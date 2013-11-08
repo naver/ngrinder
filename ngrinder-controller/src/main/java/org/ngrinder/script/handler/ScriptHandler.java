@@ -91,7 +91,7 @@ public abstract class ScriptHandler {
 	 * 
 	 * @param fileEntry
 	 *            fileEntry to be checked
-	 * @return true if handleable
+	 * @return true if the given fileEntry can be handled
 	 */
 	public boolean canHandle(FileEntry fileEntry) {
 		return FilenameUtils.isExtension(fileEntry.getPath(), getExtension());

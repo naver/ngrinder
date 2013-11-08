@@ -384,13 +384,13 @@ public class PerfTestController extends NGrinderBaseController {
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
-		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be equal to or less than %s",
+		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
 				agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"test vuser shoule be equal to or less than %s", agentManager.getMaxVuserPerAgent());
+				"test vuser should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
 		if (getConfig().isSecurityEnabled()) {
 			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
-					"test taget hosts should be provided when security mode is enabled");
+					"test target hosts should be provided when security mode is enabled");
 		}
 		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
@@ -410,7 +410,7 @@ public class PerfTestController extends NGrinderBaseController {
 			test.setRegion(Config.NONE_REGION);
 		}
 		// In case that run count is used, sampling ignore count should not be applied.
-		if (test.isThreshholdRunCount()) {
+		if (test.isThresholdRunCount()) {
 			test.setIgnoreSampleCount(0);
 		}
 		perfTestService.savePerfTest(user, test);
@@ -470,7 +470,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		if (test == null) {
-			throw processException("No clonnable test(" + id + ") exists");
+			throw processException("No test(" + id + ") exists");
 		}
 		PerfTest newOne = test.clone(new PerfTest());
 		newOne.setStatus(Status.READY);
@@ -816,7 +816,7 @@ public class PerfTestController extends NGrinderBaseController {
 				IOUtils.copy(fileInputStream, outputStream);
 			}
 		} catch (Exception e) {
-			CoreLogger.LOGGER.error("Error while uncompress log. {}", targetFile, e);
+			CoreLogger.LOGGER.error("Error while processing log. {}", targetFile, e);
 		} finally {
 			IOUtils.closeQuietly(fileInputStream);
 		}
@@ -860,7 +860,7 @@ public class PerfTestController extends NGrinderBaseController {
 			double freeMemory = MapUtils.getLong(value, "freeMemory", 0L);
 			Float cpuUsedPercentage = MapUtils.getFloat(value, "cpuUsedPercentage", 0f);
 			long sentPerSec = MapUtils.getLong(value, "sentPerSec", 0L);
-			long recievedPerSec = MapUtils.getLong(value, "recievedPerSec", 0L);
+			long receivedPerSec = MapUtils.getLong(value, "receivedPerSec", 0L);
 
 			double memUsage = 0;
 			if (totalMemory != 0) {
@@ -874,10 +874,10 @@ public class PerfTestController extends NGrinderBaseController {
 				memUsage = 99.9f;
 			}
 			String perfString = String.format(" {'agent' : '%s', 'agentFull' : '%s', 'cpu' : '%s',"
-					+ " 'mem' : '%s', 'sentPerSec' : '%s', 'recievedPerSec' : '%s'}",
+					+ " 'mem' : '%s', 'sentPerSec' : '%s', 'receivedPerSec' : '%s'}",
 					StringUtils.abbreviate(each.getKey(), 15), each.getKey(), format.format(cpuUsedPercentage),
 					format.format(memUsage), UnitUtil.byteCountToDisplaySize(sentPerSec),
-					UnitUtil.byteCountToDisplaySize(recievedPerSec));
+					UnitUtil.byteCountToDisplaySize(receivedPerSec));
 			perfStringList.add(perfString);
 		}
 		return StringUtils.join(perfStringList, ",");

@@ -65,8 +65,9 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 /**
- * SVN FileEntity abstraction. This class save and retrieve {@link FileEntry}
- * from Database.
+ * SVN FileEntity repository.
+ *
+ * This class save and retrieve {@link FileEntry} from Local SVN folders.
  * 
  * @author JunHo Yoon
  * @since 3.0

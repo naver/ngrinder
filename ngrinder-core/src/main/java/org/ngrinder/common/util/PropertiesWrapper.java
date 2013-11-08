@@ -43,7 +43,7 @@ public class PropertiesWrapper {
 	}
 
 	/**
-	 * Get property.
+	 * Get the property.
 	 * 
 	 * @param key
 	 *            property key
@@ -98,7 +98,7 @@ public class PropertiesWrapper {
 	}
 
 	/**
-	 * Add property.
+	 * Add the property.
 	 * 
 	 * @param key
 	 *            property key
@@ -124,7 +124,7 @@ public class PropertiesWrapper {
 	}
 
 	/**
-	 * Get property as boolean.
+	 * Get the property as boolean.
 	 * 
 	 * @param key
 	 *            property key
@@ -138,7 +138,7 @@ public class PropertiesWrapper {
 	}
 
 	/**
-	 * Set property.
+	 * Set the property.
 	 * 
 	 * @param key
 	 *            key

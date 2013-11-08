@@ -131,7 +131,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	public void testStartConsole() throws IOException {
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		// Get perf test
-		PerfTest perfTest = perfTestService.getNextRunnablePerfTestPerfTestCandiate();
+		PerfTest perfTest = perfTestService.getNextRunnablePerfTestPerfTestCandidate();
 		perfTest.setScriptName("/hello/world.py");
 		assertThat(perfTest, not(nullValue()));
 

@@ -145,7 +145,7 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 									startMessage != null ? startMessage.getProperties() : null);
 					if (m_agentConfig.getPropertyBoolean(AgentConfig.AGENT_USE_SAME_CONSOLE, true)) {
-						String connectingHostName = m_agentConfig.getProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST,
+						String connectingHostName = m_agentConfig.getProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST,
 										properties.getProperty(GrinderProperties.CONSOLE_HOST));
 						if (connectingHostName != null) {
 							properties.setProperty(GrinderProperties.CONSOLE_HOST, connectingHostName);
@@ -451,7 +451,7 @@ public class AgentImplementationEx implements Agent {
 		if (m_workerLaucherForShutdown != null && !m_workerLaucherForShutdown.allFinished()) {
 			m_workerLaucherForShutdown.destroyAllWorkers();
 		}
-		m_logger.info("agent is forcely terminated");
+		m_logger.info("agent is terminated by force");
 	}
 
 	private static class RampUpTimerTask extends TimerTask {

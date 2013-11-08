@@ -129,7 +129,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		for (String each : netInterfaces) {
 			try {
 				NetInterfaceStat netInterfaceStat = sigar.getNetInterfaceStat(each);
-				bandWidth.setRecieved(bandWidth.getRecieved() + netInterfaceStat.getRxBytes());
+				bandWidth.setReceived(bandWidth.getReceived() + netInterfaceStat.getRxBytes());
 				bandWidth.setSent(bandWidth.getSent() + netInterfaceStat.getTxBytes());
 			} catch (Exception e) {
 				NoOp.noOp();

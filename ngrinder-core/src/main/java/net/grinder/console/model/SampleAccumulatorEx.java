@@ -111,7 +111,7 @@ public class SampleAccumulatorEx implements Cloneable {
 	 * @param report
 	 *            report
 	 */
-	public void addCumulativeStaticstics(StatisticsSet report) {
+	public void addCumulativeStatistics(StatisticsSet report) {
 		m_cumulativeStatistics.add(report);
 	}
 

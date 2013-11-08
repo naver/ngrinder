@@ -46,7 +46,7 @@ public class SingleConsoleTest {
 			}
 
 			@Override
-			public Map<String, Object> getStatictisData() {
+			public Map<String, Object> getStatisticsData() {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				Map<Object, Object> errorMap = new HashMap<Object, Object>();
 
@@ -146,7 +146,7 @@ public class SingleConsoleTest {
 			}
 
 			@Override
-			public Map<String, Object> getStatictisData() {
+			public Map<String, Object> getStatisticsData() {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				Map<Object, Object> errorMap = new HashMap<Object, Object>();
 				errorMap.put("Tests", new Double(testCount));
@@ -167,7 +167,7 @@ public class SingleConsoleTest {
 			}
 
 			@Override
-			public Map<String, Object> getStatictisData() {
+			public Map<String, Object> getStatisticsData() {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				Map<Object, Object> errorMap = new HashMap<Object, Object>();
 				errorMap.put("Tests", new Double(testCount));

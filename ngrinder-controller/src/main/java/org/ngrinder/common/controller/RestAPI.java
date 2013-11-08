@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation which marks json rest api in the controller. If it's marked on the
- * controller methods, any exception occured in the method translated to json
+ * controller methods, any exception occurred in the method is translated to json
  * failure message.
  * 
  * @author junoyoon

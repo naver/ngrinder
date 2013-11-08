@@ -117,7 +117,7 @@ public class AgentController implements Agent {
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT,
+		grinderProperties.setInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT,
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();

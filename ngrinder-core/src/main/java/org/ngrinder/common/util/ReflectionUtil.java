@@ -35,7 +35,7 @@ public abstract class ReflectionUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
 	/**
-	 * get object field value, bypassing getter method.
+	 * Get object field value, bypassing getter method.
 	 * 
 	 * @param object
 	 *            object

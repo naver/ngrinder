@@ -58,7 +58,7 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
- * File entry service class.<br/>
+ * File entry service class.
  * 
  * This class is responsible for creating user svn repository whenever a user is
  * created and connect the user to the underlying svn.

@@ -163,7 +163,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	public void onPluginFrameworkStart(PluginFrameworkStartedEvent event) {
 		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
 						OnControllerLifeCycleRunnable.class)) {
-			runnable.start(config.getCurrentIP(), this.config.getVesion());
+			runnable.start(config.getCurrentIP(), this.config.getVersion());
 		}
 	}
 
@@ -177,7 +177,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	public void onPluginFrameworkShutdown(PluginFrameworkShutdownEvent event) {
 		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
 						OnControllerLifeCycleRunnable.class)) {
-			runnable.finish(config.getCurrentIP(), this.config.getVesion());
+			runnable.finish(config.getCurrentIP(), this.config.getVersion());
 		}
 	}
 

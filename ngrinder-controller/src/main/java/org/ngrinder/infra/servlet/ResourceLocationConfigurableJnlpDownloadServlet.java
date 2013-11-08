@@ -98,7 +98,7 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 					throws ServletException,
 					IOException {
 		try {
-			// Foward the the request to exisiting JNLPDownloadServlet.
+			// Forward the the request to existing JNLPDownloadServlet.
 			LOGGER.debug("JNLP file is downloading : {}", request.getPathInfo());
 			if (request.getMethod() == "GET") {
 				doGet(request, response);

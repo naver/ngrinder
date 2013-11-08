@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provide core logger which is always visible in LOG.
+ * Provide core logger which is always visible by LOGGER.
  * Even verbose mode is off, LOG reported by this Logger is always shown in log file.
  * 
  * This logger is subject to used to report the major execution steps of each perftest.

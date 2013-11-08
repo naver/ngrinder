@@ -108,19 +108,19 @@ public interface IAgentManagerService {
 	public abstract List<AgentInfo> getAllVisibleAgentInfoFromDB();
 
 	/**
-	 * Get a agent on given id. If it's called from the other controller, only
+	 * Get the agent for the given id. If it's called from the other controller, only
 	 * limited info available in db will be return.
 	 * 
 	 * @param id
 	 *            agent id
-	 * @param includeAgentIndentity
+	 * @param includeAgentIdentity
 	 *            include agent identity
 	 * @return agent
 	 */
-	public abstract AgentInfo getAgent(long id, boolean includeAgentIndentity);
+	public abstract AgentInfo getAgent(long id, boolean includeAgentIdentity);
 
 	/**
-	 * Get agent system data model for the given ip. This method is cluster
+	 * Get the agent system data model for the given ip. This method is cluster
 	 * aware.
 	 * 
 	 * @param ip

@@ -48,15 +48,15 @@ public class AnnouncementService {
 	}
 
 	/**
-	 * Check the announcement is changed after 1 week ago.
+	 * Check the announcement was changed since 1 week ago.
 	 * 
 	 * @return true if it's new one
 	 */
 	public boolean getAnnouncementIsNew() {
 		Date announcementDate = config.getAnnouncementDate();
 		if (announcementDate != null) {
-			Date weekago = DateUtils.addDays(new Date(), -7);
-			return announcementDate.after(weekago);
+			Date weekAgo = DateUtils.addDays(new Date(), -7);
+			return announcementDate.after(weekAgo);
 		} else {
 			return false;
 		}

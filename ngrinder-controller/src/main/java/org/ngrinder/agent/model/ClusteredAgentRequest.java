@@ -25,7 +25,7 @@ import org.ngrinder.agent.service.ClusteredAgentManagerService;
  * @author JunHo Yoon
  * @since 3.1
  */
-public class ClustedAgentRequest implements Serializable {
+public class ClusteredAgentRequest implements Serializable {
 	/**
 	 * UUID.
 	 */
@@ -83,7 +83,7 @@ public class ClustedAgentRequest implements Serializable {
 	 * @param requestType
 	 *            request type
 	 */
-	public ClustedAgentRequest(String agentIp, String agentName, RequestType requestType) {
+	public ClusteredAgentRequest(String agentIp, String agentName, RequestType requestType) {
 		this.agentIp = agentIp;
 		this.agentName = agentName;
 		this.requestType = requestType;

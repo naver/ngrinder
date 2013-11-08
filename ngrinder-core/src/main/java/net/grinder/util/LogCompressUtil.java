@@ -130,7 +130,7 @@ public abstract class LogCompressUtil {
 	}
 
 	/**
-	 * Uncompress the given array into the given file.
+	 * Extracting the given byte array  into the given file.
 	 * 
 	 * @param zipEntry
 	 *            byte array of compressed file
@@ -144,7 +144,7 @@ public abstract class LogCompressUtil {
 			fos = new FileOutputStream(toFile);
 			decompress(bio, fos, Long.MAX_VALUE);
 		} catch (IOException e) {
-			LOGGER.error("Error occurs while uncompress to {} : {} ", toFile.getAbsolutePath(), e.getMessage());
+			LOGGER.error("Error occurs during extracting to {} : {} ", toFile.getAbsolutePath(), e.getMessage());
 			LOGGER.debug("Details : ", e);
 			return;
 		} finally {
@@ -193,7 +193,7 @@ public abstract class LogCompressUtil {
 	}
 
 	/**
-	 * Uncompress the given array into the given file.
+	 * Decompress the given array into the given file.
 	 * 
 	 * @param zipEntry
 	 *            byte array of compressed file

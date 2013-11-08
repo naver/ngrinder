@@ -18,7 +18,7 @@ import java.util.Set;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 
 /**
- * Plugin extension point which is executable when the controller periodically check currently
+ * Plugin extension point which is executed whenever the controller periodically check currently
  * working agent status.
  * 
  * 

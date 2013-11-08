@@ -50,7 +50,7 @@ import com.google.gson.annotations.Expose;
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
 
-	private static final int MARGIN_FOR_ABBREVIATATION = 8;
+	private static final int MARGIN_FOR_ABBREVIATION = 8;
 
 	private static final int MAX_LONG_STRING_SIZE = 2048;
 
@@ -357,7 +357,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getDescription() {
-		return StringUtils.abbreviate(description, MAX_LONG_STRING_SIZE - MARGIN_FOR_ABBREVIATATION);
+		return StringUtils.abbreviate(description, MAX_LONG_STRING_SIZE - MARGIN_FOR_ABBREVIATION);
 	}
 
 	public String getLastModifiedDateToStr() {
@@ -403,11 +403,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return threshold;
 	}
 
-	public boolean isThreshholdDuration() {
+	public boolean isThresholdDuration() {
 		return "D".equals(getThreshold());
 	}
 
-	public boolean isThreshholdRunCount() {
+	public boolean isThresholdRunCount() {
 		return "R".equals(getThreshold());
 	}
 

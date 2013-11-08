@@ -37,7 +37,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	 * Header field of monitor status fields.
 	 */
 	public static final String HEADER = "ip,system,collectTime,freeMemory,"
-					+ "totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec,customValues";
+					+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,customValues";
 
 	/**
 	 * Enum for the system type, linux or windows.
@@ -83,9 +83,9 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			if (containsKey(cd, "bandWidth")) {
 				CompositeData bandWidth = (CompositeData) getObject(cd, "bandWidth");
 				this.bandWidth = new BandWidth(collectTime);
-				long recivedPerSec = getLong(bandWidth, "recivedPerSec");
+				long receivedPerSec = getLong(bandWidth, "receivedPerSec");
 				long sentPerSec = getLong(bandWidth, "sentPerSec");
-				this.bandWidth.setRecivedPerSec(recivedPerSec);
+				this.bandWidth.setReceivedPerSec(receivedPerSec);
 				this.bandWidth.setSentPerSec(sentPerSec);
 			}
 			if (containsKey(cd, "customValues")) {
@@ -189,7 +189,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		sb.append(DateUtil.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
 		sb.append(totalMemory).append(",").append(cpuUsedPercentage);
 		if (bandWidth != null) {
-			sb.append(",").append(bandWidth.getRecivedPerSec()).append(",").append(bandWidth.getSentPerSec());
+			sb.append(",").append(bandWidth.getReceivedPerSec()).append(",").append(bandWidth.getSentPerSec());
 		}
 		if (customValues != null) {
 			sb.append(",").append(customValues);

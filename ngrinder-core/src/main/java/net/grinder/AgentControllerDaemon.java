@@ -41,7 +41,7 @@ public class AgentControllerDaemon implements Agent {
 	private Thread thread;
 	private final GrinderProperties properties;
 	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
-	private boolean forceToshutdown = false;
+	private boolean forceShutdown = false;
 	// event synchronization for
 	private Condition m_eventSyncCondition = new Condition();
 
@@ -96,10 +96,10 @@ public class AgentControllerDaemon implements Agent {
 	 */
 	public void run(String agentControllerServerHost, int agentControllerServerPort) {
 		if (agentControllerServerHost != null) {
-			properties.setProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST, agentControllerServerHost);
+			properties.setProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST, agentControllerServerHost);
 		}
 		if (agentControllerServerPort != 0) {
-			properties.setInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT, agentControllerServerPort);
+			properties.setInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT, agentControllerServerPort);
 		}
 		run(properties);
 	}
@@ -137,8 +137,8 @@ public class AgentControllerDaemon implements Agent {
 						LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
 						LOGGER.debug("The error detail is  ", e);
 					}
-					if (isForceToshutdown()) {
-						setForceToshutdown(false);
+					if (isForceShutdown()) {
+						setForceShutdown(false);
 						break;
 					}
 					ThreadUtil.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
@@ -179,10 +179,10 @@ public class AgentControllerDaemon implements Agent {
 	 */
 	public void shutdown() {
 		try {
-			setForceToshutdown(true);
+			setForceShutdown(true);
 			agentController.shutdown();
 			if (thread != null) {
-				ThreadUtil.stopQuetly(thread, "Agent controller thread was not stopped. Stop by force.");
+				ThreadUtil.stopQuietly(thread, "Agent controller thread was not stopped. Stop by force.");
 				thread = null;
 			}
 		} catch (Exception e) {
@@ -194,12 +194,12 @@ public class AgentControllerDaemon implements Agent {
 		return agentController;
 	}
 
-	private boolean isForceToshutdown() {
-		return forceToshutdown;
+	private boolean isForceShutdown() {
+		return forceShutdown;
 	}
 
-	private synchronized void setForceToshutdown(boolean force) {
-		this.forceToshutdown = force;
+	private synchronized void setForceShutdown(boolean force) {
+		this.forceShutdown = force;
 	}
 
 	public void setRegion(String region) {

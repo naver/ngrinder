@@ -40,7 +40,7 @@ public class MonitorClientSerivceTest {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
 		tempRepo.mkdir();
 		tempRepo.deleteOnExit();
-		MonitorClientSerivce client = new MonitorClientSerivce();
+		MonitorClientService client = new MonitorClientService();
 		client.init("127.0.0.1", 13243, tempRepo, null);
 		
 		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();

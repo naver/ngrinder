@@ -27,7 +27,7 @@ public class MonitorCollectorTest {
 			BandWidth bandWidth = execute.getBandWidth();
 			System.out.println(bandWidth);
 			if (i != 1) {
-				assertThat(bandWidth.getRecivedPerSec(), not(0L));
+				assertThat(bandWidth.getReceivedPerSec(), not(0L));
 				assertThat(bandWidth.getSentPerSec(), not(0L));
 			}
 			ThreadUtil.sleep(3000);

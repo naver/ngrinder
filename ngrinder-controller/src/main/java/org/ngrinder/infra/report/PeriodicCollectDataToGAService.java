@@ -58,7 +58,7 @@ public class PeriodicCollectDataToGAService {
 		if (config.isUsageReportEnabled()) {
 			doRandomDelay();
 			GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
-							config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
+							config.getVersion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
 			MeasureProtocolRequest measureProtocolRequest = googleAnalytic.getMeasureProtocolRequest();
 			measureProtocolRequest.setEventCategory("usage");
 			measureProtocolRequest.setEventAction("executions");

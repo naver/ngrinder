@@ -20,7 +20,7 @@ import org.ngrinder.service.IPerfTestService;
 import org.ngrinder.service.ISingleConsole;
 
 /**
- * Plugin extension point for {@link PerfTest} control by examining sampling statistics.
+ * Plugin extension point for {@link PerfTest} control by examining each sampling statistics.
  * 
  * Ex) You can finish the test if the response byte is over than 1G bps.
  * 

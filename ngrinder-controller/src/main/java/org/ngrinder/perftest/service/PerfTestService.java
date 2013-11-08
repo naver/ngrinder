@@ -369,8 +369,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return perftest with updated data
 	 */
 	@Transactional
-	public PerfTest markAbromalTermination(PerfTest perfTest, StopReason reason) {
-		return markAbromalTermination(perfTest, reason.getDisplay());
+	public PerfTest markAbnormalTermination(PerfTest perfTest, StopReason reason) {
+		return markAbnormalTermination(perfTest, reason.getDisplay());
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return perftest with updated data
 	 */
 	@Transactional
-	public PerfTest markAbromalTermination(PerfTest perfTest, String reason) {
+	public PerfTest markAbnormalTermination(PerfTest perfTest, String reason) {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
 		return markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, reason);
@@ -504,7 +504,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return found {@link PerfTest} which is ready to run, null otherwise
 	 */
 	@Transactional
-	public PerfTest getNextRunnablePerfTestPerfTestCandiate() {
+	public PerfTest getNextRunnablePerfTestPerfTestCandidate() {
 		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
@@ -557,7 +557,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @return found {@link PerfTest} list
 	 */
-	public List<PerfTest> getAbnoramlTestingPerfTest() {
+	public List<PerfTest> getAbnormalTestingPerfTest() {
 		return getPerfTest(null, config.getRegion(), Status.ABNORMAL_TESTING);
 	}
 
@@ -694,7 +694,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			grinderProperties.setInt(GRINDER_PROP_AGENTS, perfTest.getAgentCount());
 			grinderProperties.setInt(GRINDER_PROP_PROCESSES, perfTest.getProcesses());
 			grinderProperties.setInt(GRINDER_PROP_THREAD, perfTest.getThreads());
-			if (perfTest.isThreshholdDuration()) {
+			if (perfTest.isThresholdDuration()) {
 				grinderProperties.setLong(GRINDER_PROP_DURATION, perfTest.getDuration());
 				grinderProperties.setInt(GRINDER_PROP_RUNS, 0);
 			} else {
@@ -773,7 +773,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} catch (IOException e) {
 				noOp();
 			}
-			throw processException("Error while file distirbution is prepared.");
+			throw processException("Error while file distribution is prepared.");
 		}
 		return handler;
 	}
@@ -978,7 +978,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	private String getProperSizeRunningSample(SingleConsole singleConsole) {
-		Map<String, Object> statisticData = singleConsole.getStatictisData();
+		Map<String, Object> statisticData = singleConsole.getStatisticsData();
 		String runningSample = gson.toJson(statisticData);
 
 		if (runningSample.length() > 9950) { // max column size is 10,000
@@ -1146,7 +1146,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
-		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatictisData();
+		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatisticsData();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
@@ -1370,15 +1370,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public void updateMonitorStat(Long perfTestId, Map<String, SystemDataModel> systemInfos) {
 		String json = gson.toJson(systemInfos);
 		if (json.length() >= 2000) {
-			Map<String, SystemDataModel> systemInfosNew = Maps.newHashMap();
+			Map<String, SystemDataModel> systemInfo = Maps.newHashMap();
 			int i = 0;
 			for (Entry<String, SystemDataModel> each : systemInfos.entrySet()) {
 				if (i++ > 3) {
 					break;
 				}
-				systemInfosNew.put(each.getKey(), each.getValue());
+				systemInfo.put(each.getKey(), each.getValue());
 			}
-			json = gson.toJson(systemInfosNew);
+			json = gson.toJson(systemInfo);
 		}
 		perfTestRepository.updatetMonitorStatus(perfTestId, json);
 	}
@@ -1460,7 +1460,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 			StringBuilder sbUsedMem = new StringBuilder("[");
 			StringBuilder sbCPUUsed = new StringBuilder("[");
-			StringBuilder sbNetReceieved = new StringBuilder("[");
+			StringBuilder sbNetReceived = new StringBuilder("[");
 			StringBuilder sbNetSent = new StringBuilder("[");
 			StringBuilder customData1 = new StringBuilder("[");
 			StringBuilder customData2 = new StringBuilder("[");
@@ -1470,7 +1470,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
-			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec"
+			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec"
 			String line = br.readLine();
 			int skipCount = dataInterval;
 			// to be compatible with previous version, check the length before
@@ -1488,7 +1488,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 						sbUsedMem.append(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])).append(",");
 					}
 					addCustomData(sbCPUUsed, 5, datalist);
-					addCustomData(sbNetReceieved, 6, datalist);
+					addCustomData(sbNetReceived, 6, datalist);
 					addCustomData(sbNetSent, 7, datalist);
 					addCustomData(customData1, 8, datalist);
 					addCustomData(customData2, 9, datalist);
@@ -1500,7 +1500,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			completeCustomData(returnMap, "cpu", sbCPUUsed);
 			completeCustomData(returnMap, "memory", sbUsedMem);
-			completeCustomData(returnMap, "received", sbNetReceieved);
+			completeCustomData(returnMap, "received", sbNetReceived);
 			completeCustomData(returnMap, "sent", sbNetSent);
 			completeCustomData(returnMap, "customData1", customData1);
 			completeCustomData(returnMap, "customData2", customData2);
@@ -1600,7 +1600,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            report key
 	 * @param interval
 	 *            interval to collect data
-	 * @return list contained lables list and tps value list
+	 * @return list containing label and tps value list
 	 */
 	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, int interval) {
 		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<String>(),
@@ -1701,7 +1701,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				reportData.deleteCharAt(reportData.length() - 1);
 			}
 		} catch (IOException e) {
-			LOGGER.error("Report data retrival is failed: {}", e.getMessage());
+			LOGGER.error("Report data retrieval is failed: {}", e.getMessage());
 			LOGGER.debug("Trace is : ", e);
 		} finally {
 			IOUtils.closeQuietly(reader);

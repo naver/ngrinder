@@ -97,8 +97,8 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 
 	@Test
 	public void testVersionString() {
-		String version = config.getVesion();
-		String versionString = config.getVesion();
+		String version = config.getVersion();
+		String versionString = config.getVersion();
 		assertThat(version, not("UNKNOWN"));
 		assertThat(versionString, not("UNKNOWN"));
 		config.initLogger(true);

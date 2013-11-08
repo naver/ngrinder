@@ -48,9 +48,9 @@ public class AgentControllerConnectorFactory {
 	 * @return A connector which can be used to contact the console.
 	 */
 	public Connector create(GrinderProperties properties) {
-		String host = properties.getProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST,
+		String host = properties.getProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST,
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
-		int port = properties.getInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT,
+		int port = properties.getInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT,
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		return new Connector(host, port, m_connectionType);
 	}

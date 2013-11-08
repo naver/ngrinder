@@ -150,14 +150,14 @@ public class FileEntryController extends NGrinderBaseController {
 		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
 		String[] parts = StringUtils.split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder retrunHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
+		StringBuilder returnHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
 				.append(contextPath).append("/svn/").append(user.getUserId()).append("</a>");
 		for (String each : parts) {
-			retrunHtml.append("/");
+			returnHtml.append("/");
 			accumulatedPart.append("/").append(each);
-			retrunHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
+			returnHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
 		}
-		String result = retrunHtml.toString();
+		String result = returnHtml.toString();
 		return result;
 	}
 
@@ -174,18 +174,18 @@ public class FileEntryController extends NGrinderBaseController {
 		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
 		String[] parts = StringUtils.split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder retrunHtml = new StringBuilder();
+		StringBuilder returnHtml = new StringBuilder();
 		for (int i = 0; i < parts.length; i++) {
 			String each = parts[i];
 			accumulatedPart.append("/").append(each);
 			if (i != parts.length - 1) {
-				retrunHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each)
+				returnHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each)
 						.append("</a>").append("/");
 			} else {
-				retrunHtml.append(each);
+				returnHtml.append(each);
 			}
 		}
-		return retrunHtml.toString();
+		return returnHtml.toString();
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class FileEntryController extends NGrinderBaseController {
 						scriptHandler, createLibAndResources));
 			}
 		}
-		model.addAttribute("breadcombPath", getScriptPathBreadcrumbs(user, PathUtil.join(path, fileName)));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, PathUtil.join(path, fileName)));
 		model.addAttribute("scriptHandler", scriptHandler);
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		return "script/editor";
@@ -305,7 +305,7 @@ public class FileEntryController extends NGrinderBaseController {
 		model.addAttribute("curRevision", script.getRevision());
 		model.addAttribute("scriptHandler", fileEntryService.getScriptHandler(script));
 		model.addAttribute("ownerId", user.getUserId());
-		model.addAttribute("breadcombPath", getScriptPathBreadcrumbs(user, path));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, path));
 		return "script/editor";
 	}
 

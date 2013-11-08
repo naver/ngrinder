@@ -33,7 +33,7 @@ public class ThreadUtilTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.common.util.ThreadUtil#stopQuetly(java.lang.Thread, java.lang.String)}.
+	 * {@link org.ngrinder.common.util.ThreadUtil#stopQuietly(java.lang.Thread, java.lang.String)}.
 	 */
 	@Test
 	public void testStopQuetly() {
@@ -51,7 +51,7 @@ public class ThreadUtilTest {
 		});
 		newThread.start();
 		ThreadUtil.sleep(500);
-		ThreadUtil.stopQuetly(newThread, "STOPPED!");
+		ThreadUtil.stopQuietly(newThread, "STOPPED!");
 	}
 
 }

@@ -107,7 +107,7 @@ public class Config implements IConfig, NGrinderConstants {
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
-			loadIntrenalProperties();
+			loadInternalProperties();
 			loadSystemProperties();
 			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
@@ -117,7 +117,7 @@ public class Config implements IConfig, NGrinderConstants {
 			resolveLocalIp();
 			loadDatabaseProperties();
 			setRMIHostName();
-			versionString = getVesion();
+			versionString = getVersion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
 		}
@@ -283,7 +283,7 @@ public class Config implements IConfig, NGrinderConstants {
 		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			CoreLogger.LOGGER.warn("The path to ngrinder-home is ambiguous:");
 			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
-			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
+			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.home=" + userHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
@@ -305,7 +305,7 @@ public class Config implements IConfig, NGrinderConstants {
 		if (!StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
 			CoreLogger.LOGGER.warn("The path to ngrinder-exhome is ambiguous:");
 			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
-			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
+			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.exhome=" + exHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
@@ -319,7 +319,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Load internal properties which is not modifiable by user.
 	 */
-	protected void loadIntrenalProperties() {
+	protected void loadInternalProperties() {
 		InputStream inputStream = null;
 		Properties properties = new Properties();
 		try {
@@ -393,7 +393,7 @@ public class Config implements IConfig, NGrinderConstants {
 				loadAnnouncement();
 			}
 		};
-		announcementWatchDog.setName("WatchDog - annoucenment.conf");
+		announcementWatchDog.setName("WatchDog - announcement.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
 		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
@@ -532,7 +532,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * 
 	 * @return nGrinder version number. If not set, return "0.0.1"
 	 */
-	public String getVesion() {
+	public String getVersion() {
 		return getInternalProperties().getProperty("ngrinder.version", "0.0.1");
 	}
 
@@ -572,7 +572,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * 
 	 * @return nGrinder version.
 	 */
-	public static String getVerionString() {
+	public static String getVersionString() {
 		return versionString;
 	}
 

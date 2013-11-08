@@ -43,7 +43,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Controller base containning widely used methods.
+ * Controller base containing widely used methods.
  * 
  * @author JunHo Yoon
  * @since 3.0

@@ -14,7 +14,7 @@ public class PeriodicCollectDataToGAServiceTest {
 	public void testReport() {
 		Config configMock = mock(Config.class);
 		when(configMock.isUsageReportEnabled()).thenReturn(true);
-		when(configMock.getVesion()).thenReturn("test-0.0.1");
+		when(configMock.getVersion()).thenReturn("test-0.0.1");
 		PeriodicCollectDataToGAService gaService = new PeriodicCollectDataToGAService() {
 			@Override
 			protected int getUsage(Date start, Date end) {

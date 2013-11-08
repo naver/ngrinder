@@ -32,8 +32,10 @@ public class ClusteredPerfTestService extends PerfTestService {
 	 * 
 	 * @return found {@link PerfTest} which is ready to run, null otherwise
 	 */
+
+	@Override
 	@Transactional
-	public PerfTest getNextRunnablePerfTestPerfTestCandiate() {
+	public PerfTest getNextRunnablePerfTestPerfTestCandidate() {
 		List<PerfTest> readyPerfTests = getPerfTestRepository().findAllByStatusAndRegionOrderByScheduledTimeAsc(
 				Status.READY, getConfig().getRegion());
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);

@@ -23,7 +23,7 @@ public class MockConsoleManager extends ConsoleManager {
 	}
 
 	@Override
-	public long getMaxWaitingMiliSecond() {
+	public long getMaxWaitingMilliSecond() {
 		return 3000;
 	}
 }

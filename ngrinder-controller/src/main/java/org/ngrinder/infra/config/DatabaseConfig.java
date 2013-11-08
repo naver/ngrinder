@@ -55,7 +55,7 @@ public class DatabaseConfig implements NGrinderConstants {
 		BasicDataSource dataSource = new BasicDataSource();
 		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
 		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
-						"[FATAL] Database type is not sepecfied. In default, use H2."));
+						"[FATAL] Database type is not specified. In default, use H2."));
 		database.setup(dataSource, databaseProperties);
 		return dataSource;
 	}
@@ -80,7 +80,7 @@ public class DatabaseConfig implements NGrinderConstants {
 		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
 
 		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
-						"[FATAL] Database type is not sepecfied. In default, use H2."));
+						"[FATAL] Database type is not specified. In default, use H2."));
 		if (config.isCluster() && !database.isClusterSupport()) {
 			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select cubrid as database");
 		}

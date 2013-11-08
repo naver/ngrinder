@@ -14,7 +14,7 @@
 package org.ngrinder.perftest.service;
 
 /**
- * Console information which contains console's characteristics.<br/>
+ * Console information which containing console attributes.<br/>
  * {@link #port} is the most important attribute of this class.
  * 
  * @author JunHo Yoon

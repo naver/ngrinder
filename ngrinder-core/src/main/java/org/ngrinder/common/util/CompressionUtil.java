@@ -449,7 +449,7 @@ public abstract class CompressionUtil {
 	 * Unpack the given jar file.
 	 * 
 	 * @param jarFile
-	 *            file to be uncompressed
+	 *            file to decompressed
 	 * @param destDir
 	 *            destination directory
 	 * @throws IOException

@@ -269,7 +269,7 @@ public class AgentManager implements NGrinderConstants {
 	 * 
 	 * @param user
 	 *            user
-	 * @return AgentIndentity set
+	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllApprovedAgents(User user) {
 		return filterUserAgents(getAllApprovedAgents(), user.getUserId());
@@ -278,7 +278,7 @@ public class AgentManager implements NGrinderConstants {
 	/**
 	 * Get all shared approved agents.
 	 * 
-	 * @return AgentIndentity set
+	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllSharedAgents() {
 		return filterSharedAgents(getAllApprovedAgents());
@@ -287,7 +287,7 @@ public class AgentManager implements NGrinderConstants {
 	/**
 	 * Get all approved agents.
 	 * 
-	 * @return AgentIndentity set
+	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllApprovedAgents() {
 		Set<AgentIdentity> allAgents = agentControllerServerDaemon.getAllAvailableAgents();
@@ -390,9 +390,9 @@ public class AgentManager implements NGrinderConstants {
 	public synchronized void runAgent(User user, final SingleConsole singleConsole,
 			final GrinderProperties grinderProperties, final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
-		final Set<AgentIdentity> neccessaryAgents = selectAgent(user, allFreeAgents, agentCount);
+		final Set<AgentIdentity> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
-		for (AgentIdentity each : neccessaryAgents) {
+		for (AgentIdentity each : necessaryAgents) {
 			LOGGER.info("- Agent {}", each.getName());
 		}
 		ExecutorService execService = null;
@@ -401,7 +401,7 @@ public class AgentManager implements NGrinderConstants {
 			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
 			grinderProperties.setProperty(GrinderProperties.CONSOLE_HOST, singleConsole.getConsoleHost());
 			execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
-			for (final AgentIdentity eachAgentIdentity : neccessaryAgents) {
+			for (final AgentIdentity eachAgentIdentity : necessaryAgents) {
 				execService.submit(new Runnable() {
 					@Override
 					public void run() {

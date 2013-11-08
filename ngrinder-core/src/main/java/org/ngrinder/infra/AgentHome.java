@@ -78,7 +78,7 @@ public class AgentHome {
 	}
 
 	/**
-	 * Get agent home directory.
+	 * Get the agent home directory.
 	 * 
 	 * @return agent home directory
 	 */
@@ -87,7 +87,7 @@ public class AgentHome {
 	}
 
 	/**
-	 * Copy {@link InputStream} to path in the target.
+	 * Copy the {@link InputStream} to path in the target.
 	 * 
 	 * @param io
 	 *            {@link InputStream}
@@ -109,7 +109,7 @@ public class AgentHome {
 	}
 
 	/**
-	 * Get properties from path.
+	 * Get the properties from path.
 	 * 
 	 * @param path
 	 *            property file path
@@ -133,7 +133,7 @@ public class AgentHome {
 	}
 
 	/**
-	 * Get file from path.
+	 * Get the file from the given path.
 	 * 
 	 * @param path
 	 *            path

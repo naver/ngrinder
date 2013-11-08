@@ -320,12 +320,12 @@ public class AgentManagerService implements IAgentManagerService {
 	 * boolean)
 	 */
 	@Override
-	public AgentInfo getAgent(long id, boolean includeAgentIndentity) {
+	public AgentInfo getAgent(long id, boolean includeAgentIdentity) {
 		AgentInfo findOne = getAgentRepository().findOne(id);
 		if (findOne == null) {
 			return null;
 		}
-		if (includeAgentIndentity) {
+		if (includeAgentIdentity) {
 			AgentControllerIdentityImplementation agentIdentityByIp = getLocalAgentIdentityByIpAndName(findOne.getIp(),
 					findOne.getName());
 			return fillUp(findOne, agentIdentityByIp);

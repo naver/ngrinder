@@ -217,8 +217,8 @@
 			var each = status[i];
 			monitorStatusString = monitorStatusString + "<li class='monitor_status'><div style='wdith:100%;' class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent + "</b></span> CPU-"
 				+ each.cpu + "% MEM-" + each.mem + "% ";
-			if (each.recievedPerSec != "0B" || each.sentPerSec != "0B") { 
-				monitorStatusString = monitorStatusString + "/ RX-"+ each.recievedPerSec + " TX-" + each.sentPerSec + "</dv></li>";
+			if (each.receivedPerSec != "0B" || each.sentPerSec != "0B") {
+				monitorStatusString = monitorStatusString + "/ RX-"+ each.receivedPerSec + " TX-" + each.sentPerSec + "</dv></li>";
 			};
 		}
 		monitorStatusString += "</ul>"; 

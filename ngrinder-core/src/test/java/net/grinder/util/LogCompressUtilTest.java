@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class LogCompressUtilTest {
 	@Test
-	public void testLogCompressUnCompress() throws IOException {
+	public void testLogCompressDecompress() throws IOException {
 		File file = new File(LogCompressUtilTest.class.getResource("/grinder1.properties").getFile());
 		byte[] zipedContent = LogCompressUtil.compressFile(file);
 		File createTempFile2 = File.createTempFile("a22", "zip");

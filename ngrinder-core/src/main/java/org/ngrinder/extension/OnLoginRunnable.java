@@ -38,10 +38,10 @@ public interface OnLoginRunnable {
 	public User loadUser(String userId);
 
 	/**
-	 * Validate user by userId and password.
+	 * Validate user with userId and password.
 	 * 
-	 * encPass / encoder / salt is only for the local DB stored password only. When you implement this with remote
-	 * password validation system, you may only need userId and password which is provided in the nGrinder login page.
+	 * encPass / encoder / salt are only when the password is saved in the local DB. When you implement this with remote
+	 * password validation system, you may only need userId and password which is input by an user in the nGrinder login page.
 	 * 
 	 * @param userId
 	 *            user providing id

@@ -318,7 +318,7 @@ public class User extends BaseModel<User> {
 	}
 
 	/**
-	 * Get user simple information.
+	 * Get the user simple information.
 	 * 
 	 * @return user
 	 */
@@ -335,7 +335,7 @@ public class User extends BaseModel<User> {
 	}
 
 	/**
-	 * a string representation of User object.
+	 * string representation of User object.
 	 * 
 	 * @return User object information String.
 	 */

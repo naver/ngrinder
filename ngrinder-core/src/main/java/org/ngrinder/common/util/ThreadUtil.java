@@ -34,7 +34,7 @@ public abstract class ThreadUtil {
 	 * Sleep in give millis without throwing exception.
 	 * 
 	 * @param millis
-	 *            milisecond.
+	 *            millisecond.
 	 */
 	public static void sleep(long millis) {
 		try {
@@ -49,11 +49,11 @@ public abstract class ThreadUtil {
 	 * 
 	 * @param thread
 	 *            thread to be stop
-	 * @param stopMaessage
+	 * @param stopMessage
 	 *            message to be shown when stop thread forcely
 	 */
 	@SuppressWarnings("deprecation")
-	public static void stopQuetly(Thread thread, String stopMaessage) {
+	public static void stopQuietly(Thread thread, String stopMessage) {
 		if (thread == null) {
 			return;
 		}
@@ -79,7 +79,7 @@ public abstract class ThreadUtil {
 		try {
 			// Force to Stop
 			if (thread.isAlive()) {
-				LOGGER.error(stopMaessage);
+				LOGGER.error(stopMessage);
 				thread.stop();
 			}
 		} catch (Exception e) {

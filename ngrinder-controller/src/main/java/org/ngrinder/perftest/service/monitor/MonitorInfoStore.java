@@ -35,8 +35,8 @@ public class MonitorInfoStore {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private Map<String, MonitorClientSerivce> monitorInfoMap = Collections
-			.synchronizedMap(new HashMap<String, MonitorClientSerivce>());
+	private Map<String, MonitorClientService> monitorInfoMap = Collections
+			.synchronizedMap(new HashMap<String, MonitorClientService>());
 
 	/**
 	 * Get monitor data from mbean client.
@@ -48,9 +48,9 @@ public class MonitorInfoStore {
 	 * @return {@link SystemInfo}
 	 */
 	public SystemInfo getSystemInfo(String ip, int port) {
-		MonitorClientSerivce monitorClient = monitorInfoMap.get(ip);
+		MonitorClientService monitorClient = monitorInfoMap.get(ip);
 		if (monitorClient == null) {
-			monitorClient = applicationContext.getBean(MonitorClientSerivce.class);
+			monitorClient = applicationContext.getBean(MonitorClientService.class);
 			monitorClient.init(ip, port);
 			monitorClient.setLastAccessedTime(System.currentTimeMillis());
 			add(ip, monitorClient);
@@ -59,7 +59,7 @@ public class MonitorInfoStore {
 		return monitorClient.getMonitorData();
 	}
 
-	private void add(String ip, MonitorClientSerivce monitorClient) {
+	private void add(String ip, MonitorClientService monitorClient) {
 		synchronized (this) {
 			monitorInfoMap.put(ip, monitorClient);
 		}
@@ -70,7 +70,7 @@ public class MonitorInfoStore {
 	 */
 	@Scheduled(fixedDelay = 30000)
 	public void deleteUnusedMonitorClient() {
-		for (Entry<String, MonitorClientSerivce> each : monitorInfoMap.entrySet()) {
+		for (Entry<String, MonitorClientService> each : monitorInfoMap.entrySet()) {
 			if ((System.currentTimeMillis() - each.getValue().getLastAccessedTime()) > 30000) {
 				remove(each.getKey());
 			}
@@ -85,7 +85,7 @@ public class MonitorInfoStore {
 	 */
 	public void remove(String ip) {
 		synchronized (this) {
-			MonitorClientSerivce monitorClient = monitorInfoMap.get(ip);
+			MonitorClientService monitorClient = monitorInfoMap.get(ip);
 			if (monitorClient == null) {
 				return;
 			}

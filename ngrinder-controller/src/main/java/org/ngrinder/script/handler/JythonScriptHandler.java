@@ -59,7 +59,7 @@ public class JythonScriptHandler extends ScriptHandler {
 				return "Error occurred\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
 								+ buf.toString();
 			} catch (Exception ex) {
-				return "Error occurred while evalation PySyntaxError";
+				return "Error occurred while evaluation python syntax";
 			}
 		}
 		return null;

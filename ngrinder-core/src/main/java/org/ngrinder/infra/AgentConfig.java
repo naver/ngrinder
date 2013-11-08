@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
  */
 public class AgentConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
-	public static final String AGENT_CONTROLER_SERVER_HOST = "agent.controller.server.host";
-	public static final String AGENT_CONTROLER_SERVER_PORT = "agent.controller.server.port";
+	public static final String AGENT_CONTROLLER_SERVER_HOST = "agent.controller.server.host";
+	public static final String AGENT_CONTROLLER_SERVER_PORT = "agent.controller.server.port";
 	public static final String AGENT_REGION = "agent.region";
 	public static final String AGENT_HOSTID = "agent.hostid";
 	public static final String AGENT_USE_SAME_CONSOLE = "agent.same.console.host";
@@ -55,7 +55,7 @@ public class AgentConfig {
 	/**
 	 * Initialize.
 	 * 
-	 * @return initialized AgentCongig
+	 * @return initialized AgentConfig
 	 */
 	public AgentConfig init() {
 		home = resolveHome();
@@ -91,7 +91,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Load path file from class path.
+	 * Load the internal files for the given path by searching class paths.
 	 * 
 	 * @param path
 	 *            path in the classpath
@@ -109,7 +109,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Save agent pid.
+	 * Save the agent pid.
 	 * 
 	 * @param agentPid
 	 *            agent pid
@@ -146,7 +146,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Get agent pid properties.
+	 * Get the agent pid in the form of string.
 	 * 
 	 * @param startMode
 	 *            agent or monitor
@@ -172,7 +172,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * resolve NGrinder agent home path.
+	 * Resolve NGrinder agent home path.
 	 * 
 	 * @return resolved {@link AgentHome}
 	 */
@@ -229,7 +229,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Get property string.
+	 * Get the string value from property for the given key.
 	 * 
 	 * @param key
 	 *            property key
@@ -243,7 +243,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Get property int.
+	 * Get the int value from property for the given key.
 	 * 
 	 * @param key
 	 *            property key
@@ -257,7 +257,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Get nGrinder internal properties.
+	 * Get the nGrinder internal property for the given key.
 	 * 
 	 * @param key
 	 *            key
@@ -274,7 +274,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * Get property boolean.
+	 * Get the boolean value from the properties.
 	 * 
 	 * @param key
 	 *            property key

@@ -27,7 +27,7 @@ import net.grinder.util.thread.InterruptibleRunnableAdapter;
 import org.slf4j.Logger;
 
 /**
- * WorkerLaucher which redirect stdout/stderr stream to user.
+ * WorkerLauncher which redirect stdout/stderr stream to user.
  * 
  * @author JunHo Yoon
  * @since 3.0

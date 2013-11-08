@@ -89,15 +89,17 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
-	public Map<String, Object> getStatictisData() {
+	public Map<String, Object> getStatisticsData() {
 		if (getCurrentRunningTime() > 0) {
-			return super.getStatictisData();
+			return super.getStatisticsData();
 		} else {
-			return getNullStatictisData();
+			return getNullStatisticsData();
 		}
 	}
 
-	private Map<String, Object> getNullStatictisData() {
+	protected Map<String, Object> getNullStatisticsData() {
 		return EMPTY_RESULT;
 	}
+
+
 }

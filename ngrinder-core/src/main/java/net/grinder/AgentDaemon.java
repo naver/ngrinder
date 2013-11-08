@@ -39,7 +39,7 @@ public class AgentDaemon implements Agent {
 	private Thread thread = new Thread();
 	private GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
-	private boolean forceToshutdown = false;
+	private boolean forceShutdown = false;
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentDaemon.class);
 	private final AgentConfig m_agentConfig;
 
@@ -144,8 +144,8 @@ public class AgentDaemon implements Agent {
 					listener.shutdownAgent();
 				}
 			});
-			if (isForceToshutdown()) {
-				setForceToshutdown(false);
+			if (isForceShutdown()) {
+				setForceShutdown(false);
 			}
 		}
 	}
@@ -198,23 +198,23 @@ public class AgentDaemon implements Agent {
 	 */
 	public void shutdown() {
 		try {
-			forceToshutdown = true;
+			forceShutdown = true;
 			if (agent != null) {
 				agent.shutdown();
 			}
-			ThreadUtil.stopQuetly(thread, "Agent Daemon is not stopped. So force to stop");
+			ThreadUtil.stopQuietly(thread, "Agent Daemon is not stopped. So force to stop");
 			thread = null;
 		} catch (Exception e) {
 			throw processException("Exception occurred while shutting down AgentDaemon", e);
 		}
 	}
 
-	private boolean isForceToshutdown() {
-		return forceToshutdown;
+	private boolean isForceShutdown() {
+		return forceShutdown;
 	}
 
-	private void setForceToshutdown(boolean force) {
-		this.forceToshutdown = force;
+	private void setForceShutdown(boolean force) {
+		this.forceShutdown = force;
 	}
 
 }

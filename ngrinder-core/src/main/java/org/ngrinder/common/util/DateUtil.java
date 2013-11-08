@@ -92,7 +92,7 @@ public abstract class DateUtil {
 	 * 
 	 * @param date
 	 *            date
-	 * @return formated string
+	 * @return formatted string
 	 */
 	public static String dateToString(Date date) {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(date);
@@ -101,7 +101,7 @@ public abstract class DateUtil {
 	/**
 	 * Get time zones.
 	 * 
-	 * @return map typezone id and GMT
+	 * @return map time zone id and GMT
 	 */
 	public static Map<String, String> getFilteredTimeZoneMap() {
 		if (timezoneIDMap == null) {
@@ -170,7 +170,7 @@ public abstract class DateUtil {
 	 * 
 	 * @param ms
 	 *            Millisecond
-	 * @return DD:HH:MM:SS formated string
+	 * @return DD:HH:MM:SS formatted string
 	 */
 	public static String ms2Time(long ms) {
 		long day = ms / DD;

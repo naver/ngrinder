@@ -47,7 +47,7 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		Authentication auth = getAuthentification(request, response);
+		Authentication auth = getAuthentication(request, response);
 		String timezone = (String) request.getParameter("user_timezone");
 		String language = (String) request.getParameter("native_language");
 		SecuredUser securedUser = (SecuredUser) auth.getPrincipal();
@@ -62,7 +62,7 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 		return auth;
 	}
 
-	protected Authentication getAuthentification(HttpServletRequest request, HttpServletResponse response) {
+	protected Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		return super.attemptAuthentication(request, response);
 	}
 

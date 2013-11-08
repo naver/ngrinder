@@ -57,7 +57,7 @@
 												<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 											</td>
 											<td>
-												<span class="input-large uneditable-input span6" style="cursor:text">${breadcombPath}</span>
+												<span class="input-large uneditable-input span6" style="cursor:text">${breadcrumbPath}</span>
 												<input type="hidden" id="script_name" class="span6" name="path" value="${(file.path)!}" readonly/>
 											</td>
 											<td>

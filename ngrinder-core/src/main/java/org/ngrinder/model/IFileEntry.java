@@ -15,7 +15,8 @@ package org.ngrinder.model;
 
 
 /**
- * File Entry model interface.<br/>
+ * File Entry model interface.
+ *
  * It's little bit out of convention. However I separate this interface on model because of backward
  * compatibility.
  * 

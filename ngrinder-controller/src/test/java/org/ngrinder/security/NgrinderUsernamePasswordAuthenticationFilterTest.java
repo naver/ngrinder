@@ -32,8 +32,8 @@ public class NgrinderUsernamePasswordAuthenticationFilterTest extends AbstractNG
 	private MockNgrinderUsernamePasswordAuthenticationFilter filter = new MockNgrinderUsernamePasswordAuthenticationFilter();
 
 	private class MockNgrinderUsernamePasswordAuthenticationFilter extends NgrinderUsernamePasswordAuthenticationFilter {
-		protected org.springframework.security.core.Authentication getAuthentification(
-						javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) {
+		protected org.springframework.security.core.Authentication getAuthentication(
+				javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) {
 			Authentication auth = mock(Authentication.class);
 			when(auth.getPrincipal()).thenReturn(new SecuredUser(getTestUser(), null));
 			return auth;

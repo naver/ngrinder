@@ -438,7 +438,7 @@ public class SampleModelImplementationEx implements SampleModel {
 								m_totalSampleAccumulator.addIntervalStatistics(statistics);
 
 								if (shouldAccumulateSamples()) {
-									m_totalSampleAccumulator.addCumulativeStaticstics(statistics);
+									m_totalSampleAccumulator.addCumulativeStatistics(statistics);
 								}
 							}
 						}
@@ -475,15 +475,15 @@ public class SampleModelImplementationEx implements SampleModel {
 				}
 
 				final long sampleInterval = m_properties.getSampleInterval();
-				SampleAccumulatorEx totalSampleAcculatorSnapshot;
+				SampleAccumulatorEx totalSampleAccumulatorSnapshot;
 				synchronized (m_accumulators) {
 					for (SampleAccumulator sampleAccumulator : m_accumulators.values()) {
 						sampleAccumulator.fireSample(sampleInterval, period);
 					}
-					totalSampleAcculatorSnapshot = new SampleAccumulatorEx(m_totalSampleAccumulator);
+					totalSampleAccumulatorSnapshot = new SampleAccumulatorEx(m_totalSampleAccumulator);
 					m_totalSampleAccumulator.refreshIntervalStatistics(sampleInterval, period);
 				}
-				totalSampleAcculatorSnapshot.fireSample(sampleInterval, period);
+				totalSampleAccumulatorSnapshot.fireSample(sampleInterval, period);
 				++msampleCount;
 
 				// I'm ignoring a minor race here: the model could have been

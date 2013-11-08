@@ -40,7 +40,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * Console manager is responsible for console instance management.<br/>
+ * Console manager is responsible for console instance management.
+ *
  * A number of consoles(specified in ngrinder.maxConcurrentTest in system.conf) are pooled. Actually console itself is
  * not pooled but the {@link ConsoleEntry} which contains console information are pooled internally. Whenever a user
  * requires a new console, it gets the one {@link ConsoleEntry} from the pool and creates new console with the
@@ -75,7 +76,8 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get the base port number of console.<br/>
+	 * Get the base port number of console.
+	 *
 	 * It can be specified at ngrinder.consolePortBase in system.conf. Each console will be created from that port.
 	 * 
 	 * @return base port number
@@ -100,7 +102,7 @@ public class ConsoleManager {
 	 * 
 	 * @return 5000 second
 	 */
-	protected long getMaxWaitingMiliSecond() {
+	protected long getMaxWaitingMilliSecond() {
 		return config.getSystemProperties().getPropertyInt(NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS,
 				NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
 	}
@@ -170,11 +172,11 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get a available console.<br/>
+	 * Get an available console.
 	 * 
 	 * If there is no available console, it waits until available console is returned back. If the specific time is
 	 * elapsed, the timeout error occurs and throws {@link org.ngrinder.common.exception.NGrinderRuntimeException} . The
-	 * timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
+	 * timeout can be adjusted by overriding {@link #getMaxWaitingMilliSecond()}.
 	 * 
 	 * @param testIdentifier
 	 *            test identifier
@@ -186,7 +188,7 @@ public class ConsoleManager {
 		ConsoleEntry consoleEntry = null;
 		SingleConsole singleConsole = null;
 		try {
-			consoleEntry = consoleQueue.poll(getMaxWaitingMiliSecond(), TimeUnit.MILLISECONDS);
+			consoleEntry = consoleQueue.poll(getMaxWaitingMilliSecond(), TimeUnit.MILLISECONDS);
 			if (consoleEntry == null) {
 				throw processException("no console entry available");
 			}
@@ -205,7 +207,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Return back the given console.<br/>
+	 * Return back the given console.
 	 * 
 	 * Duplicated returns is allowed.
 	 * 
@@ -218,13 +220,13 @@ public class ConsoleManager {
 	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
 		if (console == null) {
-			LOG.error("Attemp to return back null console for {}.", testIdentifier);
+			LOG.error("Attempt to return back null console for {}.", testIdentifier);
 			return;
 		}
 		try {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
-			LOG.error("Exception is occurred while shuttdowning console in returnback process for test {}.",
+			LOG.error("Exception is occurred while console shutdown in returnback process for test {}.",
 					testIdentifier, e);
 			// But the port is getting back.
 		} finally {
@@ -233,7 +235,7 @@ public class ConsoleManager {
 				// Wait console is completely shutdown...
 				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
+				LOG.error("Exception occurs while console shutdown in returnback process for test {}.",
 						testIdentifier, e);
 				// If it's not disconnected still, stop them forcely.
 				agentManager.stopAgent(console.getConsolePort());
@@ -241,7 +243,7 @@ public class ConsoleManager {
 			try {
 				console.shutdown();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
+				LOG.error("Exception occurs while console shutdown console in returnback process for test {}.",
 						testIdentifier, e);
 			}
 			int consolePort = console.getConsolePort();

@@ -41,7 +41,7 @@ import com.google.common.collect.Maps;
 @Service
 @Scope(value = "prototype")
 public class MonitorTask extends TimerTask {
-	private Map<String, MonitorClientSerivce> monitorClientsMap = Maps.newConcurrentMap();
+	private Map<String, MonitorClientService> monitorClientsMap = Maps.newConcurrentMap();
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -66,7 +66,7 @@ public class MonitorTask extends TimerTask {
 		for (AgentInfo target : monitorTargets) {
 			String targetKey = createTargetKey(target);
 			if (!monitorClientsMap.containsKey(targetKey)) {
-				MonitorClientSerivce bean = applicationContext.getBean(MonitorClientSerivce.class);
+				MonitorClientService bean = applicationContext.getBean(MonitorClientService.class);
 				bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
 				monitorClientsMap.put(targetKey, bean);
 			}
@@ -77,7 +77,7 @@ public class MonitorTask extends TimerTask {
 	 * Delete All MBean monitors.
 	 */
 	public void destroy() {
-		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
+		for (Entry<String, MonitorClientService> target : monitorClientsMap.entrySet()) {
 			target.getValue().close();
 		}
 		monitorClientsMap.clear();
@@ -101,18 +101,18 @@ public class MonitorTask extends TimerTask {
 	 *            true if empty data should be saved.
 	 */
 	public void saveData(boolean empty) {
-		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
-			MonitorClientSerivce monitorClientSerivce = target.getValue();
-			monitorClientSerivce.record(empty);
+		for (Entry<String, MonitorClientService> target : monitorClientsMap.entrySet()) {
+			MonitorClientService monitorClientService = target.getValue();
+			monitorClientService.record(empty);
 		}
 	}
 
 	@Override
 	public void run() {
 		Map<String, SystemDataModel> systemInfoMap = Maps.newHashMap();
-		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
-			MonitorClientSerivce monitorClientSerivce = target.getValue();
-			SystemInfo saveDataCache = monitorClientSerivce.saveDataCache();
+		for (Entry<String, MonitorClientService> target : monitorClientsMap.entrySet()) {
+			MonitorClientService monitorClientService = target.getValue();
+			SystemInfo saveDataCache = monitorClientService.saveDataCache();
 			if (saveDataCache != null) {
 				systemInfoMap.put(target.getKey(), new SystemDataModel(saveDataCache, "UNKNOWN"));
 			}

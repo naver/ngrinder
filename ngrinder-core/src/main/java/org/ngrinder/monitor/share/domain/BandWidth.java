@@ -48,10 +48,10 @@ public class BandWidth implements Serializable {
 		this.time = time;
 	}
 
-	private long recieved;
+	private long received;
 	private long sent;
 
-	private long recivedPerSec;
+	private long receivedPerSec;
 	private long sentPerSec;
 
 	/**
@@ -63,7 +63,7 @@ public class BandWidth implements Serializable {
 	 */
 	public BandWidth adjust(BandWidth bandWidth) {
 		float rate = ((float) Math.abs(time - bandWidth.getTime())) / 1000;
-		recivedPerSec = ((long) ((recieved - bandWidth.getRecieved()) * rate));
+		receivedPerSec = ((long) ((received - bandWidth.getReceived()) * rate));
 		sentPerSec = ((long) ((sent - bandWidth.getSent()) * rate));
 		return this;
 	}
@@ -80,20 +80,20 @@ public class BandWidth implements Serializable {
 		this.sentPerSec = sentPerSec;
 	}
 
-	public long getRecivedPerSec() {
-		return recivedPerSec;
+	public long getReceivedPerSec() {
+		return receivedPerSec;
 	}
 
-	public void setRecivedPerSec(long recivedPerSec) {
-		this.recivedPerSec = recivedPerSec;
+	public void setReceivedPerSec(long receivedPerSec) {
+		this.receivedPerSec = receivedPerSec;
 	}
 
-	public long getRecieved() {
-		return recieved;
+	public long getReceived() {
+		return received;
 	}
 
-	public void setRecieved(long recieved) {
-		this.recieved = recieved;
+	public void setReceived(long received) {
+		this.received = received;
 	}
 
 	public long getSent() {

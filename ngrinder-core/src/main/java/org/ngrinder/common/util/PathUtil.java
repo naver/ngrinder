@@ -27,10 +27,10 @@ public abstract class PathUtil {
 	public static final int MAX_PATH_LENGTH = 40;
 
 	/**
-	 * Remove prepending / on path.
+	 * Remove prepended / from the given path.
 	 * 
 	 * @param path
-	 *            path containning /
+	 *            path containing /
 	 * @return / removed path
 	 */
 	public static String removePrependedSlash(String path) {
@@ -60,10 +60,10 @@ public abstract class PathUtil {
 	}
 
 	/**
-	 * Remove prepending / on path.
+	 * Remove prepended / on the given path.
 	 * 
 	 * @param path
-	 *            path containning /
+	 *            path containing /
 	 * @return / removed path
 	 */
 	public static String removeDuplicatedPrependedSlash(String path) {
@@ -74,7 +74,7 @@ public abstract class PathUtil {
 	}
 
 	/**
-	 * Get short path because actual path is too long to display it totally.
+	 * Get the shorten displayable path from the given path.
 	 * 
 	 * @param path
 	 *            path

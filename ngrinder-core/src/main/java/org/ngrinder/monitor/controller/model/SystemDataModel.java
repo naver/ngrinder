@@ -51,7 +51,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	private float cpuUsedPercentage;
 
 	@Expose
-	private long recievedPerSec;
+	private long receivedPerSec;
 
 	@Expose
 	private long sentPerSec;
@@ -92,7 +92,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 		this.cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
 		BandWidth bandWidth = systemInfo.getBandWidth();
 		if (bandWidth != null) {
-			this.recievedPerSec = bandWidth.getRecivedPerSec();
+			this.receivedPerSec = bandWidth.getReceivedPerSec();
 			this.sentPerSec = bandWidth.getSentPerSec();
 		}
 		this.customValues = systemInfo.getCustomValues();
@@ -171,12 +171,12 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 		this.version = version;
 	}
 
-	public long getRecievedPerSec() {
-		return recievedPerSec;
+	public long getReceivedPerSec() {
+		return receivedPerSec;
 	}
 
-	public void setRecievedPerSec(long recievedPerSec) {
-		this.recievedPerSec = recievedPerSec;
+	public void setReceivedPerSec(long receivedPerSec) {
+		this.receivedPerSec = receivedPerSec;
 	}
 
 	public long getSentPerSec() {

@@ -316,7 +316,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				ReflectionUtil.getFieldValue(
 						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
-				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -395,7 +395,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Distribute files on given filePath to attached agents.
+	 * Distribute files in the given filePath to the attached agents.
 	 * 
 	 * @param filePath
 	 *            the distribution files
@@ -405,7 +405,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Distribute files on given filePath to attached agents.
+	 * Distribute files in the given filePath to the attached agents.
 	 * 
 	 * @param filePath
 	 *            the distribution files
@@ -416,7 +416,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public void distributeFiles(File filePath, ListenerSupport<FileDistributionListener> listener, boolean safe) {
 		setDistributionDirectory(filePath);
-		distributFiles(listener, safe);
+		distributeFiles(listener, safe);
 	}
 
 	/**
@@ -450,8 +450,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Distribute files on agents.
 	 */
-	public void distributFiles() {
-		distributFiles(null, true);
+	public void distributeFiles() {
+		distributeFiles(null, true);
 	}
 
 	/**
@@ -462,7 +462,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param safe
 	 *            safe mode
 	 */
-	public void distributFiles(ListenerSupport<FileDistributionListener> listener, final boolean safe) {
+	public void distributeFiles(ListenerSupport<FileDistributionListener> listener, final boolean safe) {
 		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
 		final AgentCacheState agentCacheState = fileDistribution.getAgentCacheState();
 		final Condition cacheStateCondition = new Condition();
@@ -899,7 +899,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		if (((double) (testSum + errors)) / 2 < errors) {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == 0) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = System.currentTimeMillis();
-			} else if (isOverLowTpsThreshhold()) {
+			} else if (isOverLowTpsThreshold()) {
 				LOGGER.warn("Stop the test because the count of test error is more than"
 						+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
@@ -912,7 +912,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		}
 	}
 
-	private boolean isOverLowTpsThreshhold() {
+	private boolean isOverLowTpsThreshold() {
 		return (System.currentTimeMillis() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue) >= TOO_MANY_ERROR_TIME;
 	}
 
@@ -945,7 +945,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			accumulatedStatisticMap.put("testDescription", test.getDescription());
 			intervalStatisticsMap.put("testNumber", test.getNumber());
 			intervalStatisticsMap.put("testDescription", test.getDescription());
-			// When only 1 test is running, it's better to use the parameterized
+			// When only 1 test is running, it's better to use the parametrized
 			// snapshot.
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 				if (INTERESTING_STATISTICS.contains(each.getKey())) {
@@ -989,7 +989,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	@Override
 	public long getCurrentExecutionCount() {
-		Map<?, ?> totalStatistics = (Map<?, ?>) getStatictisData().get("totalStatistics");
+		Map<?, ?> totalStatistics = (Map<?, ?>) getStatisticsData().get("totalStatistics");
 		Double testCount = MapUtils.getDoubleValue(totalStatistics, "Tests", 0D);
 		Double errorCount = MapUtils.getDoubleValue(totalStatistics, "Errors", 0D);
 		return testCount.longValue() + errorCount.longValue();
@@ -1223,11 +1223,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * 
 	 * @return map which contains the statistics data
 	 */
-	public Map<String, Object> getStatictisData() {
-		return this.statisticData != null ? this.statisticData : getNullStatictisData();
+	public Map<String, Object> getStatisticsData() {
+		return this.statisticData != null ? this.statisticData : getNullStatisticsData();
 	}
 
-	private Map<String, Object> getNullStatictisData() {
+	protected Map<String, Object> getNullStatisticsData() {
 		Map<String, Object> result = new HashMap<String, Object>(1);
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
@@ -1372,7 +1372,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public boolean hasTooManyError() {
 		long currentTestsCount = getCurrentExecutionCount();
-		double errors = MapUtils.getDoubleValue((Map<?, ?>) getStatictisData().get("totalStatistics"), "Errors", 0D);
+		double errors = MapUtils.getDoubleValue((Map<?, ?>) getStatisticsData().get("totalStatistics"), "Errors", 0D);
 		return currentTestsCount == 0 ? false : (errors / currentTestsCount) > 0.2;
 	}
 

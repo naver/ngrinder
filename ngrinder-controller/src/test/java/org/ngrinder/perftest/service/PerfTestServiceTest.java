@@ -43,7 +43,7 @@ import org.ngrinder.model.Status;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.repository.PerfTestRepository;
-import org.ngrinder.perftest.service.monitor.MonitorClientSerivce;
+import org.ngrinder.perftest.service.monitor.MonitorClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -75,8 +75,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		createPerfTest("new Test1", Status.TESTING, new Date());
 		createPerfTest("new Test2", Status.FINISHED, new Date());
 
-		PerfTest candiate = testService.getNextRunnablePerfTestPerfTestCandiate();
-		assertThat(candiate, nullValue());
+		PerfTest candidate = testService.getNextRunnablePerfTestPerfTestCandidate();
+		assertThat(candidate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
 		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, null, null, pageable);
@@ -101,7 +101,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 			assertThat(testTemp.getId(), is(test.getId()));
 			assertThat(testTemp.getStartTime().getTime(), is(systemTimeMills));
 
-			testService.markAbromalTermination(testTemp, StopReason.CANCEL_BY_USER);
+			testService.markAbnormalTermination(testTemp, StopReason.CANCEL_BY_USER);
 			testService.markProgress(testTemp, "this test will be TESTING again");
 			testService.markStatusAndProgress(testTemp, Status.TESTING, "this is just test unit");
 
@@ -122,7 +122,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		PerfTest finishedTest = createPerfTest("new Test3", Status.ABNORMAL_TESTING, new Date());
 		finishedTest.setPort(0); // need port number for finishing
-		list = testService.getAbnoramlTestingPerfTest();
+		list = testService.getAbnormalTestingPerfTest();
 		assertThat(list.size(), is(1));
 
 		testService.updatePerfTestAfterTestFinish(finishedTest);
@@ -131,7 +131,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), Status.START_AGENTS);
 		assertThat(errorList.size(), is(1));
-		testService.markAbromalTermination(errorList.get(0), "this is error test");
+		testService.markAbnormalTermination(errorList.get(0), "this is error test");
 	}
 
 	@Test
@@ -209,7 +209,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
 		tempRepo.mkdir();
 		tempRepo.deleteOnExit();
-		MonitorClientSerivce client = new MonitorClientSerivce();
+		MonitorClientService client = new MonitorClientService();
 		client.init("127.0.0.1", 13243, tempRepo, null);
 
 		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
@@ -234,8 +234,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testCleanUpRuntimeOnlyData() {
 
 		PerfTest test = createPerfTest("new test", Status.READY, new Date());
-		test.setAgentStatus("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"recievedPerSec\":1874668,\"sentPerSec\":1881129}}");
-		test.setMonitorStatus("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"recievedPerSec\":102718,\"sentPerSec\":135072}}");
+		test.setAgentStatus("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"receivedPerSec\":1874668,\"sentPerSec\":1881129}}");
+		test.setMonitorStatus("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"receivedPerSec\":102718,\"sentPerSec\":135072}}");
 		test.setRunningSample("{\"process\":1,\"peakTpsForGraph\":2192.0,\"lastSampleStatistics\":[{\"Peak_TPS\":0.0,\"Tests\":2145.0,\"Mean_time_to_first_byte\":0.3142191142191142,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":62205.0,\"Errors\":0.0,\"TPS\":2145.0,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4205128205128205}],\"thread\":1,\"cumulativeStatistics\":[{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4425539468012273}],\"tpsChartData\":2145.0,\"success\":true,\"totalStatistics\":{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"Mean_Test_Time_(ms)\":0.4425539468012273},\"test_time\":105}");
 		perfTestService.savePerfTest(test);
 

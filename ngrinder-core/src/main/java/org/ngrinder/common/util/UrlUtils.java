@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class UrlUtils {
 	/**
-	 * Get host part of the given url.
+	 * Get the host part from the given url.
 	 * 
 	 * @param url
 	 *            url

@@ -19,7 +19,7 @@ import org.ngrinder.service.IPerfTestService;
 /**
  * Plugin extension point for {@link PerfTest} start and finish.
  * 
- * This plugin is necessary if you want to notify the test start and end.
+ * This plugin is necessary if you want to be notified whenever the test start and end.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -48,8 +48,8 @@ public interface OnTestLifeCycleRunnable {
 	 *            stop reason
 	 * @param perfTestService
 	 *            perfTestService interface
-	 * @param vesion
+	 * @param version
 	 *            ngrinder version
 	 */
-	public void finish(PerfTest perfTest, String stopReason, IPerfTestService perfTestService, String vesion);
+	public void finish(PerfTest perfTest, String stopReason, IPerfTestService perfTestService, String version);
 }
