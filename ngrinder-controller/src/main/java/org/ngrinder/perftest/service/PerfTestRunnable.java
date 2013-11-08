@@ -240,13 +240,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 			distributeFileOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
-		} catch (SinlgeConsolCancellationException ex) {
+		} catch (SingleConsoleCancellationException ex) {
 			// In case of error, mark the occurs error on perftest.
 			doCancel(perfTest, singleConsole);
 			notifyFinsish(perfTest, StopReason.CANCEL_BY_USER);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.
-			LOG.error("Error while excuting test: {} - {} ", perfTest.getTestIdentifier(), e.getMessage());
+			LOG.error("Error while executing test: {} - {} ", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Stack Trace is : ", e);
 			doTerminate(perfTest, singleConsole);
 			notifyFinsish(perfTest, StopReason.ERROR_WHILE_PREPARE);
@@ -262,7 +262,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	SingleConsole checkCancellation(SingleConsole singleConsole) {
 		if (singleConsole.isCanceled()) {
-			throw new SinlgeConsolCancellationException("Single Console " + singleConsole.getConsolePort()
+			throw new SingleConsoleCancellationException("Single Console " + singleConsole.getConsolePort()
 					+ " is canceled");
 		}
 		return singleConsole;

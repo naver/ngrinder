@@ -21,7 +21,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class SinlgeConsolCancellationException extends NGrinderRuntimeException {
+public class SingleConsoleCancellationException extends NGrinderRuntimeException {
 
 	/** UUID. */
 	private static final long serialVersionUID = 1L;
@@ -29,7 +29,7 @@ public class SinlgeConsolCancellationException extends NGrinderRuntimeException 
 	/**
 	 * Constructor.
 	 */
-	public SinlgeConsolCancellationException() {
+	public SingleConsoleCancellationException() {
 		super("");
 	}
 
@@ -39,7 +39,7 @@ public class SinlgeConsolCancellationException extends NGrinderRuntimeException 
 	 * @param message
 	 *            message
 	 */
-	public SinlgeConsolCancellationException(String message) {
+	public SingleConsoleCancellationException(String message) {
 		super(message);
 	}
 
