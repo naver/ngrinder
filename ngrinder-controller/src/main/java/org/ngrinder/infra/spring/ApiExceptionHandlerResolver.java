@@ -32,7 +32,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 /**
  * Api exception handler which emits the exception message in the form of json.
