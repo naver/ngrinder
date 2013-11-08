@@ -55,7 +55,7 @@ public class SecurityManagerTest {
 	}
 
 	@AfterClass
-	public static void disbaleSecurity() {
+	public static void disableSecurity() {
 		SM_TEST = false;
 	}
 

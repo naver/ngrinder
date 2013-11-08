@@ -21,16 +21,13 @@ package org.ngrinder.dns;
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({"restriction", "WeakerAccess"})
 public class LocalManagedDnsDescriptor implements sun.net.spi.nameservice.NameServiceDescriptor {
 
-	public static final String DNS_PROVIDER_NAME = "LocalManagedDns";
+	private static final String DNS_PROVIDER_NAME = "LocalManagedDns";
 
-	private static sun.net.spi.nameservice.NameService nameService = null;
+	private static final sun.net.spi.nameservice.NameService nameService = new LocalManagedDns();
 
-	static {
-		nameService = new LocalManagedDns();
-	}
 
 	/**
 	 * @return The string "dns"

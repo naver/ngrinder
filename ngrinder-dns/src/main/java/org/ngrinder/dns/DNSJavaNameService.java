@@ -22,7 +22,6 @@ import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
-// CHECKSTYLE:OFF
 import sun.net.spi.nameservice.NameService;
 
 /**
@@ -31,7 +30,7 @@ import sun.net.spi.nameservice.NameService;
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({"restriction", "WeakerAccess"})
 public class DNSJavaNameService implements NameService {
 
 	/**

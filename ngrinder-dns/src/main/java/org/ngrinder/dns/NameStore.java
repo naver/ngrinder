@@ -13,23 +13,26 @@
  */
 package org.ngrinder.dns;
 
-import java.util.Map;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Local Dns Name Storage.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("WeakerAccess")
 public class NameStore {
 
 	private static NameStore singleton;
 
-	private Map<String, String> globalNames;
+	private final Map<String, Set<InetAddress>> globalNames;
 
-	protected NameStore() {
-		globalNames = new ConcurrentHashMap<String, String>();
+	private NameStore() {
+		globalNames = new ConcurrentHashMap<String, Set<InetAddress>>();
 	}
 
 	/**
@@ -51,7 +54,7 @@ public class NameStore {
 
 	/**
 	 * Get the instance.
-	 * 
+	 *
 	 * @return {@link NameStore} instance
 	 */
 	public static NameStore getInstance() {
@@ -64,55 +67,63 @@ public class NameStore {
 
 	/**
 	 * Reset the instance.
-	 * 
 	 */
-	static void reset() {
-		singleton = null;
+	void reset() {
+		globalNames.clear();
+		initFromSystemProperty();
 	}
 
 	/**
 	 * Put hostname with ipAddress.
-	 * 
-	 * @param hostName
-	 *            host name
-	 * @param ipAddress
-	 *            ip address
+	 *
+	 * @param hostName  host name
+	 * @param ipAddress ip address
 	 */
 	public void put(String hostName, String ipAddress) {
-		globalNames.put(hostName, ipAddress);
+		Set<InetAddress> ipAddresses = globalNames.get(hostName);
+		if (ipAddresses == null) {
+			ipAddresses = new HashSet<InetAddress>();
+			globalNames.put(hostName, ipAddresses);
+		}
+
+		try {
+			InetAddress address = InetAddress.getByAddress(DnsUtil.textToNumericFormat(ipAddress));
+			ipAddresses.add(address);
+		} catch (UnknownHostException ignored) {
+		}
 	}
+
 
 	/**
 	 * Remove hostname from the store.
-	 * 
-	 * @param hostName
-	 *            host name
+	 *
+	 * @param hostName host name
 	 */
+	@SuppressWarnings("SameParameterValue")
 	public void remove(String hostName) {
 		globalNames.remove(hostName);
 	}
 
 	/**
 	 * Get ip from hostname.
-	 * 
-	 * @param hostName
-	 *            host name
+	 *
+	 * @param hostName host name
 	 * @return ip if found. null otherwise.
 	 */
-	public String get(String hostName) {
+	public Set<InetAddress> get(String hostName) {
 		return globalNames.get(hostName);
 	}
 
 	/**
 	 * Get the hostname for the given ip.
-	 * 
-	 * @param ip
-	 *            ip
+	 *
+	 * @param ip ip
 	 * @return resolved host name. Null if not found.
 	 */
-	public String getReveredHost(String ip) {
+	public String getReveredHost(InetAddress ip) {
+
 		for (String hostName : globalNames.keySet()) {
-			if (globalNames.get(hostName).equals(ip)) {
+			if (globalNames.get(hostName).contains(ip)) {
 				return hostName;
 			}
 		}

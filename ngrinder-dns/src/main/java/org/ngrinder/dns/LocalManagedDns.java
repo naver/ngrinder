@@ -15,6 +15,10 @@ package org.ngrinder.dns;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import sun.net.spi.nameservice.NameService;
 
@@ -24,10 +28,10 @@ import sun.net.spi.nameservice.NameService;
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({"restriction", "WeakerAccess"})
 public class LocalManagedDns implements NameService {
 
-	private NameService defaultDnsImpl = new DNSJavaNameService();
+	private final NameService defaultDnsImpl = new DNSJavaNameService();
 
 	/**
 	 * Get host name by address.
@@ -40,7 +44,7 @@ public class LocalManagedDns implements NameService {
 	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
-		String hostName = NameStore.getInstance().getReveredHost(DnsUtil.numericToTextFormat(ip));
+		String hostName = NameStore.getInstance().getReveredHost(InetAddress.getByAddress(ip));
 		if (hostName == null) {
 			return defaultDnsImpl.getHostByAddr(ip);
 		} else {
@@ -49,7 +53,7 @@ public class LocalManagedDns implements NameService {
 	}
 
 	/**
-	 * Get ip by hostname.
+	 * Get InetAddresses by hostname.
 	 * 
 	 * @param name
 	 *            hostname
@@ -59,11 +63,9 @@ public class LocalManagedDns implements NameService {
 	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
-
-		String ipAddress = NameStore.getInstance().get(name);
-		if (DnsUtil.isNotEmpty(ipAddress)) {
-			InetAddress address = InetAddress.getByAddress(DnsUtil.textToNumericFormat(ipAddress));
-			return new InetAddress[] { address };
+		Set<InetAddress> ipAddresses = NameStore.getInstance().get(name);
+		if (ipAddresses != null) {
+			return DnsUtil.shuffle(ipAddresses.toArray(new InetAddress[ipAddresses.size()]));
 		} else {
 			return defaultDnsImpl.lookupAllHostAddr(name);
 		}

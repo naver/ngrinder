@@ -13,6 +13,8 @@
  */
 package org.ngrinder.dns;
 
+import java.net.InetAddress;
+
 /**
  * Static utilities used to convert IP Addresses between the various formats used internally by the
  * java.net.InetAddress class and associated classes.
@@ -20,9 +22,9 @@ package org.ngrinder.dns;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class DnsUtil {
+abstract class DnsUtil {
 	// CHECKSTYLE:OFF
-	public static final int INADDRSZ = 4;
+	private static final int INADDRSZ = 4;
 
 	private DnsUtil() {
 		// na
@@ -36,61 +38,26 @@ public abstract class DnsUtil {
 	 * @return true if empty
 	 */
 	public static boolean isEmpty(String str) {
-		if (str == null || str.length() == 0) {
-			return true;
+		return str == null || str.length() == 0;
+	}
+
+	// swaps array elements i and j
+	private static <T> void exch(T[] a, int i, int j) {
+		T swap = a[i];
+		a[i] = a[j];
+		a[j] = swap;
+	}
+
+	// take as input an array of strings and rearrange them in random order
+	public static <T> T[] shuffle(T[] a) {
+		int N = a.length;
+		for (int i = 0; i < N; i++) {
+			int r = i + (int) (Math.random() * (N-i));   // between i and N-1
+			exch(a, i, r);
 		}
-		return false;
+		return a;
 	}
 
-	/**
-	 * Check the string is not empty.
-	 * 
-	 * @param str
-	 *            string
-	 * @return true if not empty
-	 */
-	public static boolean isNotEmpty(String str) {
-		return !isEmpty(str);
-	}
-
-	/**
-	 * Converts the internal integer representation of an IPv4 into a binary address.
-	 * 
-	 * @param src
-	 *            integer representation of the IPv4 address
-	 * @return a byte array representing an IPv4 numeric address
-	 */
-	public static byte[] intToNumericFormat(int src) {
-		byte[] addr = new byte[INADDRSZ];
-
-		addr[0] = (byte) ((src >>> 24) & 0xFF);
-		addr[1] = (byte) ((src >>> 16) & 0xFF);
-		addr[2] = (byte) ((src >>> 8) & 0xFF);
-		addr[3] = (byte) (src & 0xFF);
-
-		return addr;
-	}
-
-	/**
-	 * Converts IPv4 binary address a single integer representation as used internally by
-	 * Inet4Address.
-	 * 
-	 * @param addr
-	 *            a byte array representing an IPv4 numeric address
-	 * @return an integer representation of the IPv4 address
-	 */
-	public static int numericToIntFormat(byte[] addr) {
-		int address = -1;
-
-		if (addr.length == INADDRSZ) {
-			address = addr[3] & 0xFF;
-			address |= ((addr[2] << 8) & 0xFF00);
-			address |= ((addr[1] << 16) & 0xFF0000);
-			address |= ((addr[0] << 24) & 0xFF000000);
-		}
-
-		return address;
-	}
 
 	/**
 	 * Converts IPv4 binary address into a string suitable for presentation.

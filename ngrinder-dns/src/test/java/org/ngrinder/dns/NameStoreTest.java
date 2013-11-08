@@ -20,49 +20,50 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.InetAddress;
+import java.util.Set;
+
 /**
  * NameStore test class
  * 
  * @author mavlarn
- * @Since 3.0
+ * @since 3.0
  */
 public class NameStoreTest {
 
 	@Before
 	public void before() {
-		NameStore.reset();
+		NameStore.getInstance().reset();
 	}
 
 	@Test
 	public void testNameStoreInit() {
-		System.out.println(System.getProperty("ngrinder.etc.hosts", ""));
 		System.setProperty("ngrinder.etc.hosts", "aaa.com:1.1.1.1,bbb.com:2.2.2.2");
-		System.out.println(System.getProperty("ngrinder.etc.hosts", ""));
-
-		String ip = NameStore.getInstance().get("aaa.com");
-		assertThat(ip, is("1.1.1.1"));
+		NameStore.getInstance().reset();
+		Set<InetAddress> ips = NameStore.getInstance().get("aaa.com");
+		assertThat(ips.iterator().next().getHostAddress(), is("1.1.1.1"));
 
 		NameStore.getInstance().remove("bbb.com");
-		ip = NameStore.getInstance().get("bbb.com");
-		assertThat(ip, nullValue());
+		ips = NameStore.getInstance().get("bbb.com");
+		assertThat(ips, nullValue());
 
 	}
 
 	@Test
-	public void testNameStoreInitInvald() {
+	public void testNameStoreInitInvalid() {
 		System.setProperty("ngrinder.etc.hosts", "bbb.com:,1.1.1.1,");
-
-		String ip = NameStore.getInstance().get("bbb.com");
-		assertThat(ip, nullValue());
+		NameStore.getInstance().reset();
+		Set<InetAddress> ips = NameStore.getInstance().get("aaa.com");
+		assertThat(ips, nullValue());
 
 	}
 
 	@Test
 	public void testNameStoreInitEmpty() {
 		System.setProperty("ngrinder.etc.hosts", "");
-
-		String ip = NameStore.getInstance().get("bbb.com");
-		assertThat(ip, nullValue());
+		NameStore.getInstance().reset();
+		Set<InetAddress> ips = NameStore.getInstance().get("bbb.com");
+		assertThat(ips, nullValue());
 
 	}
 

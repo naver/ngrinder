@@ -30,21 +30,19 @@ import java.util.List;
 public class NGrinderSecurityManager extends SecurityManager {
 
 	private String workDirectory = System.getProperty("user.dir");
-	private String logDirectory = null;
 
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
-	private String jreHomeDirectory = null;
-	private String javaExtDirectory = System.getProperty("java.ext.dirs");
-	private String pythonPath = System.getProperty("python.path");
-	private String pythonHome = System.getProperty("python.home");
-	private String pythonCache = System.getProperty("python.cachedir");
-	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
-	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
-	private List<String> allowedHost = new ArrayList<String>();
-	private List<String> readAllowedDirectory = new ArrayList<String>();
-	private List<String> writeAllowedDirectory = new ArrayList<String>();
-	private List<String> deleteAllowedDirectory = new ArrayList<String>();
+	private final String javaExtDirectory = System.getProperty("java.ext.dirs");
+	private final String pythonPath = System.getProperty("python.path");
+	private final String pythonHome = System.getProperty("python.home");
+	private final String pythonCache = System.getProperty("python.cachedir");
+	private final String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
+	private final String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
+	private final List<String> allowedHost = new ArrayList<String>();
+	private final List<String> readAllowedDirectory = new ArrayList<String>();
+	private final List<String> writeAllowedDirectory = new ArrayList<String>();
+	private final List<String> deleteAllowedDirectory = new ArrayList<String>();
 
 	{
 		this.initAccessOfDirectories();
@@ -56,6 +54,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 */
 	private void initAccessOfDirectories() {
 		workDirectory = normalize(new File(workDirectory).getAbsolutePath(), null);
+		String logDirectory;
 		if (workDirectory != null && !workDirectory.isEmpty()) {
 			logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
 			logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator
@@ -68,6 +67,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 			System.out.println("env var JAVA_HOME should be provided.");
 		}
 		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
+		String jreHomeDirectory;
 		if (javaHomeDirectory != null && !javaHomeDirectory.isEmpty()) {
 			jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
 					+ File.separator + "jre";
@@ -123,7 +123,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * 
 	 * @since Commons IO 2.0
 	 */
-	public static String getTempDirectoryPath() {
+	private static String getTempDirectoryPath() {
 		return System.getProperty("java.io.tmpdir");
 	}
 
@@ -291,7 +291,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		if (getPrefixLength(filename) == 0 && workingDirectory != null) {
 			filename = workingDirectory + File.separator + filename;
 		}
-		return doNormalize(filename, SYSTEM_SEPARATOR, true);
+		return doNormalize(filename);
 	}
 
 	/**
@@ -341,22 +341,20 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * 
 	 * @return true if the system is Windows
 	 */
-	static boolean isSystemWindows() {
+	private static boolean isSystemWindows() {
 		return SYSTEM_SEPARATOR == WINDOWS_SEPARATOR;
 	}
 
 	/**
 	 * Internal method to perform the normalization.
 	 * 
+	 *
+	 *
 	 * @param filename
 	 *            the filename
-	 * @param separator
-	 *            The separator character to use
-	 * @param keepSeparator
-	 *            true to keep the final separator
 	 * @return the normalized filename
 	 */
-	private static String doNormalize(String filename, char separator, boolean keepSeparator) {
+	private static String doNormalize(String filename) {
 		if (filename == null) {
 			return null;
 		}
@@ -373,23 +371,23 @@ public class NGrinderSecurityManager extends SecurityManager {
 		filename.getChars(0, filename.length(), array, 0);
 
 		// fix separators throughout
-		char otherSeparator = (separator == SYSTEM_SEPARATOR ? OTHER_SEPARATOR : SYSTEM_SEPARATOR);
+		char otherSeparator = (SYSTEM_SEPARATOR == SYSTEM_SEPARATOR ? OTHER_SEPARATOR : SYSTEM_SEPARATOR);
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == otherSeparator) {
-				array[i] = separator;
+				array[i] = SYSTEM_SEPARATOR;
 			}
 		}
 
 		// add extra separator on the end to simplify code below
 		boolean lastIsDirectory = true;
-		if (array[size - 1] != separator) {
-			array[size++] = separator;
+		if (array[size - 1] != SYSTEM_SEPARATOR) {
+			array[size++] = SYSTEM_SEPARATOR;
 			lastIsDirectory = false;
 		}
 
 		// adjoining slashes
 		for (int i = prefix + 1; i < size; i++) {
-			if (array[i] == separator && array[i - 1] == separator) {
+			if (array[i] == SYSTEM_SEPARATOR && array[i - 1] == SYSTEM_SEPARATOR) {
 				System.arraycopy(array, i, array, i - 1, size - i);
 				size--;
 				i--;
@@ -398,7 +396,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 		// dot slash
 		for (int i = prefix + 1; i < size; i++) {
-			if (array[i] == separator && array[i - 1] == '.' && (i == prefix + 1 || array[i - 2] == separator)) {
+			if (array[i] == SYSTEM_SEPARATOR && array[i - 1] == '.' && (i == prefix + 1 || array[i - 2] == SYSTEM_SEPARATOR)) {
 				if (i == size - 1) {
 					lastIsDirectory = true;
 				}
@@ -410,8 +408,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 		// double dot slash
 		outer: for (int i = prefix + 2; i < size; i++) {
-			if (array[i] == separator && array[i - 1] == '.' && array[i - 2] == '.'
-					&& (i == prefix + 2 || array[i - 3] == separator)) {
+			if (array[i] == SYSTEM_SEPARATOR && array[i - 1] == '.' && array[i - 2] == '.'
+					&& (i == prefix + 2 || array[i - 3] == SYSTEM_SEPARATOR)) {
 				if (i == prefix + 2) {
 					return null;
 				}
@@ -420,7 +418,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 				}
 				int j;
 				for (j = i - 4; j >= prefix; j--) {
-					if (array[j] == separator) {
+					if (array[j] == SYSTEM_SEPARATOR) {
 						// remove b/../ from a/b/../c
 						System.arraycopy(array, i + 1, array, j + 1, size - i);
 						size -= (i - j);
@@ -441,7 +439,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		if (size <= prefix) { // should never be less than prefix
 			return new String(array, 0, size);
 		}
-		if (lastIsDirectory && keepSeparator) {
+		if (lastIsDirectory) {
 			return new String(array, 0, size); // keep trailing separator
 		}
 		return new String(array, 0, size - 1); // lose trailing separator
@@ -480,7 +478,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 *            the filename to find the prefix in, null returns -1
 	 * @return the length of the prefix, -1 if invalid or null
 	 */
-	public static int getPrefixLength(String filename) {
+	private static int getPrefixLength(String filename) {
 		if (filename == null) {
 			return -1;
 		}
