@@ -16,7 +16,7 @@ package net.grinder.engine.process;
 import org.junit.runners.model.Statement;
 
 /**
- * Empty statement which do nothing.
+ * Empty statement which does nothing.
  * 
  * This class is get by {@link #getInstance()} method.
  * 

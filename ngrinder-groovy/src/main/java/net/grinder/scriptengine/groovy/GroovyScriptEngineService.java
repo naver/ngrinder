@@ -28,7 +28,7 @@ import java.util.List;
 import net.grinder.common.GrinderProperties;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
-import net.grinder.engine.process.JavaDCRInstrumenteEx;
+import net.grinder.engine.process.JavaDCRInstrumenterEx;
 import net.grinder.scriptengine.DCRContext;
 import net.grinder.scriptengine.Instrumenter;
 import net.grinder.scriptengine.ScriptEngineService;
@@ -95,7 +95,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 		 */
 		if (m_dcrContext != null) {
 			if (instrumenters.size() == 0) {
-				instrumenters.add(new JavaDCRInstrumenteEx(m_dcrContext));
+				instrumenters.add(new JavaDCRInstrumenterEx(m_dcrContext));
 			}
 		}
 

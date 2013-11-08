@@ -18,7 +18,7 @@ import net.grinder.communication.Message;
 import net.grinder.communication.Sender;
 
 /**
- * NullSender to be ignored in its use.
+ * NullSender to ignore {@link Sender} behavior.
  * 
  * @author JunHo Yoon
  * @since 3.2

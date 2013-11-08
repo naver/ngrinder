@@ -74,7 +74,7 @@ public class JUnitThreadContextInitializer {
 			file = new File(file).getAbsolutePath();
 			throw new RuntimeException("Please add \r\n-javaagent:" + file + "\r\nin 'Run As JUnit' vm argument.");
 		}
-		list.add(new JavaDCRInstrumenteEx(context));
+		list.add(new JavaDCRInstrumenterEx(context));
 		final Instrumenter instrumenter = new MasterInstrumenter(list);
 
 		m_testStatisticsHelper = new TestStatisticsHelperImplementation(m_statisticsServices.getStatisticsIndexMap());
