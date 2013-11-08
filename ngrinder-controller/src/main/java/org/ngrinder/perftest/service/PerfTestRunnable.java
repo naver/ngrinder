@@ -99,45 +99,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private Config config;
 
-	private List<OnTestSamplingRunnable> testSamplingRunnables;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	/**
-	 * Initialize plugin manager to register plugin update event.
-	 */
-	@PostConstruct
-	public void init() {
-		pluginManager.addPluginUpdateEvent(this);
-		pluginInit();
-	}
-
-	private void pluginInit() {
-		this.testSamplingRunnables = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
-	}
-
-	/**
-	 * Event handler for plugin enable.
-	 * 
-	 * @param event
-	 *            event
-	 */
-	@PluginEventListener
-	public void onPluginEnabled(PluginEnabledEvent event) {
-		pluginInit();
-	}
-
-	/**
-	 * Event handler for plugin disable.
-	 * 
-	 * @param event
-	 *            event
-	 */
-	@PluginEventListener
-	public void onPluginDisabled(PluginDisabledEvent event) {
-		pluginInit();
-	}
 
 	/**
 	 * Scheduled method for test execution. This method dispatches the test
@@ -421,7 +386,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 				perfTest.getId(), perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
 				perfTestService));
-		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(this.testSamplingRunnables, singleConsole,
+		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
+		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
 				agentManager));
