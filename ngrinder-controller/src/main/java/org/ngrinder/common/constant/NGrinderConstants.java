@@ -206,7 +206,7 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_USAGE_REPORT = "usage.report";
 	public static final String NGRINDER_USER_SELF_REGISTRATION = "ngrinder.user.self.registration";
 
-	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
+	public static final String NGRINDER_RESOURCE_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";
 	public static final String NGRINDER_QNA_RSS_URL_KEY = "home.qa.rss";
 	public static final String NGRINDER_PROP_REGION = "ngrinder.cluster.region";

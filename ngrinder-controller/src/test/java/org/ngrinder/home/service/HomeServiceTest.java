@@ -13,18 +13,16 @@
  */
 package org.ngrinder.home.service;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.util.List;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.home.model.PanelEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class HomeServiceTest extends AbstractNGrinderTransactionalTest {
 
@@ -33,13 +31,11 @@ public class HomeServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testHome() throws IOException {
-		List<PanelEntry> leftPanelEntries = homeService.getLeftPanelEntries();
+		List<PanelEntry> leftPanelEntries = homeService.getLeftPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
 		assertThat(leftPanelEntries.size(), greaterThan(2));
 		assertThat(leftPanelEntries.size(), lessThanOrEqualTo(8));
-		List<PanelEntry> rightPanel = homeService
-						.getRightPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
+		List<PanelEntry> rightPanel = homeService.getRightPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
 		assertThat(rightPanel.size(), greaterThanOrEqualTo(2));
 		assertThat(rightPanel.size(), lessThanOrEqualTo(8));
-
 	}
 }
