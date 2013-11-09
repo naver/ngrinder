@@ -13,31 +13,16 @@
  */
 package org.ngrinder.home.controller;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.infra.schedule.AsyncRunService;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
@@ -57,9 +42,18 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 /**
  * Home index page controller.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -85,6 +79,9 @@ public class HomeController extends NGrinderBaseController {
 
 	private List<TimeZone> timeZones = null;
 
+	@Autowired
+	private AsyncRunService asyncRunService;
+
 	/**
 	 * Initialize {@link HomeController}.
 	 */
@@ -102,31 +99,32 @@ public class HomeController extends NGrinderBaseController {
 				return a.getID().compareTo(b.getID());
 			}
 		});
+		asyncRunService.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				getLeftPanelEntries();
+				getRightPanelEntries();
+			}
+		});
 	}
 
 	/**
 	 * Return nGrinder index page.
-	 * 
-	 * @param user
-	 *            user
-	 * @param exception
-	 *            exception if it's redirected from exception handler
-	 * @param region
-	 *            region. it's optional
-	 * @param model
-	 *            model
-	 * @param response
-	 *            response
-	 * @param request
-	 *            request
+	 *
+	 * @param user      user
+	 * @param exception exception if it's redirected from exception handler
+	 * @param region    region. where this access comes from. it's optional
+	 * @param model     model
+	 * @param response  response
+	 * @param request   request
 	 * @return "index" if already logged in. Otherwise "login".
 	 */
-	@RequestMapping(value = { "/home", "/" })
+	@RequestMapping(value = {"/home", "/"})
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
-			@RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
-			HttpServletResponse response, HttpServletRequest request) {
+	                   @RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
+	                   HttpServletResponse response, HttpServletRequest request) {
 		try {
-			Role role = null;
+			Role role;
 			try {
 				logReferer(region);
 				// set local language
@@ -134,22 +132,9 @@ public class HomeController extends NGrinderBaseController {
 				setLoginPageDate(model);
 				role = user.getRole();
 			} catch (AuthenticationCredentialsNotFoundException e) {
-				CoreLogger.LOGGER.info("Login Failure", e);
 				return "login";
 			}
-			String rssUrl = getMessages(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY);
-			rssUrl = config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_QNA_PAGE_RSS, rssUrl);
-			model.addAttribute("right_panel_entries", homeService.getRightPanelEntries(rssUrl));
-			model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
-
-			model.addAttribute(
-					"ask_question_url",
-					config.getSystemProperties().getProperty("ngrinder.ask.question.url",
-							getMessages("home.qa.question.url")));
-			model.addAttribute(
-					"see_more_question_url",
-					config.getSystemProperties().getProperty("ngrinder.more.question.url",
-							getMessages("home.qa.rss.all")));
+			setPanelEntries(model);
 			model.addAttribute("handlers", scriptHandlerFactory.getVisibleHandlers());
 
 			if (StringUtils.isNotBlank(exception)) {
@@ -168,18 +153,45 @@ public class HomeController extends NGrinderBaseController {
 		}
 	}
 
+	private void setPanelEntries(ModelMap model) {
+		model.addAttribute("left_panel_entries", getLeftPanelEntries());
+		model.addAttribute("right_panel_entries", getRightPanelEntries());
+		model.addAttribute(
+				"ask_question_url",
+				config.getSystemProperties().getProperty("ngrinder.ask.question.url",
+						getMessages("home.qa.question.url")));
+		model.addAttribute(
+				"see_more_question_url",
+				config.getSystemProperties().getProperty("ngrinder.more.question.url",
+						getMessages("home.qa.rss.all")));
+	}
+
+	private List<PanelEntry> getRightPanelEntries() {
+		// Get nGrinder Resource RSS
+		String rightPanelRssURL = config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_FRONT_PAGE_RSS,
+				NGrinderConstants.NGRINDER_RESOURCE_RSS_URL);
+		return homeService.getRightPanelEntries(rightPanelRssURL);
+	}
+
+	private List<PanelEntry> getLeftPanelEntries() {
+		// Make the i18n applied QnA panel. Depending on the user language, show the different QnA panel.
+		String leftPanelRssURLKey = getMessages(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY);
+		// Make admin configure the QnA panel.
+		String leftPanelRssURL = config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_QNA_PAGE_RSS, leftPanelRssURLKey);
+		return homeService.getLeftPanelEntries(leftPanelRssURL);
+	}
+
 	private void logReferer(String region) {
 		if (StringUtils.isNotEmpty(region)) {
-			CoreLogger.LOGGER.info("Accessed from {}", region);
+			CoreLogger.LOGGER.info("Accessed to {}", region);
 		}
 	}
 
 	/**
 	 * Return the health check message. If there is shutdown lock, it returns
 	 * 503. Otherwise it returns region lists.
-	 * 
-	 * @param response
-	 *            response
+	 *
+	 * @param response response
 	 * @return region list
 	 */
 	@ResponseBody
@@ -187,7 +199,7 @@ public class HomeController extends NGrinderBaseController {
 	public String healthcheck(HttpServletResponse response) {
 		if (config.hasShutdownLock()) {
 			try {
-				response.sendError(503, "the ngrinder is about to down");
+				response.sendError(503, "nGrinder is about to down");
 			} catch (IOException e) {
 				LOG.error("While running healthcheck() in HomeController, the error occurs.");
 				LOG.error("Details : ", e);
@@ -202,17 +214,15 @@ public class HomeController extends NGrinderBaseController {
 	/**
 	 * Return health check message with 1 sec delay. If there is shutdown lock,
 	 * it returns 503. Otherwise, it returns region lists.
-	 * 
-	 * @param sleep
-	 *            in milliseconds.
-	 * @param response
-	 *            response
+	 *
+	 * @param sleep    in milliseconds.
+	 * @param response response
 	 * @return region list
 	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
 	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
-			HttpServletResponse response) {
+	                                HttpServletResponse response) {
 		ThreadUtil.sleep(sleep);
 		return healthcheck(response);
 	}
@@ -229,7 +239,7 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Provide help URL as a model attribute.
-	 * 
+	 *
 	 * @return help URL
 	 */
 	@ModelAttribute("helpUrl")
@@ -239,9 +249,8 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Return the login page.
-	 * 
-	 * @param model
-	 *            model
+	 *
+	 * @param model model
 	 * @return "login" if not logged in. Otherwise, "/"
 	 */
 	@RequestMapping(value = "/login")
@@ -266,11 +275,9 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Change the current user's time zone.
-	 * 
-	 * @param user
-	 *            user
-	 * @param timeZone
-	 *            time zone
+	 *
+	 * @param user     user
+	 * @param timeZone time zone
 	 * @return success json message
 	 */
 	@ResponseBody
@@ -282,9 +289,8 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Get all time zones.
-	 * 
-	 * @param model
-	 *            model
+	 *
+	 * @param model model
 	 * @return allTimeZone
 	 */
 	@RequestMapping(value = "/allTimeZone")
@@ -295,9 +301,8 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Error redirection to 404.
-	 * 
-	 * @param model
-	 *            model
+	 *
+	 * @param model model
 	 * @return "redirect:/doError"
 	 */
 	@RequestMapping(value = "/error_404")
@@ -307,15 +312,11 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Error redirection as a second phase.
-	 * 
-	 * @param user
-	 *            user
-	 * @param model
-	 *            model
-	 * @param response
-	 *            response
-	 * @param request
-	 *            request
+	 *
+	 * @param user     user
+	 * @param model    model
+	 * @param response response
+	 * @param request  request
 	 * @return "index"
 	 */
 	@RequestMapping(value = "/doError")

@@ -11,32 +11,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.infra.init;
+package org.ngrinder.infra.schedule;
 
-import javax.annotation.PostConstruct;
-
-import org.ngrinder.home.service.HomeAsyncService;
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 /**
- * Initialize necessary data which are used in Runtime.
+ * Wrapper for all async-call.
  * 
+ * This is used for pre-fetching sth.
+ *
  * @author JunHo Yoon
- * @since 3.0
+ * @since 3.3
  */
-@RuntimeOnlyComponent
-public class DataInit {
-
-	@Autowired
-	private HomeAsyncService homeAsyncService;
-
+@Component
+public class AsyncRunService {
 	/**
-	 * Initialize necessary data during boot-up.
+	 * Run async job.
+	 * @param runnable job to run
 	 */
-	@PostConstruct
-	public void init() {
-		homeAsyncService.getLeftPanelEntries();
-		homeAsyncService.getRightPanelEntries();
+	@Async
+	public void runAsync(Runnable runnable) {
+		runnable.run();
 	}
 }

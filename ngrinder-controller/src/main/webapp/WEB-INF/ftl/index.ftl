@@ -42,21 +42,21 @@
 				</div>
 		   		<div class="well">
 			  		<br/>
-				  	<#if right_panel_entries?has_content>
+				  	<#if left_panel_entries?has_content>
 					  	<table class="table table-striped ellipsis">
 					  		<colgroup>
 							 	<col width="350px"/>
 							 	<col />
 							</colgroup>
-					  		<#list right_panel_entries as each_right_entry>
-					  			<#if each_right_entry_index lt 6>
+					  		<#list left_panel_entries as each_left_entry>
+					  			<#if each_left_entry_index lt 6>
 					  			<tr>
 					  				<td class="ellipsis">
-					  					<#if each_right_entry.isNew()><span class="label label-info">new</span></#if>
-					  					<a href="${each_right_entry.link }" target="_blank">${each_right_entry.title}
+					  					<#if each_left_entry.isNew()><span class="label label-info">new</span></#if>
+					  					<a href="${each_left_entry.link }" target="_blank">${each_left_entry.title}
 					  					</a> 
 					  				</td>
-					  				<td>${each_right_entry.lastUpdatedDate?string("yyyy-MM-dd")} 
+					  				<td>${each_left_entry.lastUpdatedDate?string("yyyy-MM-dd")}
 					  				</td>
 					  			</tr>
 					  			</#if>
@@ -81,20 +81,20 @@
 				</div> 
 		   		<div class="well">
 			  		<br/>
-				  	<#if left_panel_entries?has_content>
+				  	<#if right_panel_entries?has_content>
 					  	<table class="table table-striped ellipsis">
 					  		<colgroup>
 							 	<col width="350px"/> 
 							 	<col />
 							</colgroup>
-					  		<#list left_panel_entries as each_left_entry>
-					  			<#if each_left_entry_index lt 6>
+					  		<#list right_panel_entries as each_right_entry>
+					  			<#if each_right_entry_index lt 6>
 					  			<tr>
 					  				<td class="ellipsis"> 
-					  					<#if each_left_entry.isNew()><span class="label label-info">new</span></#if>
-					  					<a href="${each_left_entry.link }" target="_blank">${each_left_entry.title}</a>
+					  					<#if each_right_entry.isNew()><span class="label label-info">new</span></#if>
+					  					<a href="${each_right_entry.link}" target="_blank">${each_right_entry.title}</a>
 					  				</td>
-					  				<td>${each_left_entry.lastUpdatedDate?string("yyyy-MM-dd")}</td>
+					  				<td>${each_right_entry.lastUpdatedDate?string("yyyy-MM-dd")}</td>
 					  			</tr>
 					  			</#if>
 					  		</#list>
