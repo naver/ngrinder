@@ -34,7 +34,7 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVException;
 
 /**
  * Class description
- * 
+ *
  * @author mavlarn
  * @Since 3.0
  */
@@ -46,36 +46,31 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private MockFileEntityRepository fileEntityRepository;
 
-	private void prepareSVN() {
-		try {
-			File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
-			fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
-			tempRepo.deleteOnExit();
-			File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
-			FileUtils.deleteQuietly(testUserRoot);
-			testUserRoot.mkdirs();
-			CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
-			testUserRoot.deleteOnExit();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void prepareSVN() throws IOException {
+		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
+		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
+		tempRepo.deleteOnExit();
+		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
+		FileUtils.deleteQuietly(testUserRoot);
+		testUserRoot.mkdirs();
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		testUserRoot.deleteOnExit();
 	}
+
 	@Test
 	public void testHandleRequest() throws ServletException, IOException {
 		prepareSVN();
-		
+
 		//test SC_UNAUTHORIZED
 		MockHttpServletRequest req = new MockHttpServletRequest(DAVHandlerExFactory.METHOD_PROPFIND,
 				"/svn/" + getTestUser().getUserId());
 		req.addHeader("Depth", DAVDepth.DEPTH_ONE);
-		HttpServletResponse resp = new MockHttpServletResponse();
+		MockHttpServletResponse resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
 
 		req.setPathInfo("/" + getTestUser().getUserId());
 		resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
-		
 	}
 
 	@Test
