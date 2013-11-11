@@ -37,7 +37,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	public MockFileEntityRepsotory repo;
+	public MockFileEntityRepository repo;
 
 	@Autowired
 	public IUserService userService;

@@ -20,7 +20,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.repository.FileEntryRepository;
 
 @TestOnlyComponent
-public class MockFileEntityRepsotory extends FileEntryRepository {
+public class MockFileEntityRepository extends FileEntryRepository {
 
 	private File userRepoDir;
 

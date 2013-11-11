@@ -39,7 +39,7 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -69,7 +69,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	private IUserService userService;
 
 	@Autowired
-	public MockFileEntityRepsotory repo;
+	public MockFileEntityRepository repo;
 
 	@Before
 	public void beforeCleanUp() throws IOException {

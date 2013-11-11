@@ -34,7 +34,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.controller.PerfTestController;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
@@ -42,10 +42,10 @@ import org.springframework.ui.ModelMap;
 public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
 
 	@Autowired
-	private MockPerfTestRunnableForCancelation perfTestRunnable;
+	private MockPerfTestRunnableForCancellation perfTestRunnable;
 
 	@Autowired
-	public MockFileEntityRepsotory fileEntityRepository;
+	public MockFileEntityRepository fileEntityRepository;
 
 	@Autowired
 	public ConsoleManager consoleManager;
@@ -84,12 +84,12 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 	}
 
 	@Test
-	public void testTestCancelationDuringPreparation() throws IOException {
+	public void testTestCancellationDuringPreparation() throws IOException {
 		doCancel(1);
 	}
 
 	@Test
-	public void testTestCancelationDuringPreparationOnSecond() throws IOException {
+	public void testTestCancellationDuringPreparation2() throws IOException {
 		doCancel(2);
 	}
 
@@ -113,7 +113,7 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 	}
 
 	@Test
-	public void testTestCancelationDuringExecutionPhase() throws IOException {
+	public void testTestCancellationDuringExecutionPhase() throws IOException {
 		// Given the testing perftest
 		perfTest = createPerfTest("test1", Status.TESTING, null);
 		// When the stop is requested

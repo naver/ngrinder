@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
@@ -42,7 +42,7 @@ public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactiona
 	private MockPerfTestController controller;
 
 	@Autowired
-	public MockFileEntityRepsotory repo;
+	public MockFileEntityRepository repo;
 
 	/**
 	 * Locate dumped user1 repo into tempdir.

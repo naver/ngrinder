@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.common.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -49,7 +49,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 	private FileEntryController scriptController;
 
 	@Autowired
-	private MockFileEntityRepsotory fileEntityRepository;
+	private MockFileEntityRepository fileEntityRepository;
 
 	@Autowired
 	private Config config;

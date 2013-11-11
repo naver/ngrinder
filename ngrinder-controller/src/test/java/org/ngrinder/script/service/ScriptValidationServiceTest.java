@@ -36,7 +36,7 @@ import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.init.ClassPathInit;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	private FileEntryService fileEntryService;
 
 	@Autowired
-	public MockFileEntityRepsotory repo;
+	public MockFileEntityRepository repo;
 
 	@Autowired
 	public IUserService userService;

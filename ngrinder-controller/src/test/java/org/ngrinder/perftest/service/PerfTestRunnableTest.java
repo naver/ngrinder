@@ -41,7 +41,7 @@ import org.ngrinder.model.Status;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
@@ -59,7 +59,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	private PerfTestService monitorService;
 
 	@Autowired
-	public MockFileEntityRepsotory fileEntityRepository;
+	public MockFileEntityRepository fileEntityRepository;
 
 	public PerfTest currentTest;
 

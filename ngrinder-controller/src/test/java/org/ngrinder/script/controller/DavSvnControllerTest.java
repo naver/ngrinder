@@ -23,7 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.util.CompressionUtil;
-import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.script.svnkitdav.DAVHandlerExFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -44,7 +44,7 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	DavSvnController svnController;
 
 	@Autowired
-	private MockFileEntityRepsotory fileEntityRepository;
+	private MockFileEntityRepository fileEntityRepository;
 
 	private void prepareSVN() {
 		try {

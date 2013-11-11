@@ -26,7 +26,7 @@ import org.ngrinder.model.PerfTest;
  * @author JunHo Yoon
  */
 @TestOnlyComponent
-public class MockPerfTestRunnableForCancelation extends PerfTestRunnable {
+public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
 
