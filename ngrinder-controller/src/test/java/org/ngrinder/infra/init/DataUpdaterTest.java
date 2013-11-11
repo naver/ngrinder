@@ -21,7 +21,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.ejb.Ejb3Configuration;
+import org.hibernate.ejb.*;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.junit.Ignore;
 import org.junit.Test;

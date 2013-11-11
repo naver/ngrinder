@@ -197,7 +197,7 @@ public class AgentManagerService implements IAgentManagerService {
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = cast(eachAgentIdentity);
-			agentList.add(creatAgentInfo(agentControllerIdentity, agentInfoMap));
+			agentList.add(createAgentInfo(agentControllerIdentity, agentInfoMap));
 		}
 		return agentList;
 	}
@@ -291,8 +291,8 @@ public class AgentManagerService implements IAgentManagerService {
 		return getAgentRepository().findAll(visible());
 	}
 
-	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity,
-			Map<String, AgentInfo> agentInfoMap) {
+	private AgentInfo createAgentInfo(AgentControllerIdentityImplementation agentIdentity,
+	                                  Map<String, AgentInfo> agentInfoMap) {
 		AgentInfo agentInfo = agentInfoMap.get(createAgentKey(agentIdentity));
 		if (agentInfo == null) {
 			agentInfo = new AgentInfo();
