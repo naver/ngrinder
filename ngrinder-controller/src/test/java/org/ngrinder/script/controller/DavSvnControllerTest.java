@@ -15,7 +15,10 @@ package org.ngrinder.script.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,8 +32,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletConfig;
+import org.springframework.mock.web.MockServletContext;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.internal.server.dav.DAVConfig;
 import org.tmatesoft.svn.core.internal.server.dav.DAVDepth;
 import org.tmatesoft.svn.core.internal.server.dav.DAVException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.text.StringContains.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
  * Class description
@@ -46,7 +58,7 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private MockFileEntityRepository fileEntityRepository;
 
-	private void prepareSVN() throws IOException {
+	private void prepareSVN() throws IOException, SVNException {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		tempRepo.deleteOnExit();
@@ -55,10 +67,14 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 		testUserRoot.mkdirs();
 		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
+		MockServletConfig servletConfig = new MockServletConfig();
+		servletConfig.addInitParameter("SVNParentPath", testUserRoot.getAbsolutePath());
+		DAVConfig davConfig = new DAVConfig(servletConfig);
+		svnController.setDAVConfig(davConfig);
 	}
 
 	@Test
-	public void testHandleRequest() throws ServletException, IOException {
+	public void testHandleRequest() throws ServletException, IOException, SVNException {
 		prepareSVN();
 
 		//test SC_UNAUTHORIZED
@@ -71,6 +87,7 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 		req.setPathInfo("/" + getTestUser().getUserId());
 		resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
+		assertThat(resp.getContentAsString(), containsString(getTestUser().getUserId() + "/!svn/"));
 	}
 
 	@Test
@@ -81,23 +98,16 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testGetServletName() {
-		svnController.getServletName();
+	public void testDavServletEnv() {
+		assertThat(svnController.getServletName(), is("svnDavServlet"));
+
+		ServletContext context = new MockServletContext();
+		svnController.setServletContext(context);
+		assertThat(svnController.getServletContext(), is(context));
+
+		assertThat(svnController.getInitParameter("param"), nullValue());
+		assertThat(svnController.getInitParameterNames().nextElement(), is((Object)"SVNParentPath"));
 	}
 
-	@Test
-	public void testGetServletContext() {
-		svnController.getServletContext();
-	}
-
-	@Test
-	public void testGetInitParameter() {
-		svnController.getInitParameter("param");
-	}
-
-	@Test
-	public void testGetInitParameterNames() {
-		svnController.getInitParameterNames();
-	}
 
 }

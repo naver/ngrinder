@@ -125,9 +125,9 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		return userRepository.findOneByUserId("admin");
 	}
 
-	public void sleep(long miliseconds) {
+	public void sleep(long milliseconds) {
 		try {
-			Thread.sleep(miliseconds);
+			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
 			LOG.error("error:", e);
 		}

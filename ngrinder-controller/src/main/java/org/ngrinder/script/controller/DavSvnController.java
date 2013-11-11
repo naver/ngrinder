@@ -95,6 +95,10 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		return myDAVConfig;
 	}
 
+	public void setDAVConfig(DAVConfig davConfig) {
+		this.myDAVConfig = davConfig;
+	}
+
 	/**
 	 * Returns this servlet's {@link ServletConfig} object.
 	 * 
