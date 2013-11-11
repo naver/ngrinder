@@ -53,6 +53,9 @@ public enum Database {
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
 					" is not defined");
+			if (databaseProperties.getPropertyBoolean("unittest", false)) {
+				format = format + ";DB_CLOSE_ON_EXIT=FALSE";
+			}
 			dataSource.setUrl(format);
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
@@ -72,7 +75,6 @@ public enum Database {
 	private final String jdbcDriverName;
 	private final String dialect;
 	private final boolean clusterSupport;
-
 	/**
 	 * Constructor with cluster mode true.
 	 * 
@@ -106,7 +108,6 @@ public enum Database {
 		this.dialect = dialect.getCanonicalName();
 		this.jdbcDriverName = jdbcDriver.getCanonicalName();
 		this.urlTemplate = urlTemplate;
-
 	}
 
 	/**

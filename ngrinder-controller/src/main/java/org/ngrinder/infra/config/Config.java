@@ -39,10 +39,12 @@ import org.ngrinder.common.util.FileWatchdog;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.service.IConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -77,7 +79,8 @@ public class Config implements IConfig, NGrinderConstants {
 	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
 	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<PropertyChangeListener>();
-
+	@Autowired
+	private SpringContext context;
 	/**
 	 * Make it singleton.
 	 */
@@ -440,6 +443,9 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
+		if (context.isUnitTestContext()) {
+			databaseProperties.addProperty("unittest", "true");
+		}
 		return databaseProperties;
 	}
 
