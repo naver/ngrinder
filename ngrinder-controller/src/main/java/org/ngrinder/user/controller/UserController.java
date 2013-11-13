@@ -50,11 +50,10 @@ import static org.ngrinder.common.util.Preconditions.*;
 
 /**
  * User management controller.
- * 
+ *
  * @author JunHo Yoon
  * @author Alex Quin
  * @since 3.0
- * 
  */
 @Controller
 @RequestMapping("/user")
@@ -68,22 +67,18 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Get user list on the given role.
-	 * 
-	 * @param model
-	 *            model
-	 * @param roleName
-	 *            role
-	 * @param pageable
-	 *            page info
-	 * @param keywords
-	 *            search keyword.
+	 *
+	 * @param model    model
+	 * @param roleName role
+	 * @param pageable page info
+	 * @param keywords search keyword.
 	 * @return user/userList
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping({ "", "/" })
+	@RequestMapping({"", "/"})
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
-			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
-			@RequestParam(required = false) String keywords) {
+	                          @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
+	                          @RequestParam(required = false) String keywords) {
 
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
@@ -113,11 +108,9 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Get user creation form page.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            mode
+	 *
+	 * @param user  current user
+	 * @param model mode
 	 * @return "user/userDetail"
 	 */
 	@RequestMapping("/new")
@@ -129,13 +122,10 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Get user detail page.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            mode
-	 * @param userId
-	 *            user to get
+	 *
+	 * @param user   current user
+	 * @param model  mode
+	 * @param userId user to get
 	 * @return "user/userDetail"
 	 */
 	@RequestMapping("/{userId}")
@@ -151,21 +141,17 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Save or Update user detail info.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            model
-	 * @param updatedUser
-	 *            user to be updated.
-	 * @param followersStr
-	 *            user Id list that current will share his permission to.
+	 *
+	 * @param user         current user
+	 * @param model        model
+	 * @param updatedUser  user to be updated.
+	 * @param followersStr user Id list that current will share his permission to.
 	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
-			@RequestParam(required = false) String followersStr) {
+	                                     @RequestParam(required = false) String followersStr) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -192,30 +178,27 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Delete users.
-	 * 
-	 * @param model
-	 *            model
-	 * @param userIds
-	 *            comma separated user ids.
+	 *
+	 * @param model   model
+	 * @param userIds comma separated user ids.
 	 * @return "redirect:/user/list"
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/delete")
 	public String deleteUser(ModelMap model, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
-		ArrayList<String> aListNumbers = new ArrayList<String>(Arrays.asList(ids));
-		userService.deleteUsers(aListNumbers);
+		for (String eachId : Arrays.asList(ids)) {
+			userService.deleteUser(eachId);
+		}
 		model.clear();
 		return "redirect:/user/";
 	}
 
 	/**
 	 * Check the user id existence.
-	 * 
-	 * @param model
-	 *            model
-	 * @param userId
-	 *            userId to be checked
+	 *
+	 * @param model  model
+	 * @param userId userId to be checked
 	 * @return success json if true.
 	 */
 	@PreAuthorize("hasAnyRole('A')")
@@ -228,11 +211,9 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Get the current user profile.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            model
+	 *
+	 * @param user  current user
+	 * @param model model
 	 * @return "user/userInfo"
 	 */
 	@RequestMapping("/profile")
@@ -249,11 +230,9 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Get the follower list.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            model
+	 *
+	 * @param user  current user
+	 * @param model model
 	 * @return "user/switchOptions"
 	 */
 	@RequestMapping("/switch_options")
@@ -270,23 +249,17 @@ public class UserController extends NGrinderBaseController {
 
 	/**
 	 * Switch user identity.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            model
-	 * @param to
-	 *            the user to whom a user will switch
-	 * @param request
-	 *            request
-	 * @param response
-	 *            response
-	 * 
+	 *
+	 * @param user     current user
+	 * @param model    model
+	 * @param to       the user to whom a user will switch
+	 * @param request  request
+	 * @param response response
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switch")
 	public String switchUser(User user, ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
-			HttpServletRequest request, HttpServletResponse response) {
+	                         HttpServletRequest request, HttpServletResponse response) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
@@ -294,18 +267,15 @@ public class UserController extends NGrinderBaseController {
 			cookie.setMaxAge(0);
 		}
 		response.addCookie(cookie);
-
 		model.clear();
 		return "redirect:/perftest/";
 	}
 
 	/**
 	 * Get user list that current user will be shared, excluding current user.
-	 * 
-	 * @param user
-	 *            current user
-	 * @param model
-	 *            model
+	 *
+	 * @param user  current user
+	 * @param model model
 	 */
 	private void getUserShareList(User user, ModelMap model) {
 		if (user == null) {
@@ -337,7 +307,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.GET)
 	public HttpEntity<String> getOne(User user, @PathVariable("userId") String userId) {
-		 return toJsonHttpEntity(userService.getUserById(userId));
+		return toJsonHttpEntity(userService.getUserById(userId));
 	}
 
 	@RestAPI
@@ -359,7 +329,7 @@ public class UserController extends NGrinderBaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(User user,  @PathVariable("userId") String userId) {
+	public HttpEntity<String> delete(User user, @PathVariable("userId") String userId) {
 		userService.deleteUser(userId);
 		return successJsonHttpEntity();
 	}

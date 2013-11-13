@@ -717,8 +717,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Prepare files for distribution. This method store the files on the path ${NGRINDER_HOME}/perftest/{test_id}/dist
-	 * folder.
+	 * Prepare files for distribution. This method stores the files on the path
+	 * ${NGRINDER_HOME}/perftest/{test_id}/dist folder.
 	 *
 	 * @param perfTest perfTest
 	 * @return File location in which the perftest script and resources are distributed.
@@ -913,7 +913,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * returns null.
 	 *
 	 * @param singleConsole
-	 *            console signle console.
+	 *            single console.
 	 * @param perfTestId
 	 *            perfTest Id
 	 * @return statistics

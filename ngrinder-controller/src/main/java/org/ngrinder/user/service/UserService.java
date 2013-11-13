@@ -37,6 +37,7 @@ import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -174,7 +175,7 @@ public class UserService implements IUserService {
 	 * @return result
 	 */
 	@Transactional
-	@Cacheable(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User saveUser(User user) {
 		encodePassword(user);
@@ -190,7 +191,7 @@ public class UserService implements IUserService {
 	 * @return result
 	 */
 	@Transactional
-	@Cacheable(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User saveUserWithoutPasswordEncoding(User user) {
 		user.init();
@@ -211,7 +212,7 @@ public class UserService implements IUserService {
 	 * @param role
 	 *            role
 	 */
-	@Cacheable(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	public User saveUser(User user, Role role) {
 		user.setRole(role);
 		return saveUser(user);
@@ -227,7 +228,7 @@ public class UserService implements IUserService {
 	 * @return saved User
 	 */
 	@Transactional
-	@Cacheable(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	public User saveUser(User user, String followerUserIds) {
 		user.setFollowers(getFollowUsers(followerUserIds));
 		return saveUser(user);
@@ -244,7 +245,7 @@ public class UserService implements IUserService {
 	 * @return saved User
 	 */
 	@Transactional
-	@Cacheable(value = "users", key = "#userId")
+	@CachePut(value = "users", key = "#userId")
 	public User saveUser(String userId, User update) {
 		update.setId(null);
 		User oneByUserId = userRepository.findOneByUserId(userId);
@@ -265,35 +266,21 @@ public class UserService implements IUserService {
 
 	/**
 	 * Delete user. All corresponding perftest and directories are deleted as well.
-	 * 
-	 * @param userIds
-	 *            the user id string list
-	 */
-	@Transactional
-	@CacheEvict(value = "users", allEntries = true)
-	public void deleteUsers(List<String> userIds) {
-		for (String userId : userIds) {
-			User user = getUserById(userId);
-			List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
-			userRepository.delete(user);
-			for (PerfTest perfTest : deletePerfTests) {
-				FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
-			}
-			FileUtils.deleteQuietly(config.getHome().getScriptDirectory(user));
-			FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(user));
-		}
-	}
-
-	/**
-	 * Delete user. All corresponding perftest and directories are deleted as well.
 	 *
 	 * @param userId
 	 *            the user id string list
 	 */
 	@Transactional
-	@CacheEvict(value = "users", allEntries = true)
+	@CacheEvict(value = "users", key = "#userId")
 	public void deleteUser(String userId) {
-		deleteUsers(Lists.newArrayList(userId));
+		User user = getUserById(userId);
+		List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
+		userRepository.delete(user);
+		for (PerfTest perfTest : deletePerfTests) {
+			FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
+		}
+		FileUtils.deleteQuietly(config.getHome().getScriptDirectory(user));
+		FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(user));
 	}
 
 	/**
@@ -390,7 +377,7 @@ public class UserService implements IUserService {
 	 * @return result
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User createUser(User user) {
 		encodePassword(user);
