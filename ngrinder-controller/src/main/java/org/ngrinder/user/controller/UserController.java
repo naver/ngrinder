@@ -76,9 +76,9 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"", "/"})
-	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
-	                          @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
-	                          @RequestParam(required = false) String keywords) {
+	public String getUsers(ModelMap model, @RequestParam(required = false) Role role,
+	                       @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
+	                       @RequestParam(required = false) String keywords) {
 
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
@@ -88,7 +88,7 @@ public class UserController extends NGrinderBaseController {
 		}
 		Page<User> pagedUser = null;
 		if (StringUtils.isEmpty(keywords)) {
-			pagedUser = userService.getAllUsersByRole(roleName, pageable);
+			pagedUser = userService.getUsersByRole(role, pageable);
 		} else {
 			pagedUser = userService.getUsersByKeyWord(keywords, pageable);
 			model.put("keywords", keywords);
@@ -96,7 +96,7 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("userPage", pagedUser);
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
-		model.addAttribute("roleName", roleName);
+		model.addAttribute("role", role);
 		model.addAttribute("page", pageable);
 		if (sort != null) {
 			Order sortProp = (Order) sort.iterator().next();
@@ -150,8 +150,7 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
-	                                     @RequestParam(required = false) String followersStr) {
+	public String saveUser(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -163,16 +162,20 @@ public class UserController extends NGrinderBaseController {
 			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
 					updatedUser);
 		}
-		if (updatedUser.exist()) {
-			userService.saveUser(updatedUser, followersStr);
-		} else {
-			userService.saveUser(updatedUser);
-		}
+		saveUser(updatedUser);
 		model.clear();
 		if (user.getId().equals(updatedUser.getId())) {
 			return "redirect:/";
 		} else {
 			return "redirect:/user/";
+		}
+	}
+
+	private User saveUser(User user) {
+		if (StringUtils.isBlank(user.getPassword())) {
+			return userService.saveUserWithoutPasswordEncoding(user);
+		} else {
+			return userService.saveUser(user);
 		}
 	}
 
@@ -238,7 +241,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/switch_options")
 	public String switchOptions(User user, ModelMap model) {
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
-			List<User> allUserByRole = userService.getAllUsersByRole(Role.USER.getFullName());
+			List<User> allUserByRole = userService.getUsersByRole(Role.USER);
 			model.addAttribute("shareUserList", allUserByRole);
 		} else {
 			User currUser = userService.getUserById(user.getUserId());
@@ -286,7 +289,7 @@ public class UserController extends NGrinderBaseController {
 
 		List<User> users = Lists.newArrayList();
 		String userId = user.getUserId();
-		for (User u : userService.getAllUsersByRole(Role.USER.getFullName())) {
+		for (User u : userService.getUsersByRole(Role.USER)) {
 			if (u.getUserId().equals(userId)) {
 				continue;
 			}
@@ -298,9 +301,9 @@ public class UserController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/", method = RequestMethod.GET)
-	public HttpEntity<String> getAll(User user, String roleName) {
-		return toJsonHttpEntity(userService.getAllUsersByRole(roleName));
+	@RequestMapping(value = { "/api/", "/api"}, method = RequestMethod.GET)
+	public HttpEntity<String> getAll(User user, Role role) {
+		return toJsonHttpEntity(userService.getUsersByRole(role));
 	}
 
 	@RestAPI
@@ -312,10 +315,10 @@ public class UserController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/", method = RequestMethod.POST)
+	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, @ModelAttribute("user") User newUser) {
 		checkNull(newUser.getId(), "User DB ID should be null");
-		return toJsonHttpEntity(userService.saveUser(newUser));
+		return toJsonHttpEntity(saveUser(newUser));
 	}
 
 	@RestAPI
@@ -323,7 +326,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.PUT)
 	public HttpEntity<String> update(User user, @PathVariable("userId") String userId, User update) {
 		checkNull(update.getId(), "User DB ID should be null");
-		return toJsonHttpEntity(userService.saveUser(userId, update));
+		return toJsonHttpEntity(saveUser(update));
 	}
 
 	@RestAPI

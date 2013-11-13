@@ -69,11 +69,10 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user2.setPassword("www222");
 		user2.setEmail("www@test.com");
 		user2.setRole(Role.USER);
-		userService.saveUser(user2, (String)null);
+		userService.saveUser(user2);
 		User userById = userService.getUserById("hello");
 		assertThat(userById.getId(), is(user.getId()));
-
-		userService.saveUser(user2, Role.ADMIN);
+		userService.saveUser(user2);
 		userById = userService.getUserById("hello");
 		assertThat(userById.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
 		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER),is(true));
@@ -85,29 +84,9 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testDeleteUsers() {
 		final User user = createTestUser("testId1");
-		List<String> userIds = new ArrayList<String>();
-		userIds.add(user.getUserId());
-		userService.deleteUsers(userIds);
+		userService.deleteUser(user.getUserId());
 		User userById = userService.getUserById(user.getUserId());
 		Assert.assertNull(userById);
-	}
-
-	@Test
-	public void testGetRole() {
-		Role role = userService.getRole("Administrator");
-		assertThat(role, is(Role.ADMIN));
-
-		role = userService.getRole("General User");
-		assertThat(role, is(Role.USER));
-
-		role = userService.getRole("Super User");
-		assertThat(role, is(Role.SUPER_USER));
-
-		role = userService.getRole("System User");
-		assertThat(role, is(Role.SYSTEM_USER));
-
-		role = userService.getRole("Test");
-		Assert.assertNull(role);
 	}
 
 	@Autowired
@@ -126,11 +105,7 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		perfTest.setTestName("Hello");
 		perfTest.setTagString("Hello,World");
 		perfTest = perfTestService.savePerfTest(user, perfTest);
-		userService.deleteUsers(new ArrayList<String>() {
-			{
-				add(user.getUserId());
-			}
-		});
+		userService.deleteUser(user.getUserId());
 		assertThat(perfTestService.getPerfTest(perfTest.getId()), nullValue());
 		assertThat(scriptDirectory.exists(), is(false));
 	}

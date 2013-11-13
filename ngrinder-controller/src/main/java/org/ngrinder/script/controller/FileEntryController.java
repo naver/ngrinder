@@ -401,21 +401,21 @@ public class FileEntryController extends NGrinderBaseController {
 	public String uploadFiles(User user, @RemainedPath String path, @RequestParam("description") String description,
 	                          @RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
-			FileEntry fileEntry = new FileEntry();
-			if (fileEntry.getFileType().isEditable()) {
-				fileEntry.setContent(new String(file.getBytes()));
-			} else {
-				fileEntry.setContentBytes(file.getBytes());
-			}
-			fileEntry.setDescription(description);
-			fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path, file.getOriginalFilename())));
-			fileEntryService.save(user, fileEntry);
+			uploadFile(user, path, description, file);
 			model.clear();
 			return "redirect:/script/list/" + path;
 		} catch (IOException e) {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
 			throw processException("Error while getting file content:" + e.getMessage(), e);
 		}
+	}
+
+	private void uploadFile(User user, String path, String description, MultipartFile file) throws IOException {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setContent(new String(file.getBytes()));
+		fileEntry.setDescription(description);
+		fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path, file.getOriginalFilename())));
+		fileEntryService.save(user, fileEntry);
 	}
 
 	/**
@@ -455,9 +455,24 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return success json string
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/", method = RequestMethod.POST)
+	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, FileEntry fileEntry) {
 		fileEntryService.save(user, fileEntry);
+		return successJsonHttpEntity();
+	}
+
+	/**
+	 * Create the given file.
+	 *
+	 * @param user      user
+	 * @param fileEntry file entry
+	 * @return success json string
+	 */
+	@RestAPI
+	@RequestMapping(value = "/api/**", params = "action=upload", method = RequestMethod.POST)
+	public HttpEntity<String> upload(User user, @RemainedPath String path, @RequestParam("description") String description,
+	                                 @RequestParam("uploadFile") MultipartFile file) throws IOException {
+		uploadFile(user, path, description, file);
 		return successJsonHttpEntity();
 	}
 
@@ -472,15 +487,15 @@ public class FileEntryController extends NGrinderBaseController {
 
 
 	@RestAPI
-	@RequestMapping(value = "/api/", params = "action=all", method = RequestMethod.GET)
+	@RequestMapping(value = {"/api/", "/api"}, params = "action=all", method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user) {
 		return toJsonHttpEntity(fileEntryService.getAllFileEntries(user));
 	}
 
 	@RestAPI
-	@RequestMapping(value = "/api/**", method = RequestMethod.GET)
+	@RequestMapping(value = {"/api/**", "/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
-		return toJsonHttpEntity(fileEntryService.getFileEntries(user, path, -1L));
+		return toJsonHttpEntity(fileEntryService.getFileEntries(user, StringUtils.trimToEmpty(path), -1L));
 	}
 
 

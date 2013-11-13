@@ -803,7 +803,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return json string
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/last", method = RequestMethod.GET)
+	@RequestMapping(value = { "/api/last", "/api", "/api/" }, method = RequestMethod.GET)
 	public HttpEntity<String> listAPI(User user, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "1") int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPerfTest(user, null, null, null, pageRequest);
@@ -832,7 +832,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return json success message if succeeded
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/", method = RequestMethod.POST)
+	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, PerfTest perftest) {
 		checkNull(perftest.getId(), "id should be null");
 		PerfTest savePerfTest = perfTestService.savePerfTest(user, perftest);

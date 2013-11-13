@@ -50,7 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The Class UserService.
- * 
+ *
  * @author Yubin Mao
  * @author AlexQin
  */
@@ -77,9 +77,8 @@ public class UserService implements IUserService {
 
 	/**
 	 * Get user by user id.
-	 * 
-	 * @param userId
-	 *            user id
+	 *
+	 * @param userId user id
 	 * @return user
 	 */
 	@Transactional
@@ -90,28 +89,9 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Get user by user id without using Cache. The user in cache has no followers and owners
-	 * initialized.
-	 * 
-	 * @param userId
-	 *            user id
-	 * @return user
-	 */
-	@Transactional
-	public User getUserByIdWithoutCache(String userId) {
-		User user = userRepository.findOneByUserId(userId);
-		if (user != null) {
-			Hibernate.initialize(user.getOwners());
-			Hibernate.initialize(user.getFollowers());
-		}
-		return user;
-	}
-
-	/**
 	 * Encoding given user's password.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 */
 	public void encodePassword(User user) {
 		if (StringUtils.isNotBlank(user.getPassword())) {
@@ -121,57 +101,11 @@ public class UserService implements IUserService {
 		}
 	}
 
-	/**
-	 * Get all user by the given role.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @param pageable
-	 *            pageable
-	 * @return page of user
-	 */
-	public Page<User> getAllUsersByRole(String roleName, Pageable pageable) {
-		if (StringUtils.isBlank(roleName)) {
-			return userRepository.findAll(pageable);
-		} else {
-			return getUsersByRole(getRole(roleName), pageable);
-		}
-	}
-
-	/**
-	 * get all users by role.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @return found user list
-	 */
-	public List<User> getAllUsersByRole(String roleName) {
-		return getAllUsersByRole(roleName, new Sort(Direction.ASC, "userName"));
-	}
-
-	/**
-	 * Get all users by role.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @param sort
-	 *            sort method
-	 * @return found user list
-	 */
-	public List<User> getAllUsersByRole(String roleName, Sort sort) {
-		if (StringUtils.isBlank(roleName)) {
-			return userRepository.findAll(sort);
-		} else {
-			return getUsersByRole(getRole(roleName), sort);
-		}
-	}
 
 	/**
 	 * Save user.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 *
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 */
 	@Transactional
@@ -184,82 +118,46 @@ public class UserService implements IUserService {
 
 	/**
 	 * Save user.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 *
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 */
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User saveUserWithoutPasswordEncoding(User user) {
-		user.init();
+		user.setFollowers(getFollowUsers(user.getFollowersStr()));
+		final User existing = userRepository.findOneByUserId(user.getUserId());
+		if (existing != null) {
+			user = existing.merge(user);
+		}
 		User createdUser = userRepository.save(user);
 		prepareUserEnv(user);
 		return createdUser;
 	}
-	
-	private void prepareUserEnv(User user) {
-		scriptService.prepare(user);
-	}
 
-	/**
-	 * Save user.
-	 * 
-	 * @param user
-	 *            user
-	 * @param role
-	 *            role
-	 */
+
+	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
+	@Override
 	public User saveUser(User user, Role role) {
 		user.setRole(role);
 		return saveUser(user);
 	}
 
-	/**
-	 * Save user
-	 * 
-	 * @param user
-	 *            user
-	 * @param followerUserIds
-	 *            comma separated follower id string
-	 * @return saved User
-	 */
-	@Transactional
-	@CachePut(value = "users", key = "#user.userId")
-	public User saveUser(User user, String followerUserIds) {
-		user.setFollowers(getFollowUsers(followerUserIds));
-		return saveUser(user);
+	private void prepareUserEnv(User user) {
+		scriptService.prepare(user);
 	}
 
 
-	/**
-	 * Save user with the given user info
-	 *
-	 * @param userId
-	 *            user
-	 * @param user
-	 *
-	 * @return saved User
-	 */
-	@Transactional
-	@CachePut(value = "users", key = "#userId")
-	public User saveUser(String userId, User update) {
-		update.setId(null);
-		User oneByUserId = userRepository.findOneByUserId(userId);
-		oneByUserId.merge(update);
-		return saveUser(oneByUserId);
-	}
-
-	private List<User> getFollowUsers(String followUserIds) {
-		followUserIds = StringUtils.trimToEmpty(followUserIds);
+	private List<User> getFollowUsers(String followersStr) {
 		List<User> newShareUsers = new ArrayList<User>();
-		String[] userIds = followUserIds.split(",");
+		String[] userIds = StringUtils.split(StringUtils.trimToEmpty(followersStr), ',');
 		for (String userId : userIds) {
 			User shareUser = userRepository.findOneByUserId(userId.trim());
-			newShareUsers.add(shareUser);
+			if (shareUser != null) {
+				newShareUsers.add(shareUser);
+			}
 		}
 		return newShareUsers;
 	}
@@ -267,8 +165,7 @@ public class UserService implements IUserService {
 	/**
 	 * Delete user. All corresponding perftest and directories are deleted as well.
 	 *
-	 * @param userId
-	 *            the user id string list
+	 * @param userId the user id string list
 	 */
 	@Transactional
 	@CacheEvict(value = "users", key = "#userId")
@@ -285,37 +182,32 @@ public class UserService implements IUserService {
 
 	/**
 	 * get the user list by the given role.
-	 * 
-	 * @param role
-	 *            role
-	 * @param sort
-	 *            sort
+	 *
+	 * @param role role
+	 * @param sort sort
 	 * @return found user list
 	 * @throws Exception
 	 */
 	public List<User> getUsersByRole(Role role, Sort sort) {
-		return userRepository.findAllByRole(role, sort);
+		return (role == null) ? userRepository.findAll(sort) : userRepository.findAllByRole(role, sort);
 	}
 
 	/**
 	 * get the user list by the given role.
-	 * 
-	 * @param role
-	 *            role
-	 * @param pageable
-	 *            sort
+	 *
+	 * @param role     role
+	 * @param pageable sort
 	 * @return found user list
 	 * @throws Exception
 	 */
 	public Page<User> getUsersByRole(Role role, Pageable pageable) {
-		return userRepository.findAllByRole(role, pageable);
+		return (role == null) ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
 	}
 
 	/**
-	 * get the user list by the given role.
-	 * 
-	 * @param role
-	 *            role
+	 * Get the users by the given role.
+	 *
+	 * @param role role
 	 * @return found user list
 	 * @throws Exception
 	 */
@@ -324,31 +216,9 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * get Role object based on role name.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @return found Role
-	 */
-	public Role getRole(String roleName) {
-		if (Role.ADMIN.getFullName().equals(roleName)) {
-			return Role.ADMIN;
-		} else if (Role.USER.getFullName().equals(roleName)) {
-			return Role.USER;
-		} else if (Role.SUPER_USER.getFullName().equals(roleName)) {
-			return Role.SUPER_USER;
-		} else if (Role.SYSTEM_USER.getFullName().equals(roleName)) {
-			return Role.SYSTEM_USER;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Get the user list by nameLike spec.
-	 * 
-	 * @param name
-	 *            name of user
+	 * Get the users by nameLike spec.
+	 *
+	 * @param name name of user
 	 * @return found user list
 	 */
 	public List<User> getUsersByKeyWord(String name) {
@@ -357,23 +227,19 @@ public class UserService implements IUserService {
 
 	/**
 	 * Get user page by the given keyword.
-	 * 
-	 * @param namelike
-	 *            keyword to be like search.
-	 * @param pageable
-	 *            page
+	 *
+	 * @param keyword  keyword to be like search.
+	 * @param pageable page
 	 * @return user page
 	 */
-	public Page<User> getUsersByKeyWord(String namelike, Pageable pageable) {
-		return userRepository.findAll(UserSpecification.nameLike(namelike), pageable);
+	public Page<User> getUsersByKeyWord(String keyword, Pageable pageable) {
+		return userRepository.findAll(UserSpecification.nameLike(keyword), pageable);
 	}
-	
+
 	/**
-	 * Create user avoiding ModelAspect behavior.
-	 * 
-	 * @param user
-	 *            including id, userID, fullName, role, password.
-	 * 
+	 * Create an user avoiding ModelAspect behavior.
+	 *
+	 * @param user userID, fullName, role, password.
 	 * @return result
 	 */
 	@Transactional
@@ -384,7 +250,7 @@ public class UserService implements IUserService {
 		Date createdDate = new Date();
 		user.setCreatedDate(createdDate);
 		user.setLastModifiedDate(createdDate);
-		User createdUser = userRepository.findOneByUserId(NGrinderConstants.NGRINDER_INITIAL_ADMIN_USERID);
+		User createdUser = getUserById(NGrinderConstants.NGRINDER_INITIAL_ADMIN_USERID);
 		user.setCreatedUser(createdUser);
 		user.setLastModifiedUser(createdUser);
 		return saveUserWithoutPasswordEncoding(user);

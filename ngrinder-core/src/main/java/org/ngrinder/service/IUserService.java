@@ -53,8 +53,22 @@ public interface IUserService {
 	 * @since 3.3
 	 */
 	public User saveUserWithoutPasswordEncoding(User user);
-	
-	
+
+
+
+
+	/**
+	 * Save user.
+	 *
+	 * @param user
+	 *            user
+	 * @param role
+	 *            role
+	 * @deprecated Use #saveUser(User user) instead.
+	 * @return result
+	 */
+	public abstract User saveUser(User user, Role role);
+
 	/**
 	 * Save user.
 	 * 
@@ -67,18 +81,9 @@ public interface IUserService {
 
 
 	/**
-	 * Save user.
-	 * 
-	 * @param user
-	 *            user
-	 * @param role
-	 *            role
-	 * @return result
-	 */
-	public abstract User saveUser(User user, Role role);
-	
-	/**
 	 * Create user.
+	 *
+	 * This method exists to avoid ModelAspect injection.
 	 * 
 	 * @param user
 	 *            include id, userID, fullName, role, password.

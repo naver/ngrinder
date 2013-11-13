@@ -84,6 +84,10 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User follower;
 
+	@Expose
+	@Transient
+	private String followersStr;
+
 	@Transient
 	private User ownerUser;
 
@@ -356,5 +360,13 @@ public class User extends BaseModel<User> {
 	@Override
 	public String toString() {
 		return "User[ID=" + this.getId() + ",name=" + this.getUserId() + ",Role=" + this.getRole() + "]";
+	}
+
+	public String getFollowersStr() {
+		return followersStr;
+	}
+
+	public void setFollowersStr(String followersStr) {
+		this.followersStr = followersStr;
 	}
 }

@@ -292,7 +292,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.useRampUp = getSafe(this.useRampUp);
 		this.scriptName = getSafe(this.scriptName, "");
 		this.testName = getSafe(this.testName, "");
-		this.testErrorCause = getSafe(this.testErrorCause, Status.UNKNOWN);
 		this.progressMessage = getSafe(this.progressMessage, "");
 		this.lastProgressMessage = getSafe(this.lastProgressMessage, "");
 		this.testComment = getSafe(this.testComment, "");

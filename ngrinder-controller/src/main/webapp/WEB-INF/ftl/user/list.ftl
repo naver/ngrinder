@@ -13,9 +13,9 @@
 			<legend class="header">
 				<@spring.message "navigator.dropdown.userManagement"/>
 				<select id="roles" class="pull-right" name="roles">
-					<option value="all" <#if listPage?exists && !roleName?exists>selected</#if>"><@spring.message "user.left.all"/></option>
-					<#list roleSet as role> 
-						<option value="${role.fullName}" <#if roleName?exists && role.fullName == roleName>selected</#if>>${role.fullName}</option>
+					<option value="all" <#if listPage?exists && !role?exists>selected</#if>"><@spring.message "user.left.all"/></option>
+					<#list roleSet as eachRole>
+						<option value="${eachRole}" <#if role?exists && role == eachRole>selected</#if>>${eachRole.fullName}</option>
 					</#list>
 				</select>
 			</legend> 
@@ -119,7 +119,7 @@
 				var selectedValue = $(this).val();
 				var destUrl = "${req.getContextPath()}/user/";
 				if (selectedValue != "all") {
-					destUrl = destUrl + "?roleName=" + selectedValue;
+					destUrl = destUrl + "?role=" + selectedValue;
 				}
 				window.location.href=destUrl;
 			});

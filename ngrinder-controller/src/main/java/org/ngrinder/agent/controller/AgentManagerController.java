@@ -189,7 +189,7 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/", method = RequestMethod.GET)
+	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user) {
 		return toJsonHttpEntity(agentManagerService.getAllVisibleAgentInfoFromDB());
 	}
