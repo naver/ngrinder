@@ -415,7 +415,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param perfTest perf test
 	 * @param status   status to be recorded.
-	 * @param message  message to be recored.
+	 * @param message  message to be recorded.
 	 * @return perftest with latest status and data
 	 */
 	@Transactional
@@ -430,7 +430,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param perfTest perf test
 	 * @param status   status to be recorded.
-	 * @param message  message to be recored.
+	 * @param message  message to be recorded.
 	 * @return perftest with latest status and data
 	 */
 	@Transactional
@@ -1287,9 +1287,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param perfTest perfTest
 	 */
 	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
-		perfTest.setRunningSample(null);
-		perfTest.setAgentStatus(null);
-		perfTest.setMonitorStatus(null);
+		perfTest.setRunningSample("");
+		perfTest.setAgentStatus("");
+		perfTest.setMonitorStatus("");
 		savePerfTest(perfTest);
 	}
 
