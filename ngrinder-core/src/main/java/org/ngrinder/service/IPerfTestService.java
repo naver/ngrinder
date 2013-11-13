@@ -86,7 +86,7 @@ public interface IPerfTestService {
 	 *            status set
 	 * @return the count
 	 */
-	public abstract long getPerfTestCount(User user, Status... statuses);
+	public abstract long getPerfTestCount(User user, Status[] statuses);
 
 	/**
 	 * Get {@link PerfTest} list which have give state.
@@ -97,7 +97,7 @@ public interface IPerfTestService {
 	 *            set of {@link Status}
 	 * @return found {@link PerfTest} list.
 	 */
-	public abstract List<PerfTest> getPerfTest(User user, Status... statuses);
+	public abstract List<PerfTest> getPerfTest(User user, Status[] statuses);
 
 	/**
 	 * Save {@link PerfTest}. This function includes logic the updating script revision when it's
@@ -149,7 +149,7 @@ public interface IPerfTestService {
 	 * Get PerfTest Directory in which the distributed file is stored.
 	 * 
 	 * @param perfTest
-	 *            pefTest from which distribution dire.ctory calculated
+	 *            pefTest from which distribution directory calculated
 	 * @return path on in files are saved.
 	 */
 	public abstract File getPerfTestDistributionPath(PerfTest perfTest);
