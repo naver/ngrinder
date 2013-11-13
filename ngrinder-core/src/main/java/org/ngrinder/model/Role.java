@@ -42,13 +42,13 @@ public enum Role {
 			switch (type) {
 			case GET_ALL_TESTS:
 				return true;
-			case DELETE_TEST_OFOTHER:
+			case DELETE_TEST_OF_OTHER:
 				return true;
-			case CHECK_SCRIPT_OFOTHER:
+			case CHECK_SCRIPT_OF_OTHER:
 				return true;
-			case VALIDATE_SCRIPT_OFOTHER:
+			case VALIDATE_SCRIPT_OF_OTHER:
 				return true;
-			case STOP_TEST_OFOTHER:
+			case STOP_TEST_OF_OTHER:
 				return true;
 			case SWITCH_TO_ANYONE:
 				return true;
@@ -74,9 +74,9 @@ public enum Role {
 			switch (type) {
 			case GET_ALL_TESTS:
 				return true;
-			case CHECK_SCRIPT_OFOTHER:
+			case CHECK_SCRIPT_OF_OTHER:
 				return true;
-			case VALIDATE_SCRIPT_OFOTHER:
+			case VALIDATE_SCRIPT_OF_OTHER:
 				return true;
 			case SWITCH_TO_ANYONE:
 				return true;

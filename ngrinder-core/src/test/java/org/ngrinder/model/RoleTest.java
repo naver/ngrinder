@@ -30,26 +30,26 @@ public class RoleTest {
 	public void testHasPermission() {
 		Role user = Role.USER;
 		assertFalse(user.hasPermission(Permission.GET_ALL_TESTS));
-		assertFalse(user.hasPermission(Permission.DELETE_TEST_OFOTHER));
-		assertFalse(user.hasPermission(Permission.CHECK_SCRIPT_OFOTHER));
-		assertFalse(user.hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER));
-		assertFalse(user.hasPermission(Permission.STOP_TEST_OFOTHER));
+		assertFalse(user.hasPermission(Permission.DELETE_TEST_OF_OTHER));
+		assertFalse(user.hasPermission(Permission.CHECK_SCRIPT_OF_OTHER));
+		assertFalse(user.hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER));
+		assertFalse(user.hasPermission(Permission.STOP_TEST_OF_OTHER));
 		assertFalse(user.hasPermission(Permission.SWITCH_TO_ANYONE));
 
 		Role admin = Role.ADMIN;
 		assertTrue(admin.hasPermission(Permission.GET_ALL_TESTS));
-		assertTrue(admin.hasPermission(Permission.DELETE_TEST_OFOTHER));
-		assertTrue(admin.hasPermission(Permission.CHECK_SCRIPT_OFOTHER));
-		assertTrue(admin.hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER));
-		assertTrue(admin.hasPermission(Permission.STOP_TEST_OFOTHER));
+		assertTrue(admin.hasPermission(Permission.DELETE_TEST_OF_OTHER));
+		assertTrue(admin.hasPermission(Permission.CHECK_SCRIPT_OF_OTHER));
+		assertTrue(admin.hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER));
+		assertTrue(admin.hasPermission(Permission.STOP_TEST_OF_OTHER));
 		assertTrue(admin.hasPermission(Permission.SWITCH_TO_ANYONE));
 
 		Role superUser = Role.SUPER_USER;
 		assertTrue(superUser.hasPermission(Permission.GET_ALL_TESTS));
-		assertFalse(superUser.hasPermission(Permission.DELETE_TEST_OFOTHER));
-		assertTrue(superUser.hasPermission(Permission.CHECK_SCRIPT_OFOTHER));
-		assertTrue(superUser.hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER));
-		assertFalse(superUser.hasPermission(Permission.STOP_TEST_OFOTHER));
+		assertFalse(superUser.hasPermission(Permission.DELETE_TEST_OF_OTHER));
+		assertTrue(superUser.hasPermission(Permission.CHECK_SCRIPT_OF_OTHER));
+		assertTrue(superUser.hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER));
+		assertFalse(superUser.hasPermission(Permission.STOP_TEST_OF_OTHER));
 		assertTrue(superUser.hasPermission(Permission.SWITCH_TO_ANYONE));
 	}
 

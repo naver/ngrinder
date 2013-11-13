@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.annotations.Expose;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -45,6 +46,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	private static final long serialVersionUID = -2422243194192027508L;
 
+	@Expose
 	private long fileSize;
 
 	/**
@@ -53,11 +55,13 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	 */
 	private String testURL;
 
+	@Expose
 	private String content;
 
 	/**
 	 * File properties.
 	 */
+	@Expose
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	/**
@@ -69,16 +73,21 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	/**
 	 * This is mapped to commit comment.
 	 */
+	@Expose
 	private String description;
 
+	@Expose
 	private String encoding;
 
 	private byte[] contentBytes;
 
+	@Expose
 	private String path;
 
+	@Expose
 	private FileType fileType;
 
+	@Expose
 	private long revision;
 	
 	private long lastRevision;

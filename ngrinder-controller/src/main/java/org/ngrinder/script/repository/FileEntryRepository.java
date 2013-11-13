@@ -166,6 +166,7 @@ public class FileEntryRepository {
 							if (dirEntry.getKind() == SVNNodeKind.DIR) {
 								script.setFileType(FileType.DIR);
 							} else {
+								script.getFileType();
 								script.setFileSize(dirEntry.getSize());
 							}
 							fileEntries.add(script);
@@ -467,7 +468,7 @@ public class FileEntryRepository {
 	 * @param paths
 	 *            paths of file entries.
 	 */
-	public void delete(User user, String[] paths) {
+	public void delete(User user, List<String> paths) {
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;
 		try {

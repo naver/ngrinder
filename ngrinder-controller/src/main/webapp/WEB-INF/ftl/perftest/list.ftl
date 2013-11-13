@@ -133,7 +133,7 @@
 					<#assign testList = testListPage.content/>
 					<#if testList?has_content>
 						<#list testList as test>
-							<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
+							<#assign totalVuser = (test.vuserPerAgent!0) * (test.agentCount!0) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
 							<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>
@@ -149,19 +149,19 @@
 										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"  /> 
 									</div>
 								</td>
-								<td class="ellipsis ${test.dateString}">
+								<td class="ellipsis ${test.dateString!""}">
 									<div
 										 rel="popover"
 										 data-html="true" 
 										 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"  
-										 data-title="${test.testName}">
-										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
+										 data-title="${test.testName!""}">
+										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName!""}</a>
 									</div>
 								</td>
 								<td class="ellipsis">
 									<div class="ellipsis"
 										rel="popover"
-										data-html="true"
+										data-html="   "
 										data-content="${test.scriptName}<br/> - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
 										title="<@spring.message "perfTest.table.scriptName"/>">			
 										<#if isAdmin??>
@@ -189,9 +189,15 @@
 								</td>
 								</#if>
 								<td>
-									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
+									<#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
-								<td	<#if test.threshold == "D">	>${(test.durationStr)!}<#else> title="<@spring.message "perfTest.configuration.runCount"/>" >${test.runCount}</#if>
+								<td
+									<#if test.threshhold?? && test.threshold == "D">	>
+									${(test.durationStr)!}
+									<#else>
+									title="<@spring.message "perfTest.configuration.runCount"/>" >
+									${(test.runCount)!}
+									</#if>
 								</td>
 								<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>

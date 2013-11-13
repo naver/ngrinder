@@ -13,25 +13,8 @@
  */
 package org.ngrinder.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import com.google.gson.annotations.Expose;
 import net.grinder.common.GrinderProperties;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.Index;
@@ -41,7 +24,13 @@ import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.PathUtil;
 
-import com.google.gson.annotations.Expose;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedSet;
+
+import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * Performance Test Entity.
@@ -59,26 +48,30 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private static final int MAX_STRING_SIZE = 2048;
 
 	@Expose
+	@Cloneable
 	@Column(name = "name")
 	private String testName;
 
 	@Expose
+	@Cloneable
 	@Column(name = "tag_string")
 	private String tagString;
 
 	@Expose
+	@Cloneable
 	@Column(length = MAX_LONG_STRING_SIZE)
 	private String description;
 
 	@Expose
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
-	private Status status = Status.READY;
+	private Status status;
 
 	@Expose
+	@Cloneable
 	/** ignoreSampleCount value, default to 0. */
 	@Column(name = "ignore_sample_count")
-	private Integer ignoreSampleCount = 0;
+	private Integer ignoreSampleCount;
 
 	@Expose
 	/** the scheduled time of this test. */
@@ -100,6 +93,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * the target host to test.
 	 */
 	@Expose
+	@Cloneable
 	@Column(name = "target_hosts")
 	private String targetHosts;
 
@@ -107,6 +101,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * The send mail code.
 	 */
 	@Expose
+	@Cloneable
 	@Column(name = "send_mail", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean sendMail;
@@ -116,58 +111,71 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * Use rampup or not.
 	 */
 	@Expose
+	@Cloneable
 	@Column(name = "use_rampup", columnDefinition = "char(1)")
 	@Type(type = "true_false")
-	private Boolean useRampUp = false;
+	private Boolean useRampUp;
 
 	/**
 	 * The threshold code, R for run count; D for duration.
 	 */
 	@Expose
+	@Cloneable
 	@Column(name = "threshold")
 	private String threshold;
 
 	@Expose
+	@Cloneable
 	@Column(name = "script_name")
 	private String scriptName;
 
 	@Expose
+	@Cloneable
 	@Column(name = "duration")
 	private Long duration;
 
 	@Expose
+	@Cloneable
 	@Column(name = "run_count")
 	private Integer runCount;
 
 	@Expose
+	@Cloneable
 	@Column(name = "agent_count")
 	private Integer agentCount;
 
 	@Expose
+	@Cloneable
 	@Column(name = "vuser_per_agent")
 	private Integer vuserPerAgent;
 
 	@Expose
+	@Cloneable
 	@Column(name = "processes")
 	private Integer processes;
 
 	@Expose
+	@Cloneable
 	@Column(name = "init_processes")
 	private Integer initProcesses;
 
 	@Expose
+	@Cloneable
 	@Column(name = "init_sleep_time")
 	private Integer initSleepTime;
 
 	@Expose
+	@Cloneable
 	@Column(name = "process_increment")
 	private Integer processIncrement;
 
 	@Expose
+	@Cloneable
 	@Column(name = "process_increment_interval")
 	private Integer processIncrementInterval;
 
 	@Expose
+	@Cloneable
 	@Column(name = "threads")
 	private Integer threads;
 
@@ -200,12 +208,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * Console port for this test. This is the identifier for console
 	 */
 	@Column(name = "port")
-	private Integer port = 0;
+	private Integer port;
 
 	@Expose
 	@Column(name = "test_error_cause")
 	@Enumerated(EnumType.STRING)
-	private Status testErrorCause = Status.UNKNOWN;
+	private Status testErrorCause;
 
 	@Column(name = "distribution_path")
 	/** The path used for file distribution */
@@ -213,30 +221,33 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Expose
 	@Column(name = "progress_message", length = MAX_STRING_SIZE)
-	private String progressMessage = "";
+	private String progressMessage;
 
 	@Column(name = "last_progress_message", length = MAX_STRING_SIZE)
-	private String lastProgressMessage = "";
+	private String lastProgressMessage;
 
 	@Expose
 	@Column(name = "test_comment", length = MAX_STRING_SIZE)
-	private String testComment = "";
+	private String testComment;
 
 	@Expose
 	@Column(name = "script_revision")
-	private Long scriptRevision = -1L;
+	private Long scriptRevision;
 
-	@Column(name = "stop_request", columnDefinition = "char(1)")
+	@Expose
+	@Column(name = "stop_request")
 	@Type(type = "true_false")
 	private Boolean stopRequest;
 
 	@Expose
+	@Cloneable
 	@Column(name = "region")
 	private String region;
 
-	@Column(name = "safe_distribution", columnDefinition = "char(1)")
+	@Column(name = "safe_distribution")
+	@Cloneable
 	@Type(type = "true_false")
-	private Boolean safeDistribution = false;
+	private Boolean safeDistribution;
 
 	@Transient
 	private String dateString;
@@ -261,12 +272,37 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String monitorStatus;
 
 	@Expose
+	@Cloneable
 	@Column(name = "sampling_interval")
 	private Integer samplingInterval;
 
 	@Expose
+	@Cloneable
 	@Column(name = "param")
 	private String param;
+
+	@PrePersist
+	public void init() {
+		this.status = getSafe(this.status, Status.SAVED);
+		this.agentCount = getSafe(this.agentCount);
+		this.port = getSafe(this.port);
+		this.processes = getSafe(this.processes);
+		this.threads = getSafe(this.threads);
+		this.ignoreSampleCount = getSafe(this.ignoreSampleCount);
+		this.useRampUp = getSafe(this.useRampUp);
+		this.scriptName = getSafe(this.scriptName, "");
+		this.testName = getSafe(this.testName, "");
+		this.testErrorCause = getSafe(this.testErrorCause, Status.UNKNOWN);
+		this.progressMessage = getSafe(this.progressMessage, "");
+		this.lastProgressMessage = getSafe(this.lastProgressMessage, "");
+		this.testComment = getSafe(this.testComment, "");
+		this.threshold = getSafe(this.threshold, "D");
+		this.runCount = getSafe(this.runCount);
+		this.duration = getSafe(this.duration);
+		this.samplingInterval = getSafe(this.samplingInterval);
+		this.scriptRevision = getSafe(this.scriptRevision, -1L);
+		this.param = getSafe(this.param, "");
+	}
 
 
 	public String getTestIdentifier() {
@@ -287,7 +323,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return testName;
 	}
 
-	@Cloneable
 	public void setTestName(String testName) {
 		this.testName = testName;
 	}
@@ -320,7 +355,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return runCount;
 	}
 
-	@Cloneable
 	public void setRunCount(Integer runCount) {
 		this.runCount = runCount;
 	}
@@ -329,7 +363,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return duration;
 	}
 
-	@Cloneable
 	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
@@ -338,7 +371,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return scriptName;
 	}
 
-	@Cloneable
 	public void setScriptName(String scriptName) {
 		this.scriptName = scriptName;
 	}
@@ -347,7 +379,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return ignoreSampleCount;
 	}
 
-	@Cloneable
 	public void setIgnoreSampleCount(Integer ignoreSampleCount) {
 		this.ignoreSampleCount = ignoreSampleCount;
 	}
@@ -364,7 +395,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtil.dateToString(getLastModifiedDate());
 	}
 
-	@Cloneable
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -393,8 +423,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return targetIPList;
 	}
 
-	@Cloneable
-	@ForceMergable
 	public void setTargetHosts(String theTarget) {
 		this.targetHosts = theTarget;
 	}
@@ -403,16 +431,15 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return threshold;
 	}
 
-	public boolean isThresholdDuration() {
+	public Boolean isThresholdDuration() {
 		return "D".equals(getThreshold());
 	}
 
-	public boolean isThresholdRunCount() {
+	public Boolean isThresholdRunCount() {
 		return "R".equals(getThreshold());
 	}
 
 
-	@Cloneable
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
 	}
@@ -439,7 +466,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setAgentCount(Integer agentCount) {
 		this.agentCount = agentCount;
 	}
@@ -449,7 +475,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setVuserPerAgent(Integer vuserPerAgent) {
 		this.vuserPerAgent = vuserPerAgent;
 	}
@@ -459,7 +484,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setProcesses(Integer processes) {
 		this.processes = processes;
 	}
@@ -468,8 +492,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return initProcesses;
 	}
 
-
-	@Cloneable
 	public void setInitProcesses(Integer initProcesses) {
 		this.initProcesses = initProcesses;
 	}
@@ -479,7 +501,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setInitSleepTime(Integer initSleepTime) {
 		this.initSleepTime = initSleepTime;
 	}
@@ -489,7 +510,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setProcessIncrement(Integer processIncrement) {
 		this.processIncrement = processIncrement;
 	}
@@ -499,7 +519,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setProcessIncrementInterval(Integer processIncrementInterval) {
 		this.processIncrementInterval = processIncrementInterval;
 	}
@@ -509,7 +528,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setThreads(Integer threads) {
 		this.threads = threads;
 	}
@@ -613,7 +631,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getProgressMessage() {
-		return StringUtils.defaultIfEmpty(progressMessage, "");
+		return progressMessage;
 	}
 
 	public void setProgressMessage(String progressMessage) {
@@ -629,7 +647,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getLastProgressMessage() {
-		return StringUtils.defaultIfEmpty(lastProgressMessage, "");
+		return lastProgressMessage;
 	}
 
 	/**
@@ -692,7 +710,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setUseRampUp(Boolean useRampUp) {
 		this.useRampUp = useRampUp;
 	}
@@ -702,7 +719,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setSendMail(Boolean sendMail) {
 		this.sendMail = sendMail;
 	}
@@ -712,8 +728,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
-	@ForceMergable
 	public void setTagString(String tagString) {
 		this.tagString = tagString;
 	}
@@ -731,7 +745,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setRegion(String region) {
 		this.region = region;
 	}
@@ -741,7 +754,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setSafeDistribution(Boolean safeDistribution) {
 		this.safeDistribution = safeDistribution;
 	}
@@ -751,7 +763,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@ForceMergable
 	public void setRunningSample(String runningSample) {
 		this.runningSample = runningSample;
 	}
@@ -760,7 +771,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return agentStatus;
 	}
 
-	@ForceMergable
 	public void setAgentStatus(String agentStatus) {
 		this.agentStatus = agentStatus;
 	}
@@ -769,7 +779,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return monitorStatus;
 	}
 
-	@ForceMergable
 	public void setMonitorStatus(String monitorStatus) {
 		this.monitorStatus = monitorStatus;
 	}
@@ -779,7 +788,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 
-	@Cloneable
 	public void setSamplingInterval(Integer samplingInterval) {
 		this.samplingInterval = samplingInterval;
 	}
@@ -788,11 +796,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return param;
 	}
 
-	@ForceMergable
-	@Cloneable
 	public void setParam(String param) {
 		this.param = param;
 	}
-
-
 }

@@ -214,7 +214,6 @@ public class AgentManager implements NGrinderConstants {
 	 * @return {@link AgentControllerIdentityImplementation}
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
-
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
 			if (StringUtils.equals(convert(agentIdentity).getIp(), agentIP)) {
 				return convert(agentIdentity);
@@ -228,7 +227,7 @@ public class AgentManager implements NGrinderConstants {
 	 * 
 	 * @param identity
 	 *            identity
-	 * @return convertity identity.
+	 * @return converted identity.
 	 */
 	AgentControllerIdentityImplementation convert(AgentIdentity identity) {
 		return (AgentControllerIdentityImplementation) identity;
@@ -248,7 +247,7 @@ public class AgentManager implements NGrinderConstants {
 	 * 
 	 * @param user
 	 *            user
-	 * @return AgentIndentity set
+	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgentsForUser(User user) {
 		return filterUserAgents(getAllFreeApprovedAgents(), user.getUserId());
@@ -257,7 +256,7 @@ public class AgentManager implements NGrinderConstants {
 	/**
 	 * Get all approved agents which are not used now.
 	 * 
-	 * @return AgentIndentity set
+	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
 		Set<AgentIdentity> allFreeAgents = agentControllerServerDaemon.getAllFreeAgents();

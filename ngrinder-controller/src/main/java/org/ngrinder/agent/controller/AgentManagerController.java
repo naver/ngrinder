@@ -23,19 +23,18 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -187,4 +186,35 @@ public class AgentManagerController extends NGrinderBaseController {
 		return toJson(buildMap(JSON_SUCCESS, true, //
 				"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
 	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/", method = RequestMethod.GET)
+	public HttpEntity<String> getAll(User user) {
+		return toJsonHttpEntity(agentManagerService.getAllVisibleAgentInfoFromDB());
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
+	public HttpEntity<String> getOne(User user, @PathVariable("id") Long id) {
+		return toJsonHttpEntity(agentManagerService.getAgent(id, false));
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{id}/approve", method = RequestMethod.PUT)
+	public HttpEntity<String> approve(User user, @PathVariable("id") Long id) {
+		agentManagerService.approve(id, true);
+		return successJsonHttpEntity();
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{id}/disapprove", method = RequestMethod.PUT)
+	public HttpEntity<String> disapprove(User user, @PathVariable("id") Long id) {
+		agentManagerService.approve(id, false);
+		return successJsonHttpEntity();
+	}
+
 }

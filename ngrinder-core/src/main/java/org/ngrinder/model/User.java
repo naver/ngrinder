@@ -15,18 +15,12 @@ package org.ngrinder.model;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
+import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
+
+import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * User managed by nGrinder.
@@ -40,39 +34,48 @@ public class User extends BaseModel<User> {
 
 	private static final long serialVersionUID = 7398072895183814285L;
 
+	@Expose
 	@Column(name = "user_id", unique = true, nullable = false)
 	/** User Id */
 	private String userId;
 
+	@Expose
 	@Column(name = "user_name")
 	/** User Name e.g) Jone Dogh. */
 	private String userName;
 
 	private String password;
 
+	@Expose
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1)")
-	private boolean enabled = true;
+	private Boolean enabled;
 
+	@Expose
 	private String email;
 
+	@Expose
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role_name", nullable = false)
 	private Role role;
 
+	@Expose
 	private String description;
 
+	@Expose
 	private String timeZone;
 
+	@Expose
 	@Column(name = "user_language")
 	private String userLanguage;
 
+	@Expose
 	@Column(name = "mobile_phone")
 	private String mobilePhone;
 
 	@Column(name = "is_external", columnDefinition = "char(1)")
 	@Type(type = "true_false")
-	private boolean external = false;
+	private Boolean external;
 
 	@Column(name = "authentication_provider_class")
 	/** Who provide the authentication */
@@ -120,6 +123,16 @@ public class User extends BaseModel<User> {
 		this.role = role;
 		isEnabled();
 	}
+
+
+	@PrePersist
+	public void init() {
+		this.enabled = getSafe(this.enabled, true);
+		this.external = getSafe(this.enabled);
+		this.role = getSafe(this.role, Role.USER);
+	}
+
+
 
 	/**
 	 * Constructor.
@@ -232,11 +245,11 @@ public class User extends BaseModel<User> {
 		this.userName = userName;
 	}
 
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 

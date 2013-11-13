@@ -13,10 +13,6 @@
  */
 package org.ngrinder.user.controller;
 
-import static org.ngrinder.common.util.Preconditions.checkArgument;
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -28,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
@@ -41,16 +38,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.web.PageableDefaults;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.common.collect.Lists;
+
+import static org.ngrinder.common.util.Preconditions.*;
 
 /**
  * User management controller.
@@ -182,7 +178,7 @@ public class UserController extends NGrinderBaseController {
 					updatedUser);
 		}
 		if (updatedUser.exist()) {
-			userService.modifyUser(updatedUser, followersStr);
+			userService.saveUser(updatedUser, followersStr);
 		} else {
 			userService.saveUser(updatedUser);
 		}
@@ -328,6 +324,44 @@ public class UserController extends NGrinderBaseController {
 		}
 		model.addAttribute("followers", user.getFollowers());
 		model.addAttribute("shareUserList", users);
-
 	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/", method = RequestMethod.GET)
+	public HttpEntity<String> getAll(User user, String roleName) {
+		return toJsonHttpEntity(userService.getAllUsersByRole(roleName));
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{userId}", method = RequestMethod.GET)
+	public HttpEntity<String> getOne(User user, @PathVariable("userId") String userId) {
+		 return toJsonHttpEntity(userService.getUserById(userId));
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/", method = RequestMethod.POST)
+	public HttpEntity<String> create(User user, @ModelAttribute("user") User newUser) {
+		checkNull(newUser.getId(), "User DB ID should be null");
+		return toJsonHttpEntity(userService.saveUser(newUser));
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{userId}", method = RequestMethod.PUT)
+	public HttpEntity<String> update(User user, @PathVariable("userId") String userId, User update) {
+		checkNull(update.getId(), "User DB ID should be null");
+		return toJsonHttpEntity(userService.saveUser(userId, update));
+	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{userId}", method = RequestMethod.DELETE)
+	public HttpEntity<String> delete(User user,  @PathVariable("userId") String userId) {
+		userService.deleteUser(userId);
+		return successJsonHttpEntity();
+	}
+
 }

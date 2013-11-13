@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.service;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -275,17 +276,29 @@ public class FileEntryService {
 	 * 
 	 * @param user
 	 *            the user
-	 * @param path
+	 * @param basePath
 	 *            the base path
 	 * @param files
 	 *            files under base path
 	 */
-	public void delete(User user, String path, String[] files) {
-		List<String> fileList = new ArrayList<String>();
-		for (String each : files) {
-			fileList.add(path + "/" + each);
+	public void delete(User user, String basePath, String[] files) {
+		List<String> fullPathFiles = new ArrayList<String>();
+		for (String each : fullPathFiles) {
+			fullPathFiles.add(basePath + "/" + each);
 		}
-		fileEntityRepository.delete(user, fileList.toArray(new String[] {}));
+		fileEntityRepository.delete(user, fullPathFiles);
+	}
+
+	/**
+	 * Delete file entry.
+	 *
+	 * @param user
+	 *            the user
+	 * @param path
+	 *            the path
+	 */
+	public void delete(User user, String path) {
+		fileEntityRepository.delete(user, newArrayList(path));
 	}
 
 	String getPathFromUrl(String urlString) {

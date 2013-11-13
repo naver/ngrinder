@@ -14,13 +14,14 @@
 package org.ngrinder.user.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.checkNull;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -173,7 +174,7 @@ public class UserService implements IUserService {
 	 * @return result
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
+	@Cacheable(value = "users", key = "#user.userId")
 	@Override
 	public User saveUser(User user) {
 		encodePassword(user);
@@ -181,7 +182,7 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * create user.
+	 * Save user.
 	 * 
 	 * @param user
 	 *            include id, userID, fullName, role, password.
@@ -189,9 +190,10 @@ public class UserService implements IUserService {
 	 * @return result
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
+	@Cacheable(value = "users", key = "#user.userId")
 	@Override
 	public User saveUserWithoutPasswordEncoding(User user) {
+		user.init();
 		User createdUser = userRepository.save(user);
 		prepareUserEnv(user);
 		return createdUser;
@@ -202,49 +204,63 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Add user.
+	 * Save user.
 	 * 
 	 * @param user
 	 *            user
 	 * @param role
 	 *            role
 	 */
-	@CacheEvict(value = "users", key = "#user.userId")
-	public void saveUser(User user, Role role) {
-		encodePassword(user);
+	@Cacheable(value = "users", key = "#user.userId")
+	public User saveUser(User user, Role role) {
 		user.setRole(role);
-		userRepository.save(user);
+		return saveUser(user);
 	}
 
 	/**
-	 * modify user information.
+	 * Save user
 	 * 
 	 * @param user
 	 *            user
-	 * @param shareUserIds
-	 *            It is a list of user IDs to share the permission of user
-	 * @return user id
+	 * @param followerUserIds
+	 *            comma separated follower id string
+	 * @return saved User
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
-	public String modifyUser(User user, String shareUserIds) {
-		checkNotNull(user, "user should be not null, when modifying user");
-		checkNotNull(user.getId(), "user id should be provided when modifying user");
+	@Cacheable(value = "users", key = "#user.userId")
+	public User saveUser(User user, String followerUserIds) {
+		user.setFollowers(getFollowUsers(followerUserIds));
+		return saveUser(user);
+	}
 
-		shareUserIds = (String) ObjectUtils.defaultIfNull(shareUserIds, "");
+
+	/**
+	 * Save user with the given user info
+	 *
+	 * @param userId
+	 *            user
+	 * @param user
+	 *
+	 * @return saved User
+	 */
+	@Transactional
+	@Cacheable(value = "users", key = "#userId")
+	public User saveUser(String userId, User update) {
+		update.setId(null);
+		User oneByUserId = userRepository.findOneByUserId(userId);
+		oneByUserId.merge(update);
+		return saveUser(oneByUserId);
+	}
+
+	private List<User> getFollowUsers(String followUserIds) {
+		followUserIds = StringUtils.trimToEmpty(followUserIds);
 		List<User> newShareUsers = new ArrayList<User>();
-		String[] userIds = shareUserIds.split(",");
+		String[] userIds = followUserIds.split(",");
 		for (String userId : userIds) {
 			User shareUser = userRepository.findOneByUserId(userId.trim());
 			newShareUsers.add(shareUser);
 		}
-		user.setFollowers(newShareUsers);
-
-		encodePassword(user);
-		User targetUser = userRepository.findOne(user.getId());
-		targetUser.merge(user);
-		userRepository.save(targetUser);
-		return user.getUserId();
+		return newShareUsers;
 	}
 
 	/**
@@ -266,6 +282,18 @@ public class UserService implements IUserService {
 			FileUtils.deleteQuietly(config.getHome().getScriptDirectory(user));
 			FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(user));
 		}
+	}
+
+	/**
+	 * Delete user. All corresponding perftest and directories are deleted as well.
+	 *
+	 * @param userId
+	 *            the user id string list
+	 */
+	@Transactional
+	@CacheEvict(value = "users", allEntries = true)
+	public void deleteUser(String userId) {
+		deleteUsers(Lists.newArrayList(userId));
 	}
 
 	/**
@@ -354,10 +382,10 @@ public class UserService implements IUserService {
 	}
 	
 	/**
-	 * Create user.
+	 * Create user avoiding ModelAspect behavior.
 	 * 
 	 * @param user
-	 *            include id, userID, fullName, role, password.
+	 *            including id, userID, fullName, role, password.
 	 * 
 	 * @return result
 	 */
@@ -374,5 +402,6 @@ public class UserService implements IUserService {
 		user.setLastModifiedUser(createdUser);
 		return saveUserWithoutPasswordEncoding(user);
 	}
+
 
 }

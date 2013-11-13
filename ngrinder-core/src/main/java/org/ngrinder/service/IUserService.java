@@ -65,6 +65,7 @@ public interface IUserService {
 	 */
 	public abstract User saveUser(User user);
 
+
 	/**
 	 * Save user.
 	 * 
@@ -72,8 +73,9 @@ public interface IUserService {
 	 *            user
 	 * @param role
 	 *            role
+	 * @return result
 	 */
-	public abstract void saveUser(User user, Role role);
+	public abstract User saveUser(User user, Role role);
 	
 	/**
 	 * Create user.

@@ -177,7 +177,8 @@ public class HomeController extends NGrinderBaseController {
 		// Make the i18n applied QnA panel. Depending on the user language, show the different QnA panel.
 		String leftPanelRssURLKey = getMessages(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY);
 		// Make admin configure the QnA panel.
-		String leftPanelRssURL = config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_QNA_PAGE_RSS, leftPanelRssURLKey);
+		String leftPanelRssURL = config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_QNA_PAGE_RSS,
+				leftPanelRssURLKey);
 		return homeService.getLeftPanelEntries(leftPanelRssURL);
 	}
 

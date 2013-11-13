@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * @author JunHo Yoon
  * @since 3.2.3
  */
-@Target({ ElementType.METHOD })
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Cloneable {

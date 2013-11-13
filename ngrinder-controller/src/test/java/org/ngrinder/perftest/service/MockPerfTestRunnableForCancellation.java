@@ -65,10 +65,4 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 		this.runnable = runnable;
 		this.ignoreCount = ignoreCount;
 	}
-
-	@Override
-	protected boolean exceedMoreAgent(PerfTest test) {
-		return false;
-	}
-
 }

@@ -234,7 +234,6 @@ public final class Preconditions {
 		if (!condition) {
 			throw new IllegalArgumentException(errorMsg);
 		}
-
 	}
 
 	/**
@@ -253,6 +252,25 @@ public final class Preconditions {
 	public static <T> T checkExist(T reference, String message, Object... args) {
 		if (reference == null) {
 			throw new IllegalArgumentException(String.format(message, args));
+		}
+		return reference;
+	}
+
+	/**
+	 * Ensures that the given reference is null.
+	 *
+	 * @param reference
+	 *            reference
+	 * @param errorMessageTemplate
+	 *            error message template
+	 * @param errorMessageArgs
+	 *            arguments to be filled in the template.
+	 */
+
+	public static <T> T checkNull(T reference, String errorMessageTemplate, Object... errorMessageArgs) {
+		if (reference != null) {
+			// If either of these parameters is null, the right thing happens anyway
+			throw new IllegalArgumentException(format(errorMessageTemplate, errorMessageArgs));
 		}
 		return reference;
 	}

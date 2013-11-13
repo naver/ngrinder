@@ -44,7 +44,7 @@ import com.google.gson.JsonObject;
 
 /**
  * Controller base containing widely used methods.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -83,7 +83,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Get the current user.
-	 * 
+	 *
 	 * @return current user
 	 */
 	public User getCurrentUser() {
@@ -92,7 +92,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide the current login user as a model attribute. If it's not found, return empty user.
-	 * 
+	 *
 	 * @return login user
 	 */
 	@ModelAttribute("currentUser")
@@ -108,7 +108,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide the announcement content as a model attribute.
-	 * 
+	 *
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement")
@@ -118,7 +118,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide the announcement content as a model attribute.
-	 * 
+	 *
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_new")
@@ -128,7 +128,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide the boolean value representing that it's clustered or not as a model attributes.
-	 * 
+	 *
 	 * @return clustered mark
 	 */
 	@ModelAttribute("clustered")
@@ -138,7 +138,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide the help URL as a model attribute.
-	 * 
+	 *
 	 * @return help URL
 	 */
 	@ModelAttribute("helpUrl")
@@ -148,9 +148,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide the announcement hide cookie value as a model attribute.
-	 * 
-	 * @param annoucnementHide
-	 *            true if hidden.
+	 *
+	 * @param annoucnementHide true if hidden.
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_hide")
@@ -161,28 +160,30 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Get the message from messageSource by the given key.
-	 * 
-	 * @param key
-	 *            key of message
+	 *
+	 * @param key key of message
 	 * @return the found message. If not found, the error message will return.
 	 */
 	protected String getMessages(String key) {
 		Locale locale = null;
 		String message = null;
+		User currentUser = null;
+		String userLanguage = "en";
 		try {
-			locale = new Locale(getCurrentUser().getUserLanguage());
-			message = messageSource.getMessage(key, null, locale);
+			currentUser = getCurrentUser();
+			userLanguage = currentUser.getUserLanguage();
 		} catch (Exception e) {
-			return "Getting message error for key " + key;
+			noOp();
 		}
+		locale = new Locale(userLanguage);
+		message = messageSource.getMessage(key, null, locale);
 		return message;
 	}
 
 	/**
 	 * Return the success json message.
-	 * 
-	 * @param message
-	 *            message
+	 *
+	 * @param message message
 	 * @return json message
 	 */
 	public String returnSuccess(String message) {
@@ -194,9 +195,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return the error json message.
-	 * 
-	 * @param message
-	 *            message
+	 *
+	 * @param message message
 	 * @return json message
 	 */
 	public String returnError(String message) {
@@ -208,7 +208,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return the raw success json message.
-	 * 
+	 *
 	 * @return json message
 	 */
 	public String returnSuccess() {
@@ -217,7 +217,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return the raw error json message.
-	 * 
+	 *
 	 * @return json message
 	 */
 	public String returnError() {
@@ -226,9 +226,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given list into a json message.
-	 * 
-	 * @param list
-	 *            list
+	 *
+	 * @param list list
 	 * @return json message
 	 */
 	public String toJson(List<?> list) {
@@ -237,9 +236,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given object into a json message.
-	 * 
-	 * @param obj
-	 *            object
+	 *
+	 * @param obj object
 	 * @return json message
 	 */
 	public String toJson(Object obj) {
@@ -248,13 +246,10 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given object into a json message.
-	 * 
-	 * @param <T>
-	 *            content type
-	 * @param content
-	 *            content
-	 * @param header
-	 *            header value map
+	 *
+	 * @param <T>     content type
+	 * @param content content
+	 * @param header  header value map
 	 * @return json message
 	 */
 	public <T> HttpEntity<T> toHttpEntity(T content, MultiValueMap<String, String> header) {
@@ -263,9 +258,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
-	 * 
-	 * @param content
-	 *            content
+	 *
+	 * @param content content
 	 * @return {@link HttpEntity} class containing the converted json message
 	 */
 	public HttpEntity<String> toJsonHttpEntity(Object content) {
@@ -276,10 +270,33 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
+	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
+	 *
+	 * @return {@link HttpEntity} class containing the converted json message
+	 */
+	public HttpEntity<String> successJsonHttpEntity() {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("content-type", "application/json; charset=UTF-8");
+		responseHeaders.setPragma("no-cache");
+		return toHttpEntity(successJson, responseHeaders);
+	}
+
+	/**
+	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
+	 *
+	 * @return {@link HttpEntity} class containing the converted json message
+	 */
+	public HttpEntity<String> errorJsonHttpEntity() {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("content-type", "application/json; charset=UTF-8");
+		responseHeaders.setPragma("no-cache");
+		return toHttpEntity(errorJson, responseHeaders);
+	}
+
+	/**
 	 * Convert the given string into {@link HttpEntity} containing the converted json message.
-	 * 
-	 * @param content
-	 *            content
+	 *
+	 * @param content content
 	 * @return json message
 	 */
 	public HttpEntity<String> toJsonHttpEntity(String content) {
@@ -291,9 +308,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given map into the json message.
-	 * 
-	 * @param map
-	 *            map
+	 *
+	 * @param map map
 	 * @return json message
 	 */
 	public String toJson(Map<Object, Object> map) {
@@ -302,12 +318,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Exception handler to forward to front page showing the error message box.
-	 * 
-	 * @param e
-	 *            occurred exception
+	 *
+	 * @param e occurred exception
 	 * @return modal and view having the exception message
 	 */
-	@ExceptionHandler({ NGrinderRuntimeException.class })
+	@ExceptionHandler({NGrinderRuntimeException.class})
 	public ModelAndView handleException(NGrinderRuntimeException e) {
 		ModelAndView modelAndView = new ModelAndView("forward:/");
 		modelAndView.addObject("exception", e.getMessage());
@@ -316,7 +331,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Get {@link Config} object.
-	 * 
+	 *
 	 * @return config
 	 */
 	public Config getConfig() {

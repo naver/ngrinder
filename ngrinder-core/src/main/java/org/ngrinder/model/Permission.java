@@ -25,18 +25,18 @@ public enum Permission {
 	SWITCH_TO_ANYONE,
 
 	/** An modify perTest that other created. */
-	MODIFY_TEST_OFOTHER,
+	MODIFY_TEST_OF_OTHER,
 
 	/** Can delete perTest that other created. */
-	DELETE_TEST_OFOTHER,
+	DELETE_TEST_OF_OTHER,
 
 	/** Can stop perTest that other created. */
-	STOP_TEST_OFOTHER,
+	STOP_TEST_OF_OTHER,
 
 	/** Aheck script that other created. */
-	CHECK_SCRIPT_OFOTHER,
+	CHECK_SCRIPT_OF_OTHER,
 
 	/** Validate script that other created. */
-	VALIDATE_SCRIPT_OFOTHER;
+	VALIDATE_SCRIPT_OF_OTHER;
 
 }

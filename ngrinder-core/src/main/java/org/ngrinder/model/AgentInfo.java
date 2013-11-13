@@ -13,18 +13,15 @@
  */
 package org.ngrinder.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+
+import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * Agent model.
@@ -57,7 +54,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	/**
 	 * Host name of the agent machine.
 	 */
-	private String hostName = "";
+	private String hostName;
 
 	@Enumerated(EnumType.STRING)
 	private AgentControllerState status;
@@ -68,11 +65,16 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private String region;
 
 	@Transient
-	private int number;
+	private Integer number;
 
 	@Type(type = "true_false")
-	@Column(columnDefinition = "char(1)")
-	private boolean approved = false;
+	@Column(columnDefinition = "char(1) default 'F'")
+	private Boolean approved;
+
+	@PrePersist
+	public void init() {
+		this.approved = getSafe(this.approved, false);
+	}
 
 	public String getIp() {
 		return ip;
@@ -192,11 +194,11 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 * @deprecated unused now.
 	 * @return the number
 	 */
-	public int getNumber() {
+	public Integer getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(Integer number) {
 		this.number = number;
 	}
 

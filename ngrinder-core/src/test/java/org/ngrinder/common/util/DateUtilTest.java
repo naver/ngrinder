@@ -34,7 +34,7 @@ import org.junit.Test;
 public class DateUtilTest {
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#dateToString(java.util.Date)}.
+	 * Test method for {@link DateUtil#dateToString(java.util.Date)}.
 	 */
 	@Test
 	public void testDateToString() {
@@ -89,7 +89,7 @@ public class DateUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#toSimpleDate(java.lang.String)}.
+	 * Test method for {@link DateUtil#toSimpleDate(java.lang.String)}.
 	 * 
 	 * @throws ParseException
 	 */
@@ -101,7 +101,7 @@ public class DateUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#toDate(java.lang.String)}.
+	 * Test method for {@link DateUtil#toDate(java.lang.String)}.
 	 * 
 	 * @throws ParseException
 	 */
@@ -113,7 +113,7 @@ public class DateUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#addDay(java.util.Date, int)}.
+	 * Test method for {@link DateUtil#addDay(java.util.Date, int)}.
 	 */
 	@Test
 	public void testAddDay() {
@@ -122,7 +122,7 @@ public class DateUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#ms2Time(long)}.
+	 * Test method for {@link DateUtil#ms2Time(long)}.
 	 */
 	@Test
 	public void testMs2Time() {

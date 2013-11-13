@@ -52,7 +52,7 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * {@link PerfTestService} test.
- * 
+ *
  * @author Mavlarn
  * @since 3.0
  */
@@ -79,15 +79,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(candidate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
-		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, null, null, pageable);
+		Page<PerfTest> testList = testService.getPerfTest(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null, null, "F", pageable);
+		testList = testService.getPerfTest(getTestUser(), null, null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
 
 		// test with no paging
-		testList = testService.getPerfTestList(getTestUser(), null, null, null, null);
+		testList = testService.getPerfTest(getTestUser(), null, null, null, null);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null, null, "F", null);
+		testList = testService.getPerfTest(getTestUser(), null, null, "F", null);
 		assertThat(testList.getContent().size(), is(1));
 
 		List<PerfTest> list = testService.getTestingPerfTest();
@@ -105,10 +105,10 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 			testService.markProgress(testTemp, "this test will be TESTING again");
 			testService.markStatusAndProgress(testTemp, Status.TESTING, "this is just test unit");
 
-			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), Status.TESTING);
+			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testingList.size(), is(1));
 
-			Long testCount = testService.getPerfTestCount(getTestUser(), Status.TESTING);
+			Long testCount = testService.getPerfTestCount(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testCount, is(1L));
 
 			GrinderProperties properties = testService.getGrinderProperties(test);
@@ -129,7 +129,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		createPerfTest("new Test3", Status.START_AGENTS, new Date());
 
-		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), Status.START_AGENTS);
+		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), new Status[]{Status.START_AGENTS});
 		assertThat(errorList.size(), is(1));
 		testService.markAbnormalTermination(errorList.get(0), "this is error test");
 	}

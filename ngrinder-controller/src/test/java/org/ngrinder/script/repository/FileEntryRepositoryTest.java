@@ -18,8 +18,10 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -81,7 +83,8 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setFileType(FileType.PYTHON_SCRIPT);
 		repo.save(getTestUser(), fileEntry, "UTF-8");
 		assertThat(repo.findAll(getTestUser()).size(), is(size + 2));
-		repo.delete(getTestUser(), new String[] { "helloworld.txt" });
+
+		repo.delete(getTestUser(), Lists.newArrayList("helloworld.txt"));
 		assertThat(repo.findAll(getTestUser()).size(), is(size + 1));
 
 		// Attempt to create duplicated path

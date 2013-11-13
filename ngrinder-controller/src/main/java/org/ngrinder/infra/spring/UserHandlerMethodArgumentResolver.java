@@ -52,7 +52,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return parameter.getParameterType().equals(User.class);
+		return parameter.getParameterIndex() == 0 && parameter.getParameterType().equals(User.class);
 	}
 
 	/*

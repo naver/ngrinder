@@ -52,8 +52,8 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user.setRole(Role.SUPER_USER);
 		user = userService.saveUser(user);
 		assertThat(user.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
-		assertThat(user.getRole().hasPermission(Permission.CHECK_SCRIPT_OFOTHER),is(true));
-		assertThat(user.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER),is(true));
+		assertThat(user.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER),is(true));
+		assertThat(user.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER),is(true));
 		assertThat(user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE),is(true));
 		assertThat(user.getUserId(), is(userId));
 		return user;
@@ -69,15 +69,15 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user2.setPassword("www222");
 		user2.setEmail("www@test.com");
 		user2.setRole(Role.USER);
-		userService.modifyUser(user2, null);
+		userService.saveUser(user2, (String)null);
 		User userById = userService.getUserById("hello");
 		assertThat(userById.getId(), is(user.getId()));
 
 		userService.saveUser(user2, Role.ADMIN);
 		userById = userService.getUserById("hello");
 		assertThat(userById.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
-		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OFOTHER),is(true));
-		assertThat(userById.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER),is(true));
+		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER),is(true));
+		assertThat(userById.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER),is(true));
 		assertThat(userById.getRole().hasPermission(Permission.SWITCH_TO_ANYONE),is(true));
 		assertThat(userById.getRole(), is(Role.ADMIN));
 	}
