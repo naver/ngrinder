@@ -80,7 +80,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), path, script, null, "", false, model);
 		scriptController.validate(getTestUser(), script, "test.com");
 		// save and get
 		model.clear();
@@ -114,12 +114,12 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.createForm(getTestUser(), path, "test.com", "file-for-search.py", "jython", false,
 						new RedirectAttributesModelMap(), model);
 		FileEntry script = (FileEntry) model.get("file");
-		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), path, script, null, "", false, model);
 
 		// save another script
 		model.clear();
 		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
-		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), path, script, null, "", false, model);
 		// save and get
 		model.clear();
 		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
@@ -147,7 +147,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String upFileName = "Uploaded";
 		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "Uploaded.py", null, "#test content...".getBytes());
 		path = path + "/" + upFileName;
-		scriptController.uploadFiles(getTestUser(), path, "Uploaded file desc.", upFile, model);
+		scriptController.upload(getTestUser(), path, "Uploaded file desc.", upFile, model);
 		model.clear();
 		scriptController.searchFileEntity(getTestUser(), "Uploaded", model);
 		Collection<FileEntry> searchResult = (Collection<FileEntry>) model.get("files");
@@ -165,7 +165,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), path, script, null, "", false, model);
 
 		scriptController.createForm(getTestUser(), path, "", fileName, "", false, attrMap, model);
 

@@ -367,9 +367,9 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/list
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
-	                            @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
-	                            @RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
+	public String save(User user, @RemainedPath String path, FileEntry fileEntry,
+	                   @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
+	                   @RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
 			Map<String, String> map = Maps.newHashMap();
 			map.put("validated", validated);
@@ -398,10 +398,10 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/list
 	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
-	public String uploadFiles(User user, @RemainedPath String path, @RequestParam("description") String description,
-	                          @RequestParam("uploadFile") MultipartFile file, ModelMap model) {
+	public String upload(User user, @RemainedPath String path, @RequestParam("description") String description,
+	                     @RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
-			uploadFile(user, path, description, file);
+			upload(user, path, description, file);
 			model.clear();
 			return "redirect:/script/list/" + path;
 		} catch (IOException e) {
@@ -410,7 +410,7 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 	}
 
-	private void uploadFile(User user, String path, String description, MultipartFile file) throws IOException {
+	private void upload(User user, String path, String description, MultipartFile file) throws IOException {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setContent(new String(file.getBytes()));
 		fileEntry.setDescription(description);
@@ -470,9 +470,10 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/**", params = "action=upload", method = RequestMethod.POST)
-	public HttpEntity<String> upload(User user, @RemainedPath String path, @RequestParam("description") String description,
-	                                 @RequestParam("uploadFile") MultipartFile file) throws IOException {
-		uploadFile(user, path, description, file);
+	public HttpEntity<String> uploadForAPI(User user, @RemainedPath String path,
+	                                       @RequestParam("description") String description,
+	                                       @RequestParam("uploadFile") MultipartFile file) throws IOException {
+		upload(user, path, description, file);
 		return successJsonHttpEntity();
 	}
 

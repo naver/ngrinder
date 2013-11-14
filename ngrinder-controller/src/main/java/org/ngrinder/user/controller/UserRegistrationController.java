@@ -19,11 +19,13 @@ import static org.ngrinder.common.util.Preconditions.checkArgument;
 import java.util.EnumSet;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -72,11 +74,11 @@ public class UserRegistrationController extends NGrinderBaseController {
 	 *            userId to be checked
 	 * @return success json if true.
 	 */
-	@RequestMapping("/{userId}/duplication_check")
-	@ResponseBody
-	public String checkUserId(ModelMap model, @PathVariable String userId) {
+	@RestAPI
+	@RequestMapping("/api/{userId}/check_duplication")
+	public HttpEntity<String> checkUserId(ModelMap model, @PathVariable String userId) {
 		User user = userService.getUserById(userId);
-		return (user == null) ? returnSuccess() : returnError();
+		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
 	
 	/**

@@ -197,20 +197,7 @@ public class UserController extends NGrinderBaseController {
 		return "redirect:/user/";
 	}
 
-	/**
-	 * Check the user id existence.
-	 *
-	 * @param model  model
-	 * @param userId userId to be checked
-	 * @return success json if true.
-	 */
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/{userId}/duplication_check")
-	@ResponseBody
-	public String checkUserId(ModelMap model, @PathVariable String userId) {
-		User user = userService.getUserById(userId);
-		return (user == null) ? returnSuccess() : returnError();
-	}
+
 
 	/**
 	 * Get the current user profile.
@@ -297,6 +284,21 @@ public class UserController extends NGrinderBaseController {
 		}
 		model.addAttribute("followers", user.getFollowers());
 		model.addAttribute("shareUserList", users);
+	}
+
+	/**
+	 * Check the user id existence.
+	 *
+	 * @param model  model
+	 * @param userId userId to be checked
+	 * @return success json if true.
+	 */
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping("/api/{userId}/check_duplication")
+	public HttpEntity<String> checkDuplication(ModelMap model, @PathVariable String userId) {
+		User user = userService.getUserById(userId);
+		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
 
 	@RestAPI

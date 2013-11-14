@@ -157,9 +157,9 @@
 			$.validator.addMethod("userIdExist", function(userId, element) {
 				if(userId != null && userId.length > 0){
 					<#if isSelfRegistration?? && isSelfRegistration>
-						url = "${req.getContextPath()}/registration/" + userId + "/duplication_check";
+						url = "${req.getContextPath()}/api/registration/" + userId + "/check_duplication";
 					<#else>
-						url = "${req.getContextPath()}/user/" + userId + "/duplication_check";
+						url = "${req.getContextPath()}/api/user/" + userId + "/check_duplication";
 					</#if>
 					var result ;
 					$.ajax({

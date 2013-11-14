@@ -27,6 +27,7 @@ import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -177,18 +178,18 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#checkUserId(org.springframework.ui.ModelMap, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#checkDuplication(org.springframework.ui.ModelMap, java.lang.String)}
 	 * .
 	 */
 	@Test
-	public void testCheckUserId() {
-		NGrinderBaseController ngridnerBaseController = new NGrinderBaseController();
+	public void testCheckDuplicatedID() {
+		NGrinderBaseController ngrinderBaseController = new NGrinderBaseController();
 		ModelMap model = new ModelMap();
-		String rtnStr = userController.checkUserId(model, "not-exist");
-		assertThat(rtnStr, is(ngridnerBaseController.returnSuccess()));
+		HttpEntity<String> rtnStr = userController.checkDuplication(model, "not-exist");
+		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
 
-		rtnStr = userController.checkUserId(model, getTestUser().getUserId());
-		assertThat(rtnStr, is(ngridnerBaseController.returnError()));
+		rtnStr = userController.checkDuplication(model, getTestUser().getUserId());
+		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnError()));
 	}
 
 	@Test
@@ -202,7 +203,6 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testSwitchOptions() {
 		ModelMap model = new ModelMap();
 		userController.switchOptions(getTestUser(), model);
-
 		assertThat(model.containsAttribute("shareUserList"), is(true));
 	}
 }

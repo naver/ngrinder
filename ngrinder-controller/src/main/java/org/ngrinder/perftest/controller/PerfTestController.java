@@ -237,29 +237,6 @@ public class PerfTestController extends NGrinderBaseController {
 		return regions;
 	}
 
-	/**
-	 * Get all available scripts in JSON format for the current factual user.
-	 *
-	 * @param user    user
-	 * @param ownerId owner id
-	 * @param model   model
-	 * @return JSON containing script's list.
-	 */
-	@RequestMapping("/script")
-	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId,
-	                                     ModelMap model) {
-		if (StringUtils.isNotEmpty(ownerId)) {
-			user = userService.getUserById(ownerId);
-		}
-		List<FileEntry> allFileEntries = fileEntryService.getAllFileEntries(user);
-		CollectionUtils.filter(allFileEntries, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
-			}
-		});
-		return toJsonHttpEntity(fileEntryGson.toJson(allFileEntries));
-	}
 
 	/**
 	 * Search tags based on the given query.
@@ -405,22 +382,7 @@ public class PerfTestController extends NGrinderBaseController {
 		return returnSuccess();
 	}
 
-	/**
-	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
-	 *
-	 * @param user user
-	 * @param ids  comma separated perf test list
-	 * @return JSON message containing perf test status
-	 */
-	@RequestMapping(value = "update_status")
-	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
-		List<PerfTest> perfTests = newArrayList();
-		if (StringUtils.isNotEmpty(ids)) {
-			perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
-		}
-		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "statusList",
-				getPerfTestStatus(perfTests)));
-	}
+
 
 	private Long[] convertString2Long(String ids) {
 		String[] numbers = StringUtils.split(ids, ",");
@@ -453,18 +415,6 @@ public class PerfTestController extends NGrinderBaseController {
 		return statuses;
 	}
 
-	/**
-	 * Get the status of the given perf test.
-	 *
-	 * @param user user
-	 * @param id   perftest id
-	 * @return JSON message containing perf test status
-	 */
-	@RequestMapping(value = "{id}/update_status")
-	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id) {
-		List<PerfTest> perfTests = perfTestService.getPerfTest(user, new Long[]{id});
-		return toJsonHttpEntity(buildMap("statusList", getPerfTestStatus(perfTests)));
-	}
 
 	/**
 	 * Delete the perf tests having given IDs.
@@ -501,37 +451,6 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get resources and lib file list from the same folder with the given script path.
-	 *
-	 * @param user       user
-	 * @param scriptPath script path
-	 * @param revision   revision
-	 * @param ownerId    ownerId
-	 * @return json string representing resources and libs.
-	 */
-	@RequestMapping(value = "/resource")
-	public HttpEntity<String> getResources(User user, @RequestParam String scriptPath,
-	                                       @RequestParam(value = "r", required = false) Long revision, // LF
-	                                       @RequestParam(required = false) String ownerId) {
-		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
-			user = userService.getUserById(ownerId);
-		}
-		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
-		String targetHosts = "";
-		List<String> fileStringList = newArrayList();
-		if (fileEntry != null) {
-			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user,
-					fileEntry, SVNRevision.HEAD.getNumber());
-			for (FileEntry each : fileList) {
-				fileStringList.add(each.getPath());
-			}
-			targetHosts = filterHostString(fileEntry.getProperties().get("targetHosts"));
-		}
-
-		return toJsonHttpEntity(buildMap("targetHosts", trimToEmpty(targetHosts), "resources", fileStringList));
-	}
-
-	/**
 	 * Filter out please_modify_this.com from hosts string.
 	 *
 	 * @param originalString original string
@@ -547,27 +466,7 @@ public class PerfTestController extends NGrinderBaseController {
 		return StringUtils.join(hosts, ",");
 	}
 
-	/**
-	 * Get the detailed report graph data for the given perf test id.<br/>
-	 * This method returns the appropriate points based on the given imgWidth.
-	 *
-	 * @param model    model
-	 * @param id       test id
-	 * @param dataType which data
-	 * @param imgWidth imageWidth
-	 * @return json string.
-	 */
-	@RequestMapping(value = "{id}/graph")
-	@ResponseBody
-	public String getReportData(ModelMap model, @PathVariable("id") long id,
-	                            @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
-		String[] dataTypes = StringUtils.split(dataType, ",");
-		if (dataTypes.length <= 0) {
-			return returnError();
-		}
-		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
-		return toJson(getGraphDataString(perfTestService.getPerfTest(id), dataTypes, interval));
-	}
+
 
 	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
 		Map<String, Object> resultMap = Maps.newHashMap();
@@ -766,21 +665,7 @@ public class PerfTestController extends NGrinderBaseController {
 		return perfTest;
 	}
 
-	/**
-	 * Get the monitor data of the target having the given IP.
-	 *
-	 * @param model     model
-	 * @param id        test Id
-	 * @param monitorIP monitorIP
-	 * @param imgWidth  image width
-	 * @return json message
-	 */
-	@RequestMapping("{id}/monitor")
-	@ResponseBody
-	public String getMonitorData(ModelMap model, @PathVariable("id") long id,
-	                             @RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
-		return toJson(buildMap("SystemData", getMonitorDataSystem(id, monitorIP, imgWidth), JSON_SUCCESS, true));
-	}
+
 
 	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
 		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
@@ -794,6 +679,134 @@ public class PerfTestController extends NGrinderBaseController {
 		return sysMonitorMap;
 	}
 
+	/**
+	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
+	 *
+	 * @param user user
+	 * @param ids  comma separated perf test list
+	 * @return JSON message containing perf test status
+	 */
+	@RestAPI
+	@RequestMapping("/api/status")
+	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
+		List<PerfTest> perfTests = newArrayList();
+		if (StringUtils.isNotEmpty(ids)) {
+			perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
+		}
+		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "statusList",
+				getPerfTestStatus(perfTests)));
+	}
+
+	/**
+	 * Get all available scripts in JSON format for the current factual user.
+	 *
+	 * @param user    user
+	 * @param ownerId owner id
+	 * @param model   model
+	 * @return JSON containing script's list.
+	 */
+	@RestAPI
+	@RequestMapping("/api/script")
+	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId,
+	                                     ModelMap model) {
+		if (StringUtils.isNotEmpty(ownerId)) {
+			user = userService.getUserById(ownerId);
+		}
+		List<FileEntry> allFileEntries = fileEntryService.getAllFileEntries(user);
+		CollectionUtils.filter(allFileEntries, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
+			}
+		});
+		return toJsonHttpEntity(fileEntryGson.toJson(allFileEntries));
+	}
+
+
+
+	/**
+	 * Get resources and lib file list from the same folder with the given script path.
+	 *
+	 * @param user       user
+	 * @param scriptPath script path
+	 * @param revision   revision
+	 * @param ownerId    ownerId
+	 * @return json string representing resources and libs.
+	 */
+	@RequestMapping("/api/resource")
+	public HttpEntity<String> getResources(User user, @RequestParam String scriptPath,
+	                                       @RequestParam(value = "r", required = false) Long revision, // LF
+	                                       @RequestParam(required = false) String ownerId) {
+		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
+			user = userService.getUserById(ownerId);
+		}
+		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
+		String targetHosts = "";
+		List<String> fileStringList = newArrayList();
+		if (fileEntry != null) {
+			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user,
+					fileEntry, SVNRevision.HEAD.getNumber());
+			for (FileEntry each : fileList) {
+				fileStringList.add(each.getPath());
+			}
+			targetHosts = filterHostString(fileEntry.getProperties().get("targetHosts"));
+		}
+
+		return toJsonHttpEntity(buildMap("targetHosts", trimToEmpty(targetHosts), "resources", fileStringList));
+	}
+
+
+	/**
+	 * Get the status of the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perftest id
+	 * @return JSON message containing perf test status
+	 */
+	@RestAPI
+	@RequestMapping("/api/{id}/status")
+	public HttpEntity<String> getStatus(User user, @PathVariable("id") Long id) {
+		List<PerfTest> perfTests = perfTestService.getPerfTest(user, new Long[]{id});
+		return toJsonHttpEntity(buildMap("statusList", getPerfTestStatus(perfTests)));
+	}
+
+	/**
+	 * Get the detailed report graph data for the given perf test id.<br/>
+	 * This method returns the appropriate points based on the given imgWidth.
+	 *
+	 * @param model    model
+	 * @param id       test id
+	 * @param dataType which data
+	 * @param imgWidth imageWidth
+	 * @return json string.
+	 */
+	@RestAPI
+	@RequestMapping("/api/{id}/graph")
+	public HttpEntity<String> getGraph(ModelMap model, @PathVariable("id") long id,
+	                       @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
+		String[] dataTypes = StringUtils.split(dataType, ",");
+		if (dataTypes.length <= 0) {
+			return errorJsonHttpEntity();
+		}
+		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
+		return toJsonHttpEntity(getGraphDataString(perfTestService.getPerfTest(id), dataTypes, interval));
+	}
+
+	/**
+	 * Get the monitor data of the target having the given IP.
+	 *
+	 * @param model     model
+	 * @param id        test Id
+	 * @param monitorIP monitorIP
+	 * @param imgWidth  image width
+	 * @return json message
+	 */
+	@RestAPI
+	@RequestMapping("/api/{id}/monitor")
+	public HttpEntity<String> getMonitorData(ModelMap model, @PathVariable("id") long id,
+	                                         @RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
+		return toJsonHttpEntity(buildMap("SystemData", getMonitorDataSystem(id, monitorIP, imgWidth), JSON_SUCCESS, true));
+	}
 
 	/**
 	 * Get the last perf test details in the form of json.
@@ -804,7 +817,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = { "/api/last", "/api", "/api/" }, method = RequestMethod.GET)
-	public HttpEntity<String> listAPI(User user, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "1") int size) {
+	public HttpEntity<String> getAll(User user, @RequestParam(value = "page", defaultValue = "0") int page,
+	                            @RequestParam(value = "size", defaultValue = "1") int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPerfTest(user, null, null, null, pageRequest);
 		return toJsonHttpEntity(testList.getContent());
@@ -869,6 +883,21 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> update(User user, @PathVariable("id") Long id, PerfTest perfTest) {
 		return toJsonHttpEntity(perfTestService.savePerfTest(user, perfTest));
 	}
+
+	/**
+	 * Stop the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perf test id
+	 * @return json success message if succeeded
+	 */
+	@RestAPI
+	@RequestMapping(value = "/api/{id}/stop", method = RequestMethod.POST)
+	public HttpEntity<String> update(User user, @PathVariable("id") Long id) {
+		perfTestService.stopPerfTest(user, id);
+		return successJsonHttpEntity();
+	}
+
 
 	/**
 	 * Update the given perf test's status.

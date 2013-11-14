@@ -290,7 +290,7 @@
 		    }
 		    performanceInit = true;
             $.ajax({
-                url: "${req.getContextPath()}/perftest/${(test.id)?c}/graph",
+                url: "${req.getContextPath()}/perftest/api/${(test.id)?c}/graph",
                 dataType:'json',
                 cache: true,
                 data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
@@ -385,7 +385,7 @@
         	}
         	
             $.ajax({
-                url: "${req.getContextPath()}/perftest/${(test.id)?c}/monitor",
+                url: "${req.getContextPath()}/perftest/api/${(test.id)?c}/monitor",
                 dataType:'json',
                 cache: true,
                 data: {'monitorIP': ip, 'imgWidth': 700},

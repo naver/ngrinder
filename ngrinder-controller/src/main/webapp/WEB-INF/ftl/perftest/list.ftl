@@ -299,7 +299,7 @@
 					imgDisplay.hide();
 					$(this).closest('tr').after(imgDisplay);
 					$.ajax({
-		                url: "${req.getContextPath()}/perftest/"+ id +"/graph",
+		                url: "${req.getContextPath()}/perftest/api/"+ id +"/graph",
 		                dataType:'json',
 		                cache: false,
 		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
@@ -469,7 +469,7 @@
 		  	}).get();
 		  	
 		    $.ajax({
-			    url: '${req.getContextPath()}/perftest/update_status', 
+			    url: '${req.getContextPath()}/perftest/api/status',
 			    type: 'POST',
 			    cache: false,
 			    data: {"ids": ids.join(",")},
