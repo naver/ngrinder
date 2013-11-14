@@ -140,6 +140,7 @@ public class UserService implements IUserService {
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
 	@Override
+	@Deprecated
 	public User saveUser(User user, Role role) {
 		user.setRole(role);
 		return saveUser(user);

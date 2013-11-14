@@ -119,7 +119,7 @@
             
             function getStatus(){
                 $.ajax({
-                    url: "${req.getContextPath()}/agent/${agent.id}/status",
+                    url: "${req.getContextPath()}/agent/api/${agent.id}/state",
                     async: false,
 					cache: false,
                     dataType:'json',

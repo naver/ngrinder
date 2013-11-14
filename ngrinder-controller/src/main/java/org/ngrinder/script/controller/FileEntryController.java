@@ -412,7 +412,7 @@ public class FileEntryController extends NGrinderBaseController {
 
 	private void upload(User user, String path, String description, MultipartFile file) throws IOException {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setContent(new String(file.getBytes()));
+		fileEntry.setContentBytes(file.getBytes());
 		fileEntry.setDescription(description);
 		fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path, file.getOriginalFilename())));
 		fileEntryService.save(user, fileEntry);
@@ -488,7 +488,7 @@ public class FileEntryController extends NGrinderBaseController {
 
 
 	@RestAPI
-	@RequestMapping(value = {"/api/", "/api"}, params = "action=all", method = RequestMethod.GET)
+	@RequestMapping(value = {"/api/**", "/api/", "/api"}, params = "action=all", method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user) {
 		return toJsonHttpEntity(fileEntryService.getAllFileEntries(user));
 	}

@@ -32,6 +32,7 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.ModelMap;
@@ -148,8 +149,8 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	@Test
 	public void testGetCurrentMonitorData() {
 		ModelMap model = new ModelMap();
-		String rtnStr = agentController.getCurrentMonitorData(0L, "127.0.0.1", "127.0.0.1", model);
-		assertTrue(rtnStr.contains("systemData"));
+		HttpEntity<String> rtnStr = agentController.getState(0L, "127.0.0.1", "127.0.0.1", model);
+		assertTrue(rtnStr.getBody().contains("systemData"));
 	}
 
 }

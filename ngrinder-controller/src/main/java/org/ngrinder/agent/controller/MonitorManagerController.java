@@ -21,10 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,15 +69,16 @@ public class MonitorManagerController extends NGrinderBaseController {
 	/**
 	 * Get the target's monitored data by the given IP.
 	 * 
+	 *
 	 * @param model
 	 *            model
 	 * @param ip
 	 *            target host IP
 	 * @return json message containing the target's monitoring data.
 	 */
-	@RequestMapping("/status")
-	@ResponseBody
-	public String getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) {
+	@RequestMapping("/state")
+	@RestAPI
+	public HttpEntity<String> getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) {
 		final Map<String, Object> systemInfoMap = Maps.newHashMap();
 		systemInfoMap.put(JSON_SUCCESS, true);
 		try {
@@ -94,7 +97,7 @@ public class MonitorManagerController extends NGrinderBaseController {
 		} catch (Exception e) {
 			systemInfoMap.put(JSON_SUCCESS, false);
 		}
-		return toJson(systemInfoMap);
+		return toJsonHttpEntity(systemInfoMap);
 	}
 
 	/**

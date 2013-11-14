@@ -44,7 +44,7 @@
 	function getStatus() {
 		var result = true;
 		$.ajax({
-			url : "${req.getContextPath()}/monitor/status",
+			url : "${req.getContextPath()}/monitor/state",
 			async : false,
 			cache : false,
 			dataType : 'json',

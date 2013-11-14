@@ -297,10 +297,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.testComment = getSafe(this.testComment, "");
 		this.threshold = getSafe(this.threshold, "D");
 		this.runCount = getSafe(this.runCount);
-		this.duration = getSafe(this.duration);
-		this.samplingInterval = getSafe(this.samplingInterval);
+		this.duration = getSafe(this.duration, 60000L);
+		this.samplingInterval = getSafe(this.samplingInterval, 2);
 		this.scriptRevision = getSafe(this.scriptRevision, -1L);
 		this.param = getSafe(this.param, "");
+		this.region = getSafe(this.region, "NONE");
 	}
 
 

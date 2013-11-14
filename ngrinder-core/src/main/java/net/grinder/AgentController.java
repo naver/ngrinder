@@ -172,7 +172,7 @@ public class AgentController implements Agent {
 						if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 							startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 
-							LOGGER.info("agent start message is revcieved from console {}", startMessage);
+							LOGGER.info("agent start message is received from controller {}", startMessage);
 							continue;
 						} else {
 							break; // Another message, check at end of outer

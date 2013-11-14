@@ -57,7 +57,7 @@ public enum FileType {
 	private String description;
 	private final FileCategory fileCategory;
 	private final String extension;
-	private final boolean libDistribtable;
+	private final boolean libDistributable;
 	private final boolean resourceDistributable;
 
 	/**
@@ -66,18 +66,18 @@ public enum FileType {
 	 * @param description
 	 *            description of this file type
 	 * @param extension
-	 *            extendsion used.
+	 *            file extension.
 	 * @param fileCategory
 	 *            category of FileType.
-	 * @param libDistribtable is distributable as lib           
-	 * @param resourceDistributable is distributable as resource
+	 * @param libDistributable true if it's distributable as lib
+	 * @param resourceDistributable true if it's distributable as resources
 	 */
-	FileType(String description, String extension, FileCategory fileCategory, boolean libDistribtable,
+	FileType(String description, String extension, FileCategory fileCategory, boolean libDistributable,
 					boolean resourceDistributable) {
 		this.description = description;
 		this.extension = extension;
 		this.fileCategory = fileCategory;
-		this.libDistribtable = libDistribtable;
+		this.libDistributable = libDistributable;
 		this.resourceDistributable = resourceDistributable;
 	}
 
@@ -130,8 +130,8 @@ public enum FileType {
 	 * 
 	 * @return true if distributable
 	 */
-	public boolean isLibDistribtable() {
-		return libDistribtable;
+	public boolean isLibDistributable() {
+		return libDistributable;
 	}
 
 	/**

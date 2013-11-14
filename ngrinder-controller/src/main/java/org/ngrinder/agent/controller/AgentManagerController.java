@@ -178,33 +178,34 @@ public class AgentManagerController extends NGrinderBaseController {
 	 *            agent name
 	 * @return json message
 	 */
-	@RequestMapping("/{id}/status")
-	@ResponseBody
-	public String getCurrentMonitorData(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
+
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping("/api/{id}/state")
+	public HttpEntity<String> getState(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
 			ModelMap model) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		return toJson(buildMap(JSON_SUCCESS, true, //
+		return toJsonHttpEntity(buildMap(JSON_SUCCESS, true, //
 				"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
 	}
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.GET)
-	public HttpEntity<String> getAll(User user) {
+	public HttpEntity<String> getAll() {
 		return toJsonHttpEntity(agentManagerService.getAllVisibleAgentInfoFromDB());
 	}
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
-	public HttpEntity<String> getOne(User user, @PathVariable("id") Long id) {
+	public HttpEntity<String> getOne(@PathVariable("id") Long id) {
 		return toJsonHttpEntity(agentManagerService.getAgent(id, false));
 	}
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}/approve", method = RequestMethod.PUT)
-	public HttpEntity<String> approve(User user, @PathVariable("id") Long id) {
+	public HttpEntity<String> approve(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, true);
 		return successJsonHttpEntity();
 	}
@@ -212,7 +213,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}/disapprove", method = RequestMethod.PUT)
-	public HttpEntity<String> disapprove(User user, @PathVariable("id") Long id) {
+	public HttpEntity<String> disapprove(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, false);
 		return successJsonHttpEntity();
 	}

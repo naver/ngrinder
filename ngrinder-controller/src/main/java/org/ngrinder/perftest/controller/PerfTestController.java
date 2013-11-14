@@ -383,7 +383,6 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 
-
 	private Long[] convertString2Long(String ids) {
 		String[] numbers = StringUtils.split(ids, ",");
 		Long[] id = new Long[numbers.length];
@@ -465,7 +464,6 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		return StringUtils.join(hosts, ",");
 	}
-
 
 
 	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
@@ -666,7 +664,6 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 
-
 	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
 		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
@@ -721,7 +718,6 @@ public class PerfTestController extends NGrinderBaseController {
 		});
 		return toJsonHttpEntity(fileEntryGson.toJson(allFileEntries));
 	}
-
 
 
 	/**
@@ -783,7 +779,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping("/api/{id}/graph")
 	public HttpEntity<String> getGraph(ModelMap model, @PathVariable("id") long id,
-	                       @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
+	                                   @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		if (dataTypes.length <= 0) {
 			return errorJsonHttpEntity();
@@ -816,9 +812,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return json string
 	 */
 	@RestAPI
-	@RequestMapping(value = { "/api/last", "/api", "/api/" }, method = RequestMethod.GET)
+	@RequestMapping(value = {"/api/last", "/api", "/api/"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, @RequestParam(value = "page", defaultValue = "0") int page,
-	                            @RequestParam(value = "size", defaultValue = "1") int size) {
+	                                 @RequestParam(value = "size", defaultValue = "1") int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPerfTest(user, null, null, null, pageRequest);
 		return toJsonHttpEntity(testList.getContent());
@@ -846,7 +842,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return json success message if succeeded
 	 */
 	@RestAPI
-	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.POST)
+	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, PerfTest perftest) {
 		checkNull(perftest.getId(), "id should be null");
 		PerfTest savePerfTest = perfTestService.savePerfTest(user, perftest);
@@ -873,8 +869,8 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Update the given perf test.
 	 *
-	 * @param user user
-	 * @param id   perf test id
+	 * @param user     user
+	 * @param id       perf test id
 	 * @param perfTest perf test configuration changes
 	 * @return json success message if succeeded
 	 */
@@ -892,8 +888,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return json success message if succeeded
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/{id}/stop", method = RequestMethod.POST)
-	public HttpEntity<String> update(User user, @PathVariable("id") Long id) {
+	@RequestMapping(value = "/api/{id}", params = "action=stop", method = RequestMethod.PUT)
+	public HttpEntity<String> stop(User user, @PathVariable("id") Long id) {
 		perfTestService.stopPerfTest(user, id);
 		return successJsonHttpEntity();
 	}
@@ -902,14 +898,14 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Update the given perf test's status.
 	 *
-	 * @param user user
-	 * @param id   perf test id
+	 * @param user   user
+	 * @param id     perf test id
 	 * @param status Status to be moved to
 	 * @return json success message if succeeded
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", params = "action=status", method = RequestMethod.PUT)
-	public HttpEntity<String> update(User user, @PathVariable("id") Long id, Status status) {
+	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id, Status status) {
 		PerfTest perfTest = getPerfTestWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id).setStatus(status);
 		return toJsonHttpEntity(perfTestService.savePerfTest(user, perfTest));
@@ -924,7 +920,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return json string
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/{id}/cloneAndStart")
+	@RequestMapping(value = {"/api/{id}/clone_and_start", /* for backward compatibility */ "/api/{id}/cloneAndStart"})
 	public HttpEntity<String> cloneAndStartAPI(User user, @PathVariable("id") Long id, PerfTest perftest) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		checkNotNull(test, "no perftest for %s exits", id);

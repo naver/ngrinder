@@ -249,7 +249,7 @@ public abstract class ScriptHandler {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
-			if (fileType.isLibDistribtable()) {
+			if (fileType.isLibDistributable()) {
 				fileList.add(eachFileEntry);
 			}
 		}
