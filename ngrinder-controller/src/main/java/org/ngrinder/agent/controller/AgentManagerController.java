@@ -128,22 +128,6 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Stop the given agent.
-	 *
-	 * @param ids comma separated agent id list
-	 * @return agent/agentList
-	 */
-	@RequestMapping(value = "stop", method = RequestMethod.POST)
-	@ResponseBody
-	public String stopAgent(@RequestParam("ids") String ids) {
-		String[] split = StringUtils.split(ids, ",");
-		for (String each : split) {
-			agentManagerService.stopAgent(Long.parseLong(each));
-		}
-		return returnSuccess();
-	}
-
-	/**
 	 * Get the agent detail info for the given agent id.
 	 *
 	 * @param model model
@@ -203,5 +187,30 @@ public class AgentManagerController extends NGrinderBaseController {
 		agentManagerService.approve(id, false);
 		return successJsonHttpEntity();
 	}
+
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/{id}", params = "stop", method = RequestMethod.PUT)
+	public HttpEntity<String> stop(@PathVariable("id") Long id) {
+		agentManagerService.stopAgent(id);
+		return successJsonHttpEntity();
+	}
+	/**
+	 * Stop the given agent.
+	 *
+	 * @param ids comma separated agent id list
+	 * @return agent/agentList
+	 */
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api/stop", method = RequestMethod.POST)
+	public HttpEntity<String> stop(@RequestParam("ids") String ids) {
+		String[] split = StringUtils.split(ids, ",");
+		for (String each : split) {
+			stop(Long.parseLong(each));
+		}
+		return successJsonHttpEntity();
+	}
+
 
 }

@@ -255,15 +255,11 @@
 	  		data: {"ids":ids},
 			dataType:'json',
 	    	success: function(res) {
-	    		if (res.success) {
-		    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-	    		} else {
-		    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-	    		}
-	    	},
-	    	error: function() {
-	    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>!");
-	    	}
+				showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
+		    },
+        	error: function() {
+            	showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
+            }
 	  	});
 	}
 	

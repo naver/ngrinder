@@ -73,8 +73,6 @@ public class MonitorManagerController extends NGrinderBaseController {
 	@RequestMapping("/state")
 	@RestAPI
 	public HttpEntity<String> getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
-		final Map<String, Object> systemInfoMap = Maps.newHashMap();
-		systemInfoMap.put(JSON_SUCCESS, true);
 		Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
 			@Override
 			public SystemInfo call() {

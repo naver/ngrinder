@@ -295,36 +295,31 @@
                 cache: true,
                 data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
                 success: function(res) {
-                    if (res.success) {
-                        var result = drawMultiPlotChart('tps_chart', res.TPS.data, res.TPS.lables, res.chartInterval);
-                        if (result !== undefined){ result.replot(); }
-                        result = drawMultiPlotChart('mean_time_chart', res.Mean_Test_Time_ms.data, res.Mean_Test_Time_ms.lables, res.chartInterval);
-                        if (result !== undefined){ result.replot(); }
+					var result = drawMultiPlotChart('tps_chart', res.TPS.data, res.TPS.lables, res.chartInterval);
+					if (result !== undefined){ result.replot(); }
+					result = drawMultiPlotChart('mean_time_chart', res.Mean_Test_Time_ms.data, res.Mean_Test_Time_ms.lables, res.chartInterval);
+					if (result !== undefined){ result.replot(); }
 
-                        if (res.Mean_time_to_first_byte !== undefined && 
-                        		res.Mean_time_to_first_byte.data !== '[ ]') {
-                        	drawMultiPlotChart('min_time_first_byte_chart', res.Mean_time_to_first_byte.data, res.Mean_time_to_first_byte.lables, res.chartInterval).replot();
-                        } else {
-                        	$("#min_time_first_byte_chart").hide();	
-                        	$("#min_time_first_byte_header").hide();
-                        }
-                        if (res.User_defined !== undefined && 
-                        		res.User_defined.lables !== undefined && res.User_defined.lables.length != 0) {
-                        	drawMultiPlotChart('user_defined_chart', res.User_defined.data, res.User_defined.lables, res.chartInterval).replot();
-                        } else {
-                        	$("#user_defined_chart").hide();	
-                        	$("#user_defined_header").hide();
-                        }
-                        drawMultiPlotChart('error_chart', res.Errors.data, res.Errors.lables, res.chartInterval);
-                        generateImg(imgBtnLabel, imgTitle); 
-                        return true;
-                    } else {
-                        showErrorMsg("Get report data failed.");
-                        return false;
-                    }
+					if (res.Mean_time_to_first_byte !== undefined &&
+							res.Mean_time_to_first_byte.data !== '[ ]') {
+						drawMultiPlotChart('min_time_first_byte_chart', res.Mean_time_to_first_byte.data, res.Mean_time_to_first_byte.lables, res.chartInterval).replot();
+					} else {
+						$("#min_time_first_byte_chart").hide();
+						$("#min_time_first_byte_header").hide();
+					}
+					if (res.User_defined !== undefined &&
+							res.User_defined.lables !== undefined && res.User_defined.lables.length != 0) {
+						drawMultiPlotChart('user_defined_chart', res.User_defined.data, res.User_defined.lables, res.chartInterval).replot();
+					} else {
+						$("#user_defined_chart").hide();
+						$("#user_defined_header").hide();
+					}
+					drawMultiPlotChart('error_chart', res.Errors.data, res.Errors.lables, res.chartInterval);
+					generateImg(imgBtnLabel, imgTitle);
+					return true;
                 },
                 error: function() {
-                    showErrorMsg("An unknow Error occurred!");
+                    showErrorMsg("Failed to get graph!");
                     return false;
                 }
             }); 
@@ -389,25 +384,20 @@
                 dataType:'json',
                 cache: true,
                 data: {'targetIP': ip, 'imgWidth': 700},
-                success: function(res) {
-                    if (res.success) {
-                    	if ($.isEmptyObject(res.SystemData)) {
-                    		showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
-                    		res.SystemData.cpu = [0];
-                    		res.SystemData.memory = [0];
-                    		res.SystemData.received = [0];
-                    		res.SystemData.sent = [0];
-                    	}
-                    	targetMonitorData[ip] = res.SystemData;
-                    	drawPlot(ip);
-                        return true;
-                    } else {
-                        showErrorMsg("Failed to retrieve monitor data.");
-                        return false;
-                    }
+                success: function(res) {\
+					if ($.isEmptyObject(res.SystemData)) {
+						showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
+						res.SystemData.cpu = [0];
+						res.SystemData.memory = [0];
+						res.SystemData.received = [0];
+						res.SystemData.sent = [0];
+					}
+					targetMonitorData[ip] = res.SystemData;
+					drawPlot(ip);
+					return true;
                 },
                 error: function() {
-                    showErrorMsg("Display Error!");
+                    showErrorMsg("Failed to get monitor graph data!");
                     return false;
                 }
             });

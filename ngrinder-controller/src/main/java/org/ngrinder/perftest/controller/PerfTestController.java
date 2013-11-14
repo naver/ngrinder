@@ -423,13 +423,14 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param ids   comma operated IDs
 	 * @return success json messages if succeeded.
 	 */
-	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	@ResponseBody
-	public String deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String ids) {
+	@RestAPI
+	@RequestMapping(value = "/api/delete", method = RequestMethod.POST)
+	public HttpEntity<String> deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String
+			ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.deletePerfTest(user, NumberUtils.toLong(idStr, 0));
 		}
-		return returnSuccess();
+		return successJsonHttpEntity();
 	}
 
 	/**
@@ -440,13 +441,14 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param ids   comma separated perf test IDs
 	 * @return success json if succeeded.
 	 */
-	@RequestMapping(value = "/stop", method = RequestMethod.POST)
-	@ResponseBody
-	public String stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids", defaultValue = "") String ids) {
+	@RestAPI
+	@RequestMapping(value = "/api/stop", method = RequestMethod.POST)
+	public HttpEntity<String> stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids",
+			defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stopPerfTest(user, NumberUtils.toLong(idStr, 0));
 		}
-		return returnSuccess();
+		return successJsonHttpEntity();
 	}
 
 	/**
@@ -468,7 +470,6 @@ public class PerfTestController extends NGrinderBaseController {
 
 	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
 		Map<String, Object> resultMap = Maps.newHashMap();
-		resultMap.put(JSON_SUCCESS, true);
 		for (String each : dataTypes) {
 			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(perfTest.getId(),
 					each, interval);
@@ -791,17 +792,17 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Get the monitor data of the target having the given IP.
 	 *
-	 * @param model     model
-	 * @param id        test Id
-	 * @param targetIP  targetIP
-	 * @param imgWidth  image width
+	 * @param model    model
+	 * @param id       test Id
+	 * @param targetIP targetIP
+	 * @param imgWidth image width
 	 * @return json message
 	 */
 	@RestAPI
 	@RequestMapping("/api/{id}/monitor")
 	public HttpEntity<String> getMonitorData(ModelMap model, @PathVariable("id") long id,
 	                                         @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
-		return toJsonHttpEntity(buildMap("SystemData", getMonitorDataSystem(id, targetIP, imgWidth), JSON_SUCCESS, true));
+		return toJsonHttpEntity(getMonitorDataSystem(id, targetIP, imgWidth));
 	}
 
 	/**

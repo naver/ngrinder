@@ -121,29 +121,29 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		ModelMap model = new ModelMap();
 		// test get agent
 		agentController.getAgent(agent.getId(), model);
-		AgentInfo agentinDB = (AgentInfo) model.get("agent");
-		assertThat(agentinDB.getName(), is(agent.getName()));
-		assertThat(agentinDB.getIp(), is(agent.getIp()));
-		assertThat(agentinDB.isApproved(), is(false));
+		AgentInfo agentInDB = (AgentInfo) model.get("agent");
+		assertThat(agentInDB.getName(), is(agent.getName()));
+		assertThat(agentInDB.getIp(), is(agent.getIp()));
+		assertThat(agentInDB.isApproved(), is(false));
 
 		// test approve agent
 		model.clear();
-		agentController.approveAgent(agentinDB.getId(), true, "", model);
+		agentController.approveAgent(agentInDB.getId(), true, "", model);
 		agentController.getAgent(agent.getId(), model);
-		agentinDB = (AgentInfo) model.get("agent");
-		assertThat(agentinDB.isApproved(), is(true));
+		agentInDB = (AgentInfo) model.get("agent");
+		assertThat(agentInDB.isApproved(), is(true));
 
 		// test un-approve
 		model.clear();
-		agentController.approveAgent(agentinDB.getId(), false, "", model);
+		agentController.approveAgent(agentInDB.getId(), false, "", model);
 		agentController.getAgent(agent.getId(), model);
-		agentinDB = (AgentInfo) model.get("agent");
-		assertThat(agentinDB.isApproved(), is(false));
+		agentInDB = (AgentInfo) model.get("agent");
+		assertThat(agentInDB.isApproved(), is(false));
 	}
 
 	@Test
 	public void testStopAgent() {
-		agentController.stopAgent("0");
+		agentController.stop("0");
 	}
 
 	@Test

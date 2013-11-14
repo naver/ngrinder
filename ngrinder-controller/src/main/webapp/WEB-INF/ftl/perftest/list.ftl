@@ -304,18 +304,13 @@
 		                cache: false,
 		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
 		                success: function(res) {
-		                    if (res.success) {
-		                        drawListPlotChart(tps_id, res.TPS.data , ["Tps"], res.chartInterval);
-		                        drawListPlotChart(mean_time_chart_id , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-		                        drawListPlotChart(error_chart_id , res.Errors.data, ["Errors"], res.chartInterval);
-		                        return true;
-		                    } else {
-		                        showErrorMsg("Get statistics data failed.");
-		                        return false;
-		                    }
+							drawListPlotChart(tps_id, res.TPS.data , ["Tps"], res.chartInterval);
+							drawListPlotChart(mean_time_chart_id , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+							drawListPlotChart(error_chart_id , res.Errors.data, ["Errors"], res.chartInterval);
+							return true;
 		                },
 		                error: function() {
-		                    showErrorMsg("An unknow Error occurred!");
+			                showErrorMsg("Failed to get graph.")
 		                    return false;
 		                }
 		            }); 
@@ -390,42 +385,34 @@
 		
 		function deleteTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/delete",
+		  		url: "${req.getContextPath()}/perftest/api/delete",
 		  		type: "POST",
 		  		data: {"ids" : ids},
 				dataType:'json',
 		    	success: function(res) {
-		    		if (res.success) {
-			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
-							setTimeout(function() {
-								getList(1);
-							}, 500);
-		    		} else {
-			    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
-		    		}
+					showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
+						setTimeout(function() {
+							getList(1);
+					}, 500);
 		    	},
 		    	error: function() {
-		    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>!");
+	                showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
 		    	}
 		  	});
 		}
 		
 		function stopTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/stop",
+		  		url: "${req.getContextPath()}/perftest/api/stop",
 				type: "POST",
 		  		data: {"ids":ids},
 				dataType:'json',
 		    	success: function(res) {
-		    		if (res.success) {
-			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-		    		} else {
-			    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-		    		}
-		    	},
-		    	error: function() {
-		    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>!");
-		    	}
+			    	showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
+			    },
+				error: function() {
+					showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
+				}
 		  	});
 		}
 		

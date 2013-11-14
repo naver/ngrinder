@@ -158,20 +158,16 @@
 			
 			function stopAgents(ids) {
 				$.ajax({
-			  		url: "${req.getContextPath()}/agent/stop",
+			  		url: "${req.getContextPath()}/agent/api/stop",
 			  		type: "POST",
 			  		data: {"ids" : ids},
 			  		cache: false,
 					dataType:'json',
 			    	success: function(res) {
-			    		if (res.success) {
-				    		showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
-							setTimeout(function() {
-								location.reload();
-							}, 2000);
-			    		} else {
-				    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>:" + res.message);
-			    		}
+						showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
+						setTimeout(function() {
+							location.reload();
+						}, 2000);
 			    	},
 			    	error: function() {
 			    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>!");
