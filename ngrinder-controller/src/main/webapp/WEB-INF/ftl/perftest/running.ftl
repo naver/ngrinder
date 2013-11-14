@@ -250,7 +250,7 @@
 	
 	function stopTests(ids) {
 		$.ajax({
-	  		url: "${req.getContextPath()}/perftest/stop",
+	  		url: "${req.getContextPath()}/perftest/api/stop",
 			type: "POST",
 	  		data: {"ids":ids},
 			dataType:'json',
