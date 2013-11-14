@@ -115,7 +115,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		agent.setApproved(false);
 		agent.setName("Test-Host");
 		agent.setIp("127.0.0.1");
-		agent.setStatus(AgentControllerState.READY);
+		agent.setState(AgentControllerState.READY);
 		agentService.saveAgent(agent);
 
 		ModelMap model = new ModelMap();

@@ -266,10 +266,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String runningSample;
 
 	@Column(name = "agent_stat", length = 9990)
-	private String agentStatus;
+	private String agentState;
 
 	@Column(name = "monitor_stat", length = 2000)
-	private String monitorStatus;
+	private String monitorState;
 
 	@Expose
 	@Cloneable
@@ -767,20 +767,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.runningSample = runningSample;
 	}
 
-	public String getAgentStatus() {
-		return agentStatus;
+	public String getAgentState() {
+		return agentState;
 	}
 
-	public void setAgentStatus(String agentStatus) {
-		this.agentStatus = agentStatus;
+	public void setAgentState(String agentStatus) {
+		this.agentState = agentStatus;
 	}
 
-	public String getMonitorStatus() {
-		return monitorStatus;
+	public String getMonitorState() {
+		return monitorState;
 	}
 
-	public void setMonitorStatus(String monitorStatus) {
-		this.monitorStatus = monitorStatus;
+	public void setMonitorState(String monitorStatus) {
+		this.monitorState = monitorStatus;
 	}
 
 	public Integer getSamplingInterval() {

@@ -70,7 +70,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agent.setName("testAppName" + key);
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
-		agent.setStatus(AgentControllerState.BUSY);
+		agent.setState(AgentControllerState.BUSY);
 		agentManagerService.saveAgent(agent);
 		return agent;
 	}
@@ -86,7 +86,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
-		agentInfo.setStatus(AgentControllerState.READY);
+		agentInfo.setState(AgentControllerState.READY);
 		agentInfo.setApproved(true);
 		agentManagerService.saveAgent(agentInfo);
 		countMap = agentManagerService.getUserAvailableAgentCountMap(getTestUser());
@@ -96,20 +96,20 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testCheckAgentStatus() {
+	public void testCheckAgentState() {
 		AgentInfo agentInfo = new AgentInfo();
 		agentInfo.setName("localhost");
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
-		agentInfo.setStatus(AgentControllerState.READY);
+		agentInfo.setState(AgentControllerState.READY);
 		agentManagerService.saveAgent(agentInfo);
-		agentManagerService.checkAgentStatusRegularly();
+		agentManagerService.checkAgentStateRegularly();
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
 		assertThat(agentInDB.getName(), is(agentInfo.getName()));
-		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
+		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
 	}
 
 	@Test

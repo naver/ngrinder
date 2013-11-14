@@ -46,7 +46,7 @@
 					<th class="no-click"><@spring.message "agent.table.port"/></th>
 					<th class="ellipsis"><@spring.message "agent.table.name"/></th>
 					<th><@spring.message "agent.table.region"/></th>
-					<th><@spring.message "common.label.status"/></th>
+					<th><@spring.message "agent.table.state"/></th>
 					<th class="no-click"><@spring.message "agent.table.approve"/></th>
 				</tr>
 			</thead>
@@ -59,7 +59,7 @@
 							<td>${(agent.port)!}</td>
 							<td class="ellipsis" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
 							<td>${(agent.region)!}</td>
-							<td>${(agent.status)!}</td>
+							<td>${(agent.state)!}</td>
 							<td>
 								<div class="btn-group" data-toggle="buttons-radio">
 									<button type="button" 

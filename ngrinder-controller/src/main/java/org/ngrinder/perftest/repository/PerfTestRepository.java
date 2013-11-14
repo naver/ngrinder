@@ -129,13 +129,13 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 *            {@link PerfTest} id
 	 * @param runningSample
 	 *            running sample json string
-	 * @param agentStatus
+	 * @param agentState
 	 *            agent status json string
 	 * @return the count of updated row
 	 */
 	@Modifying
-	@Query("update PerfTest p set p.runningSample=?2, p.agentStatus=?3 where p.id=?1")
-	int updateRuntimeStatistics(Long id, String runningSample, String agentStatus);
+	@Query("update PerfTest p set p.runningSample=?2, p.agentState=?3 where p.id=?1")
+	int updateRuntimeStatistics(Long id, String runningSample, String agentState);
 
 	/**
 	 * Update the monitor statistics on the perf test having the given {@link PerfTest} id.
@@ -147,7 +147,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 * @return the count of updated row
 	 */
 	@Modifying
-	@Query("update PerfTest p set p.monitorStatus=?2 where p.id=?1")
+	@Query("update PerfTest p set p.monitorState=?2 where p.id=?1")
 	int updatetMonitorStatus(Long id, String monitorStatus);
 
 	/**

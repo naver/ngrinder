@@ -130,7 +130,7 @@
 			if (timer) {
 				window.clearInterval(timer);
 			}
-			$.get("${req.getContextPath()}/monitor/close?ip=" + $("#monitorIp").val());
+			$.get("${req.getContextPath()}/monitor/close?ip=" + $("#target_IP").val());
 		});
 
 		initHosts();

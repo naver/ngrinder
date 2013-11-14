@@ -157,7 +157,7 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the Script path BreadCrumbs HTML string.
+	 * Get the script path BreadCrumbs HTML string.
 	 *
 	 * @param user user
 	 * @param path path
@@ -340,12 +340,12 @@ public class FileEntryController extends NGrinderBaseController {
 	@RequestMapping(value = "/search/**")
 	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
 	                               ModelMap model) {
-		final String trimedQuery = StringUtils.trimToEmpty(query);
+		final String trimmedQuery = StringUtils.trimToEmpty(query);
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(FileEntry input) {
-						return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimedQuery);
+						return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimmedQuery);
 					}
 				});
 		model.addAttribute("query", query);
@@ -355,7 +355,7 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Save fileEntry and return the the path.
+	 * Save a fileEntry and return to the the path.
 	 *
 	 * @param user                 current user
 	 * @param path                 path to which this will forward.
@@ -388,7 +388,7 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Upload files.
+	 * Upload a file.
 	 *
 	 * @param user        current user
 	 * @param path        path

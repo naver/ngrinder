@@ -130,7 +130,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agent.setName("testAppName" + key);
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
-		agent.setStatus(AgentControllerState.BUSY);
+		agent.setState(AgentControllerState.BUSY);
 		agentManagerService.saveAgent(agent);
 		return agent;
 	}
@@ -143,20 +143,20 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	}
 
 	@Test
-	public void testCheckAgentStatus() {
+	public void testCheckAgentState() {
 		AgentInfo agentInfo = new AgentInfo();
 		agentInfo.setName("localhost");
 		agentInfo.setRegion(spiedConfig.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
-		agentInfo.setStatus(AgentControllerState.READY);
+		agentInfo.setState(AgentControllerState.READY);
 		agentManagerService.saveAgent(agentInfo);
-		agentManagerService.checkAgentStatusRegularly();
+		agentManagerService.checkAgentStateRegularly();
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
 		assertThat(agentInDB.getName(), is(agentInfo.getName()));
-		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
+		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
 	}
 
 }

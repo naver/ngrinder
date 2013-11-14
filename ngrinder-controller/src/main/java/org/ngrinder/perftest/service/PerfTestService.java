@@ -328,11 +328,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param id            id of {@link PerfTest}
 	 * @param runningSample runningSample json string
-	 * @param agentStatus   agentStatus json string
+	 * @param agentState   agentState json string
 	 */
 	@Transactional
-	public void updateRuntimeStatistics(Long id, String runningSample, String agentStatus) {
-		perfTestRepository.updateRuntimeStatistics(id, runningSample, agentStatus);
+	public void updateRuntimeStatistics(Long id, String runningSample, String agentState) {
+		perfTestRepository.updateRuntimeStatistics(id, runningSample, agentState);
 		perfTestRepository.flush();
 	}
 
@@ -928,8 +928,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		String runningSample = getProperSizeRunningSample(singleConsole);
-		String agentStatus = getProperSizedStatusString(singleConsole);
-		updateRuntimeStatistics(perfTestId, runningSample, agentStatus);
+		String agentState= getProperSizedStatusString(singleConsole);
+		updateRuntimeStatistics(perfTestId, runningSample, agentState);
 	}
 
 	private String getProperSizeRunningSample(SingleConsole singleConsole) {
@@ -973,16 +973,16 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.info("Agent status string length: {}, too long to save into table.", statusLength);
 			double ratio = 9900.0 / statusLength;
 			int pickSize = (int) (agentStatusMap.size() * ratio);
-			Map<String, SystemDataModel> pickAgentStatusMap = Maps.newHashMap();
+			Map<String, SystemDataModel> pickAgentStateMap = Maps.newHashMap();
 
 			int pickIndex = 0;
 			for (Entry<String, SystemDataModel> each : agentStatusMap.entrySet()) {
 				if (pickIndex < pickSize) {
-					pickAgentStatusMap.put(each.getKey(), each.getValue());
+					pickAgentStateMap.put(each.getKey(), each.getValue());
 					pickIndex++;
 				}
 			}
-			json = gson.toJson(pickAgentStatusMap);
+			json = gson.toJson(pickAgentStateMap);
 			LOGGER.debug("Agent status string get:{} of:{} agents, new size is: {}.", new Object[]{pickSize,
 					agentStatusMap.size(), json.length()});
 		}
@@ -1031,7 +1031,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, HashMap> getAgentStat(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getAgentStatus(), HashMap.class);
+		return gson.fromJson(perfTest.getAgentState(), HashMap.class);
 	}
 
 	/*
@@ -1288,8 +1288,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
 		perfTest.setRunningSample("");
-		perfTest.setAgentStatus("");
-		perfTest.setMonitorStatus("");
+		perfTest.setAgentState("");
+		perfTest.setMonitorState("");
 		savePerfTest(perfTest);
 	}
 
@@ -1324,7 +1324,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getMonitorStatus(), HashMap.class);
+		return gson.fromJson(perfTest.getMonitorState(), HashMap.class);
 	}
 
 	/**
@@ -1333,13 +1333,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * display. For example, interval value "2" means, get one record for every "2" records.
 	 *
 	 * @param testId     test id
-	 * @param monitorIP  ip address of monitor target
+	 * @param targetIP  ip address of monitor target
 	 * @param imageWidth image with of the chart.
 	 * @return interval value.
 	 */
-	public int getSystemMonitorDataInterval(long testId, String monitorIP, int imageWidth) {
+	public int getSystemMonitorDataInterval(long testId, String targetIP, int imageWidth) {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
+				NGrinderConstants.MONITOR_FILE_PREFIX + targetIP + ".data");
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		FileInputStream in = null;
@@ -1358,7 +1358,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(lnr);
@@ -1373,14 +1373,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * in JS as a vector.
 	 *
 	 * @param testId       test id
-	 * @param monitorIP    ip address of the monitor target
+	 * @param targetIP    ip address of the monitor target
 	 * @param dataInterval interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
-	public Map<String, String> getSystemMonitorDataAsString(long testId, String monitorIP, int dataInterval) {
+	public Map<String, String> getSystemMonitorDataAsString(long testId, String targetIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
+				NGrinderConstants.MONITOR_FILE_PREFIX + targetIP + ".data");
 		BufferedReader br = null;
 		try {
 
@@ -1434,7 +1434,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			completeCustomData(returnMap, "customData4", customData4);
 			completeCustomData(returnMap, "customData5", customData5);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(br);
@@ -1459,14 +1459,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Get all{@link SystemDataModel} from monitor data file of one test and target.
 	 *
 	 * @param testId    test id
-	 * @param monitorIP IP address of the monitor target
+	 * @param targetIP IP address of the monitor target
 	 * @return SystemDataModel list
 	 */
-	public List<SystemDataModel> getSystemMonitorData(long testId, String monitorIP) {
-		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, monitorIP);
+	public List<SystemDataModel> getSystemMonitorData(long testId, String targetIP) {
+		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, targetIP);
 		List<SystemDataModel> rtnList = Lists.newArrayList();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
+				NGrinderConstants.MONITOR_FILE_PREFIX + targetIP + ".data");
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(monitorDataFile));
@@ -1490,12 +1490,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(br);
 		}
-		LOGGER.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, monitorIP);
+		LOGGER.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, targetIP);
 		return rtnList;
 	}
 

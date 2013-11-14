@@ -76,11 +76,11 @@ public class AgentManagerService implements IAgentManagerService {
 	 */
 	@Scheduled(fixedDelay = 5000)
 	@Transactional
-	public void checkAgentStatusRegularly() {
-		checkAgentStatus();
+	public void checkAgentStateRegularly() {
+		checkAgentState();
 	}
 
-	protected void checkAgentStatus() {
+	protected void checkAgentState() {
 		List<AgentInfo> changeAgents = Lists.newArrayList();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
@@ -119,9 +119,9 @@ public class AgentManagerService implements IAgentManagerService {
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(entryKey);
 			if (agentIdentity == null) {
 				// this agent is not attached to controller
-				interestingAgentInfo.setStatus(AgentControllerState.INACTIVE);
+				interestingAgentInfo.setState(AgentControllerState.INACTIVE);
 			} else {
-				interestingAgentInfo.setStatus(getAgentManager().getAgentState(agentIdentity));
+				interestingAgentInfo.setState(getAgentManager().getAgentState(agentIdentity));
 				interestingAgentInfo.setRegion(agentIdentity.getRegion());
 				interestingAgentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
 			}
@@ -308,7 +308,7 @@ public class AgentManagerService implements IAgentManagerService {
 			agentInfo.setIp(agentIdentity.getIp());
 			AgentManager agentManager = getAgentManager();
 			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
-			agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
+			agentInfo.setState(agentManager.getAgentState(agentIdentity));
 		}
 		return agentInfo;
 	}

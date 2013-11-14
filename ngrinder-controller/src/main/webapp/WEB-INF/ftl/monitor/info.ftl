@@ -2,7 +2,7 @@
 <div id="system_chart">
 	<div class="page-header page-header">
 		<h4><@spring.message "agent.info.systemData"/></h4>
-		<input type="hidden" id="monitor_ip" value="${(monitorIp)!}">
+		<input type="hidden" id="target_ip" value="${(targetIP)!}">
 	</div>
 	<h6>CPU</h6>
 	<div class="chart" id="cpu_usage_chart"></div>
@@ -23,8 +23,8 @@
 	var errorCount = 0;
 	$(document).ready(function() {
 		initChartData();
-		if (getStatus()) {
-			timer = window.setInterval("getStatus()", interval * 1000);
+		if (getState()) {
+			timer = window.setInterval("getState()", interval * 1000);
 		}
 	});
 
@@ -41,7 +41,7 @@
 		return currentMax;
 	}
 
-	function getStatus() {
+	function getState() {
 		var result = true;
 		$.ajax({
 			url : "${req.getContextPath()}/monitor/state",
@@ -49,33 +49,25 @@
 			cache : false,
 			dataType : 'json',
 			data : {
-				'ip' : '${(monitorIp)!}'
+				'ip' : '${(targetIP)!}'
 			},
 			success : function(res) {
-				if (res.success) {
-					getChartData(res);
-					maxCPU = getMax(maxCPU, cpuUsage.aElement);
-					showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
-					maxMemory = getMax(maxMemory, memoryUsage.aElement);
-					showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
-					result = true;
-					errorCount = 0;
-				} else {
-					errorCount = errorCount + 1;
-					if (errorCount > 3) {
-						showErrorMsg("Failed to get the monitoring data.");
-						result = false;
-						if (timer) {
-							window.clearInterval(timer);
-						}
-					}
-				}
+				getChartData(res);
+				maxCPU = getMax(maxCPU, cpuUsage.aElement);
+				showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+				maxMemory = getMax(maxMemory, memoryUsage.aElement);
+				showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+				result = true;
+				errorCount = 0;
 			},
 			error : function() {
-				showErrorMsg("Failed to get the monitoring data.");
-				result = false;
-				if (timer) {
-					window.clearInterval(timer);
+				errorCount = errorCount + 1;
+				if (errorCount > 3) {
+					showErrorMsg("Failed to get the monitoring data.");
+					result = false;
+					if (timer) {
+						window.clearInterval(timer);
+					}
 				}
 			}
 		});
@@ -99,8 +91,8 @@
 	}
 
 	function getChartData(dataObj) {
-		cpuUsage.enQueue(dataObj.systemData.cpuUsedPercentage);
-		memoryUsage.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
+		cpuUsage.enQueue(dataObj.cpuUsedPercentage);
+		memoryUsage.enQueue(dataObj.totalMemory - dataObj.freeMemory);
 
 		if (cpuUsage.getSize() > 60) {
 			cpuUsage.deQueue();

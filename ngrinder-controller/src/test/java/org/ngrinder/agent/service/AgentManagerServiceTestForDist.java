@@ -58,7 +58,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 		AgentInfo agentInfo1 = new AgentInfo();
 		agentInfo1.setRegion(region);
 		agentInfo1.setApproved(approved);
-		agentInfo1.setStatus(status);
+		agentInfo1.setState(status);
 		return agentInfo1;
 	}
 

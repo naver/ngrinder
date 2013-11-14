@@ -59,7 +59,7 @@ public abstract class AgentManagerSpecification {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("status").as(AgentControllerState.class);
+				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
 				return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
 						cb.notEqual(status, AgentControllerState.UNKNOWN),
 						cb.notEqual(status, AgentControllerState.WRONG_REGION));
@@ -77,7 +77,7 @@ public abstract class AgentManagerSpecification {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("status").as(AgentControllerState.class);
+				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
 				return cb.notEqual(status, AgentControllerState.INACTIVE);
 			}
 		};

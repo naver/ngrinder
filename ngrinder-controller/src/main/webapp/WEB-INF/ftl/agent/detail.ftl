@@ -50,10 +50,10 @@
 					    </tr>
 					    </tr>
 					    <tr>
-					    	<th><@spring.message "agent.table.status"/></th>
+					    	<th><@spring.message "agent.table.state"/></th>
 					    </tr>
 	                    <tr>
-					    	<td>${(agent.status)!}</td>
+					    	<td>${(agent.state)!}</td>
 					    </tr>
 				    </tbody>
 				    </table>
@@ -86,7 +86,7 @@
             $(document).ready(function() {
             	initChartData();
           
-                getStatus();
+                getState();
                 
                 $("#refresh_interval").keyup(function() {
                     var number = $(this).val();
@@ -100,7 +100,7 @@
                         interval = 1;
                     }
                     cleanChartData();
-                    timer=window.setInterval("getStatus()",interval * 1000);
+                    timer=window.setInterval("getState()",interval * 1000);
                 }).blur();
             });
             
@@ -117,7 +117,7 @@
             	return currentMax;
             }
             
-            function getStatus(){
+            function getState(){
                 $.ajax({
                     url: "${req.getContextPath()}/agent/api/${agent.id}/state",
                     async: false,
@@ -127,18 +127,12 @@
                     	   'name': '${(agent.hostName)!}',
                            'imgWidth':700},
                     success: function(res) {
-                        if (res.success) {
-                        	getChartData(res);
-                    		maxCPU = getMax(maxCPU, cpuUsage.aElement);
-                    		showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
-                    		maxMemory = getMax(maxMemory, memoryUsage.aElement);
-                        	showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
-                         
-                            return true;
-                        } else {
-                            showErrorMsg("Get monitor data failed.");
-                            return false;
-                        }
+                       	getChartData(res);
+                   		maxCPU = getMax(maxCPU, cpuUsage.aElement);
+                   		showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+                   		maxMemory = getMax(maxMemory, memoryUsage.aElement);
+                       	showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+                       return true;
                     },
                     error: function() {
                         showErrorMsg("Error!");                        
@@ -164,8 +158,8 @@
             }
             
             function getChartData(data) {				
-				cpuUsage.enQueue(data.systemData.cpuUsedPercentage);
-				memoryUsage.enQueue(data.systemData.totalMemory - data.systemData.freeMemory);
+				cpuUsage.enQueue(data.cpuUsedPercentage);
+				memoryUsage.enQueue(data.totalMemory - data.freeMemory);
 				
 				if (cpuUsage.getSize() > 60) {
 					cpuUsage.deQueue();

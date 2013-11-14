@@ -114,7 +114,6 @@ public class HomeService {
 			Collections.sort(panelEntries);
 			return panelEntries;
 		} catch (Exception e) {
-
 			LOG.error("Error while patching the feed entries for {}.", feedURL, e);
 		} finally {
 			if (feedConnection != null) {

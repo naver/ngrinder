@@ -67,13 +67,13 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 * Find all agents which matches with the given the status and are approved
 	 * .
 	 * 
-	 * @param status
+	 * @param state
 	 *            AgentControllerState
 	 * @param isApproved
 	 *            whether the agent is approved
 	 * @return agent list
 	 */
-	List<AgentInfo> findAllByStatusAndApproved(AgentControllerState status, boolean isApproved);
+	List<AgentInfo> findAllByStateAndApproved(AgentControllerState state, boolean isApproved);
 
 	/**
 	 * Get the count of {@link AgentInfo} matching the given specification.

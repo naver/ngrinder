@@ -161,8 +161,8 @@
 					<#if test.targetHostIP?exists>
 					<li>
 						<ul class="nav nav-list">
-							<#list test.targetHostIP as targetIp>
-							<li><a class="target-montor" href="javascript:void(0);" ip="${targetIp}"><i class="icon-chevron-right"></i> ${targetIp}</a></li>
+							<#list test.targetHostIP as targetIP>
+							<li><a class="target-montor" href="javascript:void(0);" ip="${targetIP}"><i class="icon-chevron-right"></i> ${targetIP}</a></li>
 							</#list>
 						</ul>
 					</li>
@@ -388,7 +388,7 @@
                 url: "${req.getContextPath()}/perftest/api/${(test.id)?c}/monitor",
                 dataType:'json',
                 cache: true,
-                data: {'monitorIP': ip, 'imgWidth': 700},
+                data: {'targetIP': ip, 'imgWidth': 700},
                 success: function(res) {
                     if (res.success) {
                     	if ($.isEmptyObject(res.SystemData)) {

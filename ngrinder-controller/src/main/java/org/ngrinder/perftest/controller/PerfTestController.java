@@ -664,9 +664,9 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 
-	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
-		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
-		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
+	private Map<String, String> getMonitorDataSystem(long id, String targetIP, int imgWidth) {
+		int interval = perfTestService.getSystemMonitorDataInterval(id, targetIP, imgWidth);
+		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, targetIP, interval);
 		PerfTest perfTest = perfTestService.getPerfTest(id);
 		sysMonitorMap.put(
 				"interval",
@@ -793,15 +793,15 @@ public class PerfTestController extends NGrinderBaseController {
 	 *
 	 * @param model     model
 	 * @param id        test Id
-	 * @param monitorIP monitorIP
+	 * @param targetIP  targetIP
 	 * @param imgWidth  image width
 	 * @return json message
 	 */
 	@RestAPI
 	@RequestMapping("/api/{id}/monitor")
 	public HttpEntity<String> getMonitorData(ModelMap model, @PathVariable("id") long id,
-	                                         @RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
-		return toJsonHttpEntity(buildMap("SystemData", getMonitorDataSystem(id, monitorIP, imgWidth), JSON_SUCCESS, true));
+	                                         @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
+		return toJsonHttpEntity(buildMap("SystemData", getMonitorDataSystem(id, targetIP, imgWidth), JSON_SUCCESS, true));
 	}
 
 	/**

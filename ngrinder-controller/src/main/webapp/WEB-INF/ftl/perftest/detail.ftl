@@ -154,7 +154,7 @@
 		margin-left:-40px;
 	}
 	
-	.monitor_status {
+	.monitor_state {
 		line-height:12px \0/IE8+9;
 	}
 	.span4-5 {

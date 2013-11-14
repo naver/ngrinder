@@ -64,7 +64,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	@Expose
 	@Enumerated(EnumType.STRING)
-	private AgentControllerState status;
+	private AgentControllerState state;
 
 
 	@Expose
@@ -97,12 +97,12 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.ip = ip;
 	}
 
-	public AgentControllerState getStatus() {
-		return status;
+	public AgentControllerState getState() {
+		return state;
 	}
 
-	public void setStatus(AgentControllerState status) {
-		this.status = status;
+	public void setState(AgentControllerState status) {
+		this.state = status;
 	}
 
 	public String getRegion() {

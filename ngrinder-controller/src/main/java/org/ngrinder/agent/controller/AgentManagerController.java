@@ -41,7 +41,7 @@ import com.google.common.collect.Collections2;
 
 /**
  * Agent management controller.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1
  */
@@ -64,15 +64,13 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	/**
 	 * Get the agent list.
-	 * 
-	 * @param region
-	 *            the region to search. If null, it returns all the attached
-	 *            agents.
-	 * @param model
-	 *            model
+	 *
+	 * @param region the region to search. If null, it returns all the attached
+	 *               agents.
+	 * @param model  model
 	 * @return agent/list
 	 */
-	@RequestMapping({ "", "/", "/list" })
+	@RequestMapping({"", "/", "/list"})
 	public String getAgentList(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
 
@@ -112,21 +110,17 @@ public class AgentManagerController extends NGrinderBaseController {
 	/**
 	 * Approve or disapprove agents, so that it can be assigned when a test is
 	 * executed.
-	 * 
-	 * @param id
-	 *            agent id to be processed
-	 * @param approve
-	 *            approve or not
-	 * @param region
-	 *            current region
-	 * @param model
-	 *            model
+	 *
+	 * @param id      agent id to be processed
+	 * @param approve approve or not
+	 * @param region  current region
+	 * @param model   model
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
 	public String approveAgent(@PathVariable("id") Long id,
-			@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
-			@RequestParam(value = "region", required = false) final String region, ModelMap model) {
+	                           @RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
+	                           @RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		agentManagerService.approve(id, approve);
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getRegions().keySet());
@@ -135,9 +129,8 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	/**
 	 * Stop the given agent.
-	 * 
-	 * @param ids
-	 *            comma separated agent id list
+	 *
+	 * @param ids comma separated agent id list
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "stop", method = RequestMethod.POST)
@@ -152,11 +145,9 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	/**
 	 * Get the agent detail info for the given agent id.
-	 * 
-	 * @param model
-	 *            model
-	 * @param id
-	 *            agent id
+	 *
+	 * @param model model
+	 * @param id    agent id
 	 * @return agent/agentDetail
 	 */
 	@RequestMapping("/{id}")
@@ -167,30 +158,25 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	/**
 	 * Get the current performance of the given agent.
-	 * 
-	 * @param model
-	 *            model
-	 * @param id
-	 *            agent id
-	 * @param ip
-	 *            agent ip
-	 * @param name
-	 *            agent name
+	 *
+	 * @param model model
+	 * @param id    agent id
+	 * @param ip    agent ip
+	 * @param name  agent name
 	 * @return json message
 	 */
 
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/api/{id}/state")
 	public HttpEntity<String> getState(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
-			ModelMap model) {
+	                                   ModelMap model) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		return toJsonHttpEntity(buildMap(JSON_SUCCESS, true, //
-				"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
+		return toJsonHttpEntity(agentManagerService.getAgentSystemDataModel(ip, name));
 	}
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.GET)
+	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll() {
 		return toJsonHttpEntity(agentManagerService.getAllVisibleAgentInfoFromDB());
 	}
@@ -204,7 +190,7 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/{id}/approve", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/{id}", params = "approve", method = RequestMethod.PUT)
 	public HttpEntity<String> approve(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, true);
 		return successJsonHttpEntity();
@@ -212,7 +198,7 @@ public class AgentManagerController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/{id}/disapprove", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/{id}", params = "disapprove", method = RequestMethod.PUT)
 	public HttpEntity<String> disapprove(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, false);
 		return successJsonHttpEntity();

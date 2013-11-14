@@ -62,17 +62,17 @@
 					</#if>
 				</div>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.targetStatus"/></label>
+					<label class="control-label"><@spring.message "perfTest.testRunning.targetState"/></label>
 				</div>
 				<div class="control-group">
-					<div id="monitor_status" style="font-size:12px;margin-left:-20px">
+					<div id="monitor_state" style="font-size:12px;margin-left:-20px">
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.agentStatus"/></label>
+					<label class="control-label"><@spring.message "perfTest.testRunning.agentState"/></label>
 				</div>
 				<div class="control-group">
-					<div id="agent_status" style="font-size:12px;margin-left:-20px">  
+					<div id="agent_state" style="font-size:12px;margin-left:-20px">
 					</div>
 				</div>
 
@@ -186,8 +186,8 @@
 					$("#process_data").text(curRunningProcesses);
 					$("#thread_data").text(curRunningThreads);
 					$("#running_count").text(curRunningCount);
-					$("#agent_status").html(createMonitoringStatusString(curAgentStat));
-					$("#monitor_status").html(createMonitoringStatusString(curMonitorStat));
+					$("#agent_state").html(createMonitoringStatusString(curAgentStat));
+					$("#monitor_state").html(createMonitoringStatusString(curMonitorStat));
 					peakTps = curPeakTps;
 					if (curPeakTps < 10) {
 						preakTps = 10;
@@ -215,7 +215,8 @@
 		var monitorStatusString = "<ul>";
 		for ( var i = 0; i < status.length; i++) {
 			var each = status[i];
-			monitorStatusString = monitorStatusString + "<li class='monitor_status'><div style='wdith:100%;' class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent + "</b></span> CPU-"
+			monitorStatusString = monitorStatusString + "<li class='monitor_state'><div style='wdith:100%;' " +
+					"class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent + "</b></span> CPU-"
 				+ each.cpu + "% MEM-" + each.mem + "% ";
 			if (each.receivedPerSec != "0B" || each.sentPerSec != "0B") {
 				monitorStatusString = monitorStatusString + "/ RX-"+ each.receivedPerSec + " TX-" + each.sentPerSec + "</dv></li>";

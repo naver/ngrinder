@@ -121,7 +121,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * 
 	 * @since 3.1
 	 */
-	public void checkAgentStatus() {
+	public void checkAgentState() {
 		List<AgentInfo> changeAgents = new ArrayList<AgentInfo>();
 		String curRegion = getConfig().getRegion();
 
@@ -143,20 +143,20 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 			if (agentIdentity != null) {
 				// if the agent attached to current controller
-				if (!hasSamePortAndStatus(eachAgentInDB, agentIdentity)) {
+				if (!hasSamePortAndState(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
 					changeAgents.add(eachAgentInDB);
 				} else if (!StringUtils.equals(eachAgentInDB.getRegion(), agentIdentity.getRegion())) {
 					fillUp(eachAgentInDB, agentIdentity);
-					eachAgentInDB.setStatus(WRONG_REGION);
+					eachAgentInDB.setState(WRONG_REGION);
 					eachAgentInDB.setApproved(false);
 					changeAgents.add(eachAgentInDB);
 				}
 
 			} else { // the agent in DB is not attached to current controller
 
-				if (eachAgentInDB.getStatus() != INACTIVE) {
-					eachAgentInDB.setStatus(INACTIVE);
+				if (eachAgentInDB.getState() != INACTIVE) {
+					eachAgentInDB.setState(INACTIVE);
 					changeAgents.add(eachAgentInDB);
 				}
 			}
@@ -174,9 +174,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				AgentInfo newAgentInfo = fillUp(agentInfo, agentIdentity);
 				changeAgents.add(newAgentInfo);
 			} else {
-				if (agentInfo.getStatus() != WRONG_REGION) {
+				if (agentInfo.getState() != WRONG_REGION) {
 					AgentInfo newAgentInfo = fillUp(agentInfo, agentIdentity);
-					agentInfo.setStatus(WRONG_REGION);
+					agentInfo.setState(WRONG_REGION);
 					agentInfo.setApproved(false);
 					changeAgents.add(newAgentInfo);
 				}
@@ -187,13 +187,13 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		getAgentRepository().save(changeAgents);
 	}
 
-	private boolean hasSamePortAndStatus(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
+	private boolean hasSamePortAndState(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
 		if (agentInfo == null) {
 			return false;
 		}
 		AgentManager agentManager = getAgentManager();
 		return agentInfo.getPort() == agentManager.getAgentConnectingPort(agentIdentity)
-				&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);
+				&& agentInfo.getState() == agentManager.getAgentState(agentIdentity);
 	}
 
 	private Gson gson = new Gson();

@@ -52,7 +52,7 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setName(name);
 		agentInfo.setIp("127.0.0.1");
 		agentInfo.setRegion(region);
-		agentInfo.setStatus(AgentControllerState.BUSY);
+		agentInfo.setState(AgentControllerState.BUSY);
 		agentInfo.setApproved(false);
 		agentRepository.save(agentInfo);
 	}

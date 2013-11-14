@@ -29,7 +29,7 @@
 					</fieldset>
 				</form>
 				<pre style="height:150px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
-You can write python code to monitor ngrinder internal status.
+You can write python code to monitor the ngrinder internal state.
 
 Following variables are available.
 
