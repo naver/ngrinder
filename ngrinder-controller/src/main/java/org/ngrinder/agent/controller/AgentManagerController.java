@@ -63,7 +63,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	private RegionService regionService;
 
 	/**
-	 * Get the agent list.
+	 * Get the agents.
 	 *
 	 * @param region the region to search. If null, it returns all the attached
 	 *               agents.
@@ -71,7 +71,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
-	public String getAgentList(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
+	public String getAgents(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
 
 		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
@@ -95,10 +95,7 @@ public class AgentManagerController extends NGrinderBaseController {
 			@Override
 			public boolean accept(File dir, String name) {
 				if (name.startsWith("ngrinder")) {
-					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-							contextPath));
-					url.append("/agent/download/" + name);
-					downloads.add(url.toString());
+					downloads.add(contextPath + "/agent/download/" + name);
 				}
 				return true;
 			}
@@ -108,8 +105,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Approve or disapprove agents, so that it can be assigned when a test is
-	 * executed.
+	 * Approve or disapprove an agent, so that it can be assigned.
 	 *
 	 * @param id      agent id to be processed
 	 * @param approve approve or not
@@ -211,6 +207,4 @@ public class AgentManagerController extends NGrinderBaseController {
 		}
 		return successJsonHttpEntity();
 	}
-
-
 }

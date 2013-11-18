@@ -388,7 +388,7 @@ $(document).ready(function () {
 			type : 'GET',
 			success : function(perfTestData) {
 				perfTestData = eval(perfTestData);
-				data = perfTestData.statusList;
+				data = perfTestData.status;
 				for ( var i = 0; i < data.length; i++) {
 					updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 				}

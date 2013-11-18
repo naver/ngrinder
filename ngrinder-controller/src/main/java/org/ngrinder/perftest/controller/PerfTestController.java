@@ -691,7 +691,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isNotEmpty(ids)) {
 			perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
 		}
-		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "statusList",
+		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getPerfTestStatus(perfTests)));
 	}
 
@@ -764,11 +764,12 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping("/api/{id}/status")
 	public HttpEntity<String> getStatus(User user, @PathVariable("id") Long id) {
 		List<PerfTest> perfTests = perfTestService.getPerfTest(user, new Long[]{id});
-		return toJsonHttpEntity(buildMap("statusList", getPerfTestStatus(perfTests)));
+		return toJsonHttpEntity(buildMap("status", getPerfTestStatus(perfTests)));
 	}
 
 	/**
-	 * Get the detailed report graph data for the given perf test id.<br/>
+	 * Get the detailed report graph data for the given perf test id.
+	 *
 	 * This method returns the appropriate points based on the given imgWidth.
 	 *
 	 * @param model    model
@@ -922,7 +923,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = {"/api/{id}/clone_and_start", /* for backward compatibility */ "/api/{id}/cloneAndStart"})
-	public HttpEntity<String> cloneAndStartAPI(User user, @PathVariable("id") Long id, PerfTest perftest) {
+	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		checkNotNull(test, "no perftest for %s exits", id);
 		PerfTest newOne = test.cloneTo(new PerfTest());
