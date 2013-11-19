@@ -13,16 +13,6 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import javax.management.ObjectName;
-import javax.management.openmbean.CompositeData;
-
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.monitor.MonitorConstants;
@@ -36,10 +26,19 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
+
 /**
  * Used to get monitor data directly from MBeanClient and save. For every
  * MBClient, one instance will be created. So it is not singleton.
- * 
+ *
  * @author Mavlarn
  * @since 3.1
  */
@@ -71,15 +70,11 @@ public class MonitorClientService {
 
 	/**
 	 * Initialize the mbeanClient connection.
-	 * 
-	 * @param ip
-	 *            IP address of the monitor target
-	 * @param port
-	 *            port of the monitor target
-	 * @param reportPath
-	 *            report path
-	 * @param cache
-	 *            cache for {@link SystemInfo} data.
+	 *
+	 * @param ip         IP address of the monitor target
+	 * @param port       port of the monitor target
+	 * @param reportPath report path
+	 * @param cache      cache for {@link SystemInfo} data.
 	 */
 	public void init(String ip, int port, File reportPath, Cache cache) {
 		LOGGER.debug("Init MonitorClientService for {}:{}", ip, port);
@@ -99,17 +94,15 @@ public class MonitorClientService {
 			bw.newLine();
 			bw.flush();
 		} catch (Exception e) {
-			LOGGER.error("Init Error while {} and {} {}", new Object[] { ip, port, reportPath }, e);
+			LOGGER.error("Init Error while {} and {} {}", new Object[]{ip, port, reportPath}, e);
 		}
 	}
 
 	/**
 	 * Initialize the mbeanClient connection.
-	 * 
-	 * @param ip
-	 *            IP address of the monitor target
-	 * @param port
-	 *            port of the monitor target
+	 *
+	 * @param ip   IP address of the monitor target
+	 * @param port port of the monitor target
 	 */
 	public void init(String ip, int port) {
 		LOGGER.debug("Init MonitorClientService for {}:{}", ip, port);
@@ -120,20 +113,20 @@ public class MonitorClientService {
 			ObjectName systemName = new ObjectName(objNameStr);
 			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
 		} catch (Exception e) {
-			LOGGER.error("Init Error while {} and {}.", new Object[] { ip, port }, e);
+			LOGGER.error("Init Error while {} and {}.", new Object[]{ip, port}, e);
 		}
 	}
 
 	/**
 	 * Get monitor data from MBClient and record into writer.
-	 * 
+	 *
 	 * @return {@link SystemInfo}
 	 */
 	public SystemInfo getMonitorData() {
 		if (mbeanClient == null) {
 			return null;
 		}
-		try { 
+		try {
 
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
@@ -189,7 +182,7 @@ public class MonitorClientService {
 
 	/**
 	 * Put the monitor data into Cache.
-	 * 
+	 *
 	 * @return saved Data
 	 */
 	public SystemInfo saveDataCache() {
@@ -207,9 +200,8 @@ public class MonitorClientService {
 
 	/**
 	 * Record the data into file.
-	 * 
-	 * @param empty
-	 *            true if want to write empty string
+	 *
+	 * @param empty true if want to write empty string
 	 */
 	public void record(boolean empty) {
 		ValueWrapper valueWrapper = cache.get(ip);

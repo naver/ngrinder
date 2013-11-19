@@ -86,7 +86,7 @@ public class AgentConfig {
 		if (agentConfig.exists()) {
 			return;
 		}
-		File newAgentConfig = new File(getCurrentDirectory(), "agent.conf");
+		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
 	    home.copyFileTo(newAgentConfig, "agent.conf");
 	}
 

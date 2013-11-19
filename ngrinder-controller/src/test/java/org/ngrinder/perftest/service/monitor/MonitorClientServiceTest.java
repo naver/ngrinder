@@ -13,17 +13,16 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Test;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -33,7 +32,7 @@ import com.google.gson.GsonBuilder;
  * @author Mavlarn
  * @since
  */
-public class MonitorClientSerivceTest {
+public class MonitorClientServiceTest {
 	
 	@Test
 	public void test() throws IOException {

@@ -84,12 +84,13 @@ public class ArchLoader {
 		agentConfig.init();
 	}
 
-	public void copyNativeToLoadPath(String name) throws ArchLoaderException {
+	public void copyNativeToAgentHomeNativeDir(String name) throws ArchLoaderException {
 		InputStream is = null;
 		FileOutputStream fo = null;
 		File fl = new File(agentConfig.getHome().getNativeDirectory(), name);
-		if (fl.exists())
+		if (fl.exists())  {
 			return;
+		}
 
 		try {
 			JarFile jarfile = new JarFile("." + File.separator + "lib" + File.separator + "sigar-native-1.0.jar");
@@ -428,7 +429,7 @@ public class ArchLoader {
 
 		try {
 			String libName = getLibraryName();
-			copyNativeToLoadPath(libName);
+			copyNativeToAgentHomeNativeDir(libName);
 			if (path == null) {
 				//e.g. org.hyperic.sigar.path
 				path = System.getProperty(getPackageName() + ".path");

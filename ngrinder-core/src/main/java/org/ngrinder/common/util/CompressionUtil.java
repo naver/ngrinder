@@ -298,15 +298,12 @@ public abstract class CompressionUtil {
 
 	/**
 	 * Untar an input file into an output file.
-	 *
 	 * The output file is created in the output folder, having the same name as
 	 * the input file, minus the '.tar' extension.
 	 *
 	 * @param inFile    the input .tar file
 	 * @param outputDir the output directory file.
 	 * @return The {@link List} of {@link File}s with the untared content.
-	 * @throws IOException
-	 * @throws FileNotFoundException
 	 */
 	@SuppressWarnings("resource")
 	public static List<File> untar(final File inFile, final File outputDir) {
@@ -345,8 +342,6 @@ public abstract class CompressionUtil {
 			}
 			debInputStream.close();
 		} catch (Exception e) {
-			LOGGER.error("Error while untar {} file by {}", inFile, e.getMessage());
-			LOGGER.debug("Trace is : ", e);
 			throw processException("Error while untar file", e);
 		} finally {
 			IOUtils.closeQuietly(is);
@@ -381,8 +376,6 @@ public abstract class CompressionUtil {
 				fout.write(buffer, 0, n);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error while ungzip {} file by {}", inFile, e.getMessage());
-			LOGGER.debug("Trace is : ", e);
 			throw processException("Error while ungzip file", e);
 		} finally {
 			IOUtils.closeQuietly(fin);
@@ -394,55 +387,66 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Unpack the given jar file.
+	 * Process each jar entry in the  given jar file.
 	 *
-	 * @param jarFile jar file
-	 * @param dest    destination directory
+	 * @param jarFile   jar file
+	 * @param processor jar file entry predicate
 	 * @throws IOException thrown when having IO problem.
 	 */
-	public static void processJarEntries(File jarFile, EntryProcessor processor) throws IOException {
-		JarFile jarfile = new JarFile(jarFile);
-		Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
-		while (enu.hasMoreElements()) {
-			JarEntry je = enu.nextElement();
-			if (je.isDirectory()) {
-				continue;
-			}
-			InputStream is = null;
-			FileOutputStream fo = null;
-			try {
+	public static void processJarEntries(File jarFile, ZipEntryProcessor processor) {
+		try {
+			JarFile jarfile = new JarFile(jarFile);
+			Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
+			while (enu.hasMoreElements()) {
+				JarEntry je = enu.nextElement();
+				if (je.isDirectory()) {
+					continue;
+				}
 				processor.process(jarfile, je);
-			} catch (IOException e) {
-				LOGGER.error("Error while extracting jar file {} ", jarFile, e.getMessage());
-				LOGGER.debug("Trace is : ", e);
-				throw processException("Error while extracting jar file", e);
-			} finally {
-				IOUtils.closeQuietly(is);
 			}
+		} catch (IOException e) {
+			throw processException("Error while extracting jar file", e);
 		}
 	}
 
 
 	/**
-	 * Add file into tar.
+	 * Add a file into tar.
 	 *
 	 * @param tarStream TarArchive outputStream
 	 * @param file      file
-	 * @param basePath  relative path
+	 * @param path      relative path to append
 	 * @throws IOException thrown when having IO problem.
 	 */
-	public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String basePath) throws IOException {
+	public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String path) throws IOException {
 		int mode = file.isDirectory() ? TarArchiveEntry.DEFAULT_DIR_MODE : TarArchiveEntry.DEFAULT_FILE_MODE;
-		addFileToTar(tarStream, file, basePath, mode);
+		addFileToTar(tarStream, file, path, mode);
 	}
 
+
 	/**
-	 * Add inputstream into tar.
+	 * Add a folder into tar.
 	 *
 	 * @param tarStream TarArchive outputStream
-	 * @param file      file
-	 * @param basePath  relative path
-	 * @param mode      mode for this entry
+	 * @param path      path to append
+	 * @throws IOException thrown when having IO problem.
+	 */
+	public static void addFolderToTar(TarArchiveOutputStream tarStream, String path) throws IOException {
+		TarArchiveEntry archiveEntry = new TarArchiveEntry(path);
+		archiveEntry.setMode(TarArchiveEntry.DEFAULT_DIR_MODE);
+		tarStream.putArchiveEntry(archiveEntry);
+		tarStream.closeArchiveEntry();
+	}
+
+
+	/**
+	 * Add the given inputstream into tar.
+	 *
+	 * @param tarStream   TarArchive outputStream
+	 * @param inputStream input stream
+	 * @param path        relative path to append
+	 * @param size        size of stream
+	 * @param mode        mode for this entry
 	 * @throws IOException thrown when having IO problem.
 	 */
 	public static void addInputStreamToTar(TarArchiveOutputStream tarStream, InputStream inputStream, String path,
@@ -455,8 +459,6 @@ public abstract class CompressionUtil {
 			tarStream.putArchiveEntry(entry);
 			IOUtils.copy(inputStream, tarStream);
 		} catch (IOException e) {
-			LOGGER.error("Error while adding stream to {}", path);
-			LOGGER.debug("Trace is : ", e);
 			throw processException("Error while adding File to Tar file", e);
 		} finally {
 			tarStream.closeArchiveEntry();
@@ -465,16 +467,16 @@ public abstract class CompressionUtil {
 
 
 	/**
-	 * Add file into tar.
+	 * Add a file into tar.
 	 *
 	 * @param tarStream TarArchive outputStream
 	 * @param file      file
-	 * @param basePath  relative path
+	 * @param path      relative path to append
 	 * @param mode      mode for this entry
 	 * @throws IOException thrown when having IO problem.
 	 */
-	public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String basePath, int mode) throws IOException {
-		TarArchiveEntry entry = new TarArchiveEntry(basePath + file.getName());
+	public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String path, int mode) throws IOException {
+		TarArchiveEntry entry = new TarArchiveEntry(path);
 		entry.setSize(file.length());
 		entry.setMode(mode);
 		BufferedInputStream bis = null;
@@ -483,17 +485,15 @@ public abstract class CompressionUtil {
 			bis = new BufferedInputStream(new FileInputStream(file));
 			IOUtils.copy(bis, tarStream);
 		} catch (IOException e) {
-			LOGGER.error("Error while adding File to Tar {} file by {}", file, e.getMessage());
-			LOGGER.debug("Trace is : ", e);
 			throw processException("Error while adding File to Tar file", e);
 		} finally {
-			IOUtils.closeQuietly(bis);
 			tarStream.closeArchiveEntry();
+			IOUtils.closeQuietly(bis);
 		}
 	}
 
 
-	public interface EntryProcessor {
+	public interface ZipEntryProcessor {
 		public void process(ZipFile zipFile, ZipEntry je) throws IOException;
 	}
 }
