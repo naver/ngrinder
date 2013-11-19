@@ -145,7 +145,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 */
 	public void init() {
 		foreMostJarList.add("ngrinder-dns");
-		patchJarList.add("patch.jar");
+		patchJarList.add("patch");
 		// TODO: If we have need another jar files, we should append it here.
 		usefulJarList.add("grinder");
 		usefulJarList.add("dnsjava");
