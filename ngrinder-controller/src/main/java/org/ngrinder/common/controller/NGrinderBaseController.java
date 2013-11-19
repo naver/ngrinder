@@ -263,10 +263,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 * @return {@link HttpEntity} class containing the converted json message
 	 */
 	public HttpEntity<String> toJsonHttpEntity(Object content) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		responseHeaders.setPragma("no-cache");
-		return toHttpEntity(toJson(content), responseHeaders);
+		return toJsonHttpEntity(content, gson);
 	}
 
 	/**
@@ -294,16 +291,17 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given string into {@link HttpEntity} containing the converted json message.
+	 * Convert the object with the given serializer into {@link HttpEntity}.
 	 *
-	 * @param content content
+	 * @param content content     ]
+	 * @param serializer custom JSON serializer
 	 * @return json message
 	 */
-	public HttpEntity<String> toJsonHttpEntity(String content) {
+	public HttpEntity<String> toJsonHttpEntity(Object content, Gson serializer) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
 		responseHeaders.setPragma("no-cache");
-		return toHttpEntity(content, responseHeaders);
+		return toHttpEntity(serializer.toJson(content), responseHeaders);
 	}
 
 	/**

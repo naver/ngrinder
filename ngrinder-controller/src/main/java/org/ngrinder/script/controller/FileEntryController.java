@@ -86,21 +86,6 @@ public class FileEntryController extends NGrinderBaseController {
 	@Autowired
 	private ScriptHandlerFactory handlerFactory;
 
-	/**
-	 * Validate the script.
-	 *
-	 * @param user       current user
-	 * @param fileEntry  fileEntry
-	 * @param hostString hostString
-	 * @return validation Result string
-	 */
-	@RequestMapping(value = "/validate", method = RequestMethod.POST)
-	@ResponseBody
-	public String validate(User user, FileEntry fileEntry,
-	                       @RequestParam(value = "hostString", required = false) String hostString) {
-		fileEntry.setCreatedUser(user);
-		return scriptValidationService.validateScript(user, fileEntry, false, hostString);
-	}
 
 	/**
 	 * Get the list of file entries for the given user.
@@ -505,5 +490,22 @@ public class FileEntryController extends NGrinderBaseController {
 	public HttpEntity<String> deleteOne(User user, @RemainedPath String path) {
 		fileEntryService.delete(user, path);
 		return successJsonHttpEntity();
+	}
+
+
+	/**
+	 * Validate the script.
+	 *
+	 * @param user       current user
+	 * @param fileEntry  fileEntry
+	 * @param hostString hostString
+	 * @return validation Result string
+	 */
+	@RequestMapping(value = "/api/validate", method = RequestMethod.POST)
+	@RestAPI
+	public HttpEntity<String> validate(User user, FileEntry fileEntry,
+	                       @RequestParam(value = "hostString", required = false) String hostString) {
+		fileEntry.setCreatedUser(user);
+		return toJsonHttpEntity(scriptValidationService.validateScript(user, fileEntry, false, hostString));
 	}
 }

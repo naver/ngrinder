@@ -468,7 +468,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 
-	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
+	private Map<String, Object> getReportGraphStrings(PerfTest perfTest, String[] dataTypes, int interval) {
 		Map<String, Object> resultMap = Maps.newHashMap();
 		for (String each : dataTypes) {
 			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(perfTest.getId(),
@@ -647,7 +647,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param id    test id
 	 * @return perftest/detail_report
 	 */
-	@RequestMapping(value = {"{id}/detail_report", "{id}/report"})
+	@RequestMapping(value = {"{id}/detail_report", /** for backward compatibility */ "{id}/report"})
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getPerfTest(id));
 		return "perftest/detail_report";
@@ -665,7 +665,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 
-	private Map<String, String> getMonitorDataSystem(long id, String targetIP, int imgWidth) {
+	private Map<String, String> getMonitorData(long id, String targetIP, int imgWidth) {
 		int interval = perfTestService.getSystemMonitorDataInterval(id, targetIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, targetIP, interval);
 		PerfTest perfTest = perfTestService.getPerfTest(id);
@@ -686,11 +686,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping("/api/status")
-	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
-		List<PerfTest> perfTests = newArrayList();
-		if (StringUtils.isNotEmpty(ids)) {
-			perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
-		}
+	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
+		List<PerfTest> perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getPerfTestStatus(perfTests)));
 	}
@@ -717,7 +714,7 @@ public class PerfTestController extends NGrinderBaseController {
 				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
 			}
 		});
-		return toJsonHttpEntity(fileEntryGson.toJson(allFileEntries));
+		return toJsonHttpEntity(allFileEntries, fileEntryGson);
 	}
 
 
@@ -787,7 +784,7 @@ public class PerfTestController extends NGrinderBaseController {
 			return errorJsonHttpEntity();
 		}
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
-		return toJsonHttpEntity(getGraphDataString(perfTestService.getPerfTest(id), dataTypes, interval));
+		return toJsonHttpEntity(getReportGraphStrings(perfTestService.getPerfTest(id), dataTypes, interval));
 	}
 
 	/**
@@ -803,7 +800,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping("/api/{id}/monitor")
 	public HttpEntity<String> getMonitorData(ModelMap model, @PathVariable("id") long id,
 	                                         @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
-		return toJsonHttpEntity(getMonitorDataSystem(id, targetIP, imgWidth));
+		return toJsonHttpEntity(getMonitorData(id, targetIP, imgWidth));
 	}
 
 	/**

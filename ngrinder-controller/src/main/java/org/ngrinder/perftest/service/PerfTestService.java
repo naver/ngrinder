@@ -227,7 +227,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(createdBy(user));
 		}
-
 		spec = spec.and(idSetEqual(ids));
 		return perfTestRepository.findAll(spec);
 	}
@@ -328,7 +327,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param id            id of {@link PerfTest}
 	 * @param runningSample runningSample json string
-	 * @param agentState   agentState json string
+	 * @param agentState    agentState json string
 	 */
 	@Transactional
 	public void updateRuntimeStatistics(Long id, String runningSample, String agentState) {
@@ -928,7 +927,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		String runningSample = getProperSizeRunningSample(singleConsole);
-		String agentState= getProperSizedStatusString(singleConsole);
+		String agentState = getProperSizedStatusString(singleConsole);
 		updateRuntimeStatistics(perfTestId, runningSample, agentState);
 	}
 
@@ -1333,7 +1332,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * display. For example, interval value "2" means, get one record for every "2" records.
 	 *
 	 * @param testId     test id
-	 * @param targetIP  ip address of monitor target
+	 * @param targetIP   ip address of monitor target
 	 * @param imageWidth image with of the chart.
 	 * @return interval value.
 	 */
@@ -1373,7 +1372,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * in JS as a vector.
 	 *
 	 * @param testId       test id
-	 * @param targetIP    ip address of the monitor target
+	 * @param targetIP     ip address of the monitor target
 	 * @param dataInterval interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
@@ -1458,7 +1457,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/**
 	 * Get all{@link SystemDataModel} from monitor data file of one test and target.
 	 *
-	 * @param testId    test id
+	 * @param testId   test id
 	 * @param targetIP IP address of the monitor target
 	 * @return SystemDataModel list
 	 */

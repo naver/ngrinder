@@ -206,7 +206,7 @@
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 				$.ajax({
-			  		url: "${req.getContextPath()}/script/validate",
+			  		url: "${req.getContextPath()}/script/api/validate",
 			    	async: true,
 			    	type: "POST",
 					data: {'path':scriptPath, 'content': newContent, 
