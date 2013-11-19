@@ -94,8 +94,7 @@ public class AgentUpdateHandler {
 
 		try {
 			FileUtils.deleteQuietly(toDir);
-			final File[] files = interDir.listFiles();
-			FileUtils.moveDirectory(files[0], toDir);
+			FileUtils.moveDirectory(new File(interDir, "ngrinder-agent"), toDir);
 		} catch (IOException e) {
 			LOGGER.error("Error while moving a file ", e);
 		}

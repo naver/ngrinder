@@ -92,7 +92,7 @@ public class ArchLoader {
 			return;
 
 		try {
-			JarFile jarfile = new JarFile("." + File.separator + "lib" + File.separator + "native.jar");
+			JarFile jarfile = new JarFile("." + File.separator + "lib" + File.separator + "sigar-native-1.0.jar");
 			for (Enumeration<JarEntry> en = jarfile.entries(); en.hasMoreElements(); ) {
 				JarEntry je = en.nextElement();
 				if (name.equals(je.getName())) {

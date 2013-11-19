@@ -341,16 +341,12 @@
 		<dependency>
 			<groupId>grinder</groupId>
 			<artifactId>grinder-patch</artifactId>
-			<version>3.9.1</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/patch/grinder-3.9.1-patch.jar</systemPath>
+			<version>3.9.1-patch</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>universal-analytics-java</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/patch/universal-analytics-java-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -385,7 +381,7 @@
 			<version>2.12.2</version>
 		</dependency>
 
-		<!-- Json convertion -->
+		<!-- Json conversion -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -422,49 +418,6 @@
 				<artifactId>maven-deploy-plugin</artifactId>
 				<configuration>
 					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<webResources>
-						<resource>
-							<directory>patch</directory>
-							<targetPath>WEB-INF/lib</targetPath>
-							<includes>
-								<include>**/*.jar</include>
-							</includes>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<additionalProjectnatures>
-						<projectnature>
-							org.springframework.ide.eclipse.core.springnature
-						</projectnature>
-						<projectnature>
-							org.eclipse.m2e.core.maven2Nature
-						</projectnature>
-					</additionalProjectnatures>
-					<additionalBuildcommands>
-						<buildcommand>
-							org.springframework.ide.eclipse.core.springbuilder
-						</buildcommand>
-						<buildcommand>
-							org.eclipse.m2e.core.maven2Builder
-						</buildcommand>
-					</additionalBuildcommands>
-
-					<downloadSources>false</downloadSources>
-					<downloadJavadocs>false</downloadJavadocs>
-					<wtpmanifest>true</wtpmanifest>
-					<wtpapplicationxml>true</wtpapplicationxml>
-					<wtpversion>2.0</wtpversion>
 				</configuration>
 			</plugin>
 			<plugin>

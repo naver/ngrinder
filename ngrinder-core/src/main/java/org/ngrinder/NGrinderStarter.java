@@ -55,7 +55,6 @@ public class NGrinderStarter {
 
 	private AgentControllerDaemon agentController;
 
-	private ReconfigurableURLClassLoader classLoader;
 
 	private static String startMode = "monitor";
 
@@ -73,8 +72,13 @@ public class NGrinderStarter {
 		agentConfig.init();
 		// Configure log.
 		configureLogging();
-		addClassPath();
 		addLibraryPath();
+	}
+
+	private void addLibraryPath() {
+		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
+				+ agentConfig.getHome().getNativeDirectory().getAbsolutePath());
+		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
 	private void configureLogging() {
@@ -89,11 +93,6 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void addCustomClassLoader() {
-		URL[] urLs = ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs();
-		this.classLoader = new ReconfigurableURLClassLoader(urLs);
-		Thread.currentThread().setContextClassLoader(this.classLoader);
-	}
 
 	/*
 	 * Get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
@@ -209,12 +208,6 @@ public class NGrinderStarter {
 		agentController.shutdown();
 	}
 
-	private void addLibraryPath() {
-		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-				+ agentConfig.getHome().getNativeDirectory().getAbsolutePath());
-		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
-	}
-
 	/**
 	 * Get jar file list.
 	 *
@@ -233,35 +226,6 @@ public class NGrinderStarter {
 		return fileString;
 	}
 
-	/**
-	 * Add class path.
-	 */
-	protected void addClassPath() {
-		ArrayList<String> libString = new ArrayList<String>();
-		Collection<File> libList = getJarFileList();
-		addCustomClassLoader();
-
-		// Add patch first
-		for (File each : libList) {
-			if (each.getName().contains("patch")) {
-				addClassPath(classLoader, each);
-				libString.add(each.getPath());
-			}
-		}
-
-		// Add rest of them
-		for (File each : libList) {
-			if (!each.getName().contains("patch")) {
-				addClassPath(classLoader, each);
-				libString.add(each.getPath());
-			}
-		}
-		if (!libString.isEmpty()) {
-			String base = System.getProperties().getProperty("java.class.path");
-			String classpath = base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator);
-			System.getProperties().setProperty("java.class.path", classpath);
-		}
-	}
 
 	private void addClassPath(ReconfigurableURLClassLoader urlClassLoader, File jarFile) {
 		try {
@@ -421,7 +385,7 @@ public class NGrinderStarter {
 		String[] list = currentFolder.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return (name.startsWith("ngrinder-core") && name.endsWith(".jar"));
+				return (name.startsWith("run_agent") && (name.endsWith(".sh") || name.endsWith(".bat")));
 			}
 		});
 		return (list != null && list.length != 0);

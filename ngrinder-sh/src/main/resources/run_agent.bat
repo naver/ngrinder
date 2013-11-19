@@ -6,7 +6,6 @@ CD %basedir%
 IF EXIST  .\update_package\lib (
 	@ECHO ON
 	REM update package and run
-	DEL .\*.jar
 	RMDIR /S /Q .\lib
 	@ECHO UPDATE NGRINDER_AGENT
 	@ECHO OFF

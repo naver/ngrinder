@@ -471,7 +471,7 @@ public class AgentManagerService implements IAgentManagerService {
 		}
 
 		final String distributePackageName = getDistributionPackageName("ngrinder-core", false);
-		final String basePath = getPackageName("ngrinder-core") + "/";
+		final String basePath = "ngrinder-agent/";
 		final String libPath = basePath + "lib/";
 		File agentTar = new File(agentPackagesDir, distributePackageName);
 		if (agentTar.exists()) {
@@ -485,7 +485,8 @@ public class AgentManagerService implements IAgentManagerService {
 
 			fos = new FileOutputStream(agentTar);
 			taos = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
-			taos.putArchiveEntry(new TarArchiveEntry(basePath));
+			final TarArchiveEntry archiveEntry = new TarArchiveEntry(basePath);
+			taos.putArchiveEntry(archiveEntry);
 			taos.closeArchiveEntry();
 			taos.putArchiveEntry(new TarArchiveEntry(libPath));
 			taos.closeArchiveEntry();
@@ -512,17 +513,16 @@ public class AgentManagerService implements IAgentManagerService {
 								}
 							});
 				}
-				if (isMatchingLib(eachUrl, "ngrinder-core")) {
-					File eachLib = new File(eachUrl.toURI());
-					CompressionUtil.addFileToTar(taos, eachLib, basePath);
-					continue;
-				}
-
 				for (String eachLib : libs) {
 					if (eachUrl.getFile().endsWith(StringUtils.trim(eachLib))) {
 						File jarFile = new File(eachUrl.toURI());
 						CompressionUtil.addFileToTar(taos, jarFile, libPath);
+						continue;
 					}
+				}
+				if (eachUrl.getFile().contains("ngrinder-core")) {
+					File jarFile = new File(eachUrl.toURI());
+					CompressionUtil.addFileToTar(taos, jarFile, libPath);
 				}
 			}
 			final String config = getConfigContent("agent_agent.conf", getAgentConfigParam());

@@ -1,6 +1,4 @@
 #!/bin/sh
 curpath=`dirname $0`
 cd ${curpath}
-LD_LIBRARY_PATH="${curpath}/native_lib/:${LD_LIBRARY_PATH}"
-export LD_LIBRARY_PATH
-java -Dstart.mode=stopagent -jar ngrinder-core-${ngrinder.version}.jar -server
+java -Dstart.mode=stopagent -server -cp "lib/*" org.ngrinder.NGrinderStarter

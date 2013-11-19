@@ -1,4 +1,4 @@
 @ECHO OFF
 SET basedir=%~dp0
 CD %basedir%
-java  -Dstart.mode=stopmonitor -jar ngrinder-core-${ngrinder.version}.jar -server
+java -Dstart.mode=stopmonitor -server -cp "lib/*" org.ngrinder.NGrinderStarter

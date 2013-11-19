@@ -7,8 +7,7 @@ do
 	then
 		echo UPDATE TO NEWER VERSION
 		# update package and run
-		rm -rf .\*.jar
-		rm -rf .\lib
+		rm -rf ./lib
 		cp -rf ./update_package/* .
 		rm -rf ./update_package
 	fi
