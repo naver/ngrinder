@@ -82,16 +82,12 @@ public class AgentConfig {
 
 	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
-		final File file = new File(System.getProperty("user.dir"), "ngrinder_agent_home_template/agent.conf");
-		if (file.exists()) {
-			home.getFile("ngrinder_agent_home_template/agent.conf");
+		final File agentConfig = home.getFile("agent.conf");
+		if (agentConfig.exists()) {
+			return;
 		}
-		InputStream agentConfIO = loadFromClassPath("ngrinder_agent_home_template/agent.conf");
-		if (agentConfIO == null) {
-			throw processException("Error while loading agent.conf file");
-		}
-		home.copyFileTo(agentConfIO, new File("ngrinder_agent_home_template/agent.conf"));
-		IOUtils.closeQuietly(agentConfIO);
+		File newAgentConfig = new File(getCurrentDirectory(), "agent.conf");
+	    home.copyFileTo(newAgentConfig, "agent.conf");
 	}
 
 	/**

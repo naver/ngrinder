@@ -59,7 +59,7 @@ public class AgentHome {
 
 		if (!directory.isDirectory()) {
 			throw processException(String.format(
-					"nGrinder home directory %s is not directory. Please delete this file in advance",
+					"nGrinder home directory %s is not directory. Please delete this sourceFile in advance",
 					directory.getAbsolutePath()));
 		}
 
@@ -105,10 +105,26 @@ public class AgentHome {
 	}
 
 	/**
+	 * Copy the {@link File} to path in the home.
+	 *
+	 * @param sourceFile {@link File}
+	 * @param target     target path. only sourceFile name will be used.
+	 */
+	public void copyFileTo(File sourceFile, String target) {
+		// Copy missing files
+		File targetFile = new File(directory, target);
+		try {
+			FileUtils.copyFile(sourceFile, targetFile);
+		} catch (IOException e) {
+			throw processException("Failed to write a sourceFile to " + target, e);
+		}
+	}
+
+	/**
 	 * Copy the {@link InputStream} to path in the target.
 	 *
 	 * @param io     {@link InputStream}
-	 * @param target target path. only file name will be used.
+	 * @param target target path. only sourceFile name will be used.
 	 * @deprecated 3.3
 	 */
 	public void copyFileTo(InputStream io, File target) {
@@ -119,14 +135,14 @@ public class AgentHome {
 				FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
 			}
 		} catch (IOException e) {
-			throw processException("Failed to write a file to " + target.getAbsolutePath(), e);
+			throw processException("Failed to write a sourceFile to " + target.getAbsolutePath(), e);
 		}
 	}
 
 	/**
 	 * Get the properties from path.
 	 *
-	 * @param path property file path
+	 * @param path property sourceFile path
 	 * @return {@link Properties} instance. return empty property if it has
 	 *         problem.
 	 */
@@ -147,7 +163,7 @@ public class AgentHome {
 	}
 
 	/**
-	 * Get the file from the given path.
+	 * Get the sourceFile from the given path.
 	 *
 	 * @param path path
 	 * @return {@link File} instance.
@@ -169,7 +185,7 @@ public class AgentHome {
 			out = FileUtils.openOutputStream(propertiesFile);
 			properties.store(out, null);
 		} catch (IOException e) {
-			LOGGER.error("Could not save property  file on " + path, e);
+			LOGGER.error("Could not save property  sourceFile on " + path, e);
 		} finally {
 			IOUtils.closeQuietly(out);
 		}
