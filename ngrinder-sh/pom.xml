@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated from archetype; please customize. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.ngrinder</groupId>
+		<artifactId>ngrinder</artifactId>
+		<version>3.3-SNAPSHOT</version>
+	</parent>
+	<artifactId>ngrinder-sh</artifactId>
+	<name>ngrinder-sh</name>
+    <version>3.3-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+	<dependencies>
+	
+	</dependencies>
+
+	<build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+	</build>
+</project>

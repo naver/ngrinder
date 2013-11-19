@@ -7,24 +7,6 @@
     <format>zip</format>
   </formats>
   <fileSets>
-	<fileSet>
-      <directory>${project.basedir}/target/classes/shell</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>*.sh</include>
-      </includes>
-      <fileMode>711</fileMode>
-      <lineEnding>unix</lineEnding>
-      
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/target/classes/shell</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>*.bat</include>
-      </includes>
-      <lineEnding>dos</lineEnding>
-    </fileSet>
     <fileSet>
       <directory>${project.basedir}/../</directory>
       <outputDirectory>/</outputDirectory>
@@ -41,11 +23,21 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>native_lib/*.*</include>
-      </includes>
+          <directory>${project.basedir}/target</directory>
+          <outputDirectory>/</outputDirectory>
+          <includes>
+              <include>*.sh</include>
+          </includes>
+          <fileMode>711</fileMode>
+          <lineEnding>unix</lineEnding>
+    </fileSet>
+    <fileSet>
+          <directory>${project.basedir}/target</directory>
+          <outputDirectory>/</outputDirectory>
+          <includes>
+              <include>*.bat</include>
+          </includes>
+          <lineEnding>dos</lineEnding>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/patch</directory>

@@ -13,7 +13,6 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.CommunicationDefaults;
@@ -21,12 +20,13 @@ import net.grinder.engine.agent.Agent;
 import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Agent Daemon wrapper for {@link AgentImplementationEx} in thread.

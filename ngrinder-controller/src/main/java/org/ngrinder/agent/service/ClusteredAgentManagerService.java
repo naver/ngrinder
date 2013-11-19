@@ -13,27 +13,13 @@
  */
 package org.ngrinder.agent.service;
 
-import static net.grinder.message.console.AgentControllerState.INACTIVE;
-import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
-import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL;
-import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.STOP_AGENT;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.ClusteredAgentRequest;
@@ -54,9 +40,21 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static net.grinder.message.console.AgentControllerState.INACTIVE;
+import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
+import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL;
+import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.STOP_AGENT;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Cluster enabled version of {@link AgentManagerService}.
@@ -404,4 +402,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
 		getAgentManager().stopAgent(agentIdentity);
 	}
+
+    /**
+     * Get the agent package containing folder.
+     */
+    public File getAgentPackagesDir() {
+        return getConfig().getExHome().getSubFile("update_agents");
+    }
 }

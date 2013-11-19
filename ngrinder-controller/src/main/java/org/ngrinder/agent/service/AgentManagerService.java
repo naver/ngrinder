@@ -13,25 +13,23 @@
  */
 package org.ngrinder.agent.service;
 
-import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
-
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
@@ -44,10 +42,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
+import java.util.zip.GZIPOutputStream;
+
+import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent manager service.
@@ -88,6 +93,7 @@ public class AgentManagerService implements IAgentManagerService {
 			AgentControllerIdentityImplementation agentControllerIdentity = cast(agentIdentity);
 			attachedAgentMap.put(createAgentKey(agentControllerIdentity), agentControllerIdentity);
 		}
+
 
 		// If region is not specified retrieved all
 		List<AgentInfo> agentsInDB = getAgentRepository().findAll();
@@ -439,4 +445,142 @@ public class AgentManagerService implements IAgentManagerService {
 	public void setConfig(Config config) {
 		this.config = config;
 	}
+
+    /**
+     * Get the agent package containing folder.
+     */
+    public File getAgentPackagesDir() {
+        return config.getHome().getSubFile("update_agents");
+    }
+
+    /*
+    * (non-Javadoc)
+    *
+    * @see
+    * org.ngrinder.agent.service.IAgentManagerService#createAgentPackage
+    */
+    public File createAgentPackage(URLClassLoader cl) throws IOException {
+
+        String agentPackageLibs = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
+
+        File agentPackagesDir = getAgentPackagesDir();
+        if (!agentPackagesDir.exists()) {
+            agentPackagesDir.mkdir();
+        }
+
+        File agentTar = new File(agentPackagesDir, getDistributePackageName("ngrinder-core", false));
+        File agentZip = new File(agentPackagesDir, getDistributePackageName("ngrinder-core", true));
+
+        if (agentTar.exists()) {
+            return agentTar;
+        }
+
+        FileUtils.cleanDirectory(agentPackagesDir);
+        File agentPackageDir = new File(agentPackagesDir, FilenameUtils.getBaseName(agentZip.getName()));
+        File agentSubLibDir = new File(agentPackageDir, "lib");
+        agentSubLibDir.mkdirs();
+
+        FileOutputStream fos = null;
+        TarArchiveOutputStream taos = null;
+        try {
+
+            fos = new FileOutputStream(agentTar);
+            taos = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
+            taos.putArchiveEntry(new TarArchiveEntry("lib/"));
+            taos.closeArchiveEntry();
+            URL[] libUrls = cl.getURLs();
+
+            final String[] libs = StringUtils.split(agentPackageLibs, ",;");
+            for (URL eachUrl : libUrls) {
+                try {
+
+                    if (isMatchingLib(eachUrl, "ngrinder-sh")) {
+                        File coreShell = new File(eachUrl.toURI());
+                        CompressionUtil.unjar(coreShell, agentPackageDir);
+                        continue;
+                    }
+
+                    if (isMatchingLib(eachUrl, "ngrinder-core")) {
+                        File eachLib = new File(eachUrl.toURI());
+                        CompressionUtil.addFileToTar(taos, eachLib, "");
+                        FileUtils.copyFileToDirectory(eachLib, agentPackageDir);
+                        continue;
+                    }
+
+                    for (String eachLib : libs) {
+                        if (eachUrl.getFile().endsWith(StringUtils.trim(eachLib))) {
+                            File jarFile = new File(eachUrl.toURI());
+                            CompressionUtil.addFileToTar(taos, jarFile, "lib/");
+                            FileUtils.copyFileToDirectory(jarFile, agentSubLibDir);
+                        }
+                    }
+                } catch (URISyntaxException e) {
+                    throw new NGrinderRuntimeException("Wrong URL Syntax for " + eachUrl, e);
+                }
+            }
+
+            File[] shellScripts = agentPackageDir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    if (name.endsWith("sh") || name.endsWith("bat"))
+                        return true;
+                    return false;
+                }
+            });
+
+            for (File eachScript : shellScripts) {
+                CompressionUtil.addFileToTar(taos, eachScript, "", 0100755);
+            }
+
+            CompressionUtil.zip(agentPackageDir);
+
+        } catch (IOException e) {
+            LOGGER.error("Error while generating agent package" + e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(taos);
+            IOUtils.closeQuietly(fos);
+            FileUtils.deleteDirectory(agentPackageDir);
+        }
+
+        return agentTar;
+    }
+
+    /*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#updateAgentLib
+	 * (java.lang.String)
+	 */
+    @Override
+    public void updateAgent(String url) {
+        agentManager.updateAgent(url);
+    }
+
+    /**
+     * Get ngrinder sub module full name.
+     *
+     * @param moduleName
+     *                  nGrinder sub  module name.
+     * @param forWindow
+     *                  if true, then package type is zip,if false, package type is tar.gz.
+     *
+     * @return String  module full name.
+     */
+    public String getDistributePackageName(String moduleName, boolean forWindow) {
+        return moduleName + "-" + config.getVersion() + (forWindow ? ".zip" : ".tar.gz");
+    }
+
+    /**
+     * Check if this given url is the given library.
+     *
+     * @param libUrl
+     *               lib's url
+     * @param libName
+     *               lib name
+     * @return true
+     */
+    public boolean isMatchingLib(URL libUrl, String libName) {
+        return StringUtils.startsWith(FilenameUtils.getName(libUrl.getFile()), libName) && libUrl.getFile().endsWith("jar");
+    }
 }

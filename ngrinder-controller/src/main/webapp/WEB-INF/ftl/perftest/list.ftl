@@ -31,6 +31,9 @@
 				height: 150px; 
 				min-width: 290px; 
 			}
+            td.no-padding {
+                padding: 0px;
+            }
 		</style>
 	</head>
 
@@ -111,7 +114,7 @@
 					<col width="50">
 				</colgroup>
 				<thead>
-					<tr>
+					<tr id="head_tr_id">
 						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
 						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="test_name" name="testName"><@spring.message "perfTest.table.testName"/></th>
@@ -219,7 +222,7 @@
 		            				<div>
 		            			</td>
 								<td class="center">
-									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download img-dispaly" sid="${test.id}"></i></a>
+									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download test-display" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>  
@@ -247,14 +250,16 @@
 		</div>
 	<script>
 		$(document).ready(function() {
+
+            var rowCount = $('#head_tr_id th').length;
+
 			$("#tag").select2({
 				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
 				allowClear: true
 			}).change(function() {
 				document.forms.test_list_form.submit();
 			});
-			
-	      	
+
 			$("#nav_test").addClass("active");
 			
 			enableChkboxSelectAll("test_table");
@@ -286,41 +291,36 @@
 				});
 			});
 			
-			$("i.img-dispaly").click(function() {
-				
+			$("i.test-display").click(function() {
 				var id = $(this).attr("sid");
-				var img_table_id = "test_" + id;
-				var tps_id = "tps_chart" + id;
-				var mean_time_chart_id = "mean_time_chart" + id;
-				var error_chart_id = "error_chart" + id;
-				
-				if(!$(this).closest('tr').next("table").length){
-					imgDisplay = $("<table id='"+ img_table_id +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tps_id +"></div></td> <td><div class='smallChart' id="+ mean_time_chart_id +"></div></td> <td><div class='smallChart' id="+ error_chart_id +"></div></td> </tr></table><table id='"+ img_table_id +"2'></table>");	
-					imgDisplay.hide();
-					$(this).closest('tr').after(imgDisplay);
+                var perftestChartTrId = "test_tr_" + id;
+				var tpsId = "tps_chart" + id;
+				var meanTimeChartId = "mean_time_chart" + id;
+				var errorChartId = "error_chart" + id;
+				if(!$(this).closest('tr').next('#'+perftestChartTrId).length){
+                    testInfoTr = $("<tr id='"+perftestChartTrId+"' style='display:none'><td colspan='"+rowCount+"' class='no-padding'><table style='width:940px'><tr><td><div class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
+					$(this).closest('tr').after(testInfoTr);
 					$.ajax({
 		                url: "${req.getContextPath()}/perftest/api/"+ id +"/graph",
 		                dataType:'json',
 		                cache: false,
 		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
 		                success: function(res) {
-							drawListPlotChart(tps_id, res.TPS.data , ["Tps"], res.chartInterval);
-							drawListPlotChart(mean_time_chart_id , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-							drawListPlotChart(error_chart_id , res.Errors.data, ["Errors"], res.chartInterval);
+							drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
+							drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+							drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
 							return true;
 		                },
 		                error: function() {
-			                showErrorMsg("Failed to get graph.")
+			                showErrorMsg("Failed to get graph.");
 		                    return false;
 		                }
-		            }); 
-				
-					imgDisplay.show("slow");
+		            });
+                    testInfoTr.show("slow");
 				}else{
-					$("#"+img_table_id).hide("slow");
-					$("#"+img_table_id).remove();
-					$("#"+img_table_id+"2").remove();
-				}
+                    $("#"+perftestChartTrId).next('tr').remove();
+                    $("#"+perftestChartTrId).remove();
+                }
 				
 			});
 			

@@ -13,13 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -27,17 +22,21 @@ import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Agent management controller.
@@ -212,5 +211,17 @@ public class AgentManagerController extends NGrinderBaseController {
 		return successJsonHttpEntity();
 	}
 
+    /**
+     * Send update message to agent side
+     *
+     * @return json message
+     */
+    @RestAPI
+    @PreAuthorize("hasAnyRole('A')")
+    @RequestMapping(value = "/api/update", method = RequestMethod.GET)
+    public HttpEntity<String> updateAgent() {
+        agentManagerService.updateAgent(httpContainerContext.getCurrentContextUrlFromUserRequest() + "/agent/download_new_agent");
+        return successJsonHttpEntity();
+    }
 
 }

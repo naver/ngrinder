@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,26 +9,16 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.NetworkUtil;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,13 +38,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Properties;
+
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -89,7 +86,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Add the system configuration change listener.
-	 * 
+	 *
 	 * @param listener
 	 *            listener
 	 */
@@ -99,7 +96,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Initialize the {@link Config} object.
-	 * 
+	 *
 	 * This method mainly resolves ${NGRINDER_HOME} and loads system properties. In addition, the logger is initialized
 	 * and the default configuration files are copied into ${NGRINDER_HOME} if they do not exists.
 	 */
@@ -144,7 +141,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Set the RMI server host name.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	protected void setRMIHostName() {
@@ -163,7 +160,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get if the cluster mode is enable or not.
-	 * 
+	 *
 	 * @return true if the cluster mode is enabled.
 	 * @since 3.1
 	 */
@@ -173,7 +170,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the ngrinder instance IPs consisting of the current cluster from the configuration.
-	 * 
+	 *
 	 * @return ngrinder instance IPs
 	 */
 	public String[] getClusterURIs() {
@@ -183,7 +180,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the current region from the configuration.
-	 * 
+	 *
 	 * @return region. If it's not clustered mode, return "NONE"
 	 */
 	public String getRegion() {
@@ -192,7 +189,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the monitor listener port from the configuration.
-	 * 
+	 *
 	 * @return monitor port
 	 */
 	public int getMonitorPort() {
@@ -202,16 +199,16 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the periodic usage report is enabled.
-	 * 
+	 *
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
 		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_USAGE_REPORT, true);
 	}
-	
+
 	/**
 	 * Check if user self-registration is enabled.
-	 * 
+	 *
 	 * @return true if enabled.
 	 */
 	public boolean isSelfUserRegistration() {
@@ -220,7 +217,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Initialize Logger.
-	 * 
+	 *
 	 * @param forceToVerbose
 	 *            true to force verbose logging.
 	 */
@@ -230,7 +227,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Set up the logger.
-	 * 
+	 *
 	 * @param verbose
 	 *            verbose mode?
 	 */
@@ -263,7 +260,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Copy the default files and create default directories to ${NGRINDER_HOME}.
-	 * 
+	 *
 	 * @throws IOException
 	 *             occurs when there is no such a files.
 	 */
@@ -277,7 +274,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Resolve nGrinder home path.
-	 * 
+	 *
 	 * @return resolved home
 	 */
 	protected Home resolveHome() {
@@ -299,7 +296,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Resolve nGrinder extended home path.
-	 * 
+	 *
 	 * @return resolved home
 	 */
 	protected Home resolveExHome() {
@@ -438,7 +435,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the database properties.
-	 * 
+	 *
 	 * @return database properties
 	 */
 	public PropertiesWrapper getDatabaseProperties() {
@@ -451,7 +448,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if it's test mode.
-	 * 
+	 *
 	 * @return true if test mode
 	 */
 	public boolean isTestMode() {
@@ -460,7 +457,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the user security is enabled.
-	 * 
+	 *
 	 * @return true if user security is enabled.
 	 */
 	public boolean isUserSecurityEnabled() {
@@ -469,7 +466,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if it's the security enabled mode.
-	 * 
+	 *
 	 * @return true if security is enabled.
 	 */
 	public boolean isSecurityEnabled() {
@@ -478,7 +475,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if it is the demo mode.
-	 * 
+	 *
 	 * @return true if demo mode is enabled.
 	 */
 	public boolean isDemo() {
@@ -487,9 +484,9 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the plugin support is enabled.
-	 * 
+	 *
 	 * The reason why we need this configuration is that it takes time to initialize plugin system in unit test context.
-	 * 
+	 *
 	 * @return true if the plugin is supported.
 	 */
 	public boolean isPluginSupported() {
@@ -498,7 +495,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the resolved home folder.
-	 * 
+	 *
 	 * @return home
 	 */
 	public Home getHome() {
@@ -507,7 +504,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the resolved extended home folder.
-	 * 
+	 *
 	 * @since 3.1
 	 * @return home
 	 */
@@ -517,7 +514,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the system properties.
-	 * 
+	 *
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
 	public PropertiesWrapper getSystemProperties() {
@@ -526,7 +523,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the announcement content.
-	 * 
+	 *
 	 * @return loaded from announcement.conf.
 	 */
 	public String getAnnouncement() {
@@ -535,7 +532,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the nGrinder version number.
-	 * 
+	 *
 	 * @return nGrinder version number. If not set, return "0.0.1"
 	 */
 	public String getVersion() {
@@ -549,7 +546,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the content of "process_and_thread_policy.js" file.
-	 * 
+	 *
 	 * @return loaded file content.
 	 */
 	public String getProcessAndThreadPolicyScript() {
@@ -566,7 +563,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the internal properties.
-	 * 
+	 *
 	 * @return internal properties
 	 */
 	public PropertiesWrapper getInternalProperties() {
@@ -575,7 +572,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get nGrinder version in static way.
-	 * 
+	 *
 	 * @return nGrinder version.
 	 */
 	public static String getVersionString() {
@@ -584,7 +581,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if it's verbose logging mode.
-	 * 
+	 *
 	 * @return true if verbose
 	 */
 	public boolean isVerbose() {
@@ -593,7 +590,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the currently configured controller IP.
-	 * 
+	 *
 	 * @return current IP.
 	 */
 	public String getCurrentIP() {
@@ -602,7 +599,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the current ngrinder instance is hidden instance from the cluster.
-	 * 
+	 *
 	 * @return true if hidden.
 	 */
 	public boolean isInvisibleRegion() {
@@ -611,7 +608,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if no_more_test.lock to block further test executions exists.
-	 * 
+	 *
 	 * @return true if it exists
 	 */
 	public boolean hasNoMoreTestLock() {
@@ -623,7 +620,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if shutdown.lock exists.
-	 * 
+	 *
 	 * @return true if it exists
 	 */
 	public boolean hasShutdownLock() {
@@ -635,7 +632,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the date of the recent announcement modification.
-	 * 
+	 *
 	 * @return the date of the recent announcement modification.
 	 */
 	public Date getAnnouncementDate() {
@@ -644,7 +641,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get ngrinder help URL.
-	 * 
+	 *
 	 * @return help URL
 	 */
 	public String getHelpUrl() {
