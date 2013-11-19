@@ -13,15 +13,10 @@
  */
 package org.ngrinder.agent.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-import java.util.Map;
-
 import junit.framework.Assert;
 import net.grinder.message.console.AgentControllerState;
-
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -29,6 +24,17 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent service test.
@@ -111,6 +117,19 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(agentInDB.getName(), is(agentInfo.getName()));
 		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
 	}
+
+    @Test
+    public void testCompressAgentFolder() throws IOException {
+        URLClassLoader loader = (URLClassLoader)this.getClass().getClassLoader();
+        URL core = this.getClass().getClassLoader().getResource("lib/ngrinder-core-test.jar");
+        URL sh = this.getClass().getClassLoader().getResource("lib/ngrinder-sh-test.jar");
+        URL[] ls = {core,sh};
+        URL[] urls = loader.getURLs();
+        URL[] allLib = cast(ArrayUtils.addAll(urls, ls));
+        URLClassLoader child = new URLClassLoader (allLib, this.getClass().getClassLoader());
+        File agentUpgrade = agentManagerService.createAgentPackage(child);
+        FileUtils.deleteQuietly(agentUpgrade);
+    }
 
 	@Test
 	public void testOther() {

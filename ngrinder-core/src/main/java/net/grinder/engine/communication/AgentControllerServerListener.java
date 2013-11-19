@@ -77,7 +77,7 @@ public final class AgentControllerServerListener {
 	 * 
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN |UPDATE_AGENT;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;

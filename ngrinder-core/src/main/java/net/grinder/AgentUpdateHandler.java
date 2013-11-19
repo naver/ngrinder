@@ -13,21 +13,18 @@
  */
 package net.grinder;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-
 import net.grinder.engine.communication.UpdateAgentGrinderMessage;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Agent Update Message Handler.
@@ -42,12 +39,13 @@ public class AgentUpdateHandler {
 
 	/**
 	 * Agent Update handler.
-	 * 
+	 *
 	 * @param agentConfig
 	 *            agentConfig
 	 */
 	public AgentUpdateHandler(AgentConfig agentConfig) {
-		this.agentConfig = agentConfig;
+        LOGGER.info("AgentUpdateHandler is initialing !");
+        this.agentConfig = agentConfig;
 	}
 
 	boolean isNewer(String newVersion, String installedVersion) {
@@ -63,57 +61,48 @@ public class AgentUpdateHandler {
 	 *            message to be sent
 	 */
 	public void updateAgent(UpdateAgentGrinderMessage message) {
-		if (!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN"))) {
-			LOGGER.info("Update request was sent. But the old version was sent");
-			return;
-		}
-		File downloadFolder = new File(System.getProperty("user.dir"), "download");
-		downloadFolder.mkdirs();
-		File dest = new File(downloadFolder, message.getFileName());
+        if (!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN"))) {
+            LOGGER.info("Update request was sent. But the old version was sent");
+            return;
+        }
 
-		File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
-		File updatePackageDir = new File(System.getProperty("user.dir"), "update_package");
-		try {
-			NetworkUtil.downloadFile(message.getDownloadUrl(), dest);
-			decompress(dest, interDir, updatePackageDir);
-			System.exit(10);
-		} catch (Exception e) {
-			LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
-			LOGGER.info("Details : ", e);
-		}
-	}
+        File tempFolder = agentConfig.getHome().getTempDirectory();
+        File dest = new File(tempFolder, message.getFileName()+".tar.gz");
 
-	void decompress(File from, File interDir, File toDir) {
-		interDir.mkdirs();
-		if (FilenameUtils.isExtension(from.getName(), "gz")) {
-			File outFile = new File(toDir, "ngrinder-agent.tar");
-			CompressionUtil.ungzip(from, outFile);
-			CompressionUtil.untar(outFile, interDir);
-			FileUtils.deleteQuietly(outFile);
-		} else if (FilenameUtils.isExtension(from.getName(), "zip")) {
-			CompressionUtil.unzip(from, interDir);
-		} else {
-			LOGGER.error("{} is not allowed to be unzipped.", from.getName());
-		}
-		// List up only directories.
-		File[] listFiles = interDir.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return (pathname.isDirectory());
-			}
-		});
-		if (ArrayUtils.isNotEmpty(listFiles)) {
-			try {
-				FileUtils.deleteQuietly(toDir);
-				FileUtils.moveDirectory(listFiles[0], toDir);
-			} catch (IOException e) {
-				LOGGER.error("Error while moving a file ", e);
-			}
-		} else {
-			LOGGER.error("{} is empty.", interDir.getName());
-		}
-		FileUtils.deleteQuietly(from);
-		FileUtils.deleteQuietly(interDir);
+        File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
+        File updatePackageDir = new File(System.getProperty("user.dir"), "update_package");
+        try {
+            NetworkUtil.downloadFile(message.getDownloadUrl(), dest);
+            decompress(dest, interDir, updatePackageDir);
+            System.exit(10);
+        } catch (Exception e) {
+            LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
+            LOGGER.info("Details : ", e);
+        }
+    }
 
-	}
+    void decompress(File from, File interDir, File toDir) {
+        interDir.mkdirs();
+        toDir.mkdirs();
+
+        if (FilenameUtils.isExtension(from.getName(), "gz")) {
+            File outFile = new File(toDir, "ngrinder-agent.tar");
+            CompressionUtil.ungzip(from, outFile);
+            CompressionUtil.untar(outFile, interDir);
+            FileUtils.deleteQuietly(outFile);
+        } else {
+            LOGGER.error("{} is not allowed to be unzipped.", from.getName());
+        }
+
+        try {
+            FileUtils.deleteQuietly(toDir);
+            FileUtils.moveDirectory(interDir, toDir);
+        } catch (IOException e) {
+            LOGGER.error("Error while moving a file ", e);
+        }
+
+        FileUtils.deleteQuietly(from);
+        FileUtils.deleteQuietly(interDir);
+
+    }
 }

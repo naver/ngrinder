@@ -13,15 +13,6 @@
  */
 package org.ngrinder.infra;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -29,6 +20,15 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Set;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder config which is stored
@@ -80,15 +80,15 @@ public class AgentConfig {
 		}
 	}
 
-	private void copyDefaultConfigurationFiles() {
-		checkNotNull(home);
-		InputStream agentConfIO = loadFromClassPath("agent.conf");
-		if (agentConfIO == null) {
-			throw processException("Error while loading agent.conf file");
-		}
-		home.copyFileTo(agentConfIO, new File("agent.conf"), false);
-		IOUtils.closeQuietly(agentConfIO);
-	}
+    private void copyDefaultConfigurationFiles() {
+        checkNotNull(home);
+        InputStream agentConfIO = loadFromClassPath("agent.conf");
+        if (agentConfIO == null) {
+            throw processException("Error while loading agent.conf file");
+        }
+        home.copyFileTo(agentConfIO, new File("agent.conf"));
+        IOUtils.closeQuietly(agentConfIO);
+    }
 
 	/**
 	 * Load the internal files for the given path by searching class paths.

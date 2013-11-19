@@ -13,28 +13,10 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
-import net.grinder.communication.AddressAwareMessage;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
-import net.grinder.communication.ClientReceiver;
-import net.grinder.communication.ClientSender;
-import net.grinder.communication.CommunicationException;
-import net.grinder.communication.ConnectionType;
-import net.grinder.communication.Connector;
-import net.grinder.communication.FanOutStreamSender;
-import net.grinder.communication.MessageDispatchSender;
-import net.grinder.communication.MessagePump;
+import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
 import net.grinder.engine.communication.AgentControllerServerListener;
@@ -47,7 +29,6 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtil;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -56,6 +37,15 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Agent Controller which handles agent start and stop.

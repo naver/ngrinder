@@ -11,22 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder;
-
-import java.io.File;
-
-import org.junit.Before;
+package net.grinder.communication;
 
 /**
- * TestBase for sigar lib path
+ * Default constant value for agent controller.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
-public class SigarTestBase {
+public abstract class AgentControllerCommunicationDefaults {
 
-	@Before
-	public void setupSigarLibPath() {
-		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-						+ new File("./native_lib").getAbsolutePath());
-	}
+	/** Default agent controller daemon host. Bind to all interfaces by default. */
+	public static final String DEFAULT_AGENT_CONTROLLER_SERVER_HOST = "";
+
+	/** Default agent controller daemon port. */
+	public static final int DEFAULT_AGENT_CONTROLLER_SERVER_PORT = 16001;
+
 }

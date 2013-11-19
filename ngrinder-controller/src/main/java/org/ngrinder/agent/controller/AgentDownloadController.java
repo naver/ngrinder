@@ -13,17 +13,17 @@
  */
 package org.ngrinder.agent.controller;
 
-import java.io.File;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.init.AgentPackageInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 
 /**
  * Agent Download Controller.
@@ -39,17 +39,27 @@ public class AgentDownloadController extends NGrinderBaseController {
 	private Config config;
 
 	/**
-	 * Download agent.
-	 * 
-	 * @param fileName
-	 *            file path of agent
-	 * @param response
-	 *            response.
-	 */
-	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
-	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
-		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
-		FileDownloadUtil.downloadFile(response, ngrinderFile);
-	}
+     * Download agent.
+     *
+     * @param fileName
+     *            file path of agent
+     * @param response
+     *            response.
+     */
+    @RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
+    public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
+        File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
+        FileDownloadUtil.downloadFile(response, ngrinderFile);
+    }
+
+    /**
+     * Download agent's latest version.
+     * @param response
+     *            response.
+     */
+    @RequestMapping(value = "/download_new_agent")
+    public void downloadLatestAgent(HttpServletResponse response) {
+        FileDownloadUtil.downloadFile(response, AgentPackageInitializer.getAgentPackageFile());
+    }
 
 }

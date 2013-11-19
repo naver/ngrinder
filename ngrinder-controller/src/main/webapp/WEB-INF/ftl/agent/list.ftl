@@ -11,10 +11,12 @@
 		</fieldSet>
 		<#include "region_selector.ftl">
 		<div class="well search-bar">
-			<button class="btn" id="stop_agent_button">
-				<i class="icon-stop"></i> <@spring.message "common.button.stop"/>
-			</button>
-			<input type="text" style="visibility: hidden; margin: 0">
+            <button class="btn btn-success" id="update_agent_button">
+                <i class="icon-thumbs-up"></i> <@spring.message "agent.management.agentUpdate"/>
+            </button>
+            <button class="btn" id="stop_agent_button">
+                <i class="icon-stop"></i> <@spring.message "common.button.stop"/>
+            </button>
 			<div class="input-prepend pull-right">
 				<span class="add-on" style="cursor: default"><@spring.message "agent.management.agentDownload"/> </span>
 				<span class="input-xlarge uneditable-input span6" style="cursor: text"> 
@@ -88,52 +90,53 @@
 	</div>
 	<script>
             $(document).ready(function() {
-		    <#if agents?has_content>
-				var oTable = $("#agent_table").dataTable({
-					"bAutoWidth": false,
-					"bFilter": false,
-					"bLengthChange": false,
-					"bInfo": false,
-					"iDisplayLength": 10,
-					"aaSorting": [[1, "asc"]],
-					"aoColumns": [{"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
-					"sPaginationType": "bootstrap",
-					"oLanguage": {
-						"oPaginate": {
-							"sPrevious": "<@spring.message "common.paging.previous"/>",
-							"sNext":     "<@spring.message "common.paging.next"/>"
-						}
-					}
-				});
-				
-				removeClick();
-				enableChkboxSelectAll("agent_table");
-				
-				$(".approved").live("click", function() {
-					var sid = $(this).attr("sid");
-					$.post(
-					  	"${req.getContextPath()}/agent/" + sid + "/approve",
-				  		{ 
-				  			"approve": "true"
-				  		},
-				  		function() {
-				  			showSuccessMsg("<@spring.message "agent.management.toBeApproved"/>");
-				  		}
-				     );
-				});
-				
-				$(".disapproved").live("click", function() {
-					var sid = $(this).attr("sid");
-					$.post(
-				  		"${req.getContextPath()}/agent/" + sid + "/approve",
-				  		{ 
-				  			"approve": "false"
-				  		},
-				  		function() {
-				  			showSuccessMsg("<@spring.message "agent.management.toBeDisapproved"/>");
-				  		}
-				     );					
-				});
+		        <#if agents?has_content>
+
+                    var oTable = $("#agent_table").dataTable({
+                        "bAutoWidth": false,
+                        "bFilter": false,
+                        "bLengthChange": false,
+                        "bInfo": false,
+                        "iDisplayLength": 10,
+                        "aaSorting": [[1, "asc"]],
+                        "aoColumns": [{"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
+                        "sPaginationType": "bootstrap",
+                        "oLanguage": {
+                            "oPaginate": {
+                                "sPrevious": "<@spring.message "common.paging.previous"/>",
+                                "sNext":     "<@spring.message "common.paging.next"/>"
+                            }
+                        }
+                    });
+
+                    removeClick();
+                    enableChkboxSelectAll("agent_table");
+
+                    $(".approved").live("click", function() {
+                        var sid = $(this).attr("sid");
+                        $.post(
+                            "${req.getContextPath()}/agent/" + sid + "/approve",
+                            {
+                                "approve": "true"
+                            },
+                            function() {
+                                showSuccessMsg("<@spring.message "agent.management.toBeApproved"/>");
+                            }
+                         );
+                    });
+
+                    $(".disapproved").live("click", function() {
+                        var sid = $(this).attr("sid");
+                        $.post(
+                            "${req.getContextPath()}/agent/" + sid + "/approve",
+                            {
+                                "approve": "false"
+                            },
+                            function() {
+                                showSuccessMsg("<@spring.message "agent.management.toBeDisapproved"/>");
+                            }
+                         );
+                    });
 				</#if>
 				
 				$("#stop_agent_button").click(function() {
@@ -153,6 +156,15 @@
 					});
 					$confirm.children(".modal-body").addClass("error-color");
 				});
+
+                $("#update_agent_button").click(function() {
+                    var list = $("td input");
+                    if(list.length == 0) {
+                        bootbox.alert("there is no agent should be updated", "<@spring.message "common.button.ok"/>");
+                        return;
+                    }
+                    updateAgents();
+                });
 				
             });
 			
@@ -174,6 +186,25 @@
 			    	}
 			  	});
 			}
+
+            function updateAgents() {
+                $.ajax({
+                    url: "${req.getContextPath()}/agent/api/update",
+                    type: "GET",
+                    cache: false,
+                    dataType:'json',
+                    success: function(res) {
+                        if (res.success) {
+                            showSuccessMsg("<@spring.message "agent.table.message.success.update"/>");
+                        } else {
+                            showErrorMsg("<@spring.message "agent.table.message.error.update"/>:" + res.message);
+                        }
+                    },
+                    error: function() {
+                        showErrorMsg("<@spring.message "agent.table.message.error.update"/>");
+                    }
+                });
+            }
 			
 	     </script>
 </body>

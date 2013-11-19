@@ -207,4 +207,18 @@ public class AgentManagerController extends NGrinderBaseController {
 		}
 		return successJsonHttpEntity();
 	}
+
+    /**
+     * Send update message to agent side
+     *
+     * @return json message
+     */
+    @RestAPI
+    @PreAuthorize("hasAnyRole('A')")
+    @RequestMapping(value = "/api/update", method = RequestMethod.GET)
+    public HttpEntity<String> updateAgent() {
+        agentManagerService.updateAgent(httpContainerContext.getCurrentContextUrlFromUserRequest() + "/agent/download_new_agent");
+        return successJsonHttpEntity();
+    }
+
 }

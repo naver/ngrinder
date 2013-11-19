@@ -498,16 +498,13 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Update agent.
-	 * 
-	 * @param fileName
-	 *            file name
-	 * @param version
-	 *            current version
-	 * @param downloadUrl
-	 *            download url
-	 */
-	public void updateAgent(String fileName, String version, String downloadUrl) {
-		sendAgentUpdateMessage(fileName, version, downloadUrl);
+	 *
+     * @param url
+     *            request url
+     *
+     */
+	public void updateAgent(String url) {
+		sendAgentUpdateMessage("test-agentFolder", config.getVersion(), url);
 	}
 
 	/**
