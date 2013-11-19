@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URLClassLoader;
 
 /**
@@ -35,20 +36,21 @@ import java.net.URLClassLoader;
 @RuntimeOnlyComponent
 public class AgentPackageInitializer {
 
-    private static File agentFile;
-    @Autowired
-    private AgentManagerService agentManagerService;
+	private File agentFile;
 
-    public static File getAgentPackageFile() {
-        return agentFile;
-    }
+	@Autowired
+	private AgentManagerService agentManagerService;
 
-    /**
-     * Create agent package.
-     */
-    @PostConstruct
-    @Async
-    public void init() throws IOException {
-        agentFile = agentManagerService.createAgentPackage((URLClassLoader) getClass().getClassLoader());
-    }
+	public File getAgentPackageFile() {
+		return agentFile;
+	}
+
+	/**
+	 * Create agent package.
+	 */
+	@PostConstruct
+	@Async
+	public void init() throws IOException, URISyntaxException {
+		agentFile = agentManagerService.createAgentPackage((URLClassLoader) getClass().getClassLoader());
+	}
 }

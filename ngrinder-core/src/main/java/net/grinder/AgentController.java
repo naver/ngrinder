@@ -49,7 +49,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Agent Controller which handles agent start and stop.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -63,7 +63,7 @@ public class AgentController implements Agent {
 	private final AgentControllerServerListener m_agentControllerServerListener;
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
-					ConnectionType.AGENT);
+			ConnectionType.AGENT);
 	private AgentConfig agentConfig;
 	private final Condition m_eventSyncCondition;
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
@@ -82,13 +82,10 @@ public class AgentController implements Agent {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param eventSyncCondition
-	 *            event sync condition to wait until agent start to run.
-	 * @param currentIp
-	 *            current ip
-	 * @throws GrinderException
-	 *             If an error occurs.
+	 *
+	 * @param eventSyncCondition event sync condition to wait until agent start to run.
+	 * @param currentIp          current ip
+	 * @throws GrinderException If an error occurs.
 	 */
 	public AgentController(Condition eventSyncCondition, String currentIp) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
@@ -101,14 +98,13 @@ public class AgentController implements Agent {
 
 	/**
 	 * Run agent controller. This method use default server port (for test)
-	 * 
-	 * @exception GrinderException
-	 *                occurs when there is a problem.
+	 *
+	 * @throws GrinderException occurs when there is a problem.
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
 		grinderProperties.setInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT,
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
 		}
@@ -117,13 +113,10 @@ public class AgentController implements Agent {
 
 	/**
 	 * Run the agent controller.
-	 * 
-	 * @param grinderProperties
-	 *            {@link GrinderProperties} used.
-	 * @param logCount
-	 *            log count
-	 * @throws GrinderException
-	 *             occurs when the test execution is failed.
+	 *
+	 * @param grinderProperties {@link GrinderProperties} used.
+	 * @param logCount          log count
+	 * @throws GrinderException occurs when the test execution is failed.
 	 */
 	public void run(GrinderProperties grinderProperties, long logCount) throws GrinderException {
 		StartGrinderMessage startMessage = null;
@@ -131,14 +124,14 @@ public class AgentController implements Agent {
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
 		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(),
-						"agentconfig should be provided before agent daemon start."));
+				"agentconfig should be provided before agent daemon start."));
 
 		m_grinderProperties = grinderProperties;
 		try {
 			while (true) {
 				do {
 					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID,
-									NetworkUtil.getLocalHostName()));
+							NetworkUtil.getLocalHostName()));
 					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(m_grinderProperties);
 
@@ -166,7 +159,7 @@ public class AgentController implements Agent {
 							continue;
 						} else {
 							break; // Another message, check at end of outer
-									// while loop.
+							// while loop.
 						}
 					}
 
@@ -263,11 +256,11 @@ public class AgentController implements Agent {
 
 		// Take only one file... if agent.send.all.logs is not set.
 		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
-			logFiles = new File[] { logFiles[0] };
+			logFiles = new File[]{logFiles[0]};
 		}
 
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(logFiles),
-						new AgentAddress(m_agentIdentity)));
+				new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
 		FileUtils.deleteQuietly(logFolder);
 	}
@@ -308,7 +301,7 @@ public class AgentController implements Agent {
 
 	/**
 	 * Get current System performance.
-	 * 
+	 *
 	 * @return {@link SystemDataModel} instance
 	 */
 	public SystemDataModel getSystemDataModel() {
@@ -328,9 +321,8 @@ public class AgentController implements Agent {
 
 	/**
 	 * Set agent config.
-	 * 
-	 * @param agentConfig
-	 *            agent config
+	 *
+	 * @param agentConfig agent config
 	 */
 	public void setAgentConfig(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;
@@ -348,7 +340,7 @@ public class AgentController implements Agent {
 			m_sender = ClientSender.connect(receiver);
 
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getSystemDataModel(),
-							m_connectionPort));
+					m_connectionPort));
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
 

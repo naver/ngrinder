@@ -28,7 +28,7 @@ import java.io.IOException;
 
 /**
  * Agent Update Message Handler.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1
  */
@@ -40,12 +40,11 @@ public class AgentUpdateHandler {
 	/**
 	 * Agent Update handler.
 	 *
-	 * @param agentConfig
-	 *            agentConfig
+	 * @param agentConfig agentConfig
 	 */
 	public AgentUpdateHandler(AgentConfig agentConfig) {
-        LOGGER.info("AgentUpdateHandler is initialing !");
-        this.agentConfig = agentConfig;
+		LOGGER.info("AgentUpdateHandler is initialing !");
+		this.agentConfig = agentConfig;
 	}
 
 	boolean isNewer(String newVersion, String installedVersion) {
@@ -56,53 +55,53 @@ public class AgentUpdateHandler {
 
 	/**
 	 * Update agent based on the current message.
-	 * 
-	 * @param message
-	 *            message to be sent
+	 *
+	 * @param message message to be sent
 	 */
 	public void updateAgent(UpdateAgentGrinderMessage message) {
-        if (!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN"))) {
-            LOGGER.info("Update request was sent. But the old version was sent");
-            return;
-        }
+		if (!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN"))) {
+			LOGGER.info("Update request was sent. But the old version was sent");
+			return;
+		}
 
-        File tempFolder = agentConfig.getHome().getTempDirectory();
-        File dest = new File(tempFolder, message.getFileName()+".tar.gz");
+		File tempFolder = agentConfig.getHome().getTempDirectory();
+		File dest = new File(tempFolder, message.getFileName() + ".tar.gz");
 
-        File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
-        File updatePackageDir = new File(System.getProperty("user.dir"), "update_package");
-        try {
-            NetworkUtil.downloadFile(message.getDownloadUrl(), dest);
-            decompress(dest, interDir, updatePackageDir);
-            System.exit(10);
-        } catch (Exception e) {
-            LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
-            LOGGER.info("Details : ", e);
-        }
-    }
+		File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
+		File updatePackageDir = new File(agentConfig.getCurrentDirectory(), "update_package");
+		try {
+			NetworkUtil.downloadFile(message.getDownloadUrl(), dest);
+			decompress(dest, interDir, updatePackageDir);
+			System.exit(10);
+		} catch (Exception e) {
+			LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
+			LOGGER.info("Details : ", e);
+		}
+	}
 
-    void decompress(File from, File interDir, File toDir) {
-        interDir.mkdirs();
-        toDir.mkdirs();
+	void decompress(File from, File interDir, File toDir) {
+		interDir.mkdirs();
+		toDir.mkdirs();
 
-        if (FilenameUtils.isExtension(from.getName(), "gz")) {
-            File outFile = new File(toDir, "ngrinder-agent.tar");
-            CompressionUtil.ungzip(from, outFile);
-            CompressionUtil.untar(outFile, interDir);
-            FileUtils.deleteQuietly(outFile);
-        } else {
-            LOGGER.error("{} is not allowed to be unzipped.", from.getName());
-        }
+		if (FilenameUtils.isExtension(from.getName(), "gz")) {
+			File outFile = new File(toDir, "ngrinder-agent.tar");
+			CompressionUtil.ungzip(from, outFile);
+			CompressionUtil.untar(outFile, interDir);
+			FileUtils.deleteQuietly(outFile);
+		} else {
+			LOGGER.error("{} is not allowed to be unzipped.", from.getName());
+		}
 
-        try {
-            FileUtils.deleteQuietly(toDir);
-            FileUtils.moveDirectory(interDir, toDir);
-        } catch (IOException e) {
-            LOGGER.error("Error while moving a file ", e);
-        }
+		try {
+			FileUtils.deleteQuietly(toDir);
+			final File[] files = interDir.listFiles();
+			FileUtils.moveDirectory(files[0], toDir);
+		} catch (IOException e) {
+			LOGGER.error("Error while moving a file ", e);
+		}
 
-        FileUtils.deleteQuietly(from);
-        FileUtils.deleteQuietly(interDir);
+		FileUtils.deleteQuietly(from);
+		FileUtils.deleteQuietly(interDir);
 
-    }
+	}
 }

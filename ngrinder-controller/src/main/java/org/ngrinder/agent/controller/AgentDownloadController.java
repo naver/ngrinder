@@ -27,7 +27,7 @@ import java.io.File;
 
 /**
  * Agent Download Controller.
- * 
+ *
  * @author Tobi
  * @since 3.0
  */
@@ -38,28 +38,28 @@ public class AgentDownloadController extends NGrinderBaseController {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private AgentPackageInitializer agentPackageInitializer;
 	/**
-     * Download agent.
-     *
-     * @param fileName
-     *            file path of agent
-     * @param response
-     *            response.
-     */
-    @RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
-    public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
-        File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
-        FileDownloadUtil.downloadFile(response, ngrinderFile);
-    }
+	 * Download agent.
+	 *
+	 * @param fileName file path of agent
+	 * @param response response.
+	 */
+	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
+	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
+		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
+		FileDownloadUtil.downloadFile(response, ngrinderFile);
+	}
 
-    /**
-     * Download agent's latest version.
-     * @param response
-     *            response.
-     */
-    @RequestMapping(value = "/download_new_agent")
-    public void downloadLatestAgent(HttpServletResponse response) {
-        FileDownloadUtil.downloadFile(response, AgentPackageInitializer.getAgentPackageFile());
-    }
+	/**
+	 * Download agent's latest version.
+	 *
+	 * @param response response.
+	 */
+	@RequestMapping(value = "/download_agent")
+	public void downloadLatestAgent(HttpServletResponse response) {
+		FileDownloadUtil.downloadFile(response, agentPackageInitializer.getAgentPackageFile());
+	}
 
 }

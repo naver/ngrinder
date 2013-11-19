@@ -15,7 +15,7 @@ package net.grinder;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.engine.agent.Agent;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
@@ -31,7 +31,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * This is daemon wrapper for agent controller.
- * 
+ *
  * @author JunHo Yoon
  */
 public class AgentControllerDaemon implements Agent {
@@ -54,9 +54,8 @@ public class AgentControllerDaemon implements Agent {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param currentIp
-	 *            current ip
+	 *
+	 * @param currentIp current ip
 	 */
 	public AgentControllerDaemon(String currentIp) {
 		try {
@@ -69,17 +68,15 @@ public class AgentControllerDaemon implements Agent {
 
 	/**
 	 * Run agent controller with the default agent controller port.
-	 * 
 	 */
 	public void run() {
-		run(null, AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		run(null, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	}
 
 	/**
 	 * Run agent controller with the agentControllerServerPort.
-	 * 
-	 * @param agentControllerServerPort
-	 *            agent controller server port
+	 *
+	 * @param agentControllerServerPort agent controller server port
 	 */
 	public void run(int agentControllerServerPort) {
 		run(null, agentControllerServerPort);
@@ -88,11 +85,9 @@ public class AgentControllerDaemon implements Agent {
 	/**
 	 * Run agent controller with the given agent controller host and the agent
 	 * controller server port.
-	 * 
-	 * @param agentControllerServerHost
-	 *            agent controller server host
-	 * @param agentControllerServerPort
-	 *            agent controller server port
+	 *
+	 * @param agentControllerServerHost agent controller server host
+	 * @param agentControllerServerPort agent controller server port
 	 */
 	public void run(String agentControllerServerHost, int agentControllerServerPort) {
 		if (agentControllerServerHost != null) {
@@ -109,9 +104,8 @@ public class AgentControllerDaemon implements Agent {
 	/**
 	 * Run agent controller with given {@link GrinderProperties}. server host
 	 * and port will be gained from {@link GrinderProperties}
-	 * 
-	 * @param grinderProperties
-	 *            {@link GrinderProperties}
+	 *
+	 * @param grinderProperties {@link GrinderProperties}
 	 */
 	public void run(final GrinderProperties grinderProperties) {
 		grinderProperties.put("grinder.region", region);
@@ -150,7 +144,7 @@ public class AgentControllerDaemon implements Agent {
 
 	/**
 	 * Agent controller shutdown listener class.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 */
 	public interface AgentControllerShutDownListener {
@@ -166,9 +160,8 @@ public class AgentControllerDaemon implements Agent {
 
 	/**
 	 * Add agent controller shutdown listener.
-	 * 
-	 * @param listener
-	 *            listener
+	 *
+	 * @param listener listener
 	 */
 	public void addListener(AgentControllerShutDownListener listener) {
 		m_listeners.add(listener);

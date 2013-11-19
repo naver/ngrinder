@@ -28,10 +28,9 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Class which represents AgentHome.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
- * 
  */
 public class AgentHome {
 
@@ -40,9 +39,8 @@ public class AgentHome {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param directory
-	 *            agent home directory
+	 *
+	 * @param directory agent home directory
 	 */
 	public AgentHome(File directory) {
 		checkNotNull(directory, "The directory should not be null.");
@@ -75,62 +73,60 @@ public class AgentHome {
 
 	/**
 	 * Get the agent home directory.
-	 * 
+	 *
 	 * @return agent home directory
 	 */
 	public File getDirectory() {
 		return directory;
 	}
 
-    /**
-     * Get agent native directory.
-     *
-     * @return agent native directory
-     */
-    public File getNativeDirectory() {
-        File nativeFile = getFile("native");
-        if (!nativeFile.exists())
-            nativeFile.mkdir();
-        return nativeFile;
-    }
-
-    /**
-     * Get temp directory.
-     *
-     * @return temp directory
-     */
-    public File getTempDirectory() {
-        File tempFile = getFile("temp");
-        if (!tempFile.exists())
-            tempFile.mkdir();
-        return tempFile;
-    }
+	/**
+	 * Get agent native directory.
+	 *
+	 * @return agent native directory
+	 */
+	public File getNativeDirectory() {
+		File nativeFile = getFile("native");
+		if (!nativeFile.exists())
+			nativeFile.mkdir();
+		return nativeFile;
+	}
 
 	/**
-     * Copy the {@link InputStream} to path in the target.
-     *
-     * @param io
-     *            {@link InputStream}
-     * @param target
-     *            target path. only file name will be used.
-     */
-    public void copyFileTo(InputStream io, File target) {
-        // Copy missing files
-        try {
-            target = new File(directory, target.getName());
-            if (!(target.exists())) {
-                FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
-            }
-        } catch (IOException e) {
-            throw processException("Failed to write a file to " + target.getAbsolutePath(), e);
-        }
-    }
+	 * Get temp directory.
+	 *
+	 * @return temp directory
+	 */
+	public File getTempDirectory() {
+		File tempFile = getFile("temp");
+		if (!tempFile.exists())
+			tempFile.mkdir();
+		return tempFile;
+	}
+
+	/**
+	 * Copy the {@link InputStream} to path in the target.
+	 *
+	 * @param io     {@link InputStream}
+	 * @param target target path. only file name will be used.
+	 * @deprecated 3.3
+	 */
+	public void copyFileTo(InputStream io, File target) {
+		// Copy missing files
+		try {
+			target = new File(directory, target.getName());
+			if (!(target.exists())) {
+				FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
+			}
+		} catch (IOException e) {
+			throw processException("Failed to write a file to " + target.getAbsolutePath(), e);
+		}
+	}
 
 	/**
 	 * Get the properties from path.
-	 * 
-	 * @param path
-	 *            property file path
+	 *
+	 * @param path property file path
 	 * @return {@link Properties} instance. return empty property if it has
 	 *         problem.
 	 */
@@ -152,9 +148,8 @@ public class AgentHome {
 
 	/**
 	 * Get the file from the given path.
-	 * 
-	 * @param path
-	 *            path
+	 *
+	 * @param path path
 	 * @return {@link File} instance.
 	 */
 	public File getFile(String path) {
@@ -163,11 +158,9 @@ public class AgentHome {
 
 	/**
 	 * Save properties.
-	 * 
-	 * @param path
-	 *            path to save
-	 * @param properties
-	 *            properties.
+	 *
+	 * @param path       path to save
+	 * @param properties properties.
 	 */
 	public void saveProperties(String path, Properties properties) {
 		OutputStream out = null;

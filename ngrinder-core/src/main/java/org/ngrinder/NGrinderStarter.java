@@ -17,7 +17,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.AgentControllerDaemon;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
@@ -42,7 +42,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Main class to start agent or monitor.
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 3.0
@@ -74,7 +74,7 @@ public class NGrinderStarter {
 		// Configure log.
 		configureLogging();
 		addClassPath();
-        addLibraryPath();
+		addLibraryPath();
 	}
 
 	private void configureLogging() {
@@ -83,11 +83,11 @@ public class NGrinderStarter {
 		configureLogging(verboseMode, logDirectory);
 	}
 
-    protected void checkRunningDirectory() {
-        if (!isValidCurrentDirectory()) {
-            staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
-        }
-    }
+	protected void checkRunningDirectory() {
+		if (!isValidCurrentDirectory()) {
+			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
+		}
+	}
 
 	private void addCustomClassLoader() {
 		URL[] urLs = ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs();
@@ -104,7 +104,7 @@ public class NGrinderStarter {
 
 	/**
 	 * Get agent version.
-	 * 
+	 *
 	 * @return version string
 	 */
 	public String getVersion() {
@@ -118,7 +118,7 @@ public class NGrinderStarter {
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
-        LOG.info("* Collect SYSTEM data. **");
+		LOG.info("* Collect SYSTEM data. **");
 
 		MonitorConstants.init(agentConfig);
 
@@ -145,9 +145,8 @@ public class NGrinderStarter {
 
 	/**
 	 * Start ngrinder agent.
-	 * 
-	 * @param controllerIp
-	 *            controllerIp;
+	 *
+	 * @param controllerIp controllerIp;
 	 */
 	public void startAgent(String controllerIp) {
 		LOG.info("***************************************************");
@@ -179,7 +178,7 @@ public class NGrinderStarter {
 		}
 
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		boolean serverMode = agentConfig.getPropertyBoolean("agent.servermode", false);
@@ -211,28 +210,28 @@ public class NGrinderStarter {
 	}
 
 	private void addLibraryPath() {
-        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-            + agentConfig.getHome().getNativeDirectory().getAbsolutePath());
+		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
+				+ agentConfig.getHome().getNativeDirectory().getAbsolutePath());
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
 	/**
 	 * Get jar file list.
-	 * 
+	 *
 	 * @return jar file collection
 	 */
-    protected Collection<File> getJarFileList() {
-        ArrayList<File> fileString = new ArrayList<File>();
+	protected Collection<File> getJarFileList() {
+		ArrayList<File> fileString = new ArrayList<File>();
 
-        File libFolder = new File(".", "lib").getAbsoluteFile();
-        if (!libFolder.exists()) {
-            printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
-        } else {
-            String[] exts = new String[]{"jar"};
-            fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
-        }
-        return fileString;
-    }
+		File libFolder = new File(".", "lib").getAbsoluteFile();
+		if (!libFolder.exists()) {
+			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
+		} else {
+			String[] exts = new String[]{"jar"};
+			fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
+		}
+		return fileString;
+	}
 
 	/**
 	 * Add class path.
@@ -244,9 +243,9 @@ public class NGrinderStarter {
 
 		// Add patch first
 		for (File each : libList) {
-            if (each.getName().contains("patch")) {
+			if (each.getName().contains("patch")) {
 				addClassPath(classLoader, each);
-                libString.add(each.getPath());
+				libString.add(each.getPath());
 			}
 		}
 
@@ -275,7 +274,7 @@ public class NGrinderStarter {
 
 	/**
 	 * {@link URLClassLoader} which exposes addURL method.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 * @since 3.1
 	 */
@@ -308,9 +307,8 @@ public class NGrinderStarter {
 
 	/**
 	 * Print help and exit. This is provided for mocking.
-	 * 
-	 * @param message
-	 *            message
+	 *
+	 * @param message message
 	 */
 	protected void printHelpAndExit(String message) {
 		staticPrintHelpAndExit(message);
@@ -318,11 +316,9 @@ public class NGrinderStarter {
 
 	/**
 	 * print help and exit. This is provided for mocking.
-	 * 
-	 * @param message
-	 *            message
-	 * @param e
-	 *            exception
+	 *
+	 * @param message message
+	 * @param e       exception
 	 */
 	protected void printHelpAndExit(String message, Exception e) {
 		staticPrintHelpAndExit(message, e);
@@ -330,9 +326,8 @@ public class NGrinderStarter {
 
 	/**
 	 * Agent starter.
-	 * 
-	 * @param args
-	 *            arguments
+	 *
+	 * @param args arguments
 	 */
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
@@ -372,9 +367,8 @@ public class NGrinderStarter {
 
 	/**
 	 * Stop process.
-	 * 
-	 * @param mode
-	 *            agent or monitor.
+	 *
+	 * @param mode agent or monitor.
 	 */
 	protected void stopProcess(String mode) {
 		String pid = agentConfig.getAgentPidProperties(mode);
@@ -392,35 +386,34 @@ public class NGrinderStarter {
 
 	/**
 	 * Check if the process is already running in this env.
-	 * 
-	 * @param startMode
-	 *            monitor or agent
+	 *
+	 * @param startMode monitor or agent
 	 */
-    public void checkDuplicatedRun(String startMode) {
-        Sigar sigar = new Sigar();
-        String existingPid = this.agentConfig.getAgentPidProperties(startMode);
-        if (StringUtils.isNotEmpty(existingPid)) {
-            try {
-                ProcState procState = sigar.getProcState(existingPid);
-                if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
-                        || procState.getState() == ProcState.SLEEP) {
-                    printHelpAndExit("Currently " + startMode + " is running with pid " + existingPid
-                            + ". Please stop it before run");
-                }
-                agentConfig.updateAgentPidProperties(startMode);
-            } catch (SigarException e) {
-                noOp();
-            }
-        }
+	public void checkDuplicatedRun(String startMode) {
+		Sigar sigar = new Sigar();
+		String existingPid = this.agentConfig.getAgentPidProperties(startMode);
+		if (StringUtils.isNotEmpty(existingPid)) {
+			try {
+				ProcState procState = sigar.getProcState(existingPid);
+				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
+						|| procState.getState() == ProcState.SLEEP) {
+					printHelpAndExit("Currently " + startMode + " is running with pid " + existingPid
+							+ ". Please stop it before run");
+				}
+				agentConfig.updateAgentPidProperties(startMode);
+			} catch (SigarException e) {
+				noOp();
+			}
+		}
 
-        this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
-    }
+		this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
+	}
 
 	/**
 	 * Check the current directory is valid or not.
-	 * 
+	 *
 	 * ngrinder agent should run in the folder agent exists.
-	 * 
+	 *
 	 * @return true if it's valid
 	 */
 	boolean isValidCurrentDirectory() {

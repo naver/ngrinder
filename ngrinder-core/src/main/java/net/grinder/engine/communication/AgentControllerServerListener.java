@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 
 /**
  * Agent control messages and allows them to be asynchronously queried.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -32,52 +32,52 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Constant that represents start message.
-	 * 
+	 *
 	 * @see #received
 	 */
 	public static final int START = 1 << 0;
 
 	/**
 	 * Constant that represents a a reset message.
-	 * 
+	 *
 	 * @see #received
 	 */
 	public static final int RESET = 1 << 1;
 
 	/**
 	 * Constant that represents a stop message.
-	 * 
+	 *
 	 * @see #received
 	 */
 	public static final int STOP = 1 << 2;
 
 	/**
 	 * Constant that represents a communication shutdown.
-	 * 
+	 *
 	 * @see #received
 	 */
 	public static final int SHUTDOWN = 1 << 3;
 
 	/**
 	 * Constant that represents a agent update.
-	 * 
+	 *
 	 * @see #received
 	 */
 	public static final int UPDATE_AGENT = 1 << 4;
 
 	/**
 	 * Constant that represents a .
-	 * 
+	 *
 	 * @see #received
 	 */
 	public static final int LOG_REPORT = 1 << 5;
 
 	/**
 	 * Constant that represent any message.
-	 * 
+	 *
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN |UPDATE_AGENT;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN | UPDATE_AGENT;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;
@@ -90,11 +90,9 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param notifyOnMessage
-	 *            An <code>Object</code> to notify when a message arrives.
-	 * @param logger
-	 *            A {@link net.grinder.common.Logger} to log received event messages to.
+	 *
+	 * @param notifyOnMessage An <code>Object</code> to notify when a message arrives.
+	 * @param logger          A {@link net.grinder.common.Logger} to log received event messages to.
 	 */
 	public AgentControllerServerListener(Condition notifyOnMessage, Logger logger) {
 		m_notifyOnMessage = notifyOnMessage;
@@ -110,11 +108,10 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Wait until any message is received.
-	 * 
+	 *
 	 * <p>
 	 * After calling this method, the actual messages can be determined using {@link #received}.
 	 * </p>
-	 * 
 	 */
 	public void waitForMessage() {
 		while (!checkForMessage(AgentControllerServerListener.ANY)) {
@@ -126,13 +123,12 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Check for messages matching the given mask.
-	 * 
+	 *
 	 * <p>
 	 * After calling this method, the actual messages can be determined using {@link #received}.
 	 * </p>
-	 * 
-	 * @param mask
-	 *            The messages to check for.
+	 *
+	 * @param mask The messages to check for.
 	 * @return <code>true</code> if at least one message matches the <code>mask</code> parameter has
 	 *         been received since the last time the message was checked for, or if communications
 	 *         have been shutdown. <code>false</code> otherwise.
@@ -153,9 +149,8 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Discard pending messages that match the given mask.
-	 * 
-	 * @param mask
-	 *            The messages to discard.
+	 *
+	 * @param mask The messages to discard.
 	 */
 	public void discardMessages(int mask) {
 		synchronized (this) {
@@ -167,9 +162,8 @@ public final class AgentControllerServerListener {
 	/**
 	 * Query the messages set up by the last {@link #checkForMessage} or {@link #waitForMessage}
 	 * call.
-	 * 
-	 * @param mask
-	 *            The messages to check for.
+	 *
+	 * @param mask The messages to check for.
 	 * @return <code>true</code> if one or more of the received messages matches <code>mask</code>.
 	 */
 	public synchronized boolean received(int mask) {
@@ -188,9 +182,8 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Registers message handlers with a dispatcher.
-	 * 
-	 * @param messageDispatcher
-	 *            The dispatcher.
+	 *
+	 * @param messageDispatcher The dispatcher.
 	 */
 	public void registerMessageHandlers(MessageDispatchRegistry messageDispatcher) {
 
@@ -229,7 +222,7 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Return the last {@link StartGrinderMessage} received.
-	 * 
+	 *
 	 * @return The message.
 	 */
 	public StartGrinderMessage getLastStartGrinderMessage() {

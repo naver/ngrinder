@@ -20,7 +20,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import net.grinder.AgentControllerDaemon;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.communication.AgentControllerCommunicationDefaults;
 
 import org.junit.Before;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -66,7 +66,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		AgentConfig agentConfig = new MockAgentConfigInControllerSide(1).init();
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig);
-		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		agentControllerDaemon.run(AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
 		LOG.info("* Start nGrinder Monitor *");
 		try {

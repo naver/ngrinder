@@ -58,7 +58,7 @@ import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Cluster enabled version of {@link AgentManagerService}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1
  */
@@ -116,7 +116,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Run a scheduled task to check the agent statuses.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public void checkAgentState() {
@@ -198,7 +198,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Collect the agent system info every second.
-	 * 
 	 */
 	@Scheduled(fixedDelay = 1000)
 	public void collectAgentSystemData() {
@@ -228,7 +227,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Get all visible agents from DB.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	@Override
@@ -246,9 +245,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Get the available agent count map in all regions of the user, including
 	 * the free agents and user specified agents.
-	 * 
-	 * @param user
-	 *            current user
+	 *
+	 * @param user current user
 	 * @return user available agent count map
 	 */
 	@Override
@@ -318,10 +316,10 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Get all agents attached of this region from DB.
-	 * 
+	 *
 	 * This method is cluster aware. If it's cluster mode it return all agents
 	 * attached in this region.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	@Override
@@ -332,10 +330,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Stop agent. In cluster mode, it queues the agent stop request to
 	 * agentRequestCache.
-	 * 
-	 * @param id
-	 *            agent id in db
-	 * 
+	 *
+	 * @param id agent id in db
 	 */
 	@Override
 	public void stopAgent(Long id) {
@@ -349,9 +345,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Add the agent system data model share request on cache.
-	 * 
-	 * @param id
-	 *            agent id in db.
+	 *
+	 * @param id agent id in db.
 	 */
 	@Override
 	public void requestShareAgentSystemDataModel(Long id) {
@@ -366,12 +361,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Get the agent system data model for the given IP. This method is cluster
 	 * aware.
-	 * 
-	 * @param ip
-	 *            agent ip
-	 * @param name
-	 *            agent name
-	 * 
+	 *
+	 * @param ip   agent ip
+	 * @param name agent name
 	 * @return {@link SystemDataModel} instance.
 	 */
 	@Override
@@ -385,9 +377,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Register agent monitoring target. This method should be called in the
 	 * controller in which the given agent exists.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 */
 	public void addAgentMonitoringTarget(AgentControllerIdentityImplementation agentIdentity) {
 		agentMonitoringTargetsCache.put(createAgentKey(agentIdentity), agentIdentity);
@@ -395,18 +386,17 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Stop agent.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity to be stopped.
+	 *
+	 * @param agentIdentity agent identity to be stopped.
 	 */
 	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
 		getAgentManager().stopAgent(agentIdentity);
 	}
 
-    /**
-     * Get the agent package containing folder.
-     */
-    public File getAgentPackagesDir() {
-        return getConfig().getExHome().getSubFile("update_agents");
-    }
+	/**
+	 * Get the agent package containing folder.
+	 */
+	public File getAgentPackagesDir() {
+		return getConfig().getExHome().getSubFile("update_agents");
+	}
 }

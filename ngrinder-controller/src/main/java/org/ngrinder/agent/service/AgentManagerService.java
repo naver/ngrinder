@@ -17,7 +17,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -28,7 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
@@ -39,6 +43,7 @@ import org.ngrinder.service.IAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,15 +53,20 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent manager service.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -74,9 +84,9 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Run a scheduled task to check the agent status periodically.
-	 * 
+	 *
 	 * This method updates the agent statuses in DB.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	@Scheduled(fixedDelay = 5000)
@@ -342,9 +352,8 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Save agent.
-	 * 
-	 * @param agent
-	 *            saved agent
+	 *
+	 * @param agent saved agent
 	 */
 	public void saveAgent(AgentInfo agent) {
 		getAgentRepository().save(agent);
@@ -352,9 +361,8 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Delete agent.
-	 * 
-	 * @param id
-	 *            agent id to be deleted
+	 *
+	 * @param id agent id to be deleted
 	 */
 	public void deleteAgent(long id) {
 		getAgentRepository().delete(id);
@@ -362,11 +370,9 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Approve/Unapprove the agent on given id.
-	 * 
-	 * @param id
-	 *            id
-	 * @param approve
-	 *            true/false
+	 *
+	 * @param id      id
+	 * @param approve true/false
 	 */
 	@Transactional
 	public void approve(Long id, boolean approve) {
@@ -382,9 +388,8 @@ public class AgentManagerService implements IAgentManagerService {
 	/**
 	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache.
 	 * ohterwise, it send stop message to the agent.
-	 * 
-	 * @param id
-	 *            identity of agent to stop.
+	 *
+	 * @param id identity of agent to stop.
 	 */
 	@Transactional
 	public void stopAgent(Long id) {
@@ -397,9 +402,8 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Add the agent system data model share request on cache.
-	 * 
-	 * @param id
-	 *            agent id.
+	 *
+	 * @param id agent id.
 	 */
 	public void requestShareAgentSystemDataModel(Long id) {
 		noOp();
@@ -446,141 +450,173 @@ public class AgentManagerService implements IAgentManagerService {
 		this.config = config;
 	}
 
-    /**
-     * Get the agent package containing folder.
-     */
-    public File getAgentPackagesDir() {
-        return config.getHome().getSubFile("update_agents");
-    }
+	/**
+	 * Get the agent package containing folder.
+	 */
+	public File getAgentPackagesDir() {
+		return config.getHome().getSubFile("update_agents");
+	}
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see
-    * org.ngrinder.agent.service.IAgentManagerService#createAgentPackage
-    */
-    public File createAgentPackage(URLClassLoader cl) throws IOException {
+	/*
+	* (non-Javadoc)
+	*
+	* @see
+	* org.ngrinder.agent.service.IAgentManagerService#createAgentPackage
+	*/
+	public File createAgentPackage(URLClassLoader cl) throws IOException, URISyntaxException {
+		String agentPackageLibs = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
+		File agentPackagesDir = getAgentPackagesDir();
+		if (!agentPackagesDir.exists()) {
+			agentPackagesDir.mkdir();
+		}
 
-        String agentPackageLibs = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
+		final String distributePackageName = getDistributionPackageName("ngrinder-core", false);
+		final String basePath = getPackageName("ngrinder-core") + "/";
+		final String libPath = basePath + "lib/";
+		File agentTar = new File(agentPackagesDir, distributePackageName);
+		if (agentTar.exists()) {
+			return agentTar;
+		}
 
-        File agentPackagesDir = getAgentPackagesDir();
-        if (!agentPackagesDir.exists()) {
-            agentPackagesDir.mkdir();
-        }
+		FileUtils.cleanDirectory(agentPackagesDir);
+		FileOutputStream fos = null;
+		TarArchiveOutputStream taos = null;
+		try {
 
-        File agentTar = new File(agentPackagesDir, getDistributePackageName("ngrinder-core", false));
-        File agentZip = new File(agentPackagesDir, getDistributePackageName("ngrinder-core", true));
+			fos = new FileOutputStream(agentTar);
+			taos = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
+			taos.putArchiveEntry(new TarArchiveEntry(basePath));
+			taos.closeArchiveEntry();
+			taos.putArchiveEntry(new TarArchiveEntry(libPath));
+			taos.closeArchiveEntry();
+			final TarArchiveOutputStream finalizedTaos = taos;
+			URL[] libUrls = cl.getURLs();
 
-        if (agentTar.exists()) {
-            return agentTar;
-        }
+			final String[] libs = StringUtils.split(agentPackageLibs, ",;");
 
-        FileUtils.cleanDirectory(agentPackagesDir);
-        File agentPackageDir = new File(agentPackagesDir, FilenameUtils.getBaseName(agentZip.getName()));
-        File agentSubLibDir = new File(agentPackageDir, "lib");
-        agentSubLibDir.mkdirs();
+			for (URL eachUrl : libUrls) {
+				if (isMatchingLib(eachUrl, "ngrinder-sh")) {
+					CompressionUtil.processJarEntries(new File(eachUrl.getFile()),
+							new CompressionUtil.EntryProcessor() {
+								@Override
+								public void process(ZipFile file, ZipEntry entry) throws IOException {
+									InputStream inputStream = null;
+									try {
+										inputStream = file.getInputStream(entry);
+										CompressionUtil.addInputStreamToTar(finalizedTaos, inputStream,
+												basePath + entry.getName(),
+												entry.getSize(), 0100755);
+									} finally {
+										IOUtils.closeQuietly(inputStream);
+									}
+								}
+							});
+				}
+				if (isMatchingLib(eachUrl, "ngrinder-core")) {
+					File eachLib = new File(eachUrl.toURI());
+					CompressionUtil.addFileToTar(taos, eachLib, basePath);
+					continue;
+				}
 
-        FileOutputStream fos = null;
-        TarArchiveOutputStream taos = null;
-        try {
+				for (String eachLib : libs) {
+					if (eachUrl.getFile().endsWith(StringUtils.trim(eachLib))) {
+						File jarFile = new File(eachUrl.toURI());
+						CompressionUtil.addFileToTar(taos, jarFile, libPath);
+					}
+				}
+			}
+			final String config = getConfigContent("agent_agent.conf", getAgentConfigParam());
+			final byte[] bytes = config.getBytes();
+			CompressionUtil.addInputStreamToTar(taos, new ByteArrayInputStream(bytes), basePath + "agent.conf",
+					bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
+		} catch (IOException e) {
+			LOGGER.error("Error while generating agent package" + e.getMessage());
+		} finally {
+			IOUtils.closeQuietly(taos);
+			IOUtils.closeQuietly(fos);
+		}
+		return agentTar;
+	}
 
-            fos = new FileOutputStream(agentTar);
-            taos = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
-            taos.putArchiveEntry(new TarArchiveEntry("lib/"));
-            taos.closeArchiveEntry();
-            URL[] libUrls = cl.getURLs();
+	private Map<String, Object> getAgentConfigParam() {
+		Map<String, Object> confMap = newHashMap();
+		confMap.put("controllerIP", config.getCurrentIP());
+		final int port = config.getSystemProperties()
+				.getPropertyInt(NGrinderConstants.NGRINDER_PROP_AGENT_CONTROL_PORT,
+						AgentControllerCommunicationDefaults
+								.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		confMap.put("controllerPort", String.valueOf(port));
+		confMap.put("controllerRegion", config.getRegion());
+		return confMap;
+	}
 
-            final String[] libs = StringUtils.split(agentPackageLibs, ",;");
-            for (URL eachUrl : libUrls) {
-                try {
 
-                    if (isMatchingLib(eachUrl, "ngrinder-sh")) {
-                        File coreShell = new File(eachUrl.toURI());
-                        CompressionUtil.unjar(coreShell, agentPackageDir);
-                        continue;
-                    }
+	/**
+	 * Get the config content replacing the variables with the given values.
+	 *
+	 * @param values map of configurations.
+	 * @return generated string
+	 */
 
-                    if (isMatchingLib(eachUrl, "ngrinder-core")) {
-                        File eachLib = new File(eachUrl.toURI());
-                        CompressionUtil.addFileToTar(taos, eachLib, "");
-                        FileUtils.copyFileToDirectory(eachLib, agentPackageDir);
-                        continue;
-                    }
+	public String getConfigContent(String templateName, Map<String, Object> values) {
+		StringWriter writer = null;
+		try {
+			Configuration config = new Configuration();
+			ClassPathResource cpr = new ClassPathResource("ngrinder_agent_home_template");
+			config.setDirectoryForTemplateLoading(cpr.getFile());
+			config.setObjectWrapper(new DefaultObjectWrapper());
+			Template template = config.getTemplate(templateName);
+			writer = new StringWriter();
+			template.process(values, writer);
+			return writer.toString();
+		} catch (Exception e) {
+			throw processException("Error while fetching the script template.", e);
+		} finally {
+			IOUtils.closeQuietly(writer);
+		}
+	}
 
-                    for (String eachLib : libs) {
-                        if (eachUrl.getFile().endsWith(StringUtils.trim(eachLib))) {
-                            File jarFile = new File(eachUrl.toURI());
-                            CompressionUtil.addFileToTar(taos, jarFile, "lib/");
-                            FileUtils.copyFileToDirectory(jarFile, agentSubLibDir);
-                        }
-                    }
-                } catch (URISyntaxException e) {
-                    throw new NGrinderRuntimeException("Wrong URL Syntax for " + eachUrl, e);
-                }
-            }
-
-            File[] shellScripts = agentPackageDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    if (name.endsWith("sh") || name.endsWith("bat"))
-                        return true;
-                    return false;
-                }
-            });
-
-            for (File eachScript : shellScripts) {
-                CompressionUtil.addFileToTar(taos, eachScript, "", 0100755);
-            }
-
-            CompressionUtil.zip(agentPackageDir);
-
-        } catch (IOException e) {
-            LOGGER.error("Error while generating agent package" + e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(taos);
-            IOUtils.closeQuietly(fos);
-            FileUtils.deleteDirectory(agentPackageDir);
-        }
-
-        return agentTar;
-    }
-
-    /*
+	/*
 	 * (non-Javadoc)
 	 *
 	 * @see
 	 * org.ngrinder.agent.service.IAgentManagerService#updateAgentLib
 	 * (java.lang.String)
 	 */
-    @Override
-    public void updateAgent(String url) {
-        agentManager.updateAgent(url);
-    }
+	@Override
+	public void updateAgent(String url) {
+		agentManager.updateAgent(url);
+	}
 
-    /**
-     * Get ngrinder sub module full name.
-     *
-     * @param moduleName
-     *                  nGrinder sub  module name.
-     * @param forWindow
-     *                  if true, then package type is zip,if false, package type is tar.gz.
-     *
-     * @return String  module full name.
-     */
-    public String getDistributePackageName(String moduleName, boolean forWindow) {
-        return moduleName + "-" + config.getVersion() + (forWindow ? ".zip" : ".tar.gz");
-    }
+	/**
+	 * Get package name
+	 *
+	 * @param moduleName nGrinder module name.
+	 * @return String module full name.
+	 */
+	public String getPackageName(String moduleName) {
+		return moduleName + "-" + config.getVersion();
+	}
 
-    /**
-     * Check if this given url is the given library.
-     *
-     * @param libUrl
-     *               lib's url
-     * @param libName
-     *               lib name
-     * @return true
-     */
-    public boolean isMatchingLib(URL libUrl, String libName) {
-        return StringUtils.startsWith(FilenameUtils.getName(libUrl.getFile()), libName) && libUrl.getFile().endsWith("jar");
-    }
+	/**
+	 * Get distributable package name with appropriate extension.
+	 *
+	 * @param moduleName nGrinder sub  module name.
+	 * @param forWindow  if true, then package type is zip,if false, package type is tar.gz.
+	 * @return String  module full name.
+	 */
+	public String getDistributionPackageName(String moduleName, boolean forWindow) {
+		return getPackageName(moduleName) + (forWindow ? ".zip" : ".tar.gz");
+	}
+
+	/**
+	 * Check if this given url is the given library.
+	 *
+	 * @param libUrl  lib's url
+	 * @param libName lib name
+	 * @return true
+	 */
+	public boolean isMatchingLib(URL libUrl, String libName) {
+		return StringUtils.startsWith(FilenameUtils.getName(libUrl.getFile()), libName) && libUrl.getFile().endsWith("jar");
+	}
 }

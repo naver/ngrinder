@@ -14,7 +14,7 @@
 package net.grinder.engine.common;
 
 import net.grinder.common.GrinderProperties;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.communication.ConnectionType;
 import net.grinder.communication.Connector;
 
@@ -49,9 +49,9 @@ public class AgentControllerConnectorFactory {
 	 */
 	public Connector create(GrinderProperties properties) {
 		String host = properties.getProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST,
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
+						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
 		int port = properties.getInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT,
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		return new Connector(host, port, m_connectionType);
 	}
 }

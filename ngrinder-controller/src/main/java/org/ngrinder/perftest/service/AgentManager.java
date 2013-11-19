@@ -27,7 +27,7 @@ import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.LogArrivedListener;
@@ -78,7 +78,7 @@ public class AgentManager implements NGrinderConstants {
 	@PostConstruct
 	public void init() {
 		int port = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_AGENT_CONTROL_PORT,
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {

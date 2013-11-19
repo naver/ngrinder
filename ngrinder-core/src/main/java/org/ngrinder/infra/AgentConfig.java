@@ -33,7 +33,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 /**
  * Spring component which is responsible to get the nGrinder config which is stored
  * ${NGRINDER_HOME}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -54,7 +54,7 @@ public class AgentConfig {
 
 	/**
 	 * Initialize.
-	 * 
+	 *
 	 * @return initialized AgentConfig
 	 */
 	public AgentConfig init() {
@@ -80,21 +80,24 @@ public class AgentConfig {
 		}
 	}
 
-    private void copyDefaultConfigurationFiles() {
-        checkNotNull(home);
-        InputStream agentConfIO = loadFromClassPath("agent.conf");
-        if (agentConfIO == null) {
-            throw processException("Error while loading agent.conf file");
-        }
-        home.copyFileTo(agentConfIO, new File("agent.conf"));
-        IOUtils.closeQuietly(agentConfIO);
-    }
+	private void copyDefaultConfigurationFiles() {
+		checkNotNull(home);
+		final File file = new File(System.getProperty("user.dir"), "ngrinder_agent_home_template/agent.conf");
+		if (file.exists()) {
+			home.getFile("ngrinder_agent_home_template/agent.conf");
+		}
+		InputStream agentConfIO = loadFromClassPath("ngrinder_agent_home_template/agent.conf");
+		if (agentConfIO == null) {
+			throw processException("Error while loading agent.conf file");
+		}
+		home.copyFileTo(agentConfIO, new File("ngrinder_agent_home_template/agent.conf"));
+		IOUtils.closeQuietly(agentConfIO);
+	}
 
 	/**
 	 * Load the internal files for the given path by searching class paths.
-	 * 
-	 * @param path
-	 *            path in the classpath
+	 *
+	 * @param path path in the classpath
 	 * @return {@link InputStream}
 	 */
 	public InputStream loadFromClassPath(String path) {
@@ -103,18 +106,16 @@ public class AgentConfig {
 
 	private void loadAgentProperties() {
 		checkNotNull(home);
-		Properties properties = home.getProperties("agent.conf");
+		Properties properties = home.getProperties("ngrinder_agent_home_template/agent.conf");
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties);
 	}
 
 	/**
 	 * Save the agent pid.
-	 * 
-	 * @param agentPid
-	 *            agent pid
-	 * @param startMode
-	 *            startMode
+	 *
+	 * @param agentPid  agent pid
+	 * @param startMode startMode
 	 */
 	public void saveAgentPidProperties(String agentPid, String startMode) {
 		checkNotNull(home);
@@ -126,12 +127,11 @@ public class AgentConfig {
 		}
 		home.saveProperties("pid", properties);
 	}
-	
+
 	/**
 	 * Update agent pid file.
-	 * 
-	 * @param startMode
-	 *            startMode
+	 *
+	 * @param startMode startMode
 	 */
 	public void updateAgentPidProperties(String startMode) {
 		checkNotNull(home);
@@ -147,9 +147,8 @@ public class AgentConfig {
 
 	/**
 	 * Get the agent pid in the form of string.
-	 * 
-	 * @param startMode
-	 *            agent or monitor
+	 *
+	 * @param startMode agent or monitor
 	 * @return pid
 	 */
 	public String getAgentPidProperties(String startMode) {
@@ -173,7 +172,7 @@ public class AgentConfig {
 
 	/**
 	 * Resolve NGrinder agent home path.
-	 * 
+	 *
 	 * @return resolved {@link AgentHome}
 	 */
 	protected AgentHome resolveHome() {
@@ -207,7 +206,7 @@ public class AgentConfig {
 
 	/**
 	 * if there is testmode property in system.properties.. return true
-	 * 
+	 *
 	 * @return true is test mode
 	 */
 	public boolean isTestMode() {
@@ -220,7 +219,7 @@ public class AgentConfig {
 
 	/**
 	 * Get agent properties.
-	 * 
+	 *
 	 * @return agent properties
 	 */
 	public PropertiesWrapper getAgentProperties() {
@@ -230,12 +229,9 @@ public class AgentConfig {
 
 	/**
 	 * Get the string value from property for the given key.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value
-	 * 
+	 *
+	 * @param key          property key
+	 * @param defaultValue default value
 	 * @return string value for given key. If not available, return default value.
 	 */
 	public String getProperty(String key, String defaultValue) {
@@ -244,12 +240,9 @@ public class AgentConfig {
 
 	/**
 	 * Get the int value from property for the given key.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value
-	 * 
+	 *
+	 * @param key          property key
+	 * @param defaultValue default value
 	 * @return int value for given key. If not available, return default value.
 	 */
 	public int getPropertyInt(String key, int defaultValue) {
@@ -258,11 +251,9 @@ public class AgentConfig {
 
 	/**
 	 * Get the nGrinder internal property for the given key.
-	 * 
-	 * @param key
-	 *            key
-	 * @param defaultValue
-	 *            default value
+	 *
+	 * @param key          key
+	 * @param defaultValue default value
 	 * @return value
 	 */
 	public String getInternalProperty(String key, String defaultValue) {
@@ -275,12 +266,9 @@ public class AgentConfig {
 
 	/**
 	 * Get the boolean value from the properties.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value
-	 * 
+	 *
+	 * @param key          property key
+	 * @param defaultValue default value
 	 * @return boolean value for given key. If not available, return default value.
 	 */
 	public boolean getPropertyBoolean(String key, boolean defaultValue) {

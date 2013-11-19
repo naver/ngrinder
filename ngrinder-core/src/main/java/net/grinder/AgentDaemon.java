@@ -30,7 +30,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Agent Daemon wrapper for {@link AgentImplementationEx} in thread.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -45,9 +45,8 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param agentConfig
-	 *            agent configuration
+	 *
+	 * @param agentConfig agent configuration
 	 */
 
 	public AgentDaemon(AgentConfig agentConfig) {
@@ -61,9 +60,8 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Set agent.
-	 * 
-	 * @param agent
-	 *            agent
+	 *
+	 * @param agent agent
 	 * @return set agent
 	 */
 	public synchronized AgentImplementationEx setAgent(AgentImplementationEx agent) {
@@ -80,9 +78,8 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Run agent to connect to given console in localhost.
-	 * 
-	 * @param consolePort
-	 *            port to which agent connect
+	 *
+	 * @param consolePort port to which agent connect
 	 */
 	public void run(int consolePort) {
 		run(null, consolePort);
@@ -90,9 +87,8 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Run agent with given {@link GrinderProperties}.
-	 * 
-	 * @param grinderProperties
-	 *            {@link GrinderProperties}
+	 *
+	 * @param grinderProperties {@link GrinderProperties}
 	 */
 	public void run(GrinderProperties grinderProperties) {
 		this.properties = grinderProperties;
@@ -103,15 +99,12 @@ public class AgentDaemon implements Agent {
 	 * Run agent with given consoleHost and consolePort. <br/>
 	 * if consoleHost is null it will use localhost or use console host set in
 	 * {@link GrinderProperties}
-	 * 
+	 *
 	 * if port number is 0, it will use default consolePort or use console port
 	 * set in {@link GrinderProperties}
-	 * 
-	 * @param consoleHost
-	 *            host name
-	 * @param consolePort
-	 *            port number
-	 * 
+	 *
+	 * @param consoleHost host name
+	 * @param consolePort port number
 	 */
 	public void run(String consoleHost, int consolePort) {
 		if (StringUtils.isNotEmpty(consoleHost)) {
@@ -152,12 +145,13 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Interface to detect agent shutdown.
-	 * 
+	 *
 	 * @author JunHo Yoon
-	 * 
 	 */
 	public interface AgentShutDownListener {
-		/** AgentShutdown listening method. */
+		/**
+		 * AgentShutdown listening method.
+		 */
 		public void shutdownAgent();
 	}
 
@@ -185,9 +179,8 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Add AgentShutdownListener.
-	 * 
-	 * @param listener
-	 *            listener to detect to Agent Shutdown
+	 *
+	 * @param listener listener to detect to Agent Shutdown
 	 */
 	public void addListener(AgentShutDownListener listener) {
 		m_listeners.add(listener);

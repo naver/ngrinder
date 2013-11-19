@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -119,7 +120,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 
     @Test
-    public void testCompressAgentFolder() throws IOException {
+    public void testCompressAgentFolder() throws IOException, URISyntaxException {
         URLClassLoader loader = (URLClassLoader)this.getClass().getClassLoader();
         URL core = this.getClass().getClassLoader().getResource("lib/ngrinder-core-test.jar");
         URL sh = this.getClass().getClassLoader().getResource("lib/ngrinder-sh-test.jar");

@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>ngrinder</artifactId>
@@ -9,11 +9,11 @@
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
-	
+
 	<properties>
 		<outputfilename>${project.version}.jar</outputfilename>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -38,11 +38,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-        <dependency>
-            <groupId>sigar</groupId>
-            <artifactId>sigar-native</artifactId>
-            <version>1.0</version>
-        </dependency>
+		<dependency>
+			<groupId>sigar</groupId>
+			<artifactId>sigar-native</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
@@ -58,11 +58,11 @@
 			<artifactId>ngrinder-groovy</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.ngrinder</groupId>
-            <artifactId>ngrinder-sh</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.ngrinder</groupId>
+			<artifactId>ngrinder-sh</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -111,12 +111,12 @@
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.1</version>
 		</dependency>
-        <dependency>
-             <groupId>org.fusesource</groupId>
-             <artifactId>sigar</artifactId>
-             <version>1.6.4</version>
-         </dependency>
-        <dependency>
+		<dependency>
+			<groupId>org.fusesource</groupId>
+			<artifactId>sigar</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>1.8.5</version>
@@ -178,59 +178,59 @@
 				</configuration>
 			</plugin>
 
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>assembly</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            <configuration>
-                <descriptors>
-                    <descriptor>src/assembly/ngrinder.xml</descriptor>
-                </descriptors>
-                <outputDirectory>${project.build.directory}</outputDirectory>
-                <archive>
-                    <manifest>
-                        <addClasspath>true</addClasspath>
-                        <classpathPrefix>lib/</classpathPrefix>
-                        <mainClass>org.ngrinder.NGrinderStarter</mainClass>
-                    </manifest>
-                </archive>
-            </configuration>
-            </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/ngrinder.xml</descriptor>
+					</descriptors>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-script</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/target</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>../ngrinder-sh/src/main/resources</directory>
-                                    <includes>
-                                        <include>*.sh</include>
-                                        <include>*.bat</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-script</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/target</outputDirectory>
+							<overwrite>true</overwrite>
+							<resources>
+								<resource>
+									<directory>../ngrinder-sh/src/main/resources</directory>
+									<includes>
+										<include>*.sh</include>
+										<include>*.bat</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
 
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

@@ -21,6 +21,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * Agent manager service interface which is used to retrieve the agent info
  * attaching the current controller.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.2
  */
@@ -37,9 +38,8 @@ public interface IAgentManagerService {
 	/**
 	 * Get the available agent count map across all users including the free
 	 * agents and user's private agents.
-	 * 
-	 * @param user
-	 *            current user
+	 *
+	 * @param user current user
 	 * @return user available agent count map
 	 */
 	public abstract Map<String, MutableInt> getUserAvailableAgentCountMap(User user);
@@ -47,64 +47,58 @@ public interface IAgentManagerService {
 	/**
 	 * Get all agent agents. The agent list is obtained combining the data from
 	 * DB and {@link AgentManager}
-	 * 
+	 *
 	 * This includes not-yet-saved agents as well.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	public abstract List<AgentInfo> getLocalAgents();
 
 	/**
 	 * Create the agent key from the given agent info.
-	 * 
-	 * @param agentInfo
-	 *            agent information
-	 * 
+	 *
+	 * @param agentInfo agent information
 	 * @return agent key
 	 */
 	public abstract String createAgentKey(AgentInfo agentInfo);
 
 	/**
 	 * Create the agent key from the given agent identity.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
-	 * 
+	 *
+	 * @param agentIdentity agent identity
 	 * @return agent key
 	 */
 	public abstract String createAgentKey(AgentControllerIdentityImplementation agentIdentity);
 
 	/**
 	 * Get the agent identity by IP and host name.
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param name
-	 *            host name
+	 *
+	 * @param ip   ip
+	 * @param name host name
 	 * @return {@link AgentControllerIdentityImplementation} instance.
 	 */
 	public abstract AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name);
 
 	/**
 	 * Get all agents attached to the current controller's region from DB.
-	 * 
+	 *
 	 * This method is cluster aware. If it's cluster mode it return all agents
 	 * attached.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	public abstract List<AgentInfo> getLocalAgentListFromDB();
 
 	/**
 	 * Get all active agents from DB.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	public abstract List<AgentInfo> getAllActiveAgentInfoFromDB();
 
 	/**
 	 * Get all visible agents from DB.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	public abstract List<AgentInfo> getAllVisibleAgentInfoFromDB();
@@ -112,11 +106,9 @@ public interface IAgentManagerService {
 	/**
 	 * Get the agent for the given id. If it's called from the other controller, only
 	 * limited info available in db will be return.
-	 * 
-	 * @param id
-	 *            agent id
-	 * @param includeAgentIdentity
-	 *            include agent identity
+	 *
+	 * @param id                   agent id
+	 * @param includeAgentIdentity include agent identity
 	 * @return agent
 	 */
 	public abstract AgentInfo getAgent(long id, boolean includeAgentIdentity);
@@ -124,29 +116,25 @@ public interface IAgentManagerService {
 	/**
 	 * Get the agent system data model for the given ip. This method is cluster
 	 * aware.
-	 * 
-	 * @param ip
-	 *            agent ip.
-	 * @param name
-	 *            agent name
+	 *
+	 * @param ip   agent ip.
+	 * @param name agent name
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public abstract SystemDataModel getAgentSystemDataModel(String ip, String name);
 
-    /**
-     * Create agent package
-     *
-     * @param classLoader
-     *                   URLClass Loader.
-     * @return File
-     */
-    public abstract File createAgentPackage(URLClassLoader classLoader) throws IOException;
+	/**
+	 * Create agent package
+	 *
+	 * @param classLoader URLClass Loader.
+	 * @return File
+	 */
+	public abstract File createAgentPackage(URLClassLoader classLoader) throws IOException, URISyntaxException;
 
-    /**
-     * Update agent
-     *
-     * @param url
-     *            controller request url.
-     */
-    public abstract void updateAgent(String url) throws IOException;
+	/**
+	 * Update agent
+	 *
+	 * @param url controller request url.
+	 */
+	public abstract void updateAgent(String url) throws IOException;
 }

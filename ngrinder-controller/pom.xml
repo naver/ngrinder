@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.ngrinder</groupId>
@@ -9,8 +9,8 @@
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
-    <version>3.3-SNAPSHOT</version>
-    <packaging>war</packaging>
+	<version>3.3-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<properties>
 		<webappdir>${basedir}/src/main/webapp</webappdir>
 		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
@@ -34,22 +34,22 @@
 		</repository>
 	</repositories>
 
-    <profiles>
-        <profile>
-            <id>internal</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <configuration>
-                            <webappDirectory>${deploy.dir}</webappDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<profiles>
+		<profile>
+			<id>internal</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<webappDirectory>${deploy.dir}</webappDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>rome</groupId>
@@ -88,7 +88,6 @@
 		</dependency>
 
 
-
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
@@ -98,9 +97,9 @@
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-core</artifactId>
-            <version>3.3-SNAPSHOT</version>
+			<version>3.3-SNAPSHOT</version>
 
-        </dependency>
+		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -148,6 +147,12 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.mojo.webstart</groupId>
+			<artifactId>webstart-jnlp-servlet</artifactId>
+			<version>1.0-6.0.02_ea_b02.2</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -315,7 +320,6 @@
 		</dependency>
 
 
-
 		<!-- AspectJ dependencies -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -399,7 +403,7 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-                <filtering>true</filtering>
+				<filtering>true</filtering>
 				<excludes>
 					<exclude>**/script_template/**/*</exclude>
 				</excludes>
@@ -424,7 +428,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
-                    <webResources>
+					<webResources>
 						<resource>
 							<directory>patch</directory>
 							<targetPath>WEB-INF/lib</targetPath>

@@ -78,6 +78,7 @@ public class Config implements IConfig, NGrinderConstants {
 	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<PropertyChangeListener>();
 	@Autowired
 	private SpringContext context;
+
 	/**
 	 * Make it singleton.
 	 */
@@ -87,8 +88,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Add the system configuration change listener.
 	 *
-	 * @param listener
-	 *            listener
+	 * @param listener listener
 	 */
 	public void addSystemConfListener(PropertyChangeListener listener) {
 		systemConfListeners.add(listener);
@@ -218,8 +218,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Initialize Logger.
 	 *
-	 * @param forceToVerbose
-	 *            true to force verbose logging.
+	 * @param forceToVerbose true to force verbose logging.
 	 */
 	public synchronized void initLogger(boolean forceToVerbose) {
 		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
@@ -228,8 +227,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Set up the logger.
 	 *
-	 * @param verbose
-	 *            verbose mode?
+	 * @param verbose verbose mode?
 	 */
 	protected void setupLogger(boolean verbose) {
 		this.verbose = verbose;
@@ -261,8 +259,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Copy the default files and create default directories to ${NGRINDER_HOME}.
 	 *
-	 * @throws IOException
-	 *             occurs when there is no such a files.
+	 * @throws IOException occurs when there is no such a files.
 	 */
 	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
@@ -379,7 +376,9 @@ public class Config implements IConfig, NGrinderConstants {
 		}
 	}
 
-	/** watch docs. */
+	/**
+	 * watch docs.
+	 */
 	private FileWatchdog announcementWatchDog;
 	private FileWatchdog systemConfWatchDog;
 	private FileWatchdog policyJsWatchDog;
@@ -505,8 +504,8 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Get the resolved extended home folder.
 	 *
-	 * @since 3.1
 	 * @return home
+	 * @since 3.1
 	 */
 	public Home getExHome() {
 		return this.exHome;
