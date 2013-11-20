@@ -106,7 +106,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>grinder</groupId>
+			<artifactId>grinder-patch</artifactId>
+			<version>3.9.1-patch</version>
+		</dependency>
 		<!-- Commons -->
 		<dependency>
 			<groupId>commons-io</groupId>

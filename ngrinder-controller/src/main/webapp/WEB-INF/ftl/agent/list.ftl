@@ -155,21 +155,29 @@
 				});
 
                 $("#update_agent_button").click(function() {
-                    var list = $("td input");
+                    var ids = "";
+                    var list = $("td input:checked");
                     if(list.length == 0) {
                         bootbox.alert("<@spring.message "agent.table.message.error.noAgent"/>", "<@spring.message "common.button.ok"/>");
                         return;
                     }
-                    updateAgents();
+
+                    var $confirm = bootbox.confirm("<@spring.message "agent.table.message.confirm.update"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+                        if (result) {
+                            updateAgents(list.map(function() {
+                                return $(this).val();
+                            }).get().join(","));
+                        }
+                    });
+                    $confirm.children(".modal-body").addClass("error-color");
                 });
-				
             });
 			
 			function stopAgents(ids) {
 				$.ajax({
 			  		url: "${req.getContextPath()}/agent/api/stop",
 			  		type: "POST",
-			  		data: {"ids" : ids},
+			  		data: { "ids" : ids },
 			  		cache: false,
 					dataType:'json',
 			    	success: function(res) {
@@ -184,11 +192,12 @@
 			  	});
 			}
 
-            function updateAgents() {
+            function updateAgents(ids) {
                 $.ajax({
                     url: "${req.getContextPath()}/agent/api/update",
-                    type: "GET",
+                    type: "POST",
                     cache: false,
+                    data: {"ids" : ids },
                     dataType:'json',
                     success: function(res) {
                         showSuccessMsg("<@spring.message "agent.table.message.success.update"/>");

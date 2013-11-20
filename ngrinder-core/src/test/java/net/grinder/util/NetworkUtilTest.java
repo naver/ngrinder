@@ -13,17 +13,16 @@
  */
 package net.grinder.util;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class NetworkUtilTest {
 	@Test
@@ -54,12 +53,12 @@ public class NetworkUtilTest {
 
 	@Test
 	public void testLocalHostName()
-					throws ClassNotFoundException,
-					SecurityException,
-					NoSuchMethodException,
-					IllegalArgumentException,
-					IllegalAccessException,
-					InvocationTargetException {
+			throws ClassNotFoundException,
+			SecurityException,
+			NoSuchMethodException,
+			IllegalArgumentException,
+			IllegalAccessException,
+			InvocationTargetException {
 		try {
 			System.out.println("Local host:" + InetAddress.getLocalHost().getHostName());
 		} catch (UnknownHostException e) {
@@ -70,8 +69,8 @@ public class NetworkUtilTest {
 		assertThat(localHostAddress, notNullValue());
 
 		Class<?> networkClas = Class.forName("net.grinder.util.NetworkUtil");
-		Method NonLoopbackMethod = networkClas.getDeclaredMethod("getFirstNonLoopbackAddress", new Class[] {
-				boolean.class, boolean.class });
+		Method NonLoopbackMethod = networkClas.getDeclaredMethod("getFirstNonLoopbackAddress", new Class[]{
+				boolean.class, boolean.class});
 		NonLoopbackMethod.setAccessible(true);
 		NonLoopbackMethod.invoke(networkClas, true, false);
 
@@ -84,10 +83,4 @@ public class NetworkUtilTest {
 		assertThat(localHostAddress, notNullValue());
 	}
 
-	@Test
-	public void testIPValidation() {
-		assertThat(NetworkUtil.isValidIP("10.10.10.10"), is(true));
-		assertThat(NetworkUtil.isValidIP("10.10.10.1011"), is(false));
-		assertThat(NetworkUtil.isValidIP("hello"), is(false));
-	}
 }

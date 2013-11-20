@@ -13,16 +13,12 @@
  */
 package net.grinder.engine.common;
 
-import net.grinder.common.GrinderProperties;
-import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.communication.ConnectionType;
 import net.grinder.communication.Connector;
 
-import org.ngrinder.infra.AgentConfig;
-
 /**
  * ConnectorFactory.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -32,9 +28,8 @@ public class AgentControllerConnectorFactory {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param connectionType
-	 *            The connection type.
+	 *
+	 * @param connectionType The connection type.
 	 */
 	public AgentControllerConnectorFactory(ConnectionType connectionType) {
 		m_connectionType = connectionType;
@@ -42,16 +37,12 @@ public class AgentControllerConnectorFactory {
 
 	/**
 	 * Factory method.
-	 * 
-	 * @param properties
-	 *            Properties.
+	 *
+	 * @param host host
+	 * @param port port
 	 * @return A connector which can be used to contact the console.
 	 */
-	public Connector create(GrinderProperties properties) {
-		String host = properties.getProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST,
-						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
-		int port = properties.getInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT,
-						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+	public Connector create(String host, int port) {
 		return new Connector(host, port, m_connectionType);
 	}
 }

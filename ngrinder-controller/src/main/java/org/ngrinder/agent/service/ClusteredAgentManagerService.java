@@ -49,8 +49,7 @@ import java.util.Set;
 
 import static net.grinder.message.console.AgentControllerState.INACTIVE;
 import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
-import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL;
-import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.STOP_AGENT;
+import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
@@ -89,25 +88,26 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
-					List<String> keysWithExpiryCheck = cast(((Ehcache) agentRequestCache.getNativeCache())
+					List<String> keys = cast(((Ehcache) agentRequestCache.getNativeCache())
 							.getKeysWithExpiryCheck());
 					String region = getConfig().getRegion() + "|";
-					for (String each : keysWithExpiryCheck) {
-						try {
-							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
-								ClusteredAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
-								AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
-										agentRequest.getAgentIp(), agentRequest.getAgentName());
-								if (agentIdentity != null) {
-									agentRequest.getRequestType().process(ClusteredAgentManagerService.this,
-											agentIdentity);
+					for (String each : keys) {
+						if (each.startsWith(region)) {
+							if (agentRequestCache.get(each) != null) {
+								try {
+									ClusteredAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
+									AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
+											agentRequest.getAgentIp(), agentRequest.getAgentName());
+									if (agentIdentity != null) {
+										agentRequest.getRequestType().process(ClusteredAgentManagerService.this,
+												agentIdentity);
+									}
+									agentRequestCache.evict(each);
+								} catch (Exception e) {
+									CoreLogger.LOGGER.error(e.getMessage(), e);
 								}
 							}
-
-						} catch (Exception e) {
-							CoreLogger.LOGGER.error(e.getMessage(), e);
 						}
-						agentRequestCache.evict(each);
 					}
 				}
 			});
@@ -119,6 +119,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 *
 	 * @since 3.1
 	 */
+
 	public void checkAgentState() {
 		List<AgentInfo> changeAgents = new ArrayList<AgentInfo>();
 		String curRegion = getConfig().getRegion();
@@ -316,7 +317,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Get all agents attached of this region from DB.
-	 *
+	 * <p/>
 	 * This method is cluster aware. If it's cluster mode it return all agents
 	 * attached in this region.
 	 *
@@ -391,6 +392,25 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
 		getAgentManager().stopAgent(agentIdentity);
+	}
+
+	/**
+	 * Update the agent
+	 *
+	 * @param agentIdentity agent identity to be updated.
+	 */
+	public void updateAgent(AgentControllerIdentityImplementation agentIdentity) {
+		getAgentManager().updateAgent(agentIdentity);
+	}
+
+	@Override
+	public void updateAgent(Long id) {
+		AgentInfo agent = getAgent(id, false);
+		if (agent == null) {
+			return;
+		}
+		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
+				new ClusteredAgentRequest(agent.getIp(), agent.getName(), UPDATE_AGENT));
 	}
 
 	/**

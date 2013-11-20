@@ -13,6 +13,8 @@
  */
 package org.ngrinder.infra;
 
+import net.grinder.communication.AgentControllerCommunicationDefaults;
+import net.grinder.util.NetworkUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -39,11 +41,16 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 public class AgentConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
-	public static final String AGENT_CONTROLLER_SERVER_HOST = "agent.controller.server.host";
-	public static final String AGENT_CONTROLLER_SERVER_PORT = "agent.controller.server.port";
+
+	public static final String AGENT_CONTROLLER_IP = "agent.controller.ip";
+	public static final String AGENT_CONTROLLER_PORT = "agent.controller.port";
+
+	// For backward compatibility
+	public static final String AGENT_CONSOLE_IP = "agent.console.ip";
+	public static final String AGENT_CONSOLE_PORT = "agent.console.port";
+
 	public static final String AGENT_REGION = "agent.region";
 	public static final String AGENT_HOSTID = "agent.hostid";
-	public static final String AGENT_USE_SAME_CONSOLE = "agent.same.console.host";
 	public static final String MONITOR_LISTEN_PORT = "monitor.listen.port";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
@@ -51,6 +58,7 @@ public class AgentConfig {
 	private AgentHome home = null;
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper internalProperties;
+	private String agentHostID;
 
 	/**
 	 * Initialize.
@@ -87,7 +95,11 @@ public class AgentConfig {
 			return;
 		}
 		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
-	    home.copyFileTo(newAgentConfig, "agent.conf");
+		if (newAgentConfig.exists()) {
+			home.copyFileTo(newAgentConfig, "agent.conf");
+		} else {
+			home.writeFileTo("", "agent.conf");
+		}
 	}
 
 	/**
@@ -271,4 +283,51 @@ public class AgentConfig {
 		return getAgentProperties().getPropertyBoolean(key, defaultValue);
 	}
 
+	public String getControllerIP() {
+		return getProperty(AGENT_CONTROLLER_IP, getProperty(AGENT_CONSOLE_IP, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST));
+	}
+
+	public void setControllerIP(String ip) {
+		getAgentProperties().setProperty(AGENT_CONTROLLER_IP, ip);
+	}
+
+	public int getControllerPort() {
+		return getPropertyInt(AGENT_CONTROLLER_PORT, getPropertyInt(AGENT_CONSOLE_PORT, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
+	}
+
+	public String getRegion() {
+		return getProperty(AGENT_REGION, "");
+	}
+
+	public String getAgentHostID() {
+		return getProperty(AGENT_HOSTID, NetworkUtil.DEFAULT_LOCAL_HOST_NAME);
+	}
+
+	public boolean isServerMode() {
+		return getPropertyBoolean("agent.servermode", false);
+	}
+
+	public String getLocalIP() {
+		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
+	}
+
+	public static class NullAgentConfig extends AgentConfig {
+		public int counter = 0;
+
+		public NullAgentConfig(int i) {
+			counter = i;
+		}
+
+		@Override
+		protected AgentHome resolveHome() {
+			AgentHome resolveHome = super.resolveHome();
+			File directory = new File(resolveHome.getDirectory(), "tmp_" + String.valueOf(counter));
+			resolveHome = new AgentHome(directory);
+			try {
+				FileUtils.forceDeleteOnExit(directory);
+			} catch (IOException e) {
+			}
+			return resolveHome;
+		}
+	}
 }

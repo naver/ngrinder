@@ -134,7 +134,7 @@ public interface IAgentManagerService {
 	/**
 	 * Update agent
 	 *
-	 * @param url controller request url.
+	 * @param id controller request url.
 	 */
-	public abstract void updateAgent(String url) throws IOException;
+	public abstract void updateAgent(Long id) throws IOException;
 }

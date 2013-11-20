@@ -451,6 +451,7 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Get the agent package containing folder.
+	 *
 	 * @return agent package folder
 	 */
 	public File getAgentPackagesDir() {
@@ -593,8 +594,12 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (java.lang.String)
 	 */
 	@Override
-	public void updateAgent(String url) {
-		agentManager.updateAgent(url);
+	public void updateAgent(Long id) {
+		AgentInfo agent = getAgent(id, true);
+		if (agent == null) {
+			return;
+		}
+		agentManager.updateAgent(agent.getAgentIdentity());
 	}
 
 	/**

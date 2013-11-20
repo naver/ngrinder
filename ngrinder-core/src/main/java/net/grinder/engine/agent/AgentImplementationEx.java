@@ -13,27 +13,13 @@
  */
 package net.grinder.engine.agent;
 
-import java.io.File;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import net.grinder.GrinderConstants;
 import net.grinder.common.GrinderBuild;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
 import net.grinder.common.processidentity.ProcessReport;
-import net.grinder.communication.ClientReceiver;
-import net.grinder.communication.ClientSender;
-import net.grinder.communication.CommunicationException;
-import net.grinder.communication.ConnectionType;
-import net.grinder.communication.Connector;
-import net.grinder.communication.FanOutStreamSender;
-import net.grinder.communication.IgnoreShutdownSender;
-import net.grinder.communication.MessageDispatchSender;
-import net.grinder.communication.MessagePump;
-import net.grinder.communication.TeeSender;
+import net.grinder.communication.*;
 import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
@@ -47,15 +33,21 @@ import net.grinder.util.AbstractGrinderClassPathProcessor;
 import net.grinder.util.Directory;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
+import java.io.File;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * This is the entry point of The Grinder agent process.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -81,13 +73,10 @@ public class AgentImplementationEx implements Agent {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param logger
-	 *            Logger.
-	 * @param agentConfig
-	 *            which contains basic agent configuration
-	 * @param proceedWithoutConsole
-	 *            <code>true</code> => proceed if a console connection could not be made.
+	 *
+	 * @param logger                Logger.
+	 * @param agentConfig           which contains basic agent configuration
+	 * @param proceedWithoutConsole <code>true</code> => proceed if a console connection could not be made.
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole) {
 
@@ -102,11 +91,9 @@ public class AgentImplementationEx implements Agent {
 
 	/**
 	 * Constructor with connection to console.
-	 * 
-	 * @param logger
-	 *            logger
-	 * @param agentConfig
-	 *            agent configuration
+	 *
+	 * @param logger      logger
+	 * @param agentConfig agent configuration
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) {
 		this(logger, agentConfig, false);
@@ -114,9 +101,8 @@ public class AgentImplementationEx implements Agent {
 
 	/**
 	 * Run grinder with empty {@link GrinderProperties}.
-	 * 
-	 * @throws GrinderException
-	 *             occurs when initialization is failed.
+	 *
+	 * @throws GrinderException occurs when initialization is failed.
 	 */
 	public void run() throws GrinderException {
 		run(new GrinderProperties());
@@ -124,11 +110,9 @@ public class AgentImplementationEx implements Agent {
 
 	/**
 	 * Run the Grinder agent process.
-	 * 
-	 * @param grinderProperties
-	 *            {@link GrinderProperties} which contains grinder agent base configuration.
-	 * @throws GrinderException
-	 *             If an error occurs.
+	 *
+	 * @param grinderProperties {@link GrinderProperties} which contains grinder agent base configuration.
+	 * @throws GrinderException If an error occurs.
 	 */
 	public void run(GrinderProperties grinderProperties) throws GrinderException {
 		StartGrinderMessage startMessage = null;
@@ -143,19 +127,14 @@ public class AgentImplementationEx implements Agent {
 
 				do {
 					properties = createAndMergeProperties(grinderProperties,
-									startMessage != null ? startMessage.getProperties() : null);
-					if (m_agentConfig.getPropertyBoolean(AgentConfig.AGENT_USE_SAME_CONSOLE, true)) {
-						String connectingHostName = m_agentConfig.getProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST,
-										properties.getProperty(GrinderProperties.CONSOLE_HOST));
-						if (connectingHostName != null) {
-							properties.setProperty(GrinderProperties.CONSOLE_HOST, connectingHostName);
-						}
-					}
+							startMessage != null ? startMessage.getProperties() : null);
+					String controllerIP = m_agentConfig.getControllerIP();
+					properties.setProperty(GrinderProperties.CONSOLE_HOST, controllerIP);
 
 					m_agentIdentity.setName(properties.getProperty("grinder.hostID", NetworkUtil.getLocalHostName()));
 
 					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
-									.create(properties) : null;
+							.create(properties) : null;
 					// We only reconnect if the connection details have changed.
 					if (consoleCommunication != null && !consoleCommunication.getConnector().equals(connector)) {
 						shutdownConsoleCommunication(consoleCommunication);
@@ -167,13 +146,13 @@ public class AgentImplementationEx implements Agent {
 					if (consoleCommunication == null && connector != null) {
 						try {
 							consoleCommunication = new ConsoleCommunication(connector, grinderProperties.getProperty(
-											"grinder.user", "_default"));
+									"grinder.user", "_default"));
 							consoleCommunication.start();
 							m_logger.info("connected to console at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							if (m_proceedWithoutConsole) {
 								m_logger.warn("{}, proceeding without the console; set "
-												+ "grinder.useConsole=false to disable this warning.", e.getMessage());
+										+ "grinder.useConsole=false to disable this warning.", e.getMessage());
 							} else {
 								m_logger.error(e.getMessage());
 								return;
@@ -200,10 +179,10 @@ public class AgentImplementationEx implements Agent {
 
 						// Convert relative path to absolute path.
 						messageProperties.setAssociatedFile(fileStoreDirectory.getFile(messageProperties
-										.getAssociatedFile()));
+								.getAssociatedFile()));
 
 						final File consoleScript = messageProperties.resolveRelativeFile(messageProperties.getFile(
-										GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
+								GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
 
 						// We only fall back to the agent properties if the start message
 						// doesn't specify a script and there is no default script.
@@ -218,7 +197,7 @@ public class AgentImplementationEx implements Agent {
 
 					if (script == null) {
 						final File scriptFile = properties.resolveRelativeFile(properties.getFile(
-										GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
+								GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
 						script = new ScriptLocation(scriptFile);
 					}
 					m_logger.debug("The script location is {}", script.getFile().getAbsolutePath());
@@ -233,41 +212,43 @@ public class AgentImplementationEx implements Agent {
 					// Set up log directory.
 					if (!properties.containsKey(GrinderProperties.LOG_DIRECTORY)) {
 						properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome()
-										.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
+								.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 					}
 					File logFile = new File(properties.getFile(GrinderProperties.LOG_DIRECTORY, new File(".")),
-									m_agentIdentity.getName() + "-" + m_agentIdentity.getNumber() + ".log");
-					m_logger.info("log file : {}" , logFile);
+							m_agentIdentity.getName() + "-" + m_agentIdentity.getNumber() + ".log");
+					m_logger.info("log file : {}", logFile);
 					AbstractLanguageHandler handler = Lang.getByFileName(script.getFile()).getHandler();
 					final WorkerFactory workerFactory;
-					String jvmArguments = buildTestRunProperties(script, handler, properties);
+					Properties rebasedSystemProperty = rebaseSystemClassPath(System.getProperties(), m_agentConfig.getCurrentDirectory());
+
+					String jvmArguments = buildTestRunProperties(script, handler, rebasedSystemProperty, properties);
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-										filterSystemClassPath(System.getProperties(), handler, m_logger), jvmArguments,
-										script.getDirectory());
+								filterSystemClassPath(rebasedSystemProperty, handler, m_logger), jvmArguments,
+								script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
 						FileUtils.writeStringToFile(logFile, workerCommandLine.toString() + "\n\n");
 						workerFactory = new ProcessWorkerFactory(workerCommandLine, m_agentIdentity,
-										m_fanOutStreamSender, consoleCommunication != null, script, properties);
+								m_fanOutStreamSender, consoleCommunication != null, script, properties);
 					} else {
 						m_logger.info("DEBUG MODE. Spawning threads rather than processes");
 						m_logger.warn("grinder.jvm.arguments ({}) ignored in single process mode", jvmArguments);
 
 						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender,
-										consoleCommunication != null, script, properties);
+								consoleCommunication != null, script, properties);
 					}
 					m_logger.debug("worker launcher is prepared.");
 					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1),
-									workerFactory, m_eventSynchronisation, m_logger);
+							workerFactory, m_eventSynchronisation, m_logger);
 					m_workerLaucherForShutdown = workerLauncher;
 					final int increment = properties.getInt("grinder.processIncrement", 0);
 					m_logger.debug("rampup mode by {}.", increment);
 					if (increment > 0) {
 						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties.getInt(
-										"grinder.initialProcesses", increment));
+								"grinder.initialProcesses", increment));
 
 						if (moreProcessesToStart) {
 							final int incrementInterval = properties.getInt("grinder.processIncrementInterval", 60000);
@@ -288,14 +269,14 @@ public class AgentImplementationEx implements Agent {
 						while (!workerLauncher.allFinished()) {
 							m_logger.debug("waiting until all workers are finished");
 							if (consoleSignalTime == -1
-											&& m_consoleListener.checkForMessage(ConsoleListener.ANY
-															^ ConsoleListener.START)) {
+									&& m_consoleListener.checkForMessage(ConsoleListener.ANY
+									^ ConsoleListener.START)) {
 								m_logger.info("dont start anymore by message from controller.");
 								workerLauncher.dontStartAnyMore();
 								consoleSignalTime = System.currentTimeMillis();
 							}
 							if (consoleSignalTime >= 0
-											&& System.currentTimeMillis() - consoleSignalTime > maximumShutdownTime) {
+									&& System.currentTimeMillis() - consoleSignalTime > maximumShutdownTime) {
 
 								m_logger.info("Terminating unresponsive processes by force");
 
@@ -338,9 +319,15 @@ public class AgentImplementationEx implements Agent {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (
+				Exception e
+				)
+
+		{
 			m_logger.error("Exception occurred in the agent message loop", e);
-		} finally {
+		} finally
+
+		{
 			if (m_timer != null) {
 				m_timer.cancel();
 				m_timer = null;
@@ -355,16 +342,33 @@ public class AgentImplementationEx implements Agent {
 		}
 	}
 
-	private String buildTestRunProperties(ScriptLocation script, AbstractLanguageHandler handler,
-					GrinderProperties properties) {
+	private Properties rebaseSystemClassPath(Properties properties, File curDir) {
+		Properties newProperties = new Properties();
+		newProperties.putAll(properties);
+		StringBuilder newClassPath = new StringBuilder();
+		boolean isFirst = true;
+		for (String each : StringUtils.split(properties.getProperty("java.class.path"), ";:")) {
+			File file = new File(curDir, each);
+			if (!isFirst) {
+				newClassPath.append(File.pathSeparator);
+			}
+			isFirst = false;
+			newClassPath.append(FilenameUtils.normalize(file.getAbsolutePath()));
+		}
+		newProperties.put("java.class.path", newClassPath.toString());
+		return newProperties;
+	}
+
+	private String buildTestRunProperties(ScriptLocation script, AbstractLanguageHandler handler, Properties systemProperty,
+	                                      GrinderProperties properties) {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
-						"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
-						NetworkUtil.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
-						m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true), m_agentConfig.getProperty("agent.javaopt", null));
+				"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
+				NetworkUtil.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
+				m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true), m_agentConfig.getProperty("agent.javaopt", null));
 		String jvmArguments = builder.buildJVMArgument();
-		String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), handler, m_logger)
-						+ File.pathSeparator
-						+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
+		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
+				+ File.pathSeparator
+				+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
 		properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
 
 		m_logger.info("grinder properties {}", properties);
@@ -379,38 +383,32 @@ public class AgentImplementationEx implements Agent {
 
 	/**
 	 * Get classpath which should be located in the head of classpath.
-	 * 
-	 * @param properties
-	 *            system properties
-	 * @param handler
-	 *            language specific handler
-	 * @param logger
-	 *            logger
+	 *
+	 * @param properties system properties
+	 * @param handler    language specific handler
+	 * @param logger     logger
 	 * @return foremost classpath
 	 */
 	private String getForeMostClassPath(Properties properties, AbstractLanguageHandler handler, Logger logger) {
-		String property = properties.getProperty("java.class.path", "");
-		AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcesssor();
-		return classPathProcessor.filterForeMostClassPath(property, logger) + File.pathSeparator
-						+ classPathProcessor.filterPatchClassPath(property, logger);
+		String systemClassPath = properties.getProperty("java.class.path");
+		AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
+		return classPathProcessor.filterForeMostClassPath(systemClassPath, logger) + File.pathSeparator
+				+ classPathProcessor.filterPatchClassPath(systemClassPath, logger);
 	}
 
 	/**
 	 * Filter classpath to prevent too many instrumentation.
-	 * 
-	 * @param properties
-	 *            system properties
-	 * @param handler
-	 *            Language specific handler
-	 * @param logger
-	 *            logger
+	 *
+	 * @param properties system properties
+	 * @param handler    Language specific handler
+	 * @param logger     logger
 	 * @return new filtered properties
 	 */
 	private Properties filterSystemClassPath(Properties properties, AbstractLanguageHandler handler, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
 		logger.debug("Total system class path in total is " + property);
 
-		String newClassPath = handler.getClassPathProcesssor().filterClassPath(property, logger);
+		String newClassPath = handler.getClassPathProcessor().filterClassPath(property, logger);
 		Properties returnProperties = new Properties(properties);
 		returnProperties.setProperty("java.class.path", newClassPath);
 		logger.debug("Filtered system class path is {}", newClassPath);
@@ -420,7 +418,7 @@ public class AgentImplementationEx implements Agent {
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 
 	private GrinderProperties createAndMergeProperties(GrinderProperties properties,
-					GrinderProperties startMessageProperties) throws PersistenceException {
+	                                                   GrinderProperties startMessageProperties) throws PersistenceException {
 
 		if (startMessageProperties != null) {
 			properties.putAll(startMessageProperties);
@@ -486,7 +484,7 @@ public class AgentImplementationEx implements Agent {
 		private final MessagePump m_messagePump;
 
 		public ConsoleCommunication(Connector connector, String user) throws CommunicationException,
-						FileStore.FileStoreException {
+				FileStore.FileStoreException {
 
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
@@ -500,7 +498,7 @@ public class AgentImplementationEx implements Agent {
 			}
 
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
-							.getCacheHighWaterMark()));
+					.getCacheHighWaterMark()));
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);
@@ -511,7 +509,7 @@ public class AgentImplementationEx implements Agent {
 			// Everything that the file store doesn't handle is tee'd to the
 			// worker processes and our message handlers.
 			fileStoreMessageDispatcher.addFallback(new TeeSender(messageDispatcher, new IgnoreShutdownSender(
-							m_fanOutStreamSender)));
+					m_fanOutStreamSender)));
 
 			m_messagePump = new MessagePump(receiver, fileStoreMessageDispatcher, 1);
 
@@ -519,10 +517,10 @@ public class AgentImplementationEx implements Agent {
 				public void run() {
 					try {
 						m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_RUNNING, m_fileStore
-										.getCacheHighWaterMark()));
+								.getCacheHighWaterMark()));
 					} catch (CommunicationException e) {
 						cancel();
-						m_logger.error("Error while pumping up the AgentPrcessReportMessage", e.getMessage());
+						m_logger.error("Error while pumping up the AgentProcessReportMessage", e.getMessage());
 						m_logger.debug("The error detail is ", e);
 					}
 
@@ -533,7 +531,7 @@ public class AgentImplementationEx implements Agent {
 		public void start() {
 			m_messagePump.start();
 			m_timer.schedule(m_reportRunningTask, GrinderConstants.AGENT_HEARTBEAT_DELAY,
-							GrinderConstants.AGENT_HEARTBEAT_INTERVAL);
+					GrinderConstants.AGENT_HEARTBEAT_INTERVAL);
 		}
 
 		public Connector getConnector() {
@@ -545,7 +543,7 @@ public class AgentImplementationEx implements Agent {
 
 			try {
 				m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_FINISHED, m_fileStore
-								.getCacheHighWaterMark()));
+						.getCacheHighWaterMark()));
 				m_logger.debug("shut down message is sent");
 			} catch (CommunicationException e) {
 				NoOp.noOp();

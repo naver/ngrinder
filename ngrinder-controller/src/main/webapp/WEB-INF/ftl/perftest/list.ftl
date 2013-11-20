@@ -35,7 +35,7 @@
                 padding: 0px;
             }
 
-			.table th, .table td .jqplot-table-legend {
+			td.jqplot-table-legend {
 				padding-bottom: 0px;
 			}
 		</style>

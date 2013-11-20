@@ -13,10 +13,6 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import java.util.Set;
-
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
@@ -35,17 +31,19 @@ import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
-
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 /**
  * Daemon for AgentControllerServer.
- * 
+ *
  * @author JunHo Yoon
- * 
  */
 public class AgentControllerServerDaemon {
 	private final ConsoleProperties consoleProperties;
@@ -62,11 +60,9 @@ public class AgentControllerServerDaemon {
 	/**
 	 * Agent controller daemon constructor with default
 	 * {@link ConsoleProperties}.
-	 * 
-	 * @param ip
-	 *            IP
-	 * @param port
-	 *            port
+	 *
+	 * @param ip   IP
+	 * @param port port
 	 */
 	public AgentControllerServerDaemon(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
@@ -74,13 +70,10 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Agent controller daemon constructor.
-	 * 
-	 * @param ip
-	 *            IP
-	 * @param port
-	 *            port
-	 * @param consoleProperties
-	 *            default property.
+	 *
+	 * @param ip                IP
+	 * @param port              port
+	 * @param consoleProperties default property.
 	 */
 	public AgentControllerServerDaemon(String ip, int port, ConsoleProperties consoleProperties) {
 		this.consoleProperties = consoleProperties;
@@ -96,7 +89,7 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get port.
-	 * 
+	 *
 	 * @return port
 	 */
 	public int getPort() {
@@ -105,9 +98,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param port
-	 *            port used.
+	 *
+	 * @param port port used.
 	 */
 	public AgentControllerServerDaemon(int port) {
 		this("", port);
@@ -161,9 +153,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Add Listener which will be used to save log in somewhere.
-	 * 
-	 * @param logArrivedListener
-	 *            listener
+	 *
+	 * @param logArrivedListener listener
 	 */
 	public void addLogArrivedListener(LogArrivedListener logArrivedListener) {
 		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
@@ -171,9 +162,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get the console port which the given controller's agent is using.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 * @return port
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
@@ -183,9 +173,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get agent status set matching the given predicate.
-	 * 
-	 * @param predicate
-	 *            predicate
+	 *
+	 * @param predicate predicate
 	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
@@ -195,9 +184,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get the agent status of the given agent controller.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 * @return agent controller status
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
@@ -207,7 +195,7 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get all free agents which is not used yet.
-	 * 
+	 *
 	 * @return free agent list
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
@@ -217,9 +205,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get {@link SystemDataModel} of the given agent.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
@@ -229,7 +216,7 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get all available agents.
-	 * 
+	 *
 	 * @return agent set
 	 */
 	public Set<AgentIdentity> getAllAvailableAgents() {
@@ -238,11 +225,9 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get component used in {@link AgentControllerServer}.
-	 * 
-	 * @param componentType
-	 *            component type class
-	 * @param <T>
-	 *            component type class
+	 *
+	 * @param componentType component type class
+	 * @param <T>           component type class
 	 * @return <T> the component in consoleFoundation
 	 */
 	public <T> T getComponent(Class<T> componentType) {
@@ -251,11 +236,9 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Start agent using {@link GrinderProperties}.
-	 * 
-	 * @param grinderProperties
-	 *            base grinder properties
-	 * @param agentIdentity
-	 *            agent controller identity
+	 *
+	 * @param grinderProperties base grinder properties
+	 * @param agentIdentity     agent controller identity
 	 */
 	public void startAgent(GrinderProperties grinderProperties, AgentIdentity agentIdentity) {
 		LOGGER.info("{} agent is started.", agentIdentity);
@@ -265,9 +248,8 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Stop agent.
-	 * 
-	 * @param agentIdentity
-	 *            agent controller identity
+	 *
+	 * @param agentIdentity agent controller identity
 	 */
 	public void stopAgent(AgentIdentity agentIdentity) {
 		LOGGER.info("{} agent is stopped.", agentIdentity);
@@ -277,18 +259,13 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Update agent to the given version.
-	 * 
-	 * @param agentIdentity
-	 *            agentIndentity
-	 * @param fileName
-	 *            name of the file to be updated
-	 * @param version
-	 *            version
-	 * @param url
-	 *            downloadUrl
+	 *
+	 * @param agentIdentity agentIdentity
+	 * @param version       version
+	 * @param url           downloadUrl
 	 */
-	public void updateAgent(AgentIdentity agentIdentity, String fileName, String version, String url) {
+	public void updateAgent(AgentIdentity agentIdentity, String version, String url) {
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-				new UpdateAgentGrinderMessage(fileName, version, url));
+				new UpdateAgentGrinderMessage(version, url));
 	}
 }

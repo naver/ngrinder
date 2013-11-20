@@ -17,10 +17,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.AgentControllerDaemon;
-import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
@@ -33,12 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Main class to start agent or monitor.
@@ -56,8 +50,6 @@ public class NGrinderStarter {
 	private AgentControllerDaemon agentController;
 
 
-	private static String startMode = "monitor";
-
 	/**
 	 * Constructor.
 	 */
@@ -72,13 +64,6 @@ public class NGrinderStarter {
 		agentConfig.init();
 		// Configure log.
 		configureLogging();
-		addLibraryPath();
-	}
-
-	private void addLibraryPath() {
-		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-				+ agentConfig.getHome().getNativeDirectory().getAbsolutePath());
-		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
 	private void configureLogging() {
@@ -92,7 +77,6 @@ public class NGrinderStarter {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
 		}
 	}
-
 
 	/*
 	 * Get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
@@ -122,9 +106,7 @@ public class NGrinderStarter {
 		MonitorConstants.init(agentConfig);
 
 		try {
-
-			String localHostAddress = NetworkUtil.getLocalHostAddress();
-			System.setProperty("java.rmi.server.hostname", localHostAddress);
+			System.setProperty("java.rmi.server.hostname", NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
 					MonitorConstants.DEFAULT_MONITOR_PORT);
 			AgentMonitorServer.getInstance().init(monitorPort, agentConfig);
@@ -145,30 +127,12 @@ public class NGrinderStarter {
 	/**
 	 * Start ngrinder agent.
 	 *
-	 * @param controllerIp controllerIp;
+	 * @param controllerIP controllerIp;
 	 */
-	public void startAgent(String controllerIp) {
+	public void startAgent(String controllerIP) {
 		LOG.info("***************************************************");
 		LOG.info(" Start nGrinder Agent ...");
-		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties()
-				.getProperty("agent.console.ip", NetworkUtil.getLocalHostAddress());
-
-		if (!NetworkUtil.isValidIP(consoleIP)) {
-			LOG.error("Hey!! {} does not seems like IP. Try to resolve the ip with {}.", consoleIP, consoleIP);
-			InetAddress byName;
-			try {
-				byName = InetAddress.getByName(consoleIP);
-				consoleIP = byName.getHostAddress();
-				agentConfig.getAgentProperties().setProperty("agent.console.ip", consoleIP);
-				LOG.info("Console IP is resolved as {}.", consoleIP);
-			} catch (UnknownHostException e) {
-				consoleIP = "127.0.0.1";
-				LOG.info("Console IP resolution is failed. Use 127.0.0.1 instead.");
-			} finally {
-				agentConfig.getAgentProperties().setProperty("agent.console.ip", consoleIP);
-			}
-
-		}
+		LOG.info("***************************************************");
 
 		if (StringUtils.isEmpty(System.getenv("JAVA_HOME"))) {
 			LOG.error("Hey!! JAVA_HOME env var was not provided. "
@@ -176,24 +140,23 @@ public class NGrinderStarter {
 					+ "Otherwise you can not execute the agent in the security mode.");
 		}
 
-		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
-		LOG.info("with console: {}:{}", consoleIP, consolePort);
-		boolean serverMode = agentConfig.getPropertyBoolean("agent.servermode", false);
+		boolean serverMode = agentConfig.isServerMode();
 		if (!serverMode) {
 			LOG.info("JVM server mode is disabled. If you turn on ngrinder.servermode in agent.conf."
 					+ " It will provide the better agent performance.");
 		}
 
+		controllerIP = StringUtils.defaultIfBlank(controllerIP, agentConfig.getControllerIP());
+		agentConfig.setControllerIP(NetworkUtil.getIP(controllerIP));
+
+		int controllerPort = agentConfig.getControllerPort();
+		String region = agentConfig.getRegion();
+		LOG.info("with controller: {}:{}", controllerIP, controllerPort);
+
 		try {
-			String localHostAddress = NetworkUtil.getLocalHostAddress();
-			System.setProperty("java.rmi.server.hostname", localHostAddress);
-			agentController = new AgentControllerDaemon(localHostAddress);
-			agentController.getAgentController().setAgentConfig(agentConfig);
-			agentController.setRegion(region);
-			agentController.setAgentConfig(agentConfig);
-			agentController.run(consoleIP, consolePort);
+			System.setProperty("java.rmi.server.hostname", NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
+			agentController = new AgentControllerDaemon(agentConfig);
+			agentController.run();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
 			printHelpAndExit("Error while starting Agent", e);
@@ -206,53 +169,6 @@ public class NGrinderStarter {
 	public void stopAgent() {
 		LOG.info("Stop nGrinder agent!");
 		agentController.shutdown();
-	}
-
-	/**
-	 * Get jar file list.
-	 *
-	 * @return jar file collection
-	 */
-	protected Collection<File> getJarFileList() {
-		ArrayList<File> fileString = new ArrayList<File>();
-
-		File libFolder = new File(".", "lib").getAbsoluteFile();
-		if (!libFolder.exists()) {
-			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
-		} else {
-			String[] exts = new String[]{"jar"};
-			fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
-		}
-		return fileString;
-	}
-
-
-	private void addClassPath(ReconfigurableURLClassLoader urlClassLoader, File jarFile) {
-		try {
-			URL jarFileUrl = checkNotNull(jarFile.toURI().toURL());
-			urlClassLoader.addURL(jarFileUrl);
-		} catch (MalformedURLException e) {
-			LOG.error(e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * {@link URLClassLoader} which exposes addURL method.
-	 *
-	 * @author JunHo Yoon
-	 * @since 3.1
-	 */
-	static class ReconfigurableURLClassLoader extends URLClassLoader {
-
-		public ReconfigurableURLClassLoader(URL[] urls) {
-			super(urls);
-		}
-
-		@Override
-		public void addURL(URL url) {
-			super.addURL(url);
-		}
-
 	}
 
 	private void configureLogging(boolean verbose, File logDirectory) {
@@ -296,7 +212,7 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		checkJavaVersion();
-		startMode = System.getProperty("start.mode");
+		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
 		if ("stopagent".equalsIgnoreCase(startMode)) {
@@ -375,7 +291,7 @@ public class NGrinderStarter {
 
 	/**
 	 * Check the current directory is valid or not.
-	 *
+	 * <p/>
 	 * ngrinder agent should run in the folder agent exists.
 	 *
 	 * @return true if it's valid
@@ -396,8 +312,11 @@ public class NGrinderStarter {
 	}
 
 	private static void staticPrintHelpAndExit(String message, Exception e) {
-		LOG.error(message);
+		if (e == null) {
+			LOG.error(message);
+		} else {
+			LOG.error(message, e);
+		}
 		System.exit(-1);
 	}
-
 }

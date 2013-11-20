@@ -18,6 +18,8 @@ package org.hyperic.jni;
 
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.infra.AgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -36,8 +38,8 @@ import java.util.jar.JarFile;
  * @since 3.3
  */
 public class ArchLoader {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArchLoader.class);
 	private Object loadLock = new Object();
-
 	private boolean loaded = false;
 
 	private final static String osName = System.getProperty("os.name");
@@ -88,7 +90,12 @@ public class ArchLoader {
 		InputStream is = null;
 		FileOutputStream fo = null;
 		File fl = new File(agentConfig.getHome().getNativeDirectory(), name);
-		if (fl.exists())  {
+
+		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
+				+ agentConfig.getHome().getNativeDirectory().getAbsolutePath());
+		LOGGER.info("java.library.path : {} ", System.getProperty("java.library.path"));
+
+		if (fl.exists()) {
 			return;
 		}
 
@@ -294,8 +301,8 @@ public class ArchLoader {
 
 	private String findJarPath(String libName, boolean isRequired)
 			throws ArchLoaderException {
-	    /*
-         * native libraries should be installed along side
+		/*
+		 * native libraries should be installed along side
          * ${this.name}.jar, try to find where ${this.name}.jar
          * is on disk and use that path.
          */

@@ -63,23 +63,24 @@ public class AgentUpdateHandler {
 			LOGGER.info("Update request was sent. But the old version was sent");
 			return;
 		}
-
-		File tempFolder = agentConfig.getHome().getTempDirectory();
-		File dest = new File(tempFolder, message.getFileName() + ".tar.gz");
-
-		File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
-		File updatePackageDir = new File(agentConfig.getCurrentDirectory(), "update_package");
+		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
+		File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unzip");
+		File updateDir = new File(agentConfig.getCurrentDirectory(), "update_package");
 		try {
-			NetworkUtil.downloadFile(message.getDownloadUrl(), dest);
-			decompress(dest, interDir, updatePackageDir);
-			System.exit(10);
+			NetworkUtil.downloadFile(createDownloadURL(message.getDownloadUrl(), agentConfig.getControllerIP()), download);
+			decompressDownloadPackage(download, interDir, updateDir);
+			System.exit(0);
 		} catch (Exception e) {
 			LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
 			LOGGER.info("Details : ", e);
 		}
 	}
 
-	void decompress(File from, File interDir, File toDir) {
+	private String createDownloadURL(String downloadUrl, String consoleIP) {
+		return "";
+	}
+
+	void decompressDownloadPackage(File from, File interDir, File toDir) {
 		interDir.mkdirs();
 		toDir.mkdirs();
 
@@ -98,9 +99,7 @@ public class AgentUpdateHandler {
 		} catch (IOException e) {
 			LOGGER.error("Error while moving a file ", e);
 		}
-
 		FileUtils.deleteQuietly(from);
 		FileUtils.deleteQuietly(interDir);
-
 	}
 }

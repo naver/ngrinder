@@ -13,31 +13,26 @@
  */
 package net.grinder.engine.agent;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Properties;
-
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.FanOutStreamSender;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
-import net.grinder.util.Directory;
 import net.grinder.util.AbstractGrinderClassPathProcessor;
+import net.grinder.util.Directory;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.Properties;
+
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Script validation service.
@@ -101,7 +96,7 @@ public class LocalScriptTestDriveService {
 			deleteLogs(base);
 
 			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
-			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcesssor();
+			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
 					NetworkUtil.getLocalHostName());

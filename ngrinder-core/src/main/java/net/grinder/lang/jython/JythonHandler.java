@@ -34,7 +34,7 @@ public class JythonHandler extends AbstractLanguageHandler {
 	}
 
 	@Override
-	public AbstractGrinderClassPathProcessor getClassPathProcesssor() {
+	public AbstractGrinderClassPathProcessor getClassPathProcessor() {
 		return classPathProcessor;
 	}
 

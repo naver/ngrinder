@@ -53,6 +53,6 @@ public abstract class AbstractLanguageHandler {
 	 * 
 	 * @return {@link AbstractGrinderClassPathProcessor} instance.
 	 */
-	public abstract AbstractGrinderClassPathProcessor getClassPathProcesssor();
+	public abstract AbstractGrinderClassPathProcessor getClassPathProcessor();
 
 }

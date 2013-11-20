@@ -13,16 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
@@ -35,7 +25,6 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.thread.ExecutorFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,11 +41,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+
 /**
  * Agent manager.
- * 
+ * <p/>
  * This class has {@link AgentControllerServerDaemon} internally and manage to the agent connection.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -111,11 +109,9 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * 
 	 * Get the port which given agent is connecting to.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 * @return port
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
@@ -124,7 +120,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all agent status.
-	 * 
+	 *
 	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
@@ -139,9 +135,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get agent status set matching the given predicate.
-	 * 
-	 * @param predicate
-	 *            predicate
+	 *
+	 * @param predicate predicate
 	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
@@ -151,9 +146,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the agent status of the given agent.
-	 * 
-	 * @param agentIdentity
-	 *            agentIdentity of one agent
+	 *
+	 * @param agentIdentity agentIdentity of one agent
 	 * @return status agent controller status of one agent
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
@@ -162,7 +156,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all agents which is connected to agent controller.
-	 * 
+	 *
 	 * @return agents set
 	 */
 	public Set<AgentIdentity> getAllAttachedAgents() {
@@ -171,7 +165,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the max agent size per console.
-	 * 
+	 *
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
@@ -181,7 +175,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the max vuser per agent.
-	 * 
+	 *
 	 * @return max vuser per agent
 	 */
 	public int getMaxVuserPerAgent() {
@@ -190,7 +184,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the max run count per thread.
-	 * 
+	 *
 	 * @return max run count per thread
 	 */
 	public int getMaxRunCount() {
@@ -199,7 +193,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the max run hour.
-	 * 
+	 *
 	 * @return max run hour
 	 */
 	public int getMaxRunHour() {
@@ -208,9 +202,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the {@link AgentIdentity} which has the given ip.
-	 * 
-	 * @param agentIP
-	 *            agent ip
+	 *
+	 * @param agentIP agent ip
 	 * @return {@link AgentControllerIdentityImplementation}
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
@@ -224,9 +217,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Convert {@link AgentIdentity} to {@link AgentControllerIdentityImplementation} type.
-	 * 
-	 * @param identity
-	 *            identity
+	 *
+	 * @param identity identity
 	 * @return converted identity.
 	 */
 	AgentControllerIdentityImplementation convert(AgentIdentity identity) {
@@ -235,7 +227,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all agents which are not used now.
-	 * 
+	 *
 	 * @return AgentIndentity set
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
@@ -244,9 +236,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all approved agents for given user which are not used now.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgentsForUser(User user) {
@@ -255,7 +246,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all approved agents which are not used now.
-	 * 
+	 *
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
@@ -265,9 +256,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all approved agents for given user.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllApprovedAgents(User user) {
@@ -276,7 +266,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all shared approved agents.
-	 * 
+	 *
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllSharedAgents() {
@@ -285,7 +275,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all approved agents.
-	 * 
+	 *
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllApprovedAgents() {
@@ -295,9 +285,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Filter the approved agents from given agents.
-	 * 
-	 * @param agents
-	 *            all agents
+	 *
+	 * @param agents all agents
 	 * @return approved agents.
 	 */
 	public Set<AgentIdentity> filterApprovedAgents(Set<AgentIdentity> agents) {
@@ -322,10 +311,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Filter the shared agents from given agents.
-	 * 
-	 * 
-	 * @param agents
-	 *            all agents
+	 *
+	 * @param agents all agents
 	 * @return userOwned agents.
 	 */
 	public Set<AgentIdentity> filterSharedAgents(Set<AgentIdentity> agents) {
@@ -343,12 +330,9 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Filter the user owned agents from given agents.
-	 * 
-	 * 
-	 * @param agents
-	 *            all agents
-	 * @param userId
-	 *            userId
+	 *
+	 * @param agents all agents
+	 * @param userId userId
 	 * @return userOwned agents.
 	 */
 	public Set<AgentIdentity> filterUserAgents(Set<AgentIdentity> agents, String userId) {
@@ -365,9 +349,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the current system performance of the given agent.
-	 * 
-	 * @param agentIdentity
-	 *            {@link AgentIdentity}
+	 *
+	 * @param agentIdentity {@link AgentIdentity}
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
@@ -376,18 +359,14 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Assign the agents on the given console.
-	 * 
-	 * @param user
-	 *            user
-	 * @param singleConsole
-	 *            {@link SingleConsole} to which agents will be assigned
-	 * @param grinderProperties
-	 *            {@link GrinderProperties} to be distributed.
-	 * @param agentCount
-	 *            the count of agents.
+	 *
+	 * @param user              user
+	 * @param singleConsole     {@link SingleConsole} to which agents will be assigned
+	 * @param grinderProperties {@link GrinderProperties} to be distributed.
+	 * @param agentCount        the count of agents.
 	 */
 	public synchronized void runAgent(User user, final SingleConsole singleConsole,
-			final GrinderProperties grinderProperties, final Integer agentCount) {
+	                                  final GrinderProperties grinderProperties, final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
 		final Set<AgentIdentity> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
@@ -417,13 +396,10 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Select agent. This method return agent set which is belong to the given user first and then share agent set.
-	 * 
-	 * @param user
-	 *            user
-	 * @param allFreeAgents
-	 *            agents
-	 * @param agentCount
-	 *            number of agent
+	 *
+	 * @param user          user
+	 * @param allFreeAgents agents
+	 * @param agentCount    number of agent
 	 * @return selected agent.
 	 */
 	public Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
@@ -452,9 +428,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Stop agent by force.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 */
 	public void stopAgent(AgentIdentity agentIdentity) {
 		agentControllerServerDaemon.stopAgent(agentIdentity);
@@ -462,9 +437,8 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Stop agents which uses the given console port by force.
-	 * 
-	 * @param consolePort
-	 *            console port.
+	 *
+	 * @param consolePort console port.
 	 */
 	public void stopAgent(int consolePort) {
 		Set<AgentStatus> agentStatusSetConnectingToPort = getAgentStatusSetConnectingToPort(consolePort);
@@ -477,19 +451,16 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Send agent update message.
-	 * 
-	 * @param fileName
-	 *            file name
-	 * @param version
-	 *            updating version
-	 * @param downloadUrl
-	 *            download URL
+	 *
+	 * @param fileName    file name
+	 * @param version     updating version
+	 * @param downloadUrl download URL
 	 * @return messge
 	 */
 	public String sendAgentUpdateMessage(String fileName, String version, String downloadUrl) {
 		StringBuilder progress = new StringBuilder();
 		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
-			agentControllerServerDaemon.updateAgent(each, fileName, version, downloadUrl);
+			;
 			ThreadUtil.sleep(1000);
 			progress.append("Update agent ").append(each).append(" to ").append(version).append("\n");
 		}
@@ -497,21 +468,18 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Update agent.
+	 * Update the given agent.
 	 *
-     * @param url
-     *            request url
-     *
-     */
-	public void updateAgent(String url) {
-		sendAgentUpdateMessage("test-agentFolder", config.getVersion(), url);
+	 * @param agentIdentity agent identity
+	 */
+	public void updateAgent(AgentIdentity agentIdentity) {
+		agentControllerServerDaemon.updateAgent(agentIdentity, config.getVersion(), "");
 	}
 
 	/**
 	 * Get the set of {@link AgentStatus} from agents belong to the given single console port.
-	 * 
-	 * @param singleConsolePort
-	 *            port
+	 *
+	 * @param singleConsolePort port
 	 * @return {@link AgentStatus} set
 	 */
 	public Set<AgentStatus> getAgentStatusSetConnectingToPort(final int singleConsolePort) {

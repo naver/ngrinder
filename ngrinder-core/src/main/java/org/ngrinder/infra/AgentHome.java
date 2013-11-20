@@ -87,8 +87,9 @@ public class AgentHome {
 	 */
 	public File getNativeDirectory() {
 		File nativeFile = getFile("native");
-		if (!nativeFile.exists())
+		if (!nativeFile.exists())  {
 			nativeFile.mkdir();
+		}
 		return nativeFile;
 	}
 
@@ -115,6 +116,21 @@ public class AgentHome {
 		File targetFile = new File(directory, target);
 		try {
 			FileUtils.copyFile(sourceFile, targetFile);
+		} catch (IOException e) {
+			throw processException("Failed to write a sourceFile to " + target, e);
+		}
+	}
+
+	/**
+	 * Write the content to path in the home.
+	 *
+	 * @param content {@link File}
+	 * @param target  target path. only sourceFile name will be used.
+	 */
+	public void writeFileTo(String content, String target) {
+		File targetFile = new File(directory, target);
+		try {
+			FileUtils.write(targetFile, content);
 		} catch (IOException e) {
 			throw processException("Failed to write a sourceFile to " + target, e);
 		}

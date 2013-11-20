@@ -18,7 +18,7 @@ public class UnknownHandler extends AbstractLanguageHandler {
 	}
 
 	@Override
-	public AbstractGrinderClassPathProcessor getClassPathProcesssor() {
+	public AbstractGrinderClassPathProcessor getClassPathProcessor() {
 		return null;
 	}
 

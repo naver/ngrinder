@@ -13,16 +13,6 @@
  */
 package org.ngrinder.infra.config;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.util.Properties;
-
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
@@ -31,6 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.io.File;
+import java.util.Properties;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration("classpath:applicationContext.xml")
 public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
@@ -41,9 +39,9 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 	@Test
 	public void testDefaultHome() {
 		Home home = config.getHome();
-		File ngrinderHomeUnderUserHome = new File(System.getProperty("user.home"), ".ngrinder");
-		assertThat(home.getDirectory(), is(ngrinderHomeUnderUserHome));
-		assertThat(home.getPluginsDirectory(), is(new File(ngrinderHomeUnderUserHome, "plugins")));
+		File oracle = new File(System.getProperty("user.home"), ".ngrinder");
+		assertThat(home.getDirectory(), is(oracle));
+		assertThat(home.getPluginsDirectory(), is(new File(oracle, "plugins")));
 	}
 	
 	@Test

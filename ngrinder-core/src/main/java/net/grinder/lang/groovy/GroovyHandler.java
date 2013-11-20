@@ -33,7 +33,7 @@ public class GroovyHandler extends AbstractLanguageHandler {
 	}
 
 	@Override
-	public AbstractGrinderClassPathProcessor getClassPathProcesssor() {
+	public AbstractGrinderClassPathProcessor getClassPathProcessor() {
 		return classPathProcessor;
 	}
 

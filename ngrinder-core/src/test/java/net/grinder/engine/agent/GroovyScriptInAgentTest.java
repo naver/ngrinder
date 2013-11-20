@@ -13,11 +13,6 @@
  */
 package net.grinder.engine.agent;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.URL;
-
 import net.grinder.AgentDaemon;
 import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.SingleConsole;
@@ -25,13 +20,17 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
 import net.grinder.util.GrinderClassPathInitializer;
 import net.grinder.util.thread.Condition;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.URL;
 
 public class GroovyScriptInAgentTest {
 
@@ -57,7 +56,6 @@ public class GroovyScriptInAgentTest {
 	@Test
 	public void testStartAgentAndTest() throws InterruptedException, PersistenceException {
 		AgentConfig agentConfig1 = Mockito.spy(agentConfig);
-		Mockito.when(agentConfig1.getPropertyBoolean(AgentConfig.AGENT_USE_SAME_CONSOLE, true)).thenReturn(false);
 		AgentDaemon agent = new AgentDaemon(agentConfig1);
 		URL scriptUrl = this.getClass().getResource("/grinder.properties");
 		File scriptFile = new File(scriptUrl.getFile());

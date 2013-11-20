@@ -17,7 +17,7 @@ import net.grinder.communication.Message;
 
 /**
  * Message for agent update.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -26,22 +26,16 @@ public class UpdateAgentGrinderMessage implements Message {
 	private static final long serialVersionUID = 3218379141994562444L;
 	private final String version;
 	private final String downloadUrl;
-	private final String fileName;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param fileName
-	 *            fileName
-	 * @param version
-	 *            version
-	 * @param downloadUrl
-	 *            downloadUrl
+	 *
+	 * @param version     version
+	 * @param downloadUrl downloadUrl
 	 */
-	public UpdateAgentGrinderMessage(String fileName, String version, String downloadUrl) {
+	public UpdateAgentGrinderMessage(String version, String downloadUrl) {
 		this.version = version;
 		this.downloadUrl = downloadUrl;
-		this.fileName = fileName;
 	}
 
 	public String getVersion() {
@@ -51,9 +45,4 @@ public class UpdateAgentGrinderMessage implements Message {
 	public String getDownloadUrl() {
 		return downloadUrl;
 	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
 }

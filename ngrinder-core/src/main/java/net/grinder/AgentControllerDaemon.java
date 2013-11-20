@@ -14,8 +14,6 @@
 package net.grinder;
 
 import net.grinder.common.GrinderException;
-import net.grinder.common.GrinderProperties;
-import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.engine.agent.Agent;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
@@ -27,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * This is daemon wrapper for agent controller.
@@ -39,94 +36,50 @@ public class AgentControllerDaemon implements Agent {
 	private static final int LOG_FREQUENCY = 5;
 	private final AgentController agentController;
 	private Thread thread;
-	private final GrinderProperties properties;
 	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
 	private boolean forceShutdown = false;
 	// event synchronization for
 	private Condition m_eventSyncCondition = new Condition();
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
+
 	/**
-	 * Region of grinder agent.
+	 * Constructor for test.
 	 */
-	private String region = "";
-	private AgentConfig agentConfig;
+	public AgentControllerDaemon() {
+		this(new AgentConfig().init());
+	}
 
 	/**
 	 * Constructor.
 	 *
-	 * @param currentIp current ip
+	 * @param agentConfig agent config
 	 */
-	public AgentControllerDaemon(String currentIp) {
+	public AgentControllerDaemon(AgentConfig agentConfig) {
 		try {
-			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
-			agentController = new AgentController(m_eventSyncCondition, currentIp);
+			agentController = new AgentController(m_eventSyncCondition, agentConfig);
 		} catch (GrinderException e) {
-			throw processException("Exception occurred while initiating the agent controller deamon", e);
+			throw processException("Exception occurred while initiating the agent controller daemon", e);
 		}
 	}
 
-	/**
-	 * Run agent controller with the default agent controller port.
-	 */
-	public void run() {
-		run(null, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-	}
-
-	/**
-	 * Run agent controller with the agentControllerServerPort.
-	 *
-	 * @param agentControllerServerPort agent controller server port
-	 */
-	public void run(int agentControllerServerPort) {
-		run(null, agentControllerServerPort);
-	}
-
-	/**
-	 * Run agent controller with the given agent controller host and the agent
-	 * controller server port.
-	 *
-	 * @param agentControllerServerHost agent controller server host
-	 * @param agentControllerServerPort agent controller server port
-	 */
-	public void run(String agentControllerServerHost, int agentControllerServerPort) {
-		if (agentControllerServerHost != null) {
-			properties.setProperty(AgentConfig.AGENT_CONTROLLER_SERVER_HOST, agentControllerServerHost);
-		}
-		if (agentControllerServerPort != 0) {
-			properties.setInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT, agentControllerServerPort);
-		}
-		run(properties);
-	}
 
 	private long count = 0;
 
-	/**
-	 * Run agent controller with given {@link GrinderProperties}. server host
-	 * and port will be gained from {@link GrinderProperties}
-	 *
-	 * @param grinderProperties {@link GrinderProperties}
-	 */
-	public void run(final GrinderProperties grinderProperties) {
-		grinderProperties.put("grinder.region", region);
+	public void run() {
 		thread = new Thread(new Runnable() {
 			public void run() {
 				do {
 					try {
-						if (count % LOG_FREQUENCY == 0) {
+						if (count++ % LOG_FREQUENCY == 0) {
 							LOGGER.info("The agent controller daemon is started.");
 						}
-						getAgentController().setAgentConfig(
-								checkNotNull(agentConfig, "the agent config should be provided "
-										+ "before the controller is started"));
-						getAgentController().run(grinderProperties, count);
-
+						getAgentController().run();
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
 							public void inform(AgentControllerShutDownListener listener) {
 								listener.shutdownAgentController();
 							}
 						});
-						count++;
 					} catch (Exception e) {
 						LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
 						LOGGER.debug("The error detail is  ", e);
@@ -194,13 +147,4 @@ public class AgentControllerDaemon implements Agent {
 	private synchronized void setForceShutdown(boolean force) {
 		this.forceShutdown = force;
 	}
-
-	public void setRegion(String region) {
-		this.region = region;
-	}
-
-	public void setAgentConfig(AgentConfig agentConfig) {
-		this.agentConfig = agentConfig;
-	}
-
 }

@@ -27,7 +27,6 @@ import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtil;
-import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -56,6 +55,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class AgentController implements Agent {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
+	private final AgentConfig agentConfig;
 
 	private Timer m_timer;
 	private final Condition m_eventSynchronisation = new Condition();
@@ -64,11 +64,8 @@ public class AgentController implements Agent {
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
 			ConnectionType.AGENT);
-	private AgentConfig agentConfig;
 	private final Condition m_eventSyncCondition;
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
-
-	private GrinderProperties m_grinderProperties;
 
 	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
@@ -84,57 +81,42 @@ public class AgentController implements Agent {
 	 * Constructor.
 	 *
 	 * @param eventSyncCondition event sync condition to wait until agent start to run.
-	 * @param currentIp          current ip
-	 * @throws GrinderException If an error occurs.
 	 */
-	public AgentController(Condition eventSyncCondition, String currentIp) throws GrinderException {
-		m_eventSyncCondition = eventSyncCondition;
-		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
-		// Set it with the default name 
-		m_agentIdentity = new AgentControllerIdentityImplementation(NetworkUtil.getLocalHostName(), currentIp);
-		agentSystemDataCollector = new AgentSystemDataCollector();
-		agentSystemDataCollector.refresh();
+	public AgentController(Condition eventSyncCondition, AgentConfig agentConfig) throws GrinderException {
+		this.m_eventSyncCondition = eventSyncCondition;
+
+		this.agentConfig = agentConfig;
+		this.version = agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
+		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
+		// Set it with the default name
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getLocalIP());
+		this.m_agentIdentity.setRegion(agentConfig.getRegion());
+		this.agentSystemDataCollector = new AgentSystemDataCollector();
+		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
+		this.agentSystemDataCollector.refresh();
 	}
 
-	/**
-	 * Run agent controller. This method use default server port (for test)
-	 *
-	 * @throws GrinderException occurs when there is a problem.
-	 */
-	public void run() throws GrinderException {
-		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(AgentConfig.AGENT_CONTROLLER_SERVER_PORT,
-				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		synchronized (m_eventSyncCondition) {
-			m_eventSyncCondition.notifyAll();
-		}
-		run(grinderProperties, 1);
-	}
 
 	/**
 	 * Run the agent controller.
 	 *
-	 * @param grinderProperties {@link GrinderProperties} used.
-	 * @param logCount          log count
 	 * @throws GrinderException occurs when the test execution is failed.
 	 */
-	public void run(GrinderProperties grinderProperties, long logCount) throws GrinderException {
+	public void run() throws GrinderException {
+		synchronized (m_eventSyncCondition) {
+			m_eventSyncCondition.notifyAll();
+		}
+
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(),
-				"agentconfig should be provided before agent daemon start."));
-
-		m_grinderProperties = grinderProperties;
+		AgentDaemon agent = new AgentDaemon(checkNotNull(agentConfig,
+				"agent.conf should be provided before agent daemon start."));
 		try {
 			while (true) {
 				do {
-					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID,
-							NetworkUtil.getLocalHostName()));
-					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
-					final Connector connector = m_connectorFactory.create(m_grinderProperties);
-
+					final Connector connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
 					if (consoleCommunication == null) {
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
@@ -309,7 +291,7 @@ public class AgentController implements Agent {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
 			return new SystemDataModel(systemInfo, this.version);
 		} catch (Exception e) {
-			LOGGER.error("Error while getting system perf data model : {} ", e.getMessage());
+			LOGGER.error("Error while getting system data model : {} ", e.getMessage());
 			LOGGER.debug("The error detail is ", e);
 			return emptySystemDataModel;
 		}
@@ -319,16 +301,6 @@ public class AgentController implements Agent {
 		return agentConfig;
 	}
 
-	/**
-	 * Set agent config.
-	 *
-	 * @param agentConfig agent config
-	 */
-	public void setAgentConfig(AgentConfig agentConfig) {
-		this.agentConfig = agentConfig;
-		this.version = agentConfig.getInternalProperty("ngrinder.version", "3.1.3");
-		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
-	}
 
 	private final class ConsoleCommunication {
 		private final ClientSender m_sender;

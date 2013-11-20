@@ -13,52 +13,40 @@
  */
 package net.grinder.util;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
+import org.apache.commons.io.IOUtils;
+import org.python.google.common.net.InetAddresses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Enumeration;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Common network utility. This contains very careful implementation to detect current machine's ip.
  * There are the following cases which block to get the appropriate ip.
- * 
+ * <p/>
  * <ul>
  * <li>If there are VM in the same machine</li>
  * <li>If /etc/hosts are not very well specified</li>
  * </ul>
- * 
+ *
  * @author JunHo Yoon
  * @author Mavlarn
- * 
  * @since 3.0
- * 
  */
 public abstract class NetworkUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
+	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
+	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
 
 	/**
 	 * Get the local host address, try to get actual IP.
-	 * 
+	 *
 	 * @return ip form of host address
 	 */
 	public static String getLocalHostAddress() {
@@ -76,11 +64,9 @@ public abstract class NetworkUtil {
 
 	/**
 	 * Get local address by connecting to a server.
-	 * 
-	 * @param byConnecting
-	 *            the server address to connect.
-	 * @param port
-	 *            the port to connect
+	 *
+	 * @param byConnecting the server address to connect.
+	 * @param port         the port to connect
 	 * @return IP address local IP address
 	 */
 	public static String getLocalHostAddress(String byConnecting, int port) {
@@ -95,11 +81,9 @@ public abstract class NetworkUtil {
 
 	/**
 	 * Get local host name by connecting to a server.
-	 * 
-	 * @param byConnecting
-	 *            the server address to connect.
-	 * @param port
-	 *            the port to connect
+	 *
+	 * @param byConnecting the server address to connect.
+	 * @param port         the port to connect
 	 * @return localhost name. if fails, return "localhost"
 	 */
 	public static String getLocalHostName(String byConnecting, int port) {
@@ -141,14 +125,14 @@ public abstract class NetworkUtil {
 	}
 
 	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
-					throws SocketException {
+			throws SocketException {
 		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
 			if (!i.isUp()) {
 				continue;
 			}
-			for (Enumeration<?> en2 = i.getInetAddresses(); en2.hasMoreElements();) {
+			for (Enumeration<?> en2 = i.getInetAddresses(); en2.hasMoreElements(); ) {
 				InetAddress addr = (InetAddress) en2.nextElement();
 				if (!addr.isLoopbackAddress()) {
 					if (addr instanceof Inet4Address) {
@@ -173,7 +157,7 @@ public abstract class NetworkUtil {
 	 * Get local host name. On some platform, InetAddress.getLocalHost().getHostName() will return
 	 * "localhost". If the /etc/hosts file is not set properly, it will return "localhost" or throw
 	 * exception. So, at this circumstance, we will get the address by connecting a network address.
-	 * 
+	 *
 	 * @return local host name
 	 */
 	public static String getLocalHostName() {
@@ -192,9 +176,8 @@ public abstract class NetworkUtil {
 
 	/**
 	 * Get the IP addresses from host name.
-	 * 
-	 * @param host
-	 *            host
+	 *
+	 * @param host host
 	 * @return {@link InetAddress} array
 	 */
 	public static InetAddress[] getIpsFromHost(String host) {
@@ -202,17 +185,15 @@ public abstract class NetworkUtil {
 			return InetAddress.getAllByName(host);
 		} catch (UnknownHostException e) {
 			LOGGER.error("Error while get localhost name for {}", host, e);
-			return new InetAddress[] {};
+			return new InetAddress[]{};
 		}
 	}
 
 	/**
 	 * Download a file from the given URL string.
-	 * 
-	 * @param urlString
-	 *            URL string
-	 * @param toFile
-	 *            file to be saved.
+	 *
+	 * @param urlString URL string
+	 * @param toFile    file to be saved.
 	 */
 	public static void downloadFile(String urlString, File toFile) {
 		FileOutputStream os = null;
@@ -240,21 +221,16 @@ public abstract class NetworkUtil {
 		return;
 	}
 
-	private static final String PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
-	
-	private static final Pattern IP_PATTERN = Pattern.compile(PATTERN);
-
-	/**
-	 * Check if the given IP is well formed.
-	 * 
-	 * @param ip
-	 *            ip
-	 * @return true if valid
-	 */
-	public static boolean isValidIP(final String ip) {
-		Matcher matcher = IP_PATTERN.matcher(ip);
-		return matcher.matches();
+	public static String getIP(String ip) {
+		if (InetAddresses.isInetAddress(ip)) {
+			return ip;
+		}
+		try {
+			InetAddress byName = InetAddress.getByName(ip);
+			ip = byName.getHostAddress();
+		} catch (UnknownHostException e) {
+			ip = "127.0.0.1";
+		}
+		return ip;
 	}
 }
