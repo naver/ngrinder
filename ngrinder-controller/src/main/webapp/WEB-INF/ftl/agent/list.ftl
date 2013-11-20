@@ -157,7 +157,7 @@
                 $("#update_agent_button").click(function() {
                     var list = $("td input");
                     if(list.length == 0) {
-                        bootbox.alert("there is no agent should be updated", "<@spring.message "common.button.ok"/>");
+                        bootbox.alert("<@spring.message "agent.table.message.error.noAgent"/>", "<@spring.message "common.button.ok"/>");
                         return;
                     }
                     updateAgents();

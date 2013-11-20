@@ -54,7 +54,7 @@ public class AgentDownloadController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Download agent's latest version.
+	 * Download the latest agent.
 	 *
 	 * @param response response.
 	 */
