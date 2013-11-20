@@ -26,6 +26,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +61,6 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CompressionUtil.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.PathUtil.join;
 import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
@@ -451,9 +451,10 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Get the agent package containing folder.
+	 * @return agent package folder
 	 */
 	public File getAgentPackagesDir() {
-		return config.getHome().getSubFile("update_agents");
+		return config.getHome().getSubFile("download");
 	}
 
 	static class TarArchivingZipEntryProcessor implements ZipEntryProcessor {
@@ -487,29 +488,32 @@ public class AgentManagerService implements IAgentManagerService {
 	* @see
 	* org.ngrinder.agent.service.IAgentManagerService#createAgentPackage
 	*/
-	public File createAgentPackage(URLClassLoader cl) throws IOException, URISyntaxException {
+	public File createAgentPackage(URLClassLoader classLoader) throws IOException, URISyntaxException {
 		File agentPackagesDir = getAgentPackagesDir();
 		agentPackagesDir.mkdirs();
 		File agentTar = new File(agentPackagesDir, getDistributionPackageName("ngrinder-core", false));
-		if (agentTar.exists()) {
+		if (!config.isTestMode() && agentTar.exists()) {
 			return agentTar;
 		}
-
+		FileUtils.deleteQuietly(agentTar);
 		final String basePath = "ngrinder-agent/";
 		final String libPath = basePath + "lib/";
 		TarArchiveOutputStream tarOutputStream = null;
 		try {
-			tarOutputStream = createTarGzipArchiveStream(agentTar);
+			tarOutputStream = createGzippedTarArchiveStream(agentTar);
 			addFolderToTar(tarOutputStream, basePath);
 			addFolderToTar(tarOutputStream, libPath);
-			Set<String> libs = getDependentLibs(cl);
+			Set<String> libs = getDependentLibs(classLoader);
 
-			for (URL eachUrl : cl.getURLs()) {
-				File eachJar = new File(eachUrl.getFile());
-				if (isDependentLib(eachJar, "ngrinder-sh")) {
-					processJarEntries(eachJar, new TarArchivingZipEntryProcessor(tarOutputStream, basePath, 0100755));
-				} else if (isDependentLib(eachJar, libs)) {
-					addFileToTar(tarOutputStream, eachJar, libPath + eachJar.getName());
+			for (URL eachUrl : classLoader.getURLs()) {
+				File eachClassPath = new File(eachUrl.getFile());
+				if (!isJar(eachClassPath)) {
+					continue;
+				}
+				if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
+					processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, basePath, 0100755));
+				} else if (isAgentDependentLib(eachClassPath, libs)) {
+					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 				}
 			}
 			addAgentConfToTar(tarOutputStream, basePath);
@@ -521,10 +525,10 @@ public class AgentManagerService implements IAgentManagerService {
 		return agentTar;
 	}
 
-	private TarArchiveOutputStream createTarGzipArchiveStream(File agentTar) throws IOException {
+	private TarArchiveOutputStream createGzippedTarArchiveStream(File agentTar) throws IOException {
+
 		FileOutputStream fos = new FileOutputStream(agentTar);
-		TarArchiveOutputStream tarOutputStream = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
-		return tarOutputStream;
+		return new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
 	}
 
 	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath) throws IOException {
@@ -536,7 +540,8 @@ public class AgentManagerService implements IAgentManagerService {
 
 	private Set<String> getDependentLibs(URLClassLoader cl) throws IOException {
 		Set<String> libs = new HashSet<String>();
-		for (String each : StringUtils.split(IOUtils.toString(cl.getResourceAsStream("dependencies.txt")), ",;")) {
+		final String dependencies = IOUtils.toString(cl.getResourceAsStream("dependencies.txt"));
+		for (String each : StringUtils.split(dependencies, ",;")) {
 			libs.add(each.trim());
 		}
 		libs.add(getPackageName("ngrinder-core") + ".jar");
@@ -614,24 +619,34 @@ public class AgentManagerService implements IAgentManagerService {
 	}
 
 	/**
-	 * Check if this given url is the given library.
+	 * Check if this given path is jar.
 	 *
 	 * @param libFile lib file
-	 * @param libName lib name
-	 * @return true
+	 * @return true if it's jar
 	 */
-	public boolean isDependentLib(File libFile, String libName) {
+	public boolean isJar(File libFile) {
+		return StringUtils.endsWith(libFile.getName(), ".jar");
+	}
+
+	/**
+	 * Check if this given lib file is the given library.
+	 *
+	 * @param libFile lib file
+	 * @param libName desirable name
+	 * @return true if dependent lib
+	 */
+	public boolean isAgentDependentLib(File libFile, String libName) {
 		return StringUtils.startsWith(libFile.getName(), libName);
 	}
 
 	/**
-	 * Check if this given url in the given lib set.
+	 * Check if this given lib file in the given lib set.
 	 *
 	 * @param libFile lib file
 	 * @param libs    lib set
-	 * @return true
+	 * @return true if dependent lib
 	 */
-	public boolean isDependentLib(File libFile, Set<String> libs) {
+	public boolean isAgentDependentLib(File libFile, Set<String> libs) {
 		return libs.contains(libFile.getName());
 	}
 }

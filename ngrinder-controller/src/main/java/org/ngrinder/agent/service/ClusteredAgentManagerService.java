@@ -396,7 +396,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Get the agent package containing folder.
 	 */
+	@Override
 	public File getAgentPackagesDir() {
-		return getConfig().getExHome().getSubFile("update_agents");
+		return getConfig().getExHome().getSubFile("download");
 	}
 }

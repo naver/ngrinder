@@ -27,7 +27,7 @@ import java.net.URLClassLoader;
 /**
  * Create Agent Package
  *
- * This class is used to create agent package which located at {NGRINDER_HOME}/update_agent folder
+ * This class is used to create agent package which located at {NGRINDER_HOME}/agent_package folder
  * when system initialized firstly.
  *
  * @author Matt
