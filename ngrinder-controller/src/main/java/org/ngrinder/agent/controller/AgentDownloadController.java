@@ -42,12 +42,24 @@ public class AgentDownloadController extends NGrinderBaseController {
 	private AgentPackageInitializer agentPackageInitializer;
 
 	/**
+	 * Download agent.
+	 *
+	 * @param fileName file path of agent
+	 * @param response response.
+	 */
+	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
+	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
+		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
+		FileDownloadUtil.downloadFile(response, ngrinderFile);
+	}
+
+	/**
 	 * Download agent's latest version.
 	 *
 	 * @param response response.
 	 */
 	@RequestMapping(value = "/download")
-	public void download(HttpServletResponse response) {
+	public void downloadLatestAgent(HttpServletResponse response) {
 		FileDownloadUtil.downloadFile(response, agentPackageInitializer.getAgentPackageFile());
 	}
 
