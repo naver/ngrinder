@@ -47,7 +47,7 @@ public class AgentDownloadController extends NGrinderBaseController {
 	 * @param response response.
 	 */
 	@RequestMapping(value = "/download")
-	public void downloadLatestAgent(HttpServletResponse response) {
+	public void download(HttpServletResponse response) {
 		FileDownloadUtil.downloadFile(response, agentPackageInitializer.getAgentPackageFile());
 	}
 
