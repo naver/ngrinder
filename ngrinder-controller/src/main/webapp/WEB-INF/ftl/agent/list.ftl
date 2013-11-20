@@ -91,7 +91,6 @@
 	<script>
             $(document).ready(function() {
 		        <#if agents?has_content>
-
                     var oTable = $("#agent_table").dataTable({
                         "bAutoWidth": false,
                         "bFilter": false,
@@ -114,8 +113,7 @@
 
                     $(".approved").live("click", function() {
                         var sid = $(this).attr("sid");
-                        $.post(
-                            "${req.getContextPath()}/agent/" + sid + "/approve",
+                        $.post("${req.getContextPath()}/agent/" + sid + "/approve",
                             {
                                 "approve": "true"
                             },
@@ -127,8 +125,7 @@
 
                     $(".disapproved").live("click", function() {
                         var sid = $(this).attr("sid");
-                        $.post(
-                            "${req.getContextPath()}/agent/" + sid + "/approve",
+                        $.post("${req.getContextPath()}/agent/" + sid + "/approve",
                             {
                                 "approve": "false"
                             },
@@ -194,11 +191,7 @@
                     cache: false,
                     dataType:'json',
                     success: function(res) {
-                        if (res.success) {
-                            showSuccessMsg("<@spring.message "agent.table.message.success.update"/>");
-                        } else {
-                            showErrorMsg("<@spring.message "agent.table.message.error.update"/>:" + res.message);
-                        }
+                        showSuccessMsg("<@spring.message "agent.table.message.success.update"/>");
                     },
                     error: function() {
                         showErrorMsg("<@spring.message "agent.table.message.error.update"/>");
