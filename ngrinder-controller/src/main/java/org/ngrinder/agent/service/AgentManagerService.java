@@ -26,6 +26,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -471,7 +472,9 @@ public class AgentManagerService implements IAgentManagerService {
 			InputStream inputStream = null;
 			try {
 				inputStream = file.getInputStream(entry);
-				addInputStreamToTar(this.tao, inputStream, basePath + entry.getName(), entry.getSize(), this.mode);
+				addInputStreamToTar(this.tao, inputStream, basePath + FilenameUtils.getName(entry.getName()),
+						entry.getSize(),
+						this.mode);
 			} finally {
 				IOUtils.closeQuietly(inputStream);
 			}
@@ -504,9 +507,9 @@ public class AgentManagerService implements IAgentManagerService {
 			for (URL eachUrl : cl.getURLs()) {
 				File eachJar = new File(eachUrl.getFile());
 				if (isDependentLib(eachJar, "ngrinder-sh")) {
-					processJarEntries(new File(eachUrl.getFile()), new TarArchivingZipEntryProcessor(tarOutputStream, basePath, 0100755));
+					processJarEntries(eachJar, new TarArchivingZipEntryProcessor(tarOutputStream, basePath, 0100755));
 				} else if (isDependentLib(eachJar, libs)) {
-					addFileToTar(tarOutputStream, eachJar, join(libPath, eachJar.getName()));
+					addFileToTar(tarOutputStream, eachJar, libPath + eachJar.getName());
 				}
 			}
 			addAgentConfToTar(tarOutputStream, basePath);
