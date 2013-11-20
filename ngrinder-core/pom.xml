@@ -58,11 +58,7 @@
 			<artifactId>ngrinder-groovy</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.ngrinder</groupId>
-			<artifactId>ngrinder-sh</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>

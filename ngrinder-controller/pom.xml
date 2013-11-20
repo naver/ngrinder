@@ -13,7 +13,6 @@
 	<packaging>war</packaging>
 	<properties>
 		<webappdir>${basedir}/src/main/webapp</webappdir>
-		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
 		<deploy.dir>${basedir}/../../deploy</deploy.dir>
 	</properties>
 
@@ -97,8 +96,13 @@
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-core</artifactId>
-			<version>3.3-SNAPSHOT</version>
+			<version>${project.version}</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.ngrinder</groupId>
+			<artifactId>ngrinder-sh</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
