@@ -62,7 +62,7 @@ public class AgentImplementationEx implements Agent {
 	private final ConsoleListener m_consoleListener;
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final ConnectorFactory m_connectorFactory = new ConnectorFactory(ConnectionType.AGENT);
-	private WorkerLauncher m_workerLaucherForShutdown = null;
+	private WorkerLauncher m_workerLauncherForShutdown = null;
 	/**
 	 * We use an most one file store throughout an agent's life, but can't Initialize it until we've
 	 * read the properties and connected to the console.
@@ -243,7 +243,7 @@ public class AgentImplementationEx implements Agent {
 					m_logger.debug("worker launcher is prepared.");
 					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1),
 							workerFactory, m_eventSynchronisation, m_logger);
-					m_workerLaucherForShutdown = workerLauncher;
+					m_workerLauncherForShutdown = workerLauncher;
 					final int increment = properties.getInt("grinder.processIncrement", 0);
 					m_logger.debug("rampup mode by {}.", increment);
 					if (increment > 0) {
@@ -446,8 +446,8 @@ public class AgentImplementationEx implements Agent {
 		}
 		m_consoleListener.shutdown();
 
-		if (m_workerLaucherForShutdown != null && !m_workerLaucherForShutdown.allFinished()) {
-			m_workerLaucherForShutdown.destroyAllWorkers();
+		if (m_workerLauncherForShutdown != null && !m_workerLauncherForShutdown.allFinished()) {
+			m_workerLauncherForShutdown.destroyAllWorkers();
 		}
 		m_logger.info("agent is terminated by force");
 	}
