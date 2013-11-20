@@ -94,7 +94,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		List<String> classPathList = new ArrayList<String>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
 			String filename = FilenameUtils.getName(eachClassPath);
-			if (isForeMostJar(filename) || isUsefulForforeMostferenceProject(eachClassPath)) {
+			if (isForemostJar(filename) || isUsefulForForemostReferenceProject(eachClassPath)) {
 				logger.trace("classpath :" + eachClassPath);
 				classPathList.add(eachClassPath);
 			}
@@ -124,7 +124,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		return StringUtils.join(classPathList, File.pathSeparator);
 	}
 
-	private boolean isUsefulForforeMostferenceProject(String path) {
+	private boolean isUsefulForForemostReferenceProject(String path) {
 		return junitContext && new File(path).isDirectory()
 						&& path.contains(File.separator + "ngrinder-dns" + File.separator);
 	}
@@ -171,7 +171,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	protected abstract void initMore();
 
-	private boolean isForeMostJar(String jarFilename) {
+	private boolean isForemostJar(String jarFilename) {
 		if ("jar".equals(FilenameUtils.getExtension(jarFilename))) {
 			for (String jarName : foreMostJarList) {
 				if (jarFilename.contains(jarName)) {

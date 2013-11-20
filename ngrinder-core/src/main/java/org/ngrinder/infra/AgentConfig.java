@@ -102,7 +102,7 @@ public class AgentConfig {
 
 	private void loadAgentProperties() {
 		checkNotNull(home);
-		Properties properties = home.getProperties("ngrinder_agent_home_template/agent.conf");
+		Properties properties = home.getProperties("agent.conf");
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties);
 	}
