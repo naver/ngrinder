@@ -384,15 +384,8 @@
                 dataType:'json',
                 cache: true,
                 data: {'targetIP': ip, 'imgWidth': 700},
-                success: function(res) {\
-					if ($.isEmptyObject(res.SystemData)) {
-						showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
-						res.SystemData.cpu = [0];
-						res.SystemData.memory = [0];
-						res.SystemData.received = [0];
-						res.SystemData.sent = [0];
-					}
-					targetMonitorData[ip] = res.SystemData;
+                success: function(res) {
+					targetMonitorData[ip] = res;
 					drawPlot(ip);
 					return true;
                 },
