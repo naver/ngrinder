@@ -17,7 +17,6 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.AgentControllerDaemon;
-import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
@@ -31,7 +30,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.InetAddress;
 
+import static net.grinder.util.NetworkUtil.getAddressWithSocket;
+import static net.grinder.util.NetworkUtil.getIP;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
@@ -98,15 +101,11 @@ public class NGrinderStarter {
 	 * Start the performance monitor.
 	 */
 	public void startMonitor() {
-		LOG.info("**************************");
-		LOG.info("* Start nGrinder Monitor *");
-		LOG.info("**************************");
-		LOG.info("* Collect SYSTEM data. **");
-
+		LOG.info("***************************************************");
+		LOG.info("* Start nGrinder Monitor... ");
+		LOG.info("***************************************************");
 		MonitorConstants.init(agentConfig);
-
 		try {
-			System.setProperty("java.rmi.server.hostname", agentConfig.getLocalIP());
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
 			AgentMonitorServer.getInstance().init(monitorPort, agentConfig);
 			AgentMonitorServer.getInstance().start();
@@ -126,11 +125,11 @@ public class NGrinderStarter {
 	/**
 	 * Start ngrinder agent.
 	 *
-	 * @param controllerIP controllerIp;
+	 * @param directControllerIP controllerIp to connect directly;
 	 */
-	public void startAgent(String controllerIP) {
+	public void startAgent(String directControllerIP) {
 		LOG.info("***************************************************");
-		LOG.info(" Start nGrinder Agent ...");
+		LOG.info("   Start nGrinder Agent ...");
 		LOG.info("***************************************************");
 
 		if (StringUtils.isEmpty(System.getenv("JAVA_HOME"))) {
@@ -145,19 +144,20 @@ public class NGrinderStarter {
 					+ " It will provide the better agent performance.");
 		}
 
-		controllerIP = StringUtils.defaultIfBlank(controllerIP, agentConfig.getControllerIP());
-		agentConfig.setControllerIP(NetworkUtil.getIP(controllerIP));
-
+		String controllerIP = getIP(defaultIfBlank(directControllerIP, agentConfig.getControllerIP()));
 		int controllerPort = agentConfig.getControllerPort();
+		agentConfig.setControllerIP(controllerIP);
+
 		String region = agentConfig.getRegion();
-		LOG.info("with controller: {}:{}", controllerIP, controllerPort);
+		LOG.info("connecting to controller {}:{}", controllerIP, controllerPort);
 
 		try {
-			System.setProperty("java.rmi.server.hostname", NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
+			InetAddress localAddress = getAddressWithSocket(controllerIP, controllerPort);
+			System.setProperty("java.rmi.server.hostname", localAddress.getHostAddress());
 			agentController = new AgentControllerDaemon(agentConfig);
 			agentController.run();
 		} catch (Exception e) {
-			LOG.error("ERROR: {}", e.getMessage());
+			LOG.error("Error while connecting to : {}:{}", controllerIP, controllerPort);
 			printHelpAndExit("Error while starting Agent", e);
 		}
 	}

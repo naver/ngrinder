@@ -15,8 +15,7 @@ package net.grinder.util;
 
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -58,12 +57,7 @@ public class NetworkUtilTest {
 	}
 
 	@Test
-	public void testLocalHostAddress() {
-		try {
-			System.out.println("Local addr:" + InetAddress.getLocalHost().getHostAddress());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+	public void testLocalHostAddress() throws UnknownHostException {
 		String localHostAddress = NetworkUtil.getLocalHostAddress();
 		assertThat(localHostAddress, notNullValue());
 		assertThat(localHostAddress, not("127.0.0.1"));
@@ -84,34 +78,17 @@ public class NetworkUtilTest {
 	}
 
 	@Test
-	public void testLocalHostName()
-			throws ClassNotFoundException,
-			SecurityException,
-			NoSuchMethodException,
-			IllegalArgumentException,
-			IllegalAccessException,
-			InvocationTargetException {
-		try {
-			System.out.println("Local host:" + InetAddress.getLocalHost().getHostName());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+	public void testLocalHostName() throws Exception {
 		String localHostAddress = NetworkUtil.getLocalHostName();
-		System.out.println("NetworkUtil.getLocalHostName:" + localHostAddress);
 		assertThat(localHostAddress, notNullValue());
-
-		Class<?> networkClas = Class.forName("net.grinder.util.NetworkUtil");
-		Method NonLoopbackMethod = networkClas.getDeclaredMethod("getFirstNonLoopbackAddress", new Class[]{
-				boolean.class, boolean.class});
-		NonLoopbackMethod.setAccessible(true);
-		NonLoopbackMethod.invoke(networkClas, true, false);
-
+		final InetAddress firstNonLoopbackAddress = NetworkUtil.getFirstNonLoopbackAddress(true, false);
+		assertThat(firstNonLoopbackAddress.isLoopbackAddress(), is(false));
+		assertThat(firstNonLoopbackAddress, instanceOf(Inet4Address.class));
 	}
 
 	@Test
 	public void testLocalHostNameByConnecting() {
 		String localHostAddress = NetworkUtil.getLocalHostName("www.baidu.com", 80);
-		System.out.println("NetworkUtil.getLocalHostName:" + localHostAddress);
 		assertThat(localHostAddress, notNullValue());
 	}
 

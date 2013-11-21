@@ -111,12 +111,13 @@ public abstract class NetworkUtil {
 		return addr;
 	}
 
-	static InetAddress getAddressWithSocket(String byConnecting, int port) {
+
+	public static InetAddress getAddressWithSocket(String byConnecting, int port) {
 		Socket s = null;
 		try {
 			s = new Socket();
 			SocketAddress addr = new InetSocketAddress(byConnecting, port);
-			s.connect(addr, 1000); // 2 seconds timeout
+			s.connect(addr, 2000); // 2 seconds timeout
 			return s.getLocalAddress();
 		} catch (Exception e) {
 			return null;
@@ -217,20 +218,44 @@ public abstract class NetworkUtil {
 		}
 	}
 
-	public static IPPortPair convertIPAndPortPair(String ipAndPortPair, int defaultPort) {
-		if (InetAddresses.isInetAddress(ipAndPortPair)) {
-			return new IPPortPair(ipAndPortPair, defaultPort);
+	/**
+	 * Convert the given string to ip and port pair.
+	 *
+	 * This supports IP6 and IP4.
+	 *
+	 * <ul>
+	 * <li>127.0.0.1:30  ==> 127.0.0.1 and 30</li>
+	 * <li>2001:0:9d38:90d7:469:1f94:f5bf:cf5d:30  ==> 2001:0:9d38:90d7:469:1f94:f5bf:cf5d and 30</li>
+	 * <li>[2001:0:9d38:90d7:469:1f94:f5bf:cf5d]:30  ==> 2001:0:9d38:90d7:469:1f94:f5bf:cf5d and 30</li>
+	 * </ul>
+	 *
+	 * @param ipPortString textual representation of ip and port pair
+	 * @param defaultPort  default port used when port is invisible.
+	 * @return ip and port pair
+	 */
+	public static IPPortPair convertIPAndPortPair(String ipPortString, int defaultPort) {
+		if (InetAddresses.isInetAddress(ipPortString)) {
+			return new IPPortPair(ipPortString, defaultPort);
 		}
-		final int i = ipAndPortPair.lastIndexOf(":");
-		String ipPart = ipAndPortPair;
+		final int i = ipPortString.lastIndexOf(":");
+		String ipPart = ipPortString;
 		int portPart = defaultPort;
 		if (i != -1) {
-			portPart = NumberUtils.toInt(ipAndPortPair.substring(i + 1));
-			ipPart = ipAndPortPair.substring(0, i);
+			portPart = NumberUtils.toInt(ipPortString.substring(i + 1));
+			ipPart = ipPortString.substring(0, i);
 		}
 		return new IPPortPair(getIP(ipPart), portPart);
 	}
 
+	/**
+	 * Get IP form the given string.
+	 *
+	 * If the given ipOrHost is host name, it tries to turn it into IP.
+	 * If the host name is not available, it returns 127.0.0.1 instead.
+	 *
+	 * @param ipOrHost textual representation of ip or host name
+	 * @return ip
+	 */
 	public static String getIP(String ipOrHost) {
 		String ip = ipOrHost;
 		if (InetAddresses.isInetAddress(ip)) {
@@ -240,7 +265,8 @@ public abstract class NetworkUtil {
 			ip = InetAddress.getByName(ipOrHost).getHostAddress();
 		} catch (UnknownHostException e) {
 			ip = "127.0.0.1";
-			LOGGER.error("Error while resolving {} to IP. Use {} instead.", new Object[]{ipOrHost, ip}, e);
+			LOGGER.error("Error while resolving {} to IP. Use {} instead.", ipOrHost, ip);
+			LOGGER.debug("Details : ", e);
 		}
 		return ip;
 	}
