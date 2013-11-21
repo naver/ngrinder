@@ -400,7 +400,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * @param agentIdentity agent identity to be updated.
 	 */
 	public void updateAgent(AgentControllerIdentityImplementation agentIdentity) {
-		getAgentManager().updateAgent(agentIdentity);
+		getAgentManager().updateAgent(agentIdentity, getConfig().getVersion());
 	}
 
 	@Override

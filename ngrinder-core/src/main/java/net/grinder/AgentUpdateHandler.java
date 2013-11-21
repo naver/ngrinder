@@ -13,12 +13,14 @@
  */
 package net.grinder;
 
-import net.grinder.engine.communication.UpdateAgentGrinderMessage;
-import net.grinder.util.NetworkUtil;
+import net.grinder.communication.CommunicationException;
+import net.grinder.engine.communication.AgentDownloadGrinderMessage;
+import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.util.CompressionUtil;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +38,16 @@ public class AgentUpdateHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentUpdateHandler.class);
 
 	private final AgentConfig agentConfig;
+	private AgentController.ConsoleCommunication consoleCommunication;
 
 	/**
 	 * Agent Update handler.
 	 *
 	 * @param agentConfig agentConfig
 	 */
-	public AgentUpdateHandler(AgentConfig agentConfig) {
+	public AgentUpdateHandler(AgentConfig agentConfig, AgentController.ConsoleCommunication consoleCommunication) {
 		LOGGER.info("AgentUpdateHandler is initialing !");
+		this.consoleCommunication = consoleCommunication;
 		this.agentConfig = agentConfig;
 	}
 
@@ -58,16 +62,26 @@ public class AgentUpdateHandler {
 	 *
 	 * @param message message to be sent
 	 */
-	public void updateAgent(UpdateAgentGrinderMessage message) {
+	public void updateAgent(AgentUpdateGrinderMessage message) throws CommunicationException {
 		if (!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN"))) {
 			LOGGER.info("Update request was sent. But the old version was sent");
 			return;
 		}
 		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
-		File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unzip");
-		File updateDir = new File(agentConfig.getCurrentDirectory(), "update_package");
+		long offset = 0;
+		while (true) {
+			AgentUpdateGrinderMessage updateMessage = (AgentUpdateGrinderMessage) consoleCommunication.sendBlockingMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
+			// Fill this to composite the binary.
+			//
+			if (updateMessage.getNext() == 0) {
+				break;
+			}
+			// Sleep to let the other messages to be sent
+			ThreadUtil.sleep(10);
+		}
 		try {
-			NetworkUtil.downloadFile(createDownloadURL(message.getDownloadUrl(), agentConfig.getControllerIP()), download);
+			File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unzip");
+			File updateDir = new File(agentConfig.getCurrentDirectory(), "update_package");
 			decompressDownloadPackage(download, interDir, updateDir);
 			System.exit(0);
 		} catch (Exception e) {

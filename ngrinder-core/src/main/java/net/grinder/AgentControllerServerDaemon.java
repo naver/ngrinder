@@ -18,13 +18,10 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
-import net.grinder.console.communication.AgentProcessControl;
-import net.grinder.console.communication.AgentProcessControlImplementation;
+import net.grinder.console.communication.*;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
-import net.grinder.console.communication.ConsoleCommunication;
-import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.engine.communication.UpdateAgentGrinderMessage;
+import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.agent.StopGrinderMessage;
@@ -161,6 +158,15 @@ public class AgentControllerServerDaemon {
 	}
 
 	/**
+	 * Add Listener which will be used to send the agent download request.
+	 *
+	 * @param agentDownloadRequestListener listener
+	 */
+	public void setAgentDownloadRequestListener(AgentDownloadRequestListener agentDownloadRequestListener) {
+		getComponent(AgentProcessControlImplementation.class).setAgentDownloadListener(agentDownloadRequestListener);
+	}
+
+	/**
 	 * Get the console port which the given controller's agent is using.
 	 *
 	 * @param agentIdentity agent identity
@@ -258,14 +264,13 @@ public class AgentControllerServerDaemon {
 	}
 
 	/**
-	 * Update agent to the given version.
+	 * Send agent update message to agent
 	 *
 	 * @param agentIdentity agentIdentity
 	 * @param version       version
-	 * @param url           downloadUrl
 	 */
-	public void updateAgent(AgentIdentity agentIdentity, String version, String url) {
+	public void updateAgent(AgentIdentity agentIdentity, String version) {
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-				new UpdateAgentGrinderMessage(version, url));
+				new AgentUpdateGrinderMessage(version, null, 0, 0));
 	}
 }

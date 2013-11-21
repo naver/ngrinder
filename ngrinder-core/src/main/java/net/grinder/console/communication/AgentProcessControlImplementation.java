@@ -13,23 +13,14 @@
  */
 package net.grinder.console.communication;
 
-import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
-
-import java.util.EventListener;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.communication.CommunicationException;
+import net.grinder.communication.Message;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
+import net.grinder.engine.communication.AgentDownloadGrinderMessage;
 import net.grinder.engine.communication.LogReportGrinderMessage;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -38,15 +29,20 @@ import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
+
 /**
  * Implementation of {@link AgentProcessControl}.
- * 
+ *
  * @author JunHo Yoon
  */
 public class AgentProcessControlImplementation implements AgentProcessControl {
@@ -55,6 +51,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<AgentIdentity, AgentStatus>();
 	private final ListenerSupport<Listener> m_listeners = new ListenerSupport<Listener>();
 	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<LogArrivedListener>();
+	private AgentDownloadRequestListener m_agentDownloadListener;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
 	/**
@@ -64,7 +61,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	/**
 	 * We keep a record of processes for a few seconds after they have been terminated.
-	 * 
+	 * <p/>
 	 * Every FLUSH_PERIOD, process statuses are checked. Those haven't reported for a while are
 	 * marked and are discarded if they still haven't been updated by the next FLUSH_PERIOD.
 	 */
@@ -74,11 +71,9 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param timer
-	 *            Timer that can be used to schedule housekeeping tasks.
-	 * @param consoleCommunication
-	 *            The console communication handler.
+	 *
+	 * @param timer                Timer that can be used to schedule housekeeping tasks.
+	 * @param consoleCommunication The console communication handler.
 	 */
 	public AgentProcessControlImplementation(Timer timer, ConsoleCommunication consoleCommunication) {
 		m_consoleCommunication = consoleCommunication;
@@ -98,11 +93,11 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		final MessageDispatchRegistry messageDispatchRegistry = consoleCommunication.getMessageDispatchRegistry();
 
 		messageDispatchRegistry.set(AgentControllerProcessReportMessage.class,
-						new AbstractHandler<AgentControllerProcessReportMessage>() {
-							public void handle(AgentControllerProcessReportMessage message) {
-								addAgentStatusReport(message);
-							}
-						});
+				new AbstractHandler<AgentControllerProcessReportMessage>() {
+					public void handle(AgentControllerProcessReportMessage message) {
+						addAgentStatusReport(message);
+					}
+				});
 
 		messageDispatchRegistry.set(LogReportGrinderMessage.class, new AbstractHandler<LogReportGrinderMessage>() {
 			public void handle(final LogReportGrinderMessage message) {
@@ -115,13 +110,18 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			}
 		});
 
+		messageDispatchRegistry.set(AgentDownloadGrinderMessage.class, new MessageDispatchRegistry.AbstractBlockingHandler<AgentDownloadGrinderMessage>() {
+			@Override
+			public Message blockingSend(final AgentDownloadGrinderMessage message) throws CommunicationException {
+				return m_agentDownloadListener.onAgentDownloadRequested(message.getVersion(), message.getNext());
+			}
+		});
 	}
 
 	/**
 	 * Add Agent status report.
-	 * 
-	 * @param message
-	 *            {@link AgentControllerProcessReportMessage}
+	 *
+	 * @param message {@link AgentControllerProcessReportMessage}
 	 */
 	public void addAgentStatusReport(AgentControllerProcessReportMessage message) {
 		AgentStatus agentStatus = getAgentStatus(message.getAgentIdentity());
@@ -131,9 +131,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	/**
 	 * Get agent status. It's for internal use.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
+	 *
+	 * @param agentIdentity agent identity
 	 * @return {@link AgentStatus}
 	 */
 	private AgentStatus getAgentStatus(AgentIdentity agentIdentity) {
@@ -167,24 +166,26 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		});
 	}
 
+	public void setAgentDownloadListener(AgentDownloadRequestListener agentDownloadListener) {
+		this.m_agentDownloadListener = agentDownloadListener;
+	}
+
 	/**
 	 * Interface for listeners to SampleModelImplementation.
 	 */
 	interface Listener extends EventListener {
 		/**
 		 * Update agent status.
-		 * 
-		 * @param agentMap
-		 *            agent map
+		 *
+		 * @param agentMap agent map
 		 */
 		public void update(Map<AgentIdentity, AgentStatus> agentMap);
 	}
 
 	/**
 	 * Callers are for synchronization.
-	 * 
-	 * @param purgableMap
-	 *            map for {@link ProcessIdentity}
+	 *
+	 * @param purgableMap map for {@link ProcessIdentity}
 	 */
 	private void purge(Map<? extends ProcessIdentity, ? extends Purgable> purgableMap) {
 
@@ -205,7 +206,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private interface Purgable {
 		/**
 		 * check it should be purged.
-		 * 
+		 *
 		 * @return true if purse is necessary
 		 */
 		boolean shouldPurge();
@@ -233,9 +234,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		/**
 		 * Constructor.
-		 * 
-		 * @param agentProcessReportMessage
-		 *            {@link AgentControllerProcessReportMessage}
+		 *
+		 * @param agentProcessReportMessage {@link AgentControllerProcessReportMessage}
 		 */
 		AgentReference(AgentControllerProcessReportMessage agentProcessReportMessage) {
 			this.m_agentProcessReportMessage = agentProcessReportMessage;
@@ -256,7 +256,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	/**
 	 * Agent Status.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 */
 	public final class AgentStatus implements Purgable {
@@ -264,9 +264,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		/**
 		 * Constructor.
-		 * 
-		 * @param agentIdentity
-		 *            agent identity
+		 *
+		 * @param agentIdentity agent identity
 		 */
 		public AgentStatus(AgentIdentity agentIdentity) {
 			setAgentProcessStatus(new UnknownAgentProcessReport(new AgentAddress(agentIdentity)));
@@ -279,7 +278,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		/**
 		 * Get agent controller status.
-		 * 
+		 *
 		 * @return {@link AgentControllerState} member
 		 */
 		public AgentControllerState getAgentControllerState() {
@@ -292,9 +291,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		/**
 		 * Set each agent process message on the agent status.
-		 * 
-		 * @param message
-		 *            Message
+		 *
+		 * @param message Message
 		 */
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
 			LOGGER.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getSystemDataModel());
@@ -315,15 +313,14 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		public String getAgentName() {
 			return m_agentReference == null ? "" : m_agentReference.m_agentProcessReportMessage.getAgentIdentity()
-							.getName();
+					.getName();
 		}
 	}
 
 	/**
 	 * Add process control {@link Listener}.
-	 * 
-	 * @param listener
-	 *            listener to be added
+	 *
+	 * @param listener listener to be added
 	 */
 	public void addListener(Listener listener) {
 		m_listeners.add(listener);
@@ -331,9 +328,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	/**
 	 * Add Log control {@link LogArrivedListener}.
-	 * 
-	 * @param listener
-	 *            listener to be added
+	 *
+	 * @param listener listener to be added
 	 */
 	public void addLogArrivedListener(LogArrivedListener listener) {
 		m_logListeners.add(listener);
@@ -350,7 +346,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		final GrinderProperties propertiesToSend = properties != null ? properties : new GrinderProperties();
 		for (AgentIdentity each : agents) {
 			m_consoleCommunication.sendToAddressedAgents(new AgentAddress(each), new StartGrinderMessage(
-							propertiesToSend, each.getNumber()));
+					propertiesToSend, each.getNumber()));
 		}
 	}
 
@@ -412,14 +408,15 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private static class UnknownAgentProcessReport extends AgentControllerProcessReportMessage {
 
-		/** UUID. */
+		/**
+		 * UUID.
+		 */
 		private static final long serialVersionUID = -2758014000696737553L;
 
 		/**
 		 * Constructor.
-		 * 
-		 * @param address
-		 *            {@link AgentAddress} in which the agent process is not known.
+		 *
+		 * @param address {@link AgentAddress} in which the agent process is not known.
 		 */
 		public UnknownAgentProcessReport(AgentAddress address) {
 			super(AgentControllerState.UNKNOWN, null, 0);
@@ -452,9 +449,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	/**
 	 * Get agent identities and status map matching the given predicate.
-	 * 
-	 * @param predicate
-	 *            predicate
+	 *
+	 * @param predicate predicate
 	 * @return {@link AgentIdentity} {@link AgentStatus} map
 	 * @since 3.1.2
 	 */

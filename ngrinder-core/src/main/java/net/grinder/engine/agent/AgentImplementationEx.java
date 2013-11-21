@@ -45,6 +45,8 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static net.grinder.util.NetworkUtil.DEFAULT_LOCAL_HOST_NAME;
+
 /**
  * This is the entry point of The Grinder agent process.
  *
@@ -128,11 +130,8 @@ public class AgentImplementationEx implements Agent {
 				do {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
-					String controllerIP = m_agentConfig.getControllerIP();
-					properties.setProperty(GrinderProperties.CONSOLE_HOST, controllerIP);
-
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", NetworkUtil.getLocalHostName()));
-
+					properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());
+					m_agentIdentity.setName(properties.getProperty("grinder.hostID", DEFAULT_LOCAL_HOST_NAME));
 					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
 							.create(properties) : null;
 					// We only reconnect if the connection details have changed.

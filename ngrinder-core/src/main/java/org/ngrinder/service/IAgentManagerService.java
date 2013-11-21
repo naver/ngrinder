@@ -47,7 +47,7 @@ public interface IAgentManagerService {
 	/**
 	 * Get all agent agents. The agent list is obtained combining the data from
 	 * DB and {@link AgentManager}
-	 *
+	 * <p/>
 	 * This includes not-yet-saved agents as well.
 	 *
 	 * @return agent list
@@ -81,7 +81,7 @@ public interface IAgentManagerService {
 
 	/**
 	 * Get all agents attached to the current controller's region from DB.
-	 *
+	 * <p/>
 	 * This method is cluster aware. If it's cluster mode it return all agents
 	 * attached.
 	 *
@@ -134,7 +134,15 @@ public interface IAgentManagerService {
 	/**
 	 * Update agent
 	 *
-	 * @param id controller request url.
+	 * @param ids ids.
+	 */
+	public abstract void updateAgent(List<Long> ids) throws IOException;
+
+	/**
+	 * Update agent
+	 *
+	 * @param id ids.
 	 */
 	public abstract void updateAgent(Long id) throws IOException;
+
 }

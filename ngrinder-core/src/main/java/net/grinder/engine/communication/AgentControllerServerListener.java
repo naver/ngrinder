@@ -19,7 +19,6 @@ import net.grinder.communication.MessageDispatchRegistry.Handler;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.util.thread.Condition;
-
 import org.slf4j.Logger;
 
 /**
@@ -63,7 +62,7 @@ public final class AgentControllerServerListener {
 	 *
 	 * @see #received
 	 */
-	public static final int UPDATE_AGENT = 1 << 4;
+	public static final int AGENT_UPDATE = 1 << 4;
 
 	/**
 	 * Constant that represents a .
@@ -77,22 +76,20 @@ public final class AgentControllerServerListener {
 	 *
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN | UPDATE_AGENT;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN | AGENT_UPDATE;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;
 	private int m_messagesReceived = 0;
 	private int m_lastMessagesReceived = 0;
 	private StartGrinderMessage m_lastStartGrinderMessage;
-	private LogReportGrinderMessage m_lastLogReportGrinderMessage;
-
-	private UpdateAgentGrinderMessage m_lastUpdateAgentGrinderMessage;
+	private AgentUpdateGrinderMessage m_lastAgentUpdateGrinderMessage;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param notifyOnMessage An <code>Object</code> to notify when a message arrives.
-	 * @param logger          A {@link net.grinder.common.Logger} to log received event messages to.
+	 * @param logger          logger to log received event messages to.
 	 */
 	public AgentControllerServerListener(Condition notifyOnMessage, Logger logger) {
 		m_notifyOnMessage = notifyOnMessage;
@@ -108,7 +105,7 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Wait until any message is received.
-	 *
+	 * <p/>
 	 * <p>
 	 * After calling this method, the actual messages can be determined using {@link #received}.
 	 * </p>
@@ -123,7 +120,7 @@ public final class AgentControllerServerListener {
 
 	/**
 	 * Check for messages matching the given mask.
-	 *
+	 * <p/>
 	 * <p>
 	 * After calling this method, the actual messages can be determined using {@link #received}.
 	 * </p>
@@ -202,22 +199,13 @@ public final class AgentControllerServerListener {
 			}
 		});
 
-		messageDispatcher.set(UpdateAgentGrinderMessage.class, new AbstractMessageHandler<UpdateAgentGrinderMessage>() {
-			public void handle(UpdateAgentGrinderMessage message) {
+		messageDispatcher.set(AgentUpdateGrinderMessage.class, new AbstractMessageHandler<AgentUpdateGrinderMessage>() {
+			public void handle(AgentUpdateGrinderMessage message) {
 				m_logger.info("received a update agent message");
-				m_lastUpdateAgentGrinderMessage = message;
-				setReceived(UPDATE_AGENT);
+				m_lastAgentUpdateGrinderMessage = message;
+				setReceived(AGENT_UPDATE);
 			}
 		});
-
-		messageDispatcher.set(LogReportGrinderMessage.class, new AbstractMessageHandler<LogReportGrinderMessage>() {
-			public void handle(LogReportGrinderMessage message) {
-				m_logger.info("received a log report message");
-				m_lastLogReportGrinderMessage = message;
-				setReceived(LOG_REPORT);
-			}
-		});
-
 	}
 
 	/**
@@ -227,10 +215,6 @@ public final class AgentControllerServerListener {
 	 */
 	public StartGrinderMessage getLastStartGrinderMessage() {
 		return m_lastStartGrinderMessage;
-	}
-
-	public LogReportGrinderMessage getLastLogReportGrinderMessage() {
-		return m_lastLogReportGrinderMessage;
 	}
 
 	private abstract class AbstractMessageHandler<T extends Message> implements Handler<T> {
@@ -249,7 +233,7 @@ public final class AgentControllerServerListener {
 		}
 	}
 
-	public UpdateAgentGrinderMessage getLastUpdateAgentGrinderMessage() {
-		return m_lastUpdateAgentGrinderMessage;
+	public AgentUpdateGrinderMessage getLastAgentUpdateGrinderMessage() {
+		return m_lastAgentUpdateGrinderMessage;
 	}
 }

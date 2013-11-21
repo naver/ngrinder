@@ -594,12 +594,26 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (java.lang.String)
 	 */
 	@Override
+	public void updateAgent(List<Long> ids) {
+		for (Long each : ids) {
+			updateAgent(each);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#updateAgentLib
+	 * (java.lang.String)
+	 */
+	@Override
 	public void updateAgent(Long id) {
 		AgentInfo agent = getAgent(id, true);
 		if (agent == null) {
 			return;
 		}
-		agentManager.updateAgent(agent.getAgentIdentity());
+		agentManager.updateAgent(agent.getAgentIdentity(), config.getVersion());
 	}
 
 	/**

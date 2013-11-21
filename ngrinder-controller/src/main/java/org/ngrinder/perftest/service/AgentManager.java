@@ -18,9 +18,11 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.AgentControllerCommunicationDefaults;
+import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.LogArrivedListener;
+import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.console.AgentAddress;
@@ -59,7 +61,7 @@ import java.util.concurrent.ExecutorService;
  * @since 3.0
  */
 @Component
-public class AgentManager implements NGrinderConstants {
+public class AgentManager implements NGrinderConstants, AgentDownloadRequestListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 	private static final int NUMBER_OF_THREAD = 3;
@@ -79,6 +81,7 @@ public class AgentManager implements NGrinderConstants {
 				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port);
 		agentControllerServerDaemon.start();
+		agentControllerServerDaemon.setAgentDownloadRequestListener(this);
 		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
@@ -472,8 +475,8 @@ public class AgentManager implements NGrinderConstants {
 	 *
 	 * @param agentIdentity agent identity
 	 */
-	public void updateAgent(AgentIdentity agentIdentity) {
-		agentControllerServerDaemon.updateAgent(agentIdentity, config.getVersion(), "");
+	public void updateAgent(AgentIdentity agentIdentity, String version) {
+		agentControllerServerDaemon.updateAgent(agentIdentity, version);
 	}
 
 	/**
@@ -489,5 +492,10 @@ public class AgentManager implements NGrinderConstants {
 				return status.getConnectingPort() == singleConsolePort;
 			}
 		});
+	}
+
+	@Override
+	public AgentUpdateGrinderMessage onAgentDownloadRequested(String version, long offset) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

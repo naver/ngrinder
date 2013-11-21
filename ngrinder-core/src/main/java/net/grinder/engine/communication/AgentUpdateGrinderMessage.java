@@ -21,28 +21,36 @@ import net.grinder.communication.Message;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class UpdateAgentGrinderMessage implements Message {
+public class AgentUpdateGrinderMessage implements Message {
 
-	private static final long serialVersionUID = 3218379141994562444L;
 	private final String version;
-	private final String downloadUrl;
+	private final byte[] binary;
+	private final long next;
+	private final long checksum;
 
 	/**
 	 * Constructor.
-	 *
-	 * @param version     version
-	 * @param downloadUrl downloadUrl
 	 */
-	public UpdateAgentGrinderMessage(String version, String downloadUrl) {
+	public AgentUpdateGrinderMessage(String version, byte[] binary, long next, long checksum) {
 		this.version = version;
-		this.downloadUrl = downloadUrl;
+		this.binary = binary;
+		this.next = next;
+		this.checksum = checksum;
 	}
 
 	public String getVersion() {
 		return version;
 	}
 
-	public String getDownloadUrl() {
-		return downloadUrl;
+	public long getNext() {
+		return next;
+	}
+
+	public long getChecksum() {
+		return checksum;
+	}
+
+	public byte[] getBinary() {
+		return binary;
 	}
 }

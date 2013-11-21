@@ -62,8 +62,6 @@
 					<encoding>${source-encoding}</encoding>
 				</configuration>
 			</plugin>
-
 		</plugins>
-
 	</build>
 </project>

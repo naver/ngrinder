@@ -190,14 +190,14 @@ public class AgentController implements Agent {
 					startMessage = null;
 					m_connectionPort = 0;
 					break;
-				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.UPDATE_AGENT)) {
+				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.AGENT_UPDATE)) {
 					// Do update agent by downloading new version.
 					startMessage = null;
 					m_connectionPort = 0;
 					m_state = AgentControllerState.UPDATING;
 					sendCurrentState(consoleCommunication);
-					agentUpdateHandler = new AgentUpdateHandler(agentConfig);
-					agentUpdateHandler.updateAgent(m_agentControllerServerListener.getLastUpdateAgentGrinderMessage());
+					agentUpdateHandler = new AgentUpdateHandler(agentConfig, consoleCommunication);
+					agentUpdateHandler.updateAgent(m_agentControllerServerListener.getLastAgentUpdateGrinderMessage());
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.LOG_REPORT)) {
 					startMessage = null;
 					m_state = AgentControllerState.BUSY;
@@ -240,7 +240,6 @@ public class AgentController implements Agent {
 		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
 			logFiles = new File[]{logFiles[0]};
 		}
-
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(logFiles),
 				new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
@@ -302,7 +301,7 @@ public class AgentController implements Agent {
 	}
 
 
-	private final class ConsoleCommunication {
+	public final class ConsoleCommunication {
 		private final ClientSender m_sender;
 		private final TimerTask m_reportRunningTask;
 		private final MessagePump m_messagePump;
@@ -331,7 +330,7 @@ public class AgentController implements Agent {
 			};
 		}
 
-		public void sendMessage(AddressAwareMessage message) {
+		public void sendMessage(Message message) {
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
@@ -359,6 +358,10 @@ public class AgentController implements Agent {
 			} finally {
 				m_messagePump.shutdown();
 			}
+		}
+
+		public Message sendBlockingMessage(Message message) throws CommunicationException {
+			return m_sender.blockingSend(message);
 		}
 	}
 }
