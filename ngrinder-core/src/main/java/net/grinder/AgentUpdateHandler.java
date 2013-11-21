@@ -19,6 +19,7 @@ import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;

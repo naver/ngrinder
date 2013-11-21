@@ -106,9 +106,8 @@ public class NGrinderStarter {
 		MonitorConstants.init(agentConfig);
 
 		try {
-			System.setProperty("java.rmi.server.hostname", NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
-			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
-					MonitorConstants.DEFAULT_MONITOR_PORT);
+			System.setProperty("java.rmi.server.hostname", agentConfig.getLocalIP());
+			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
 			AgentMonitorServer.getInstance().init(monitorPort, agentConfig);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {

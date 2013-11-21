@@ -42,6 +42,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class AgentConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
 
+	// Available from 3.3
 	public static final String AGENT_CONTROLLER_IP = "agent.controller.ip";
 	public static final String AGENT_CONTROLLER_PORT = "agent.controller.port";
 
@@ -50,8 +51,9 @@ public class AgentConfig {
 	public static final String AGENT_CONSOLE_PORT = "agent.console.port";
 
 	public static final String AGENT_REGION = "agent.region";
-	public static final String AGENT_HOSTID = "agent.hostid";
+	public static final String AGENT_HOST_ID = "agent.hostid";
 	public static final String MONITOR_LISTEN_PORT = "monitor.listen.port";
+	public static final String MONITOR_LISTEN_IP = "monitor.listen.ip";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 
@@ -188,7 +190,8 @@ public class AgentConfig {
 		LOGGER.info("    System Environment:  NGRINDER_AGENT_HOME={}", StringUtils.trimToEmpty(userHomeFromEnv));
 
 		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
-		LOGGER.info("    Java Sytem Property:  ngrinder.agent.home={}", StringUtils.trimToEmpty(userHomeFromProperty));
+		LOGGER.info("    Java System Property:  ngrinder.agent.home={}",
+				StringUtils.trimToEmpty(userHomeFromProperty));
 
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			LOGGER.warn("The path to ngrinder agent home is ambiguous:");
@@ -300,7 +303,7 @@ public class AgentConfig {
 	}
 
 	public String getAgentHostID() {
-		return getProperty(AGENT_HOSTID, NetworkUtil.DEFAULT_LOCAL_HOST_NAME);
+		return getProperty(AGENT_HOST_ID, NetworkUtil.DEFAULT_LOCAL_HOST_NAME);
 	}
 
 	public boolean isServerMode() {
@@ -308,7 +311,7 @@ public class AgentConfig {
 	}
 
 	public String getLocalIP() {
-		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
+		return getProperty(MONITOR_LISTEN_IP, NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public static class NullAgentConfig extends AgentConfig {

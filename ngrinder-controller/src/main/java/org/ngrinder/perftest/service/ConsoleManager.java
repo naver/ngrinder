@@ -13,23 +13,8 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
-
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
@@ -39,6 +24,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
+
 /**
  * Console manager is responsible for console instance management.
  *
@@ -46,7 +44,7 @@ import org.springframework.stereotype.Component;
  * not pooled but the {@link ConsoleEntry} which contains console information are pooled internally. Whenever a user
  * requires a new console, it gets the one {@link ConsoleEntry} from the pool and creates new console with the
  * {@link ConsoleEntry}. Currently using consoles are kept in {@link #consoleInUse} member variable.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -79,7 +77,7 @@ public class ConsoleManager {
 	 * Get the base port number of console.
 	 *
 	 * It can be specified at ngrinder.consolePortBase in system.conf. Each console will be created from that port.
-	 * 
+	 *
 	 * @return base port number
 	 */
 	protected int getConsolePortBase() {
@@ -89,7 +87,7 @@ public class ConsoleManager {
 
 	/**
 	 * Get the console pool size. It can be specified at ngrinder.maxConcurrentTest in system.conf.
-	 * 
+	 *
 	 * @return console size.
 	 */
 	protected int getConsoleSize() {
@@ -99,7 +97,7 @@ public class ConsoleManager {
 
 	/**
 	 * Get Timeout (in second).
-	 * 
+	 *
 	 * @return 5000 second
 	 */
 	protected long getMaxWaitingMilliSecond() {
@@ -109,11 +107,9 @@ public class ConsoleManager {
 
 	/**
 	 * Get the available ports.
-	 * 
-	 * @param size
-	 *            port size
-	 * @param from
-	 *            port number starting from
+	 *
+	 * @param size port size
+	 * @param from port number starting from
 	 * @return port list
 	 */
 	List<Integer> getAvailablePorts(int size, int from) {
@@ -129,9 +125,8 @@ public class ConsoleManager {
 
 	/**
 	 * Get a available port greater than the given port.
-	 * 
-	 * @param scanStartPort
-	 *            port scan from
+	 *
+	 * @param scanStartPort port scan from
 	 * @return min port available from scanStartPort
 	 */
 	private int checkPortAvailability(int scanStartPort) {
@@ -147,9 +142,8 @@ public class ConsoleManager {
 
 	/**
 	 * Check if the given port is available.
-	 * 
-	 * @param port
-	 *            port to be checked
+	 *
+	 * @param port port to be checked
 	 * @return true if available
 	 */
 	private boolean checkExactPortAvailability(int port) {
@@ -173,15 +167,13 @@ public class ConsoleManager {
 
 	/**
 	 * Get an available console.
-	 * 
+	 *
 	 * If there is no available console, it waits until available console is returned back. If the specific time is
 	 * elapsed, the timeout error occurs and throws {@link org.ngrinder.common.exception.NGrinderRuntimeException} . The
 	 * timeout can be adjusted by overriding {@link #getMaxWaitingMilliSecond()}.
-	 * 
-	 * @param testIdentifier
-	 *            test identifier
-	 * @param baseConsoleProperties
-	 *            base {@link ConsoleProperties}
+	 *
+	 * @param testIdentifier        test identifier
+	 * @param baseConsoleProperties base {@link ConsoleProperties}
 	 * @return console
 	 */
 	public SingleConsole getAvailableConsole(String testIdentifier, ConsoleProperties baseConsoleProperties) {
@@ -208,14 +200,11 @@ public class ConsoleManager {
 
 	/**
 	 * Return back the given console.
-	 * 
+	 *
 	 * Duplicated returns is allowed.
-	 * 
-	 * @param testIdentifier
-	 *            test identifier
-	 * @param console
-	 *            console which will be returned back.
-	 * 
+	 *
+	 * @param testIdentifier test identifier
+	 * @param console        console which will be returned back.
 	 */
 	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
@@ -226,7 +215,7 @@ public class ConsoleManager {
 		try {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
-			LOG.error("Exception is occurred while console shutdown in returnback process for test {}.",
+			LOG.error("Exception is occurred while console shutdown in return back process for test {}.",
 					testIdentifier, e);
 			// But the port is getting back.
 		} finally {
@@ -235,15 +224,15 @@ public class ConsoleManager {
 				// Wait console is completely shutdown...
 				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while console shutdown in returnback process for test {}.",
+				LOG.error("Exception occurs while console shutdown in return back process for test {}.",
 						testIdentifier, e);
-				// If it's not disconnected still, stop them forcely.
+				// If it's not disconnected still, stop them by force.
 				agentManager.stopAgent(console.getConsolePort());
 			}
 			try {
 				console.shutdown();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while console shutdown console in returnback process for test {}.",
+				LOG.error("Exception occurs while console shutdown console in return back process for test {}.",
 						testIdentifier, e);
 			}
 			int consolePort = console.getConsolePort();
@@ -265,7 +254,7 @@ public class ConsoleManager {
 
 	/**
 	 * Get the list of {@link SingleConsole} which are used.
-	 * 
+	 *
 	 * @return {@link SingleConsole} list in use
 	 */
 	public List<SingleConsole> getConsoleInUse() {
@@ -274,7 +263,7 @@ public class ConsoleManager {
 
 	/**
 	 * Get the size of currently available consoles.
-	 * 
+	 *
 	 * @return size of available consoles.
 	 */
 	public Integer getAvailableConsoleSize() {
@@ -283,9 +272,8 @@ public class ConsoleManager {
 
 	/**
 	 * Get the {@link SingleConsole} instance which is using the given port.
-	 * 
-	 * @param port
-	 *            port which the console is using
+	 *
+	 * @param port port which the console is using
 	 * @return {@link SingleConsole} instance if found. Otherwise, {@link NullSingleConsole} instance.
 	 */
 	public SingleConsole getConsoleUsingPort(Integer port) {

@@ -88,8 +88,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Single console for multiple test. This is the customized version of
  * {@link Console} which grinder has.
- * 
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -129,7 +128,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private boolean headerAdded = false;
 
 	private Map<String, BufferedWriter> fileWriterMap = newHashMap();
-	/** the count of current sampling. */
+	/**
+	 * the count of current sampling.
+	 */
 	private long samplingCount = 0;
 
 	/**
@@ -155,38 +156,22 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
 
 	/**
-	 * Constructor with console ip and port.
-	 * 
-	 * @param ip
-	 *            IP
-	 * @param port
-	 *            PORT
+	 * Constructor to bind all ip and the given port.
+	 *
+	 * This is for unit test.
+	 *
+	 * @param port PORT
 	 */
-	public SingleConsole(String ip, int port) {
-		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
-	}
-
-	/**
-	 * Constructor with console port and properties.
-	 * 
-	 * @param port
-	 *            PORT
-	 * @param consoleProperties
-	 *            {@link ConsoleProperties} used.
-	 */
-	public SingleConsole(int port, ConsoleProperties consoleProperties) {
-		this("", port, consoleProperties);
+	public SingleConsole(int port) {
+		this("", port, ConsolePropertiesFactory.createEmptyConsoleProperties());
 	}
 
 	/**
 	 * Constructor with IP, port, and properties.
-	 * 
-	 * @param ip
-	 *            IP
-	 * @param port
-	 *            PORT
-	 * @param consoleProperties
-	 *            {@link ConsoleProperties} used.
+	 *
+	 * @param ip                IP
+	 * @param port              PORT
+	 * @param consoleProperties {@link ConsoleProperties} used.
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
 		// if port is 0, it is Null singleConsole.
@@ -209,37 +194,14 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		}
 	}
 
-	/**
-	 * Simple constructor setting only port. It automatically binds all ip
-	 * addresses.
-	 * 
-	 * @param port
-	 *            PORT number
-	 */
-	public SingleConsole(int port) {
-		this("", port);
-	}
 
 	/**
 	 * Get the assigned console port.
-	 * 
+	 *
 	 * @return console port
 	 */
 	public int getConsolePort() {
 		return this.getConsoleProperties().getConsolePort();
-	}
-
-	/**
-	 * Get the assigned console host. If it's empty, it returns host IP.
-	 * 
-	 * @return console host
-	 */
-	public String getConsoleHost() {
-		String consoleHost = this.getConsoleProperties().getConsoleHost();
-		if (StringUtils.isEmpty(consoleHost)) {
-			consoleHost = NetworkUtil.getLocalHostAddress();
-		}
-		return consoleHost;
 	}
 
 	/**
@@ -297,7 +259,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Get the count of all attached agents.
-	 * 
+	 *
 	 * @return count of agents
 	 */
 	public int getAllAttachedAgentsCount() {
@@ -307,7 +269,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Get all attached agent list on this console.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
@@ -327,11 +289,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Get the console component having the given type.
-	 * 
-	 * @param <T>
-	 *            componentType component type
-	 * @param componentType
-	 *            component type
+	 *
+	 * @param <T>           componentType component type
+	 * @param componentType component type
 	 * @return the consoleFoundation
 	 */
 	public <T> T getConsoleComponent(Class<T> componentType) {
@@ -341,7 +301,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Get {@link ConsoleProperties} which is used to configure
 	 * {@link SingleConsole}.
-	 * 
+	 *
 	 * @return {@link ConsoleProperties}
 	 */
 	public ConsoleProperties getConsoleProperties() {
@@ -350,9 +310,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Start a test with the given {@link GrinderProperties}.
-	 * 
-	 * @param properties
-	 *            {@link GrinderProperties}
+	 *
+	 * @param properties {@link GrinderProperties}
 	 * @return current time
 	 */
 	public long startTest(GrinderProperties properties) {
@@ -364,9 +323,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Set the file distribution directory.
-	 * 
-	 * @param filePath
-	 *            file path.
+	 *
+	 * @param filePath file path.
 	 */
 	public void setDistributionDirectory(File filePath) {
 		final ConsoleProperties properties = getConsoleComponent(ConsoleProperties.class);
@@ -396,9 +354,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Distribute files in the given filePath to the attached agents.
-	 * 
-	 * @param filePath
-	 *            the distribution files
+	 *
+	 * @param filePath the distribution files
 	 */
 	public void distributeFiles(File filePath) {
 		distributeFiles(filePath, null, true);
@@ -406,13 +363,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Distribute files in the given filePath to the attached agents.
-	 * 
-	 * @param filePath
-	 *            the distribution files
-	 * @param listener
-	 *            listener
-	 * @param safe
-	 *            safe file transition
+	 *
+	 * @param filePath the distribution files
+	 * @param listener listener
+	 * @param safe     safe file transition
 	 */
 	public void distributeFiles(File filePath, ListenerSupport<FileDistributionListener> listener, boolean safe) {
 		setDistributionDirectory(filePath);
@@ -421,7 +375,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * File distribution event listener.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 */
 	public abstract static class FileDistributionListener {
@@ -429,20 +383,17 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		/**
 		 * Notify the file distribution start event and the returns if the safe
 		 * mode is enabled or not.
-		 * 
-		 * @param dir
-		 *            Distribution dir
-		 * @param safe
-		 *            safe file transition
+		 *
+		 * @param dir  Distribution dir
+		 * @param safe safe file transition
 		 * @return true if safe
 		 */
 		public abstract boolean start(File dir, boolean safe);
 
 		/**
 		 * Notify the progress showing that the given file was distributed.
-		 * 
-		 * @param fileName
-		 *            distributed file name
+		 *
+		 * @param fileName distributed file name
 		 */
 		public abstract void distributed(String fileName);
 	}
@@ -456,11 +407,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Distribute files on agents.
-	 * 
-	 * @param listener
-	 *            listener
-	 * @param safe
-	 *            safe mode
+	 *
+	 * @param listener listener
+	 * @param safe     safe mode
 	 */
 	public void distributeFiles(ListenerSupport<FileDistributionListener> listener, final boolean safe) {
 		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
@@ -521,7 +470,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	private void checkSafetyWithCacheState(final FileDistribution fileDistribution,
-			final Condition cacheStateCondition, int fileCount) {
+	                                       final Condition cacheStateCondition, int fileCount) {
 		synchronized (cacheStateCondition) {
 			for (int i = 0; i < (10 * fileCount) && shouldEnable(fileDistribution); ++i) {
 				cacheStateCondition.waitNoInterrruptException(500);
@@ -532,9 +481,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Wait until the given size of agents are all connected. It wait until 10
 	 * sec.
-	 * 
-	 * @param size
-	 *            size of agent.
+	 *
+	 * @param size size of agent.
 	 */
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
@@ -580,7 +528,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * Check all test is finished. To be safe, this counts the running thread
 	 * and unfinished worker processes. If one of them is 0, It assumes the test
 	 * is finished.
-	 * 
+	 *
 	 * @return true if finished
 	 */
 	public boolean isAllTestFinished() {
@@ -600,9 +548,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Set the current TPS value. and it updates the max peak TPS as well.
-	 * 
-	 * @param newValue
-	 *            TPS value
+	 *
+	 * @param newValue TPS value
 	 */
 	public void setTpsValue(double newValue) {
 		peakTpsForGraph = Math.max(peakTpsForGraph, newValue);
@@ -645,7 +592,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Get all expression views.
-	 * 
+	 *
 	 * @return {@link ExpressionView} array
 	 * @since 3.0.2
 	 */
@@ -661,7 +608,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Get all expression entry set (display name and
 	 * {@link StatisticExpression} pair).
-	 * 
+	 *
 	 * @return entry set of display name and {@link StatisticExpression} pair
 	 * @since 3.1.2
 	 */
@@ -745,15 +692,13 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Write the interval summary data per each test. This is activated only
 	 * when there are more than 1 registed test.
-	 * 
-	 * @param intervalStatisticMapPerTest
-	 *            statistics map
-	 * @param lastCall
-	 *            true if it's the last call of consequent call in a single
-	 *            sampling
+	 *
+	 * @param intervalStatisticMapPerTest statistics map
+	 * @param lastCall                    true if it's the last call of consequent call in a single
+	 *                                    sampling
 	 */
 	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, //
-			boolean lastCall) {
+	                                             boolean lastCall) {
 		if (intervalStatisticMapPerTest.size() > 1) {
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 				if (INTERESTING_PER_TEST_STATISTICS.contains(each.getKey())) {
@@ -776,12 +721,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Write the total test interval statistic data into file.
-	 * 
-	 * @param intervalStatistics
-	 *            interval statistics
-	 * @param firstCall
-	 *            true if it's the last call of consecutive calls in a single
-	 *            sampling
+	 *
+	 * @param intervalStatistics interval statistics
+	 * @param firstCall          true if it's the last call of consecutive calls in a single
+	 *                           sampling
 	 */
 	public void writeIntervalSummaryData(StatisticsSet intervalStatistics, boolean firstCall) {
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
@@ -796,9 +739,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Write the each interval statistic data as the form of CSV.
-	 * 
-	 * @param intervalStatistics
-	 *            interval statistics
+	 *
+	 * @param intervalStatistics interval statistics
 	 */
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics) {
 
@@ -859,9 +801,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Check if the TPS is too low. the TPS is lower than 0.001 for 1 minutes,
 	 * It emits a shutdown event to the {@link ConsoleShutdownListener}
-	 * 
-	 * @param tps
-	 *            current TPS
+	 *
+	 * @param tps current TPS
 	 */
 	private void checkTooLowTps(double tps) {
 		// If the tps is too low, which means the agents or scripts went wrong.
@@ -888,9 +829,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * Check if too many error has been occurred. If the half of total
 	 * transaction is error for the last 10 secs. It notifies the
 	 * {@link ConsoleShutdownListener}
-	 * 
-	 * @param cumulativeStatistics
-	 *            accumulated Statistics
+	 *
+	 * @param cumulativeStatistics accumulated Statistics
 	 */
 	private void checkTooManyError(StatisticsSet cumulativeStatistics) {
 		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
@@ -924,11 +864,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Build up statistics for current sampling.
-	 * 
-	 * @param accumulatedStatistics
-	 *            intervalStatistics
-	 * @param intervalStatistics
-	 *            cumulatedStatistics
+	 *
+	 * @param accumulatedStatistics intervalStatistics
+	 * @param intervalStatistics    cumulatedStatistics
 	 */
 	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
 		Map<String, Object> result = newHashMap();
@@ -1004,7 +942,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Listener interface to detect the sampling start and end moment.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 * @since 3.0
 	 */
@@ -1016,13 +954,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 		/**
 		 * Called whenever the sampling is performed.
-		 * 
-		 * @param file
-		 *            report path
-		 * @param intervalStatistics
-		 *            interval statistics snapshot
-		 * @param cumulativeStatistics
-		 *            cumulative statistics snapshot
+		 *
+		 * @param file                 report path
+		 * @param intervalStatistics   interval statistics snapshot
+		 * @param cumulativeStatistics cumulative statistics snapshot
 		 * @since 3.0.2
 		 */
 		void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics);
@@ -1037,7 +972,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Listener interface to detect sampling start and end moment and each
 	 * sampling. This is used when the consecutive sampling should be counted.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 * @since 3.1.3
 	 */
@@ -1050,20 +985,16 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		/**
 		 * Called whenever the sampling is performed. The last call in the each
 		 * consecutive sampling will pass the true in the last call parameter.
-		 * 
-		 * @param file
-		 *            report path
-		 * @param intervalStatistics
-		 *            interval statistics snapshot
-		 * @param cumulativeStatistics
-		 *            cumulative statistics snapshot
-		 * @param lastCall
-		 *            true if it's the last call of the consecutive calls in a
-		 *            single sampling
+		 *
+		 * @param file                 report path
+		 * @param intervalStatistics   interval statistics snapshot
+		 * @param cumulativeStatistics cumulative statistics snapshot
+		 * @param lastCall             true if it's the last call of the consecutive calls in a
+		 *                             single sampling
 		 * @since 3.0.3
 		 */
 		void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics,
-				boolean lastCall);
+		                boolean lastCall);
 
 		/**
 		 * Called when the sampling is ended.
@@ -1074,22 +1005,21 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Listener interface to detect the console shutdown condition.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 */
 	public interface ConsoleShutdownListener {
 		/**
 		 * Called when the console should be shutdown.
-		 * 
-		 * @param stopReason
-		 *            the reason of shutdown
+		 *
+		 * @param stopReason the reason of shutdown
 		 */
 		void readyToStop(StopReason stopReason);
 	}
 
 	/**
 	 * Get the list of the registered {@link ConsoleShutdownListener}.
-	 * 
+	 *
 	 * @return the list of the registered {@link ConsoleShutdownListener}.
 	 * @see ConsoleShutdownListener
 	 */
@@ -1100,9 +1030,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Add the given {@link ConsoleShutdownListener} to get notified when
 	 * console is shutdown
-	 * 
-	 * @param listener
-	 *            listener to be registered.
+	 *
+	 * @param listener listener to be registered.
 	 */
 	public void addListener(ConsoleShutdownListener listener) {
 		showdownListner.add(listener);
@@ -1111,10 +1040,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Add the given {@link SamplingLifeCycleListener} to get notified when
 	 * sampling is started and ended.
-	 * 
-	 * @param listener
-	 *            listener to be registered.
-	 * 
+	 *
+	 * @param listener listener to be registered.
 	 */
 	public void addSamplingLifeCyleListener(SamplingLifeCycleListener listener) {
 		samplingLifeCycleListener.add(listener);
@@ -1151,9 +1078,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Update the count of current processes and threads.
-	 * 
-	 * @param processReports
-	 *            ProcessReports array.
+	 *
+	 * @param processReports ProcessReports array.
 	 */
 	private void updateCurrentProcessAndThread(ProcessReports[] processReports) {
 		int notFinishedWorkerCount = 0;
@@ -1220,7 +1146,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * Get the statistics data. This method returns {@link Map} whose key is
 	 * string and it's mapped to the various statistics. Please refer
 	 * {@link #updateStatistics()}
-	 * 
+	 *
 	 * @return map which contains the statistics data
 	 */
 	public Map<String, Object> getStatisticsData() {
@@ -1245,9 +1171,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Set the report path.
-	 * 
-	 * @param reportPath
-	 *            path in which report will be stored.
+	 *
+	 * @param reportPath path in which report will be stored.
 	 */
 	public void setReportPath(File reportPath) {
 		checkNotNull(reportPath, "the report folder should not be empty!").mkdirs();
@@ -1263,9 +1188,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Start sampling with sampling ignore count.
-	 * 
-	 * @param ignoreSampleCount
-	 *            the count how many sampling will be ignored.
+	 *
+	 * @param ignoreSampleCount the count how many sampling will be ignored.
 	 */
 	public void startSampling(int ignoreSampleCount) {
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
@@ -1367,7 +1291,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Check if the current test contains too many errors.
-	 * 
+	 *
 	 * @return true if error is over 20%
 	 */
 	public boolean hasTooManyError() {
@@ -1378,7 +1302,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Check if the test is performed at least once.
-	 * 
+	 *
 	 * @return true if performed.
 	 * @since 3.1.1
 	 */
@@ -1388,7 +1312,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Check if this {@link SingleConsole} is canceled.
-	 * 
+	 *
 	 * @return true if yes.
 	 */
 	public boolean isCanceled() {
@@ -1397,9 +1321,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Check if the current test running time is over given duration.
-	 * 
-	 * @param duration
-	 *            duration in millisecond
+	 *
+	 * @param duration duration in millisecond
 	 * @return true if it's over.
 	 */
 	public boolean isCurrentRunningTimeOverDuration(long duration) {
@@ -1422,9 +1345,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Only for unit test.
-	 * 
-	 * @param sampleModel
-	 *            sample model
+	 *
+	 * @param sampleModel sample model
 	 */
 	public void setSampleModel(SampleModel sampleModel) {
 		this.sampleModel = sampleModel;
@@ -1452,9 +1374,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Add the {@link SamplingLifeCycleFollowUpListener}.
-	 * 
-	 * @param listener
-	 *            listener to be registered
+	 *
+	 * @param listener listener to be registered
 	 * @since 3.1.3
 	 */
 	public void addSamplingLifeCycleFollowUpCycleListener(SamplingLifeCycleFollowUpListener listener) {

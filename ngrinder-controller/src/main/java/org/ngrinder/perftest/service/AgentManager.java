@@ -380,7 +380,6 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 		try {
 			// Make the agents connect to console.
 			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
-			grinderProperties.setProperty(GrinderProperties.CONSOLE_HOST, singleConsole.getConsoleHost());
 			execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
 			for (final AgentIdentity eachAgentIdentity : necessaryAgents) {
 				execService.submit(new Runnable() {

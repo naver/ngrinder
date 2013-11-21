@@ -44,7 +44,9 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -116,7 +118,6 @@ public class Config implements IConfig, NGrinderConstants {
 			initLogger(isTestMode());
 			resolveLocalIp();
 			loadDatabaseProperties();
-			setRMIHostName();
 			versionString = getVersion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
@@ -125,7 +126,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	protected void resolveLocalIp() {
 		currentIP = getSystemProperties().getPropertyWithBackwardCompatibility("ngrinder.controller.ip",
-				"ngrinder.controller.ipaddress", NetworkUtil.getLocalHostAddress());
+				"ngrinder.controller.ipaddress", "");
 	}
 
 	/**
@@ -137,25 +138,6 @@ public class Config implements IConfig, NGrinderConstants {
 		announcementWatchDog.interrupt();
 		systemConfWatchDog.interrupt();
 		policyJsWatchDog.interrupt();
-	}
-
-	/**
-	 * Set the RMI server host name.
-	 *
-	 * @since 3.1
-	 */
-	protected void setRMIHostName() {
-		if (isCluster()) {
-			if (getRegion().equals(NONE_REGION)) {
-				LOG.error("Region is not set in cluster mode. Please set ngrinder.region properly.");
-			} else {
-				CoreLogger.LOGGER.info("Cache cluster URIs:{}", getClusterURIs());
-				// Set RMI server host for remote serving. Otherwise, maybe it
-				// will use 127.0.0.1 as the RMI server name and the remote client can not connect.
-				CoreLogger.LOGGER.info("Set current IP:{} for RMI server.", getCurrentIP());
-				System.setProperty("java.rmi.server.hostname", getCurrentIP());
-			}
-		}
 	}
 
 	/**
@@ -596,6 +578,7 @@ public class Config implements IConfig, NGrinderConstants {
 		return currentIP;
 	}
 
+
 	/**
 	 * Check if the current ngrinder instance is hidden instance from the cluster.
 	 *
@@ -648,4 +631,12 @@ public class Config implements IConfig, NGrinderConstants {
 				"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
 
+	/**
+	 * Get the current controller public IP.
+	 *
+	 * @return public IP.
+	 */
+	public String getCurrentPublicIP() {
+		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
+	}
 }

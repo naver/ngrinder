@@ -131,9 +131,8 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
 					properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", DEFAULT_LOCAL_HOST_NAME));
-					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
-							.create(properties) : null;
+					m_agentIdentity.setName(m_agentConfig.getAgentHostID());
+					final Connector connector = m_connectorFactory.create(properties);
 					// We only reconnect if the connection details have changed.
 					if (consoleCommunication != null && !consoleCommunication.getConnector().equals(connector)) {
 						shutdownConsoleCommunication(consoleCommunication);

@@ -13,16 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import net.grinder.util.NetworkUtil;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
@@ -31,10 +22,8 @@ import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.FactoryConfiguration;
 import net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +32,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import com.google.common.net.InetAddresses;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Dynamic cache configuration. This get the control of EhCache configuration from Spring. Depending
  * on the system.conf, it creates local cache or dist cache.
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 3.1
@@ -60,10 +56,8 @@ public class DynamicCacheConfig {
 	private Config config;
 
 	/**
-	 * Create cache manager dynamically according to the configuration. Because we cann't add a
-	 * cluster peer provider dynamically.
-	 * 
-	 * 
+	 * Create cache manager dynamically according to the configuration.
+	 *
 	 * @return EhCacheCacheManager bean
 	 */
 	@SuppressWarnings("rawtypes")
@@ -79,6 +73,8 @@ public class DynamicCacheConfig {
 				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
 			} else {
 				CoreLogger.LOGGER.info("In cluster mode.");
+				System.setProperty("java.rmi.server.hostname", getCurrentIP());
+
 				inputStream = new ClassPathResource("ehcache-dist.xml").getInputStream();
 				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
 
@@ -91,7 +87,7 @@ public class DynamicCacheConfig {
 
 				FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 				peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-				String peerListenerProperties = createPearListenerProperties(replicatedCacheNames);
+				String peerListenerProperties = createPearListenerProperties();
 				peerListenerConfig.setProperties(peerListenerProperties);
 				cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
 				CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperties);
@@ -100,7 +96,7 @@ public class DynamicCacheConfig {
 			CacheManager mgr = CacheManager.create(cacheManagerConfig);
 			setCacheManager(mgr);
 			cacheManager.setCacheManager(mgr);
-			
+
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while setting up cache", e);
 		} finally {
@@ -109,10 +105,20 @@ public class DynamicCacheConfig {
 		return cacheManager;
 	}
 
-	protected String createPearListenerProperties(List<String> replicatedCacheNames) {
-		int clusterListenerPort = getCacheListenerPort();
-		String currentIP = config.getCurrentIP();
-		return String.format("hostName=%s, port=%d, socketTimeoutMillis=200", currentIP, clusterListenerPort);
+	protected String createPearListenerProperties() {
+		return String.format("hostName=%s, port=%d, socketTimeoutMillis=200", getCurrentIP(), getCacheListenerPort());
+	}
+
+	private String getCurrentIP() {
+		for (String eachIP : config.getClusterURIs()) {
+			NetworkUtil.IPPortPair ipAndPortPair = NetworkUtil.convertIPAndPortPair(eachIP, 0);
+			for (InetAddress each : NetworkUtil.DEFAULT_LOCAL_ADDRESSES) {
+				if (ipAndPortPair.isSame(each.getHostAddress())) {
+					return eachIP;
+				}
+			}
+		}
+		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
 	}
 
 	void setCacheManager(CacheManager mgr) {
@@ -127,27 +133,15 @@ public class DynamicCacheConfig {
 		int clusterListenerPort = getCacheListenerPort();
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
-		String currentIP = config.getCurrentIP();
-		String current = currentIP + ":" + getCacheListenerPort();
+		final String currentIP = getCurrentIP();
 		for (String ip : config.getClusterURIs()) {
-			if (ip.equals(current)) {
+			NetworkUtil.IPPortPair ipAndPortPair = NetworkUtil.convertIPAndPortPair(ip, clusterListenerPort);
+			if (ipAndPortPair.isSame(currentIP)) {
 				continue;
-			}
-			// Verify it's ip.
-			String[] split = StringUtils.split(ip, ":");
-			ip = split[0];
-			int port = (split.length >= 2) ? NumberUtils.toInt(split[1], clusterListenerPort) : clusterListenerPort;
-			if (!InetAddresses.isInetAddress(ip)) {
-				try {
-					ip = InetAddress.getByName(ip).getHostAddress();
-				} catch (UnknownHostException e) {
-					CoreLogger.LOGGER.error("{} is not valid ip or host name", ip);
-					continue;
-				}
 			}
 
 			for (String cacheName : replicatedCacheNames) {
-				uris.add(String.format("//%s:%d/%s", ip, port, cacheName));
+				uris.add(String.format("//%s:%d/%s", ipAndPortPair.getIP(), ipAndPortPair.getPort(), cacheName));
 			}
 		}
 		return "peerDiscovery=manual,rmiUrls=" + StringUtils.join(uris, "|");
@@ -155,7 +149,7 @@ public class DynamicCacheConfig {
 
 	int getCacheListenerPort() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
-						Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
+				Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 	}
 
 	protected List<String> getReplicatedCacheNames(Configuration cacheManagerConfig) {
@@ -163,7 +157,7 @@ public class DynamicCacheConfig {
 		List<String> replicatedCacheNames = new ArrayList<String>();
 		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
 			List<CacheEventListenerFactoryConfiguration> list = cast(eachConfig.getValue()
-							.getCacheEventListenerConfigurations());
+					.getCacheEventListenerConfigurations());
 			for (CacheEventListenerFactoryConfiguration each : list) {
 				if (each.getFullyQualifiedClassPath().equals("net.sf.ehcache.distribution.RMICacheReplicatorFactory")) {
 					replicatedCacheNames.add(eachConfig.getKey());

@@ -43,7 +43,7 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		assertThat(home.getDirectory(), is(oracle));
 		assertThat(home.getPluginsDirectory(), is(new File(oracle, "plugins")));
 	}
-	
+
 	@Test
 	public void testGetMonitorPort() {
 		int port = config.getMonitorPort();
@@ -103,11 +103,6 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		assertThat(config.isVerbose(), is(true));
 	}
 
-	@Test
-	public void testLoadClusterConfig() {
-		config.cluster = true;
-		config.setRMIHostName();
-	}
 
 	@Test
 	public void testLoadExtendProperties() {

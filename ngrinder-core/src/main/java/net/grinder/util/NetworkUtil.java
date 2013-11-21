@@ -14,17 +14,17 @@
 package net.grinder.util;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.python.google.common.net.InetAddresses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static java.net.NetworkInterface.getNetworkInterfaces;
 
 /**
  * Common network utility. This contains very careful implementation to detect current machine's ip.
@@ -43,6 +43,7 @@ public abstract class NetworkUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
 	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
 	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
+	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses();
 
 	/**
 	 * Get the local host address, try to get actual IP.
@@ -69,7 +70,7 @@ public abstract class NetworkUtil {
 	 * @param port         the port to connect
 	 * @return IP address local IP address
 	 */
-	public static String getLocalHostAddress(String byConnecting, int port) {
+	static String getLocalHostAddress(String byConnecting, int port) {
 		InetAddress addr = getLocalInetAddress(byConnecting, port);
 		if (addr != null) {
 			return addr.getHostAddress();
@@ -86,7 +87,7 @@ public abstract class NetworkUtil {
 	 * @param port         the port to connect
 	 * @return localhost name. if fails, return "localhost"
 	 */
-	public static String getLocalHostName(String byConnecting, int port) {
+	static String getLocalHostName(String byConnecting, int port) {
 		InetAddress addr = getLocalInetAddress(byConnecting, port);
 		if (addr != null) {
 			return addr.getHostName();
@@ -95,7 +96,7 @@ public abstract class NetworkUtil {
 		}
 	}
 
-	private static InetAddress getLocalInetAddress(String byConnecting, int port) {
+	static InetAddress getLocalInetAddress(String byConnecting, int port) {
 		InetAddress addr = getAddressWithSocket(byConnecting, port);
 		if (addr == null) {
 			addr = getAddressWithSocket("www.baidu.com", 80);
@@ -110,12 +111,12 @@ public abstract class NetworkUtil {
 		return addr;
 	}
 
-	private static InetAddress getAddressWithSocket(String byConnecting, int port) {
+	static InetAddress getAddressWithSocket(String byConnecting, int port) {
 		Socket s = null;
 		try {
 			s = new Socket();
 			SocketAddress addr = new InetSocketAddress(byConnecting, port);
-			s.connect(addr, 2000); // 2 seconds timeout
+			s.connect(addr, 1000); // 2 seconds timeout
 			return s.getLocalAddress();
 		} catch (Exception e) {
 			return null;
@@ -124,9 +125,9 @@ public abstract class NetworkUtil {
 		}
 	}
 
-	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
+	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
 			throws SocketException {
-		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
+		Enumeration<?> en = getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
 			if (!i.isUp()) {
@@ -189,48 +190,81 @@ public abstract class NetworkUtil {
 		}
 	}
 
-	/**
-	 * Download a file from the given URL string.
-	 *
-	 * @param urlString URL string
-	 * @param toFile    file to be saved.
-	 */
-	public static void downloadFile(String urlString, File toFile) {
-		FileOutputStream os = null;
-		InputStream in = null;
-		URLConnection connection = null;
-		try {
-			URL url = new URL(urlString);
-			connection = url.openConnection();
-			connection.connect();
-			byte[] buffer = new byte[4 * 1024];
-			int read;
-			os = new FileOutputStream(toFile);
-			in = connection.getInputStream();
-			while ((read = in.read(buffer)) > 0) {
-				os.write(buffer, 0, read);
-			}
-		} catch (Exception e) {
-			LOGGER.error("download file from {} was failed", urlString, e);
-			throw processException("Error while download " + urlString, e);
-		} finally {
-			((HttpURLConnection) connection).disconnect();
-			IOUtils.closeQuietly(os);
-			IOUtils.closeQuietly(in);
+	public static class IPPortPair {
+		private final String ip;
+		private final int port;
+
+		public IPPortPair(String ip, int port) {
+			this.ip = ip;
+			this.port = port;
 		}
-		return;
+
+		public boolean isSame(String ip) {
+			return this.ip.equals(ip);
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public String getIP() {
+			return ip;
+		}
+
+		@Override
+		public String toString() {
+			return this.ip + " " + this.port;
+		}
 	}
 
-	public static String getIP(String ip) {
+	public static IPPortPair convertIPAndPortPair(String ipAndPortPair, int defaultPort) {
+		if (InetAddresses.isInetAddress(ipAndPortPair)) {
+			return new IPPortPair(ipAndPortPair, defaultPort);
+		}
+		final int i = ipAndPortPair.lastIndexOf(":");
+		String ipPart = ipAndPortPair;
+		int portPart = defaultPort;
+		if (i != -1) {
+			portPart = NumberUtils.toInt(ipAndPortPair.substring(i + 1));
+			ipPart = ipAndPortPair.substring(0, i);
+		}
+		return new IPPortPair(getIP(ipPart), portPart);
+	}
+
+	public static String getIP(String ipOrHost) {
+		String ip = ipOrHost;
 		if (InetAddresses.isInetAddress(ip)) {
 			return ip;
 		}
 		try {
-			InetAddress byName = InetAddress.getByName(ip);
-			ip = byName.getHostAddress();
+			ip = InetAddress.getByName(ipOrHost).getHostAddress();
 		} catch (UnknownHostException e) {
 			ip = "127.0.0.1";
+			LOGGER.error("Error while resolving {} to IP. Use {} instead.", new Object[]{ipOrHost, ip}, e);
 		}
 		return ip;
+	}
+
+	private static List<InetAddress> getAllLocalNonLoopbackAddresses() {
+		List<InetAddress> addresses = new ArrayList<InetAddress>();
+		final Enumeration<NetworkInterface> networkInterfaces;
+		try {
+			networkInterfaces = getNetworkInterfaces();
+			while (networkInterfaces.hasMoreElements()) {
+				final NetworkInterface networkInterface = networkInterfaces.nextElement();
+				if (networkInterface.isUp()) {
+					final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+					while (inetAddresses.hasMoreElements()) {
+						final InetAddress inetAddress = inetAddresses.nextElement();
+						if (!inetAddress.isLoopbackAddress()) {
+							addresses.add(inetAddress);
+						}
+					}
+				}
+			}
+		} catch (SocketException e) {
+			LOGGER.error("Error while resolving non look back local addresses.", e);
+		}
+		return addresses;
 	}
 }

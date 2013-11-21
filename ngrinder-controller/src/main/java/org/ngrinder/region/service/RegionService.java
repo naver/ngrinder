@@ -89,7 +89,7 @@ public class RegionService {
 		Map<String, RegionInfo> regions = getRegions();
 		String localRegion = getCurrentRegion();
 		RegionInfo regionInfo = regions.get(localRegion);
-		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentIP())) {
+		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentPublicIP())) {
 			throw processException("The region name, " + localRegion
 							+ ", is already used by other controller " + regionInfo.getIp()
 							+ ". Please set the different region name in this controller.");
@@ -105,7 +105,7 @@ public class RegionService {
 	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
 			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
-			cache.put(getCurrentRegion(), new RegionInfo(config.getCurrentIP(), newHashSet));
+			cache.put(getCurrentRegion(), new RegionInfo(config.getCurrentPublicIP(), newHashSet));
 		}
 	}
 
