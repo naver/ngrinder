@@ -133,14 +133,14 @@ public class NGrinderStarter {
 		LOG.info("***************************************************");
 
 		if (StringUtils.isEmpty(System.getenv("JAVA_HOME"))) {
-			LOG.error("Hey!! JAVA_HOME env var was not provided. "
+			LOG.info("Hey!! JAVA_HOME env var was not provided. "
 					+ "Please provide JAVA_HOME env var before running agent."
 					+ "Otherwise you can not execute the agent in the security mode.");
 		}
 
 		boolean serverMode = agentConfig.isServerMode();
 		if (!serverMode) {
-			LOG.info("JVM server mode is disabled. If you turn on ngrinder.servermode in agent.conf."
+			LOG.info("JVM server mode is disabled. If you turn on agent.servermode in agent.conf."
 					+ " It will provide the better agent performance.");
 		}
 
