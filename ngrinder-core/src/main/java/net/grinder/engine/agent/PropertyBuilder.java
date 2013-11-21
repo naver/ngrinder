@@ -36,10 +36,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class which is responsible to build custom jvm arguments.
- * 
+ *
  * This class aware of security. So it produces the appropriate JVM arguments
  * which works at security env.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -56,27 +56,19 @@ public class PropertyBuilder {
 
 	/**
 	 * Constructor with null additional java opt value.
-	 * 
-	 * @param properties
-	 *            {@link GrinderProperties}
-	 * @param baseDirectory
-	 *            base directory which the script executes.
-	 * @param securityEnabled
-	 *            true if security enable mode
-	 * @param hostString
-	 *            hostString
-	 * @param hostName
-	 *            current host name
-	 * @param server
-	 *            server mode
-	 * @param useXmxLimit
-	 *            true if 1G limit should be enabled
-	 * @param additionalJavaOpt
-	 *            additional java option to be provided when invoking agent
-	 *            process
+	 *
+	 * @param properties        {@link GrinderProperties}
+	 * @param baseDirectory     base directory which the script executes.
+	 * @param securityEnabled   true if security enable mode
+	 * @param hostString        hostString
+	 * @param hostName          current host name
+	 * @param server            server mode
+	 * @param useXmxLimit       true if 1G limit should be enabled
+	 * @param additionalJavaOpt additional java option to be provided when invoking agent
+	 *                          process
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-			String hostString, String hostName, boolean server, boolean useXmxLimit, String additionalJavaOpt) {
+	                       String hostString, String hostName, boolean server, boolean useXmxLimit, String additionalJavaOpt) {
 		this.properties = checkNotNull(properties);
 		this.baseDirectory = checkNotNull(baseDirectory);
 		this.securityEnabled = securityEnabled;
@@ -89,70 +81,52 @@ public class PropertyBuilder {
 
 	/**
 	 * Constructor with null additional java opt value.
-	 * 
-	 * @param properties
-	 *            {@link GrinderProperties}
-	 * @param baseDirectory
-	 *            base directory which the script executes.
-	 * @param securityEnabled
-	 *            true if security enable mode
-	 * @param hostString
-	 *            hostString
-	 * @param hostName
-	 *            current host name
-	 * @param server
-	 *            server mode
-	 * @param useXmxLimit
-	 *            true if 1G limit should be enabled
+	 *
+	 * @param properties      {@link GrinderProperties}
+	 * @param baseDirectory   base directory which the script executes.
+	 * @param securityEnabled true if security enable mode
+	 * @param hostString      hostString
+	 * @param hostName        current host name
+	 * @param server          server mode
+	 * @param useXmxLimit     true if 1G limit should be enabled
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-			String hostString, String hostName, boolean server, boolean useXmxLimit) {
+	                       String hostString, String hostName, boolean server, boolean useXmxLimit) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, useXmxLimit, null);
 	}
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param properties
-	 *            {@link GrinderProperties}
-	 * @param baseDirectory
-	 *            base directory which the script executes.
-	 * @param securityEnabled
-	 *            true if security enable mode
-	 * @param hostString
-	 *            hostString
-	 * @param hostName
-	 *            current host name
-	 * @param server
-	 *            server mode
+	 *
+	 * @param properties      {@link GrinderProperties}
+	 * @param baseDirectory   base directory which the script executes.
+	 * @param securityEnabled true if security enable mode
+	 * @param hostString      hostString
+	 * @param hostName        current host name
+	 * @param server          server mode
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-			String hostString, String hostName, boolean server) {
+	                       String hostString, String hostName, boolean server) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, true);
 	}
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param properties
-	 *            {@link GrinderProperties}
-	 * @param baseDirectory
-	 *            base directory which the script executes.
-	 * @param securityEnabled
-	 *            true if security enable mode
-	 * @param hostString
-	 *            hostString
-	 * @param hostName
-	 *            current host name
+	 *
+	 * @param properties      {@link GrinderProperties}
+	 * @param baseDirectory   base directory which the script executes.
+	 * @param securityEnabled true if security enable mode
+	 * @param hostString      hostString
+	 * @param hostName        current host name
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-			String hostString, String hostName) {
+	                       String hostString, String hostName) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, false);
 	}
 
 	/**
 	 * Build JVM Arguments.
-	 * 
+	 *
 	 * @return generated jvm arguments
 	 */
 	public String buildJVMArgument() {
@@ -161,7 +135,7 @@ public class PropertyBuilder {
 
 	/**
 	 * Build JVM Arguments.
-	 * 
+	 *
 	 * @return generated jvm arguments
 	 */
 	public String buildJVMArgumentWithoutMemory() {
@@ -263,11 +237,9 @@ public class PropertyBuilder {
 
 	/**
 	 * Build custom class path based on the jar files on given base path.
-	 * 
-	 * @param useAbsolutePath
-	 *            true if the class path entries should be represented as
-	 *            absolute path
-	 * 
+	 *
+	 * @param useAbsolutePath true if the class path entries should be represented as
+	 *                        absolute path
 	 * @return classpath string
 	 */
 	public String buildCustomClassPath(final boolean useAbsolutePath) {
@@ -293,9 +265,8 @@ public class PropertyBuilder {
 
 	/**
 	 * Rebase class path from relative path to absolute path.
-	 * 
-	 * @param classPath
-	 *            class path
+	 *
+	 * @param classPath class path
 	 * @return converted path.
 	 */
 	public String rebaseCustomClassPath(String classPath) {
@@ -358,9 +329,8 @@ public class PropertyBuilder {
 	/**
 	 * Rebase Host String.. add the missing ip addresses if only host is
 	 * provided..
-	 * 
-	 * @param hostString
-	 *            host string
+	 *
+	 * @param hostString host string
 	 * @return completed host string.
 	 */
 	public String rebaseHostString(String hostString) {
@@ -376,7 +346,8 @@ public class PropertyBuilder {
 				newHostString.append(pair);
 			} else if (pair.contains(":")) {
 				newHostString.append(pair);
-			} else {
+			} else if (securityEnabled) {
+				// When the security mode is enabled, we should provide all IPs
 				boolean eachFirst = true;
 				for (InetAddress each : NetworkUtil.getIpsFromHost(pair)) {
 					if (!eachFirst) {
