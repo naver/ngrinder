@@ -13,7 +13,7 @@
  */
 package org.ngrinder.infra.init;
 
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -39,7 +39,7 @@ public class AgentPackageInitializer {
 	private File agentFile;
 
 	@Autowired
-	private AgentManagerService agentManagerService;
+	private AgentPackageService agentPackageService;
 
 	public File getAgentPackageFile() {
 		return agentFile;
@@ -51,6 +51,6 @@ public class AgentPackageInitializer {
 	@PostConstruct
 	@Async
 	public void init() throws IOException, URISyntaxException {
-		agentFile = agentManagerService.createAgentPackage((URLClassLoader) getClass().getClassLoader());
+		agentFile = agentPackageService.createAgentPackage((URLClassLoader) getClass().getClassLoader());
 	}
 }

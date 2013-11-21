@@ -25,24 +25,35 @@ public class AgentUpdateGrinderMessage implements Message {
 
 	private final String version;
 	private final byte[] binary;
-	private final long next;
+	private final int next;
 	private final long checksum;
 
 	/**
 	 * Constructor.
 	 */
-	public AgentUpdateGrinderMessage(String version, byte[] binary, long next, long checksum) {
+	public AgentUpdateGrinderMessage(String version, byte[] binary, int next, long checksum) {
 		this.version = version;
 		this.binary = binary;
 		this.next = next;
 		this.checksum = checksum;
 	}
 
+	/**
+	 *Get Null AgentUpdateGrinderMessage when nothing is read.
+	 *
+	 *@param version version
+	 *
+	 *@return AgentUpdateGrinderMessage null message
+	 */
+	public static AgentUpdateGrinderMessage getNullAgentUpdateGrinderMessage(String version) {
+		return new AgentUpdateGrinderMessage(version, null, -1, 0);
+	}
+
 	public String getVersion() {
 		return version;
 	}
 
-	public long getNext() {
+	public int getNext() {
 		return next;
 	}
 

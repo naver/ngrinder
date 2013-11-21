@@ -24,7 +24,7 @@ import net.grinder.communication.Message;
 public class AgentDownloadGrinderMessage implements Message {
 
 	private final String version;
-	private final long next;
+	private final int next;
 
 	/**
 	 * Constructor.
@@ -32,7 +32,7 @@ public class AgentDownloadGrinderMessage implements Message {
 	 * @param version version
 	 * @param next    next offset to start
 	 */
-	public AgentDownloadGrinderMessage(String version, long next) {
+	public AgentDownloadGrinderMessage(String version, int next) {
 		this.version = version;
 		this.next = next;
 	}
@@ -41,7 +41,7 @@ public class AgentDownloadGrinderMessage implements Message {
 		return version;
 	}
 
-	public long getNext() {
+	public int getNext() {
 		return next;
 	}
 }

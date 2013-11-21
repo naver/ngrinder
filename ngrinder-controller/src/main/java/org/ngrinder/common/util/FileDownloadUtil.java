@@ -13,20 +13,12 @@
  */
 package org.ngrinder.common.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 
 /**
  * File download utilities.
@@ -38,6 +30,7 @@ public abstract class FileDownloadUtil {
 
 	private static final int FILE_DOWNLOAD_BUFFER_SIZE = 4096;
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadUtil.class);
+	public static final int FILE_CHUNK_BUFFER_SIZE = 1024;
 
 	/**
 	 * Download the given file to the given {@link HttpServletResponse}.

@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Agent Update Message Handler.
@@ -69,14 +71,28 @@ public class AgentUpdateHandler {
 			return;
 		}
 		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
-		long offset = 0;
+		int offset = 0;
 		while (true) {
+
 			AgentUpdateGrinderMessage updateMessage = (AgentUpdateGrinderMessage) consoleCommunication.sendBlockingMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
-			// Fill this to composite the binary.
-			//
-			if (updateMessage.getNext() == 0) {
+			if (updateMessage.getNext() == -1) {
 				break;
 			}
+
+			if (updateMessage.getNext() != -1 && updateMessage.getNext() == updateMessage.getBinary().length + offset) {
+
+				OutputStream agentPackage = null;
+				try {
+					agentPackage = new FileOutputStream(download);
+					IOUtils.write(updateMessage.getBinary(), agentPackage);
+					offset += updateMessage.getBinary().length;
+				} catch (Exception e) {
+					LOGGER.error("Error while writing agent package,its offset is {} and details {}:", offset, e.getMessage());
+				} finally {
+					IOUtils.closeQuietly(agentPackage);
+				}
+			}
+
 			// Sleep to let the other messages to be sent
 			ThreadUtil.sleep(10);
 		}
