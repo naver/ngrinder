@@ -13,7 +13,6 @@
  */
 package org.ngrinder.user.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -61,7 +60,6 @@ public class UserController extends NGrinderBaseController {
 
 	@Autowired
 	private UserService userService;
-
 	@Autowired
 	private Config config;
 
@@ -69,7 +67,7 @@ public class UserController extends NGrinderBaseController {
 	 * Get user list on the given role.
 	 *
 	 * @param model    model
-	 * @param roleName role
+	 * @param role     role
 	 * @param pageable page info
 	 * @param keywords search keyword.
 	 * @return user/userList
@@ -77,8 +75,8 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"", "/"})
 	public String getUsers(ModelMap model, @RequestParam(required = false) Role role,
-	                       @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
-	                       @RequestParam(required = false) String keywords) {
+						   @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
+						   @RequestParam(required = false) String keywords) {
 
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
@@ -134,7 +132,6 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
 		User userFromDB = userService.getUserById(userId);
 		model.addAttribute("user", userFromDB);
-		model.addAttribute("userSecurity", config.isUserSecurityEnabled());
 		getUserShareList(userFromDB, model);
 		return "user/detail";
 	}
@@ -197,8 +194,6 @@ public class UserController extends NGrinderBaseController {
 		return "redirect:/user/";
 	}
 
-
-
 	/**
 	 * Get the current user profile.
 	 *
@@ -214,7 +209,6 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("demo", config.isDemo());
 		getUserShareList(currentUser, model);
 		model.addAttribute("action", "profile");
-		model.addAttribute("userSecurity", config.isUserSecurityEnabled());
 		return "user/info";
 	}
 
@@ -249,7 +243,7 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/switch")
 	public String switchUser(User user, ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
-	                         HttpServletRequest request, HttpServletResponse response) {
+							 HttpServletRequest request, HttpServletResponse response) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
@@ -303,7 +297,7 @@ public class UserController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = { "/api/", "/api"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, Role role) {
 		return toJsonHttpEntity(userService.getUsersByRole(role));
 	}
@@ -317,7 +311,7 @@ public class UserController extends NGrinderBaseController {
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = { "/api/", "/api" }, method = RequestMethod.POST)
+	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, @ModelAttribute("user") User newUser) {
 		checkNull(newUser.getId(), "User DB ID should be null");
 		return toJsonHttpEntity(saveUser(newUser));

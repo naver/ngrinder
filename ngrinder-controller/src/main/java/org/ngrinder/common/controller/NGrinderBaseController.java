@@ -13,14 +13,9 @@
  */
 package org.ngrinder.common.controller;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -38,9 +33,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Controller base containing widely used methods.
@@ -51,24 +49,16 @@ import com.google.gson.JsonObject;
 public class NGrinderBaseController implements NGrinderConstants {
 
 	public static final String ERROR_PAGE = "errors/error";
-
 	protected static final int DEFAULT_PAGE_LIMIT = 20;
-
 	private static String successJson;
-
 	private static String errorJson;
-
 	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-
 	@Autowired
 	private MessageSource messageSource;
-
 	@Autowired
 	private UserContext userContext;
-
 	@Autowired
 	private Config config;
-
 	@Autowired
 	private AnnouncementService announcementService;
 
@@ -124,6 +114,16 @@ public class NGrinderBaseController implements NGrinderConstants {
 	@ModelAttribute("announcement_new")
 	public boolean announcementNew() {
 		return announcementService.getAnnouncementIsNew();
+	}
+
+	/**
+	 * Provide the boolean value representing that whether it's user security mode or not as a model attributes.
+	 *
+	 * @return userSecurity mark
+	 */
+	@ModelAttribute("userSecurity")
+	public boolean userSecurity() {
+		return config.isUserSecurityEnabled();
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	/**
 	 * Convert the object with the given serializer into {@link HttpEntity}.
 	 *
-	 * @param content content     ]
+	 * @param content    content
 	 * @param serializer custom JSON serializer
 	 * @return json message
 	 */
