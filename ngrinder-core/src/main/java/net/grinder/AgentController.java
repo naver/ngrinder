@@ -210,7 +210,7 @@ public class AgentController implements Agent {
 							agentUpdateHandler.update(message);
 						}
 						consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
-								message.getNext(), agentConfig.getControllerIP()));
+								message.getNext()));
 
 					} catch (Exception e) {
 						IOUtils.closeQuietly(agentUpdateHandler);

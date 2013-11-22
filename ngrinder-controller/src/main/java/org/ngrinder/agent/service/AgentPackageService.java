@@ -85,7 +85,7 @@ public class AgentPackageService {
 	 * @param classLoader URLClass Loader.
 	 * @return File
 	 */
-	public File createAgentPackage(URLClassLoader classLoader, String connectionIP) {
+	public synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP) {
 		File agentPackagesDir = getAgentPackagesDir();
 		agentPackagesDir.mkdirs();
 		File agentTar = new File(agentPackagesDir, getDistributionPackageName("ngrinder-core", connectionIP, false));
