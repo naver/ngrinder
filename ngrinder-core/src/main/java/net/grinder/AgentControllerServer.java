@@ -81,7 +81,7 @@ public class AgentControllerServer {
 	 */
 	public void run() {
 		if (m_shutdown) {
-			throw processException("The console can not be run because it's already shutdowned");
+			throw processException("The console can not be run because it's already shutdown");
 		}
 		m_container.start();
 		m_container.getComponent(AgentProcessControlImplementation.class);

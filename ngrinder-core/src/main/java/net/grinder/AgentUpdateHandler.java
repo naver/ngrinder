@@ -95,7 +95,8 @@ public class AgentUpdateHandler implements Closeable {
 			decompressDownloadPackage();
 			System.exit(0);
 		} else {
-			consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
+			consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset,
+					agentConfig.getControllerIP()));
 		}
 	}
 

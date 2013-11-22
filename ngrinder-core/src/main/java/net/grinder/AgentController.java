@@ -205,7 +205,8 @@ public class AgentController implements Agent {
 						if (message.getNext() == 0) {
 							IOUtils.closeQuietly(agentUpdateHandler);
 							agentUpdateHandler = new AgentUpdateHandler(agentConfig, message, consoleCommunication);
-						} else {
+						}
+						if (agentUpdateHandler != null) {
 							agentUpdateHandler.updateAgent(message);
 						}
 					} catch (Exception e) {

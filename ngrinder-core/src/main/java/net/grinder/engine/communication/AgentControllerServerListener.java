@@ -67,14 +67,6 @@ public final class AgentControllerServerListener {
 
 
 	/**
-	 * Constant that represents a .
-	 *
-	 * @see #received
-	 */
-	public static final int LOG_REPORT = 1 << 5;
-
-
-	/**
 	 * Constant that represent any message.
 	 *
 	 * @see #received
