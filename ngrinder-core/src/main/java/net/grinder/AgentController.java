@@ -20,6 +20,7 @@ import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
 import net.grinder.engine.communication.AgentControllerServerListener;
+import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.communication.LogReportGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
@@ -29,6 +30,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtil;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
@@ -116,8 +118,8 @@ public class AgentController implements Agent {
 		try {
 			while (true) {
 				do {
-					final Connector connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
 					if (consoleCommunication == null) {
+						final Connector connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
 							consoleCommunication.start();
@@ -196,8 +198,22 @@ public class AgentController implements Agent {
 					m_connectionPort = 0;
 					m_state = AgentControllerState.UPDATING;
 					sendCurrentState(consoleCommunication);
-					agentUpdateHandler = new AgentUpdateHandler(agentConfig, consoleCommunication, m_agentControllerServerListener);
-					agentUpdateHandler.updateAgent(m_agentControllerServerListener.getLastAgentUpdateGrinderMessage());
+					final AgentUpdateGrinderMessage message = m_agentControllerServerListener.getLastAgentUpdateGrinderMessage();
+					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
+					try {
+						// If it's initial message
+						if (message.getNext() == 0) {
+							IOUtils.closeQuietly(agentUpdateHandler);
+							agentUpdateHandler = new AgentUpdateHandler(agentConfig, message, consoleCommunication);
+						} else {
+							agentUpdateHandler.updateAgent(message);
+						}
+					} catch (Exception e) {
+						IOUtils.closeQuietly(agentUpdateHandler);
+						agentUpdateHandler = null;
+						LOGGER.error("While updating agent, the exception is occurred", e);
+					}
+
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.LOG_REPORT)) {
 					startMessage = null;
 					m_state = AgentControllerState.BUSY;
@@ -360,8 +376,5 @@ public class AgentController implements Agent {
 			}
 		}
 
-		public Message sendBlockingMessage(Message message) throws CommunicationException {
-			return m_sender.blockingSend(message);
-		}
 	}
 }

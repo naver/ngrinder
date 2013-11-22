@@ -22,15 +22,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.CompressionUtil;
-import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+
+import static org.ngrinder.common.util.Preconditions.checkNotZero;
+import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
  * Agent Update Message Handler.
@@ -38,25 +37,33 @@ import java.io.OutputStream;
  * @author JunHo Yoon
  * @since 3.1
  */
-public class AgentUpdateHandler {
+public class AgentUpdateHandler implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentUpdateHandler.class);
 
 	private final AgentConfig agentConfig;
 	private AgentController.ConsoleCommunication consoleCommunication;
 	private AgentControllerServerListener messageListener;
+	private File download;
+	private int offset = 0;
+	private FileOutputStream agentOutputStream;
 
 	/**
 	 * Agent Update handler.
 	 *
 	 * @param agentConfig agentConfig
-	 * @param m_agentControllerServerListener
-	 *
 	 */
-	public AgentUpdateHandler(AgentConfig agentConfig, AgentController.ConsoleCommunication consoleCommunication, AgentControllerServerListener agentControllerServerListener) {
-		LOGGER.info("AgentUpdateHandler is initialized !");
-		this.messageListener = agentControllerServerListener;
+	public AgentUpdateHandler(AgentConfig agentConfig, AgentUpdateGrinderMessage message,
+	                          AgentController.ConsoleCommunication consoleCommunication)
+			throws FileNotFoundException {
+		checkTrue(!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version",
+				"UNKNOWN")), "Update request was sent. But the old version was sent");
+
 		this.consoleCommunication = consoleCommunication;
 		this.agentConfig = agentConfig;
+		this.offset = 0;
+		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
+		this.agentOutputStream = new FileOutputStream(download);
+		LOGGER.info("AgentUpdateHandler is initialized !");
 	}
 
 	boolean isNewer(String newVersion, String installedVersion) {
@@ -68,80 +75,43 @@ public class AgentUpdateHandler {
 		return new VersionNumber(newVersion).compareTo(new VersionNumber(installedVersion)) > 0;
 	}
 
+	public void close() {
+		IOUtils.closeQuietly(agentOutputStream);
+	}
+
 	/**
 	 * Update agent based on the current message.
 	 *
 	 * @param message message to be sent
 	 */
-	public void updateAgent(AgentUpdateGrinderMessage message) throws CommunicationException {
-		if (!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN"))) {
-			LOGGER.info("Update request was sent. But the old version was sent");
-			return;
+	public void updateAgent(AgentUpdateGrinderMessage message) throws CommunicationException, IOException {
+		checkNotZero(message.getNext(), "Consequent initial agent update grinder message was sent");
+		if (message.getNext() != -1 && message.getNext() == message.getBinary().length +
+				offset) {
+			IOUtils.write(message.getBinary(), agentOutputStream);
+			offset += message.getBinary().length;
 		}
-		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
-		int offset = 0;
-		while (true) {
-			messageListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
-			consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
-			LOGGER.info("Waiting for next message");
-			messageListener.waitForMessage();
-			if (!messageListener.received(AgentControllerServerListener.AGENT_UPDATE)) {
-				LOGGER.info("Unexpected message was sent.");
-				return;
-			}
-			final AgentUpdateGrinderMessage updateMessage = messageListener.getLastAgentUpdateGrinderMessage();
-			if (updateMessage.getNext() == 0) {
-				LOGGER.info("Consequent initial agent update grinder message was sent");
-				return;
-			}
-
-			if (updateMessage.getNext() != -1 && updateMessage.getNext() == updateMessage.getBinary().length +
-					offset) {
-
-				OutputStream agentPackage = null;
-				try {
-					agentPackage = new FileOutputStream(download);
-					IOUtils.write(updateMessage.getBinary(), agentPackage);
-					offset += updateMessage.getBinary().length;
-				} catch (Exception e) {
-					LOGGER.error("Error while writing agent package,its offset is {} and details {}:", offset, e.getMessage());
-				} finally {
-					IOUtils.closeQuietly(agentPackage);
-				}
-			}
-			if (updateMessage.getNext() != -1) {
-				// No more messages are necessary
-				break;
-			}
-			// Sleep to let the other messages to be sent
-			ThreadUtil.sleep(10);
-		}
-		try {
-			File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unzip");
-			File updateDir = new File(agentConfig.getCurrentDirectory(), "update_package");
-			decompressDownloadPackage(download, interDir, updateDir);
+		if (message.getNext() == -1) {
+			decompressDownloadPackage();
 			System.exit(0);
-		} catch (Exception e) {
-			LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
-			LOGGER.info("Details : ", e);
+		} else {
+			consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
 		}
 	}
 
-	private String createDownloadURL(String downloadUrl, String consoleIP) {
-		return "";
-	}
-
-	void decompressDownloadPackage(File from, File interDir, File toDir) {
+	void decompressDownloadPackage() {
+		File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unzip");
+		File toDir = new File(agentConfig.getCurrentDirectory(), "update_package");
 		interDir.mkdirs();
 		toDir.mkdirs();
 
-		if (FilenameUtils.isExtension(from.getName(), "gz")) {
+		if (FilenameUtils.isExtension(download.getName(), "gz")) {
 			File outFile = new File(toDir, "ngrinder-agent.tar");
-			CompressionUtil.ungzip(from, outFile);
+			CompressionUtil.ungzip(download, outFile);
 			CompressionUtil.untar(outFile, interDir);
 			FileUtils.deleteQuietly(outFile);
 		} else {
-			LOGGER.error("{} is not allowed to be unzipped.", from.getName());
+			LOGGER.error("{} is not allowed to be unzipped.", download.getName());
 		}
 
 		try {
@@ -150,7 +120,7 @@ public class AgentUpdateHandler {
 		} catch (IOException e) {
 			LOGGER.error("Error while moving a file ", e);
 		}
-		FileUtils.deleteQuietly(from);
+		FileUtils.deleteQuietly(download);
 		FileUtils.deleteQuietly(interDir);
 	}
 }
