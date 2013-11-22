@@ -56,7 +56,6 @@ public class AgentUpdateHandler implements Closeable {
 				"UNKNOWN")), "Update request was sent. But the old version was sent");
 
 		this.agentConfig = agentConfig;
-		this.offset = 0;
 		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
 		this.agentOutputStream = new FileOutputStream(download);
 		LOGGER.info("AgentUpdateHandler is initialized !");
@@ -86,6 +85,7 @@ public class AgentUpdateHandler implements Closeable {
 				offset) {
 			try {
 				IOUtils.write(message.getBinary(), agentOutputStream);
+				offset = message.getNext();
 			} catch (IOException e) {
 				throw new CommunicationException("Error while writing binary", e);
 			}

@@ -95,7 +95,7 @@
                         "bInfo": false,
                         "iDisplayLength": 10,
                         "aaSorting": [[1, "asc"]],
-                        "aoColumns": [{"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
+                        "aoColumns": [null, {"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
                         "sPaginationType": "bootstrap",
                         "oLanguage": {
                             "oPaginate": {

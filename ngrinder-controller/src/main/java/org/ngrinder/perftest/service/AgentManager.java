@@ -28,14 +28,15 @@ import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.thread.ExecutorFactory;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
-import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.init.AgentPackageInitializer;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -50,7 +51,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +78,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	private AgentManagerRepository agentManagerRepository;
 
 	@Autowired
-	private AgentPackageService agentPackageService;
+	private AgentPackageInitializer agentPackageInitializer;
 
 	/**
 	 * Initialize agent manager.
@@ -366,7 +367,6 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServerDaemon.getSystemDataModel(agentIdentity);
 	}
-
 	/**
 	 * Get the agent version.
 	 *
@@ -516,19 +516,26 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 			return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 		}
 		byte[] buffer = new byte[FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE];
+		RandomAccessFile agentPackageReader = null;
 		try {
-			RandomAccessFile agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(
-					(URLClassLoader) getClass().getClassLoader(), ""), "rw");
-			int bufferSize = agentPackageReader.read(buffer, offset, FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE);
-			if (bufferSize == -1) {
+			agentPackageReader = new RandomAccessFile(agentPackageInitializer.getAgentPackageFile(), "r");
+			agentPackageReader.seek(offset);
+			int count = agentPackageReader.read(buffer, 0, FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE);
+			byte[] bytes = buffer;
+			if (count != FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE) {
+				bytes = Arrays.copyOf(buffer, count);
+			}
+			if (count == -1) {
 				return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 			} else {
-				return new AgentUpdateGrinderMessage(version, buffer, offset, 0);
+				return new AgentUpdateGrinderMessage(version, bytes, offset + count, 0);
 			}
 
 		} catch (Exception e) {
 			LOGGER.error("Error while reading agent package,its offset is {} and details {}:", offset, e.getMessage());
 			return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
+		} finally {
+			IOUtils.closeQuietly(agentPackageReader);
 		}
 	}
 
