@@ -131,6 +131,14 @@ public class RegionService {
 	}
 
 	/**
+	 * Get region by region name
+	 * @param regionName
+	 * @return region info
+	 */
+	public RegionInfo getRegion(String regionName) {
+		return (RegionInfo)cache.get(regionName);
+	}
+	/**
 	 * Get region list of all clustered controller.
 	 * 
 	 * @return region list

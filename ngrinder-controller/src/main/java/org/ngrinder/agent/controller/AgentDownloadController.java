@@ -17,15 +17,20 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.net.URLClassLoader;
+
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Agent Download Controller.
@@ -42,6 +47,9 @@ public class AgentDownloadController extends NGrinderBaseController {
 
 	@Autowired
 	private AgentPackageService agentPackageService;
+
+	@Autowired
+	private RegionService regionService;
 
 	/**
 	 * Download agent.
@@ -61,9 +69,16 @@ public class AgentDownloadController extends NGrinderBaseController {
 	 * @param response response.
 	 */
 	@RequestMapping(value = "/download")
-	public void downloadLatestAgent(HttpServletRequest request, HttpServletResponse response) {
-		FileDownloadUtil.downloadFile(response, agentPackageService.createAgentPackage((URLClassLoader) getClass()
-				.getClassLoader(), request.getServerName()));
+	public void downloadLatestAgent(@RequestParam(value = "owner", required = false) String owner,
+	                                @RequestParam(value = "region", required = false) String region, HttpServletRequest request,
+	                                HttpServletResponse response) {
+		String connectingIP = request.getServerName();
+		if (config.isCluster()) {
+			checkNotEmpty(region, "region should be provided to download agent.");
+			connectingIP = checkNotNull(regionService.getRegion(region), "selecting region '" + region + "' is not " +
+					"available").getIp();
+		}
+		FileDownloadUtil.downloadFile(response, agentPackageService.createAgentPackage(connectingIP, region, owner));
 	}
 
 }

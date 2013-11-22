@@ -11,6 +11,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.TypeConvertUtil;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import java.util.zip.ZipFile;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CompressionUtil.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent package service.
@@ -60,15 +62,23 @@ public class AgentPackageService {
 	 *
 	 * @param moduleName   nGrinder sub  module name.
 	 * @param connectionIP where it will connect to
+	 * @param region       region
+	 * @param ownerName    owner name
 	 * @param forWindow    if true, then package type is zip,if false, package type is tar.
 	 * @return String  module full name.
 	 */
-	public String getDistributionPackageName(String moduleName, String connectionIP, boolean forWindow) {
-		connectionIP = StringUtils.trimToEmpty(connectionIP);
-		if (StringUtils.isNotEmpty(connectionIP)) {
-			connectionIP = "-" + connectionIP;
+	public String getDistributionPackageName(String moduleName, String connectionIP, String region, String ownerName,
+	                                         boolean forWindow) {
+		return getPackageName(moduleName) + getFilenameComponent(connectionIP) + getFilenameComponent(region) +
+				getFilenameComponent(ownerName) + (forWindow ? ".zip" : ".tar");
+	}
+
+	private String getFilenameComponent(String value) {
+		value = StringUtils.trimToEmpty(value);
+		if (StringUtils.isNotEmpty(value)) {
+			value = "-" + value;
 		}
-		return getPackageName(moduleName) + connectionIP + (forWindow ? ".zip" : ".tar");
+		return value;
 	}
 
 	/**
@@ -78,16 +88,27 @@ public class AgentPackageService {
 		return config.isCluster() ? config.getExHome().getSubFile("download") : config.getHome().getSubFile("download");
 	}
 
+	public synchronized File createAgentPackage() {
+		return createAgentPackage(null, null, null);
+	}
+
+	public synchronized File createAgentPackage(String connectionIP, String region,
+	                                            String owner) {
+		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), connectionIP, region, owner);
+	}
+
 	/**
 	 * Create agent package
 	 *
 	 * @param classLoader URLClass Loader.
 	 * @return File
 	 */
-	public synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP) {
+	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
+	                                     String owner) {
 		File agentPackagesDir = getAgentPackagesDir();
 		agentPackagesDir.mkdirs();
-		File agentTar = new File(agentPackagesDir, getDistributionPackageName("ngrinder-core", connectionIP, false));
+		final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
+		File agentTar = new File(agentPackagesDir, packageName);
 		if (agentTar.exists()) {
 			return agentTar;
 		}
@@ -112,7 +133,7 @@ public class AgentPackageService {
 					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 				}
 			}
-			addAgentConfToTar(tarOutputStream, basePath, connectionIP);
+			addAgentConfToTar(tarOutputStream, basePath, connectionIP, region, owner);
 		} catch (IOException e) {
 			LOGGER.error("Error while generating an agent package" + e.getMessage());
 		} finally {
@@ -126,10 +147,11 @@ public class AgentPackageService {
 		return new TarArchiveOutputStream(new BufferedOutputStream(fos));
 	}
 
-	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath,
-	                               String connectionIP) throws IOException {
-		if (StringUtils.isNotEmpty(connectionIP)) {
-			final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam(connectionIP));
+	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath, String connectingIP,
+	                               String region, String owner) throws IOException {
+		if (StringUtils.isNotEmpty(connectingIP)) {
+			final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam(connectingIP, region,
+					owner));
 			final byte[] bytes = config.getBytes();
 			addInputStreamToTar(tarOutputStream, new ByteArrayInputStream(bytes), basePath + "__agent.conf",
 					bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
@@ -146,14 +168,20 @@ public class AgentPackageService {
 		return libs;
 	}
 
-	private Map<String, Object> getAgentConfigParam(String forServer) {
+	private Map<String, Object> getAgentConfigParam(String forServer, String region, String owner) {
 		Map<String, Object> confMap = newHashMap();
 		confMap.put("controllerIP", forServer);
 		final int port = config.getSystemProperties()
 				.getPropertyInt(NGrinderConstants.NGRINDER_PROP_AGENT_CONTROL_PORT,
 						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		confMap.put("controllerPort", String.valueOf(port));
-		confMap.put("controllerRegion", config.getRegion());
+		if (StringUtils.isEmpty(region)) {
+			region = "NONE";
+		}
+		if (StringUtils.isNotBlank(owner)) {
+			region = region + "_owned_" + owner;
+		}
+		confMap.put("controllerRegion", region);
 		return confMap;
 	}
 

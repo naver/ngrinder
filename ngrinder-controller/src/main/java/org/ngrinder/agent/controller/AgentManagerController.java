@@ -68,11 +68,10 @@ public class AgentManagerController extends NGrinderBaseController {
 	/**
 	 * Get the agents.
 	 *
-	 * @param region the region to search. If null, it returns all the attached
-	 *               agents.
+	 * @param region  the region to search. If null, it returns all the attached
+	 *                agents.
 	 * @param request servlet request
-	 * @param model  model
-	 *
+	 * @param model   model
 	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
@@ -95,9 +94,12 @@ public class AgentManagerController extends NGrinderBaseController {
 		model.addAttribute("regions", regionService.getRegions().keySet());
 		File directory = config.getHome().getDownloadDirectory();
 		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		File agentPackage = agentPackageService.createAgentPackage((URLClassLoader) getClass().getClassLoader(),
-				request == null ? "" : request.getServerName());
-		model.addAttribute("downloadLink", contextPath + "/agent/download/" + agentPackage.getName());
+
+		if (!config.isCluster() || StringUtils.isNotBlank(region)) {
+			File agentPackage = agentPackageService.createAgentPackage(
+					request == null ? "" : request.getServerName(), region, null);
+			model.addAttribute("downloadLink", contextPath + "/agent/download/" + agentPackage.getName());
+		}
 		return "agent/list";
 	}
 

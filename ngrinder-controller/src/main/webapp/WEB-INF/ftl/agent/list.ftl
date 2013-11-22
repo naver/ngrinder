@@ -17,12 +17,18 @@
             <button class="btn" id="stop_agent_button">
                 <i class="icon-stop"></i> <@spring.message "common.button.stop"/>
             </button>
+
 			<div class="input-prepend pull-right">
 				<span class="add-on" style="cursor: default"><@spring.message "agent.management.agentDownload"/> </span>
 				<span class="input-xlarge uneditable-input span6" style="cursor: text">
-					<a href="${downloadLink}">${downloadLink}</a>
+					<#if downloadLink??>
+						<a href="${downloadLink}">${downloadLink}</a>
+					<#else>
+						Please select the region in advance to download agent.
+					</#if>
 				</span>
 			</div>
+
 		</div>
 
 		<table class="table table-striped table-bordered ellipsis" id="agent_table">
@@ -77,7 +83,7 @@
 					</#list> 
 				<#else>
 					<tr>
-						<td colspan="7" class="center"><@spring.message "common.message.noData"/></td>
+						<td colspan="8" class="center"><@spring.message "common.message.noData"/></td>
 					</tr>
 				</#if>
 			</tbody>

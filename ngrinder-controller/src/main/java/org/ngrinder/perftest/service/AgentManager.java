@@ -520,8 +520,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 		byte[] buffer = new byte[FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE];
 		RandomAccessFile agentPackageReader = null;
 		try {
-			agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(((URLClassLoader)
-					getClass().getClassLoader()), ""), "r");
+			agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r");
 			agentPackageReader.seek(offset);
 			int count = agentPackageReader.read(buffer, 0, FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE);
 			byte[] bytes = buffer;
