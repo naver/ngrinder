@@ -15,7 +15,6 @@ package net.grinder;
 
 import net.grinder.communication.CommunicationException;
 import net.grinder.engine.communication.AgentControllerServerListener;
-import net.grinder.engine.communication.AgentDownloadGrinderMessage;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
@@ -41,7 +40,6 @@ public class AgentUpdateHandler implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentUpdateHandler.class);
 
 	private final AgentConfig agentConfig;
-	private AgentController.ConsoleCommunication consoleCommunication;
 	private AgentControllerServerListener messageListener;
 	private File download;
 	private int offset = 0;
@@ -52,16 +50,14 @@ public class AgentUpdateHandler implements Closeable {
 	 *
 	 * @param agentConfig agentConfig
 	 */
-	public AgentUpdateHandler(AgentConfig agentConfig, AgentUpdateGrinderMessage message,
-	                          AgentController.ConsoleCommunication consoleCommunication)
+	public AgentUpdateHandler(AgentConfig agentConfig, AgentUpdateGrinderMessage message)
 			throws FileNotFoundException {
-		checkTrue(!isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version",
+		checkTrue(isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version",
 				"UNKNOWN")), "Update request was sent. But the old version was sent");
 
-		this.consoleCommunication = consoleCommunication;
 		this.agentConfig = agentConfig;
 		this.offset = 0;
-		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
+		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
 		this.agentOutputStream = new FileOutputStream(download);
 		LOGGER.info("AgentUpdateHandler is initialized !");
 	}
@@ -84,19 +80,20 @@ public class AgentUpdateHandler implements Closeable {
 	 *
 	 * @param message message to be sent
 	 */
-	public void updateAgent(AgentUpdateGrinderMessage message) throws CommunicationException, IOException {
+	public void update(AgentUpdateGrinderMessage message) throws CommunicationException {
 		checkNotZero(message.getNext(), "Consequent initial agent update grinder message was sent");
 		if (message.getNext() != -1 && message.getNext() == message.getBinary().length +
 				offset) {
-			IOUtils.write(message.getBinary(), agentOutputStream);
-			offset += message.getBinary().length;
-		}
-		if (message.getNext() == -1) {
+			try {
+				IOUtils.write(message.getBinary(), agentOutputStream);
+			} catch (IOException e) {
+				throw new CommunicationException("Error while writing binary", e);
+			}
+		} else if (message.getNext() == -1) {
 			decompressDownloadPackage();
 			System.exit(0);
 		} else {
-			consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset,
-					agentConfig.getControllerIP()));
+			throw new CommunicationException("Wrong offset received from controller !");
 		}
 	}
 
@@ -106,10 +103,9 @@ public class AgentUpdateHandler implements Closeable {
 		interDir.mkdirs();
 		toDir.mkdirs();
 
-		if (FilenameUtils.isExtension(download.getName(), "gz")) {
+		if (FilenameUtils.isExtension(download.getName(), "tar")) {
 			File outFile = new File(toDir, "ngrinder-agent.tar");
-			CompressionUtil.ungzip(download, outFile);
-			CompressionUtil.untar(outFile, interDir);
+			CompressionUtil.untar(download, interDir);
 			FileUtils.deleteQuietly(outFile);
 		} else {
 			LOGGER.error("{} is not allowed to be unzipped.", download.getName());

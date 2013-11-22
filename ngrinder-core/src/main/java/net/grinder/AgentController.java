@@ -205,12 +205,14 @@ public class AgentController implements Agent {
 						// If it's initial message
 						if (message.getNext() == 0) {
 							IOUtils.closeQuietly(agentUpdateHandler);
-							agentUpdateHandler = new AgentUpdateHandler(agentConfig, message, consoleCommunication);
+							agentUpdateHandler = new AgentUpdateHandler(agentConfig, message);
 						}
 						if (agentUpdateHandler != null) {
-							agentUpdateHandler.updateAgent(message);
+							agentUpdateHandler.update(message);
+							consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
+									message.getNext(), agentConfig.getControllerIP()));
 						}
-						consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), message.getNext()));
+
 					} catch (Exception e) {
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
