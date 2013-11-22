@@ -123,13 +123,6 @@ public interface IAgentManagerService {
 	 */
 	public abstract SystemDataModel getAgentSystemDataModel(String ip, String name);
 
-	/**
-	 * Create agent package
-	 *
-	 * @param classLoader URLClass Loader.
-	 * @return File
-	 */
-	public abstract File createAgentPackage(URLClassLoader classLoader) throws IOException, URISyntaxException;
 
 	/**
 	 * Update agent
@@ -145,4 +138,10 @@ public interface IAgentManagerService {
 	 */
 	public abstract void updateAgent(Long id) throws IOException;
 
+	/**
+	 * Get the agent package directory
+	 *
+	 * @return package stored directory
+	 */
+	public abstract File getAgentPackagesDir();
 }

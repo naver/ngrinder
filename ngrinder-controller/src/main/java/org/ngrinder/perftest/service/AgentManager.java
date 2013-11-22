@@ -528,18 +528,17 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 			if (count != FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE) {
 				bytes = Arrays.copyOf(buffer, count);
 			}
-			if (count == -1) {
-				return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
-			} else {
+			if (count != -1) {
 				return new AgentUpdateGrinderMessage(version, bytes, offset + count, 0);
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error while reading agent package,its offset is {} and details {}:", offset, e.getMessage());
-			return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
+			LOGGER.error("Error while reading agent package, its offset is {} and details {}:", offset,
+					e.getMessage());
 		} finally {
 			IOUtils.closeQuietly(agentPackageReader);
 		}
+		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 	}
 
 

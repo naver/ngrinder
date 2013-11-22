@@ -39,7 +39,7 @@ import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent service test.
- * 
+ *
  * @author Tobi
  * @since 3.0
  */
@@ -47,6 +47,9 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private AgentManagerService agentManagerService;
+
+	@Autowired
+	private AgentPackageService agentPackageService;
 
 	@Autowired
 	private AgentManagerRepository agentRepository;
@@ -119,18 +122,18 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
 	}
 
-    @Test
-    public void testCompressAgentFolder() throws IOException, URISyntaxException {
-        URLClassLoader loader = (URLClassLoader)this.getClass().getClassLoader();
-        URL core = this.getClass().getClassLoader().getResource("lib/ngrinder-core-test.jar");
-        URL sh = this.getClass().getClassLoader().getResource("lib/ngrinder-sh-test.jar");
-        URL[] ls = {core,sh};
-        URL[] urls = loader.getURLs();
-        URL[] allLib = cast(ArrayUtils.addAll(urls, ls));
-        URLClassLoader child = new URLClassLoader (allLib, this.getClass().getClassLoader());
-        File agentUpgrade = agentManagerService.createAgentPackage(child);
-        FileUtils.deleteQuietly(agentUpgrade);
-    }
+	@Test
+	public void testCompressAgentFolder() throws IOException, URISyntaxException {
+		URLClassLoader loader = (URLClassLoader) this.getClass().getClassLoader();
+		URL core = this.getClass().getClassLoader().getResource("lib/ngrinder-core-test.jar");
+		URL sh = this.getClass().getClassLoader().getResource("lib/ngrinder-sh-test.jar");
+		URL[] ls = {core, sh};
+		URL[] urls = loader.getURLs();
+		URL[] allLib = cast(ArrayUtils.addAll(urls, ls));
+		URLClassLoader child = new URLClassLoader(allLib, this.getClass().getClassLoader());
+		File agentUpgrade = agentPackageService.createAgentPackage(child, "");
+		FileUtils.deleteQuietly(agentUpgrade);
+	}
 
 	@Test
 	public void testOther() {

@@ -39,7 +39,7 @@ public class AgentUpdateGrinderMessage implements Message {
 	}
 
 	/**
-	 *Get Null AgentUpdateGrinderMessage when nothing is read.
+	 *Get Null AgentUpdateGrinderMessage when nothing can be read.
 	 *
 	 *@param version version
 	 *
