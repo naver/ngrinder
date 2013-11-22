@@ -34,12 +34,13 @@
 		<table class="table table-striped table-bordered ellipsis" id="agent_table">
 			<colgroup>
 				<col width="30">
-				<col width="150">
+				<col width="130">
 				<col width="60">
 				<col width="*">
-				<col width="200">
 				<col width="100">
-				<col width="165">
+				<col width="150">
+				<col width="80">
+				<col width="160">
 			</colgroup>
 			<thead>
 				<tr>
@@ -47,6 +48,7 @@
 					<th><@spring.message "agent.table.IPAndDns"/></th>
 					<th class="no-click"><@spring.message "agent.table.port"/></th>
 					<th class="ellipsis"><@spring.message "agent.table.name"/></th>
+					<th><@spring.message "agent.table.version"/></th>
 					<th><@spring.message "agent.table.region"/></th>
 					<th><@spring.message "agent.table.state"/></th>
 					<th class="no-click"><@spring.message "agent.table.approve"/></th>
@@ -60,6 +62,7 @@
 							<td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self">${agent.ip}</a></td>
 							<td>${(agent.port)!}</td>
 							<td class="ellipsis" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
+							<td class="ellipsis">${(agent.version)!"Prev 3.3"}</td>
 							<td>${(agent.region)!}</td>
 							<td>${(agent.state)!}</td>
 							<td>

@@ -79,6 +79,16 @@ public interface AgentProcessControl {
 	public Set<AgentIdentity> getAllAgents();
 
 	/**
+	 * Get agent version for given {@link AgentIdentity}.
+	 *
+	 * @param agentIdentity
+	 *            agent identity
+	 * @return agent version
+	 */
+	String getAgentVersion(AgentIdentity agentIdentity);
+
+
+	/**
 	 * Get {@link JavaDataModel} for given {@link AgentIdentity}.
 	 * 
 	 * @param agentIdentity

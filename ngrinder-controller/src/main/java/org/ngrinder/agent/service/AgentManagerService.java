@@ -139,6 +139,7 @@ public class AgentManagerService implements IAgentManagerService {
 				interestingAgentInfo.setState(getAgentManager().getAgentState(agentIdentity));
 				interestingAgentInfo.setRegion(agentIdentity.getRegion());
 				interestingAgentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
+				interestingAgentInfo.setVersion(getAgentManager().getAgentVersion(agentIdentity));
 			}
 			changeAgents.add(interestingAgentInfo);
 		}
@@ -324,6 +325,7 @@ public class AgentManagerService implements IAgentManagerService {
 			AgentManager agentManager = getAgentManager();
 			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 			agentInfo.setState(agentManager.getAgentState(agentIdentity));
+			agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 		}
 		return agentInfo;
 	}

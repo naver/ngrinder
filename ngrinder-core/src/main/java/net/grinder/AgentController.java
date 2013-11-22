@@ -216,11 +216,6 @@ public class AgentController implements Agent {
 						LOGGER.error("While updating agent, the exception is occurred", e);
 					}
 
-				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.LOG_REPORT)) {
-					startMessage = null;
-					m_state = AgentControllerState.BUSY;
-					sendCurrentState(consoleCommunication);
-					// Do update
 				} else {
 					// ConsoleListener.RESET or natural death.
 					startMessage = null;
@@ -329,7 +324,7 @@ public class AgentController implements Agent {
 			m_sender = ClientSender.connect(receiver);
 
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getSystemDataModel(),
-					m_connectionPort));
+					m_connectionPort, version));
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
 
@@ -357,7 +352,7 @@ public class AgentController implements Agent {
 		}
 
 		public void sendCurrentState() throws CommunicationException {
-			sendMessage(new AgentControllerProcessReportMessage(m_state, getSystemDataModel(), m_connectionPort));
+			sendMessage(new AgentControllerProcessReportMessage(m_state, getSystemDataModel(), m_connectionPort, version));
 		}
 
 		public void start() {
@@ -368,7 +363,7 @@ public class AgentController implements Agent {
 		public void shutdown() {
 			m_reportRunningTask.cancel();
 			try {
-				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, 0));
+				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, 0, version));
 			} catch (CommunicationException e) {
 				// Fall through
 				// Ignore - peer has probably shut down.
