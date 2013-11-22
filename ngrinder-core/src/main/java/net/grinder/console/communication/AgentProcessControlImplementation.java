@@ -299,6 +299,10 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			m_agentReference = new AgentReference(message);
 		}
 
+		public String getVersion() {
+			return m_agentReference == null ? null : m_agentReference.m_agentProcessReportMessage.getVersion();
+		}
+
 		public SystemDataModel getSystemDataModel() {
 			return m_agentReference == null ? null : m_agentReference.m_agentProcessReportMessage.getSystemDataModel();
 		}
@@ -419,7 +423,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		 * @param address {@link AgentAddress} in which the agent process is not known.
 		 */
 		public UnknownAgentProcessReport(AgentAddress address) {
-			super(AgentControllerState.UNKNOWN, null, 0);
+			super(AgentControllerState.UNKNOWN, null, 0, null);
 			try {
 				setAddress(address);
 			} catch (CommunicationException e) {
@@ -435,6 +439,11 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	@Override
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getAgentControllerState();
+	}
+
+	@Override
+	public String getAgentVersion(AgentIdentity agentIdentity) {
+		return getAgentStatus(agentIdentity).getVersion();
 	}
 
 	@Override

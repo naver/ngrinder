@@ -18,7 +18,6 @@ import net.grinder.communication.Address;
 import net.grinder.communication.AddressAwareMessage;
 import net.grinder.communication.CommunicationException;
 import net.grinder.messages.console.AgentAddress;
-
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
@@ -39,6 +38,8 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	private int connectingPort = 0;
 
+	private String version;
+
 	/**
 	 * Creates a new <code>AgentProcessReportMessage</code> instance.
 	 * 
@@ -48,10 +49,11 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 	 * @param connectingPort agent connecting console port 
 	 */
 	public AgentControllerProcessReportMessage(AgentControllerState state,
-					SystemDataModel systemDataModel, int connectingPort) {
-		m_state = state;
+					SystemDataModel systemDataModel, int connectingPort, String version) {
+		this.m_state = state;
 		this.systemDataModel = systemDataModel;
 		this.connectingPort = connectingPort;
+		this.version = version;
 	}
 
 	/**
@@ -102,4 +104,7 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 		return connectingPort;
 	}
 
+	public String getVersion() {
+		return version;
+	}
 }

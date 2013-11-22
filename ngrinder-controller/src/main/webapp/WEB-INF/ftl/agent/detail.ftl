@@ -48,6 +48,12 @@
 	                    <tr>
 					    	<td>${(agent.region)!}</td>
 					    </tr>
+						<tr>
+							<th><@spring.message "agent.table.version"/></th>
+						</tr>
+						<tr>
+							<td>${(agent.version)!"Prev 3.3"}</td>
+						</tr>
 					    </tr>
 					    <tr>
 					    	<th><@spring.message "agent.table.state"/></th>

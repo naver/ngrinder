@@ -84,9 +84,13 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@Column(columnDefinition = "char(1) default 'F'")
 	private Boolean approved;
 
+	@Expose
+	private String version;
+
 	@PrePersist
 	public void init() {
 		this.approved = getSafe(this.approved, false);
+		this.version = getSafe(this.version, "");
 	}
 
 	public String getIp() {
@@ -226,5 +230,13 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	public void setSystemStat(String systemStat) {
 		this.systemStat = systemStat;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getVersion() {
+		return this.version;
 	}
 }

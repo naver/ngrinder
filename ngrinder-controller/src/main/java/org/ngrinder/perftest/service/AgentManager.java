@@ -365,6 +365,15 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServerDaemon.getSystemDataModel(agentIdentity);
 	}
+	/**
+	 * Get the agent version.
+	 *
+	 * @param agentIdentity {@link AgentIdentity}
+	 * @return version.
+	 */
+	public String getAgentVersion(AgentControllerIdentityImplementation agentIdentity) {
+		return agentControllerServerDaemon.getAgentVersion(agentIdentity);
+	}
 
 	/**
 	 * Assign the agents on the given console.
@@ -519,4 +528,6 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 			return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 		}
 	}
+
+
 }

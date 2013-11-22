@@ -178,6 +178,16 @@ public class AgentControllerServerDaemon {
 	}
 
 	/**
+	 * Get the agent version of the given agent.
+	 *
+	 * @param agentIdentity agent identity
+	 * @return version
+	 */
+	public String getAgentVersion(AgentIdentity agentIdentity) {
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentVersion(agentIdentity);
+	}
+
+	/**
 	 * Get agent status set matching the given predicate.
 	 *
 	 * @param predicate predicate
