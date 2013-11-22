@@ -25,6 +25,7 @@ import net.grinder.communication.CommunicationException;
  */
 public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 
+	public static int MAX_RETTRY_COUNT = 3;
 	private Address address;
 	private final String version;
 	private final int next;

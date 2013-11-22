@@ -46,7 +46,7 @@ public class AgentUpdateGrinderMessage implements Message {
 	 *@return AgentUpdateGrinderMessage null message
 	 */
 	public static AgentUpdateGrinderMessage getNullAgentUpdateGrinderMessage(String version) {
-		return new AgentUpdateGrinderMessage(version, null, -1, 0);
+		return new AgentUpdateGrinderMessage(version, new byte[0], -1, 0);
 	}
 
 	public String getVersion() {

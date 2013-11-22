@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-import static org.ngrinder.common.util.Preconditions.checkNotZero;
 import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
@@ -80,9 +79,7 @@ public class AgentUpdateHandler implements Closeable {
 	 * @param message message to be sent
 	 */
 	public void update(AgentUpdateGrinderMessage message) throws CommunicationException {
-		checkNotZero(message.getNext(), "Consequent initial agent update grinder message was sent");
-		if (message.getNext() != -1 && message.getNext() == message.getBinary().length +
-				offset) {
+		if (message.getNext() != -1) {
 			try {
 				IOUtils.write(message.getBinary(), agentOutputStream);
 				offset = message.getNext();

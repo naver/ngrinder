@@ -33,6 +33,7 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -77,6 +78,8 @@ public class AgentController implements Agent {
 	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
 
 	private AgentUpdateHandler agentUpdateHandler;
+
+	private int retryCount = 0;
 
 	private String version;
 
@@ -203,16 +206,29 @@ public class AgentController implements Agent {
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
 					try {
 						// If it's initial message
-						if (message.getNext() == 0) {
+						if (message.getNext() == 0 && message.getBinary().length == 0) {
 							IOUtils.closeQuietly(agentUpdateHandler);
 							agentUpdateHandler = new AgentUpdateHandler(agentConfig, message);
 						} else if (agentUpdateHandler != null) {
-							agentUpdateHandler.update(message);
+
+							if (message.getChecksum() == CRC32ChecksumUtils.getCRC32Checksum(message.getBinary())) {
+								retryCount = 0;
+								agentUpdateHandler.update(message);
+							} else if (retryCount <= AgentDownloadGrinderMessage.MAX_RETTRY_COUNT) {
+								retryCount++;
+								consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
+										message.getNext()));
+							} else {
+								throw new CommunicationException("Error while getting agent package binary from controller");
+							}
+
 						}
+
 						consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
-								message.getNext()));
+								message.getNext() + message.getBinary().length));
 
 					} catch (Exception e) {
+						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
 						LOGGER.error("While updating agent, the exception is occurred", e);

@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
@@ -51,7 +52,6 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -528,7 +528,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 				bytes = Arrays.copyOf(buffer, count);
 			}
 			if (count != -1) {
-				return new AgentUpdateGrinderMessage(version, bytes, offset + count, 0);
+				return new AgentUpdateGrinderMessage(version, bytes, offset, CRC32ChecksumUtils.getCRC32Checksum(bytes));
 			}
 
 		} catch (Exception e) {
