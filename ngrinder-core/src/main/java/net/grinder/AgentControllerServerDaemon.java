@@ -271,6 +271,6 @@ public class AgentControllerServerDaemon {
 	 */
 	public void updateAgent(AgentIdentity agentIdentity, String version) {
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-				new AgentUpdateGrinderMessage(version, null, 0, 0));
+				new AgentUpdateGrinderMessage(version, new byte[0], 0, 0));
 	}
 }

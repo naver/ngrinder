@@ -20,6 +20,7 @@ import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
 import net.grinder.engine.communication.AgentControllerServerListener;
+import net.grinder.engine.communication.AgentDownloadGrinderMessage;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.communication.LogReportGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -208,6 +209,7 @@ public class AgentController implements Agent {
 						} else {
 							agentUpdateHandler.updateAgent(message);
 						}
+						consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), message.getNext()));
 					} catch (Exception e) {
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
