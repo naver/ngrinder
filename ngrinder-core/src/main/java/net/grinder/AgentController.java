@@ -87,7 +87,6 @@ public class AgentController implements Agent {
 	 */
 	public AgentController(Condition eventSyncCondition, AgentConfig agentConfig) throws GrinderException {
 		this.m_eventSyncCondition = eventSyncCondition;
-
 		this.agentConfig = agentConfig;
 		this.version = agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
@@ -210,7 +209,7 @@ public class AgentController implements Agent {
 						if (agentUpdateHandler != null) {
 							agentUpdateHandler.update(message);
 							consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
-									message.getNext(), agentConfig.getControllerIP()));
+									message.getNext()));
 						}
 
 					} catch (Exception e) {
@@ -325,7 +324,6 @@ public class AgentController implements Agent {
 		public ConsoleCommunication(Connector connector) throws CommunicationException {
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
-
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getSystemDataModel(),
 					m_connectionPort, version));
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();

@@ -19,14 +19,8 @@
             </button>
 			<div class="input-prepend pull-right">
 				<span class="add-on" style="cursor: default"><@spring.message "agent.management.agentDownload"/> </span>
-				<span class="input-xlarge uneditable-input span6" style="cursor: text"> 
-					<#if downloadLinks?has_content> 
-						<#list downloadLinks as each>
-							<div>
-								<a href="${each}">${each}</a>
-							</div> 
-						</#list>
-					</#if>
+				<span class="input-xlarge uneditable-input span6" style="cursor: text">
+					<a href="${downloadLink}">${downloadLink}</a>
 				</span>
 			</div>
 		</div>

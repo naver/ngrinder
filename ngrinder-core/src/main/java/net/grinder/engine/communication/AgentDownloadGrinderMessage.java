@@ -28,7 +28,6 @@ public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 	private Address address;
 	private final String version;
 	private final int next;
-	private String connectingIP;
 
 	/**
 	 * Constructor.
@@ -36,10 +35,9 @@ public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 	 * @param version version
 	 * @param next    next offset to start
 	 */
-	public AgentDownloadGrinderMessage(String version, int next, String connectingIP) {
+	public AgentDownloadGrinderMessage(String version, int next) {
 		this.version = version;
 		this.next = next;
-		this.connectingIP = connectingIP;
 	}
 
 	public String getVersion() {
@@ -57,13 +55,5 @@ public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 
 	public Address getAddress() {
 		return address;
-	}
-
-	public String getConnectingIP() {
-		return connectingIP;
-	}
-
-	public void setConnectingIP(String connectingIP) {
-		this.connectingIP = connectingIP;
 	}
 }

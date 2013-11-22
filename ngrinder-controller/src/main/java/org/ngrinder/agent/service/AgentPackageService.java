@@ -59,12 +59,17 @@ public class AgentPackageService {
 	/**
 	 * Get distributable package name with appropriate extension.
 	 *
-	 * @param moduleName nGrinder sub  module name.
-	 * @param forWindow  if true, then package type is zip,if false, package type is tar.
+	 * @param moduleName   nGrinder sub  module name.
+	 * @param connectionIP where it will connect to
+	 * @param forWindow    if true, then package type is zip,if false, package type is tar.
 	 * @return String  module full name.
 	 */
-	public String getDistributionPackageName(String moduleName, boolean forWindow) {
-		return getPackageName(moduleName) + (forWindow ? ".zip" : ".tar");
+	public String getDistributionPackageName(String moduleName, String connectionIP, boolean forWindow) {
+		connectionIP = StringUtils.trimToEmpty(connectionIP);
+		if (StringUtils.isNotEmpty(connectionIP)) {
+			connectionIP = "-" + connectionIP;
+		}
+		return getPackageName(moduleName) + connectionIP + (forWindow ? ".zip" : ".tar");
 	}
 
 	/**
@@ -80,11 +85,11 @@ public class AgentPackageService {
 	 * @param classLoader URLClass Loader.
 	 * @return File
 	 */
-	public File createAgentPackage(URLClassLoader classLoader) throws IOException, URISyntaxException {
+	public File createAgentPackage(URLClassLoader classLoader, String connectionIP) {
 		File agentPackagesDir = getAgentPackagesDir();
 		agentPackagesDir.mkdirs();
-		File agentTar = new File(agentPackagesDir, getDistributionPackageName("ngrinder-core", false));
-		if (!config.isTestMode() && agentTar.exists()) {
+		File agentTar = new File(agentPackagesDir, getDistributionPackageName("ngrinder-core", connectionIP, false));
+		if (agentTar.exists()) {
 			return agentTar;
 		}
 		FileUtils.deleteQuietly(agentTar);
@@ -108,7 +113,7 @@ public class AgentPackageService {
 					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 				}
 			}
-			addAgentConfToTar(tarOutputStream, basePath);
+			addAgentConfToTar(tarOutputStream, basePath, connectionIP);
 		} catch (IOException e) {
 			LOGGER.error("Error while generating an agent package" + e.getMessage());
 		} finally {
@@ -118,16 +123,18 @@ public class AgentPackageService {
 	}
 
 	private TarArchiveOutputStream createTarArchiveStream(File agentTar) throws IOException {
-
 		FileOutputStream fos = new FileOutputStream(agentTar);
 		return new TarArchiveOutputStream(new BufferedOutputStream(fos));
 	}
 
-	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath) throws IOException {
-		final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam());
-		final byte[] bytes = config.getBytes();
-		addInputStreamToTar(tarOutputStream, new ByteArrayInputStream(bytes), basePath + "__agent.conf",
-				bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
+	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath,
+	                               String connectionIP) throws IOException {
+		if (StringUtils.isNotEmpty(connectionIP)) {
+			final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam(connectionIP));
+			final byte[] bytes = config.getBytes();
+			addInputStreamToTar(tarOutputStream, new ByteArrayInputStream(bytes), basePath + "__agent.conf",
+					bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
+		}
 	}
 
 	private Set<String> getDependentLibs(URLClassLoader cl) throws IOException {
@@ -140,9 +147,9 @@ public class AgentPackageService {
 		return libs;
 	}
 
-	private Map<String, Object> getAgentConfigParam() {
+	private Map<String, Object> getAgentConfigParam(String forServer) {
 		Map<String, Object> confMap = newHashMap();
-		confMap.put("controllerIP", config.getCurrentIP());
+		confMap.put("controllerIP", forServer);
 		final int port = config.getSystemProperties()
 				.getPropertyInt(NGrinderConstants.NGRINDER_PROP_AGENT_CONTROL_PORT,
 						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);

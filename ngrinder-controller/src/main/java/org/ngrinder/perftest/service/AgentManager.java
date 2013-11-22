@@ -31,11 +31,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.init.AgentPackageInitializer;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -50,6 +50,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	private AgentManagerRepository agentManagerRepository;
 
 	@Autowired
-	private AgentPackageInitializer agentPackageInitializer;
+	private AgentPackageService agentPackageService;
 
 	/**
 	 * Initialize agent manager.
@@ -365,6 +366,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServerDaemon.getSystemDataModel(agentIdentity);
 	}
+
 	/**
 	 * Get the agent version.
 	 *
@@ -515,12 +517,13 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 		}
 		byte[] buffer = new byte[FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE];
 		try {
-			RandomAccessFile agentPackageReader = new RandomAccessFile(agentPackageInitializer.getAgentPackageFile(), "rw");
+			RandomAccessFile agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(
+					(URLClassLoader) getClass().getClassLoader(), ""), "rw");
 			int bufferSize = agentPackageReader.read(buffer, offset, FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE);
 			if (bufferSize == -1) {
 				return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 			} else {
-				return new AgentUpdateGrinderMessage(version, buffer, offset + bufferSize, 0);
+				return new AgentUpdateGrinderMessage(version, buffer, offset, 0);
 			}
 
 		} catch (Exception e) {

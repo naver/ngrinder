@@ -17,6 +17,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
@@ -33,9 +34,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
+import java.net.URLClassLoader;
 import java.util.List;
 
 /**
@@ -61,18 +62,23 @@ public class AgentManagerController extends NGrinderBaseController {
 	@Autowired
 	private RegionService regionService;
 
+	@Autowired
+	private AgentPackageService agentPackageService;
+
 	/**
 	 * Get the agents.
 	 *
 	 * @param region the region to search. If null, it returns all the attached
 	 *               agents.
+	 * @param request servlet request
 	 * @param model  model
+	 *
 	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
-	public String getAgents(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
+	public String getAgents(@RequestParam(value = "region", required = false) final String region,
+	                        HttpServletRequest request, ModelMap model) {
 		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
-
 		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
 			@Override
 			public boolean apply(AgentInfo agentInfo) {
@@ -89,17 +95,9 @@ public class AgentManagerController extends NGrinderBaseController {
 		model.addAttribute("regions", regionService.getRegions().keySet());
 		File directory = config.getHome().getDownloadDirectory();
 		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		final List<String> downloads = new ArrayList<String>();
-		directory.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				if (name.startsWith("ngrinder")) {
-					downloads.add(contextPath + "/agent/download/" + name);
-				}
-				return true;
-			}
-		});
-		model.addAttribute("downloadLinks", downloads);
+		File agentPackage = agentPackageService.createAgentPackage((URLClassLoader) getClass().getClassLoader(),
+				request == null ? "" : request.getServerName());
+		model.addAttribute("downloadLink", contextPath + "/agent/download/" + agentPackage.getName());
 		return "agent/list";
 	}
 
