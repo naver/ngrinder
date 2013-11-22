@@ -30,7 +30,7 @@ public abstract class FileDownloadUtil {
 
 	private static final int FILE_DOWNLOAD_BUFFER_SIZE = 4096;
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadUtil.class);
-	public static final int FILE_CHUNK_BUFFER_SIZE = 1024;
+	public static final int FILE_CHUNK_BUFFER_SIZE = 1024*1024;
 
 	/**
 	 * Download the given file to the given {@link HttpServletResponse}.

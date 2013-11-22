@@ -520,7 +520,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 			if (bufferSize == -1) {
 				return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 			} else {
-				return new AgentUpdateGrinderMessage(version, buffer, offset, 0);
+				return new AgentUpdateGrinderMessage(version, buffer, offset + bufferSize, 0);
 			}
 
 		} catch (Exception e) {
