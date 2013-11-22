@@ -13,16 +13,19 @@
  */
 package net.grinder.engine.communication;
 
-import net.grinder.communication.Message;
+import net.grinder.communication.Address;
+import net.grinder.communication.AddressAwareMessage;
+import net.grinder.communication.CommunicationException;
 
 /**
- * Message for agent dwonload from agent to controller.
+ * Message for agent download from agent to controller.
  *
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentDownloadGrinderMessage implements Message {
+public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 
+	private Address address;
 	private final String version;
 	private final int next;
 
@@ -43,5 +46,14 @@ public class AgentDownloadGrinderMessage implements Message {
 
 	public int getNext() {
 		return next;
+	}
+
+	@Override
+	public void setAddress(Address address) throws CommunicationException {
+		this.address = address;
+	}
+
+	public Address getAddress() {
+		return address;
 	}
 }

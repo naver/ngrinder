@@ -14,6 +14,7 @@
 package net.grinder;
 
 import net.grinder.communication.CommunicationException;
+import net.grinder.engine.communication.AgentControllerServerListener;
 import net.grinder.engine.communication.AgentDownloadGrinderMessage;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.util.VersionNumber;
@@ -42,19 +43,26 @@ public class AgentUpdateHandler {
 
 	private final AgentConfig agentConfig;
 	private AgentController.ConsoleCommunication consoleCommunication;
+	private AgentControllerServerListener messageListener;
 
 	/**
 	 * Agent Update handler.
 	 *
 	 * @param agentConfig agentConfig
+	 * @param m_agentControllerServerListener
+	 *
 	 */
-	public AgentUpdateHandler(AgentConfig agentConfig, AgentController.ConsoleCommunication consoleCommunication) {
-		LOGGER.info("AgentUpdateHandler is initialing !");
+	public AgentUpdateHandler(AgentConfig agentConfig, AgentController.ConsoleCommunication consoleCommunication, AgentControllerServerListener agentControllerServerListener) {
+		LOGGER.info("AgentUpdateHandler is initialized !");
+		this.messageListener = agentControllerServerListener;
 		this.consoleCommunication = consoleCommunication;
 		this.agentConfig = agentConfig;
 	}
 
 	boolean isNewer(String newVersion, String installedVersion) {
+		if (newVersion.contains("-SNAPSHOT")) {
+			return true;
+		}
 		installedVersion = installedVersion.replaceAll("\\(.*\\)", "").trim();
 		newVersion = newVersion.replaceAll("\\(.*\\)", "").trim();
 		return new VersionNumber(newVersion).compareTo(new VersionNumber(installedVersion)) > 0;
@@ -73,13 +81,22 @@ public class AgentUpdateHandler {
 		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
 		int offset = 0;
 		while (true) {
-
-			AgentUpdateGrinderMessage updateMessage = (AgentUpdateGrinderMessage) consoleCommunication.sendBlockingMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
-			if (updateMessage.getNext() == -1) {
-				break;
+			messageListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
+			consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(), offset));
+			LOGGER.info("Waiting for next message");
+			messageListener.waitForMessage();
+			if (!messageListener.received(AgentControllerServerListener.AGENT_UPDATE)) {
+				LOGGER.info("Unexpected message was sent.");
+				return;
+			}
+			final AgentUpdateGrinderMessage updateMessage = messageListener.getLastAgentUpdateGrinderMessage();
+			if (updateMessage.getNext() == 0) {
+				LOGGER.info("Consequent initial agent update grinder message was sent");
+				return;
 			}
 
-			if (updateMessage.getNext() != -1 && updateMessage.getNext() == updateMessage.getBinary().length + offset) {
+			if (updateMessage.getNext() != -1 && updateMessage.getNext() == updateMessage.getBinary().length +
+					offset) {
 
 				OutputStream agentPackage = null;
 				try {
@@ -92,7 +109,10 @@ public class AgentUpdateHandler {
 					IOUtils.closeQuietly(agentPackage);
 				}
 			}
-
+			if (updateMessage.getNext() != -1) {
+				// No more messages are necessary
+				break;
+			}
 			// Sleep to let the other messages to be sent
 			ThreadUtil.sleep(10);
 		}

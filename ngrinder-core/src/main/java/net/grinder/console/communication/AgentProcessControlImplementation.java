@@ -17,10 +17,10 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.communication.CommunicationException;
-import net.grinder.communication.Message;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
 import net.grinder.engine.communication.AgentDownloadGrinderMessage;
+import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.communication.LogReportGrinderMessage;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -110,10 +110,10 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			}
 		});
 
-		messageDispatchRegistry.set(AgentDownloadGrinderMessage.class, new MessageDispatchRegistry.AbstractBlockingHandler<AgentDownloadGrinderMessage>() {
-			@Override
-			public Message blockingSend(final AgentDownloadGrinderMessage message) throws CommunicationException {
-				return m_agentDownloadListener.onAgentDownloadRequested(message.getVersion(), message.getNext());
+		messageDispatchRegistry.set(AgentDownloadGrinderMessage.class, new AbstractHandler<AgentDownloadGrinderMessage>() {
+			public void handle(final AgentDownloadGrinderMessage message) {
+				final AgentUpdateGrinderMessage agentUpdateGrinderMessage = m_agentDownloadListener.onAgentDownloadRequested(message.getVersion(), message.getNext());
+				m_consoleCommunication.sendToAddressedAgents(message.getAddress(), agentUpdateGrinderMessage);
 			}
 		});
 	}

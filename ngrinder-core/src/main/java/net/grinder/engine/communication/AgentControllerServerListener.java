@@ -64,12 +64,15 @@ public final class AgentControllerServerListener {
 	 */
 	public static final int AGENT_UPDATE = 1 << 4;
 
+
+
 	/**
 	 * Constant that represents a .
 	 *
 	 * @see #received
 	 */
 	public static final int LOG_REPORT = 1 << 5;
+
 
 	/**
 	 * Constant that represent any message.
@@ -201,7 +204,7 @@ public final class AgentControllerServerListener {
 
 		messageDispatcher.set(AgentUpdateGrinderMessage.class, new AbstractMessageHandler<AgentUpdateGrinderMessage>() {
 			public void handle(AgentUpdateGrinderMessage message) {
-				m_logger.info("received a update agent message");
+				m_logger.info("received a agent update message {}", message.getNext());
 				m_lastAgentUpdateGrinderMessage = message;
 				setReceived(AGENT_UPDATE);
 			}
@@ -217,6 +220,8 @@ public final class AgentControllerServerListener {
 		return m_lastStartGrinderMessage;
 	}
 
+
+
 	private abstract class AbstractMessageHandler<T extends Message> implements Handler<T> {
 
 		public void shutdown() {
@@ -227,7 +232,7 @@ public final class AgentControllerServerListener {
 			}
 
 			if (shutdown) {
-				m_logger.info("agent controller communication is shutdowned");
+				m_logger.info("agent controller communication is shutdown");
 				setReceived(SHUTDOWN);
 			}
 		}
@@ -236,4 +241,5 @@ public final class AgentControllerServerListener {
 	public AgentUpdateGrinderMessage getLastAgentUpdateGrinderMessage() {
 		return m_lastAgentUpdateGrinderMessage;
 	}
+
 }

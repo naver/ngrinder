@@ -527,7 +527,6 @@ public class AgentManagerService implements IAgentManagerService {
 	}
 
 	private TarArchiveOutputStream createGzippedTarArchiveStream(File agentTar) throws IOException {
-
 		FileOutputStream fos = new FileOutputStream(agentTar);
 		return new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
 	}

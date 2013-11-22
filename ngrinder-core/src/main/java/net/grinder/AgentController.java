@@ -196,7 +196,7 @@ public class AgentController implements Agent {
 					m_connectionPort = 0;
 					m_state = AgentControllerState.UPDATING;
 					sendCurrentState(consoleCommunication);
-					agentUpdateHandler = new AgentUpdateHandler(agentConfig, consoleCommunication);
+					agentUpdateHandler = new AgentUpdateHandler(agentConfig, consoleCommunication, m_agentControllerServerListener);
 					agentUpdateHandler.updateAgent(m_agentControllerServerListener.getLastAgentUpdateGrinderMessage());
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.LOG_REPORT)) {
 					startMessage = null;
