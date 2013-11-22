@@ -25,7 +25,6 @@ import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -61,11 +60,11 @@ public class AgentPackageService {
 	 * Get distributable package name with appropriate extension.
 	 *
 	 * @param moduleName nGrinder sub  module name.
-	 * @param forWindow  if true, then package type is zip,if false, package type is tar.gz.
+	 * @param forWindow  if true, then package type is zip,if false, package type is tar.
 	 * @return String  module full name.
 	 */
 	public String getDistributionPackageName(String moduleName, boolean forWindow) {
-		return getPackageName(moduleName) + (forWindow ? ".zip" : ".tar.gz");
+		return getPackageName(moduleName) + (forWindow ? ".zip" : ".tar");
 	}
 
 	/**
@@ -93,7 +92,7 @@ public class AgentPackageService {
 		final String libPath = basePath + "lib/";
 		TarArchiveOutputStream tarOutputStream = null;
 		try {
-			tarOutputStream = createGzippedTarArchiveStream(agentTar);
+			tarOutputStream = createTarArchiveStream(agentTar);
 			addFolderToTar(tarOutputStream, basePath);
 			addFolderToTar(tarOutputStream, libPath);
 			Set<String> libs = getDependentLibs(classLoader);
@@ -118,10 +117,10 @@ public class AgentPackageService {
 		return agentTar;
 	}
 
-	private TarArchiveOutputStream createGzippedTarArchiveStream(File agentTar) throws IOException {
+	private TarArchiveOutputStream createTarArchiveStream(File agentTar) throws IOException {
 
 		FileOutputStream fos = new FileOutputStream(agentTar);
-		return new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
+		return new TarArchiveOutputStream(new BufferedOutputStream(fos));
 	}
 
 	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath) throws IOException {

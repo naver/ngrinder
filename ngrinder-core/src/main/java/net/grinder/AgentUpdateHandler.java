@@ -78,7 +78,7 @@ public class AgentUpdateHandler {
 			LOGGER.info("Update request was sent. But the old version was sent");
 			return;
 		}
-		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar.gz");
+		File download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
 		int offset = 0;
 		while (true) {
 			messageListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
