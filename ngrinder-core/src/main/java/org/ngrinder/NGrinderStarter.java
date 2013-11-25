@@ -20,6 +20,7 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.jni.ArchLoaderException;
+import org.hyperic.jni.ArchNotSupportedException;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
@@ -69,7 +70,7 @@ public class NGrinderStarter {
 		agentConfig.init();
 		try {
 			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
-		} catch (ArchLoaderException e) {
+		} catch (Exception e) {
 			LOG.error("Error while expanding native lib", e);
 		}
 		// Configure log.

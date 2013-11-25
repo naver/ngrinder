@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * @author JunHo Yoon
  * 
  */
-@ContextConfiguration("classpath:applicationContext.xml")
+@ContextConfiguration("classpath:applicationContext-test.xml")
 public class HomeTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
 
 	@Autowired

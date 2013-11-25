@@ -258,7 +258,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	protected Home resolveHome() {
 		if (StringUtils.isNotBlank(System.getProperty("unit-test"))) {
-			final File tmpHome = new File("java.io.tmp", "ngrinder");
+			final File tmpHome = new File(System.getProperty("java.io.tmp"), "ngrinder");
 			try {
 				FileUtils.forceDeleteOnExit(tmpHome);
 			} catch (IOException e) {

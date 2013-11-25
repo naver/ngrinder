@@ -1,8 +1,9 @@
 package org.ngrinder.infra;
 
 import org.apache.commons.io.IOUtils;
-import org.hyperic.jni.ArchLoader;
 import org.hyperic.jni.ArchLoaderException;
+import org.hyperic.jni.ArchNotSupportedException;
+import org.hyperic.sigar.SigarLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,21 +26,24 @@ public class ArchLoaderInit {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ArchLoaderInit.class);
 
 	public void init(File nativeDirectory) throws
-			ArchLoaderException {
-		final String name = new ArchLoader().getLibName();
+			ArchLoaderException, ArchNotSupportedException {
+		final SigarLoader archLoader = new SigarLoader(getClass());
+		archLoader.setName("sigar");
+		final String name = archLoader.getLibraryName();
 		File fl = new File(nativeDirectory, name);
-
+		addNativeDirectoryToLibPath(nativeDirectory);
 		if (fl.exists()) {
 			return;
 		}
 
-		InputStream is = null;
 		FileOutputStream fo = null;
+		InputStream is = null;
 		try {
+			is = getClass().getClassLoader().getResourceAsStream(name);
 			JarFile jarfile = new JarFile(getSigarNativePath());
 			for (Enumeration<JarEntry> en = jarfile.entries(); en.hasMoreElements(); ) {
 				JarEntry je = en.nextElement();
-				if (name.equals(je.getName())) {
+				if (name.contains(je.getName())) {
 					is = jarfile.getInputStream(je);
 					fo = new FileOutputStream(fl);
 					IOUtils.copy(is, fo);
@@ -51,7 +55,6 @@ public class ArchLoaderInit {
 			IOUtils.closeQuietly(fo);
 			IOUtils.closeQuietly(is);
 		}
-		addNativeDirectoryToLibPath(nativeDirectory);
 	}
 
 	private void addNativeDirectoryToLibPath(File nativeDirectory) {

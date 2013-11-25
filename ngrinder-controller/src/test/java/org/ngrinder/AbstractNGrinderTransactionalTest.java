@@ -14,9 +14,11 @@
 package org.ngrinder;
 
 import net.grinder.AgentControllerDaemon;
+import org.hyperic.jni.ArchLoaderException;
 import org.junit.Before;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
@@ -43,7 +45,7 @@ import java.util.Set;
  *
  * @author Mavlarn
  */
-@ContextConfiguration({"classpath:applicationContext.xml"})
+@ContextConfiguration({"classpath:applicationContext-test.xml"})
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
 		NGrinderConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
@@ -57,8 +59,14 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 
 		System.setProperty("unit-test", "true");
 		LOG.info("* Start nGrinder Agent *");
-		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1);
-		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig.init());
+
+		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1).init();
+		try {
+			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
+		} catch (Exception e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.run();
 
 		LOG.info("* Start nGrinder Monitor *");

@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration("classpath:applicationContext.xml")
+@ContextConfiguration("classpath:applicationContext-test.xml")
 public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
 
 	@Autowired
