@@ -13,10 +13,6 @@
  */
 package org.ngrinder.home.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -24,12 +20,16 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -62,8 +62,8 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testHealthcheck() {
 		MockHttpServletResponse resq = new MockHttpServletResponse();
 		homeController.healthcheck(resq);
-		String viewName = homeController.healthcheckSlowly(500, resq);
-		assertTrue(viewName.startsWith(regionService.getCurrentRegion()));
+		HttpEntity<String> message = homeController.healthcheckSlowly(500, resq);
+		assertThat(message.getBody(), containsString("NONE"));
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testErrorPage() {
 		RedirectAttributesModelMap model = new RedirectAttributesModelMap();
 		String viewName = homeController.error404(model);
-		assertThat(viewName, is("redirect:/doError"));
+		assertThat(viewName, startsWith("redirect:/doError"));
 
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		MockHttpServletRequest req = new MockHttpServletRequest();

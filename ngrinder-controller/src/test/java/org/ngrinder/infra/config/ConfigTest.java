@@ -13,13 +13,11 @@
  */
 package org.ngrinder.infra.config;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
@@ -30,12 +28,15 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration("classpath:applicationContext.xml")
-public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
+public class ConfigTest implements NGrinderConstants {
 
-	@Autowired
 	private MockConfig config;
 
+	@Before
+	public void before() {
+		config = new MockConfig();
+		config.init();
+	}
 	@Test
 	public void testDefaultHome() {
 		Home home = config.getHome();

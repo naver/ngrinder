@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.LocaleEditor;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -195,9 +196,8 @@ public class HomeController extends NGrinderBaseController {
 	 * @param response response
 	 * @return region list
 	 */
-	@ResponseBody
 	@RequestMapping("/check/healthcheck")
-	public String healthcheck(HttpServletResponse response) {
+	public HttpEntity<String> healthcheck(HttpServletResponse response) {
 		if (config.hasShutdownLock()) {
 			try {
 				response.sendError(503, "nGrinder is about to down");
@@ -209,7 +209,7 @@ public class HomeController extends NGrinderBaseController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("current", regionService.getCurrentRegion());
 		map.put("regions", regionService.getRegions());
-		return toJson(map);
+		return toJsonHttpEntity(map);
 	}
 
 	/**
@@ -222,8 +222,8 @@ public class HomeController extends NGrinderBaseController {
 	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
-	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
-	                                HttpServletResponse response) {
+	public HttpEntity<String> healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
+	                                            HttpServletResponse response) {
 		ThreadUtil.sleep(sleep);
 		return healthcheck(response);
 	}
