@@ -54,9 +54,11 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	protected User testUser = null;
 
 	static {
+
+		System.setProperty("unit-test", "true");
 		LOG.info("* Start nGrinder Agent *");
 		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1);
-		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig);
+		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig.init());
 		agentControllerDaemon.run();
 
 		LOG.info("* Start nGrinder Monitor *");

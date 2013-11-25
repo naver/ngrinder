@@ -257,6 +257,14 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return resolved home
 	 */
 	protected Home resolveHome() {
+		if (StringUtils.isNotBlank(System.getProperty("unit-test"))) {
+			final File tmpHome = new File("java.io.tmp", "ngrinder");
+			try {
+				FileUtils.forceDeleteOnExit(tmpHome);
+			} catch (IOException e) {
+			}
+			return new Home(tmpHome);
+		}
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
