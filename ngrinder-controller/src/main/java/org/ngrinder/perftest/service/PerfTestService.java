@@ -110,7 +110,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private FileEntryService fileEntryService;
 
 	@Autowired
-	private TagService tagSerivce;
+	private TagService tagService;
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
@@ -120,7 +120,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param user        user
 	 * @param query       query string on test name or description
-	 * @param tag         seach tag.
+	 * @param tag         search tag.
 	 * @param queryFilter "S" for querying scheduled test, "F" for querying finished test
 	 * @param pageable    paging info
 	 * @return found {@link PerfTest} list
@@ -271,7 +271,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	private void attachTags(User user, PerfTest perfTest, String tagString) {
-		SortedSet<Tag> tags = tagSerivce.addTags(user,
+		SortedSet<Tag> tags = tagService.addTags(user,
 				StringUtils.split(StringUtils.trimToEmpty(tagString), ","));
 		perfTest.setTags(tags);
 		perfTest.setTagString(buildTagString(tags));
@@ -1204,7 +1204,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestRepository.flush();
 		perfTestRepository.delete(perfTestList);
 		perfTestRepository.flush();
-		tagSerivce.deleteTags(user);
+		tagService.deleteTags(user);
 		return perfTestList;
 	}
 
