@@ -16,6 +16,7 @@ package org.ngrinder.infra.config;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import com.google.common.io.Files;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.NetworkUtil;
@@ -258,10 +259,13 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	protected Home resolveHome() {
 		if (StringUtils.isNotBlank(System.getProperty("unit-test"))) {
-			final File tmpHome = new File(System.getProperty("java.io.tmp"), "ngrinder");
+			final String tempDir = System.getProperty("java.io.tmpdir");
+			final File tmpHome = new File(tempDir, ".ngrinder");
+			tmpHome.mkdirs();
 			try {
 				FileUtils.forceDeleteOnExit(tmpHome);
 			} catch (IOException e) {
+				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 			}
 			return new Home(tmpHome);
 		}
