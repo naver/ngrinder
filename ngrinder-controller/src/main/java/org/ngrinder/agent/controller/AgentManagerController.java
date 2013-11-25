@@ -36,8 +36,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Map;
+
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
 /**
  * Agent management controller.
@@ -92,7 +95,6 @@ public class AgentManagerController extends NGrinderBaseController {
 		}));
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getRegions().keySet());
-		File directory = config.getHome().getDownloadDirectory();
 		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 
 		if (!config.isCluster() || StringUtils.isNotBlank(region)) {
@@ -151,6 +153,18 @@ public class AgentManagerController extends NGrinderBaseController {
 	                                   ModelMap model) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
 		return toJsonHttpEntity(agentManagerService.getAgentSystemDataModel(ip, name));
+	}
+
+	/**
+	 * Get the current all agents state.
+	 * @return json message
+	 */
+	@RestAPI
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = {"/api/states/", "/api/states"}, method = RequestMethod.GET)
+	public HttpEntity<String> getStates() {
+		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
+		return toJsonHttpEntity(getAgentStatus(agents));
 	}
 
 	@RestAPI
@@ -230,5 +244,17 @@ public class AgentManagerController extends NGrinderBaseController {
 			update(Long.parseLong(each));
 		}
 		return successJsonHttpEntity();
+	}
+
+	private List<Map<String, Object>> getAgentStatus(List<AgentInfo> agentInfos) {
+		List<Map<String, Object>> statuses = newArrayList();
+		for (AgentInfo each : agentInfos) {
+			Map<String, Object> result = newHashMap();
+			result.put(PARAM_STATUS_UPDATE_ID, each.getId());
+			result.put(PARAM_STATUS_AGENT_PORT, each.getPort());
+			result.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getState().getCategory().getIconName());
+			statuses.add(result);
+		}
+		return statuses;
 	}
 }

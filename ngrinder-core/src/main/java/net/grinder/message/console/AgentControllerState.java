@@ -21,19 +21,47 @@ package net.grinder.message.console;
  */
 public enum AgentControllerState {
 	/** Just after agent controller is started. */
-	STARTED,
+	STARTED(AgentStatusCategory.READY),
 	/** When agent controller is ready to get some message. */
-	READY,
+	READY(AgentStatusCategory.READY),
 	/** When agent controller runs agents or other jobs. */
-	BUSY,
+	BUSY(AgentStatusCategory.PROGRESSING),
 	/** When agent controller is closed. */
-	FINISHED,
+	FINISHED(AgentStatusCategory.READY),
 	/** When agent controller is down. */
-	INACTIVE,
+	INACTIVE(AgentStatusCategory.UNKNOWN),
 	/** When agent is attached wrong region. */
-	WRONG_REGION,
+	WRONG_REGION(AgentStatusCategory.READY),
 	/** When agent is updating. */
-	UPDATING,
+	UPDATING(AgentStatusCategory.READY),
 	/** Unknown. */
-	UNKNOWN
+	UNKNOWN(AgentStatusCategory.UNKNOWN);
+
+	/**
+	 * Constructor.
+	 *
+	 * @param category
+	 *            category of this status within.
+	 */
+	AgentControllerState(AgentStatusCategory category) {
+		this.category = category;
+	}
+	private final AgentStatusCategory category;
+	/**
+	 * Get the category of each status.
+	 *
+	 * @return category.
+	 */
+	public AgentStatusCategory getCategory() {
+		return category;
+	}
+
+	/**
+	 * Get the icon name of this status.
+	 *
+	 * @return icon anme
+	 */
+	public String getIconName() {
+		return category.getIconName();
+	}
 }

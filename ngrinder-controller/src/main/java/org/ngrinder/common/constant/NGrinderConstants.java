@@ -126,6 +126,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_TPS = "TPS";
 	public static final String PARAM_VUSER = "vuser";
 	public static final String PARAM_RESPONSE_TIME = "response_time";
+	public static final String PARAM_STATUS_AGENT_PORT = "port";
 
 	public static final String PARAM_TEST = "test";
 	public static final String PARAM_LOG_LIST = "logs";
