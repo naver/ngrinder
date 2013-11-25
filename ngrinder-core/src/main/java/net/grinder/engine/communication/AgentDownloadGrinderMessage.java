@@ -25,10 +25,10 @@ import net.grinder.communication.CommunicationException;
  */
 public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 
-	public static int MAX_RETTRY_COUNT = 3;
+	public static int MAX_RETRY_COUNT = 3;
 	private Address address;
 	private final String version;
-	private final int next;
+	private int next;
 
 	/**
 	 * Constructor.
@@ -41,12 +41,25 @@ public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 		this.next = next;
 	}
 
+	/**
+	 * Constructor.
+	 *
+	 * @param version version
+	 */
+	public AgentDownloadGrinderMessage(String version) {
+		this.version = version;
+	}
+
 	public String getVersion() {
 		return version;
 	}
 
 	public int getNext() {
 		return next;
+	}
+
+	public void setNext(int next) {
+		this.next = next;
 	}
 
 	@Override

@@ -204,6 +204,7 @@ public class AgentController implements Agent {
 					sendCurrentState(consoleCommunication);
 					final AgentUpdateGrinderMessage message = m_agentControllerServerListener.getLastAgentUpdateGrinderMessage();
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
+					AgentDownloadGrinderMessage agentDownloadGrinderMessage = new AgentDownloadGrinderMessage(message.getVersion());
 					try {
 						// If it's initial message
 						if (message.getNext() == 0 && message.getBinary().length == 0) {
@@ -214,18 +215,16 @@ public class AgentController implements Agent {
 							if (message.getChecksum() == CRC32ChecksumUtils.getCRC32Checksum(message.getBinary())) {
 								retryCount = 0;
 								agentUpdateHandler.update(message);
-							} else if (retryCount <= AgentDownloadGrinderMessage.MAX_RETTRY_COUNT) {
+								agentDownloadGrinderMessage.setNext(message.getNext() + message.getBinary().length);
+							} else if (retryCount <= AgentDownloadGrinderMessage.MAX_RETRY_COUNT) {
 								retryCount++;
-								consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
-										message.getNext()));
+								agentDownloadGrinderMessage.setNext(message.getNext());
 							} else {
 								throw new CommunicationException("Error while getting agent package binary from controller");
 							}
 
 						}
-
-						consoleCommunication.sendMessage(new AgentDownloadGrinderMessage(message.getVersion(),
-								message.getNext() + message.getBinary().length));
+						consoleCommunication.sendMessage(agentDownloadGrinderMessage);
 
 					} catch (Exception e) {
 						retryCount = 0;
