@@ -646,6 +646,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL,
 						getSafe(perfTest.getProcessIncrementInterval()));
 				grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, getSafe(perfTest.getInitSleepTime()));
+				grinderProperties.setInt(GRINDER_PROP_INITIAL_PROCESS, getSafe(perfTest.getInitProcesses()));
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
