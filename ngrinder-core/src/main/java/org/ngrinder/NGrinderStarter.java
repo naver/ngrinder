@@ -19,10 +19,12 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.lang.StringUtils;
+import org.hyperic.jni.ArchLoaderException;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
@@ -65,6 +67,11 @@ public class NGrinderStarter {
 		checkRunningDirectory();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
+		try {
+			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
+		} catch (ArchLoaderException e) {
+			LOG.error("Error while expanding native lib", e);
+		}
 		// Configure log.
 		configureLogging();
 	}
