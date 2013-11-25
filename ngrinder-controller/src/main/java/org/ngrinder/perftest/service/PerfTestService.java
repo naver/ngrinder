@@ -360,7 +360,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Add a progress message on the given perfTest.
 	 *
 	 * @param perfTest perf test
-	 * @param message  message to be recored.
+	 * @param message  message to be recorded.
 	 * @return saved {@link PerfTest}
 	 */
 	@Transactional
