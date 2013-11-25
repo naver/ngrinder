@@ -27,15 +27,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * Dynamically create a subclass of {@link AgentManagerService} depending on the cluster activation
  * status.
- *
+ * 
  * @author JunHo Yoon
  * @since 3.1
  */
 @Configuration
-@Profile("production")
-@EnableScheduling
+@Profile("unittest")
 @EnableTransactionManagement
-public class AgentManagerServiceConfig implements ApplicationContextAware {
+public class MockAgentManagerServiceConfig implements ApplicationContextAware {
 
 	@Autowired
 	private Config config;
@@ -44,14 +43,14 @@ public class AgentManagerServiceConfig implements ApplicationContextAware {
 
 	/**
 	 * Create a subclass of {@link AgentManagerService} depending on the cluster activation status.
-	 *
+	 * 
 	 * @return {@link AgentManagerService}
 	 */
 	@Bean(name = "agentManagerService")
 	public AgentManagerService agentManagerService() {
 		AgentManagerService createBean = (AgentManagerService) applicationContext.getAutowireCapableBeanFactory()
-				.autowire(config.isCluster() ? ClusteredAgentManagerService.class : AgentManagerService.class,
-						AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, true);
+						.autowire(AgentManagerService.class,
+										AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, true);
 		return createBean;
 	}
 

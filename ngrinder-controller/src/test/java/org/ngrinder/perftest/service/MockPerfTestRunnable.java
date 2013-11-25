@@ -21,6 +21,7 @@ import net.grinder.common.GrinderProperties;
 
 import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.PerfTest;
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Mock PerfTest which disable spring task schedule.
@@ -30,10 +31,6 @@ import org.ngrinder.model.PerfTest;
 @TestOnlyComponent
 public class MockPerfTestRunnable extends PerfTestRunnable {
 
-	@Override
-	public void startTest() {
-		// Do not make it runnable
-	}
 
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
@@ -43,5 +40,11 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 				perfTest.getAgentCount());
 		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS_FINISHED,
 				perfTest.getAgentCount() + " agents are started.");
+	}
+
+	@Override
+	protected void addSamplingListeners(PerfTest perfTest, SingleConsole singleConsole) {
+		// Do nothing on each sampling...
+		// To avoid exceptions due to @Transactional in the different thread.
 	}
 }

@@ -13,21 +13,10 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
 import net.grinder.statistics.StatisticsSet;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -38,12 +27,18 @@ import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
 
@@ -114,15 +109,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		}
 		perfTestRunnable.startTest();
 		sleep(15000);
-		perfTestRunnable.finishTest();
-		sleep(5000);
+		assertThat(perfTestService.getTestingPerfTest().size(), is(1));
+
 		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
 		perfTestRunnable.finishTest();
-		sleep(10000);
-
-		List<SystemDataModel> systemData = monitorService.getSystemMonitorData(currentTest.getId(), "127.0.0.1");
-		assertTrue(systemData.size() > 0);
-
+		sleep(5000);
+		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
+		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
 	}
 
 	boolean ended = false;
@@ -142,7 +135,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		// Start agents
 		perfTest.setAgentCount(1);
-		System.out.println(perfTest);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 

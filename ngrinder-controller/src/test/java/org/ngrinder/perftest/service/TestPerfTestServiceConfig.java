@@ -11,11 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.agent.service;
+package org.ngrinder.perftest.service;
 
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -25,17 +24,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Dynamically create a subclass of {@link AgentManagerService} depending on the cluster activation
- * status.
+ * Dynamic creation of {@link PerfTestService} depending on the cluster enable or disable.
  *
  * @author JunHo Yoon
  * @since 3.1
  */
 @Configuration
-@Profile("production")
-@EnableScheduling
+@Profile("unittest")
 @EnableTransactionManagement
-public class AgentManagerServiceConfig implements ApplicationContextAware {
+public class TestPerfTestServiceConfig implements ApplicationContextAware {
 
 	@Autowired
 	private Config config;
@@ -43,16 +40,13 @@ public class AgentManagerServiceConfig implements ApplicationContextAware {
 	private ApplicationContext applicationContext;
 
 	/**
-	 * Create a subclass of {@link AgentManagerService} depending on the cluster activation status.
+	 * Create PerTest service depending on cluster mode.
 	 *
-	 * @return {@link AgentManagerService}
+	 * @return {@link PerfTestService}
 	 */
-	@Bean(name = "agentManagerService")
-	public AgentManagerService agentManagerService() {
-		AgentManagerService createBean = (AgentManagerService) applicationContext.getAutowireCapableBeanFactory()
-				.autowire(config.isCluster() ? ClusteredAgentManagerService.class : AgentManagerService.class,
-						AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, true);
-		return createBean;
+	@Bean(name = "perfTestService")
+	public PerfTestService perfTestService() {
+		return applicationContext.getAutowireCapableBeanFactory().createBean(PerfTestService.class);
 	}
 
 	@Override

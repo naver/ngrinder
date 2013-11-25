@@ -14,7 +14,6 @@
 package org.ngrinder;
 
 import net.grinder.AgentControllerDaemon;
-import org.hyperic.jni.ArchLoaderException;
 import org.junit.Before;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.AgentConfig;
@@ -31,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
@@ -45,7 +45,8 @@ import java.util.Set;
  *
  * @author Mavlarn
  */
-@ContextConfiguration({"classpath:applicationContext-test.xml"})
+@ActiveProfiles("unittest")
+@ContextConfiguration({"classpath:applicationContext.xml"})
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
 		NGrinderConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);

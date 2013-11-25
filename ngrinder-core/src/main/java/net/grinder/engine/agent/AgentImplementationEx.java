@@ -345,8 +345,11 @@ public class AgentImplementationEx implements Agent {
 		newProperties.putAll(properties);
 		StringBuilder newClassPath = new StringBuilder();
 		boolean isFirst = true;
-		for (String each : StringUtils.split(properties.getProperty("java.class.path"), ";:")) {
-			File file = new File(curDir, each);
+		for (String each : StringUtils.split(properties.getProperty("java.class.path"), File.pathSeparator)) {
+			File file = new File(each);
+			if (!file.isAbsolute()) {
+				file = new File(curDir, each);
+			}
 			if (!isFirst) {
 				newClassPath.append(File.pathSeparator);
 			}
