@@ -22,7 +22,7 @@ import java.io.*;
 
 /**
  * File download utilities.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -34,11 +34,9 @@ public abstract class FileDownloadUtil {
 
 	/**
 	 * Download the given file to the given {@link HttpServletResponse}.
-	 * 
-	 * @param response
-	 *            {@link HttpServletResponse}
-	 * @param fileName
-	 *            file path
+	 *
+	 * @param response {@link HttpServletResponse}
+	 * @param fileName file path
 	 * @return true if succeeded
 	 */
 	public static boolean downloadFile(HttpServletResponse response, String fileName) {
@@ -48,11 +46,9 @@ public abstract class FileDownloadUtil {
 
 	/**
 	 * Download the given file to the given {@link HttpServletResponse}.
-	 * 
-	 * @param response
-	 *            {@link HttpServletResponse}
-	 * @param file
-	 *            file path
+	 *
+	 * @param response {@link HttpServletResponse}
+	 * @param file     file path
 	 * @return true if succeeded
 	 */
 	public static boolean downloadFile(HttpServletResponse response, File file) {

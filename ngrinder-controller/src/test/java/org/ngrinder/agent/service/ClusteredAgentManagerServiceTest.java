@@ -42,7 +42,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Agent service test.
- * 
+ *
  * @author Tobi
  * @since 3.0
  */
@@ -82,7 +82,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		cacheConfig.setConfig(spiedConfig);
 		cacheManager = cacheConfig.dynamicCacheManager();
 		((EhCacheCacheManager) cacheManager).afterPropertiesSet(); // it will not be called if we
-																	// create manually
+		// create manually
 		ReflectionTestUtils.setField(agentManagerService, "cacheManager", cacheManager);
 		assertThat(cacheConfig.getConfig(), not(nullValue()));
 
@@ -92,18 +92,16 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 	@Test
 	public void testOther() {
-		String agentHostName = NetworkUtil.getLocalHostName();
 		agentManagerService.getAllVisibleAgentInfoFromDB();
 		agentManagerService.getAllActiveAgentInfoFromDB();
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
-		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(agentHostName,
-						"127.0.0.1");
+		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(NetworkUtil.DEFAULT_LOCAL_HOST_NAME,
+				"127.0.0.1");
 		monitor.setRegion(spiedConfig.getRegion());
 		agentManagerService.addAgentMonitoringTarget(monitor);
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(agentHostName, "127.0.0.1"));
-		
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(NetworkUtil.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1"));
 		agentManagerService.collectAgentSystemData();
 	}
 

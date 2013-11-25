@@ -116,6 +116,7 @@ public abstract class CompressionUtil {
 	public static void unzip(InputStream is, File destDir, String charsetName) {
 		byte[] buffer = new byte[1024];
 		ZipInputStream zis = null;
+		FileOutputStream fos = null;
 		try {
 			File folder = destDir;
 			if (!folder.exists()) {
@@ -128,18 +129,23 @@ public abstract class CompressionUtil {
 			while (ze != null) {
 				String fileName = ze.getName();
 				File newFile = new File(destDir.getAbsolutePath() + File.separator + fileName);
-				new File(newFile.getParent()).mkdirs();
-				FileOutputStream fos = new FileOutputStream(newFile);
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
+				if (ze.isDirectory()) {
+					newFile.mkdirs();
+				} else {
+					fos = new FileOutputStream(newFile);
+					int len;
+					while ((len = zis.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
+					IOUtils.closeQuietly(fos);
 				}
-				IOUtils.closeQuietly(fos);
+
 				ze = zis.getNextEntry();
 			}
 		} catch (Exception e) {
 			throw processException(e);
 		} finally {
+			IOUtils.closeQuietly(fos);
 			IOUtils.closeQuietly(is);
 			IOUtils.closeQuietly(zis);
 		}

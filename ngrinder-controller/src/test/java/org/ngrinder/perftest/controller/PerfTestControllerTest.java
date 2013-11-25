@@ -53,7 +53,7 @@ import org.springframework.ui.ModelMap;
 
 /**
  * PerfTest Controller Test.
- * 
+ *
  * @author mavlarn
  * @Since 3.0
  */
@@ -295,7 +295,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		assertThat(testList.size(), is(1));
 
 		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), null, null, new PageRequest(0, 10),
-						model);
+				model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -320,9 +320,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
-
 		controller.getMonitorData(model, test.getId(), "127.0.0.1", 0);
-
 		model.clear();
 		long testId = 123456L;
 		controller.getMonitorData(model, testId, "127.0.0.1", 700);
@@ -336,11 +334,11 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		try {
 			controller.downloadCSV(getTestUser(), resp, test.getId());
 		} catch (IllegalStateException e) {
-			// the report file doesn'r exist
+			// the report file doesn't exist
 			assertTrue(true);
 		}
 		resp.reset();
-		controller.downloadLog(getTestUser(), "", test.getId(), resp);
+		controller.downloadLog(getTestUser(), "log", test.getId(), resp);
 	}
 
 	@Test

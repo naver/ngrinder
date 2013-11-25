@@ -1317,11 +1317,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max((int) (lineNumber / pointCount), 1);
 		} catch (FileNotFoundException e) {
-			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.info("Monitor data file does not exist at {}", monitorDataFile);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.info("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
 		} finally {
 			IOUtils.closeQuietly(lnr);
 			IOUtils.closeQuietly(isr);
@@ -1396,8 +1394,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			completeCustomData(returnMap, "customData4", customData4);
 			completeCustomData(returnMap, "customData5", customData5);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.info("Error while getting monitor {} data file at {}", targetIP, monitorDataFile);
 		} finally {
 			IOUtils.closeQuietly(br);
 		}

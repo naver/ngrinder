@@ -215,8 +215,10 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			if (value != null && agentIdentity != null) {
 				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
 						agentIdentity.getName());
-				found.setSystemStat(gson.toJson(getSystemDataModel(agentIdentity)));
-				agentInfos.add(found);
+				if (found != null) {
+					found.setSystemStat(gson.toJson(getSystemDataModel(agentIdentity)));
+					agentInfos.add(found);
+				}
 			}
 		}
 		agentManagerRepository.save(agentInfos);

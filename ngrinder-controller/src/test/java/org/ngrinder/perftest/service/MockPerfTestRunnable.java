@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import static org.ngrinder.model.Status.START_AGENTS;
 import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
+
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 
@@ -23,7 +24,7 @@ import org.ngrinder.model.PerfTest;
 
 /**
  * Mock PerfTest which disable spring task schedule.
- * 
+ *
  * @author JunHo Yoon
  */
 @TestOnlyComponent
@@ -31,16 +32,16 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 
 	@Override
 	public void startTest() {
-		super.startTest();
+		// Do not make it runnable
 	}
 
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS,
-						perfTest.getAgentCount() + " agents are starting.");
+				perfTest.getAgentCount() + " agents are starting.");
 		getAgentManager().runAgent(perfTest.getLastModifiedUser(), singleConsole, grinderProperties,
-						perfTest.getAgentCount());
+				perfTest.getAgentCount());
 		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS_FINISHED,
-						perfTest.getAgentCount() + " agents are started.");
+				perfTest.getAgentCount() + " agents are started.");
 	}
 }
