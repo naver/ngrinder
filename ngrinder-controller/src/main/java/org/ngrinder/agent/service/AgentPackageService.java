@@ -11,7 +11,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.TypeConvertUtil;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import java.util.zip.ZipFile;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CompressionUtil.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent package service.
@@ -104,7 +102,7 @@ public class AgentPackageService {
 	 * @return File
 	 */
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
-	                                     String owner) {
+										 String owner) {
 		File agentPackagesDir = getAgentPackagesDir();
 		agentPackagesDir.mkdirs();
 		final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
@@ -128,7 +126,13 @@ public class AgentPackageService {
 					continue;
 				}
 				if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
-					processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, basePath, 0100755));
+					processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
+						@Override
+						public boolean evaluate(Object object) {
+							ZipEntry zipEntry = (ZipEntry) object;
+							return zipEntry.getName().endsWith("sh") || zipEntry.getName().endsWith("bat");
+						}
+					}, basePath, 0100755));
 				} else if (isAgentDependentLib(eachClassPath, libs)) {
 					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 				}
@@ -244,11 +248,14 @@ public class AgentPackageService {
 
 	static class TarArchivingZipEntryProcessor implements ZipEntryProcessor {
 		private TarArchiveOutputStream tao;
+		private FilePredicate filePredicate;
 		private String basePath;
 		private int mode;
 
-		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, String basePath, int mode) {
+
+		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, FilePredicate filePredicate,String basePath, int mode) {
 			this.tao = tao;
+			this.filePredicate = filePredicate;
 			this.basePath = basePath;
 			this.mode = mode;
 		}
@@ -258,13 +265,18 @@ public class AgentPackageService {
 			InputStream inputStream = null;
 			try {
 				inputStream = file.getInputStream(entry);
-				addInputStreamToTar(this.tao, inputStream, basePath + FilenameUtils.getName(entry.getName()),
-						entry.getSize(),
-						this.mode);
+
+				if (filePredicate.evaluate(entry)) {
+					addInputStreamToTar(this.tao, inputStream, basePath + FilenameUtils.getName(entry.getName()),
+							entry.getSize(),
+							this.mode);
+				}
+
 			} finally {
 				IOUtils.closeQuietly(inputStream);
 			}
 		}
 	}
+
 
 }

@@ -446,7 +446,7 @@ public abstract class CompressionUtil {
 
 
 	/**
-	 * Add the given inputstream into tar.
+	 * Add the given input stream into tar.
 	 *
 	 * @param tarStream   TarArchive outputStream
 	 * @param inputStream input stream
@@ -460,7 +460,6 @@ public abstract class CompressionUtil {
 		TarArchiveEntry entry = new TarArchiveEntry(path);
 		entry.setSize(size);
 		entry.setMode(mode);
-		BufferedInputStream bis = null;
 		try {
 			tarStream.putArchiveEntry(entry);
 			IOUtils.copy(inputStream, tarStream);
@@ -501,5 +500,9 @@ public abstract class CompressionUtil {
 
 	public interface ZipEntryProcessor {
 		public void process(ZipFile zipFile, ZipEntry je) throws IOException;
+	}
+
+	public interface FilePredicate {
+		public boolean evaluate(Object object);
 	}
 }
