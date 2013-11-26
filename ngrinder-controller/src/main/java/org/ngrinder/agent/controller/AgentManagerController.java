@@ -253,6 +253,8 @@ public class AgentManagerController extends NGrinderBaseController {
 			result.put(PARAM_STATUS_UPDATE_ID, each.getId());
 			result.put(PARAM_STATUS_AGENT_PORT, each.getPort());
 			result.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getState().getCategory().getIconName());
+			result.put(PARAM_STATUS_UPDATE_STATUS_NAME, each.getState());
+
 			statuses.add(result);
 		}
 		return statuses;

@@ -19,8 +19,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.lang.StringUtils;
-import org.hyperic.jni.ArchLoaderException;
-import org.hyperic.jni.ArchNotSupportedException;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;

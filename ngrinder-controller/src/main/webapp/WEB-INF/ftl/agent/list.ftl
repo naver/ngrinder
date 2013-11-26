@@ -60,7 +60,9 @@
             <tr>
                 <td class="center"><input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}"></td>
                 <td class="center" id="row_${agent.id}">
-                    <div class="ball" id="ball_${agent.id}">
+                    <div class="ball" id="ball_${agent.id}"
+                         data-html="true"
+                         rel="popover">
                         <img class="status" src="${req.getContextPath()}/img/ball/${agent.state.iconName}"/>
                     </div>
                 </td>
@@ -229,7 +231,7 @@
             data: {},
             success: function (data) {
                 for (var i = 0; i < data.length; i++) {
-                    updateStatus(data[i].id, data[i].icon, data[i].port);
+                    updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
                 }
 
                 if (ids.length == 0) {
@@ -242,12 +244,13 @@
 
     })();
 
-    function updateStatus(id, icon, port) {
+    function updateStatus(id, icon, port, state) {
         var $ballImg = $("#ball_" + id + " img");
         if ($ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
             $ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
             $("#port_" + id).html(port);
         }
+        $("#ball_" + id).attr("data-original-title", state);
     }
 </script>
 </body>
