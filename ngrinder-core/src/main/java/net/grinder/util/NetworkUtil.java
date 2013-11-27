@@ -14,10 +14,12 @@
 package net.grinder.util;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.python.google.common.net.InetAddresses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.net.util.IPAddressUtil;
 
 import java.net.*;
 import java.util.ArrayList;
@@ -43,7 +45,8 @@ public abstract class NetworkUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
 	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
 	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
-	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses();
+	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
+	public static List<InetAddress> DEFAULT_LOCAL_IP4_ADDRESSES = getAllLocalNonLoopbackAddresses(true);
 
 	/**
 	 * Get the local host address, try to get actual IP.
@@ -95,6 +98,7 @@ public abstract class NetworkUtil {
 			return "localhost";
 		}
 	}
+
 
 	static InetAddress getLocalInetAddress(String byConnecting, int port) {
 		InetAddress addr = getAddressWithSocket(byConnecting, port);
@@ -200,7 +204,7 @@ public abstract class NetworkUtil {
 			this.port = port;
 		}
 
-		public boolean isSame(String ip) {
+		public boolean isSameIP(String ip) {
 			return this.ip.equals(ip);
 		}
 
@@ -216,13 +220,50 @@ public abstract class NetworkUtil {
 		public String toString() {
 			return this.ip + " " + this.port;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			IPPortPair that = (IPPortPair) o;
+
+			if (port != that.port) return false;
+			if (ip != null ? !ip.equals(that.ip) : that.ip != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = ip != null ? ip.hashCode() : 0;
+			result = 31 * result + port;
+			return result;
+		}
+
+		public boolean isIP4AndLocalHost() {
+			for (InetAddress localAddress : NetworkUtil.DEFAULT_LOCAL_IP4_ADDRESSES) {
+				String hostAddress = localAddress.getHostAddress();
+				if (localAddress instanceof Inet6Address && ((Inet6Address) localAddress).getScopeId() != 0) {
+					hostAddress = hostAddress.substring(0, hostAddress.lastIndexOf("%"));
+				}
+				if (ip.equals(hostAddress)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public boolean isIP6() {
+			return IPAddressUtil.isIPv6LiteralAddress(ip);
+		}
 	}
 
 	/**
 	 * Convert the given string to ip and port pair.
-	 *
+	 * <p/>
 	 * This supports IP6 and IP4.
-	 *
+	 * <p/>
 	 * <ul>
 	 * <li>127.0.0.1:30  ==> 127.0.0.1 and 30</li>
 	 * <li>2001:0:9d38:90d7:469:1f94:f5bf:cf5d:30  ==> 2001:0:9d38:90d7:469:1f94:f5bf:cf5d and 30</li>
@@ -234,6 +275,8 @@ public abstract class NetworkUtil {
 	 * @return ip and port pair
 	 */
 	public static IPPortPair convertIPAndPortPair(String ipPortString, int defaultPort) {
+		// If it's the scoped IP6 address
+		ipPortString = removeScopedMarkerFromIP(ipPortString);
 		if (InetAddresses.isInetAddress(ipPortString)) {
 			return new IPPortPair(ipPortString, defaultPort);
 		}
@@ -247,9 +290,15 @@ public abstract class NetworkUtil {
 		return new IPPortPair(getIP(ipPart), portPart);
 	}
 
+	public static String removeScopedMarkerFromIP(String ip) {
+		if (StringUtils.isNotEmpty(ip) && ip.contains("%")) {
+			ip = ip.substring(0, ip.lastIndexOf("%"));
+		}
+		return ip;
+	}
 	/**
 	 * Get IP form the given string.
-	 *
+	 * <p/>
 	 * If the given ipOrHost is host name, it tries to turn it into IP.
 	 * If the host name is not available, it returns 127.0.0.1 instead.
 	 *
@@ -271,7 +320,7 @@ public abstract class NetworkUtil {
 		return ip;
 	}
 
-	private static List<InetAddress> getAllLocalNonLoopbackAddresses() {
+	private static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
 		List<InetAddress> addresses = new ArrayList<InetAddress>();
 		final Enumeration<NetworkInterface> networkInterfaces;
 		try {
@@ -282,6 +331,9 @@ public abstract class NetworkUtil {
 					final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
 					while (inetAddresses.hasMoreElements()) {
 						final InetAddress inetAddress = inetAddresses.nextElement();
+						if (onlyIPv4 && inetAddress instanceof Inet6Address) {
+							continue;
+						}
 						if (!inetAddress.isLoopbackAddress()) {
 							addresses.add(inetAddress);
 						}

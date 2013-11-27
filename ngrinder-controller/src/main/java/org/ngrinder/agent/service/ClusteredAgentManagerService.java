@@ -65,7 +65,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteredAgentManagerService.class);
 
 	@Autowired
-	private CacheManager cacheManager;
+	CacheManager cacheManager;
 
 	private Cache agentRequestCache;
 

@@ -14,6 +14,7 @@
 package org.ngrinder.infra.config;
 
 import net.grinder.util.NetworkUtil;
+import net.grinder.util.Pair;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
@@ -25,6 +26,7 @@ import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -34,7 +36,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,6 @@ public class DynamicCacheConfig {
 				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
 			} else {
 				CoreLogger.LOGGER.info("In cluster mode.");
-				System.setProperty("java.rmi.server.hostname", getCurrentIP());
 
 				inputStream = new ClassPathResource("ehcache-dist.xml").getInputStream();
 				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
@@ -81,16 +81,18 @@ public class DynamicCacheConfig {
 				FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 				peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 				List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
-				String properties = createCacheProperties(replicatedCacheNames);
-				peerProviderConfig.setProperties(properties);
+				Pair<NetworkUtil.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
+				NetworkUtil.IPPortPair currentListener = properties.getFirst();
+				System.setProperty("java.rmi.server.hostname", currentListener.getIP());
+				String peers = properties.getSecond();
+				peerProviderConfig.setProperties(peers);
 				cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
 
 				FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 				peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-				String peerListenerProperties = createPearListenerProperties();
-				peerListenerConfig.setProperties(peerListenerProperties);
+				peerListenerConfig.setProperties(String.format("hostName=%s, port=%d, socketTimeoutMillis=200", currentListener.getIP(), currentListener.getPort()));
 				cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
-				CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperties);
+				CoreLogger.LOGGER.info("clusterURLs:{}", properties);
 			}
 			cacheManagerConfig.setName(getCacheName());
 			CacheManager mgr = CacheManager.create(cacheManagerConfig);
@@ -105,22 +107,6 @@ public class DynamicCacheConfig {
 		return cacheManager;
 	}
 
-	protected String createPearListenerProperties() {
-		return String.format("hostName=%s, port=%d, socketTimeoutMillis=200", getCurrentIP(), getCacheListenerPort());
-	}
-
-	private String getCurrentIP() {
-		for (String eachIP : config.getClusterURIs()) {
-			NetworkUtil.IPPortPair ipAndPortPair = NetworkUtil.convertIPAndPortPair(eachIP, 0);
-			for (InetAddress each : NetworkUtil.DEFAULT_LOCAL_ADDRESSES) {
-				if (ipAndPortPair.isSame(each.getHostAddress())) {
-					return eachIP;
-				}
-			}
-		}
-		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
-	}
-
 	void setCacheManager(CacheManager mgr) {
 		// Do nothing.
 	}
@@ -129,25 +115,32 @@ public class DynamicCacheConfig {
 		return "cacheManager";
 	}
 
-	protected String createCacheProperties(List<String> replicatedCacheNames) {
-		int clusterListenerPort = getCacheListenerPort();
+	protected Pair<NetworkUtil.IPPortPair, String> createCacheProperties(List<String> replicatedCacheNames) {
+		int clusterListenerPort = getClusterListenerPort();
+		String listenerProperty = "";
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
-		final String currentIP = getCurrentIP();
+		NetworkUtil.IPPortPair local = null;
 		for (String ip : config.getClusterURIs()) {
 			NetworkUtil.IPPortPair ipAndPortPair = NetworkUtil.convertIPAndPortPair(ip, clusterListenerPort);
-			if (ipAndPortPair.isSame(currentIP)) {
+			if (ipAndPortPair.isIP4AndLocalHost()) {
+				local = ipAndPortPair;
 				continue;
 			}
-
 			for (String cacheName : replicatedCacheNames) {
-				uris.add(String.format("//%s:%d/%s", ipAndPortPair.getIP(), ipAndPortPair.getPort(), cacheName));
+				if (ipAndPortPair.isIP6()) {
+					uris.add(String.format("//[%s]:%d/%s", ipAndPortPair.getIP(), ipAndPortPair.getPort(), cacheName));
+				} else {
+					uris.add(String.format("//%s:%d/%s", ipAndPortPair.getIP(), ipAndPortPair.getPort(), cacheName));
+				}
 			}
 		}
-		return "peerDiscovery=manual,rmiUrls=" + StringUtils.join(uris, "|");
+
+		String peerProperty = "peerDiscovery=manual,rmiUrls=" + StringUtils.join(uris, "|");
+		return Pair.of(Preconditions.checkNotNull(local), peerProperty);
 	}
 
-	int getCacheListenerPort() {
+	int getClusterListenerPort() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
 				Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 	}

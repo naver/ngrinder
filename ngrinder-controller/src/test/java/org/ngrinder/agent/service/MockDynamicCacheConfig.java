@@ -13,17 +13,14 @@
  */
 package org.ngrinder.agent.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import net.grinder.util.NetworkUtil;
+import net.grinder.util.Pair;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.FactoryConfiguration;
 import net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.infra.config.DynamicCacheConfig;
@@ -31,12 +28,16 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 /**
-  * Mock DynamicCacheConfig which use cluster mode.
+ * Mock DynamicCacheConfig which use cluster mode.
  */
 @TestOnlyComponent
 public class MockDynamicCacheConfig extends DynamicCacheConfig {
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public EhCacheCacheManager dynamicCacheManager() {
@@ -44,7 +45,7 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 		Configuration cacheManagerConfig;
 		InputStream inputStream = null;
 		try {
-		
+
 			CoreLogger.LOGGER.info("In cluster mode.");
 			inputStream = new ClassPathResource("ehcache-dist.xml").getInputStream();
 			cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
@@ -52,17 +53,19 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 			FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 			peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 			List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
-			String properties = createCacheProperties(replicatedCacheNames);
-			peerProviderConfig.setProperties(properties);
+			Pair<NetworkUtil.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
+			NetworkUtil.IPPortPair currentListener = properties.getFirst();
+			String peerProperty = properties.getSecond();
+			peerProviderConfig.setProperties(peerProperty);
 			cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
 
 			FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 			peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-			String peerListenerProperties = createPearListenerProperties();
-			peerListenerConfig.setProperties(peerListenerProperties);
+			String peerListenerProperty = String.format("hostName=%s, port=%d, socketTimeoutMillis=200", currentListener.getIP(), currentListener.getPort());
+			peerListenerConfig.setProperties(peerListenerProperty);
 			cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
-			CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperties);
-	
+			CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperty);
+
 			cacheManagerConfig.setName("TestCluster");
 			CacheManager mgr = CacheManager.create(cacheManagerConfig);
 			cacheManager.setCacheManager(mgr);

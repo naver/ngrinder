@@ -13,21 +13,10 @@
  */
 package org.ngrinder.agent.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Map;
-
 import junit.framework.Assert;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.util.NetworkUtil;
-
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +27,14 @@ import org.ngrinder.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Agent service test.
@@ -71,10 +67,10 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		when(spiedConfig.isCluster()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
 
-		AgentManagerServiceConfig servConfig = new AgentManagerServiceConfig();
-		ReflectionTestUtils.setField(servConfig, "config", spiedConfig);
-		servConfig.setApplicationContext(applicationContext);
-		agentManagerService = (ClusteredAgentManagerService) servConfig.agentManagerService();
+		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig();
+		serviceConfig.config = spiedConfig;
+		serviceConfig.setApplicationContext(applicationContext);
+		agentManagerService = (ClusteredAgentManagerService) serviceConfig.agentManagerService();
 		agentManagerService.setConfig(spiedConfig);
 
 		// set clustered cache manager.
@@ -83,7 +79,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		cacheManager = cacheConfig.dynamicCacheManager();
 		((EhCacheCacheManager) cacheManager).afterPropertiesSet(); // it will not be called if we
 		// create manually
-		ReflectionTestUtils.setField(agentManagerService, "cacheManager", cacheManager);
+		agentManagerService.cacheManager = cacheManager;
 		assertThat(cacheConfig.getConfig(), not(nullValue()));
 
 		agentManagerService.init();

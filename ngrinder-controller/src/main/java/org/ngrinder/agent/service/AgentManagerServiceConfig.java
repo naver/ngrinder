@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class AgentManagerServiceConfig implements ApplicationContextAware {
 
 	@Autowired
-	private Config config;
+	Config config;
 
 	private ApplicationContext applicationContext;
 
