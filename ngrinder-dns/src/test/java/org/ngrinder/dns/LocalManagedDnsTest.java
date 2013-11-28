@@ -33,7 +33,7 @@ import org.junit.Test;
  */
 public class LocalManagedDnsTest {
 
-	private final LocalManagedDns localDNS = (LocalManagedDns)new LocalManagedDnsDescriptor().createNameService();
+	private final LocalManagedDns localDNS = (LocalManagedDns) new LocalManagedDnsDescriptor().createNameService();
 
 
 	@Test
@@ -54,7 +54,7 @@ public class LocalManagedDnsTest {
 	public void testNotRegisteredDNSLookup() throws UnknownHostException {
 		System.setProperty("ngrinder.etc.hosts", "www.google.com:10.10.10.10,www.google.com:10.10.10.11");
 		NameStore.getInstance().reset();
-		assertThat(localDNS.lookupAllHostAddr("www.naver.com").length, greaterThan(2));
+		assertThat(localDNS.lookupAllHostAddr("www.naver.com").length, greaterThan(1));
 	}
 
 
