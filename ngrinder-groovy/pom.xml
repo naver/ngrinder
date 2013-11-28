@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated from archetype; please customize. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.ngrinder</groupId>
@@ -10,9 +10,9 @@
 	</parent>
 	<artifactId>ngrinder-groovy</artifactId>
 	<name>ngrinder-groovy</name>
-    <version>3.3-SNAPSHOT</version>
+	<version>3.3-SNAPSHOT</version>
 
-    <packaging>jar</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -87,6 +87,15 @@
 					<source>${jdk-version}</source>
 					<target>${jdk-version}</target>
 					<encoding>${source-encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>
+						-javaagent:${env.M2_REPO}/net/sf/grinder/grinder-dcr-agent/3.9.1/grinder-dcr-agent-3.9.1.jar
+					</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
