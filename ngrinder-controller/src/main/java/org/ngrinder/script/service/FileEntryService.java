@@ -283,7 +283,7 @@ public class FileEntryService {
 	 */
 	public void delete(User user, String basePath, String[] files) {
 		List<String> fullPathFiles = new ArrayList<String>();
-		for (String each : fullPathFiles) {
+		for (String each : files) {
 			fullPathFiles.add(basePath + "/" + each);
 		}
 		fileEntityRepository.delete(user, fullPathFiles);
