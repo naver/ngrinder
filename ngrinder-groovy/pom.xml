@@ -94,9 +94,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
-						-javaagent:~/.m2/repository/net/sf/grinder/grinder-dcr-agent/3.9.1/grinder-dcr-agent-3.9.1.jar
+						-javaagent:${settings.localRepository}/net/sf/grinder/grinder-dcr-agent/3.9.1/grinder-dcr-agent-3.9.1.jar
 					</argLine>
+					<useSystemClassLoader>true</useSystemClassLoader>
 				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>
