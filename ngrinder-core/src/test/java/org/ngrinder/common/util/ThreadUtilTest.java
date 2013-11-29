@@ -15,11 +15,12 @@ package org.ngrinder.common.util;
 
 import org.junit.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since
  */
 public class ThreadUtilTest {
 
@@ -36,7 +37,7 @@ public class ThreadUtilTest {
 	 * {@link org.ngrinder.common.util.ThreadUtil#stopQuietly(java.lang.Thread, java.lang.String)}.
 	 */
 	@Test
-	public void testStopQuetly() {
+	public void testStopQuietly() {
 		Thread newThread = new Thread(new Runnable() {
 
 			@Override
@@ -44,14 +45,15 @@ public class ThreadUtilTest {
 				int i = 10;
 				while (i > 0) {
 					ThreadUtil.sleep(200);
-					System.out.println("Running...");
 				}
 
 			}
 		});
 		newThread.start();
 		ThreadUtil.sleep(500);
+		assertThat(newThread.isAlive()).isTrue();
 		ThreadUtil.stopQuietly(newThread, "STOPPED!");
+		assertThat(newThread.isAlive()).isFalse();
 	}
 
 }

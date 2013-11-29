@@ -90,7 +90,7 @@ public class Home implements NGrinderConstants {
 	public void copyFrom(File from, boolean overwrite) {
 		// Copy missing files
 		try {
-			for (File file : from.listFiles()) {
+			for (File file : checkNotNull(from.listFiles())) {
 				if (!(new File(directory, file.getName()).exists())) {
 					FileUtils.copyFileToDirectory(file, directory);
 				} else {

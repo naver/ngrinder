@@ -6,13 +6,6 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarLoader;
 import org.junit.Test;
 
-/**
- * Created with IntelliJ IDEA.
- * User: junoyoon
- * Date: 13. 11. 25
- * Time: 오후 2:00
- * To change this template use File | Settings | File Templates.
- */
 public class ArchLoaderInitTest {
 	@Test
 	public void testArchLoader() throws ArchNotSupportedException, ArchLoaderException {

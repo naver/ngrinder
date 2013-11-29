@@ -1,17 +1,17 @@
 package net.grinder.util;
 
-import static junit.framework.Assert.fail;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import static junit.framework.Assert.fail;
 
 public class GrinderUtilTest {
 	@Test
 	public void testAny() {
-		String[] array = new String[] { "hello1", "hello2", "hello3", "hello4", "hello5", "hello6", "hello7" };
+		String[] array = new String[]{"hello1", "hello2", "hello3", "hello4", "hello5", "hello6", "hello7"};
 		List<String> asList = new ArrayList<String>(Arrays.asList(array));
 		for (int i = 0; i < 1000000; i++) {
 			if (asList.isEmpty()) {
@@ -21,7 +21,6 @@ public class GrinderUtilTest {
 				fail();
 			}
 			String any = GrinderUtils.any(array);
-			System.out.println(any);
 			if (asList.contains(any)) {
 				asList.remove(any);
 			}
@@ -36,7 +35,6 @@ public class GrinderUtilTest {
 				fail();
 			}
 			String any = GrinderUtils.any(asList);
-			System.out.println(any);
 			if (asList.contains(any)) {
 				asList.remove(any);
 			}

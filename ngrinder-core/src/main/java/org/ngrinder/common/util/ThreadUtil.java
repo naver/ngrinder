@@ -70,7 +70,7 @@ public abstract class ThreadUtil {
 			noOp();
 		}
 		try {
-			// Again Wait 5000 second.
+			// Again, Wait a while.
 			thread.join(RETRY_MILLISECOND);
 		} catch (Exception e) {
 			// Fall through
