@@ -127,6 +127,9 @@ public class UserService implements IUserService {
 	@Override
 	public User saveUserWithoutPasswordEncoding(User user) {
 		user.setFollowers(getFollowUsers(user.getFollowersStr()));
+		if (user.getPassword() != null || StringUtils.isBlank(user.getPassword())) {
+			user.setPassword(null);
+		}
 		final User existing = userRepository.findOneByUserId(user.getUserId());
 		if (existing != null) {
 			user = existing.merge(user);
