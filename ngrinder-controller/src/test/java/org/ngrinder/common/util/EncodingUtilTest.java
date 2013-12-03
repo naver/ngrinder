@@ -24,32 +24,32 @@ import org.junit.Test;
  * Class description.
  *
  * @author Mavlarn
- * @since
  */
 public class EncodingUtilTest {
 
 	/**
 	 * Test method for {@link org.ngrinder.common.util.EncodingUtil#getAutoDecodedString(byte[], java.lang.String)}.
-	 * @throws IOException 
+	 *
+	 * @throws IOException
 	 */
 	@Test
 	public void testGetAutoDecodedString() throws IOException {
 		String testStr = "12345678ikbsdfghjklsdfghjklzxcvbnm,.:LGF)(&^%^RYVG";
-		String rtnEncode = EncodingUtil.detectEncoding(testStr.getBytes(), "UTF-8");
+		String rtnEncode = EncodingUtil.detectEncoding(testStr.getBytes("UTF-8"), "UTF-8");
 		assertThat(rtnEncode, is("UTF-8"));
 	}
-	
+
 	@Test
 	public void testGetAutoDecodedStringChinese() throws IOException {
 		String testStr = "12345678ikbsdfghjklsd你好lzxcvbnm,.:LGF)(&^%^RYVG";
-		String rtnEncode = EncodingUtil.detectEncoding(testStr.getBytes(), "UTF-8");
-		assertThat(rtnEncode, is("UTF-8"));
+		String rtnEncode = EncodingUtil.detectEncoding(testStr.getBytes("EUC-KR"), "EUC-KR");
+		assertThat(rtnEncode, is("EUC-KR"));
 	}
 
 	@Test
 	public void testDetectEncoding() throws IOException {
 		String testStr = "12345678ikbsdfghjklsd你好lzxcvbnm,.:LGF)(&^%^RYVG";
-		String rtnStr = EncodingUtil.getAutoDecodedString(testStr.getBytes(), "UTF-8");
+		String rtnStr = EncodingUtil.getAutoDecodedString(testStr.getBytes("UTF-8"), "UTF-8");
 		assertThat(rtnStr, is(testStr));
 	}
 

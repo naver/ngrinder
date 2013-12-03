@@ -13,27 +13,23 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import net.grinder.SingleConsole;
+import net.grinder.util.ConsolePropertiesFactory;
+import org.junit.Test;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StopWatch;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
 
-import net.grinder.SingleConsole;
-import net.grinder.util.ConsolePropertiesFactory;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
-import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ThreadUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StopWatch;
-
-public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
+public class ConsoleManagerTest extends AbstractAgentReadyTest {
 	@Autowired
 	private MockConsoleManager manager;
 
@@ -50,7 +46,6 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testConsoleManagerWhenExceedingLimit() {
-
 		// Get all console
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;
@@ -96,7 +91,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 
 		// return console again is always allowed
 		manager.returnBackConsole("test", anotherConsole);
-		ThreadUtil.sleep(2000);
+		ThreadUtils.sleep(2000);
 		assertThat(manager.getAvailableConsoleSize(), is(1));
 		assertThat(manager.getConsoleInUse().size(), is(initialSize - 1));
 	}

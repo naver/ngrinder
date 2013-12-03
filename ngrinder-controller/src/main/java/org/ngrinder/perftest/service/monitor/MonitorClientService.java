@@ -65,7 +65,6 @@ public class MonitorClientService {
 	 * default constructor, used to debug the non-singleton of this class.
 	 */
 	public MonitorClientService() {
-		LOGGER.debug("Created MonitorClientService.");
 	}
 
 	/**
@@ -131,7 +130,7 @@ public class MonitorClientService {
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
 			}
-			if (!mbeanClient.isConnected()) {
+			if (mbeanClient == null || !mbeanClient.isConnected()) {
 				// if the monitor client can not be connected, just return, to
 				// avoid error.
 				return null;

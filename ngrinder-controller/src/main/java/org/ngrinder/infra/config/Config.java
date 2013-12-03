@@ -106,7 +106,7 @@ public class Config implements IConfig, NGrinderConstants {
 	@PostConstruct
 	public void init() {
 		try {
-			CoreLogger.LOGGER.info("NGrinder is starting...");
+			CoreLogger.LOGGER.info("nGrinder is starting...");
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
@@ -118,6 +118,7 @@ public class Config implements IConfig, NGrinderConstants {
 			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
 			initLogger(isTestMode());
 			resolveLocalIp();
+			loadAnnouncement();
 			loadDatabaseProperties();
 			versionString = getVersion();
 		} catch (IOException e) {
@@ -377,7 +378,7 @@ public class Config implements IConfig, NGrinderConstants {
 	private FileWatchdog systemConfWatchDog;
 	private FileWatchdog policyJsWatchDog;
 
-	private void initHomeMonitor() {
+	protected void initHomeMonitor() {
 		checkNotNull(home);
 		this.announcementWatchDog = new FileWatchdog(getHome().getSubFile("announcement.conf").getAbsolutePath()) {
 			@Override
@@ -434,7 +435,7 @@ public class Config implements IConfig, NGrinderConstants {
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
 		if (context.isUnitTestContext()) {
-			databaseProperties.addProperty("unittest", "true");
+			databaseProperties.addProperty("unit-test", "true");
 		}
 		return databaseProperties;
 	}

@@ -14,19 +14,19 @@
 package org.ngrinder.agent.controller;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-public class MonitorManagerControllerTest extends AbstractNGrinderTransactionalTest{
+public class MonitorManagerControllerTest extends AbstractAgentReadyTest {
 
 	@Autowired
 	MonitorManagerController monitorManagerController;
-	
+
 	@Test
 	public void testGetMonitorData() throws Exception {
 		monitorManagerController.getRealTimeMonitorData(null, "127.0.0.1");
 		monitorManagerController.closeMonitorConnection(null, "127.0.0.1");
 	}
-	
+
 }

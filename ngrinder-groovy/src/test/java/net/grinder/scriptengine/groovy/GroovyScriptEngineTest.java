@@ -22,31 +22,57 @@
  */
 package net.grinder.scriptengine.groovy;
 
-import java.io.File;
-
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.process.JUnitThreadContextInitializer;
-
+import net.grinder.plugin.http.HTTPPlugin;
+import net.grinder.plugininterface.GrinderPlugin;
+import net.grinder.plugininterface.PluginRegistry;
+import net.grinder.util.ThreadUtils;
+import org.codehaus.groovy.reflection.ReflectionUtils;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
  */
 public class GroovyScriptEngineTest {
 
 	@Test
-	public void testRunGroovyScript() throws EngineException {
+	public void testRunGroovyScript() throws EngineException, NoSuchFieldException, IllegalAccessException {
+
 		JUnitThreadContextInitializer init = new JUnitThreadContextInitializer();
 		init.initialize();
+
 		// for test, used to get groovy source file.
-		File scriptFile = new File("src/test/java/org/ngrinder/TestRunner.groovy");
-		GroovyScriptEngine engine = new GroovyScriptEngine(new ScriptLocation(scriptFile));
+		String file = getClass().getClassLoader().getResource("org/ngrinder/TestRunner.groovy").getFile();
+		GroovyScriptEngine engine = new GroovyScriptEngine(new ScriptLocation(new File(file).getAbsoluteFile()));
+
 		init.attachWorkerThreadContext();
 		GroovyScriptEngine.GroovyWorkerRunnable worker = (GroovyScriptEngine.GroovyWorkerRunnable) engine
-						.createWorkerRunnable();
+				.createWorkerRunnable();
+		assertStaticField(engine.m_groovyClass, "callCount1", 0);
+		assertStaticField(engine.m_groovyClass, "callCount2", 0);
 		worker.run();
+		assertStaticField(engine.m_groovyClass, "callCount1", 1);
+		assertStaticField(engine.m_groovyClass, "callCount2", 1);
+		worker.run();
+		assertStaticField(engine.m_groovyClass, "callCount1", 2);
+		assertStaticField(engine.m_groovyClass, "callCount2", 2);
+
+	}
+
+	private void assertStaticField(Class clazz, String fieldName, Object expectedValue) throws IllegalAccessException,
+			NoSuchFieldException {
+		assertThat(clazz.getDeclaredField(fieldName).get(null), is(expectedValue));
 	}
 }

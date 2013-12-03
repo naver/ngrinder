@@ -41,6 +41,7 @@ import net.grinder.common.Test;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
+import net.grinder.console.common.ConsoleException;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.ProcessControl;
@@ -68,7 +69,6 @@ import net.grinder.util.FileContents;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.collections.MapUtils;
@@ -79,7 +79,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.service.ISingleConsole;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -93,11 +93,11 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener, ISingleConsole {
-	private static final String REOSURCE_CONSOLE = "net.grinder.console.common.resources.Console";
+	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation(REOSURCE_CONSOLE);
-	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
+	public static final Resources RESOURCE = new ResourcesImplementation(RESOURCE_CONSOLE);
+	public static final Logger LOGGER = LoggerFactory.getLogger("console");
 
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
@@ -174,23 +174,20 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param consoleProperties {@link ConsoleProperties} used.
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
-		// if port is 0, it is Null singleConsole.
-		if (port == 0) {
-			return;
-		}
+		init(ip, port, consoleProperties);
+	}
+
+	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
 		try {
 			if (StringUtils.isNotEmpty(ip)) {
 				consoleProperties.setConsoleHost(ip);
 			}
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, eventSyncCondition);
-
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
-
 		} catch (GrinderException e) {
 			throw processException("Exception occurred while creating SingleConsole", e);
-
 		}
 	}
 
@@ -209,15 +206,15 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * messages.
 	 */
 	public void start() {
-		if (consoleFoundation == null) {
+		if (getConsoleFoundation() == null) {
 			return; // the console is not a valid console.(NullSingleConsole)
 		}
 		synchronized (eventSyncCondition) {
 			consoleFoundationThread = new Thread(new Runnable() {
 				public void run() {
-					consoleFoundation.run();
+					getConsoleFoundation().run();
 				}
-			}, "SingleConsole on port " + getConsolePort());
+			}, "console on port " + getConsolePort());
 			consoleFoundationThread.setDaemon(true);
 			consoleFoundationThread.start();
 			eventSyncCondition.waitNoInterrruptException(5000);
@@ -228,7 +225,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * For test.
 	 */
 	public void startSync() {
-		consoleFoundation.run();
+		getConsoleFoundation().run();
 	}
 
 	/**
@@ -238,7 +235,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public void shutdown() {
 		try {
 			synchronized (this) {
-				consoleFoundation.shutdown();
+				getConsoleFoundation().shutdown();
 				if (consoleFoundationThread != null && !consoleFoundationThread.isInterrupted()) {
 					consoleFoundationThread.interrupt();
 					consoleFoundationThread.join(1000);
@@ -247,7 +244,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 
 		} catch (Exception e) {
-			throw processException("Exception occurred while shutting down SingleConsole", e);
+			throw processException("Exception occurred while shutting down console", e);
 		} finally {
 			// close all report file
 			for (BufferedWriter bw : fileWriterMap.values()) {
@@ -263,8 +260,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return count of agents
 	 */
 	public int getAllAttachedAgentsCount() {
-		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-				.getNumberOfLiveAgents();
+		return getConsoleFoundation().getComponent(ProcessControl.class).getNumberOfLiveAgents();
+	}
+
+	protected ConsoleFoundationEx getConsoleFoundation() {
+		return checkNotNull(consoleFoundation);
 	}
 
 	/**
@@ -276,7 +276,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		final List<AgentIdentity> agentIdentities = newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
 				ReflectionUtil.getFieldValue(
-						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						(ProcessControlImplementation) getConsoleFoundation().getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
 				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
@@ -295,7 +295,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return the consoleFoundation
 	 */
 	public <T> T getConsoleComponent(Class<T> componentType) {
-		return consoleFoundation.getComponent(componentType);
+		return getConsoleFoundation().getComponent(componentType);
 	}
 
 	/**
@@ -464,7 +464,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 		}
 		if (mutableBoolean.isFalse()) {
-			ThreadUtil.sleep(1000);
+			ThreadUtils.sleep(1000);
 			checkSafetyWithCacheState(fileDistribution, cacheStateCondition, fileCount);
 		}
 	}

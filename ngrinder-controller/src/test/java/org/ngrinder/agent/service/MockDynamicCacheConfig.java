@@ -65,7 +65,6 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 			peerListenerConfig.setProperties(peerListenerProperty);
 			cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
 			CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperty);
-
 			cacheManagerConfig.setName("TestCluster");
 			CacheManager mgr = CacheManager.create(cacheManagerConfig);
 			cacheManager.setCacheManager(mgr);

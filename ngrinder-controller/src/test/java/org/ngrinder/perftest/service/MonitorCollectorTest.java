@@ -1,15 +1,14 @@
 package org.ngrinder.perftest.service;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import org.junit.Test;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.collect.Lists;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MonitorCollectorTest {
 

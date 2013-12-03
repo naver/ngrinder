@@ -34,6 +34,7 @@ public class ConfigTest implements NGrinderConstants {
 
 	@Before
 	public void before() {
+		System.setProperty("unit-test", "");
 		config = new MockConfig();
 		config.init();
 	}

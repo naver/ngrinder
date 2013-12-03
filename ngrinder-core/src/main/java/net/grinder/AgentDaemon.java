@@ -21,7 +21,7 @@ import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class AgentDaemon implements Agent {
 	private GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceShutdown = false;
-	public static final Logger LOGGER = LoggerFactory.getLogger(AgentDaemon.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger("agent daemon");
 	private final AgentConfig m_agentConfig;
 
 	/**
@@ -54,7 +54,7 @@ public class AgentDaemon implements Agent {
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
 		} catch (GrinderException e) {
-			throw processException("Exception occurred while creating AgentDaemon", e);
+			throw processException("Exception occurred while creating Agent Daemon", e);
 		}
 	}
 
@@ -114,11 +114,11 @@ public class AgentDaemon implements Agent {
 			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
 
-		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port : "
+		thread = new Thread(new AgentThreadRunnable(), "Agent Daemon connecting to port "
 				+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);
 		thread.start();
-		LOGGER.info("Agent Daemon {} is started.", thread.getName());
+		LOGGER.info("{} is started.", thread.getName());
 	}
 
 	private GrinderProperties getGrinderProperties() {
@@ -195,10 +195,10 @@ public class AgentDaemon implements Agent {
 			if (agent != null) {
 				agent.shutdown();
 			}
-			ThreadUtil.stopQuietly(thread, "Agent Daemon is not stopped. So force to stop");
+			ThreadUtils.stopQuietly(thread, "Agent Daemon is not stopped. So stop by force");
 			thread = null;
 		} catch (Exception e) {
-			throw processException("Exception occurred while shutting down AgentDaemon", e);
+			throw processException("Exception occurred while shutting down the agent daemon", e);
 		}
 	}
 

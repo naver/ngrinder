@@ -93,7 +93,7 @@ public class JUnitThreadContextInitializer {
 						new NullSender());
 
 		final InternalScriptContext scriptContext = new ScriptContextImplementation(new SimpleWorkerIdentity(
-						"unittest", 0), new SimpleWorkerIdentity("unittest", 0), m_threadContexts, null,
+						"unit-test", 0), new SimpleWorkerIdentity("unit-test", 0), m_threadContexts, null,
 						externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts), scriptStatistics,
 						m_testRegistryImplementation, null, null, null, null);
 		Grinder.grinder = scriptContext;
@@ -118,7 +118,7 @@ public class JUnitThreadContextInitializer {
 								m_statisticsServices, 0, LOGGER);
 				m_threadContexts.threadCreated(threadContext);
 				m_threadContexts.threadStarted(threadContext);
-				threadContext.registerThreadLifeCycleListener(new SkeletonThreadLifeCycleListener() {
+  				threadContext.registerThreadLifeCycleListener(new SkeletonThreadLifeCycleListener() {
 					@Override
 					public void endThread() {
 						threadContext.reportPendingDispatchContext();

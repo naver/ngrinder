@@ -13,30 +13,34 @@
  */
 package org.ngrinder.perftest.service;
 
-import java.util.Date;
-import java.util.List;
-
+import net.grinder.AgentControllerDaemon;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 /**
- * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to
- * create {@link PerfTest}.
- * 
+ * In addition {@link org.ngrinder.AbstractNGrinderTransactionalTest}, this class provides basic function to
+ * create {@link org.ngrinder.model.PerfTest} and run the test.
+ *
  * @author JunHo Yoon
  * @since 3.0
- * 
  */
-abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
+public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractPerfTestTransactionalTest.class);
-
 
 
 	@Autowired
@@ -97,4 +101,5 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		perfTestService.savePerfTest(perfTest);
 		return perfTest;
 	}
+
 }

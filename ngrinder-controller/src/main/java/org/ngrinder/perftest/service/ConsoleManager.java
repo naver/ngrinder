@@ -208,14 +208,14 @@ public class ConsoleManager {
 	 */
 	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
-		if (console == null) {
+		if (console == null || console instanceof NullSingleConsole) {
 			LOG.error("Attempt to return back null console for {}.", testIdentifier);
 			return;
 		}
 		try {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
-			LOG.error("Exception is occurred while console shutdown in return back process for test {}.",
+			LOG.error("Exception occurred during console return back for test {}.",
 					testIdentifier, e);
 			// But the port is getting back.
 		} finally {
@@ -224,7 +224,7 @@ public class ConsoleManager {
 				// Wait console is completely shutdown...
 				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while console shutdown in return back process for test {}.",
+				LOG.error("Exception occurred during console return back for test {}.",
 						testIdentifier, e);
 				// If it's not disconnected still, stop them by force.
 				agentManager.stopAgent(console.getConsolePort());
@@ -232,17 +232,13 @@ public class ConsoleManager {
 			try {
 				console.shutdown();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while console shutdown console in return back process for test {}.",
+				LOG.error("Exception occurred during console return back for test {}.",
 						testIdentifier, e);
 			}
-			int consolePort = -1;
+			int consolePort;
 			try {
 				consolePort = console.getConsolePort();
 			} catch (Exception e) {
-				// In case that no console is initialized.
-				noOp();
-			}
-			if (consolePort == -1) {
 				return;
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
@@ -284,6 +280,10 @@ public class ConsoleManager {
 	 */
 	public SingleConsole getConsoleUsingPort(Integer port) {
 		for (SingleConsole each : consoleInUse) {
+			// Avoid to Klocwork error.
+			if (each instanceof  NullSingleConsole) {
+				continue;
+			}
 			if (each.getConsolePort() == port) {
 				return each;
 			}

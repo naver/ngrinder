@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.controller.PerfTestController;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Mavlarn
  * @since
  */
-public class NGrinderBaseControllerTest extends AbstractPerfTestTransactionalTest {
+public class NGrinderBaseControllerTest extends AbstractAgentReadyTest {
 
 	// NGrinderBaseController is not a component, use its sub-class to test.
 	@Autowired

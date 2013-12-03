@@ -14,97 +14,82 @@
 
 package org.ngrinder.sm;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import junit.framework.Assert;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
-import junit.framework.Assert;
+import static org.junit.Assert.fail;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-/**
- * 
- * @author Tobi
- * @since 3.0
- */
 public class SecurityManagerTest {
 
-	public static boolean SM_TEST = false;
 
 	private static final String PATH = new File("/").getAbsolutePath();
+	private SecurityManager preSecurityManager;
 
-	@BeforeClass
-	// @Ignore
-	public static void init() {
-		SM_TEST = true;
+	@Before
+	public void init() {
 		System.setProperty("ngrinder.exec.path", PATH);
 		System.setProperty("ngrinder.etc.hosts", "10.34.64.36,CN14748-D-1:127.0.0.1,localhost:127.0.0.1");
 		System.setProperty("ngrinder.console.ip", "10.34.63.53");
-		// -Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager
+		preSecurityManager = System.getSecurityManager();
 		System.setSecurityManager(new MockNGrinderSecurityManager());
 	}
 
-	@AfterClass
-	public static void disableSecurity() {
-		SM_TEST = false;
+	@After
+	public  void disableSecurity() {
+		System.setSecurityManager(preSecurityManager);
 	}
 
+
+
+
 	@Test
-	// @Ignore
-	public void testNGrinderSecurityManager() {
-		System.out.println(new File("hell").getAbsolutePath());
-		System.out.println(System.getProperty("user.home"));
+	public void testAllowedNetworkAccess() throws UnknownHostException {
+		ArrayUtils.toString(Inet4Address.getAllByName("10.34.64.36"));
 	}
 
 	@Test(expected = SecurityException.class)
-	public void testNGrinderSecurityManagerNetAccessNotAllowed() throws UnknownHostException {
-		System.out.println(ArrayUtils.toString(Inet4Address.getAllByName("www.google.com")));
+	public void testNotAllowedNetworkAccess() throws UnknownHostException {
+		Inet4Address.getAllByName("www.google.com");
 	}
 
 	@Test
-	public void testNGrinderSecurityManagerNetAccessAllowed() throws UnknownHostException {
-		System.out.println(ArrayUtils.toString(Inet4Address.getAllByName("10.34.64.36")));
-		Assert.assertTrue(true);
+	public void testAllowedFileAccess() {
+		new File("hell").getAbsolutePath();
+		// This should be passed
 	}
 
 	@Test
-	// @Ignore
-	public void testNGrinderSecurityManagerFile() {
+	public void testNotAllowedFileAccess() {
 		boolean readTag = false, writeTag = false;
 		BufferedReader fis = null;
 		BufferedWriter fos = null;
 		try {
 			fis = new BufferedReader(new FileReader(PATH + "/input.txt"));
-		} catch (FileNotFoundException ioe) {
-			readTag = true;
+			fail("Read should not be allowed");
+		} catch (Exception ioe) {
 		} finally {
 			IOUtils.closeQuietly(fis);
 		}
-		Assert.assertTrue(readTag);
 
 		try {
 			fos = new BufferedWriter(new FileWriter(PATH + "/output.txt"));
 			fos.write("Hello SecurityManager.");
+			fail("This should not be reached");
+			Assert.assertTrue(writeTag);
 		} catch (IOException ioe) {
-			System.out.println("I/O failed for SecurityManagerTest.");
-			System.err.println(ioe);
+			fail("This should not be reached");
 		} catch (SecurityException e) {
-			System.err.println("Do not have the file write access in \"ngrinder.exec.path\"");
-			writeTag = true;
 		} finally {
 			IOUtils.closeQuietly(fos);
 		}
-		Assert.assertTrue(writeTag);
 	}
 
 }

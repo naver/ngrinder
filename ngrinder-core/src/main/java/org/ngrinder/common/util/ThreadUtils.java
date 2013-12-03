@@ -15,6 +15,7 @@ package org.ngrinder.common.util;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
+import net.grinder.common.UncheckedInterruptedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +25,11 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class ThreadUtil {
+public abstract class ThreadUtils {
 
-	private static final int RETRY_MILLISECOND = 5000;
-	private static final int THREAD_WAITING_TIME = 5000;
-	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtil.class);
+	private static final int RETRY_MILLISECOND = 2000;
+	private static final int THREAD_WAITING_TIME = 2000;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtils.class);
 
 	/**
 	 * Sleep in give millis without throwing exception.
@@ -40,7 +41,7 @@ public abstract class ThreadUtil {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			LOGGER.warn(e.getMessage(), e);
+			throw new UncheckedInterruptedException(e);
 		}
 	}
 

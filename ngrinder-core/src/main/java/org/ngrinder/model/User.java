@@ -24,7 +24,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * User managed by nGrinder.
- * 
+ *
  * @author Mavlarn
  * @since 3.0
  */
@@ -93,12 +93,12 @@ public class User extends BaseModel<User> {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
-	inverseJoinColumns = @JoinColumn(name = "follow_id"))
+			inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), // LF
-	inverseJoinColumns = @JoinColumn(name = "owner_id"))
+			inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
 
 	/**
@@ -109,15 +109,11 @@ public class User extends BaseModel<User> {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param userId
-	 *            user id
-	 * @param name
-	 *            user name
-	 * @param password
-	 *            password
-	 * @param role
-	 *            role
+	 *
+	 * @param userId   user id
+	 * @param name     user name
+	 * @param password password
+	 * @param role     role
 	 * @deprecated
 	 */
 	public User(String userId, String name, String password, Role role) {
@@ -130,6 +126,7 @@ public class User extends BaseModel<User> {
 
 
 	@PrePersist
+	@PreUpdate
 	public void init() {
 		this.enabled = getSafe(this.enabled, true);
 		this.external = getSafe(this.enabled);
@@ -137,20 +134,14 @@ public class User extends BaseModel<User> {
 	}
 
 
-
 	/**
 	 * Constructor.
-	 * 
-	 * @param userId
-	 *            user id
-	 * @param name
-	 *            user name
-	 * @param password
-	 *            password
-	 * @param email
-	 *            email
-	 * @param role
-	 *            role
+	 *
+	 * @param userId   user id
+	 * @param name     user name
+	 * @param password password
+	 * @param email    email
+	 * @param role     role
 	 */
 	public User(String userId, String name, String password, String email, Role role) {
 		this.userId = userId;
@@ -163,7 +154,7 @@ public class User extends BaseModel<User> {
 
 	/**
 	 * Check this user is valid.
-	 * 
+	 *
 	 * @return true if valid
 	 */
 	public boolean validate() {
@@ -336,7 +327,7 @@ public class User extends BaseModel<User> {
 
 	/**
 	 * Get the user simple information.
-	 * 
+	 *
 	 * @return user
 	 */
 	// It will throw StackOverflowException if return User that contains owners and followers value
@@ -353,7 +344,7 @@ public class User extends BaseModel<User> {
 
 	/**
 	 * string representation of User object.
-	 * 
+	 *
 	 * @return User object information String.
 	 */
 	// avoid lazy initialization issues ,method toString not contain followers and owners

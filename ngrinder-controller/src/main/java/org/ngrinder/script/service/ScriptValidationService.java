@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Script Validation Service.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -106,11 +106,8 @@ public class ScriptValidationService implements IScriptValidationService {
 				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
 						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
-			int timeout = Math.max(
-					config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_VALIDATION_TIMEOUT,
-							LocalScriptTestDriveService.DEFAULT_TIMEOUT), 10);
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-					config.isSecurityEnabled(), hostString, timeout);
+					config.isSecurityEnabled(), hostString, getTimeout());
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuffer output = new StringBuffer();
 			String path = config.getHome().getDirectory().getAbsolutePath();
@@ -128,10 +125,15 @@ public class ScriptValidationService implements IScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
-	@Override
-	public String checkSyntaxErrors(String script) {
-
-		return null;
+	protected int getTimeout() {
+		return Math.max(
+				config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_VALIDATION_TIMEOUT,
+						LocalScriptTestDriveService.DEFAULT_TIMEOUT), 10);
 	}
 
+	@Override
+	public String checkSyntaxErrors(String script) {
+		// deprecated
+		return null;
+	}
 }

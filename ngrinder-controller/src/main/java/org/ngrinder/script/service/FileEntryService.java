@@ -13,23 +13,6 @@
  */
 package org.ngrinder.script.service;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtil;
@@ -58,12 +41,28 @@ import org.tmatesoft.svn.core.internal.io.fs.FSHooks;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 /**
  * File entry service class.
- * 
+ *
  * This class is responsible for creating user svn repository whenever a user is
  * created and connect the user to the underlying svn.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -110,9 +109,8 @@ public class FileEntryService {
 
 	/**
 	 * invalidate the file_entry_seach_cache.
-	 * 
-	 * @param userId
-	 *            userId.
+	 *
+	 * @param userId userId.
 	 */
 	public void invalidateCache(String userId) {
 		cacheManager.getCache("file_entry_search_cache").evict(userId);
@@ -120,11 +118,10 @@ public class FileEntryService {
 
 	/**
 	 * Create user svn repo.
-	 * 
+	 *
 	 * This method is executed async way.
-	 * 
-	 * @param user
-	 *            newly created user.
+	 *
+	 * @param user newly created user.
 	 */
 	@Async
 	public void prepare(User user) {
@@ -149,9 +146,8 @@ public class FileEntryService {
 	/**
 	 * Get all {@link FileEntry} for the given user. This method is subject to
 	 * be cached because it takes time.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 * @return cached {@link FileEntry} list
 	 */
 	@Cacheable(value = "file_entry_search_cache", key = "#user.userId")
@@ -161,13 +157,10 @@ public class FileEntryService {
 
 	/**
 	 * Get file entries from underlying svn for given path.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param path
-	 *            path in the repo
-	 * @param revision
-	 *            revision number. -1 if HEAD.
+	 *
+	 * @param user     the user
+	 * @param path     path in the repo
+	 * @param revision revision number. -1 if HEAD.
 	 * @return file entry list
 	 */
 	public List<FileEntry> getFileEntries(User user, String path, Long revision) {
@@ -178,15 +171,12 @@ public class FileEntryService {
 
 	/**
 	 * Get single file entity.
-	 * 
+	 *
 	 * The return value has content byte.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param path
-	 *            path in the svn repo
-	 * @param revision
-	 *            file revision.
+	 *
+	 * @param user     the user
+	 * @param path     path in the svn repo
+	 * @param revision file revision.
 	 * @return single file entity
 	 */
 	public FileEntry getFileEntry(User user, String path, long revision) {
@@ -195,13 +185,11 @@ public class FileEntryService {
 
 	/**
 	 * Get single file entity.
-	 * 
+	 *
 	 * The return value has content byte.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param path
-	 *            path in the svn repo
+	 *
+	 * @param user the user
+	 * @param path path in the svn repo
 	 * @return single file entity
 	 */
 	public FileEntry getFileEntry(User user, String path) {
@@ -210,11 +198,9 @@ public class FileEntryService {
 
 	/**
 	 * Check file existence.
-	 * 
-	 * @param user
-	 *            user
-	 * @param path
-	 *            path in user repo
+	 *
+	 * @param user user
+	 * @param path path in user repo
 	 * @return true if exists.
 	 */
 	public boolean hasFileEntry(User user, String path) {
@@ -223,15 +209,11 @@ public class FileEntryService {
 
 	/**
 	 * Add folder on the given path.
-	 * 
-	 * @param user
-	 *            user
-	 * @param path
-	 *            base path
-	 * @param comment
-	 *            comment
-	 * @param folderName
-	 *            folder name
+	 *
+	 * @param user       user
+	 * @param path       base path
+	 * @param comment    comment
+	 * @param folderName folder name
 	 */
 	public void addFolder(User user, String path, String folderName, String comment) {
 		FileEntry entry = new FileEntry();
@@ -243,13 +225,10 @@ public class FileEntryService {
 
 	/**
 	 * Get file entity for the given revision.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param path
-	 *            path in the repo
-	 * @param revision
-	 *            revision. if -1, HEAD
+	 *
+	 * @param user     the user
+	 * @param path     path in the repo
+	 * @param revision revision. if -1, HEAD
 	 * @return file entity
 	 */
 	public FileEntry getFileEntry(User user, String path, Long revision) {
@@ -259,11 +238,9 @@ public class FileEntryService {
 
 	/**
 	 * Save File entry.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param fileEntity
-	 *            fileEntity to be saved
+	 *
+	 * @param user       the user
+	 * @param fileEntity fileEntity to be saved
 	 */
 	public void save(User user, FileEntry fileEntity) {
 		prepare(user);
@@ -273,13 +250,10 @@ public class FileEntryService {
 
 	/**
 	 * Delete file entries.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param basePath
-	 *            the base path
-	 * @param files
-	 *            files under base path
+	 *
+	 * @param user     the user
+	 * @param basePath the base path
+	 * @param files    files under base path
 	 */
 	public void delete(User user, String basePath, String[] files) {
 		List<String> fullPathFiles = new ArrayList<String>();
@@ -292,10 +266,8 @@ public class FileEntryService {
 	/**
 	 * Delete file entry.
 	 *
-	 * @param user
-	 *            the user
-	 * @param path
-	 *            the path
+	 * @param user the user
+	 * @param path the path
 	 */
 	public void delete(User user, String path) {
 		fileEntityRepository.delete(user, newArrayList(path));
@@ -314,33 +286,26 @@ public class FileEntryService {
 	String[] dividePathAndFile(String path) {
 		int lastIndexOf = path.lastIndexOf("/");
 		if (lastIndexOf == -1) {
-			return new String[] { path, "" };
+			return new String[]{"", path};
 		} else {
-			return new String[] { path.substring(0, lastIndexOf), path.substring(lastIndexOf + 1) };
+			return new String[]{path.substring(0, lastIndexOf), path.substring(lastIndexOf + 1)};
 		}
 	}
 
 	/**
 	 * Create new FileEntry.
-	 * 
-	 * @param user
-	 *            user
-	 * @param path
-	 *            base path path
-	 * @param fileName
-	 *            fileName
-	 * @param name
-	 *            name
-	 * @param url
-	 *            url
-	 * @param scriptHandler
-	 *            script handler
-	 * @param libAndResource
-	 *            true if lib and resources should be created
+	 *
+	 * @param user           user
+	 * @param path           base path path
+	 * @param fileName       fileName
+	 * @param name           name
+	 * @param url            url
+	 * @param scriptHandler  script handler
+	 * @param libAndResource true if lib and resources should be created
 	 * @return created file entry. main test file if it's the project creation.
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String name, String url,
-			ScriptHandler scriptHandler, boolean libAndResource) {
+	                                 ScriptHandler scriptHandler, boolean libAndResource) {
 		if (scriptHandler instanceof ProjectHandler) {
 			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource);
 			return null;
@@ -359,13 +324,10 @@ public class FileEntryService {
 
 	/**
 	 * Create new FileEntry for the given URL.
-	 * 
-	 * @param user
-	 *            user
-	 * @param url
-	 *            URL to be tested.
-	 * @param scriptHandler
-	 *            scriptHandler
+	 *
+	 * @param user          user
+	 * @param url           URL to be tested.
+	 * @param scriptHandler scriptHandler
 	 * @return created new {@link FileEntry}
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String url, ScriptHandler scriptHandler) {
@@ -386,15 +348,11 @@ public class FileEntryService {
 
 	/**
 	 * Load freemarker template for quick test.
-	 * 
-	 * @param user
-	 *            user
-	 * @param handler
-	 *            handler
-	 * @param url
-	 *            url
-	 * @param name
-	 *            name
+	 *
+	 * @param user    user
+	 * @param handler handler
+	 * @param url     url
+	 * @param name    name
 	 * @return generated test script
 	 */
 	public String loadTemplate(User user, ScriptHandler handler, String url, String name) {
@@ -408,11 +366,9 @@ public class FileEntryService {
 	/**
 	 * Get SVN URL for the given user and the given subpath. Base path and the
 	 * subpath is separated by ####.
-	 * 
-	 * @param user
-	 *            user
-	 * @param path
-	 *            subpath
+	 *
+	 * @param user user
+	 * @param path subpath
 	 * @return SVN URL
 	 */
 	public String getSvnUrl(User user, String path) {
@@ -427,7 +383,7 @@ public class FileEntryService {
 
 	/**
 	 * Get current context path url by user request.
-	 * 
+	 *
 	 * @return context path
 	 */
 	public String getCurrentContextPathFromUserRequest() {
@@ -437,13 +393,10 @@ public class FileEntryService {
 
 	/**
 	 * Get a SVN content into given dir.
-	 * 
-	 * @param user
-	 *            user
-	 * @param fromPath
-	 *            path in svn subpath
-	 * @param toDir
-	 *            to directory
+	 *
+	 * @param user     user
+	 * @param fromPath path in svn subpath
+	 * @param toDir    to directory
 	 */
 	public void writeContentTo(User user, String fromPath, File toDir) {
 		fileEntityRepository.writeContentTo(user, fromPath, toDir);
@@ -452,9 +405,8 @@ public class FileEntryService {
 	/**
 	 * Get the appropriate {@link ScriptHandler} subclass for the given
 	 * {@link FileEntry}.
-	 * 
-	 * @param scriptEntry
-	 *            script entry
+	 *
+	 * @param scriptEntry script entry
 	 * @return scriptHandler
 	 */
 	public ScriptHandler getScriptHandler(FileEntry scriptEntry) {
@@ -464,9 +416,8 @@ public class FileEntryService {
 	/**
 	 * Get the appropriate {@link ScriptHandler} subclass for the given
 	 * ScriptHandler key.
-	 * 
-	 * @param key
-	 *            script entry
+	 *
+	 * @param key script entry
 	 * @return scriptHandler
 	 */
 	public ScriptHandler getScriptHandler(String key) {

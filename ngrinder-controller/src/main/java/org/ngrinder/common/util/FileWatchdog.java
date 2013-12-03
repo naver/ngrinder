@@ -48,7 +48,7 @@ public abstract class FileWatchdog extends Thread {
 	private long delay = DEFAULT_DELAY;
 
 	private File file;
-	private long lastModif = 0;
+	private long lastModified = 0;
 	private boolean warnedAlready = false;
 	private boolean interrupted = false;
 
@@ -79,16 +79,18 @@ public abstract class FileWatchdog extends Thread {
 		try {
 			fileExists = file.exists();
 		} catch (SecurityException e) {
-			LOGGER.warn("Was not allowed to read check file existance, file:[" + filename + "].");
+			LOGGER.warn("Was not allowed to read check file existence, file:[" + filename + "].");
 			interrupted = true; // there is no point in continuing
 			return;
 		}
 
 		if (fileExists) {
 			long l = file.lastModified(); // this can also throw a
-											// SecurityException
-			if (l > lastModif) { // however, if we reached this point this
-				lastModif = l; // is very unlikely.
+			if (lastModified ==0) {
+				lastModified = l; // is very unlikely.
+			}
+			if (l > lastModified) { // however, if we reached this point this
+				lastModified = l; // is very unlikely.
 				doOnChange();
 				warnedAlready = false;
 			}

@@ -13,15 +13,6 @@
  */
 package org.ngrinder.user.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -32,6 +23,12 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 
@@ -51,10 +48,10 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user.setEmail("www@test.com");
 		user.setRole(Role.SUPER_USER);
 		user = userService.saveUser(user);
-		assertThat(user.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
-		assertThat(user.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER),is(true));
-		assertThat(user.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER),is(true));
-		assertThat(user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE),is(true));
+		assertThat(user.getRole().hasPermission(Permission.GET_ALL_TESTS), is(true));
+		assertThat(user.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER), is(true));
+		assertThat(user.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER), is(true));
+		assertThat(user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE), is(true));
 		assertThat(user.getUserId(), is(userId));
 		return user;
 	}
@@ -68,25 +65,25 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user2.setUserId("hello");
 		user2.setPassword("www222");
 		user2.setEmail("www@test.com");
-		user2.setRole(Role.USER);
-		userService.saveUser(user2);
+		user2.setRole(Role.ADMIN);
+		user2 = userService.saveUser(user2);
 		User userById = userService.getUserById("hello");
 		assertThat(userById.getId(), is(user.getId()));
 		userService.saveUser(user2);
 		userById = userService.getUserById("hello");
-		assertThat(userById.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
-		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER),is(true));
-		assertThat(userById.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER),is(true));
-		assertThat(userById.getRole().hasPermission(Permission.SWITCH_TO_ANYONE),is(true));
+		assertThat(userById.getRole().hasPermission(Permission.GET_ALL_TESTS), is(true));
+		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER), is(true));
+		assertThat(userById.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER), is(true));
+		assertThat(userById.getRole().hasPermission(Permission.SWITCH_TO_ANYONE), is(true));
 		assertThat(userById.getRole(), is(Role.ADMIN));
 	}
 
 	@Test
 	public void testDeleteUsers() {
-		final User user = createTestUser("testId1");
+		final User user = createTestUser("testId3");
+		assertThat(user, notNullValue());
 		userService.deleteUser(user.getUserId());
-		User userById = userService.getUserById(user.getUserId());
-		Assert.assertNull(userById);
+		assertThat(userService.getUserById(user.getUserId()), nullValue());
 	}
 
 	@Autowired
@@ -109,7 +106,7 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(perfTestService.getPerfTest(perfTest.getId()), nullValue());
 		assertThat(scriptDirectory.exists(), is(false));
 	}
-	
+
 	@Test
 	public void testGetUserListByKeyWord() {
 		User user = new User();
@@ -120,7 +117,7 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user.setRole(Role.USER);
 		user = userService.saveUser(user);
 		assertThat(user.getUserId(), is("testIdForNameSearch"));
-		
+
 		List<User> userList = userService.getUsersByKeyWord("ForNameSearch");
 		assertThat(userList.size(), is(1));
 

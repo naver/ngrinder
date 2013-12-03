@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
@@ -32,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {@link TagService} test.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -68,17 +69,17 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		entity.setLastModifiedUser(getTestUser());
 		entity.setCreatedUser(getTestUser());
 		tagRepository.save(entity);
-		Set<Tag> addTags = tagService.addTags(getTestUser(), new String[] { "HELLO", "WORLD" });
+		Set<Tag> addTags = tagService.addTags(getTestUser(), new String[]{"HELLO", "WORLD"});
 		assertThat(addTags.size(), is(2));
 		assertThat(tagRepository.findAll().size(), is(2));
 
-		addTags = tagService.addTags(getTestUser(), new String[] { "HELLO", "world" });
+		addTags = tagService.addTags(getTestUser(), new String[]{"HELLO", "world"});
 		assertThat(addTags.size(), is(2));
 		assertThat(tagRepository.findAll().size(), is(3));
-		
-		addTags = tagService.addTags(getTestUser(), new String[] {});
+
+		addTags = tagService.addTags(getTestUser(), new String[]{});
 		assertThat(tagRepository.findAll().size(), is(3));
-		
+
 
 		tagService.deleteTags(getTestUser());
 		assertThat(tagRepository.findAll().size(), is(0));
@@ -87,9 +88,9 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testPerfTestTagging() {
 		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
-		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[] { "HELLO", "world" }));
+		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[]{"HELLO", "world"}));
 		createPerfTest(newPerfTest);
-		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[] { "HELLO", "WORLD" }));
+		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[]{"HELLO", "WORLD"}));
 		PerfTest createPerfTest = createPerfTest(newPerfTest);
 		PerfTest perfTestWithTag = perfTestService.getPerfTestWithTag(createPerfTest.getId());
 		List<Tag> listTags = tagService.getAllTags(getTestUser(), "H");

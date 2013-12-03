@@ -17,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.config.Config;
@@ -224,7 +224,7 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping("/check/healthcheck_slow")
 	public HttpEntity<String> healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
 	                                            HttpServletResponse response) {
-		ThreadUtil.sleep(sleep);
+		ThreadUtils.sleep(sleep);
 		return healthcheck(response);
 	}
 

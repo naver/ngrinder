@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
  * @author JunHo Yoon
  * 
  */
-@ActiveProfiles("unittest")
+@ActiveProfiles("unit-test")
 @ContextConfiguration("classpath:applicationContext.xml")
 public class HomeTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
 

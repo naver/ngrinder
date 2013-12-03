@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * nGrinder security manager.
- * 
+ *
  * @author JunHo Yoon
  * @author Tobi
  * @since 3.0
@@ -116,11 +116,11 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	// -----------------------------------------------------------------------
+
 	/**
 	 * Returns the path to the system temporary directory.
-	 * 
+	 *
 	 * @return the path to the system temporary directory.
-	 * 
 	 * @since Commons IO 2.0
 	 */
 	private static String getTempDirectoryPath() {
@@ -157,7 +157,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 			// except setSecurityManager
 			String permissionName = permission.getName();
 			if ("setSecurityManager".equals(permissionName)) {
-				throw new SecurityException("java.lang.RuntimePermission: setSecurityManager is not allowed.");
+				processSetSecurityManagerAction();
 			}
 		} else if (permission instanceof java.security.UnresolvedPermission) {
 			throw new SecurityException("java.security.UnresolvedPermission is not allowed.");
@@ -174,6 +174,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 		} else if (permission instanceof javax.sound.sampled.AudioPermission) {
 			throw new SecurityException("javax.sound.sampled.AudioPermission is not allowed.");
 		}
+	}
+
+	protected void processSetSecurityManagerAction() throws SecurityException {
+		throw new SecurityException("java.lang.RuntimePermission: setSecurityManager is not allowed.");
 	}
 
 	@Override
@@ -218,9 +222,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	/**
 	 * File read access is allowed on <br>
 	 * "agent.exec.folder" and "agent.exec.folder".
-	 * 
-	 * @param file
-	 *            file path
+	 *
+	 * @param file file path
 	 */
 	@SuppressWarnings("unused")
 	private void fileAccessReadAllowed(String file) {
@@ -237,9 +240,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	/**
 	 * File write access is allowed <br>
 	 * on "agent.exec.folder".
-	 * 
-	 * @param file
-	 *            file path
+	 *
+	 * @param file file path
 	 */
 	private void fileAccessWriteAllowed(String file) {
 		if (file != null && (file.contains("log/test_") || file.contains("log\\test_"))) {
@@ -258,9 +260,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	/**
 	 * File delete access is allowed <br>
 	 * on "agent.exec.folder".
-	 * 
-	 * @param file
-	 *            file path
+	 *
+	 * @param file file path
 	 */
 	private void fileAccessDeleteAllowed(String file) {
 		String filePath = normalize(file, workDirectory);
@@ -296,9 +297,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	/**
 	 * NetWork access is allowed on "ngrinder.etc.hosts".
-	 * 
-	 * @param host
-	 *            host name
+	 *
+	 * @param host host name
 	 */
 	private void netWorkAccessAllowed(String host) {
 		if (allowedHost.contains(host)) {
@@ -327,6 +327,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * The separator character that is the opposite of the system separator.
 	 */
 	private static final char OTHER_SEPARATOR;
+
 	static {
 		if (isSystemWindows()) {
 			OTHER_SEPARATOR = UNIX_SEPARATOR;
@@ -336,9 +337,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	// -----------------------------------------------------------------------
+
 	/**
 	 * Determines if Windows file system is in use.
-	 * 
+	 *
 	 * @return true if the system is Windows
 	 */
 	private static boolean isSystemWindows() {
@@ -347,11 +349,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	/**
 	 * Internal method to perform the normalization.
-	 * 
 	 *
-	 *
-	 * @param filename
-	 *            the filename
+	 * @param filename the filename
 	 * @return the normalized filename
 	 */
 	private static String doNormalize(String filename) {
@@ -370,10 +369,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 		char[] array = new char[size + 2]; // +1 for possible extra slash, +2 for arraycopy
 		filename.getChars(0, filename.length(), array, 0);
 
-		// fix separators throughout
-		char otherSeparator = (SYSTEM_SEPARATOR == SYSTEM_SEPARATOR ? OTHER_SEPARATOR : SYSTEM_SEPARATOR);
 		for (int i = 0; i < array.length; i++) {
-			if (array[i] == otherSeparator) {
+			if (array[i] == OTHER_SEPARATOR) {
 				array[i] = SYSTEM_SEPARATOR;
 			}
 		}
@@ -407,7 +404,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 		}
 
 		// double dot slash
-		outer: for (int i = prefix + 2; i < size; i++) {
+		outer:
+		for (int i = prefix + 2; i < size; i++) {
 			if (array[i] == SYSTEM_SEPARATOR && array[i - 1] == '.' && array[i - 2] == '.'
 					&& (i == prefix + 2 || array[i - 3] == SYSTEM_SEPARATOR)) {
 				if (i == prefix + 2) {
@@ -446,6 +444,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	// -----------------------------------------------------------------------
+
 	/**
 	 * Returns the length of the filename prefix, such as <code>C:/</code> or <code>~/</code>.
 	 * <p>
@@ -453,7 +452,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * <p>
 	 * The prefix length includes the first slash in the full filename if applicable. Thus, it is possible that the
 	 * length returned is greater than the length of the input string.
-	 * 
+	 *
 	 * <pre>
 	 * Windows:
 	 * a\b\c.txt           --> ""          --> relative
@@ -461,7 +460,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * C:a\b\c.txt         --> "C:"        --> drive relative
 	 * C:\a\b\c.txt        --> "C:\"       --> absolute
 	 * \\server\a\b\c.txt  --> "\\server\" --> UNC
-	 * 
+	 *
 	 * Unix:
 	 * a/b/c.txt           --> ""          --> relative
 	 * /a/b/c.txt          --> "/"         --> absolute
@@ -473,9 +472,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is running on. ie. both Unix and Windows
 	 * prefixes are matched regardless.
-	 * 
-	 * @param filename
-	 *            the filename to find the prefix in, null returns -1
+	 *
+	 * @param filename the filename to find the prefix in, null returns -1
 	 * @return the length of the prefix, -1 if invalid or null
 	 */
 	private static int getPrefixLength(String filename) {
@@ -533,11 +531,11 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	// -----------------------------------------------------------------------
+
 	/**
 	 * Checks if the character is a separator.
-	 * 
-	 * @param ch
-	 *            the character to check
+	 *
+	 * @param ch the character to check
 	 * @return true if it is a separator character
 	 */
 	private static boolean isSeparator(char ch) {

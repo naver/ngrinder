@@ -30,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
+/**
+ * This test contains the logic which generates the initial db schema.
+ */
 @SuppressWarnings("deprecation")
 @Ignore
 public class DataUpdaterTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
@@ -53,7 +56,6 @@ public class DataUpdaterTest extends org.ngrinder.AbstractNGrinderTransactionalT
 			System.out.println(file.getAbsolutePath());
 			schema.setOutputFile(file.getAbsolutePath());
 			schema.create(true, false);
-
 		}
 	}
 }

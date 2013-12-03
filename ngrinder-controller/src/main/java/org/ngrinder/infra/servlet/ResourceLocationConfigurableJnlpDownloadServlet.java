@@ -40,14 +40,16 @@ import org.springframework.web.context.ServletContextAware;
 /**
  * {@link JnlpDownloadServlet} which forwards the download request to the home folder. This class is
  * mainly implemented by providing decorating {@link ServletContext}.
- * 
+ *
  * @author JunHo Yoon
  */
 @RuntimeOnlyController("jnlpDownloadServlet")
 public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloadServlet implements HttpRequestHandler,
-				ServletConfig, ServletContextAware {
+		ServletConfig, ServletContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLocationConfigurableJnlpDownloadServlet.class);
-	/** UID. */
+	/**
+	 * UID.
+	 */
 	private static final long serialVersionUID = 2703216836987727946L;
 
 	@Autowired
@@ -60,9 +62,8 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 	 * it can redirect {@link ServletContext#getRealPath(String)}
 	 * {@link ServletContext#getResource(String)},
 	 * {@link ServletContext#getResourceAsStream(String)} to ${NGRINDER_HOME}/download/.
-	 * 
-	 * @param servletContext
-	 *            raw {@link ServletContext}
+	 *
+	 * @param servletContext raw {@link ServletContext}
 	 */
 
 	@Override
@@ -71,15 +72,14 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 			this.servletContext = servletContext;
 		} else {
 			this.servletContext = new ServletContextDelegate(servletContext, this.config.getHome()
-							.getDownloadDirectory());
+					.getDownloadDirectory());
 		}
 	}
 
 	/**
 	 * This method name should not be init. If it's init, there will be recursion calls.
-	 * 
-	 * @throws ServletException
-	 *             exception
+	 *
+	 * @throws ServletException exception
 	 */
 	@PostConstruct
 	public void initialize() throws ServletException {
@@ -95,14 +95,14 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 	 */
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
-					throws ServletException,
-					IOException {
+			throws ServletException,
+			IOException {
 		try {
 			// Forward the the request to existing JNLPDownloadServlet.
 			LOGGER.debug("JNLP file is downloading : {}", request.getPathInfo());
-			if (request.getMethod() == "GET") {
+			if ("GET".equals(request.getMethod())) {
 				doGet(request, response);
-			} else if (request.getMethod() == "HEAD") {
+			} else if ("HEAD".equals(request.getMethod())) {
 				doHead(request, response);
 			} else {
 				doGet(request, response);

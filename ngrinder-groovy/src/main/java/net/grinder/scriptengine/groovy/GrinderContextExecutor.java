@@ -14,6 +14,7 @@
 package net.grinder.scriptengine.groovy;
 
 import static net.grinder.util.NoOp.noOp;
+
 import net.grinder.engine.process.NullStatement;
 import net.grinder.script.Grinder;
 import net.grinder.scriptengine.groovy.GroovyScriptEngine.GroovyScriptExecutionException;
@@ -26,30 +27,38 @@ import org.junit.runners.model.Statement;
 
 /**
  * JUnit styled script runner in the Grinder context.
- * 
+ *
  * This class is to let the its user call the pre/post methods by himself.
- * 
+ *
  * This runner is *NOT* intended to run in the JUnit.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
 public class GrinderContextExecutor extends GrinderRunner {
 	/**
 	 * Constructor.
-	 * 
-	 * @param klass
-	 *            class to be tested.
-	 * @throws InitializationError
-	 *             initialization exception
+	 *
+	 * @param klass class to be tested.
+	 * @throws InitializationError initialization exception
 	 */
 	public GrinderContextExecutor(Class<?> klass) throws InitializationError {
 		super(klass);
 	}
 
 	/**
+	 * Constructor.
+	 *
+	 * @param klass  class to be tested.
+	 * @param runner runner object
+	 * @throws InitializationError initialization exception
+	 */
+	public GrinderContextExecutor(Class<?> klass, Object runner) throws InitializationError {
+		super(klass, runner);
+	}
+
+	/**
 	 * Do nothing on grinder context initialization.
-	 * 
 	 */
 	@Override
 	protected void initializeGrinderContext() {
@@ -58,9 +67,8 @@ public class GrinderContextExecutor extends GrinderRunner {
 
 	/**
 	 * Do nothing.
-	 * 
-	 * @param notifier
-	 *            notifier
+	 *
+	 * @param notifier notifier
 	 */
 	@Override
 	protected void registerRunNotifierListener(RunNotifier notifier) {
@@ -69,9 +77,8 @@ public class GrinderContextExecutor extends GrinderRunner {
 
 	/**
 	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess} annotated methods.
-	 * 
-	 * @throws GroovyScriptExecutionException
-	 *             script exception
+	 *
+	 * @throws GroovyScriptExecutionException script exception
 	 */
 	public void runBeforeProcess() throws GroovyScriptExecutionException {
 		try {
@@ -84,9 +91,8 @@ public class GrinderContextExecutor extends GrinderRunner {
 
 	/**
 	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.AfterProcess} annotated methods.
-	 * 
-	 * @throws GroovyScriptExecutionException
-	 *             script exception
+	 *
+	 * @throws GroovyScriptExecutionException script exception
 	 */
 	public void runAfterProcess() throws GroovyScriptExecutionException {
 		try {
@@ -99,9 +105,8 @@ public class GrinderContextExecutor extends GrinderRunner {
 
 	/**
 	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.BeforeThread} annotated methods.
-	 * 
-	 * @throws GroovyScriptExecutionException
-	 *             script exception.
+	 *
+	 * @throws GroovyScriptExecutionException script exception.
 	 */
 	public void runBeforeThread() throws GroovyScriptExecutionException {
 		try {
@@ -114,9 +119,8 @@ public class GrinderContextExecutor extends GrinderRunner {
 
 	/**
 	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.AfterThread} annotated methods.
-	 * 
-	 * @throws GroovyScriptExecutionException
-	 *             script error.
+	 *
+	 * @throws GroovyScriptExecutionException script error.
 	 */
 	public void runAfterThread() throws GroovyScriptExecutionException {
 		try {
@@ -155,9 +159,8 @@ public class GrinderContextExecutor extends GrinderRunner {
 
 	/**
 	 * No support for repetition in grinder context.
-	 * 
-	 * @param statement
-	 *            statement.
+	 *
+	 * @param statement statement.
 	 * @return pass the given statement without modification
 	 */
 	@Override

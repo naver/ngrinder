@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -61,6 +63,8 @@ public class AgentConfig {
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper internalProperties;
 	private String agentHostID;
+	private boolean silent = false;
+	private int controllerPort;
 
 	/**
 	 * Initialize.
@@ -73,6 +77,17 @@ public class AgentConfig {
 		loadAgentProperties();
 		loadInternalProperties();
 		return this;
+	}
+
+	/**
+	 * Initialize.
+	 *
+	 * @param silent true if no log should be printed
+	 * @return initialized AgentConfig
+	 */
+	public AgentConfig init(boolean silent) {
+		this.silent = silent;
+		return init();
 	}
 
 	private void loadInternalProperties() {
@@ -186,23 +201,20 @@ public class AgentConfig {
 	 * @return resolved {@link AgentHome}
 	 */
 	protected AgentHome resolveHome() {
-		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
-		LOGGER.info("    System Environment:  NGRINDER_AGENT_HOME={}", StringUtils.trimToEmpty(userHomeFromEnv));
-
-		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
-		LOGGER.info("    Java System Property:  ngrinder.agent.home={}",
-				StringUtils.trimToEmpty(userHomeFromProperty));
-
+		String userHomeFromEnv = trimToEmpty(System.getenv("NGRINDER_AGENT_HOME"));
+		printLog("    System Environment:  NGRINDER_AGENT_HOME={}", userHomeFromEnv);
+		String userHomeFromProperty = trimToEmpty(System.getProperty("ngrinder.agent.home"));
+		printLog("    Java System Property:  ngrinder.agent.home={}", userHomeFromEnv);
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
-			LOGGER.warn("The path to ngrinder agent home is ambiguous:");
-			LOGGER.warn("    '{}' is accepted.", userHomeFromProperty);
+			printLog("The path to ngrinder agent home is ambiguous:");
+			printLog("    '{}' is accepted.", userHomeFromProperty);
 		}
 
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		if (StringUtils.isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		}
-		LOGGER.info("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
+		printLog("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
 		File homeDirectory = new File(userHome);
 		try {
 			homeDirectory.mkdirs();
@@ -215,11 +227,18 @@ public class AgentConfig {
 		return new AgentHome(homeDirectory);
 	}
 
+	private void printLog(String template, Object... var) {
+		if (!isSilentMode()) {
+			LOGGER.info(template, var);
+		}
+	}
+
 	/**
 	 * if there is testmode property in system.properties.. return true
 	 *
 	 * @return true is test mode
 	 */
+
 	public boolean isTestMode() {
 		return BooleanUtils.toBoolean(getProperty("testmode", "false"));
 	}
@@ -287,7 +306,8 @@ public class AgentConfig {
 	}
 
 	public String getControllerIP() {
-		return getProperty(AGENT_CONTROLLER_IP, getProperty(AGENT_CONSOLE_IP, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST));
+		final String property = getProperty(AGENT_CONSOLE_IP, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
+		return getProperty(AGENT_CONTROLLER_IP, property);
 	}
 
 	public void setControllerIP(String ip) {
@@ -314,11 +334,33 @@ public class AgentConfig {
 		return getProperty(MONITOR_LISTEN_IP, NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
+	public boolean isSilentMode() {
+		return silent;
+	}
+
+
 	public static class NullAgentConfig extends AgentConfig {
 		public int counter = 0;
+		private int controllerPort = 0;
 
 		public NullAgentConfig(int i) {
 			counter = i;
+		}
+
+
+		public int getControllerPort() {
+			if (controllerPort == 0) {
+				return getPropertyInt(AGENT_CONTROLLER_PORT, getPropertyInt(AGENT_CONSOLE_PORT, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
+			}
+			return controllerPort;
+		}
+
+		public void setControllerPort(int controllerPort) {
+			this.controllerPort = controllerPort;
+		}
+
+		public boolean isSilentMode() {
+			return true;
 		}
 
 		@Override
@@ -329,6 +371,7 @@ public class AgentConfig {
 			try {
 				FileUtils.forceDeleteOnExit(directory);
 			} catch (IOException e) {
+				noOp();
 			}
 			return resolveHome;
 		}

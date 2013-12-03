@@ -102,7 +102,7 @@ public class AgentPackageService {
 	 * @return File
 	 */
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
-										 String owner) {
+	                                     String owner) {
 		File agentPackagesDir = getAgentPackagesDir();
 		agentPackagesDir.mkdirs();
 		final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
@@ -164,11 +164,19 @@ public class AgentPackageService {
 
 	private Set<String> getDependentLibs(URLClassLoader cl) throws IOException {
 		Set<String> libs = new HashSet<String>();
-		final String dependencies = IOUtils.toString(cl.getResourceAsStream("dependencies.txt"));
-		for (String each : StringUtils.split(dependencies, ",;")) {
-			libs.add(each.trim());
+		InputStream dependencyStream = null;
+		try {
+			dependencyStream = cl.getResourceAsStream("dependencies.txt");
+			final String dependencies = IOUtils.toString(dependencyStream);
+			for (String each : StringUtils.split(dependencies, ",;")) {
+				libs.add(each.trim());
+				libs.add(getPackageName("ngrinder-core") + ".jar");
+			}
+		} catch (Exception e) {
+			IOUtils.closeQuietly(dependencyStream);
+			LOGGER.error("Error while loading dependencies.txt", e);
 		}
-		libs.add(getPackageName("ngrinder-core") + ".jar");
+
 		return libs;
 	}
 
@@ -253,7 +261,7 @@ public class AgentPackageService {
 		private int mode;
 
 
-		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, FilePredicate filePredicate,String basePath, int mode) {
+		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, FilePredicate filePredicate, String basePath, int mode) {
 			this.tao = tao;
 			this.filePredicate = filePredicate;
 			this.basePath = basePath;

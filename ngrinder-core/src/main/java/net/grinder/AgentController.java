@@ -95,7 +95,7 @@ public class AgentController implements Agent {
 		this.version = agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		// Set it with the default name
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getLocalIP());
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getControllerIP());
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new AgentSystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
@@ -129,8 +129,8 @@ public class AgentController implements Agent {
 							consoleCommunication.start();
 							LOGGER.info("connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
-							LOGGER.error("Error while connecting to controller {}", connector.getEndpointAsString());
-							LOGGER.debug(e.getMessage(), e);
+							LOGGER.error("Error while connecting to agent controller server at {}",
+									connector.getEndpointAsString());
 							return;
 						}
 					}
@@ -158,7 +158,7 @@ public class AgentController implements Agent {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
-					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "");
+					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "unknown");
 					LOGGER.info("starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
@@ -220,7 +220,7 @@ public class AgentController implements Agent {
 								retryCount++;
 								agentDownloadGrinderMessage.setNext(message.getNext());
 							} else {
-								throw new CommunicationException("Error while getting agent package binary from controller");
+								throw new CommunicationException("Error while getting agent package from controller");
 							}
 
 						}
@@ -230,7 +230,7 @@ public class AgentController implements Agent {
 						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
-						LOGGER.error("While updating agent, the exception is occurred", e);
+						LOGGER.error("While updating agent, the exception occurred.", e);
 					}
 
 				} else {
@@ -260,12 +260,12 @@ public class AgentController implements Agent {
 				return (name.endsWith(".log"));
 			}
 		});
-		Arrays.sort(logFiles);
-		if (ArrayUtils.isEmpty(logFiles)) {
+
+		if (logFiles == null || ArrayUtils.isEmpty(logFiles)) {
 			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());
 			return;
 		}
-
+		Arrays.sort(logFiles);
 		// Take only one file... if agent.send.all.logs is not set.
 		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
 			logFiles = new File[]{logFiles[0]};
@@ -364,7 +364,7 @@ public class AgentController implements Agent {
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
-				LOGGER.error("{}. This error is ignorable if it doesn't occur much.", e.getMessage());
+				LOGGER.error("{}. This error is not critical if it doesn't occur much.", e.getMessage());
 			}
 		}
 

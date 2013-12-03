@@ -176,6 +176,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, grinderProperties, checkCancellation(singleConsole));
+
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 		} catch (SingleConsoleCancellationException ex) {
@@ -264,7 +265,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				"All necessary files are distributed.");
 	}
 
-	private int getSafeTransmissionThreshold() {
+	protected int getSafeTransmissionThreshold() {
 		// For backward compatibility
 		int safeTransmissionThreshold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD, 0);
 		if (safeTransmissionThreshold == 0) {
@@ -477,13 +478,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *                           {@link PerfTest}
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		LOG.info("Cancel {} by user request.", perfTest.getTestIdentifier());
+		LOG.info("Cancel test {} by user request.", perfTest.getId());
 		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
 					"Stop requested by user");
 		} catch (Exception e) {
-			LOG.error("Error while canceling {} : {}", perfTest.getTestIdentifier(), e.getMessage());
+			LOG.error("Error while canceling test {} : {}", perfTest.getId(), e.getMessage());
 			LOG.debug("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);

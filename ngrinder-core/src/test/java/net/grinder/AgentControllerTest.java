@@ -19,16 +19,14 @@ import net.grinder.util.NetworkUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractMuliGrinderTestBase;
+import org.ngrinder.AbstractMultiGrinderTestBase;
 
-import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AgentControllerTest extends AbstractMuliGrinderTestBase {
+public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 	AgentControllerServerDaemon agentControllerServerDaemon;
 	AgentControllerDaemon agentControllerDaemon;
 	AgentControllerDaemon agentControllerDaemon2;
@@ -37,23 +35,15 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 
 	@Before
 	public void before() {
-		File file = new File(new File("."), "native_lib");
-		System.setProperty("java.library.path", file.getAbsolutePath());
-		// set sys_paths to null
-		Field sysPathsField = null;
-		try {
-			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
-			sysPathsField.setAccessible(true);
-			sysPathsField.set(null, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		agentControllerServerDaemon = new AgentControllerServerDaemon(getFreePort());
+		final int freePort = getFreePort();
+		agentControllerServerDaemon = new AgentControllerServerDaemon(freePort);
 		agentControllerServerDaemon.start();
+		agentConfig1.setControllerPort(freePort);
+		agentControllerDaemon = new AgentControllerDaemon(agentConfig1);
 
-		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.run();
-		agentControllerDaemon2 = new AgentControllerDaemon();
+		agentConfig2.setControllerPort(freePort);
+		agentControllerDaemon2 = new AgentControllerDaemon(agentConfig2);
 		agentControllerDaemon2.run();
 		sleep(2000);
 		// Validate if all agents are well-attached.

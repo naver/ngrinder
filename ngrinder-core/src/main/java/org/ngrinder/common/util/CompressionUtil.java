@@ -35,6 +35,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Compression utility.
@@ -128,7 +129,11 @@ public abstract class CompressionUtil {
 
 			while (ze != null) {
 				String fileName = ze.getName();
-				File newFile = new File(destDir.getAbsolutePath() + File.separator + fileName);
+
+				File newFile = new File(destDir.getAbsolutePath(), fileName);
+				if (newFile.getPath().contains("..")) {
+					throw new IllegalArgumentException("zip entry should not contain .. in the path.");
+				}
 				if (ze.isDirectory()) {
 					newFile.mkdirs();
 				} else {
@@ -222,7 +227,13 @@ public abstract class CompressionUtil {
 		if (!zippedFile.exists()) {
 			zippedFile.createNewFile();
 		}
-		zip(src, new FileOutputStream(zippedFile), charSetName, includeSrc);
+		FileOutputStream os = null;
+		try {
+			os = new FileOutputStream(zippedFile);
+			zip(src, os, charSetName, includeSrc);
+		} finally {
+			IOUtils.closeQuietly(os);
+		}
 	}
 
 	/**
@@ -237,7 +248,7 @@ public abstract class CompressionUtil {
 	public static void zip(File src, OutputStream os, String charsetName, boolean includeSrc) throws IOException {
 		ZipArchiveOutputStream zos = new ZipArchiveOutputStream(os);
 		zos.setEncoding(charsetName);
-		FileInputStream fis;
+		FileInputStream fis = null;
 
 		int length;
 		ZipArchiveEntry ze;
@@ -251,10 +262,11 @@ public abstract class CompressionUtil {
 				stack.push(src);
 				root = src.getParentFile();
 			} else {
-				File[] fs = src.listFiles();
+				File[] fs = checkNotNull(src.listFiles());
 				for (int i = 0; i < fs.length; i++) {
 					stack.push(fs[i]);
 				}
+
 				root = src;
 			}
 		} else {
@@ -266,7 +278,7 @@ public abstract class CompressionUtil {
 			File f = stack.pop();
 			name = toPath(root, f);
 			if (f.isDirectory()) {
-				File[] fs = f.listFiles();
+				File[] fs = checkNotNull(f.listFiles());
 				for (int i = 0; i < fs.length; i++) {
 					if (fs[i].isDirectory()) {
 						stack.push(fs[i]);
@@ -277,11 +289,14 @@ public abstract class CompressionUtil {
 			} else {
 				ze = new ZipArchiveEntry(name);
 				zos.putArchiveEntry(ze);
-				fis = new FileInputStream(f);
-				while ((length = fis.read(buf, 0, buf.length)) >= 0) {
-					zos.write(buf, 0, length);
+				try {
+					fis = new FileInputStream(f);
+					while ((length = fis.read(buf, 0, buf.length)) >= 0) {
+						zos.write(buf, 0, length);
+					}
+				} finally {
+					IOUtils.closeQuietly(fis);
 				}
-				fis.close();
 				zos.closeArchiveEntry();
 			}
 		}
@@ -319,7 +334,7 @@ public abstract class CompressionUtil {
 		try {
 			is = new FileInputStream(inFile);
 			debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
-			TarArchiveEntry entry = null;
+			TarArchiveEntry entry;
 			while ((entry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
 				final File outputFile = new File(outputDir, entry.getName());
 				if (entry.isDirectory()) {
@@ -335,9 +350,12 @@ public abstract class CompressionUtil {
 						parentFile.mkdirs();
 					}
 					final OutputStream outputFileStream = new FileOutputStream(outputFile);
+					try {
+						IOUtils.copy(debInputStream, outputFileStream);
+					} finally {
+						IOUtils.closeQuietly(outputFileStream);
+					}
 
-					IOUtils.copy(debInputStream, outputFileStream);
-					outputFileStream.close();
 					if (FilenameUtils.isExtension(outputFile.getName(), EXECUTABLE_EXTENSION)) {
 						outputFile.setExecutable(true, true);
 					}
@@ -377,7 +395,7 @@ public abstract class CompressionUtil {
 			}
 			fout = new FileOutputStream(outFile);
 			final byte[] buffer = new byte[4048];
-			int n = 0;
+			int n;
 			while (-1 != (n = gzIn.read(buffer))) {
 				fout.write(buffer, 0, n);
 			}
@@ -492,8 +510,8 @@ public abstract class CompressionUtil {
 		} catch (IOException e) {
 			throw processException("Error while adding File to Tar file", e);
 		} finally {
-			tarStream.closeArchiveEntry();
 			IOUtils.closeQuietly(bis);
+			tarStream.closeArchiveEntry();
 		}
 	}
 

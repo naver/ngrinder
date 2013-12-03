@@ -23,7 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.util.CompressionUtil;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -36,7 +36,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  * @author mavlarn
  * @Since 3.0
  */
-public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactionalTest {
+public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 
 	@Autowired
 	private MockPerfTestController controller;

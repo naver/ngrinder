@@ -96,7 +96,7 @@ public class MBeanClient {
 	}
 
 	/**
-	 * disconnect the MBclient. If it is remote JMX server, disconnect the connection. If it is
+	 * disconnect the MBeanClient. If it is remote JMX server, disconnect the connection. If it is
 	 * local, disconnect the binding.
 	 */
 	public void disconnect() {

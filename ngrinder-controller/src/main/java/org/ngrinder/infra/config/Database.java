@@ -53,7 +53,7 @@ public enum Database {
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
 					" is not defined");
-			if (databaseProperties.getPropertyBoolean("unittest", false)) {
+			if (databaseProperties.getPropertyBoolean("unit-test", false)) {
 				format = format + ";DB_CLOSE_ON_EXIT=FALSE";
 			}
 			dataSource.setUrl(format);

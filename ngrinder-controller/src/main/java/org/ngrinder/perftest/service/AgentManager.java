@@ -36,7 +36,7 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.common.util.FileDownloadUtil;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
@@ -482,7 +482,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 		StringBuilder progress = new StringBuilder();
 		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
 			;
-			ThreadUtil.sleep(1000);
+			ThreadUtils.sleep(1000);
 			progress.append("Update agent ").append(each).append(" to ").append(version).append("\n");
 		}
 		return progress.toString();

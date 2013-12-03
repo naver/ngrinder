@@ -13,6 +13,8 @@
  */
 package org.ngrinder.region.service;
 
+import static net.grinder.util.NetworkUtil.DEFAULT_LOCAL_IP4_ADDRESSES;
+import static net.grinder.util.NetworkUtil.removeScopedMarkerFromIP;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -33,7 +35,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Region Service Test class.
- * 
+ *
  * @author mavlarn
  * @since 3.1
  */
@@ -46,7 +48,8 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	private RegionService regionService;
 
 	private EhCacheCacheManager cacheManager;
-	
+	private String curAddress;
+
 	@Before
 	public void before() {
 	}
@@ -59,22 +62,25 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
 		RegionService spiedRegionService = spy(regionService);
 		spiedRegionService.setConfig(spiedConfig);
-		
+
+		curAddress = removeScopedMarkerFromIP(DEFAULT_LOCAL_IP4_ADDRESSES.get(0).getHostAddress());
+		when(spiedConfig.getClusterURIs()).thenReturn(new String[]{curAddress, "210.10.10.1"});
+
 		DynamicCacheConfig cacheConfig = new DynamicCacheConfig();
 		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
 		cacheManager = cacheConfig.dynamicCacheManager();
 		cacheManager.afterPropertiesSet();
 		ReflectionTestUtils.setField(spiedRegionService, "cacheManager", cacheManager);
-		
-		net.sf.ehcache.CacheManager ehCacheManager = (net.sf.ehcache.CacheManager)ReflectionTestUtils.getField(cacheManager, "cacheManager");
+
+		net.sf.ehcache.CacheManager ehCacheManager = (net.sf.ehcache.CacheManager) ReflectionTestUtils.getField(cacheManager, "cacheManager");
 		ehCacheManager.addCache("regions");
-		
+
 		spiedRegionService.initRegion();
 		spiedRegionService.checkRegionUpdate();
 		Collection<String> regions = spiedRegionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
-		
+
 	}
 
 }

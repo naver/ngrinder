@@ -64,7 +64,11 @@ public class LocalScriptTestDriveService {
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
 					String hostString) {
-		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, DEFAULT_TIMEOUT);
+		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, getDefaultTimeout());
+	}
+
+	protected int getDefaultTimeout() {
+		return DEFAULT_TIMEOUT;
 	}
 
 	/**
@@ -112,12 +116,13 @@ public class LocalScriptTestDriveService {
 			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
 			agentIdentity.setNumber(0);
 			String newClassPath = classPathProcessor.buildClasspathBasedOnCurrentClassLoader(LOGGER);
-			LOGGER.debug("Validation Class Path " + newClassPath);
+			LOGGER.debug("validation class path " + newClassPath);
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
+
 			Directory workingDirectory = new Directory(base);
 			String buildJVMArgumentWithoutMemory = builder.buildJVMArgumentWithoutMemory();
-			LOGGER.info("JVM Args : {} ", buildJVMArgumentWithoutMemory);
+			LOGGER.info("jvm args : {} ", buildJVMArgumentWithoutMemory);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
 					systemProperties, buildJVMArgumentWithoutMemory, workingDirectory);
 
@@ -132,7 +137,7 @@ public class LocalScriptTestDriveService {
 			workerLauncher.startAllWorkers();
 			// Wait for a termination event.
 			synchronized (eventSynchronisation) {
-				final long sleeptime = 1000;
+				final long sleep = 1000;
 				int waitingCount = 0;
 				while (true) {
 					if (workerLauncher.allFinished()) {
@@ -144,7 +149,7 @@ public class LocalScriptTestDriveService {
 						stopByTooMuchExecution = true;
 						break;
 					}
-					eventSynchronisation.waitNoInterrruptException(sleeptime);
+					eventSynchronisation.waitNoInterrruptException(sleep);
 				}
 			}
 		} catch (Exception e) {

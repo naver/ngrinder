@@ -18,14 +18,17 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.util.AccessUtils;
 import org.ngrinder.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import static org.ngrinder.common.util.AccessUtils.getSafe;
+
 /**
  * {@link UserDetails} implementation.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -41,11 +44,9 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * User instance used for SpringSecurity.
-	 * 
-	 * @param user
-	 *            real user info
-	 * @param userInfoProviderClass
-	 *            class name who provides the user info
+	 *
+	 * @param user                  real user info
+	 * @param userInfoProviderClass class name who provides the user info
 	 */
 	public SecuredUser(User user, String userInfoProviderClass) {
 		this.setUser(user);
@@ -54,7 +55,7 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * Return provided authorities. It returns one Role from {@link User} in the {@link GrantedAuthority} list.
-	 * 
+	 *
 	 * @return {@link GrantedAuthority} list
 	 */
 	@Override
@@ -66,6 +67,7 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * Return password.
+	 *
 	 * @return password
 	 */
 	@Override
@@ -75,6 +77,7 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * Return Username (Actually user id).
+	 *
 	 * @return user name
 	 */
 	@Override
@@ -84,17 +87,17 @@ public class SecuredUser implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return getUser().isEnabled();
+		return getSafe(getUser().isEnabled(), true);
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return getUser().isEnabled();
+		return getSafe(getUser().isEnabled(), true);
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return getUser().isEnabled();
+		return getSafe(getUser().isEnabled(), true);
 	}
 
 	@Override
@@ -108,6 +111,7 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * Get auth provider class name.
+	 *
 	 * @return auth provider class
 	 */
 	public String getAuthProviderClass() {

@@ -16,7 +16,7 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.PerfTest;
 
@@ -46,7 +46,7 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		ThreadUtil.sleep(1000);
+		ThreadUtils.sleep(1000);
 	}
 
 	int calledCount = 0;

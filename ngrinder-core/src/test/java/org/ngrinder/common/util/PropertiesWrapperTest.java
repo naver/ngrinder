@@ -13,18 +13,17 @@
  */
 package org.ngrinder.common.util;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.Properties;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
- * Class description.
+ * Property Wrapper Test
  * 
  * @author Mavlarn
- * @since
  */
 public class PropertiesWrapperTest {
 

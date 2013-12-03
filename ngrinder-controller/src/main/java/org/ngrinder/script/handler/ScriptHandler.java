@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.ngrinder.common.util.FileUtil;
+import org.ngrinder.common.util.FileUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -264,7 +264,7 @@ public abstract class ScriptHandler {
 
 	protected void prepareDefaultFile(File distDir, PropertiesWrapper properties) {
 		if (properties.getPropertyBoolean("ngrinder.dist.logback", true)) {
-			FileUtil.copyResourceToFile("/logback/logback-worker.xml", new File(distDir, "logback-worker.xml"));
+			FileUtils.copyResourceToFile("/logback/logback-worker.xml", new File(distDir, "logback-worker.xml"));
 		}
 	}
 

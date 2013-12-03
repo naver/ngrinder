@@ -282,6 +282,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String param;
 
 	@PrePersist
+	@PreUpdate
 	public void init() {
 		this.status = getSafe(this.status, Status.SAVED);
 		this.agentCount = getSafe(this.agentCount);

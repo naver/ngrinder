@@ -38,6 +38,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
 import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.service.IUserService;

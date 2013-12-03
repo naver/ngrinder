@@ -87,7 +87,7 @@ public class AgentHome {
 	 */
 	public File getNativeDirectory() {
 		File nativeFile = getFile("native");
-		if (!nativeFile.exists())  {
+		if (!nativeFile.exists()) {
 			nativeFile.mkdir();
 		}
 		return nativeFile;
@@ -164,15 +164,12 @@ public class AgentHome {
 	 */
 	public Properties getProperties(String path) {
 		Properties properties = new Properties();
-		InputStream is = null;
 		try {
 			File propertiesFile = new File(directory, path);
 			String config = FileUtils.readFileToString(propertiesFile, "UTF-8");
 			properties.load(new StringReader(config));
 		} catch (IOException e) {
 			noOp();
-		} finally {
-			IOUtils.closeQuietly(is);
 		}
 		return properties;
 

@@ -14,6 +14,7 @@
 package net.grinder.scriptengine.groovy;
 
 import static net.grinder.util.NoOp.noOp;
+
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovySystem;
 
@@ -37,22 +38,22 @@ import org.junit.runners.model.InitializationError;
 
 /**
  * Groovy implementation of {@link ScriptEngine}.
- * 
+ *
  * @author Ryan Gardner
  * @author JunHo Yoon (modified by)
  */
 public class GroovyScriptEngine implements ScriptEngine {
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
-	private Class<?> m_groovyClass;
+	// For unit test, make it package protected.
+	Class<?> m_groovyClass;
 	private GrinderContextExecutor m_grinderRunner;
+
 	/**
 	 * Construct a GroovyScriptEngine that will use the supplied ScriptLocation.
-	 * 
-	 * @param script
-	 *            location of the .groovy script file
-	 * @throws EngineException
-	 *             if there is an exception loading, parsing, or constructing the test from the
-	 *             file.
+	 *
+	 * @param script location of the .groovy script file
+	 * @throws EngineException if there is an exception loading, parsing, or constructing the test from the
+	 *                         file.
 	 */
 	public GroovyScriptEngine(ScriptLocation script) throws EngineException {
 		// Get groovy to compile the script and access the callable closure
@@ -68,9 +69,9 @@ public class GroovyScriptEngine implements ScriptEngine {
 		} catch (IOException io) {
 			throw new EngineException("Unable to parse groovy script at: " + script.getFile().getAbsolutePath(), io);
 		} catch (InitializationError e) {
-			throw new EngineException("Error while iniialize test runner", e);
+			throw new EngineException("Error while initialize test runner", e);
 		} catch (Throwable e) {
-			throw new EngineException("Error while iniialize test runner", e);
+			throw new EngineException("Error while initialize test runner", e);
 		}
 	}
 
@@ -91,7 +92,11 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	@Override
 	public ScriptEngineService.WorkerRunnable createWorkerRunnable(Object testRunner) throws EngineException {
-		return createWorkerRunnable((GrinderRunner) testRunner);
+		try {
+			return new GroovyWorkerRunnable(new GrinderContextExecutor(m_groovyClass, testRunner));
+		} catch (InitializationError e)	{
+			throw new EngineException("Exception occurred during initializing runner", e);
+		}
 	}
 
 	/**
@@ -109,7 +114,9 @@ public class GroovyScriptEngine implements ScriptEngine {
 					}
 				}
 				super.fireTestFailure(failure);
-			};
+			}
+
+			;
 		};
 
 		private GroovyWorkerRunnable(GrinderContextExecutor groovyRunner) throws EngineException {
@@ -124,7 +131,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 						return;
 					}
 					Grinder.grinder.getLogger().error(failure.getMessage(),
-									exceptionProcessor.filterException(rootCause));
+							exceptionProcessor.filterException(rootCause));
 					// In case of exception, set test failed.
 					try {
 						StatisticsForTest forLastTest = Grinder.grinder.getStatistics().getForLastTest();
@@ -145,7 +152,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 			} catch (RuntimeException e) {
 				if (exceptionProcessor.isGenericShutdown(e)) {
 					throw new GroovyScriptExecutionException("Shutdown",
-									e.getMessage().equals("Wrapped") ? e.getCause() : e);
+							e.getMessage().equals("Wrapped") ? e.getCause() : e);
 				}
 			}
 		}
@@ -159,9 +166,9 @@ public class GroovyScriptEngine implements ScriptEngine {
 
 	/**
 	 * Shut down the engine.
-	 * 
+	 *
 	 * @throws net.grinder.engine.common.EngineException
-	 *             If the engine could not be shut down.
+	 *          If the engine could not be shut down.
 	 */
 	@Override
 	public void shutdown() throws EngineException {
@@ -170,7 +177,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 
 	/**
 	 * Returns a description of the script engine for the log.
-	 * 
+	 *
 	 * @return The description.
 	 */
 	@Override
@@ -183,14 +190,15 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	public static final class GroovyScriptExecutionException extends ScriptExecutionException {
 
-		/** UUID. */
+		/**
+		 * UUID.
+		 */
 		private static final long serialVersionUID = -1789749790500700831L;
 
 		/**
 		 * Construct an exception with the supplied message.
-		 * 
-		 * @param message
-		 *            the message for the exception
+		 *
+		 * @param message the message for the exception
 		 */
 		public GroovyScriptExecutionException(String message) {
 			super(message);
@@ -198,11 +206,9 @@ public class GroovyScriptEngine implements ScriptEngine {
 
 		/**
 		 * Construct an exception with the supplied message and throwable.
-		 * 
-		 * @param s
-		 *            the message for the exception
-		 * @param t
-		 *            another throwable that this exception wraps
+		 *
+		 * @param s the message for the exception
+		 * @param t another throwable that this exception wraps
 		 */
 		public GroovyScriptExecutionException(String s, Throwable t) {
 			super(s, t);

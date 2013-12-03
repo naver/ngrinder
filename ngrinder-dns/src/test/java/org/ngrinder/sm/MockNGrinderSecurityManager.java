@@ -13,35 +13,9 @@
  */
 package org.ngrinder.sm;
 
-/**
- * Used in test cases, enable the network check only in SecurityManagerTest class, and disable the
- * check in other classes.
- * 
- * @author Mavlarn
- * @since 3.0
- */
 public class MockNGrinderSecurityManager extends NGrinderSecurityManager {
-
 	@Override
-	public void checkConnect(String host, int port) {
-		try {
-			super.checkConnect(host, port);
-		} catch (SecurityException e) {
-			if (SecurityManagerTest.SM_TEST) {
-				throw e;
-			}
-		}
+	protected void processSetSecurityManagerAction() throws SecurityException {
+		// No operation
 	}
-
-	@Override
-	public void checkConnect(String host, int port, Object context) {
-		try {
-			super.checkConnect(host, port, context);
-		} catch (SecurityException e) {
-			if (SecurityManagerTest.SM_TEST) {
-				throw e;
-			}
-		}
-	}
-
 }

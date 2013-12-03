@@ -17,16 +17,17 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {@link PerfTestService} test.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
-public class PerfTestProcessAndThreadPolicyServiceTest extends AbstractPerfTestTransactionalTest {
+public class PerfTestProcessAndThreadPolicyServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private PerfTestService perfTestService;

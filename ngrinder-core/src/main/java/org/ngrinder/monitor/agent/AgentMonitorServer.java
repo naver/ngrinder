@@ -35,10 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * This class is the agent of monitor server, it will be used to start a JMX
- * server.
- * 
+ * monitor server, it will be used to start a JMX server.
+ *
  * @author Mavlarn
  * @since 3.0
  */
@@ -64,11 +62,9 @@ public final class AgentMonitorServer {
 	/**
 	 * Initialize the monitor server with default port and collector. Default
 	 * port is 12343, and default collector is system data collector.
-	 * 
-	 * @param agentConfig
-	 *            agentConfig
-	 * @throws IOException
-	 *             IO error
+	 *
+	 * @param agentConfig agentConfig
+	 * @throws IOException IO error
 	 */
 	public void init(AgentConfig agentConfig) throws IOException {
 		this.init(MonitorConstants.DEFAULT_MONITOR_PORT, agentConfig);
@@ -78,13 +74,10 @@ public final class AgentMonitorServer {
 	/**
 	 * Initialize the monitor server with default collector. In 3.0 version,
 	 * default collector is system data collector.
-	 * 
-	 * @param port
-	 *            monitor listener port
-	 * @param agentConfig
-	 *            agentConfig
-	 * @throws IOException
-	 *             IO error
+	 *
+	 * @param port        monitor listener port
+	 * @param agentConfig agentConfig
+	 * @throws IOException IO error
 	 */
 	public void init(final int port, AgentConfig agentConfig) throws IOException {
 		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR, agentConfig);
@@ -92,15 +85,11 @@ public final class AgentMonitorServer {
 
 	/**
 	 * Initialize the monitor server.
-	 * 
-	 * @param port
-	 *            monitor listener port
-	 * @param dataCollector
-	 *            a list of collector, for java or system data
-	 * @param agentConfig
-	 *            agentConfig
-	 * @throws IOException
-	 *             IO error
+	 *
+	 * @param port          monitor listener port
+	 * @param dataCollector a list of collector, for java or system data
+	 * @param agentConfig   agentConfig
+	 * @throws IOException IO error
 	 */
 	public void init(final int port, final Set<String> dataCollector, AgentConfig agentConfig) throws IOException {
 
@@ -120,12 +109,11 @@ public final class AgentMonitorServer {
 	}
 
 	/**
-	 * Get current host name. If the mintor.host field exists in the agent.conf
+	 * Get current host name. If the monitor.host field exists in the agent.conf
 	 * file, it will return this. Otherwise, return automatically resolved host
 	 * name.
-	 * 
-	 * @param agentConfig
-	 *            agent config
+	 *
+	 * @param agentConfig agent config
 	 * @return current host name
 	 */
 	protected String getCurrentHostName(AgentConfig agentConfig) {
@@ -134,7 +122,7 @@ public final class AgentMonitorServer {
 
 	/**
 	 * check whether the monitor server is running.
-	 * 
+	 *
 	 * @return true if the monitor server is running
 	 */
 	public boolean isRunning() {
@@ -143,7 +131,7 @@ public final class AgentMonitorServer {
 
 	/**
 	 * get monitor listener port of monitor JMX server.
-	 * 
+	 *
 	 * @return port listener port
 	 */
 	public int getPort() {
@@ -152,9 +140,8 @@ public final class AgentMonitorServer {
 
 	/**
 	 * Start monitoring.
-	 * 
-	 * @throws IOException
-	 *             exception
+	 *
+	 * @throws IOException exception
 	 */
 	public void start() throws IOException {
 		if (!isRunning()) {
@@ -171,7 +158,7 @@ public final class AgentMonitorServer {
 	public void stop() {
 		LOG.info("Stop monitor.");
 		if (!isRunning) {
-			LOG.info("Monitoring is not started!");
+			LOG.info("Monitor was not started!");
 			return;
 		}
 		isRunning = false;

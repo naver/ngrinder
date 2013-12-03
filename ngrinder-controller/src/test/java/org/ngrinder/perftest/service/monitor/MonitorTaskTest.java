@@ -13,54 +13,61 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.model.AgentInfo;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtil;
-import org.ngrinder.model.AgentInfo;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.perftest.service.monitor.MonitorTask;
-
 /**
- * Class description.
- *
- * @author Mavlarn
- * @since
+ * Monitor Task Test
  */
-public class MonitorTaskTest extends AbstractPerfTestTransactionalTest {
+public class MonitorTaskTest extends AbstractAgentReadyTest {
+	private File tempReport;
+
+	@Before
+	public void before() {
+		tempReport = new File(System.getProperty("java.io.tmpdir"), "tmp-report");
+		FileUtils.deleteQuietly(tempReport);
+		tempReport.mkdir();
+	}
+
+
+	@After
+	public void after() {
+		tempReport.deleteOnExit();
+	}
 
 	@Test
 	public void testAddMonitor() throws IOException {
-		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
-		tempRepo.mkdir();
-		tempRepo.deleteOnExit();
 		AgentInfo monitorAgt = new AgentInfo();
 		monitorAgt.setIp("127.0.0.1");
 		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
-		MonitorTask monitorMngr = applicationContext.getBean(MonitorTask.class);
-		monitorMngr.add(agents, tempRepo);
-		new Thread(monitorMngr).start();
-		monitorMngr.saveData();
-		
-		ThreadUtil.sleep(3000);
-		// test to add again
-		monitorMngr.add(agents, tempRepo);
+		MonitorTask monitorTask = applicationContext.getBean(MonitorTask.class);
+		monitorTask.add(agents, tempReport);
+		new Thread(monitorTask).start();
+		monitorTask.saveData();
 
-		ThreadUtil.sleep(3000);
-		monitorMngr.destroy();
+		ThreadUtils.sleep(3000);
+		// test to add again
+		monitorTask.add(agents, tempReport);
+
+		ThreadUtils.sleep(3000);
+		monitorTask.destroy();
 	}
 
 	@Test
 	public void testAddMonitorInvalid() throws IOException {
-		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
-		tempRepo.mkdir();
-		tempRepo.deleteOnExit();
 		AgentInfo monitorAgt = new AgentInfo();
 		monitorAgt.setIp("10.10.10.10");
 		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
@@ -70,11 +77,11 @@ public class MonitorTaskTest extends AbstractPerfTestTransactionalTest {
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
 		agents.add(monitorAgt2);
-		MonitorTask monitorMngr = applicationContext.getBean(MonitorTask.class);
-		monitorMngr.add(agents, tempRepo);
-		new Thread(monitorMngr).start();
-		monitorMngr.saveData();
-		ThreadUtil.sleep(3000);
-		monitorMngr.destroy();
+		MonitorTask monitorTask = applicationContext.getBean(MonitorTask.class);
+		monitorTask.add(agents, tempReport);
+		new Thread(monitorTask).start();
+		monitorTask.saveData();
+		ThreadUtils.sleep(3000);
+		monitorTask.destroy();
 	}
 }

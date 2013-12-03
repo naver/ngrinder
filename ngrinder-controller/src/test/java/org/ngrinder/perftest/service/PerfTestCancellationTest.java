@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
 
-public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
+public class PerfTestCancellationTest extends AbstractAgentReadyTest implements NGrinderConstants {
 
 	@Autowired
 	private MockPerfTestRunnableForCancellation perfTestRunnable;

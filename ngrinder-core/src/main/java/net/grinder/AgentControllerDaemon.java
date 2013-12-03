@@ -19,7 +19,7 @@ import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +43,6 @@ public class AgentControllerDaemon implements Agent {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
 
-	/**
-	 * Constructor for test.
-	 */
-	public AgentControllerDaemon() {
-		this(new AgentConfig().init());
-	}
 
 	/**
 	 * Constructor.
@@ -88,7 +82,7 @@ public class AgentControllerDaemon implements Agent {
 						setForceShutdown(false);
 						break;
 					}
-					ThreadUtil.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
+					ThreadUtils.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
 				} while (true);
 			}
 		}, "Agent Controller Thread");
@@ -128,7 +122,7 @@ public class AgentControllerDaemon implements Agent {
 			setForceShutdown(true);
 			agentController.shutdown();
 			if (thread != null) {
-				ThreadUtil.stopQuietly(thread, "Agent controller thread was not stopped. Stop by force.");
+				ThreadUtils.stopQuietly(thread, "Agent controller thread was not stopped. Stop by force.");
 				thread = null;
 			}
 		} catch (Exception e) {

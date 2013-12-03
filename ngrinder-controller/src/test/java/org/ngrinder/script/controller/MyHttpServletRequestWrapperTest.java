@@ -47,16 +47,10 @@ public class MyHttpServletRequestWrapperTest {
 	}
 
 	@Test
-	public void testHandleRequest3() {
+	public void testHandleRequest3() throws UnsupportedEncodingException {
 		String testURI = "/hello/svnadmin/admin/한글";
-		try {
-			testURI = URLEncoder.encode(testURI, "UTF-8");
-			System.out.println(testURI);
-			String testURI2 = URLDecoder.decode(testURI, "UTF-8");
-			System.out.println(testURI2);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		testURI = URLEncoder.encode(testURI, "UTF-8");
+
 		HttpServletRequest req = new MockHttpServletRequest("GET", testURI);
 		wrapper = new MyHttpServletRequestWrapper(req) {
 			public String getRequestURI() {

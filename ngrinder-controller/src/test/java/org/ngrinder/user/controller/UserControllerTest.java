@@ -25,6 +25,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -32,9 +33,8 @@ import org.springframework.ui.ModelMap;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since
  */
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -43,7 +43,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#getUserList(org.springframework.ui.ModelMap, java.lang.String, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#getUserList(org.springframework.ui.ModelMap, java.lang.String,
+	 * java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -63,7 +64,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#getUserDetail(org.ngrinder.model.User, org.springframework.ui.ModelMap, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#getUserDetail(org.ngrinder.model.User,
+	 * org.springframework.ui.ModelMap, java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -76,7 +78,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#saveOrUpdateUserDetail(org.ngrinder.model.User, org.springframework.ui.ModelMap, org.ngrinder.model.User)}
+	 * {@link org.ngrinder.user.controller.UserController#saveOrUpdateUserDetail(org.ngrinder.model.User,
+	 * org.springframework.ui.ModelMap, org.ngrinder.model.User)}
 	 * .
 	 */
 	@Test
@@ -113,7 +116,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		assertThat(currUser.getRole(), is(Role.USER)); // current test user is "USER"
 
 		User updatedUser = new User(currUser.getUserId(), currUser.getUserName(), currUser.getPassword(),
-						"temp@nhn.com", currUser.getRole());
+				"temp@nhn.com", currUser.getRole());
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
@@ -152,33 +155,34 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		saveTestUser("NewUserId2", "NewUserName2");
 		saveTestUser("NewUserId3", "NewUserName3");
 
-		Pageable page = new PageRequest(1, 10);
+		Pageable page = new PageRequest(0, 10);
 
 		// search
 		userController.getUsers(model, null, page, "NewUserName");
-		List<User> userList = (List<User>) model.get("userList");
-		assertThat(userList.size(), is(3));
+		PageImpl userList = (PageImpl<User>) model.get("users");
+		assertThat(userList.getContent().size(), is(3));
 
 		// test to delete one
 		model.clear();
 		userController.deleteUser(model, "NewUserId1");
 		model.clear();
 		userController.getUsers(model, Role.USER, page, "NewUserName");
-		userList = (List<User>) model.get("userList");
-		assertThat(userList.size(), is(2));
+		userList = (PageImpl<User>) model.get("users");
+		assertThat(userList.getContent().size(), is(2));
 
 		// test to delete more
 		model.clear();
 		userController.deleteUser(model, "NewUserId2,NewUserId3");
 		model.clear();
 		userController.getUsers(model, Role.USER, page, "NewUserName");
-		userList = (List<User>) model.get("userList");
-		assertThat(userList.size(), is(0));
+		userList = (PageImpl<User>) model.get("users");
+		assertThat(userList.getContent().size(), is(0));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#checkDuplication(org.springframework.ui.ModelMap, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#checkDuplication(org.springframework.ui.ModelMap,
+	 * java.lang.String)}
 	 * .
 	 */
 	@Test

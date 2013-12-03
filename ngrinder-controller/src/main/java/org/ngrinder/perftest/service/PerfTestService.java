@@ -605,7 +605,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return created {@link GrinderProperties} instance
 	 */
 	public GrinderProperties getGrinderProperties(PerfTest perfTest, ScriptHandler scriptHandler) {
-		FileWriter fileWriter = null;
 		try {
 			// Use default properties first
 			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
@@ -674,8 +673,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			return grinderProperties;
 		} catch (Exception e) {
 			throw processException("error while prepare grinder property for " + perfTest.getTestName(), e);
-		} finally {
-			IOUtils.closeQuietly(fileWriter);
 		}
 	}
 
@@ -758,7 +755,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		int interval = 0;
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
-			LOGGER.warn("Report data for {} in {} does not exist.", dataType, testId);
+			LOGGER.warn("Report {} for test {} does not exist.", dataType, testId);
 			return 0;
 		}
 		LineNumberReader lnr = null;
@@ -946,7 +943,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 			}
 			json = gson.toJson(pickAgentStateMap);
-			LOGGER.debug("Agent status string get:{} of:{} agents, new size is: {}.", new Object[]{pickSize,
+			LOGGER.debug("Agent status string get {} outof {} agents, new size is {}.", new Object[]{pickSize,
 					agentStatusMap.size(), json.length()});
 		}
 		return json;

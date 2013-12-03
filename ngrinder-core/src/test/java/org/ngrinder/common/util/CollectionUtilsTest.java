@@ -23,10 +23,9 @@ import java.util.Set;
 import org.junit.Test;
 
 /**
- * Class description.
+ * CollectionUtils unit test
  *
  * @author Mavlarn
- * @since
  */
 public class CollectionUtilsTest {
 
@@ -38,7 +37,7 @@ public class CollectionUtilsTest {
 		Set<Integer> intSet = new HashSet<Integer>();
 		intSet.add(1);
 		intSet.add(2);
-		intSet.add(3);  
+		intSet.add(3);
 		intSet.add(4);
 		intSet.add(5);
 		intSet.add(6);

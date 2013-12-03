@@ -74,7 +74,6 @@ public class GrinderRunnerTest {
 
 		@BeforeClass
 		public static void beforeProcess() {
-			System.out.println("Before Process");
 			request = new HTTPRequest();
 			try {
 				test.record(request);
@@ -112,12 +111,10 @@ public class GrinderRunnerTest {
 
 		@AfterThread
 		public void doAfter() {
-			System.out.println("After Thread");
 		}
 		
 		@AfterProcess
 		public static void afterProcess() {
-			System.out.println("After Process");
 		}
 	}
 

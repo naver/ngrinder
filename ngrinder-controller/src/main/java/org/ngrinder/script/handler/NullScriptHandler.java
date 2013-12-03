@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Null {@link ScriptHandler} which implements Null object pattern.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -52,7 +52,7 @@ public class NullScriptHandler extends ScriptHandler {
 
 	@Override
 	public void prepareDist(Long testId, User user, FileEntry script, //
-					File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+	                        File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 
 	}
 
@@ -63,9 +63,8 @@ public class NullScriptHandler extends ScriptHandler {
 
 	/**
 	 * Alternative access to code mirror key.
-	 * 
-	 * @param fileType
-	 *            file type
+	 *
+	 * @param fileType file type
 	 * @return appropriate code mirror key. if nothing, return shell
 	 */
 	public String getCodemirrorKey(FileType fileType) {

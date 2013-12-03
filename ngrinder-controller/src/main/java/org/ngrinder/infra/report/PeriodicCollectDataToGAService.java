@@ -23,7 +23,7 @@ import net.grinder.util.NetworkUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.http.MeasureProtocolRequest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
@@ -74,7 +74,7 @@ public class PeriodicCollectDataToGAService {
 	 * delay with random manner. Not to report from multiple machines at a same time.
 	 */
 	protected void doRandomDelay() {
-		ThreadUtil.sleep(new Random().nextInt(100) * 1000);
+		ThreadUtils.sleep(new Random().nextInt(100) * 1000);
 	}
 
 	protected int getUsage(Date start, Date end) {

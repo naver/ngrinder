@@ -13,63 +13,52 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 
 /**
- * Class description.
- *
- * @author Mavlarn
- * @since
+ * Monitor Client Service Test
  */
-public class MonitorClientServiceTest {
-	
-	@Test
-	public void test() throws IOException {
-		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
-		tempRepo.mkdir();
-		tempRepo.deleteOnExit();
-		MonitorClientService client = new MonitorClientService();
-		client.init("127.0.0.1", 13243, tempRepo, null);
-		
-		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
-		SystemInfo info1 = client.getMonitorData();
-		if (info1 == null) {
-			return;
-		}
-		info1.setCustomValues("111,222");
-		SystemDataModel data1 = new SystemDataModel(info1, "3.1.2");
-		rtnMap.put("test1", data1);
-		
-		SystemInfo info2 = client.getMonitorData();
-		SystemDataModel data2 = new SystemDataModel(info2, "3.1.2");
-		rtnMap.put("test2", data2);
-		
-		Gson gson = new Gson();
-		String jsonStr = gson.toJson(rtnMap);
-		System.out.println(jsonStr);
-		
-		@SuppressWarnings("unchecked")
-		Map<String, SystemDataModel> back = gson.fromJson(jsonStr, HashMap.class);
-		System.out.println(back);
+public class MonitorClientServiceTest extends AbstractAgentReadyTest {
+	private File tempReport;
 
-		System.out.println("**********************************");
-		Gson gson3 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		String jsonStr3 = gson3.toJson(rtnMap);
-		System.out.println(jsonStr3);
-		@SuppressWarnings("unchecked")
-		Map<String, SystemDataModel> back3 = gson3.fromJson(jsonStr3, HashMap.class);
-		System.out.println(back3);
+	@Before
+	public void before() {
+		tempReport = new File(System.getProperty("java.io.tmpdir"), "tmp-report");
+		FileUtils.deleteQuietly(tempReport);
+		tempReport.mkdir();
 	}
+
+
+	@After
+	public void after() {
+		tempReport.deleteOnExit();
+	}
+
+	@Test
+	public void testMonitorClient() throws IOException {
+		MonitorClientService client = new MonitorClientService();
+		client.init("127.0.0.1", 13243, tempReport, null);
+		final SystemInfo monitorData = client.getMonitorData();
+		assertThat(monitorData, Matchers.notNullValue());
+		sleep(3000);
+		SystemInfo monitorData2 = client.getMonitorData();
+		assertThat(monitorData2, Matchers.notNullValue());
+		assertThat(monitorData, not(monitorData2));
+
+	}
+
 
 }

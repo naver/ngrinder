@@ -146,7 +146,7 @@ public class AgentImplementationEx implements Agent {
 							consoleCommunication = new ConsoleCommunication(connector, grinderProperties.getProperty(
 									"grinder.user", "_default"));
 							consoleCommunication.start();
-							m_logger.info("connected to console at {}", connector.getEndpointAsString());
+							m_logger.info("connect to console at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							if (m_proceedWithoutConsole) {
 								m_logger.warn("{}, proceeding without the console; set "
@@ -200,7 +200,7 @@ public class AgentImplementationEx implements Agent {
 					}
 					m_logger.debug("The script location is {}", script.getFile().getAbsolutePath());
 					if (!script.getFile().canRead()) {
-						m_logger.error("The script file '" + script + "' does not exist or is not readable.");
+						m_logger.error("The script file '{}' does not exist or is not readable.", script);
 						script = null;
 						break;
 					}

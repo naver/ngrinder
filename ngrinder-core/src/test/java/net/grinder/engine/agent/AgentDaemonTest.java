@@ -22,12 +22,12 @@ import net.grinder.util.thread.Condition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractMuliGrinderTestBase;
+import org.ngrinder.AbstractMultiGrinderTestBase;
 
 /**
  * @author JunHo Yoon
  */
-public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
+public class AgentDaemonTest extends AbstractMultiGrinderTestBase {
 
 	private SingleConsole console1;
 	private Integer consolePort;
@@ -56,7 +56,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 	Condition condition = new Condition();
 
 	@Test(timeout = 3000)
-	public void testIfAgentDeadWellWhenConsoleIsShutdowned() {
+	public void testIfAgentDeadWellWhenConsoleIsShutdown() {
 		// After connecting agent daemon,
 		AgentDaemon agent = new AgentDaemon(agentConfig1);
 		agent.run(console1.getConsolePort());
@@ -73,7 +73,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 		agent.run(console1.getConsolePort());
 		agent.addListener(new AgentShutDownSynchronizeListener(condition));
 		// Shutdown console
-		sleep(4000);
+		sleep(3000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(1));
 
 		// shutdown twice

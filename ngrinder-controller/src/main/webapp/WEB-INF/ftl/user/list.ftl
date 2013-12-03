@@ -42,7 +42,7 @@
 		
 		</form>
 		<table class="table table-striped table-bordered ellipsis" id="user_table">
-			<#assign userList = userPage.content/>
+			<#assign userList = users.content/>
 			<colgroup>
 				<col width="30">
 				<col width="120">
@@ -94,7 +94,7 @@
 		</table>
 		<#if userList?has_content>
 			<#include "../common/paging.ftl">
-			<@paging  userPage.totalElements userPage.number+1 userPage.size 10 ""/>
+			<@paging  users.totalElements users.number+1 users.size 10 ""/>
 			<script type="text/javascript">
 				function doSubmit(page) {
 					getList(page);

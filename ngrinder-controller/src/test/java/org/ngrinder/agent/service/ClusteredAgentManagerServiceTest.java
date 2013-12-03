@@ -31,6 +31,8 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import java.util.List;
 import java.util.Map;
 
+import static net.grinder.util.NetworkUtil.DEFAULT_LOCAL_IP4_ADDRESSES;
+import static net.grinder.util.NetworkUtil.removeScopedMarkerFromIP;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -58,6 +60,8 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 	private boolean initialed = false;
 
+	String curAddress;
+
 	@Before
 	public void before() {
 		if (initialed) {
@@ -67,6 +71,8 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		when(spiedConfig.isCluster()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
 
+		curAddress = removeScopedMarkerFromIP(DEFAULT_LOCAL_IP4_ADDRESSES.get(0).getHostAddress());
+		when(spiedConfig.getClusterURIs()).thenReturn(new String[]{curAddress, "210.10.10.1"});
 		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig();
 		serviceConfig.config = spiedConfig;
 		serviceConfig.setApplicationContext(applicationContext);

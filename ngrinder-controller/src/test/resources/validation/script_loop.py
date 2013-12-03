@@ -15,9 +15,7 @@ request1 = test1.wrap(HTTPRequest())
 log = grinder.logger.info
 class TestRunner:  
 	def __call__(self):
-		hello = request1.GET("http://www.naver.com")
-		hello = request1.GET("http://www.naver.com")
-		# result is a HTTPClient.HTTPResult. We get the message body
-		# using the getText() method.
-		assert hello.status == 200 
+		grinder.sleep(1000)
+		while True:
+			log("WOW")
         

@@ -55,7 +55,6 @@ public class FileEntryServiceTest {
 		dividePathAndFile = fileEntryService.dividePathAndFile("helloworld.com");
 		assertThat(dividePathAndFile[0], is(""));
 		assertThat(dividePathAndFile[1], is("helloworld.com"));
-
 	}
 
 	@Test(expected = NGrinderRuntimeException.class)

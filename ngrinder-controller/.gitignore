@@ -5,6 +5,7 @@
 .project
 .classpath
 .project
+.idea
 *-file-store
 target/
 src/main/webapp/WEB-INF/classes

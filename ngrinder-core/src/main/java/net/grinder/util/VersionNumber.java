@@ -13,9 +13,10 @@
  */
 package net.grinder.util;
 
-import java.util.StringTokenizer;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+
+import java.util.StringTokenizer;
 
 /**
  * Comparable Version number.
@@ -44,7 +45,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 			String token = tokens.nextToken().toLowerCase();
 			if (token.equals("*")) {
 				this.digits[i++] = 1000;
-			} else if (token.startsWith("snapshot")) {
+			} else if (StringUtils.startsWithIgnoreCase(token, "snapshot")) {
 				this.digits[i - 1]--;
 				this.digits[i++] = 1000;
 				break;

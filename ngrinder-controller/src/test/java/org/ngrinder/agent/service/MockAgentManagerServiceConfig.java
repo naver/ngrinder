@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @since 3.1
  */
 @Configuration
-@Profile("unittest")
+@Profile("unit-test")
 @EnableTransactionManagement
 public class MockAgentManagerServiceConfig implements ApplicationContextAware {
 

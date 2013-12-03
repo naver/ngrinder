@@ -296,6 +296,7 @@ public abstract class NetworkUtil {
 		}
 		return ip;
 	}
+
 	/**
 	 * Get IP form the given string.
 	 * <p/>

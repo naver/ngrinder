@@ -40,10 +40,11 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
+public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGrinderConstants {
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
+
 	@Autowired
 	private AgentManager agentManager;
 
@@ -58,9 +59,11 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	public PerfTest currentTest;
 
+	@Autowired
+	public ConsoleManager consoleManager;
+
 	@Before
 	public void before() throws IOException {
-
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
@@ -86,43 +89,34 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			if (agentCount != 0 || checkLoop++ > 20) {
 				break;
 			}
-			System.out.println("WAIT UNTIL AGENT IS CONNECTED - TRY COUNT " + checkLoop);
 			sleep(1000);
 		}
-
+		agentService.checkAgentStateRegularly();
 		List<AgentInfo> agentList = agentService.getLocalAgentListFromDB();
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}
-
-		// agentList = agentService.getLocalAgents();
-		assertThat(agentCount, is(1));
+		assertThat(agentList.size(), is(1));
 	}
 
 	@Test
 	public void testDoTest() throws IOException {
-		for (int i = 0; i < 10; i++) {
-			if (agentManager.getAllFreeApprovedAgents().size() == 1) {
-				break;
-			}
-			sleep(1000);
-		}
+		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.startTest();
-		sleep(15000);
+		sleep(10000);
 		assertThat(perfTestService.getTestingPerfTest().size(), is(1));
-
 		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
-		perfTestRunnable.finishTest();
 		sleep(5000);
+		perfTestRunnable.finishTest();
 		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
+		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
 	boolean ended = false;
 
 	@Test
 	public void testStartConsole() throws IOException {
-		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		// Get perf test
 		PerfTest perfTest = perfTestService.getNextRunnablePerfTestPerfTestCandidate();
 		perfTest.setScriptName("/hello/world.py");
@@ -157,16 +151,22 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
 		sleep(10000);
-		// Waiting for termination
+		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
 		singleConsole.waitUntilAllAgentDisconnected();
+		perfTestRunnable.finishTest();
+		// Waiting for termination
+
+
+		sleep(5000);
+		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
+		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
+		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
 	private void prepareUserRepo() throws IOException {

@@ -100,7 +100,7 @@ public class BaseEntity<M> implements Serializable {
 					each.set(this, value);
 				}
 			}
-			return (M)this;
+			return (M) this;
 		} catch (Exception e) {
 			String displayName = (forDisplay == null) ? "Empty" : forDisplay.getName();
 			throw processException(displayName + " - Exception occurred while merging an entity from " + source + " to "
@@ -130,6 +130,7 @@ public class BaseEntity<M> implements Serializable {
 				if (Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers)) {
 					continue;
 				}
+				forDisplay = each;
 				final Cloneable annotation = each.getAnnotation(Cloneable.class);
 				if (annotation == null) {
 					continue;

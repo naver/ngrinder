@@ -63,7 +63,7 @@ public class AgentManagerService implements IAgentManagerService {
 
 	/**
 	 * Run a scheduled task to check the agent status periodically.
-	 * <p/>
+	 *
 	 * This method updates the agent statuses in DB.
 	 *
 	 * @since 3.1

@@ -13,30 +13,13 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -50,13 +33,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 /**
  * {@link PerfTestService} test.
  *
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
+public class PerfTestServiceTest extends AbstractAgentReadyTest {
 
 	@Autowired
 	private PerfTestService testService;
@@ -160,11 +153,11 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
-	public void testGetReportDataWithExistData() throws IOException {
+	public void testGetReportDataWithExistingData() throws IOException {
 		long testId = 123456L; // there is sample monitor data in test resources.
 
-		// test resource dir
-		File testHomeDir = new ClassPathResource("").getFile();
+		// Given
+		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
 		Config mockConfig = spy(config);
@@ -172,21 +165,21 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTestService mockService = spy(testService);
 		mockService.setConfig(mockConfig);
 
+		// When
 		// TPS,Errors,Mean_Test_Time_(ms)
 		int interval = mockService.getReportDataInterval(testId, "TPS", 700);
-		String reportDataCPU = mockService.getSingleReportDataAsJson(testId, "TPS", interval);
-		String reportDataMsT = mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval);
 
-		assertTrue(reportDataCPU.length() > 100);
-		assertTrue(reportDataMsT.length() > 100);
+		// Then
+		assertThat(mockService.getSingleReportDataAsJson(testId, "TPS", interval).length(), greaterThan(100));
+		assertThat(mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval).length(),
+				greaterThan(100));
 	}
 
 	@Test
-	public void testGetMonitorDataWithExistData() throws IOException {
+	public void testGetMonitorDataWithExistingData() throws IOException {
+		// Given
 		long testId = 123456L; // there is sample monitor data in test resources.
-
-		// test resource dir
-		File testHomeDir = new ClassPathResource("").getFile();
+		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
 		Config mockConfig = spy(config);
@@ -194,14 +187,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTestService mockService = spy(testService);
 		mockService.setConfig(mockConfig);
 
+		// When
 		int interval = mockService.getSystemMonitorDataInterval(testId, "127.0.0.1", 700);
 		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsString(testId, "127.0.0.1", interval);
-		String cpuStr = reportDataMap.get("cpu");
-		LOG.debug("CPU monitor string is:{}", cpuStr);
-		assertTrue(cpuStr.length() > 300);
-		assertTrue(reportDataMap.get("memory").length() > 300);
-		assertTrue(reportDataMap.get("received").length() > 300);
-		assertTrue(reportDataMap.get("sent").length() > 300);
+
+		// Then
+		assertThat(reportDataMap.get("cpu").length(), greaterThanOrEqualTo(300));
+		assertThat(reportDataMap.get("memory").length(), greaterThanOrEqualTo(300));
+		assertThat(reportDataMap.get("received").length(), greaterThanOrEqualTo(300));
+		assertThat(reportDataMap.get("sent").length(), greaterThanOrEqualTo(300));
 	}
 
 	@Test
@@ -223,7 +217,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 			info.setCustomValues(random.nextInt() + "," + random.nextInt());
 			SystemDataModel data1 = new SystemDataModel(info, "3.1.2");
 			rtnMap.put("test-" + random.nextInt(), data1);
-			ThreadUtil.sleep(100);
+			ThreadUtils.sleep(100);
 		}
 		String statusString = perfTestService.getProperSizedStatusString(rtnMap);
 		System.out.println("Status string size is:" + statusString.length());

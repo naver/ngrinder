@@ -14,16 +14,16 @@
 package org.ngrinder.perftest.service.monitor;
 
 
+import org.junit.Test;
+import org.ngrinder.monitor.share.domain.SystemInfo;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
+
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
-import org.ngrinder.monitor.share.domain.SystemInfo;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
 
-
-public class MonitorInfoStoreTest extends AbstractPerfTestTransactionalTest{
+public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
 	
 	@Test
 	public void test(){
@@ -31,6 +31,7 @@ public class MonitorInfoStoreTest extends AbstractPerfTestTransactionalTest{
 		MonitorInfoStore monitorStore = applicationContext.getBean(MonitorInfoStore.class);
 		SystemInfo systemInfo = monitorStore.getSystemInfo(ip, 13243);
 		assertThat(systemInfo, not(nullValue()));
+		assertThat(systemInfo.getFreeMemory(), not(0L));
 		monitorStore.remove(ip);
 	}
 }

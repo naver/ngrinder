@@ -64,8 +64,8 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		Authentication auth = mock(UsernamePasswordAuthenticationToken.class);
 		authProvider = spy(authProvider);
 
-		when(auth.getPrincipal()).thenReturn("hello");
-		when(auth.getName()).thenReturn("hello");
+		when(auth.getPrincipal()).thenReturn("hello1");
+		when(auth.getName()).thenReturn("hello1");
 		when(auth.getCredentials()).thenReturn("world");
 
 		when(manager.getEnabledModulesByClass(any(OnLoginRunnable.class.getClass()), any(OnLoginRunnable.class)))
@@ -78,12 +78,12 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 
 		// When user is return by plugin module.
 		User user = new User();
-		user.setUserName("hello");
-		user.setUserId("hello");
+		user.setUserName("hello1");
+		user.setUserId("hello1");
 		user.setEmail("helloworld@gmail.com");
 		user.setRole(Role.SUPER_USER);
 		user.setAuthProviderClass(mockLoginPlugin.getClass().getName());
-		when(mockLoginPlugin.loadUser("hello")).thenReturn(user);
+		when(mockLoginPlugin.loadUser("hello1")).thenReturn(user);
 		when(mockLoginPlugin.validateUser(anyString(), anyString(), anyString(), any(), any())).thenReturn(true);
 
 		// Then, Auth should be succeeded.
@@ -93,7 +93,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		// verify(authProvider, times(1)).addNewUserIntoLocal(any(SecuredUser.class));
 
 		reset(authProvider);
-		when(mockLoginPlugin.loadUser("hello")).thenReturn(user);
+		when(mockLoginPlugin.loadUser("hello1")).thenReturn(user);
 		// Then, Auth should be succeeded.
 		assertThat(authProvider.authenticate(auth), notNullValue());
 

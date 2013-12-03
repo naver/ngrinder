@@ -13,17 +13,22 @@
  */
 package org.ngrinder.perftest.model;
 
+import net.grinder.SingleConsole;
+import net.grinder.common.GrinderException;
+import net.grinder.console.model.ConsoleProperties;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.grinder.SingleConsole;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Null Object for {@link SingleConsole}.
- * 
+ *
  * This class is to ignore the default {@link SingleConsole} behavior.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -34,6 +39,11 @@ public class NullSingleConsole extends SingleConsole {
 
 	static {
 		EMPTY_RESULT.put("test_time", 0);
+	}
+
+	@Override
+	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
+
 	}
 
 	/**
@@ -63,6 +73,7 @@ public class NullSingleConsole extends SingleConsole {
 		// Do nothing
 	}
 
+
 	@Override
 	public void sendStopMessageToAgents() {
 		// Do nothing
@@ -89,6 +100,11 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
+	public int getConsolePort() {
+		return 0;
+	}
+
+	@Override
 	public Map<String, Object> getStatisticsData() {
 		if (getCurrentRunningTime() > 0) {
 			return super.getStatisticsData();
@@ -100,6 +116,5 @@ public class NullSingleConsole extends SingleConsole {
 	protected Map<String, Object> getNullStatisticsData() {
 		return EMPTY_RESULT;
 	}
-
 
 }

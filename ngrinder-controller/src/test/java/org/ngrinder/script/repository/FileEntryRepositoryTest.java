@@ -13,14 +13,6 @@
  */
 package org.ngrinder.script.repository;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,6 +27,13 @@ import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 
@@ -113,7 +112,6 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		repo.save(getTestUser(), fileEntry, null);
 		List<FileEntry> findAll = repo.findAll(getTestUser(), "hello.zip", null);
 		FileEntry foundEntry = findAll.get(0);
-		System.out.println(foundEntry.getPath());
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 		// commit again
 		repo.save(getTestUser(), fileEntry, null);
@@ -133,7 +131,6 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setContentBytes(byteArray);
 		repo.save(getTestUser(), fileEntry, null);
 		FileEntry foundEntry = repo.findOne(getTestUser(), "hello.zip", SVNRevision.HEAD);
-		System.out.println(foundEntry);
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}
 
@@ -145,7 +142,7 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testRecusiveDireSave() throws IOException {
+	public void testRecursiveDirSave() throws IOException {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setContent("HELLO WORLD2");
 		fileEntry.setEncoding("UTF-8");

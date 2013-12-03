@@ -54,7 +54,7 @@ import org.junit.runners.model.TestClass;
 /**
  * Grinder JUnit Runner. Grinder JUnit Runner is the custom {@link Runner} which lets the user can
  * run the Grinder script in the JUnit context.
- * 
+ *
  * This runner has a little bit different characteristic from conventional JUnit test.
  * <ul>
  * <li>All Test annotated tests are executed with a single instance.</li>
@@ -63,23 +63,22 @@ import org.junit.runners.model.TestClass;
  * <li>{@link BeforeThread} and {@link AfterThread} annotated methods are executed per each thread.</li>
  * <li>{@link Repeat} annotated
  * </ul>
- * 
+ *
  * In addition, it contains a little different behavior from generic grinder test script.
  * <ul>
  * <li>It only initiates only 1 process and 1 thread.</li>
  * <li>Each <code>&#064;test</code> annotated method are independent to run. So one failure from one
  * method doesn't block the other methods' runs</li>
  * </ul>
- * 
+ *
  * @author JunHo Yoon
  * @author Mavlarn
- * @since 1.0
  * @see BeforeProcess
  * @see BeforeThread
  * @see AfterThread
  * @see AfterProcess
  * @see Repeat
- * 
+ * @since 1.0
  */
 public class GrinderRunner extends BlockJUnit4ClassRunner {
 	private JUnitThreadContextInitializer threadContextInitializer;
@@ -92,11 +91,9 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param klass
-	 *            klass
-	 * @throws InitializationError
-	 *             class initialization error.
+	 *
+	 * @param klass klass
+	 * @throws InitializationError class initialization error.
 	 */
 	public GrinderRunner(Class<?> klass) throws InitializationError {
 		super(klass);
@@ -114,6 +111,31 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 		initializeGrinderContext();
 	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param klass  klass
+	 * @param runner runner class
+	 * @throws InitializationError class initialization error.
+	 */
+	public GrinderRunner(Class<?> klass, final Object runner) throws InitializationError {
+		super(klass);
+		this.testTargetFactory = new TestObjectFactory() {
+			@Override
+			public TestClass getTestClass() {
+				return GrinderRunner.this.getTestClass();
+			}
+
+			@Override
+			public Object createTest() throws Exception {
+				return runner;
+			}
+		};
+
+		initializeGrinderContext();
+	}
+
 
 	protected void initializeGrinderContext() {
 		this.threadContextInitializer = new JUnitThreadContextInitializer();
@@ -159,7 +181,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	/**
 	 * Check if the rate runner should be enabled.
-	 * 
+	 *
 	 * @return true if enabled;
 	 */
 	protected boolean isRateRunnerEnabled() {
@@ -191,13 +213,13 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	protected Statement withRepeat(Statement statement) {
 		Annotation[] annotations = getTestClass().getAnnotations();
-		int repeatation = 1;
+		int repetition = 1;
 		for (Annotation each : annotations) {
 			if (each.annotationType().equals(Repeat.class)) {
-				repeatation = ((Repeat) each).value();
+				repetition = ((Repeat) each).value();
 			}
 		}
-		return new RepetitionStatment(statement, repeatation, threadContextUpdater);
+		return new RepetitionStatment(statement, repetition, threadContextUpdater);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -237,9 +259,8 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 * Returns a {@link Statement}: run all non-overridden {@code @BeforeClass} methods on this
 	 * class and superclasses before executing {@code statement}; if any throws an Exception, stop
 	 * execution and pass the exception on.
-	 * 
-	 * @param statement
-	 *            statement
+	 *
+	 * @param statement statement
 	 * @return wrapped statement
 	 */
 	protected Statement withBeforeProcess(Statement statement) {
@@ -254,10 +275,8 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 * and superclasses before executing {@code statement}; all AfterClass methods are always
 	 * executed: exceptions thrown by previous steps are combined, if necessary, with exceptions
 	 * from AfterClass methods into a {@link MultipleFailureException}.
-	 * 
-	 * 
-	 * @param statement
-	 *            statement
+	 *
+	 * @param statement statement
 	 * @return wrapped statement
 	 */
 	protected Statement withAfterProcess(Statement statement) {

@@ -50,6 +50,7 @@ public interface IScriptValidationService {
 	 * @param script
 	 *            script
 	 * @return script syntax error message. null otherwise.
+	 * @deprecated
 	 */
 	public abstract String checkSyntaxErrors(String script);
 

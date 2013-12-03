@@ -17,9 +17,7 @@ public class BreadCrumbTest {
 		controller.setFileEntryService(mockFileEntryService);
 		User user = new User();
 		user.setUserId("admin");
-		String constructSvnUrlBreadCrumb = controller.getSvnUrlBreadcrumbs(user, "hello/world");
-		System.out.println(constructSvnUrlBreadCrumb);
-		assertThat(constructSvnUrlBreadCrumb)
-						.isEqualTo("<a href='http://helloworld.org/ngrinder/script/list'>http://helloworld.org/ngrinder/svn/admin</a>/<a href='http://helloworld.org/ngrinder/script/list/hello'>hello</a>/<a href='http://helloworld.org/ngrinder/script/list/hello/world'>world</a>");
+		assertThat(controller.getSvnUrlBreadcrumbs(user, "hello/world"))
+				.isEqualTo("<a href='http://helloworld.org/ngrinder/script/list'>http://helloworld.org/ngrinder/svn/admin</a>/<a href='http://helloworld.org/ngrinder/script/list/hello'>hello</a>/<a href='http://helloworld.org/ngrinder/script/list/hello/world'>world</a>");
 	}
 }

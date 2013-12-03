@@ -13,46 +13,51 @@
  */
 package org.ngrinder.common.util;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
- * Class description.
+ * Thread Util Unit Test.
  *
  * @author Mavlarn
  */
 public class ThreadUtilTest {
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.ThreadUtil#sleep(long)}.
+	 * Test method for {@link ThreadUtils#sleep(long)}.
 	 */
 	@Test
 	public void testSleep() {
-		ThreadUtil.sleep(1000);
+		StopWatch watch = new StopWatch();
+		watch.start();
+		ThreadUtils.sleep(1000);
+		watch.stop();
+		assertThat(watch.getTime()).isGreaterThanOrEqualTo(1000);
+		assertThat(watch.getTime()).isLessThan(3000);
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.common.util.ThreadUtil#stopQuietly(java.lang.Thread, java.lang.String)}.
+	 * {@link ThreadUtils#stopQuietly(java.lang.Thread, java.lang.String)}.
 	 */
 	@Test
 	public void testStopQuietly() {
 		Thread newThread = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				int i = 10;
 				while (i > 0) {
-					ThreadUtil.sleep(200);
+					ThreadUtils.sleep(200);
 				}
-
 			}
 		});
 		newThread.start();
-		ThreadUtil.sleep(500);
+		ThreadUtils.sleep(500);
 		assertThat(newThread.isAlive()).isTrue();
-		ThreadUtil.stopQuietly(newThread, "STOPPED!");
+		ThreadUtils.stopQuietly(newThread, "STOPPED!");
+		ThreadUtils.sleep(1000);
 		assertThat(newThread.isAlive()).isFalse();
 	}
 

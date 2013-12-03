@@ -47,4 +47,9 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 		// Do nothing on each sampling...
 		// To avoid exceptions due to @Transactional in the different thread.
 	}
+
+	@Override
+	protected int getSafeTransmissionThreshold() {
+		return 1;
+	}
 }

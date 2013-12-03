@@ -24,29 +24,41 @@ import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.Condition;
 
+import org.hyperic.jni.ArchLoaderException;
+import org.hyperic.jni.ArchNotSupportedException;
 import org.junit.Before;
-import org.ngrinder.common.util.ThreadUtil;
+import org.junit.BeforeClass;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.ArchLoaderInit;
 
-abstract public class AbstractMuliGrinderTestBase {
-	public AgentConfig agentConfig1;
-	public AgentConfig agentConfig2;
-	public AgentConfig agentConfig3;
+abstract public class AbstractMultiGrinderTestBase {
+	public AgentConfig.NullAgentConfig agentConfig1;
+	public AgentConfig.NullAgentConfig agentConfig2;
+	public AgentConfig.NullAgentConfig agentConfig3;
+
 
 	@Before
-	public void agentInit() {
-		agentConfig1 = new MockAgentConfigInAgentSide().init();
-		agentConfig2 = new MockAgentConfigInAgentSide().init();
-		agentConfig3 = new MockAgentConfigInAgentSide().init();
+	public void agentInit() throws ArchNotSupportedException, ArchLoaderException {
+		agentConfig1 = new AgentConfig.NullAgentConfig(1);
+		agentConfig1.init();
+		ArchLoaderInit archLoaderInit = new ArchLoaderInit();
+		archLoaderInit.init(agentConfig1.getHome().getNativeDirectory());
+		agentConfig2 = new AgentConfig.NullAgentConfig(1);
+		agentConfig2.init();
+		archLoaderInit.init(agentConfig2.getHome().getNativeDirectory());
+		agentConfig3 = new AgentConfig.NullAgentConfig(1);
+		agentConfig3.init();
+		archLoaderInit.init(agentConfig3.getHome().getNativeDirectory());
 	}
 
 	/**
 	 * Sleep quietly
-	 * 
-	 * @param milisecond
+	 *
+	 * @param millisecond
 	 */
-	public void sleep(long milisecond) {
-		ThreadUtil.sleep(milisecond);
+	public void sleep(long millisecond) {
+		ThreadUtils.sleep(millisecond);
 	}
 
 	protected AgentIdentity getAgentIdentity(Set<AgentIdentity> agentSet, int index) {
@@ -58,7 +70,9 @@ abstract public class AbstractMuliGrinderTestBase {
 		return agentIdentity;
 	}
 
-	/** Waiting condition */
+	/**
+	 * Waiting condition
+	 */
 	public Condition condition = new Condition();
 
 	public final class AgentShutDownSynchronizeListener implements AgentShutDownListener {
@@ -77,7 +91,7 @@ abstract public class AbstractMuliGrinderTestBase {
 		}
 	}
 
-	public void waitOnCondition(Condition codition, int timeout) {
+	public void waitOnCondition(Condition condition, int timeout) {
 		synchronized (condition) {
 			condition.waitNoInterrruptException(2100);
 		}
@@ -86,7 +100,7 @@ abstract public class AbstractMuliGrinderTestBase {
 	/**
 	 * Returns a free port numbers on localhost, or less than give count entries if unable to find a
 	 * free port.
-	 * 
+	 *
 	 * @return a free port number on localhost, or less than give count entries if unable to find a
 	 *         free port
 	 */
@@ -100,7 +114,7 @@ abstract public class AbstractMuliGrinderTestBase {
 
 	/**
 	 * Returns a free port number on localhost, or -1 if unable to find a free port.
-	 * 
+	 *
 	 * @return a free port number on localhost, or -1 if unable to find a free port
 	 */
 	public int getFreePort() {

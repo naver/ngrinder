@@ -13,13 +13,14 @@
  */
 package org.ngrinder;
 
+import org.junit.Test;
+import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.AgentConfig;
+
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtil;
 
 public class NGrinderStarterTest {
 
@@ -31,32 +32,26 @@ public class NGrinderStarterTest {
 	}
 
 	@Test
-	public void testNGrinderStarterJarResolution() {
-		String path = ClassLoader.getSystemClassLoader().getResource(".").getPath();
-		System.out.println(path);
-	}
-
-	@Test
 	public void testGetStartModeAndVersion() {
 		String startMode = starter.getStartMode();
 		assertTrue(startMode.equals("monitor") || startMode.equals("agent"));
 
 		String version = starter.getVersion();
-		assertTrue(StringUtils.isNotBlank(version));
+		assertThat(version, containsString("3."));
 	}
 
 	@Test
 	public void testStartAgent() {
 		starter.startAgent("127.0.0.1"); // there is no agent properties, it can
-											// be started with default setting
-		ThreadUtil.sleep(3000);
+		// be started with default setting
+		ThreadUtils.sleep(2000);
 		starter.stopAgent();
 	}
 
 	@Test
 	public void testStartMonitor() {
 		starter.startMonitor();
-		ThreadUtil.sleep(3000);
+		ThreadUtils.sleep(2000);
 		starter.stopMonitor();
 		starter.stopMonitor();
 	}
@@ -72,6 +67,11 @@ class MockNGrinderStarter extends NGrinderStarter {
 	@Override
 	protected void checkRunningDirectory() {
 
+	}
+
+	@Override
+	protected AgentConfig createAgentConfig() {
+		return new AgentConfig.NullAgentConfig(1).init();
 	}
 
 	@Override

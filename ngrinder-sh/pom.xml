@@ -37,9 +37,9 @@
                         <configuration>
                             <tasks>
                                 <fixcrlf srcdir="${basedir}/src/main/resources"
-                                         destdir="${build.outputDirectory}" includes="**/*.sh" eol="unix"/>
+                                         destdir="${project.build.outputDirectory}" includes="**/*.sh" eol="unix"/>
                                 <fixcrlf srcdir="${basedir}/src/main/resources"
-                                         destdir="${build.outputDirectory}" includes="**/*.bat" eol="dos"/>
+                                         destdir="${project.build.outputDirectory}" includes="**/*.bat" eol="dos"/>
                             </tasks>
                         </configuration>
                         <goals>

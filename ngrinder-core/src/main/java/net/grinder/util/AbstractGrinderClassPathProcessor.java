@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 
 /**
  * Grinder classpath optimization class.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -55,11 +55,9 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	/**
 	 * Construct classPath for grinder from given classpath string.
-	 * 
-	 * @param classPath
-	 *            classpath string
-	 * @param logger
-	 *            logger
+	 *
+	 * @param classPath classpath string
+	 * @param logger    logger
 	 * @return classpath optimized for grinder.
 	 */
 	public String filterClassPath(String classPath, Logger logger) {
@@ -77,17 +75,15 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	private boolean isUsefulReferenceProject(String path) {
 		return junitContext && new File(path).isDirectory()
-						&& path.contains(File.separator + "ngrinder-groovy" + File.separator);
+				&& path.contains(File.separator + "ngrinder-groovy" + File.separator);
 	}
 
 	/**
 	 * Construct the classpath of ngrinder which is very important and located in the head of
 	 * classpath.
-	 * 
-	 * @param classPath
-	 *            classpath string
-	 * @param logger
-	 *            logger
+	 *
+	 * @param classPath classpath string
+	 * @param logger    logger
 	 * @return classpath optimized for grinder.
 	 */
 	public String filterForeMostClassPath(String classPath, Logger logger) {
@@ -105,11 +101,9 @@ public abstract class AbstractGrinderClassPathProcessor {
 	/**
 	 * Construct the classpath of ngrinder which is very important and located in the head of
 	 * classpath.
-	 * 
-	 * @param classPath
-	 *            classpath string
-	 * @param logger
-	 *            logger
+	 *
+	 * @param classPath classpath string
+	 * @param logger    logger
 	 * @return classpath optimized for grinder.
 	 */
 	public String filterPatchClassPath(String classPath, Logger logger) {
@@ -126,7 +120,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	private boolean isUsefulForForemostReferenceProject(String path) {
 		return junitContext && new File(path).isDirectory()
-						&& path.contains(File.separator + "ngrinder-dns" + File.separator);
+				&& path.contains(File.separator + "ngrinder-dns" + File.separator);
 	}
 
 	private boolean isPatchJar(String jarFilename) {
@@ -208,9 +202,8 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	/**
 	 * Construct the foremost classPath from current classLoader.
-	 * 
-	 * @param logger
-	 *            logger
+	 *
+	 * @param logger logger
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildForemostClasspathBasedOnCurrentClassLoader(Logger logger) {
@@ -224,9 +217,8 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	/**
 	 * Construct the patch classPath from current classLoader.
-	 * 
-	 * @param logger
-	 *            logger
+	 *
+	 * @param logger logger
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildPatchClasspathBasedOnCurrentClassLoader(Logger logger) {
@@ -240,17 +232,25 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	/**
 	 * Construct classPath from current classLoader.
-	 * 
-	 * @param logger
-	 *            logger
+	 *
+	 * @param logger logger
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildClasspathBasedOnCurrentClassLoader(Logger logger) {
-		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		URL[] urls = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
+
 		StringBuilder builder = new StringBuilder();
-		for (URL each : urLs) {
+		for (URL each : urls) {
 			builder.append(each.getFile()).append(File.pathSeparator);
 		}
+		if (builder.length() < 300) {
+			// In case of the URLClassLoader is not activated, Try with system class path
+			final String property = System.getProperty("java.class.path", "");
+			for (String each : property.split(File.pathSeparator)) {
+				builder.append(each).append(File.pathSeparator);
+			}
+		}
+		System.out.println(builder.toString());
 		return filterClassPath(builder.toString(), logger);
 	}
 

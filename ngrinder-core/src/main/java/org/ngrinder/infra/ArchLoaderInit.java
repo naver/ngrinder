@@ -36,40 +36,62 @@ public class ArchLoaderInit {
 			return;
 		}
 
-		FileOutputStream fo = null;
-		InputStream is = null;
 		try {
-			is = getClass().getClassLoader().getResourceAsStream(name);
 			JarFile jarfile = new JarFile(getSigarNativePath());
 			for (Enumeration<JarEntry> en = jarfile.entries(); en.hasMoreElements(); ) {
 				JarEntry je = en.nextElement();
 				if (name.contains(je.getName())) {
-					is = jarfile.getInputStream(je);
-					fo = new FileOutputStream(fl);
-					IOUtils.copy(is, fo);
+					FileOutputStream fo = null;
+					InputStream is = null;
+					try {
+						is = jarfile.getInputStream(je);
+						fo = new FileOutputStream(fl);
+						IOUtils.copy(is, fo);
+					} finally {
+						IOUtils.closeQuietly(fo);
+						IOUtils.closeQuietly(is);
+					}
 				}
 			}
 		} catch (IOException e) {
 			throw new ArchLoaderException(e.getMessage());
-		} finally {
-			IOUtils.closeQuietly(fo);
-			IOUtils.closeQuietly(is);
 		}
 	}
+
 
 	private void addNativeDirectoryToLibPath(File nativeDirectory) {
 		String existingPath = System.getProperty("java.library.path");
 		if (!existingPath.contains(nativeDirectory.getAbsolutePath())) {
 			System.setProperty("java.library.path", nativeDirectory.getAbsolutePath() + File
 					.pathSeparator + existingPath);
+			LOGGER.info("java.library.path : {} ", System.getProperty("java.library.path"));
 		}
-		LOGGER.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
 	private String getSigarNativePath() throws IOException {
-		for (URL each : ((URLClassLoader) ArchLoaderInit.class.getClassLoader()).getURLs()) {
+		// Current class loader first
+		final ClassLoader classLoader = ArchLoaderInit.class.getClassLoader();
+		for (URL each : ((URLClassLoader) classLoader).getURLs()) {
 			if (each.getFile().contains("sigar-native-")) {
 				return each.getFile();
+			}
+		}
+
+		// Then parent class loader
+		final ClassLoader parent = classLoader.getParent();
+		if (parent != null) {
+			for (URL each : ((URLClassLoader) parent).getURLs()) {
+				if (each.getFile().contains("sigar-native-")) {
+					return each.getFile();
+				}
+			}
+		}
+
+		// Try with system class path
+		final String property = System.getProperty("java.class.path", "");
+		for (String each : property.split(File.pathSeparator)) {
+			if (each.contains("sigar-native-")) {
+				return new File(each).getAbsolutePath();
 			}
 		}
 		throw new IOException("No sigar-native available in the classpath");
