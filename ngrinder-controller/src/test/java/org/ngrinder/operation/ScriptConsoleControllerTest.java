@@ -13,7 +13,9 @@
  */
 package org.ngrinder.operation;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -27,19 +29,20 @@ public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTe
 
 	@Test
 	public void runScriptTest() {
-
-		ScriptConsoleController scriptController = new ScriptConsoleController() {
-
-			@Override
-			protected void intVars(PythonInterpreter interp) {
-			}
-
-		};
+		ScriptConsoleController scriptController = new ScriptConsoleController();
 		scriptController.init();
-		String command = "print \'hello\'";
+
 		Model model = new ExtendedModelMap();
+		scriptController.runScript("", model);
+		assertThat((String) model.asMap().get("result"), nullValue());
+		String command = "print \'hello\'";
 		scriptController.runScript(command, model);
 		assertThat(model.containsAttribute("result"), is(true));
+		assertThat((String) model.asMap().get("result"), containsString("hello"));
+
+		scriptController.runScript("var a = 1", model);
+		scriptController.runScript("print a", model);
+		assertThat((String) model.asMap().get("result"), containsString("No such property"));
 
 	}
 }

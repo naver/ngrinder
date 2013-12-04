@@ -8,6 +8,9 @@
 	.CodeMirror-scroll {
 		height: 400px;
 	}
+	.validation {
+		height:150px; margin-top:5px;
+	}
 </style>
 </head>
 <body>
@@ -23,13 +26,13 @@
 								<@spring.message "script.view.button.runScript"/>
 							</button>
 						</legend> 
-						
-						<textarea class="span12"  id="scriptEditor" name="scriptEditor" style="resize: none">${(script)!}</textarea>
+						<textarea class="span12" id="script_editor" style="resize: none">${(script)!}</textarea>
 						<input type="hidden" id="script" name="script" value=""/>
 					</fieldset>
 				</form>
-				<pre style="height:150px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
-You can write python code to monitor the ngrinder internal state.
+				<pre class="prettyprint pre-scrollable validation">
+					<#if result??>${result}<#else>
+You can write groovy code to monitor the ngrinder internal state.
 
 Following variables are available.
 
@@ -57,11 +60,11 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 		<#include "../common/copyright.ftl">
 	</div>
     <#include "../common/codemirror.ftl">
-	<script src="${req.getContextPath()}/plugins/codemirror/lang/python.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/groovy.js"></script>
     <script>
 	    $(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("scriptEditor"), {
-			   mode: "python",
+			var editor = CodeMirror.fromTextArea(document.getElementById("script_editor"), {
+			   mode: "groovy",
 			   theme: "eclipse",
 			   lineNumbers: true,
 			   lineWrapping: true,
