@@ -14,6 +14,5 @@ public class GroovyHandlerTest {
 		assertThat(checkSyntaxErrors, notNullValue());
 		checkSyntaxErrors = handler.checkSyntaxErrors("hello", "print 'hello';");
 		assertThat(checkSyntaxErrors, nullValue());
-
 	}
 }

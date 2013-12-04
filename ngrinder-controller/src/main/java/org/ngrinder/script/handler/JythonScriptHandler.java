@@ -13,10 +13,7 @@
  */
 package org.ngrinder.script.handler;
 
-import org.python.core.CompileMode;
-import org.python.core.CompilerFlags;
-import org.python.core.PySyntaxError;
-import org.python.core.PyTuple;
+import org.python.core.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,9 +41,9 @@ public class JythonScriptHandler extends ScriptHandler {
 	public String checkSyntaxErrors(String path, String script) {
 		try {
 			org.python.core.ParserFacade.parse(script, CompileMode.exec, path, new CompilerFlags(
-							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST));
+					CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST));
 
-		} catch (PySyntaxError e) {
+		} catch (PyException e) {
 			try {
 				PyTuple pyTuple = (PyTuple) ((PyTuple) e.value).get(1);
 				Integer line = (Integer) pyTuple.get(1);
@@ -57,7 +54,7 @@ public class JythonScriptHandler extends ScriptHandler {
 					buf.insert(column, "^");
 				}
 				return "Error occurred\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
-								+ buf.toString();
+						+ buf.toString();
 			} catch (Exception ex) {
 				return "Error occurred while evaluation python syntax";
 			}
