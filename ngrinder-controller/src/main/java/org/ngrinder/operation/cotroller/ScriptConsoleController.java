@@ -92,20 +92,6 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 
 	/**
-	 * Initialize Jython and put several managers and services into the jython context.
-	 */
-	@PostConstruct
-	public void init() {
-	}
-
-	/**
-	 * Destroy bean.
-	 */
-	@PreDestroy
-	public void destroy() {
-	}
-
-	/**
 	 * Run the given script. The run result is stored in "result" of the given model.
 	 *
 	 * @param script script
