@@ -355,11 +355,18 @@ public abstract class NetworkUtil {
 	public static List<String> getDnsServers() throws NamingException {
 		Hashtable env = new Hashtable();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-		DirContext ctx = new InitialDirContext(env);
-		String dnsString = (String) ctx.getEnvironment().get("java.naming.provider.url");
+		DirContext ctx = null;
 		List<String> dnsServers = new ArrayList<String>();
-		for (String each : dnsString.split(" ")) {
-			dnsServers.add(each.replace("dns://", ""));
+		try {
+			ctx = new InitialDirContext(env);
+			String dnsString = (String) ctx.getEnvironment().get("java.naming.provider.url");
+			for (String each : dnsString.split(" ")) {
+				dnsServers.add(each.replace("dns://", ""));
+			}
+		} catch (Exception e) {
+			if (ctx != null) {
+				ctx.close();
+			}
 		}
 		return dnsServers;
 	}

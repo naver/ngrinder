@@ -90,6 +90,7 @@ public class NameStore {
 			InetAddress address = InetAddress.getByAddress(DnsUtil.textToNumericFormat(ipAddress));
 			ipAddresses.add(address);
 		} catch (UnknownHostException ignored) {
+			// Fall through
 		}
 	}
 
