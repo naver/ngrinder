@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.util.Hashtable;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.util.Directory;
@@ -27,25 +28,39 @@ import net.grinder.util.NetworkUtil;
 
 import org.junit.Test;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+
 public class PropertyBuilderTest {
 	@Test
 	public void testPropertyBuilder() throws DirectoryException {
 		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-						+ new File("./native_lib").getAbsolutePath());
+				+ new File("./native_lib").getAbsolutePath());
 
 		PropertyBuilder createPropertyBuilder = createPropertyBuilder("www.sample.com,:127.0.0.1");
 		assertThat(createPropertyBuilder.rebaseHostString("www.sample.com,:127.0.0.1"),
-						is("www.sample.com:173.230.129.147,:127.0.0.1"));
+				is("www.sample.com:173.230.129.147,:127.0.0.1"));
 		assertThat(createPropertyBuilder.rebaseHostString("www.sample.com:74.125.128.99"),
-						is("www.sample.com:74.125.128.99"));
+				is("www.sample.com:74.125.128.99"));
 		assertThat(createPropertyBuilder.rebaseHostString("www.google.com").length(), greaterThan(40));
 		assertThat(createPropertyBuilder.rebaseHostString(":127.0.0.1"), is(":127.0.0.1"));
 	}
 
 	@Test
+	public void testDnsServerResolver() throws DirectoryException {
+		PropertyBuilder createPropertyBuilder = createPropertyBuilder("www.sample.com,:127.0.0.1");
+		StringBuilder builder = new StringBuilder();
+		createPropertyBuilder.addDnsIP(builder);
+		assertThat(builder.toString(), containsString("ngrinder.dns.ip="));
+		assertThat(builder.length(), greaterThan(20));
+	}
+
+	@Test
 	public void testPropertyBuilderMemSize() throws DirectoryException {
 		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-						+ new File("./native_lib").getAbsolutePath());
+				+ new File("./native_lib").getAbsolutePath());
 
 		PropertyBuilder createPropertyBuilder = createPropertyBuilder("www.sample.com,:127.0.0.1");
 		createPropertyBuilder.addProperties("grinder.processes", "10");

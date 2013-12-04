@@ -21,9 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.net.util.IPAddressUtil;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 
 import static java.net.NetworkInterface.getNetworkInterfaces;
@@ -345,5 +350,17 @@ public abstract class NetworkUtil {
 			LOGGER.error("Error while resolving non look back local addresses.", e);
 		}
 		return addresses;
+	}
+
+	public static List<String> getDnsServers() throws NamingException {
+		Hashtable env = new Hashtable();
+		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
+		DirContext ctx = new InitialDirContext(env);
+		String dnsString = (String) ctx.getEnvironment().get("java.naming.provider.url");
+		List<String> dnsServers = new ArrayList<String>();
+		for (String each : dnsString.split(" ")) {
+			dnsServers.add(each.replace("dns://", ""));
+		}
+		return dnsServers;
 	}
 }

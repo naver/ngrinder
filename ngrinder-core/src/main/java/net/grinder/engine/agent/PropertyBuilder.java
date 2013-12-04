@@ -310,16 +310,17 @@ public class PropertyBuilder {
 				.append(properties.getProperty(GrinderProperties.CONSOLE_HOST, "127.0.0.1")).append(" ");
 	}
 
-	@SuppressWarnings("restriction")
-	private StringBuilder addDnsIP(StringBuilder jvmArguments) {
+	StringBuilder addDnsIP(StringBuilder jvmArguments) {
 		try {
-			List<?> nameservers = sun.net.dns.ResolverConfiguration.open().nameservers();
-			return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(nameservers, ",")).append(" ");
+			List<?> dnsServers = NetworkUtil.getDnsServers();
+			if (!dnsServers.isEmpty()) {
+				return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(dnsServers, ",")).append(" ");
+			}
 		} catch (Exception e) {
 			LOGGER.error("Error while adding DNS IPs for the security mode. This might be occurred by not using " +
 					"Oracle JDK : {}", e.getMessage());
-			return jvmArguments;
 		}
+		return jvmArguments;
 	}
 
 	private StringBuilder addCustomDns(StringBuilder jvmArguments) {
