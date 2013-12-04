@@ -40,7 +40,7 @@ public class SystemConfigService {
 	 * 
 	 * @return file content.
 	 */
-	public String getSystemConfigFile() {
+	public String getSystemConfig() {
 		try {
 			return FileUtils.readFileToString(config.getHome().getSubFile("system.conf"), "UTF-8");
 		} catch (Exception e) {
@@ -56,7 +56,7 @@ public class SystemConfigService {
 	 *            file content.
 	 * @return save successfully or not.
 	 */
-	public boolean saveSystemConfigFile(String content) {
+	public boolean saveSystemConfig(String content) {
 		try {
 			FileUtils.writeStringToFile(config.getHome().getSubFile("system.conf"), content, "UTF-8");
 		} catch (IOException e) {

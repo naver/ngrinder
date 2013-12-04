@@ -14,17 +14,22 @@
 package org.ngrinder.operation.cotroller;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 /**
  * System configuration controller.
- * 
+ *
  * @author Alex Qin
  * @since 3.1
  */
@@ -38,29 +43,41 @@ public class SystemConfigController extends NGrinderBaseController {
 
 	/**
 	 * Open the system configuration editor.
-	 * 
-	 * @param model
-	 *            model
+	 *
+	 * @param model model
 	 * @return operation/system_config
 	 */
 	@RequestMapping("")
-	public String openSystemConfiguration(Model model) {
-		model.addAttribute("content", systemConfigService.getSystemConfigFile());
+	public String get(Model model) {
+		model.addAttribute("content", systemConfigService.getSystemConfig());
 		return "operation/system_config";
 	}
 
 	/**
 	 * Save the system configuration.
-	 * 
-	 * @param model
-	 *            model
-	 * @param content
-	 *            system configuration content to be saved
+	 *
+	 * @param model   model
+	 * @param content system configuration content to be saved
 	 * @return operation/system_config
 	 */
 	@RequestMapping("/save")
-	public String saveSystemConfiguration(Model model, @RequestParam final String content) {
-		model.addAttribute("success", systemConfigService.saveSystemConfigFile(content));
-		return openSystemConfiguration(model);
+	public String save(Model model, @RequestParam final String content) {
+		model.addAttribute("success", systemConfigService.saveSystemConfig(content));
+		return get(model);
+	}
+
+	/**
+	 * Save the system configuration.
+	 *
+	 * @param model   model
+	 * @param content system configuration content to be saved
+	 * @return true if succeeded
+	 */
+	@RestAPI
+	@RequestMapping(value = "api/save", method = RequestMethod.POST)
+	public HttpEntity<String> save(@RequestParam final String content) {
+		systemConfigService.saveSystemConfig(checkNotEmpty(content, "content should be " +
+				"passed as parameter"));
+		return successJsonHttpEntity();
 	}
 }
