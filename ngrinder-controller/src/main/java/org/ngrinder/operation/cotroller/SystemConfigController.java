@@ -53,6 +53,7 @@ public class SystemConfigController extends NGrinderBaseController {
 		return "operation/system_config";
 	}
 
+
 	/**
 	 * Save the system configuration.
 	 *
@@ -66,6 +67,18 @@ public class SystemConfigController extends NGrinderBaseController {
 		return get(model);
 	}
 
+
+	/**
+	 * Get the system configuration.
+	 *
+	 * @return system configuration
+	 */
+	@RestAPI
+	@RequestMapping(value = "/api", method = RequestMethod.GET)
+	public HttpEntity<String> get() {
+		return toJsonHttpEntity(systemConfigService.getSystemConfig());
+	}
+
 	/**
 	 * Save the system configuration.
 	 *
@@ -74,8 +87,8 @@ public class SystemConfigController extends NGrinderBaseController {
 	 * @return true if succeeded
 	 */
 	@RestAPI
-	@RequestMapping(value = "api/save", method = RequestMethod.POST)
-	public HttpEntity<String> save(@RequestParam final String content) {
+	@RequestMapping(value = "/api", method = RequestMethod.POST)
+	public HttpEntity<String> save(@RequestParam(required = true) final String content) {
 		systemConfigService.saveSystemConfig(checkNotEmpty(content, "content should be " +
 				"passed as parameter"));
 		return successJsonHttpEntity();
