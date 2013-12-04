@@ -30,7 +30,6 @@ public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTe
 	@Test
 	public void runScriptTest() {
 		ScriptConsoleController scriptController = new ScriptConsoleController();
-		scriptController.init();
 
 		Model model = new ExtendedModelMap();
 		scriptController.runScript("", model);
