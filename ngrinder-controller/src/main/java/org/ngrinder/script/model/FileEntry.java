@@ -25,7 +25,7 @@ import com.google.gson.annotations.Expose;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
 
@@ -101,7 +101,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	}
 
 	public String getPathInShort() {
-		return PathUtil.getShortPath(path.toString());
+		return PathUtils.getShortPath(path.toString());
 	}
 
 	public String getFileName() {

@@ -38,6 +38,7 @@ public class FileEntryServiceTest {
 
 	@Test
 	public void testFileNameFromUrl() {
+		assertThat(fileEntryService.getPathFromUrl("http://helloworld/wow;wow"), is("helloworld/wow_wow"));
 		assertThat(fileEntryService.getPathFromUrl("http://helloworld"), is("helloworld"));
 		assertThat(fileEntryService.getPathFromUrl("http://helloworld.com"), is("helloworld.com"));
 		assertThat(fileEntryService.getPathFromUrl("http://helloworld.com/wewe.nhn"), is("helloworld.com/wewe.nhn"));

@@ -22,7 +22,7 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -385,7 +385,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getScriptNameInShort() {
-		return PathUtil.getShortPath(scriptName);
+		return PathUtils.getShortPath(scriptName);
 	}
 
 	public String getDescription() {

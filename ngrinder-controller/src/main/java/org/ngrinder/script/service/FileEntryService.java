@@ -15,7 +15,7 @@ package org.ngrinder.script.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.HttpContainerContext;
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -217,7 +217,7 @@ public class FileEntryService {
 	 */
 	public void addFolder(User user, String path, String folderName, String comment) {
 		FileEntry entry = new FileEntry();
-		entry.setPath(PathUtil.join(path, folderName));
+		entry.setPath(PathUtils.join(path, folderName));
 		entry.setFileType(FileType.DIR);
 		entry.setDescription(comment);
 		fileEntityRepository.save(user, entry, null);
@@ -277,7 +277,7 @@ public class FileEntryService {
 		try {
 			URL url = new URL(urlString);
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
-			return (url.getHost() + urlPath).replaceAll("[\\&\\?\\%\\-]", "_");
+			return (url.getHost() + urlPath).replaceAll("[;\\&\\?\\%\\-]", "_");
 		} catch (MalformedURLException e) {
 			throw processException("Error while translating " + urlString, e);
 		}
@@ -310,7 +310,7 @@ public class FileEntryService {
 			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource);
 			return null;
 		}
-		path = PathUtil.join(path, fileName);
+		path = PathUtils.join(path, fileName);
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(path);
 		fileEntry.setContent(loadTemplate(user, scriptHandler, url, name));

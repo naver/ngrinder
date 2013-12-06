@@ -36,7 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
@@ -109,7 +109,7 @@ public class FileEntryController extends NGrinderBaseController {
 
 		});
 		for (FileEntry each : files) {
-			each.setPath(PathUtil.removePrependedSlash(each.getPath()));
+			each.setPath(PathUtils.removePrependedSlash(each.getPath()));
 		}
 
 		model.addAttribute("files", files);
@@ -218,7 +218,7 @@ public class FileEntryController extends NGrinderBaseController {
 		FileEntry entry = new FileEntry();
 		entry.setPath(fileName);
 		if (scriptHandler instanceof ProjectHandler) {
-			if (!fileEntryService.hasFileEntry(user, PathUtil.join(path, fileName))) {
+			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler,
 						createLibAndResources);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
@@ -230,7 +230,7 @@ public class FileEntryController extends NGrinderBaseController {
 			}
 
 		} else {
-			String fullPath = PathUtil.join(path, fileName);
+			String fullPath = PathUtils.join(path, fileName);
 			if (fileEntryService.hasFileEntry(user, fullPath)) {
 				model.addAttribute("file", fileEntryService.getFileEntry(user, fullPath));
 			} else {
@@ -238,7 +238,7 @@ public class FileEntryController extends NGrinderBaseController {
 						scriptHandler, createLibAndResources));
 			}
 		}
-		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, PathUtil.join(path, fileName)));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, PathUtils.join(path, fileName)));
 		model.addAttribute("scriptHandler", scriptHandler);
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		return "script/editor";

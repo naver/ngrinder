@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
  * @since 3.0
  * 
  */
-public abstract class PathUtil {
+public abstract class PathUtils {
 
 	public static final int MAX_PATH_LENGTH = 40;
 

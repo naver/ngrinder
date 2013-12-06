@@ -19,7 +19,7 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
 
 /**
@@ -50,7 +50,7 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 		}
 		try {
 			String svnFileUrl = getRequestURI().substring(
-					PathUtil.removeDuplicatedPrependedSlash(getContextPath() + "/svn").length());
+					PathUtils.removeDuplicatedPrependedSlash(getContextPath() + "/svn").length());
 			pathInfo = SVNEncodingUtil.uriEncode(URLDecoder.decode(svnFileUrl, "UTF-8"));
 			return pathInfo;
 		} catch (UnsupportedEncodingException e) {

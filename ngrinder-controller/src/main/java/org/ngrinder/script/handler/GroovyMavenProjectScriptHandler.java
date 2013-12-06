@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.model.User;
@@ -140,7 +140,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	@Override
 	protected void prepareDistMore(Long testId, User user, FileEntry script, File distDir,
 			PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
-		String pomPathInSVN = PathUtil.join(getBasePath(script), "pom.xml");
+		String pomPathInSVN = PathUtils.join(getBasePath(script), "pom.xml");
 		MavenCli cli = new MavenCli();
 		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
 				+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
@@ -167,7 +167,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	@Override
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, // LF
 			String url, boolean createLib) {
-		path = PathUtil.join(path, fileName);
+		path = PathUtils.join(path, fileName);
 		try {
 			// Create Dir entry
 			createBaseDirectory(user, path);
@@ -202,7 +202,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				fileContent = fileContent.replace("${url}", url);
 				FileEntry fileEntry = new FileEntry();
 				fileEntry.setContent(fileContent);
-				fileEntry.setPath(FilenameUtils.normalize(PathUtil.join(path, subpath), true));
+				fileEntry.setPath(FilenameUtils.normalize(PathUtils.join(path, subpath), true));
 				fileEntry.setDescription("create groovy maven project");
 				String hostName = UrlUtils.getHost(url);
 				if (StringUtils.isNotEmpty(hostName)

@@ -13,7 +13,7 @@
  */
 package org.ngrinder.infra.spring;
 
-import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.PathUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,9 +70,9 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 		RequestMapping requestMappingOnMethod = parameter.getMethodAnnotation(RequestMapping.class);
 		RequestMapping requestMappingOnClass = getDeclaringClassRequestMapping(parameter);
 		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requestMappingOnMethod.value()[0]);
-		return PathUtil.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest
-						.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE,
-										NativeWebRequest.SCOPE_REQUEST)));
+		return PathUtils.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest
+				.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE,
+						NativeWebRequest.SCOPE_REQUEST)));
 	}
 
 	/**
