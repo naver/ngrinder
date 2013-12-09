@@ -13,23 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.util.AccessUtils.getSafe;
-import static org.ngrinder.model.Status.CANCELED;
-import static org.ngrinder.model.Status.DISTRIBUTE_FILES;
-import static org.ngrinder.model.Status.DISTRIBUTE_FILES_FINISHED;
-import static org.ngrinder.model.Status.START_AGENTS;
-import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
-import static org.ngrinder.model.Status.START_CONSOLE;
-import static org.ngrinder.model.Status.START_TESTING;
-import static org.ngrinder.model.Status.TESTING;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.StopReason;
@@ -37,7 +20,6 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -46,24 +28,32 @@ import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
-import org.ngrinder.perftest.service.samplinglistener.AgentDieHardListener;
-import org.ngrinder.perftest.service.samplinglistener.AgentLostDetectionListener;
-import org.ngrinder.perftest.service.samplinglistener.MonitorCollectorListener;
-import org.ngrinder.perftest.service.samplinglistener.PerfTestSamplingCollectorListener;
-import org.ngrinder.perftest.service.samplinglistener.PluginRunListener;
+import org.ngrinder.perftest.service.monitor.MonitorScheduledTask;
+import org.ngrinder.perftest.service.samplinglistener.*;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.util.AccessUtils.getSafe;
+import static org.ngrinder.model.Status.*;
 
 /**
  * {@link PerfTest} run scheduler.
@@ -85,6 +75,12 @@ public class PerfTestRunnable implements Constants {
 	private PerfTestService perfTestService;
 
 	@Autowired
+	private ScheduledTaskService scheduledTaskService;
+
+	@Autowired
+	private CacheManager cacheManager;
+
+	@Autowired
 	private ConsoleManager consoleManager;
 
 	@Autowired
@@ -95,11 +91,6 @@ public class PerfTestRunnable implements Constants {
 
 	@Autowired
 	private Config config;
-
-
-	@Autowired
-	private ApplicationContext applicationContext;
-
 
 	/**
 	 * Scheduled method for test execution. This method dispatches the test
@@ -226,8 +217,8 @@ public class PerfTestRunnable implements Constants {
 	/**
 	 * Distribute files to agents.
 	 *
-	 * @param perfTest          perftest
-	 * @param singleConsole     console to be used.
+	 * @param perfTest      perftest
+	 * @param singleConsole console to be used.
 	 */
 	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) {
 		// Distribute files
@@ -341,20 +332,31 @@ public class PerfTestRunnable implements Constants {
 	}
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
-		// Add the SamplingLifeCycleFollowUpListener
-		singleConsole.addSamplingLifeCycleFollowUpCycleListener(new MonitorCollectorListener(this.applicationContext,
-				perfTest.getId(), createMonitorTargets(perfTest), singleConsole.getReportPath()));
-
+		singleConsole.addSamplingLifeCycleFollowUpCycleListener(createMonitorCollectionListener(perfTest, singleConsole));
 		// Add SamplingLifeCycleListener
 		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
-				perfTest.getId(), perfTestService));
+				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
-				perfTestService));
+				perfTestService, scheduledTaskService));
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
-				agentManager));
+				agentManager, scheduledTaskService));
+	}
+
+	private MonitorCollectorListener createMonitorCollectionListener(final PerfTest perfTest,
+	                                                                 final SingleConsole singleConsole) {
+		final MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
+		monitorScheduledTask.setCorrespondingPerfTestId(perfTest.getId());
+		// To speed up, make the monitor connection in the async way.
+		scheduledTaskService.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				monitorScheduledTask.add(createMonitorTargets(perfTest), singleConsole.getReportPath());
+			}
+		});
+		return new MonitorCollectorListener(monitorScheduledTask, scheduledTaskService, perfTest.getSamplingInterval());
 	}
 
 	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {

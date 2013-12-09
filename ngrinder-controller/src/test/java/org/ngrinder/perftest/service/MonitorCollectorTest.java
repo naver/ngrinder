@@ -15,9 +15,9 @@ public class MonitorCollectorTest {
 	@Test
 	public void testMonitor() {
 		SystemDataModel systemDataModel = new SystemDataModel();
-		systemDataModel.setCollectTime(100);
-		systemDataModel.setFreeMemory(20);
-		systemDataModel.setCpuUsedPercentage(20);
+		systemDataModel.setCollectTime(100L);
+		systemDataModel.setFreeMemory(20L);
+		systemDataModel.setCpuUsedPercentage(20f);
 		List<SystemDataModel> lists = Lists.newArrayList();
 		lists.add(systemDataModel);
 		lists.add(systemDataModel);

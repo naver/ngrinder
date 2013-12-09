@@ -18,14 +18,13 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
-import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.ClusteredAgentRequest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.infra.schedule.ScheduledTask;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -71,7 +70,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	private Cache agentMonitoringTargetsCache;
 
 	@Autowired
-	private ScheduledTask scheduledTask;
+	private ScheduledTaskService scheduledTaskService;
 
 	@Autowired
 	private RegionService regionService;
@@ -84,9 +83,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		agentMonitoringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
 		if (getConfig().isClustered()) {
 			agentRequestCache = cacheManager.getCache("agent_request");
-			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
+			scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
 				@Override
-				public void interruptibleRun() {
+				public void run() {
 					List<String> keys = cast(((Ehcache) agentRequestCache.getNativeCache())
 							.getKeysWithExpiryCheck());
 					String region = getConfig().getRegion() + "|";
@@ -109,7 +108,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 						}
 					}
 				}
-			});
+			}, 3000);
 		}
 	}
 

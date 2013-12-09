@@ -13,59 +13,44 @@
  */
 package org.ngrinder.perftest.service.samplinglistener;
 
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
-
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.PerfTestService;
+
+import java.io.File;
 
 /**
  * Perf Test Sampling collection class.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.1
  */
 public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListener {
-	private final PerfTestService perfTestService;
-	private ExecutorService newSingleThreadExecutor;
-	private PerfTestStatisticCollectionRunnable perfTestStatisticCollectionRunnable;
+	private final ScheduledTaskService scheduledTaskService;
+	private Runnable runnable;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param singleConsole
-	 *            singleConsole to monitor
-	 * @param perfTestId
-	 *            perfTest id which this sampling start
-	 * @param perfTestService
-	 *            service
+	 *
+	 * @param singleConsole        singleConsole to monitor
+	 * @param perfTestId           perfTest id which this sampling start
+	 * @param perfTestService      perfTestService
+	 * @param scheduledTaskService scheduledTaskService
 	 */
-	public PerfTestSamplingCollectorListener(SingleConsole singleConsole, Long perfTestId,
-			PerfTestService perfTestService) {
-		this.perfTestService = perfTestService;
-		this.newSingleThreadExecutor = Executors.newSingleThreadExecutor();
-		this.perfTestStatisticCollectionRunnable = new PerfTestStatisticCollectionRunnable(singleConsole, perfTestId);
-	}
-
-	class PerfTestStatisticCollectionRunnable implements Runnable {
-		private final SingleConsole singleConsole;
-		private final Long perfTestId;
-
-		PerfTestStatisticCollectionRunnable(SingleConsole singleConsole, Long perfTestId) {
-			this.singleConsole = singleConsole;
-			this.perfTestId = perfTestId;
-		}
-
-		@Override
-		public void run() {
-			perfTestService.saveStatistics(singleConsole, perfTestId);
-		}
-
+	public PerfTestSamplingCollectorListener(final SingleConsole singleConsole, final Long perfTestId,
+	                                         final PerfTestService perfTestService,
+	                                         ScheduledTaskService scheduledTaskService) {
+		this.scheduledTaskService = scheduledTaskService;
+		// Make it separate asyc call to remove the delay on the sampling.
+		this.runnable = new Runnable() {
+			@Override
+			public void run() {
+				perfTestService.saveStatistics(singleConsole, perfTestId);
+			}
+		};
 	}
 
 	@Override
@@ -74,13 +59,11 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		CoreLogger.LOGGER.debug("Sampling is performed");
-		newSingleThreadExecutor.execute(this.perfTestStatisticCollectionRunnable);
+		scheduledTaskService.runAsync(this.runnable);
 	}
 
 	@Override
 	public void onSamplingEnded() {
-		newSingleThreadExecutor.shutdown();
 	}
 
 }

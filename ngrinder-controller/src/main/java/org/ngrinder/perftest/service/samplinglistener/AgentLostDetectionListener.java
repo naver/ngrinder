@@ -13,42 +13,50 @@
  */
 package org.ngrinder.perftest.service.samplinglistener;
 
-import java.io.File;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
-
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.service.PerfTestService;
 
+import java.io.File;
+
 /**
  * Agent Lost Detector.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.2
  */
 public class AgentLostDetectionListener implements SamplingLifeCycleListener {
-	private final PerfTest perfTest;
-	private final SingleConsole singleConsole;
-	private final PerfTestService perfTestService;
-	private int countOfLostAgent;
+	private final Runnable runnable;
+	private final ScheduledTaskService scheduledTaskService;
+	private int lostAgentDetectionTrial;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param singleConsole
-	 *            singleConsole to monitor
-	 * @param perfTest
-	 *            perfTest which this sampling start
-	 * @param perfTestService
-	 *            service
+	 *
+	 * @param singleConsole   singleConsole to monitor
+	 * @param perfTest        perfTest which this sampling start
+	 * @param perfTestService service
 	 */
-	public AgentLostDetectionListener(SingleConsole singleConsole, PerfTest perfTest, PerfTestService perfTestService) {
-		this.singleConsole = singleConsole;
-		this.perfTest = perfTest;
-		this.perfTestService = perfTestService;
+	public AgentLostDetectionListener(final SingleConsole singleConsole, final PerfTest perfTest,
+	                                  final PerfTestService perfTestService, ScheduledTaskService scheduledTaskService) {
+		this.scheduledTaskService = scheduledTaskService;
+		this.runnable = new Runnable() {
+			@Override
+			public void run() {
+				if (singleConsole.getAllAttachedAgentsCount() == 0) {
+					if (lostAgentDetectionTrial++ > 10) {
+						perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
+								"[ERROR] All agents are unexpectedly lost.");
+					}
+				} else {
+					lostAgentDetectionTrial = 0;
+				}
+			}
+		};
 	}
 
 	@Override
@@ -57,14 +65,7 @@ public class AgentLostDetectionListener implements SamplingLifeCycleListener {
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		if (singleConsole.getAllAttachedAgentsCount() == 0) {
-			if (countOfLostAgent++ > 10) {
-				perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
-						"[ERROR] All agents are unexpectedly lost.");
-			}
-		} else {
-			countOfLostAgent = 0;
-		}
+		scheduledTaskService.runAsync(this.runnable);
 	}
 
 	@Override

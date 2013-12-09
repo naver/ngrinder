@@ -20,6 +20,7 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.statistics.StatisticsSet;
 
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -33,10 +34,8 @@ import org.ngrinder.perftest.service.PerfTestService;
  * @since 3.1.2
  */
 public class AgentDieHardListener implements SamplingLifeCycleListener {
-	private final PerfTest perfTest;
-	private final SingleConsole singleConsole;
-	private final PerfTestService perfTestService;
-	private final AgentManager agentManager;
+	private final Runnable runnable;
+	private final ScheduledTaskService scheduledTaskService;
 
 	/**
 	 * Constructor.
@@ -46,33 +45,38 @@ public class AgentDieHardListener implements SamplingLifeCycleListener {
 	 * @param perfTestService perfTestService
 	 * @param agentManager    agent manager
 	 */
-	public AgentDieHardListener(SingleConsole singleConsole, PerfTest perfTest, PerfTestService perfTestService,
-	                            AgentManager agentManager) {
-		this.singleConsole = singleConsole;
-		this.perfTest = perfTest;
-		this.perfTestService = perfTestService;
-		this.agentManager = agentManager;
+	public AgentDieHardListener(final SingleConsole singleConsole, final PerfTest perfTest,
+	                            final PerfTestService perfTestService,
+	                            final AgentManager agentManager, final ScheduledTaskService scheduledTaskService) {
+		this.scheduledTaskService = scheduledTaskService;
+		this.runnable = new Runnable() {
+			@Override
+			public void run() {
+				for (AgentStatus agentStates : agentManager.getAgentStatusSetConnectingToPort(singleConsole.getConsolePort())) {
+					SystemDataModel systemDataModel = agentStates.getSystemDataModel();
+					if (systemDataModel != null) {
+						// If the memory is available less than 2%.
+						double freeMemoryRatio = ((double) systemDataModel.getFreeMemory()) / systemDataModel.getTotalMemory();
+						if (freeMemoryRatio < 0.02) {
+							perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, //
+									String.format("[ERROR] %s agent is about to die due to lack of free memory.\n"
+											+ "Shutdown PerfTest %s by force for safety\n" + "Please decrease the vuser count.", //
+											agentStates.getAgentName(), perfTest.getId()));
+						}
+					}
+				}
+			}
+		};
 	}
 
 	@Override
 	public void onSamplingStarted() {
+		scheduledTaskService.runAsync(this.runnable);
 	}
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		for (AgentStatus agentStates : agentManager.getAgentStatusSetConnectingToPort(singleConsole.getConsolePort())) {
-			SystemDataModel systemDataModel = agentStates.getSystemDataModel();
-			if (systemDataModel != null) {
-				// If the memory is available less than 2%.
-				double freeMemoryRatio = ((double) systemDataModel.getFreeMemory()) / systemDataModel.getTotalMemory();
-				if (freeMemoryRatio < 0.02) {
-					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, //
-							String.format("[ERROR] %s agent is about to die due to lack of free memory.\n"
-									+ "Shutdown PerfTest %s by force for safety\n" + "Please decrease the vuser count.", //
-									agentStates.getAgentName(), perfTest.getId()));
-				}
-			}
-		}
+
 
 	}
 

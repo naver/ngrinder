@@ -226,7 +226,10 @@
 		            				<div>
 		            			</td>
 								<td class="center">
-									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download test-display" sid="${test.id}"></i></a>
+									<a href="javascript:void(0)"
+									   	style="<#if test.status != 'FINISHED' && test.status !=	'CANCELED'>display:none;</#if>">
+										<i class="icon-download test-display" sid="${test.id}"></i>
+									</a>
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>

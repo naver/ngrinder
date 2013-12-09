@@ -13,16 +13,14 @@
  */
 package org.ngrinder.monitor.controller.model;
 
+import com.google.gson.annotations.Expose;
 import org.ngrinder.model.BaseEntity;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
-import com.google.gson.annotations.Expose;
-
 /**
- * 
  * System data model class, to store the system monitor data.
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 2.0
@@ -68,9 +66,8 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	/**
 	 * Constructor to create SystemDataModel with SystemInfo.
-	 * 
-	 * @param systemInfo
-	 *            is the data collected by monitor
+	 *
+	 * @param systemInfo is the data collected by monitor
 	 */
 	public SystemDataModel(SystemInfo systemInfo) {
 		this(systemInfo, null);
@@ -78,11 +75,9 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	/**
 	 * Constructor to create SystemDataModel with SystemInfo.
-	 * 
-	 * @param systemInfo
-	 *            is the data collected by monitor
-	 * @param version
-	 *            version of model.
+	 *
+	 * @param systemInfo is the data collected by monitor
+	 * @param version    version of model.
 	 */
 	public SystemDataModel(SystemInfo systemInfo, String version) {
 		this.system = String.valueOf(systemInfo.getSystem());

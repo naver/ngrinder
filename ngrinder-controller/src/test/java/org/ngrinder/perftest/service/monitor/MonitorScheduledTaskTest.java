@@ -17,10 +17,12 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.perftest.service.AbstractAgentReadyTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +32,14 @@ import java.util.Set;
 /**
  * Monitor Task Test
  */
-public class MonitorTaskTest extends AbstractAgentReadyTest {
+public class MonitorScheduledTaskTest extends AbstractAgentReadyTest {
 	private File tempReport;
+
+	@Autowired
+	ScheduledTaskService scheduledTaskService;
+
+	@Autowired
+	CacheManager cacheManager;
 
 	@Before
 	public void before() {
@@ -53,17 +61,13 @@ public class MonitorTaskTest extends AbstractAgentReadyTest {
 		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
-		MonitorTask monitorTask = applicationContext.getBean(MonitorTask.class);
-		monitorTask.add(agents, tempReport);
-		new Thread(monitorTask).start();
-		monitorTask.saveData();
-
-		ThreadUtils.sleep(3000);
+		MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
+		monitorScheduledTask.add(agents, tempReport);
+		monitorScheduledTask.run();
+		monitorScheduledTask.saveData(false);
 		// test to add again
-		monitorTask.add(agents, tempReport);
-
-		ThreadUtils.sleep(3000);
-		monitorTask.destroy();
+		monitorScheduledTask.add(agents, tempReport);
+		monitorScheduledTask.close();
 	}
 
 	@Test
@@ -77,11 +81,10 @@ public class MonitorTaskTest extends AbstractAgentReadyTest {
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
 		agents.add(monitorAgt2);
-		MonitorTask monitorTask = applicationContext.getBean(MonitorTask.class);
-		monitorTask.add(agents, tempReport);
-		new Thread(monitorTask).start();
-		monitorTask.saveData();
-		ThreadUtils.sleep(3000);
-		monitorTask.destroy();
+		MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
+		monitorScheduledTask.add(agents, tempReport);
+		monitorScheduledTask.run();
+		monitorScheduledTask.saveData(false);
+		monitorScheduledTask.close();
 	}
 }

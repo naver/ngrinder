@@ -13,88 +13,52 @@
  */
 package org.ngrinder.perftest.service.samplinglistener;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.util.Set;
-import java.util.Timer;
-
 import net.grinder.SingleConsole.SamplingLifeCycleFollowUpListener;
 import net.grinder.statistics.StatisticsSet;
+import org.apache.commons.io.IOUtils;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
+import org.ngrinder.perftest.service.monitor.MonitorScheduledTask;
 
-import org.ngrinder.model.AgentInfo;
-import org.ngrinder.perftest.service.monitor.MonitorTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import java.io.File;
 
 /**
  * Monitor data collector.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.1
  */
 public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListener {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorListener.class);
-	private final ApplicationContext applicationContext;
-	private final Set<AgentInfo> agents;
-	private MonitorTask monitorTask;
-	private final File reportPath;
-	private Timer timer;
-	private final Long perfTestId;
+	private final ScheduledTaskService scheduledTaskService;
+	private int interval;
+	private MonitorScheduledTask monitorScheduledTask;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param applicationContext
-	 *            application context
-	 * @param perfTestId
-	 *            perf test id
-	 * @param agents
-	 *            set of monitors to be collected
-	 * @param reportPath
-	 *            where does it report.
+	 *
+	 * @param monitorScheduledTask monitoring task which will be periodically run
+	 * @param scheduledTaskService scheduling service to run monitor task
 	 */
-	public MonitorCollectorListener(ApplicationContext applicationContext, Long perfTestId, Set<AgentInfo> agents,
-			File reportPath) {
-		this.applicationContext = applicationContext;
-		this.perfTestId = checkNotNull(perfTestId);
-		this.agents = agents;
-		this.reportPath = reportPath;
+	public MonitorCollectorListener(MonitorScheduledTask monitorScheduledTask,
+	                                ScheduledTaskService scheduledTaskService, int interval) {
+		this.monitorScheduledTask = monitorScheduledTask;
+		this.scheduledTaskService = scheduledTaskService;
+		this.interval = interval;
 	}
 
 	@Override
 	public void onSamplingStarted() {
-		monitorTask = applicationContext.getBean(MonitorTask.class);
-		monitorTask.setCorrespondingPerfTestId(perfTestId);
-		monitorTask.add(agents, reportPath);
-		if (this.timer != null) {
-			timer.cancel();
-		}
-		this.timer = new Timer(true);
-		this.timer.schedule(monitorTask, 1000, 1000);
+		scheduledTaskService.addFixedDelayedScheduledTask(monitorScheduledTask, interval);
 	}
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics,
-			boolean lastCall) {
-		if (monitorTask != null) {
-			if (lastCall) {
-				monitorTask.saveData();
-			} else {
-				monitorTask.saveData(true);
-			}
-		}
+	                       boolean lastCall) {
+		monitorScheduledTask.saveData(!lastCall);
 	}
 
 	@Override
 	public void onSamplingEnded() {
-		LOGGER.info("remove monitors on {}", agents);
-		if (timer != null) {
-			timer.cancel();
-		}
-		if (monitorTask != null) {
-			monitorTask.destroy();
-		}
+		scheduledTaskService.removeScheduledJob(this.monitorScheduledTask);
+		IOUtils.closeQuietly(this.monitorScheduledTask);
 	}
 }

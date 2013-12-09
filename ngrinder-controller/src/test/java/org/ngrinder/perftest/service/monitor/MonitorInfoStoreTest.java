@@ -24,9 +24,9 @@ import static org.junit.Assert.assertThat;
 
 
 public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
-	
+
 	@Test
-	public void test(){
+	public void testMonitorInfoRetrieval() {
 		String ip = "127.0.0.1";
 		MonitorInfoStore monitorStore = applicationContext.getBean(MonitorInfoStore.class);
 		SystemInfo systemInfo = monitorStore.getSystemInfo(ip, 13243);

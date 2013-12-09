@@ -9,6 +9,7 @@
 	<!-- Scans the classpath of this application for @Components to deploy as beans -->
 	<context:component-scan base-package="org.ngrinder"/>
 
+	<import resource="applicationContext-task.xml"/>
 	<import resource="applicationContext-springdata.xml"/>
 	<import resource="applicationContext-security.xml"/>
 	<import resource="applicationContext-ehcache.xml"/>

@@ -20,7 +20,7 @@ import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.infra.schedule.AsyncRunService;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
@@ -74,7 +74,7 @@ public class HomeController extends BaseController {
 	private List<TimeZone> timeZones = null;
 
 	@Autowired
-	private AsyncRunService asyncRunService;
+	private ScheduledTaskService scheduledTaskService;
 
 	/**
 	 * Initialize {@link HomeController}.
@@ -93,7 +93,7 @@ public class HomeController extends BaseController {
 				return a.getID().compareTo(b.getID());
 			}
 		});
-		asyncRunService.runAsync(new Runnable() {
+		scheduledTaskService.runAsync(new Runnable() {
 			@Override
 			public void run() {
 				getLeftPanelEntries();

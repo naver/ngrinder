@@ -13,8 +13,6 @@
  */
 package org.ngrinder.script.service;
 
-import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.config.Config;
@@ -76,8 +74,6 @@ public class FileEntryService {
 	@Autowired
 	private Config config;
 
-	@Autowired
-	private HttpContainerContext httpContainerContext;
 
 	@Autowired
 	@Qualifier("cacheManager")
@@ -108,7 +104,7 @@ public class FileEntryService {
 	}
 
 	/**
-	 * invalidate the file_entry_seach_cache.
+	 * invalidate the file_entry_search_cache.
 	 *
 	 * @param userId userId.
 	 */
@@ -348,34 +344,6 @@ public class FileEntryService {
 		map.put("userName", user.getUserName());
 		map.put("name", name);
 		return handler.getScriptTemplate(map);
-	}
-
-	/**
-	 * Get SVN URL for the given user and the given subpath. Base path and the
-	 * subpath is separated by ####.
-	 *
-	 * @param user user
-	 * @param path subpath
-	 * @return SVN URL
-	 */
-	public String getSvnUrl(User user, String path) {
-		String contextPath = getCurrentContextPathFromUserRequest();
-		StringBuilder url = new StringBuilder(contextPath);
-		url.append("/svn/").append(user.getUserId());
-		if (StringUtils.isNotEmpty(path)) {
-			url.append("/").append(path.trim());
-		}
-		return url.toString();
-	}
-
-	/**
-	 * Get current context path url by user request.
-	 *
-	 * @return context path
-	 */
-	private String getCurrentContextPathFromUserRequest() {
-		return config.getSystemProperties().getProperty("http.url",
-				httpContainerContext.getCurrentContextUrlFromUserRequest());
 	}
 
 	/**

@@ -16,11 +16,10 @@ package org.ngrinder.region.service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.schedule.ScheduledTask;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.region.model.RegionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class RegionService {
 	private Config config;
 
 	@Autowired
-	private ScheduledTask scheduledTask;
+	private ScheduledTaskService scheduledTaskService;
 
 	@Autowired
 	private CacheManager cacheManager;
@@ -62,14 +61,13 @@ public class RegionService {
 	public void initRegion() {
 		if (config.isClustered()) {
 			cache = cacheManager.getCache("regions");
-			verifyDuplicateRegion();
-			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
+			verifyDuplicatedRegion();
+			scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
 				@Override
-				public void interruptibleRun() {
+				public void run() {
 					checkRegionUpdate();
 				}
-
-			});
+			}, 3000);
 		}
 	}
 
@@ -78,7 +76,7 @@ public class RegionService {
 	 *
 	 * @since 3.2
 	 */
-	private void verifyDuplicateRegion() {
+	private void verifyDuplicatedRegion() {
 		Map<String, RegionInfo> regions = getAll();
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);

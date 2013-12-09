@@ -35,6 +35,7 @@ import org.ngrinder.extension.OnControllerLifeCycleRunnable;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IAgentManagerService;
 import org.ngrinder.service.IConfig;
 import org.ngrinder.service.IPerfTestService;
@@ -44,6 +45,7 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
@@ -87,7 +89,13 @@ public class PluginManager implements ServletContextAware, Constants {
 	private PerfTestService perfTestService;
 
 	@Autowired
+	private FileEntryService fileEntryService;
+
+	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private CacheManager cacheManager;
 
 	/**
 	 * Initialize plugin component.
@@ -131,6 +139,7 @@ public class PluginManager implements ServletContextAware, Constants {
 				reg.register(IUserService.class).forInstance(userService);
 				reg.register(IPerfTestService.class).forInstance(perfTestService);
 				reg.register(IConfig.class).forInstance(config);
+				reg.register(CacheManager.class).forInstance(cacheManager);
 			}
 		};
 		Home home = config.getHome();

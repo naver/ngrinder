@@ -23,9 +23,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.util.DateUtils;
 
 /**
- * 
  * System info object to save date collected by monitor.
- * 
+ *
  * @author Mavlarn
  * @since 2.0
  */
@@ -37,7 +36,11 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	 * Header field of monitor status fields.
 	 */
 	public static final String HEADER = "ip,system,collectTime,freeMemory,"
-					+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,customValues";
+			+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,customValues";
+
+	public boolean isParsed() {
+		return true;
+	}
 
 	/**
 	 * Enum for the system type, linux or windows.
@@ -48,7 +51,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private System system;
 
-	private BandWidth bandWidth;
+	protected BandWidth bandWidth;
 
 	private long totalCpuValue;
 
@@ -62,7 +65,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private String ip;
 
-	private String customValues;
+	protected String customValues;
 
 	@Override
 	public void parse(CompositeData cd) {
@@ -180,7 +183,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	/**
 	 * Get record string.
-	 * 
+	 *
 	 * @return record string
 	 */
 	public String toRecordString() {
@@ -197,26 +200,41 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return sb.toString();
 	}
 
-	/**
-	 * Return the empty record string.
-	 * 
-	 * @return null filled record string.
-	 * @see #toRecordString()
-	 */
-	public String toEmptyRecordString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("null").append(",").append("null").append(",");
-		sb.append("null").append(",").append("null").append(",");
-		sb.append("null").append(",").append("null");
-		if (bandWidth != null) {
-			sb.append(",").append("null").append(",").append("null");
+
+	public static class NullSystemInfo extends SystemInfo {
+		private static final NullSystemInfo instance = new NullSystemInfo();
+
+		public static SystemInfo getNullSystemInfo() {
+			return instance;
 		}
-		if (customValues != null) {
-			int valueCount = StringUtils.countMatches(customValues, ",") + 1;
-			for (int i = 0; i < valueCount; i++) {
-				sb.append(",").append("null");
+
+		/**
+		 * Return the empty record string.
+		 *
+		 * @return null filled record string.
+		 * @see #toRecordString()
+		 */
+		@Override
+		public String toRecordString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("null").append(",").append("null").append(",");
+			sb.append("null").append(",").append("null").append(",");
+			sb.append("null").append(",").append("null");
+			if (bandWidth != null) {
+				sb.append(",").append("null").append(",").append("null");
 			}
+			if (customValues != null) {
+				int valueCount = StringUtils.countMatches(customValues, ",") + 1;
+				for (int i = 0; i < valueCount; i++) {
+					sb.append(",").append("null");
+				}
+			}
+			return sb.toString();
 		}
-		return sb.toString();
+
+		public boolean isParsed() {
+			return false;
+		}
 	}
+
 }

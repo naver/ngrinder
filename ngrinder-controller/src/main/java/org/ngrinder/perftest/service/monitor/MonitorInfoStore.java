@@ -13,46 +13,40 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to save JMX connect for every request that want to observe monitor real-time system information.
  */
 @Service
-@Scope(value = "singleton")
 public class MonitorInfoStore {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private Map<String, MonitorClientService> monitorInfoMap = Collections
-			.synchronizedMap(new HashMap<String, MonitorClientService>());
+	private Map<String, MonitorClientService> monitorClientMap = new ConcurrentHashMap<String, MonitorClientService>();
 
 	/**
 	 * Get monitor data from mbean client.
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param port
-	 *            port
+	 *
+	 * @param ip   ip
+	 * @param port port
 	 * @return {@link SystemInfo}
 	 */
 	public SystemInfo getSystemInfo(String ip, int port) {
-		MonitorClientService monitorClient = monitorInfoMap.get(ip);
+		MonitorClientService monitorClient = monitorClientMap.get(ip);
 		if (monitorClient == null) {
-			monitorClient = applicationContext.getBean(MonitorClientService.class);
+			monitorClient = new MonitorClientService();
 			monitorClient.init(ip, port);
-			monitorClient.setLastAccessedTime(System.currentTimeMillis());
 			add(ip, monitorClient);
 		}
 		monitorClient.setLastAccessedTime(System.currentTimeMillis());
@@ -60,9 +54,7 @@ public class MonitorInfoStore {
 	}
 
 	private void add(String ip, MonitorClientService monitorClient) {
-		synchronized (this) {
-			monitorInfoMap.put(ip, monitorClient);
-		}
+		monitorClientMap.put(ip, monitorClient);
 	}
 
 	/**
@@ -70,7 +62,7 @@ public class MonitorInfoStore {
 	 */
 	@Scheduled(fixedDelay = 30000)
 	public void closeUnusedMonitorClient() {
-		for (Entry<String, MonitorClientService> each : monitorInfoMap.entrySet()) {
+		for (Entry<String, MonitorClientService> each : monitorClientMap.entrySet()) {
 			if ((System.currentTimeMillis() - each.getValue().getLastAccessedTime()) > 30000) {
 				close(each.getKey());
 			}
@@ -79,19 +71,10 @@ public class MonitorInfoStore {
 
 	/**
 	 * Close mbean client connected to the given ip.
-	 * 
-	 * @param ip
-	 *            ip
+	 *
+	 * @param ip ip
 	 */
 	public void close(String ip) {
-		synchronized (this) {
-			MonitorClientService monitorClient = monitorInfoMap.get(ip);
-			if (monitorClient == null) {
-				return;
-			}
-			monitorClient.closeMbeanClient();
-			monitorInfoMap.remove(ip);
-		}
+		IOUtils.closeQuietly(monitorClientMap.remove(ip));
 	}
-
 }

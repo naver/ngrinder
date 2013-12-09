@@ -13,60 +13,52 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimerTask;
-
+import com.google.common.collect.Maps;
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
+import java.io.Closeable;
+import java.io.File;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Scheduler to monitor and save the monitoring data.
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 3.1
  */
-@Service
-@Scope(value = "prototype")
-public class MonitorTask extends TimerTask {
+public class MonitorScheduledTask implements Runnable, Closeable {
 	private Map<String, MonitorClientService> monitorClientsMap = Maps.newConcurrentMap();
 
-	@Autowired
-	private ApplicationContext applicationContext;
-
-	@Autowired
 	private CacheManager cacheManager;
 
-	@Autowired
 	private PerfTestService perfTestService;
 
 	private Long perfTestId;
 
+	public MonitorScheduledTask(CacheManager cacheManager, PerfTestService perfTestService) {
+		this.cacheManager = cacheManager;
+		this.perfTestService = perfTestService;
+	}
+
 	/**
 	 * Add MBean monitors on the given monitorTargets.
-	 * 
-	 * @param monitorTargets
-	 *            a set of monitor targets
-	 * @param reportPath
-	 *            report path
+	 *
+	 * @param monitorTargets a set of monitor targets
+	 * @param reportPath     report path
 	 */
 	public void add(Set<AgentInfo> monitorTargets, File reportPath) {
 		for (AgentInfo target : monitorTargets) {
 			String targetKey = createTargetKey(target);
 			if (!monitorClientsMap.containsKey(targetKey)) {
-				MonitorClientService bean = applicationContext.getBean(MonitorClientService.class);
+				MonitorClientService bean = new MonitorClientService();
 				bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
 				monitorClientsMap.put(targetKey, bean);
 			}
@@ -76,9 +68,9 @@ public class MonitorTask extends TimerTask {
 	/**
 	 * Delete All MBean monitors.
 	 */
-	public void destroy() {
+	public void close() {
 		for (Entry<String, MonitorClientService> target : monitorClientsMap.entrySet()) {
-			target.getValue().close();
+			IOUtils.closeQuietly(target.getValue());
 		}
 		monitorClientsMap.clear();
 	}
@@ -87,45 +79,36 @@ public class MonitorTask extends TimerTask {
 		return target.getIp();
 	}
 
-	/**
-	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.
-	 */
-	public void saveData() {
-		saveData(false);
-	}
 
 	/**
 	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.
-	 * 
-	 * @param empty
-	 *            true if empty data should be saved.
+	 *
+	 * @param includeEmpty true if empty data should be saved.
 	 */
-	public void saveData(boolean empty) {
+	public void saveData(boolean includeEmpty) {
 		for (Entry<String, MonitorClientService> target : monitorClientsMap.entrySet()) {
 			MonitorClientService monitorClientService = target.getValue();
-			monitorClientService.record(empty);
+			monitorClientService.record(includeEmpty);
 		}
 	}
+
+
+	public void setCorrespondingPerfTestId(Long perfTestId) {
+		this.perfTestId = perfTestId;
+	}
+
 
 	@Override
 	public void run() {
 		Map<String, SystemDataModel> systemInfoMap = Maps.newHashMap();
 		for (Entry<String, MonitorClientService> target : monitorClientsMap.entrySet()) {
 			MonitorClientService monitorClientService = target.getValue();
-			SystemInfo saveDataCache = monitorClientService.saveDataCache();
-			if (saveDataCache != null) {
+			SystemInfo saveDataCache = monitorClientService.saveDataIntoCache();
+			if (saveDataCache.isParsed()) {
 				systemInfoMap.put(target.getKey(), new SystemDataModel(saveDataCache, "UNKNOWN"));
 			}
 		}
 		perfTestService.updateMonitorStat(perfTestId, systemInfoMap);
-	}
-
-	public void setPerfTestService(PerfTestService perfTestService) {
-		this.perfTestService = perfTestService;
-	}
-
-	public void setCorrespondingPerfTestId(Long perfTestId) {
-		this.perfTestId = perfTestId;
 	}
 
 }
