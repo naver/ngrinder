@@ -289,7 +289,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.port = getSafe(this.port);
 		this.processes = getSafe(this.processes);
 		this.threads = getSafe(this.threads);
-		this.ignoreSampleCount = getSafe(this.ignoreSampleCount);
+
 		this.useRampUp = getSafe(this.useRampUp);
 		this.scriptName = getSafe(this.scriptName, "");
 		this.testName = getSafe(this.testName, "");
@@ -297,6 +297,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.lastProgressMessage = getSafe(this.lastProgressMessage, "");
 		this.testComment = getSafe(this.testComment, "");
 		this.threshold = getSafe(this.threshold, "D");
+		if (isThresholdRunCount()) {
+			this.setIgnoreSampleCount(0);
+		} else {
+			this.ignoreSampleCount = getSafe(this.ignoreSampleCount);
+		}
 		this.runCount = getSafe(this.runCount);
 		this.duration = getSafe(this.duration, 60000L);
 		this.samplingInterval = getSafe(this.samplingInterval, 2);
@@ -799,5 +804,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setParam(String param) {
 		this.param = param;
+	}
+
+	public void prepare(boolean isClone) {
+		if (isClone) {
+			this.setId(null);
+		}
 	}
 }

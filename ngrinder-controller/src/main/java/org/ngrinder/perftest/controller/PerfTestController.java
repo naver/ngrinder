@@ -328,22 +328,7 @@ public class PerfTestController extends BaseController {
 		// Point to the head revision
 		test.setScriptRevision(-1L);
 		// NGRINDER-236 hehe
-		if (isClone) {
-			test.setId(null);
-			test.setTps(null);
-			test.setCreatedUser(null);
-			test.setCreatedDate(null);
-			test.setLastModifiedDate(null);
-			test.setLastModifiedUser(null);
-			test.setTestComment(null);
-		}
-		if (StringUtils.isBlank(test.getRegion())) {
-			test.setRegion(Config.NONE_REGION);
-		}
-		// In case that run count is used, sampling ignore count should not be applied.
-		if (test.isThresholdRunCount()) {
-			test.setIgnoreSampleCount(0);
-		}
+		test.prepare(isClone);
 		perfTestService.save(user, test);
 		model.clear();
 		return "redirect:/perftest/list";

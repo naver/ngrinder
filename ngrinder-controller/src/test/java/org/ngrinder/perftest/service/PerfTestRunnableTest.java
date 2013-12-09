@@ -51,8 +51,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cons
 	@Autowired
 	private AgentManagerService agentService;
 
-	@Autowired
-	private PerfTestService monitorService;
 
 	@Autowired
 	public MockFileEntityRepository fileEntityRepository;
@@ -67,7 +65,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cons
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
-
 		testUserRoot.mkdirs();
 		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
@@ -82,10 +79,9 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cons
 		allPerfTest.get(0).setDuration(30000L);
 		perfTestService.save(testUser, allPerfTest.get(0));
 
-		int agentCount = 0;
 		int checkLoop = 0;
 		while (true) {
-			agentCount = agentManager.getAllAttachedAgents().size();
+			int agentCount = agentManager.getAllAttachedAgents().size();
 			if (agentCount != 0 || checkLoop++ > 20) {
 				break;
 			}
