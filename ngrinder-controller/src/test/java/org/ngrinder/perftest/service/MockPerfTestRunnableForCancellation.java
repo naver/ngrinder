@@ -31,7 +31,15 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
 
-	;
+	@Override
+	public void startPeriodically() {
+		// no nothing
+	}
+
+	@Override
+	public void finishPeriodically() {
+		// no nothing
+	}
 
 	@Override
 	protected boolean hasEnoughFreeAgents(PerfTest test) {

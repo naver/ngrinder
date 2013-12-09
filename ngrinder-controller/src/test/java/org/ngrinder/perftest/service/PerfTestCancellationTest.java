@@ -104,7 +104,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 				perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
 			}
 		}, 1);
-		perfTestRunnable.start();
+		perfTestRunnable.doStart();;
 
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		// Then
@@ -118,7 +118,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 		perfTest = createPerfTest("test1", Status.TESTING, null);
 		// When the stop is requested
 		perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
-		perfTestRunnable.finishPeriodically();
+		perfTestRunnable.doFinish();
 		// Then it should be canceled.
 		assertThat(perfTestService.getOne(perfTest.getId()).getStatus(), is(Status.CANCELED));
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));

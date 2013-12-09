@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Convenient class for property extraction.
- * 
+ *
  * @author JunHo Yoon
  */
 public class PropertiesWrapper {
@@ -34,9 +34,8 @@ public class PropertiesWrapper {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param properties
-	 *            {@link Properties} which will be used for data retrieval.
+	 *
+	 * @param properties {@link Properties} which will be used for data retrieval.
 	 */
 	public PropertiesWrapper(Properties properties) {
 		this.properties = properties;
@@ -44,13 +43,10 @@ public class PropertiesWrapper {
 
 	/**
 	 * Get the property.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value when data is not available
-	 * @param errorMsgTemplate
-	 *            error msg
+	 *
+	 * @param key              property key
+	 * @param defaultValue     default value when data is not available
+	 * @param errorMsgTemplate error msg
 	 * @return property value
 	 */
 	public String getProperty(String key, String defaultValue, String errorMsgTemplate) {
@@ -66,11 +62,9 @@ public class PropertiesWrapper {
 
 	/**
 	 * Get the property for the given property key.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value when data is not available
+	 *
+	 * @param key          property key
+	 * @param defaultValue default value when data is not available
 	 * @return property value
 	 */
 	public String getProperty(String key, String defaultValue) {
@@ -80,13 +74,10 @@ public class PropertiesWrapper {
 	/**
 	 * Get the property for the given property key considering with backward
 	 * compatibility.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param oldKey
-	 *            old property key.
-	 * @param defaultValue
-	 *            default value when data is not available
+	 *
+	 * @param key          property key
+	 * @param oldKey       old property key.
+	 * @param defaultValue default value when data is not available
 	 * @return property value
 	 */
 	public String getPropertyWithBackwardCompatibility(String key, String oldKey, String defaultValue) {
@@ -97,13 +88,29 @@ public class PropertiesWrapper {
 		return StringUtils.trim(property);
 	}
 
+
+	/**
+	 * Get the property integer for the given property key considering with backward
+	 * compatibility.
+	 *
+	 * @param key          property key
+	 * @param oldKey       old property key.
+	 * @param defaultValue default value when data is not available
+	 * @return property value
+	 */
+	public Integer getPropertyIntWithBackwardCompatibility(String key, String oldKey, Integer defaultValue) {
+		int property = getPropertyInt(key, Integer.MIN_VALUE);
+		if (property == Integer.MIN_VALUE) {
+			property = getPropertyInt(oldKey, defaultValue);
+		}
+		return property;
+	}
+
 	/**
 	 * Add the property.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param value
-	 *            property value
+	 *
+	 * @param key   property key
+	 * @param value property value
 	 */
 	public void addProperty(String key, String value) {
 		this.properties.put(key, value);
@@ -111,11 +118,9 @@ public class PropertiesWrapper {
 
 	/**
 	 * Get property as integer.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value when data is not available
+	 *
+	 * @param key          property key
+	 * @param defaultValue default value when data is not available
 	 * @return property integer value
 	 */
 	public int getPropertyInt(String key, int defaultValue) {
@@ -125,11 +130,9 @@ public class PropertiesWrapper {
 
 	/**
 	 * Get the property as boolean.
-	 * 
-	 * @param key
-	 *            property key
-	 * @param defaultValue
-	 *            default value when data is not available
+	 *
+	 * @param key          property key
+	 * @param defaultValue default value when data is not available
 	 * @return property boolean value
 	 */
 	public boolean getPropertyBoolean(String key, boolean defaultValue) {
@@ -139,11 +142,9 @@ public class PropertiesWrapper {
 
 	/**
 	 * Set the property.
-	 * 
-	 * @param key
-	 *            key
-	 * @param value
-	 *            value to be stored.
+	 *
+	 * @param key   key
+	 * @param value value to be stored.
 	 */
 	public void setProperty(String key, String value) {
 		this.properties.setProperty(key, value);

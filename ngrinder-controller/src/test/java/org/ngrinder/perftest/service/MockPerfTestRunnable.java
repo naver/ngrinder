@@ -31,7 +31,6 @@ import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
 @Component
 public class MockPerfTestRunnable extends PerfTestRunnable {
 
-
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS,
@@ -51,5 +50,15 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 	@Override
 	protected int getSafeTransmissionThreshold() {
 		return 1;
+	}
+
+	@Override
+	public void startPeriodically() {
+		// do nothing.
+	}
+
+	@Override
+	public void finishPeriodically() {
+		// No nothing on the periodic finish
 	}
 }

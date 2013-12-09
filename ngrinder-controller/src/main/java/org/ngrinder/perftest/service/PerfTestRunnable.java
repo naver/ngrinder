@@ -98,7 +98,11 @@ public class PerfTestRunnable implements Constants {
 	 * is executed.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
-	public void start() {
+	public void startPeriodically() {
+		doStart();
+	}
+
+	void doStart() {
 		if (config.hasNoMoreTestLock()) {
 			return;
 		}
@@ -258,12 +262,8 @@ public class PerfTestRunnable implements Constants {
 
 	protected int getSafeTransmissionThreshold() {
 		// For backward compatibility
-		int safeTransmissionThreshold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD, 0);
-		if (safeTransmissionThreshold == 0) {
-			safeTransmissionThreshold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHOLD,
-					1 * 1024 * 1024);
-		}
-		return safeTransmissionThreshold;
+		return config.getSystemProperties().getPropertyIntWithBackwardCompatibility
+				(NGRINDER_PROP_DIST_SAFE_THRESHOLD, NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD, 1 * 1024 * 1024);
 	}
 
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
@@ -403,6 +403,10 @@ public class PerfTestRunnable implements Constants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_TERMINATION_FREQUENCY_MILLISECONDS)
 	public void finishPeriodically() {
+		doFinish();
+	}
+
+	protected void doFinish() {
 		for (PerfTest each : perfTestService.getAllAbnormalTesting()) {
 			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
@@ -422,12 +426,11 @@ public class PerfTestRunnable implements Constants {
 		for (PerfTest each : perfTestService.getAllTesting()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
-				doFinish(each, consoleUsingPort);
+				doNormal(each, consoleUsingPort);
 				cleanUp(each);
 				notifyFinish(each, StopReason.NORMAL);
 			}
 		}
-
 	}
 
 	/**
@@ -518,7 +521,7 @@ public class PerfTestRunnable implements Constants {
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
 	 *                           {@link PerfTest}
 	 */
-	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doNormal(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 				singleConsoleInUse.getCurrentRunningTime());
