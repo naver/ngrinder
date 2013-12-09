@@ -72,7 +72,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 
 		String userParam = webRequest.getParameter("ownerId");
 		if (StringUtils.isNotBlank(userParam) && currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
-			return getUserService().getUserById(userParam);
+			return getUserService().getOne(userParam);
 		}
 
 		// User want to do something through other User status and this
@@ -92,7 +92,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		if (currentUser.getUserId().equals(switchUser)) {
 			currentUser.setOwnerUser(null);
 		} else if (StringUtils.isNotEmpty(switchUser)) {
-			User ownerUser = getUserService().getUserById(switchUser);
+			User ownerUser = getUserService().getOne(switchUser);
 			// CurrentUser should remember whose status he used
 			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)
 					|| (ownerUser.getFollowers() != null && ownerUser.getFollowers().contains(currentUser))) {

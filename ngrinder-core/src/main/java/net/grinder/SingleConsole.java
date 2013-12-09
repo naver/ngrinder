@@ -13,11 +13,38 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.CollectionUtils.newLinkedHashMap;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import net.grinder.common.GrinderException;
+import net.grinder.common.GrinderProperties;
+import net.grinder.common.Test;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.common.processidentity.WorkerProcessReport;
+import net.grinder.console.ConsoleFoundationEx;
+import net.grinder.console.common.Resources;
+import net.grinder.console.common.ResourcesImplementation;
+import net.grinder.console.communication.ProcessControl;
+import net.grinder.console.communication.ProcessControl.Listener;
+import net.grinder.console.communication.ProcessControl.ProcessReports;
+import net.grinder.console.distribution.AgentCacheState;
+import net.grinder.console.distribution.FileDistribution;
+import net.grinder.console.distribution.FileDistributionHandler;
+import net.grinder.console.model.*;
+import net.grinder.statistics.*;
+import net.grinder.util.*;
+import net.grinder.util.ListenerSupport.Informer;
+import net.grinder.util.thread.Condition;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.mutable.MutableBoolean;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.DateUtils;
+import org.ngrinder.common.util.ReflectionUtils;
+import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.service.AbstractSingleConsole;
+import org.python.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,65 +52,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import net.grinder.common.GrinderException;
-import net.grinder.common.GrinderProperties;
-import net.grinder.common.Test;
-import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.common.processidentity.WorkerProcessReport;
-import net.grinder.console.ConsoleFoundationEx;
-import net.grinder.console.common.ConsoleException;
-import net.grinder.console.common.Resources;
-import net.grinder.console.common.ResourcesImplementation;
-import net.grinder.console.communication.ProcessControl;
-import net.grinder.console.communication.ProcessControl.Listener;
-import net.grinder.console.communication.ProcessControl.ProcessReports;
-import net.grinder.console.communication.ProcessControlImplementation;
-import net.grinder.console.distribution.AgentCacheState;
-import net.grinder.console.distribution.FileDistribution;
-import net.grinder.console.distribution.FileDistributionHandler;
-import net.grinder.console.model.ConsoleProperties;
-import net.grinder.console.model.ModelTestIndex;
-import net.grinder.console.model.SampleListener;
-import net.grinder.console.model.SampleModel;
-import net.grinder.console.model.SampleModelImplementationEx;
-import net.grinder.console.model.SampleModelViews;
-import net.grinder.statistics.ExpressionView;
-import net.grinder.statistics.StatisticExpression;
-import net.grinder.statistics.StatisticsIndexMap;
-import net.grinder.statistics.StatisticsServicesImplementation;
-import net.grinder.statistics.StatisticsSet;
-import net.grinder.util.AllocateLowestNumber;
-import net.grinder.util.ConsolePropertiesFactory;
-import net.grinder.util.Directory;
-import net.grinder.util.FileContents;
-import net.grinder.util.ListenerHelper;
-import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.thread.Condition;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.mutable.MutableBoolean;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.ReflectionUtil;
-import org.ngrinder.common.util.ThreadUtils;
-import org.ngrinder.service.ISingleConsole;
-import org.python.google.common.collect.Sets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Single console for multiple test. This is the customized version of
@@ -92,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class SingleConsole implements Listener, SampleListener, ISingleConsole {
+public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener {
 	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
@@ -102,7 +76,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
 
-	private Condition eventSyncCondition = new Condition();
+	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
 	private boolean cancel = false;
 
@@ -222,13 +196,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * For test.
-	 */
-	public void startSync() {
-		getConsoleFoundation().run();
-	}
-
-	/**
 	 * Shutdown this {@link SingleConsole} instance and wait until the
 	 * underlying console logic is stopped.
 	 */
@@ -275,8 +242,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-				ReflectionUtil.getFieldValue(
-						(ProcessControlImplementation) getConsoleFoundation().getComponent(ProcessControl.class),
+				ReflectionUtils.getFieldValue(
+						getConsoleFoundation().getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
 				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
@@ -356,15 +323,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * Distribute files in the given filePath to the attached agents.
 	 *
 	 * @param filePath the distribution files
-	 */
-	public void distributeFiles(File filePath) {
-		distributeFiles(filePath, null, true);
-	}
-
-	/**
-	 * Distribute files in the given filePath to the attached agents.
-	 *
-	 * @param filePath the distribution files
 	 * @param listener listener
 	 * @param safe     safe file transition
 	 */
@@ -400,19 +358,12 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Distribute files on agents.
-	 */
-	public void distributeFiles() {
-		distributeFiles(null, true);
-	}
-
-	/**
-	 * Distribute files on agents.
 	 *
 	 * @param listener listener
 	 * @param safe     safe mode
 	 */
 	public void distributeFiles(ListenerSupport<FileDistributionListener> listener, final boolean safe) {
-		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
+		final FileDistribution fileDistribution = getConsoleComponent(FileDistribution.class);
 		final AgentCacheState agentCacheState = fileDistribution.getAgentCacheState();
 		final Condition cacheStateCondition = new Condition();
 		agentCacheState.addListener(new PropertyChangeListener() {
@@ -560,10 +511,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		return tpsValue;
 	}
 
-	public long getStartTime() {
-		return startTime;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -573,11 +520,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public long getCurrentRunningTime() {
 		return System.currentTimeMillis() - startTime;
 	}
-
-	protected Map<String, Object> getStatisticData() {
-		return statisticData;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -745,7 +687,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics) {
 
 		StringBuilder csvLine = new StringBuilder();
-		csvLine.append(DateUtil.dateToString(new Date()));
+		csvLine.append(DateUtils.dateToString(new Date()));
 
 		// add headers into the csv file.
 		if (!headerAdded) {
@@ -1188,10 +1130,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Start sampling with sampling ignore count.
-	 *
-	 * @param ignoreSampleCount the count how many sampling will be ignored.
 	 */
-	public void startSampling(int ignoreSampleCount) {
+	public void startSampling() {
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
 		this.sampleModel.addModelListener(new SampleModel.Listener() {
@@ -1297,7 +1237,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public boolean hasTooManyError() {
 		long currentTestsCount = getCurrentExecutionCount();
 		double errors = MapUtils.getDoubleValue((Map<?, ?>) getStatisticsData().get("totalStatistics"), "Errors", 0D);
-		return currentTestsCount == 0 ? false : (errors / currentTestsCount) > 0.2;
+		return currentTestsCount != 0 && (errors / currentTestsCount) > 0.2;
 	}
 
 	/**

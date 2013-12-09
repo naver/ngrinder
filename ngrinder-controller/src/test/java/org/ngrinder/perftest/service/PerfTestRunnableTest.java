@@ -22,8 +22,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.CompressionUtil;
+import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -40,7 +40,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGrinderConstants {
+public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Constants {
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
@@ -69,7 +69,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 
 		testUserRoot.mkdirs();
-		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
 		prepareUserRepo();
@@ -80,7 +80,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		assertThat(allPerfTest.size(), is(1));
 		allPerfTest.get(0).setScriptName("/hello/world.py");
 		allPerfTest.get(0).setDuration(30000L);
-		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
+		perfTestService.save(testUser, allPerfTest.get(0));
 
 		int agentCount = 0;
 		int checkLoop = 0;
@@ -92,7 +92,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 			sleep(1000);
 		}
 		agentService.checkAgentStateRegularly();
-		List<AgentInfo> agentList = agentService.getLocalAgentListFromDB();
+		List<AgentInfo> agentList = agentService.getLocalAgentsFromDB();
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}
@@ -102,13 +102,13 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 	@Test
 	public void testDoTest() throws IOException {
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
-		perfTestRunnable.startTest();
+		perfTestRunnable.start();
 		sleep(10000);
-		assertThat(perfTestService.getTestingPerfTest().size(), is(1));
-		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
+		assertThat(perfTestService.getAllTesting().size(), is(1));
+		perfTestService.stop(getTestUser(), currentTest.getId());
 		sleep(5000);
-		perfTestRunnable.finishTest();
-		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
+		perfTestRunnable.finishPeriodically();
+		assertThat(perfTestService.getAllTesting().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
@@ -136,7 +136,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		perfTestService.prepareDistribution(perfTest);
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 		sleep(3000);
-		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
+		perfTestRunnable.distributeFileOn(perfTest, singleConsole);
 
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
 			@Override
@@ -157,14 +157,14 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
 		sleep(10000);
-		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
+		perfTestService.stop(getTestUser(), currentTest.getId());
 		singleConsole.waitUntilAllAgentDisconnected();
-		perfTestRunnable.finishTest();
+		perfTestRunnable.finishPeriodically();
 		// Waiting for termination
 
 
 		sleep(5000);
-		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
+		assertThat(perfTestService.getAllTesting().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
@@ -172,7 +172,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 	private void prepareUserRepo() throws IOException {
 		File userRepoDirectory = fileEntityRepository.getUserRepoDirectory(null);
 		FileUtils.deleteQuietly(userRepoDirectory);
-		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), userRepoDirectory.getParentFile());
+		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), userRepoDirectory.getParentFile());
 		FileEntry fileEntryDir = new FileEntry();
 		fileEntryDir.setPath("/hello");
 		fileEntryDir.setFileType(FileType.DIR);

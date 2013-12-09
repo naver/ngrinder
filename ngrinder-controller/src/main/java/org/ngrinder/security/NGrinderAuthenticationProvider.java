@@ -141,14 +141,14 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setCreatedDate(new Date());
-		User newUser = userService.getUserById(user.getUserId());
+		User newUser = userService.getOne(user.getUserId());
 		if (newUser != null) {
 			user = newUser.merge(user);
 		}
 		if (user.getRole() == null) {
 			user.setRole(Role.USER);
 		}
-		User savedUser = userService.saveUser(user);
+		User savedUser = userService.save(user);
 		securedUser.setUser(savedUser);
 	}
 

@@ -43,7 +43,7 @@ public class AnnouncementService {
 	 * 
 	 * @return file content.
 	 */
-	public String getAnnouncement() {
+	public String getOne() {
 		return config.getAnnouncement();
 	}
 
@@ -52,7 +52,7 @@ public class AnnouncementService {
 	 * 
 	 * @return true if it's new one
 	 */
-	public boolean getAnnouncementIsNew() {
+	public boolean isNew() {
 		Date announcementDate = config.getAnnouncementDate();
 		if (announcementDate != null) {
 			Date weekAgo = DateUtils.addDays(new Date(), -7);
@@ -69,7 +69,7 @@ public class AnnouncementService {
 	 *            file content.
 	 * @return save successfully or not.
 	 */
-	public boolean saveAnnouncement(String content) {
+	public boolean save(String content) {
 		try {
 			FileUtils.writeStringToFile(config.getHome().getSubFile("announcement.conf"), content, "UTF-8");
 			config.loadAnnouncement();

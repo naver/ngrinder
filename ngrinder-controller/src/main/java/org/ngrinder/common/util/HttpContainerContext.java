@@ -13,7 +13,7 @@
  */
 package org.ngrinder.common.util;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
@@ -24,7 +24,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Utility component which provides various Http Container values.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -36,17 +36,16 @@ public class HttpContainerContext {
 
 	/**
 	 * Get current container nGrinder context base path.
-	 * 
+	 *
 	 * E.g) if user requests http://hostname:port/context_path/realurl, This
 	 * will return http://hostname:port/context_path
-	 * 
+	 *
 	 * In case of providing "http.url" property in system.properties file, this
 	 * method will return pre-set value.
-	 * 
+	 *
 	 * @return ngrinder context base path on http request.
 	 */
 	public String getCurrentContextUrlFromUserRequest() {
-
 		String httpUrl = config.getSystemProperties().getPropertyWithBackwardCompatibility("http.url",
 				"ngrinder.http.url", "");
 		// if provided
@@ -68,7 +67,7 @@ public class HttpContainerContext {
 
 	/**
 	 * Check the user has unix user agent.
-	 * 
+	 *
 	 * @return true if unix.
 	 */
 	public boolean isUnixUser() {

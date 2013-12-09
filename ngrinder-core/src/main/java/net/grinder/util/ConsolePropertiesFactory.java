@@ -24,7 +24,7 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * Convenient class for {@link ConsoleProperties} creation.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -32,16 +32,14 @@ public abstract class ConsolePropertiesFactory {
 	/**
 	 * Create empty {@link ConsoleProperties}. the created {@link ConsoleProperties} instance links
 	 * with temp/temp_console directory.
-	 * 
+	 *
 	 * @return empty {@link ConsoleProperties} instance
-	 * 
 	 */
 	public static ConsoleProperties createEmptyConsoleProperties() {
 		File tmpFile = null;
 		try {
 			tmpFile = File.createTempFile("ngrinder", "tmp");
-			ConsoleProperties consoleProperties = new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
-			return consoleProperties;
+			return new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
 		} catch (Exception e) {
 			throw processException("Exception occurred while creating empty console property", e);
 		} finally {

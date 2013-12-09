@@ -13,15 +13,10 @@
  */
 package org.ngrinder.perftest.service;
 
-import net.grinder.AgentControllerDaemon;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.slf4j.Logger;
@@ -30,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * In addition {@link org.ngrinder.AbstractNGrinderTransactionalTest}, this class provides basic function to
@@ -92,13 +86,12 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	}
 
 	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
-		PerfTest test = newPerfTest(testName, status, scheduledTime);
-		perfTestService.savePerfTest(test);
-		return test;
+		PerfTest perftest = newPerfTest(testName, status, scheduledTime);
+		return createPerfTest(perftest);
 	}
 
 	public PerfTest createPerfTest(PerfTest perfTest) {
-		perfTestService.savePerfTest(perfTest);
+		perfTestService.save(getTestUser(), perfTest);
 		return perfTest;
 	}
 

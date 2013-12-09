@@ -39,7 +39,7 @@ public class AnnouncementControllerTest extends AbstractNGrinderTransactionalTes
 	@Test
 	public void testOpenAnnouncement() {
 		Model model = new ExtendedModelMap();
-		controller.openAnnouncement(model);
+		controller.open(model);
 		
 		assertThat(model.containsAttribute("content"), is(true));
 	}
@@ -48,10 +48,10 @@ public class AnnouncementControllerTest extends AbstractNGrinderTransactionalTes
 	public void testSaveAnnouncement() {
 		Model model = new ExtendedModelMap();
 		String content = "My test.";
-		controller.saveAnnouncement(model, content);
+		controller.save(model, content);
 		
 		assertThat(model.containsAttribute("success"), is(true));
-		assertThat(service.getAnnouncement(), is(content));
+		assertThat(service.getOne(), is(content));
 		assertThat(config.getAnnouncement(), is(content));
 	}
 }

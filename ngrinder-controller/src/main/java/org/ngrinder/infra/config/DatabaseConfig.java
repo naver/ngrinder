@@ -16,7 +16,7 @@ package org.ngrinder.infra.config;
 import javax.persistence.Entity;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.reflections.Reflections;
@@ -39,7 +39,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
  * @since 3.0
  */
 @Configuration
-public class DatabaseConfig implements NGrinderConstants {
+public class DatabaseConfig implements Constants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
 
 	@Autowired
@@ -81,7 +81,7 @@ public class DatabaseConfig implements NGrinderConstants {
 
 		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
 						"[FATAL] Database type is not specified. In default, use H2."));
-		if (config.isCluster() && !database.isClusterSupport()) {
+		if (config.isClustered() && !database.isClusterSupport()) {
 			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select cubrid as database");
 		}
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());

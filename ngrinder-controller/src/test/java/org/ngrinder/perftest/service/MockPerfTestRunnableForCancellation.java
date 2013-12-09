@@ -15,29 +15,23 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
-
 import org.ngrinder.common.util.ThreadUtils;
-import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.PerfTest;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 /**
  * Mock PerfTest which disable spring task schedule.
- * 
+ *
  * @author JunHo Yoon
  */
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
 
-	@Override
-	public void startTest() {
-		// No Nothing.
-	};
-
-	public void testDrive() {
-		super.startTest();
-	};
+	;
 
 	@Override
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
@@ -60,6 +54,14 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 		}
 		return super.checkCancellation(singleConsole);
 	}
+
+
+	@Override
+	protected void addSamplingListeners(PerfTest perfTest, SingleConsole singleConsole) {
+		// Do nothing on each sampling...
+		// To avoid exceptions due to @Transactional in the different thread.
+	}
+
 
 	public void setRunnable(Runnable runnable, int ignoreCount) {
 		this.runnable = runnable;

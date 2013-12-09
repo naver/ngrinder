@@ -15,7 +15,7 @@ package net.grinder;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		// Make one agent connect to console1
 		GrinderProperties grinderProperties = new GrinderProperties();
 		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
-		String localHostAddress = NetworkUtil.getLocalHostAddress();
+		String localHostAddress = NetworkUtils.getLocalHostAddress();
 		grinderProperties.setProperty(GrinderProperties.CONSOLE_HOST, localHostAddress);
 		AgentIdentity next = getAgentIdentity(allAvailableAgents, 0);
 		agentControllerServerDaemon.startAgent(grinderProperties, next);

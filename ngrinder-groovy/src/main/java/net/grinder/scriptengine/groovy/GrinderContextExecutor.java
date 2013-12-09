@@ -140,8 +140,7 @@ public class GrinderContextExecutor extends GrinderRunner {
 	 */
 	@Override
 	protected Statement classBlock(RunNotifier notifier) {
-		Statement statement = childrenInvoker(notifier);
-		return statement;
+		return childrenInvoker(notifier);
 	}
 
 	protected boolean isRateRunnerEnabled() {

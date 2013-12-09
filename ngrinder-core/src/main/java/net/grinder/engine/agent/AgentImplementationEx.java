@@ -31,7 +31,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.AbstractGrinderClassPathProcessor;
 import net.grinder.util.Directory;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -44,8 +44,6 @@ import java.io.File;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static net.grinder.util.NetworkUtil.DEFAULT_LOCAL_HOST_NAME;
 
 /**
  * This is the entry point of The Grinder agent process.
@@ -87,7 +85,7 @@ public class AgentImplementationEx implements Agent {
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
-		m_agentIdentity = new AgentIdentityImplementation(NetworkUtil.getLocalHostName());
+		m_agentIdentity = new AgentIdentityImplementation(NetworkUtils.getLocalHostName());
 
 	}
 
@@ -364,7 +362,7 @@ public class AgentImplementationEx implements Agent {
 	                                      GrinderProperties properties) {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
 				"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
-				NetworkUtil.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
+				NetworkUtils.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
 				m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true), m_agentConfig.getProperty("agent.javaopt", null));
 		String jvmArguments = builder.buildJVMArgument();
 		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)

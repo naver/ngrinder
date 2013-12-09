@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * nGrinder index page data retrieval service.
@@ -55,8 +55,6 @@ public class HomeService {
 	public void init() {
 	}
 
-	@Autowired
-	private Config config;
 
 	/**
 	 * Get the let panel entries from the given feed RUL.

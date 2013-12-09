@@ -35,7 +35,7 @@ public class ReflectionUtilTest {
 	public void testGetFieldValue() {
 		User testUser = new User();
 		testUser.setUserId("TMP_UID");
-		String rtnUid = (String) ReflectionUtil.getFieldValue(testUser, "userId");
+		String rtnUid = (String) ReflectionUtils.getFieldValue(testUser, "userId");
 		assertThat(rtnUid, is("TMP_UID"));
 	}
 }

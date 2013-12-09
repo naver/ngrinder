@@ -18,7 +18,7 @@ package org.ngrinder.common.util;
  */
 public abstract class AccessUtils {
 	public static int getSafe(Integer value) {
-		return (value == null) ? 0 : value.intValue();
+		return (value == null) ? 0 : value;
 	}
 
 	public static <T> T getSafe(T value, T defaultValue) {
@@ -26,14 +26,14 @@ public abstract class AccessUtils {
 	}
 
 	public static long getSafe(Long value) {
-		return (value == null) ? 0 : value.longValue();
+		return (value == null) ? 0 : value;
 	}
 
 	public static boolean getSafe(Boolean value) {
-		return (value == null) ? false : value.booleanValue();
+		return (value == null) ? false : value;
 	}
 
 	public static boolean getSafe(Boolean value, boolean b) {
-		return (value == null) ?  b : value.booleanValue();
+		return (value == null) ? b : value;
 	}
 }

@@ -18,11 +18,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.http.MeasureProtocolRequest;
 import org.ngrinder.infra.config.Config;
@@ -57,12 +57,12 @@ public class PeriodicCollectDataToGAService {
 	public void reportUsage() {
 		if (config.isUsageReportEnabled()) {
 			doRandomDelay();
-			GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
-							config.getVersion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
+			GoogleAnalytic googleAnalytic = new GoogleAnalytic(Constants.GOOGLEANALYTICS_APPNAME,
+							config.getVersion(), Constants.GOOGLEANALYTICS_TRACKINGID);
 			MeasureProtocolRequest measureProtocolRequest = googleAnalytic.getMeasureProtocolRequest();
 			measureProtocolRequest.setEventCategory("usage");
 			measureProtocolRequest.setEventAction("executions");
-			String currentAddress = NetworkUtil.getLocalHostAddress();
+			String currentAddress = NetworkUtils.getLocalHostAddress();
 			Date yesterday = DateUtils.addDays(new Date(), -1);
 			Date start = DateUtils.truncate(yesterday, Calendar.DATE);
 			Date end = DateUtils.addMilliseconds(DateUtils.ceiling(yesterday, Calendar.DATE), -1);
@@ -78,9 +78,9 @@ public class PeriodicCollectDataToGAService {
 	}
 
 	protected int getUsage(Date start, Date end) {
-		List<PerfTest> list = config.isCluster() ? //
-		perfTestService.getPerfTest(start, end, config.getRegion())
-						: perfTestService.getPerfTest(start, end);
+		List<PerfTest> list = config.isClustered() ? //
+		perfTestService.getAll(start, end, config.getRegion())
+						: perfTestService.getAll(start, end);
 		return list.size();
 	}
 

@@ -13,7 +13,7 @@
  */
 package net.grinder.communication;
 
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 
 /**
  * Default constant value for agent controller.
@@ -26,7 +26,7 @@ public abstract class AgentControllerCommunicationDefaults {
 	/**
 	 * Default agent controller daemon host. Bind to all interfaces by default.
 	 */
-	public static final String DEFAULT_AGENT_CONTROLLER_SERVER_HOST = NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
+	public static final String DEFAULT_AGENT_CONTROLLER_SERVER_HOST = NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 
 	/**
 	 * Default agent controller daemon port.

@@ -25,7 +25,7 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
@@ -80,7 +80,7 @@ public final class AgentMonitorServer {
 	 * @throws IOException IO error
 	 */
 	public void init(final int port, AgentConfig agentConfig) throws IOException {
-		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR, agentConfig);
+		this.init(port, MonitorConstants.SYSTEM_DATA_COLLECTOR, agentConfig);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public final class AgentMonitorServer {
 	 * @return current host name
 	 */
 	protected String getCurrentHostName(AgentConfig agentConfig) {
-		return agentConfig.getProperty("monitor.host", NetworkUtil.getLocalHostAddress());
+		return agentConfig.getProperty("monitor.host", NetworkUtils.getLocalHostAddress());
 	}
 
 	/**

@@ -33,9 +33,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
-import org.ngrinder.common.util.FileDownloadUtil;
+import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
@@ -67,7 +67,7 @@ import java.util.concurrent.ExecutorService;
  * @since 3.0
  */
 @Component
-public class AgentManager implements NGrinderConstants, AgentDownloadRequestListener {
+public class AgentManager implements Constants, AgentDownloadRequestListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 	private static final int NUMBER_OF_THREAD = 3;
@@ -182,7 +182,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	 */
 	public int getMaxAgentSizePerConsole() {
 		return config.getSystemProperties().getPropertyInt("agent.max.size",
-				NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+				Constants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	 * @return max vuser per agent
 	 */
 	public int getMaxVuserPerAgent() {
-		return config.getSystemProperties().getPropertyInt("agent.max.vuser", NGrinderConstants.MAX_VUSER_PER_AGENT);
+		return config.getSystemProperties().getPropertyInt("agent.max.vuser", Constants.MAX_VUSER_PER_AGENT);
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	 * @return max run count per thread
 	 */
 	public int getMaxRunCount() {
-		return config.getSystemProperties().getPropertyInt("agent.max.runcount", NGrinderConstants.MAX_RUN_COUNT);
+		return config.getSystemProperties().getPropertyInt("agent.max.runcount", Constants.MAX_RUN_COUNT);
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 	 * @return max run hour
 	 */
 	public int getMaxRunHour() {
-		return config.getSystemProperties().getPropertyInt("agent.max.runhour", NGrinderConstants.MAX_RUN_HOUR);
+		return config.getSystemProperties().getPropertyInt("agent.max.runhour", Constants.MAX_RUN_HOUR);
 	}
 
 	/**
@@ -517,14 +517,14 @@ public class AgentManager implements NGrinderConstants, AgentDownloadRequestList
 		if (offset == -1) {
 			return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 		}
-		byte[] buffer = new byte[FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE];
+		byte[] buffer = new byte[FileDownloadUtils.FILE_CHUNK_BUFFER_SIZE];
 		RandomAccessFile agentPackageReader = null;
 		try {
 			agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r");
 			agentPackageReader.seek(offset);
-			int count = agentPackageReader.read(buffer, 0, FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE);
+			int count = agentPackageReader.read(buffer, 0, FileDownloadUtils.FILE_CHUNK_BUFFER_SIZE);
 			byte[] bytes = buffer;
-			if (count != FileDownloadUtil.FILE_CHUNK_BUFFER_SIZE) {
+			if (count != FileDownloadUtils.FILE_CHUNK_BUFFER_SIZE) {
 				bytes = Arrays.copyOf(buffer, count);
 			}
 			if (count != -1) {

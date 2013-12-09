@@ -14,27 +14,17 @@
 package org.ngrinder.perftest.service;
 
 import net.grinder.AgentControllerDaemon;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.ArchLoaderInit;
-import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
-import org.ngrinder.perftest.repository.PerfTestRepository;
-import org.ngrinder.perftest.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
- * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to
- * create {@link PerfTest} and run the test.
+ * In addition {@link AbstractPerfTestTransactionalTest}, this class provides running agent.
  *
  * @author JunHo Yoon
  * @since 3.0
@@ -47,18 +37,16 @@ public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransaction
 		try {
 			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("ArchLoader failed", e);
 		}
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig);
 		agentControllerDaemon.run();
-
 		try {
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
 			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector, agentConfig);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
-			LOG.error("ERROR: {}", e.getMessage());
-			LOG.debug("Error while starting Monitor", e);
+			LOG.error("Error while starting Monitor", e);
 		}
 	}
 }

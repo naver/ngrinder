@@ -18,7 +18,7 @@ import org.ngrinder.model.User;
 
 /**
  * User service interface. This interface is visible to plugins
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -26,68 +26,46 @@ public interface IUserService {
 
 	/**
 	 * Encode password of the given user.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 */
 	public abstract void encodePassword(User user);
 
 	/**
 	 * Get user by user id.
-	 * 
-	 * @param userId
-	 *            user id
+	 *
+	 * @param userId user id
 	 * @return user
 	 * @since 3.3
 	 */
-	public abstract User getUserById(String userId);
-	
+	public abstract User getOne(String userId);
+
 
 	/**
 	 * Save user without password encoding step.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 *
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 * @since 3.3
 	 */
-	public User saveUserWithoutPasswordEncoding(User user);
-
-
+	public User saveWithoutPasswordEncoding(User user);
 
 
 	/**
 	 * Save user.
 	 *
-	 * @param user
-	 *            user
-	 * @param role
-	 *            role
-	 * @deprecated Use #saveUser(User user) instead.
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 */
-	public abstract User saveUser(User user, Role role);
-
-	/**
-	 * Save user.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
-	 * @return result
-	 */
-	public abstract User saveUser(User user);
+	public abstract User save(User user);
 
 
 	/**
 	 * Create user.
 	 *
 	 * This method exists to avoid ModelAspect injection.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 *
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 */
 	public abstract User createUser(User user);

@@ -19,19 +19,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.util.Hashtable;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.util.Directory;
 import net.grinder.util.Directory.DirectoryException;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 
 import org.junit.Test;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 
 public class PropertyBuilderTest {
 	@Test
@@ -72,6 +66,6 @@ public class PropertyBuilderTest {
 		Directory directory = new Directory(new File("."));
 		GrinderProperties property = new GrinderProperties();
 
-		return new PropertyBuilder(property, directory, true, hostString, NetworkUtil.getLocalHostName());
+		return new PropertyBuilder(property, directory, true, hostString, NetworkUtils.getLocalHostName());
 	}
 }

@@ -13,18 +13,9 @@
  */
 package org.ngrinder.user.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.Preconditions.checkNull;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Hibernate;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -32,7 +23,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
-import org.ngrinder.service.IUserService;
+import org.ngrinder.service.AbstractUserService;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +39,10 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
  * The Class UserService.
  *
@@ -55,7 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author AlexQin
  */
 @Service
-public class UserService implements IUserService {
+public class UserService extends AbstractUserService {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -84,7 +79,7 @@ public class UserService implements IUserService {
 	@Transactional
 	@Cacheable("users")
 	@Override
-	public User getUserById(String userId) {
+	public User getOne(String userId) {
 		return userRepository.findOneByUserId(userId);
 	}
 
@@ -111,9 +106,9 @@ public class UserService implements IUserService {
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
 	@Override
-	public User saveUser(User user) {
+	public User save(User user) {
 		encodePassword(user);
-		return saveUserWithoutPasswordEncoding(user);
+		return saveWithoutPasswordEncoding(user);
 	}
 
 	/**
@@ -125,8 +120,8 @@ public class UserService implements IUserService {
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
 	@Override
-	public User saveUserWithoutPasswordEncoding(User user) {
-		user.setFollowers(getFollowUsers(user.getFollowersStr()));
+	public User saveWithoutPasswordEncoding(User user) {
+		user.setFollowers(getFollowers(user.getFollowersStr()));
 		if (user.getPassword() != null && StringUtils.isBlank(user.getPassword())) {
 			user.setPassword(null);
 		}
@@ -139,22 +134,12 @@ public class UserService implements IUserService {
 		return createdUser;
 	}
 
-
-	@Transactional
-	@CachePut(value = "users", key = "#user.userId")
-	@Override
-	@Deprecated
-	public User saveUser(User user, Role role) {
-		user.setRole(role);
-		return saveUser(user);
-	}
-
 	private void prepareUserEnv(User user) {
 		scriptService.prepare(user);
 	}
 
 
-	private List<User> getFollowUsers(String followersStr) {
+	private List<User> getFollowers(String followersStr) {
 		List<User> newShareUsers = new ArrayList<User>();
 		String[] userIds = StringUtils.split(StringUtils.trimToEmpty(followersStr), ',');
 		for (String userId : userIds) {
@@ -167,15 +152,15 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Delete user. All corresponding perftest and directories are deleted as well.
+	 * Delete the given user. All corresponding perftest and directories are deleted as well.
 	 *
 	 * @param userId the user id string list
 	 */
 	@Transactional
 	@CacheEvict(value = "users", key = "#userId")
-	public void deleteUser(String userId) {
-		User user = getUserById(userId);
-		List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
+	public void delete(String userId) {
+		User user = getOne(userId);
+		List<PerfTest> deletePerfTests = perfTestService.deleteAll(user);
 		userRepository.delete(user);
 		for (PerfTest perfTest : deletePerfTests) {
 			FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
@@ -185,14 +170,14 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * get the user list by the given role.
+	 * Get the user list by the given role.
 	 *
 	 * @param role role
 	 * @param sort sort
 	 * @return found user list
 	 * @throws Exception
 	 */
-	public List<User> getUsersByRole(Role role, Sort sort) {
+	public List<User> getAll(Role role, Sort sort) {
 		return (role == null) ? userRepository.findAll(sort) : userRepository.findAllByRole(role, sort);
 	}
 
@@ -204,7 +189,7 @@ public class UserService implements IUserService {
 	 * @return found user list
 	 * @throws Exception
 	 */
-	public Page<User> getUsersByRole(Role role, Pageable pageable) {
+	public Page<User> getPagedAll(Role role, Pageable pageable) {
 		return (role == null) ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
 	}
 
@@ -215,8 +200,8 @@ public class UserService implements IUserService {
 	 * @return found user list
 	 * @throws Exception
 	 */
-	public List<User> getUsersByRole(Role role) {
-		return getUsersByRole(role, new Sort(Direction.ASC, "userName"));
+	public List<User> getAll(Role role) {
+		return getAll(role, new Sort(Direction.ASC, "userName"));
 	}
 
 	/**
@@ -225,7 +210,7 @@ public class UserService implements IUserService {
 	 * @param name name of user
 	 * @return found user list
 	 */
-	public List<User> getUsersByKeyWord(String name) {
+	public List<User> getAll(String name) {
 		return userRepository.findAll(UserSpecification.nameLike(name));
 	}
 
@@ -236,7 +221,7 @@ public class UserService implements IUserService {
 	 * @param pageable page
 	 * @return user page
 	 */
-	public Page<User> getUsersByKeyWord(String keyword, Pageable pageable) {
+	public Page<User> getPagedAll(String keyword, Pageable pageable) {
 		return userRepository.findAll(UserSpecification.nameLike(keyword), pageable);
 	}
 
@@ -254,10 +239,10 @@ public class UserService implements IUserService {
 		Date createdDate = new Date();
 		user.setCreatedDate(createdDate);
 		user.setLastModifiedDate(createdDate);
-		User createdUser = getUserById(NGrinderConstants.NGRINDER_INITIAL_ADMIN_USERID);
+		User createdUser = getOne(Constants.NGRINDER_INITIAL_ADMIN_USERID);
 		user.setCreatedUser(createdUser);
 		user.setLastModifiedUser(createdUser);
-		return saveUserWithoutPasswordEncoding(user);
+		return saveWithoutPasswordEncoding(user);
 	}
 
 

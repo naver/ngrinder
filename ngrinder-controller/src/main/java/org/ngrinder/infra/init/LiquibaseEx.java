@@ -34,7 +34,7 @@ import liquibase.util.StringUtils;
 
 /**
  * {@link Liquibase} extension to use {@link TypeConverter} for lock acquire.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -44,18 +44,14 @@ public class LiquibaseEx extends Liquibase {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param changeLogFile
-	 *            changeLogFile
-	 * @param resourceAccessor
-	 *            resource accessor
-	 * @param database
-	 *            database to be used
-	 * @throws LiquibaseException
-	 *             occurs when initialization is failed.
+	 *
+	 * @param changeLogFile    changeLogFile
+	 * @param resourceAccessor resource accessor
+	 * @param database         database to be used
+	 * @throws LiquibaseException occurs when initialization is failed.
 	 */
 	public LiquibaseEx(String changeLogFile, ResourceAccessor resourceAccessor, Database database)
-					throws LiquibaseException {
+			throws LiquibaseException {
 		super(changeLogFile, resourceAccessor, database);
 		this.changeLogFile = changeLogFile;
 	}
@@ -75,8 +71,8 @@ public class LiquibaseEx extends Liquibase {
 			getChangeLogParameters().setContexts(StringUtils.splitAndTrim(contexts, ","));
 
 			DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
-							.getParser(this.changeLogFile, getFileOpener())
-							.parse(this.changeLogFile, getChangeLogParameters(), getFileOpener());
+					.getParser(this.changeLogFile, getFileOpener())
+					.parse(this.changeLogFile, getChangeLogParameters(), getFileOpener());
 			checkDatabaseChangeLogTable(true, changeLog, contexts);
 
 			changeLog.validate(database, contexts);
@@ -90,11 +86,11 @@ public class LiquibaseEx extends Liquibase {
 				LOGGER.error("Error while releasing db lock", e);
 			}
 		}
-	};
+	}
 
 	private ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog)
-					throws DatabaseException {
+			throws DatabaseException {
 		return new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database), new ContextChangeSetFilter(
-						contexts), new DbmsChangeSetFilter(database));
+				contexts), new DbmsChangeSetFilter(database));
 	}
 }

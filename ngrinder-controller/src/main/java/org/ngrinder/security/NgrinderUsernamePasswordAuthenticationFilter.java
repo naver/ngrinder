@@ -29,7 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * nGrinder customized login authentication filter. This checks not only auth but also timezone and
  * locale.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -48,8 +48,8 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		Authentication auth = getAuthentication(request, response);
-		String timezone = (String) request.getParameter("user_timezone");
-		String language = (String) request.getParameter("native_language");
+		String timezone = request.getParameter("user_timezone");
+		String language = request.getParameter("native_language");
 		SecuredUser securedUser = (SecuredUser) auth.getPrincipal();
 		User user = securedUser.getUser();
 		User existingUser = userRepository.findOneByUserId(user.getUserId());
@@ -68,13 +68,14 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-					javax.servlet.FilterChain chain, Authentication authResult) throws IOException, ServletException {
+	                                        javax.servlet.FilterChain chain, Authentication authResult) throws IOException, ServletException {
 		super.successfulAuthentication(request, response, chain, authResult);
-	};
+	}
+
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-					AuthenticationException failed) throws IOException, ServletException {
+	                                          AuthenticationException failed) throws IOException, ServletException {
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
 

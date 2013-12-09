@@ -14,15 +14,11 @@
 package org.ngrinder.perftest.model;
 
 import net.grinder.SingleConsole;
-import net.grinder.common.GrinderException;
 import net.grinder.console.model.ConsoleProperties;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Null Object for {@link SingleConsole}.
@@ -34,7 +30,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 public class NullSingleConsole extends SingleConsole {
 
-	public static final NullSingleConsole NULL_CONSOLE = new NullSingleConsole();
 	private static final Map<String, Object> EMPTY_RESULT = new HashMap<String, Object>(1);
 
 	static {
@@ -91,11 +86,6 @@ public class NullSingleConsole extends SingleConsole {
 
 	@Override
 	public void start() {
-		// Do nothing
-	}
-
-	@Override
-	public void distributeFiles(File filePath) {
 		// Do nothing
 	}
 

@@ -16,7 +16,7 @@ package org.ngrinder.agent.service;
 import junit.framework.Assert;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +31,8 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import java.util.List;
 import java.util.Map;
 
-import static net.grinder.util.NetworkUtil.DEFAULT_LOCAL_IP4_ADDRESSES;
-import static net.grinder.util.NetworkUtil.removeScopedMarkerFromIP;
+import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_IP4_ADDRESSES;
+import static net.grinder.util.NetworkUtils.removeScopedMarkerFromIP;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -68,7 +68,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 			return;
 		}
 		spiedConfig = spy(config);
-		when(spiedConfig.isCluster()).thenReturn(true);
+		when(spiedConfig.isClustered()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
 
 		curAddress = removeScopedMarkerFromIP(DEFAULT_LOCAL_IP4_ADDRESSES.get(0).getHostAddress());
@@ -99,28 +99,28 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
-		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(NetworkUtil.DEFAULT_LOCAL_HOST_NAME,
+		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(NetworkUtils.DEFAULT_LOCAL_HOST_NAME,
 				"127.0.0.1");
 		monitor.setRegion(spiedConfig.getRegion());
 		agentManagerService.addAgentMonitoringTarget(monitor);
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(NetworkUtil.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1"));
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(NetworkUtils.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1"));
 		agentManagerService.collectAgentSystemData();
 	}
 
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getAgent(agent.getId(), false);
+		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNotNull(agent2);
 
-		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentListFromDB();
-		agentListDB = agentManagerService.getLocalAgentListFromDB();
+		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
+		agentListDB = agentManagerService.getLocalAgentsFromDB();
 		Assert.assertNotNull(agentListDB);
 
 		agentManagerService.approve(agent.getId(), true);
 
 		agentManagerService.deleteAgent(agent.getId());
-		agent2 = agentManagerService.getAgent(agent.getId(), false);
+		agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNull(agent2);
 	}
 

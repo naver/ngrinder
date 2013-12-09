@@ -38,10 +38,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * ThreadContext initializer in JUnit context.
- * 
+ *
  * This class is responsible to setup the Grinder thread context when it's not executed in the
  * Grinder agent.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -49,10 +49,7 @@ public class JUnitThreadContextInitializer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JUnitThreadContextInitializer.class);
 	private ThreadContexts m_threadContexts = new ThreadContexts();
 	private StatisticsServices m_statisticsServices;
-	private TestStatisticsHelperImplementation m_testStatisticsHelper;
-	private TestRegistryImplementation m_testRegistryImplementation;
 	private Times m_times = new Times();
-	private Sleeper m_sleeper;
 
 	/**
 	 * Constructor.
@@ -77,29 +74,29 @@ public class JUnitThreadContextInitializer {
 		list.add(new JavaDCRInstrumenterEx(context));
 		final Instrumenter instrumenter = new MasterInstrumenter(list);
 
-		m_testStatisticsHelper = new TestStatisticsHelperImplementation(m_statisticsServices.getStatisticsIndexMap());
+		TestStatisticsHelperImplementation m_testStatisticsHelper = new TestStatisticsHelperImplementation(m_statisticsServices.getStatisticsIndexMap());
 
-		m_testRegistryImplementation = new TestRegistryImplementation(m_threadContexts,
-						m_statisticsServices.getStatisticsSetFactory(), m_testStatisticsHelper,
-						m_times.getTimeAuthority());
+		TestRegistryImplementation m_testRegistryImplementation = new TestRegistryImplementation(m_threadContexts,
+				m_statisticsServices.getStatisticsSetFactory(), m_testStatisticsHelper,
+				m_times.getTimeAuthority());
 
 		m_testRegistryImplementation.setInstrumenter(instrumenter);
 
 		final Logger externalLogger = new ExternalLogger(LOGGER, m_threadContexts);
 
-		m_sleeper = new SleeperImplementation(m_times.getTimeAuthority(), externalLogger, 1.0d, 0.2d);
+		Sleeper m_sleeper = new SleeperImplementation(m_times.getTimeAuthority(), externalLogger, 1.0d, 0.2d);
 
 		final Statistics scriptStatistics = new ScriptStatisticsImplementation(m_threadContexts, m_statisticsServices,
-						new NullSender());
+				new NullSender());
 
 		final InternalScriptContext scriptContext = new ScriptContextImplementation(new SimpleWorkerIdentity(
-						"unit-test", 0), new SimpleWorkerIdentity("unit-test", 0), m_threadContexts, null,
-						externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts), scriptStatistics,
-						m_testRegistryImplementation, null, null, null, null);
+				"unit-test", 0), new SimpleWorkerIdentity("unit-test", 0), m_threadContexts, null,
+				externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts), scriptStatistics,
+				m_testRegistryImplementation, null, null, null, null);
 		Grinder.grinder = scriptContext;
 
 		new PluginRegistryImplementation(externalLogger, scriptContext, m_threadContexts, m_statisticsServices,
-						m_times.getTimeAuthority());
+				m_times.getTimeAuthority());
 
 	}
 
@@ -115,10 +112,10 @@ public class JUnitThreadContextInitializer {
 				properties.setInt("grinder.threads", 1);
 				properties.setBoolean("grinder.logData", false);
 				final ThreadContextImplementation threadContext = new ThreadContextImplementation(properties,
-								m_statisticsServices, 0, LOGGER);
+						m_statisticsServices, 0, LOGGER);
 				m_threadContexts.threadCreated(threadContext);
 				m_threadContexts.threadStarted(threadContext);
-  				threadContext.registerThreadLifeCycleListener(new SkeletonThreadLifeCycleListener() {
+				threadContext.registerThreadLifeCycleListener(new SkeletonThreadLifeCycleListener() {
 					@Override
 					public void endThread() {
 						threadContext.reportPendingDispatchContext();
@@ -132,7 +129,7 @@ public class JUnitThreadContextInitializer {
 		} catch (EngineException e) {
 			LOGGER.error("Error while initiating thread context", e);
 		}
-	};
+	}
 
 	/**
 	 * Detach the worker thread context.
@@ -147,7 +144,7 @@ public class JUnitThreadContextInitializer {
 
 	/**
 	 * Get thread context updater.
-	 * 
+	 *
 	 * @return JUnitThreadContextUpdater
 	 */
 	public JUnitThreadContextUpdater getThreadContextUpdater() {

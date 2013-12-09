@@ -50,7 +50,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.ngrinder</groupId>
-			<artifactId>ngrinder-dns</artifactId>
+			<artifactId>ngrinder-runtime</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

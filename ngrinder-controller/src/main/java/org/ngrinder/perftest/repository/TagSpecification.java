@@ -27,33 +27,17 @@ import org.springframework.data.jpa.domain.Specification;
 
 /**
  * {@link Tag} Specification for more elaborated {@link org.ngrinder.model.PerfTest} search.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class TagSpecification {
 
-	/**
-	 * Get the {@link Specification} which provides the empty predicate.
-	 * 
-	 * This is for the base element for "and" or "or" combination.
-	 * 
-	 * @return {@link Specification}
-	 */
-	public static Specification<Tag> emptyPredicate() {
-		return new Specification<Tag>() {
-			@Override
-			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("id").isNotNull();
-			}
-		};
-	}
 
 	/**
 	 * Get the {@link Specification} which checks if the {@link Tag#getTagValue()} has one of given value.
-	 * 
-	 * @param values
-	 *            tag lists
+	 *
+	 * @param values tag lists
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> valueIn(final String[] values) {
@@ -68,9 +52,8 @@ public abstract class TagSpecification {
 	/**
 	 * Get lastModifiedUser and createBy {@link Specification} to get the {@link Tag} whose creator or last modifier is
 	 * the given user.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> lastModifiedOrCreatedBy(final User user) {
@@ -84,7 +67,7 @@ public abstract class TagSpecification {
 
 	/**
 	 * Get the {@link Specification} which checks if the tag has corresponding perfTests.
-	 * 
+	 *
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> hasPerfTest() {
@@ -100,9 +83,8 @@ public abstract class TagSpecification {
 
 	/**
 	 * Get the {@link Specification} to get the {@link Tag} whose value starts with given query.
-	 * 
-	 * @param queryString
-	 *            matching tag value
+	 *
+	 * @param queryString matching tag value
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> isStartWith(final String queryString) {

@@ -2,9 +2,11 @@ package org.ngrinder.script.controller;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
 
@@ -12,9 +14,8 @@ public class BreadCrumbTest {
 	@Test
 	public void testBreadCrumb() {
 		FileEntryController controller = new FileEntryController();
-		FileEntryService mockFileEntryService = mock(FileEntryService.class);
-		when(mockFileEntryService.getCurrentContextPathFromUserRequest()).thenReturn("http://helloworld.org/ngrinder");
-		controller.setFileEntryService(mockFileEntryService);
+		controller.httpContainerContext = mock(HttpContainerContext.class);
+		when(controller.httpContainerContext.getCurrentContextUrlFromUserRequest()).thenReturn("http://helloworld.org/ngrinder");
 		User user = new User();
 		user.setUserId("admin");
 		assertThat(controller.getSvnUrlBreadcrumbs(user, "hello/world"))

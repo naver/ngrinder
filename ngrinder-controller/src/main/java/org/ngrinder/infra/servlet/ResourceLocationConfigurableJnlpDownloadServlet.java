@@ -13,9 +13,18 @@
  */
 package org.ngrinder.infra.servlet;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
+import jnlp.sample.servlet.JnlpDownloadServlet;
+import org.apache.commons.collections.iterators.IteratorEnumeration;
+import org.ngrinder.common.util.NoOp;
+import org.ngrinder.infra.config.Config;
+import org.python.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.HttpRequestHandler;
+import org.springframework.web.context.ServletContextAware;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
@@ -23,19 +32,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import jnlp.sample.servlet.JnlpDownloadServlet;
-
-import org.apache.commons.collections.iterators.IteratorEnumeration;
-import org.ngrinder.common.util.NoOp;
-import org.ngrinder.infra.annotation.RuntimeOnlyController;
-import org.ngrinder.infra.config.Config;
-import org.python.google.common.collect.Maps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.HttpRequestHandler;
-import org.springframework.web.context.ServletContextAware;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * {@link JnlpDownloadServlet} which forwards the download request to the home folder. This class is
@@ -43,7 +42,8 @@ import org.springframework.web.context.ServletContextAware;
  *
  * @author JunHo Yoon
  */
-@RuntimeOnlyController("jnlpDownloadServlet")
+@Profile("production")
+@Controller("jnlpDownloadServlet")
 public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloadServlet implements HttpRequestHandler,
 		ServletConfig, ServletContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLocationConfigurableJnlpDownloadServlet.class);

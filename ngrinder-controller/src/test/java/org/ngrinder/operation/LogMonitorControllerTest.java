@@ -67,7 +67,7 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 	}
 
 	private String getLastMessage() {
-		HttpEntity<String> lastLog = logMonitorController.getLastLog();
+		HttpEntity<String> lastLog = logMonitorController.getLast();
 		JsonParser parser = new JsonParser();
 		JsonElement parse = parser.parse(lastLog.getBody());
 		String message = parse.getAsJsonObject().get("log").getAsString();

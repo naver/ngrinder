@@ -46,7 +46,7 @@ public class ClusteredPerfTestServiceTest extends AbstractNGrinderTransactionalT
 	@Test
 	public void testGetPerfTestCandidate() {
 		Config spiedConfig = spy(config);
-		when(spiedConfig.isCluster()).thenReturn(true);
+		when(spiedConfig.isClustered()).thenReturn(true);
 		ReflectionTestUtils.setField(perfTestConfig, "config", spiedConfig);
 
 		PerfTestService clusteredPerfTest = perfTestConfig.perfTestService();

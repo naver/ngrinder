@@ -69,7 +69,7 @@ public class ClusterConfigurationVerifier {
 	 */
 	@PostConstruct
 	public void init() throws IOException {
-		if (config.isCluster() && !config.isTestMode()) {
+		if (config.isClustered() && !config.isTestMode()) {
 			systemConfFile = config.getHome().getSubFile("system.conf");
 			cache = cacheManager.getCache("controller_home");
 			config.addSystemConfListener(new PropertyChangeListener() {
@@ -120,7 +120,7 @@ public class ClusterConfigurationVerifier {
 	private void updateSystemConfFingerPrintToCache(File systemConfFile) {
 		try {
 			String systemConfFingerPrint = String.valueOf(FileUtils.checksumCRC32(systemConfFile));
-			cache.put(regionService.getCurrentRegion(), systemConfFingerPrint);
+			cache.put(regionService.getCurrent(), systemConfFingerPrint);
 		} catch (IOException e) {
 			LOGGER.error("Error while updating system.conf fingerprint into cache.", e);
 		}

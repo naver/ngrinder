@@ -16,14 +16,13 @@ package org.ngrinder.infra.config;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import com.google.common.io.Files;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.FileWatchdog;
@@ -32,7 +31,7 @@ import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.service.IConfig;
+import org.ngrinder.service.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +44,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -59,7 +56,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Component
-public class Config implements IConfig, NGrinderConstants {
+public class Config extends AbstractConfig implements Constants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
@@ -70,7 +67,7 @@ public class Config implements IConfig, NGrinderConstants {
 	private PropertiesWrapper databaseProperties;
 	private String announcement;
 	private Date announcementDate;
-	private static String versionString = "";
+	private String versionString = "";
 	private boolean verbose;
 	private String currentIP;
 
@@ -115,7 +112,7 @@ public class Config implements IConfig, NGrinderConstants {
 			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
-			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
+			cluster = getSystemProperties().getPropertyBoolean(Constants.NGRINDER_PROP_CLUSTER_MODE, false);
 			initLogger(isTestMode());
 			resolveLocalIp();
 			loadAnnouncement();
@@ -148,7 +145,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if the cluster mode is enabled.
 	 * @since 3.1
 	 */
-	public boolean isCluster() {
+	public boolean isClustered() {
 		return cluster;
 	}
 
@@ -168,7 +165,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return region. If it's not clustered mode, return "NONE"
 	 */
 	public String getRegion() {
-		return isCluster() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
+		return isClustered() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
 	}
 
 	/**
@@ -187,7 +184,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_USAGE_REPORT, true);
+		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_PROP_USAGE_REPORT, true);
 	}
 
 	/**
@@ -196,7 +193,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if enabled.
 	 */
 	public boolean isSelfUserRegistration() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_USER_SELF_REGISTRATION, false);
+		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_USER_SELF_REGISTRATION, false);
 	}
 
 	/**
@@ -205,7 +202,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @param forceToVerbose true to force verbose logging.
 	 */
 	public synchronized void initLogger(boolean forceToVerbose) {
-		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
+		setupLogger((forceToVerbose) || getSystemProperties().getPropertyBoolean("verbose", false));
 	}
 
 	/**
@@ -224,7 +221,7 @@ public class Config implements IConfig, NGrinderConstants {
 		try {
 			if (!logbackConf.exists()) {
 				logbackConf = new ClassPathResource("/logback/logback-ngrinder.xml").getFile();
-				if (exHome.exists() && isCluster()) {
+				if (exHome.exists() && isClustered()) {
 					context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
 					context.putProperty("SUFFIX", "_" + getRegion());
 				} else {
@@ -247,7 +244,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
-		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
+		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile());
 		home.makeSubPath(PLUGIN_PATH);
 		home.makeSubPath(PERF_TEST_PATH);
 		home.makeSubPath(DOWNLOAD_PATH);
@@ -262,11 +259,13 @@ public class Config implements IConfig, NGrinderConstants {
 		if (StringUtils.isNotBlank(System.getProperty("unit-test"))) {
 			final String tempDir = System.getProperty("java.io.tmpdir");
 			final File tmpHome = new File(tempDir, ".ngrinder");
-			tmpHome.mkdirs();
+			if (tmpHome.mkdirs()) {
+				LOG.info("{} is created", tmpHome.getPath());
+			}
 			try {
 				FileUtils.forceDeleteOnExit(tmpHome);
 			} catch (IOException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOG.error("Error while setting forceDeleteOnExit on {}", tmpHome);
 			}
 			return new Home(tmpHome);
 		}
@@ -364,7 +363,6 @@ public class Config implements IConfig, NGrinderConstants {
 			} else {
 				announcementDate = null;
 			}
-			return;
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while reading announcement file.", e);
 			announcement = "";
@@ -564,14 +562,6 @@ public class Config implements IConfig, NGrinderConstants {
 		return internalProperties;
 	}
 
-	/**
-	 * Get nGrinder version in static way.
-	 *
-	 * @return nGrinder version.
-	 */
-	public static String getVersionString() {
-		return versionString;
-	}
 
 	/**
 	 * Check if it's verbose logging mode.
@@ -607,10 +597,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if it exists
 	 */
 	public boolean hasNoMoreTestLock() {
-		if (exHome.exists()) {
-			return exHome.getSubFile("no_more_test.lock").exists();
-		}
-		return false;
+		return exHome.exists() && exHome.getSubFile("no_more_test.lock").exists();
 	}
 
 	/**
@@ -619,10 +606,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if it exists
 	 */
 	public boolean hasShutdownLock() {
-		if (exHome.exists()) {
-			return exHome.getSubFile("shutdown.lock").exists();
-		}
-		return false;
+		return exHome.exists() && exHome.getSubFile("shutdown.lock").exists();
 	}
 
 	/**
@@ -650,6 +634,6 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return public IP.
 	 */
 	public String getCurrentPublicIP() {
-		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
+		return NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 	}
 }

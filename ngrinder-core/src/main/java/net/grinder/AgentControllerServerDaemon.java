@@ -48,7 +48,7 @@ public class AgentControllerServerDaemon {
 	private AgentControllerServer agentControllerServer;
 	public static final Resources RESOURCES = new ResourcesImplementation(
 			"net.grinder.console.common.resources.Console");
-	private Condition m_eventSyncCondition = new Condition();
+	private final Condition m_eventSyncCondition = new Condition();
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCES.getString("shortTitle"));
 	private static final long AGENT_CONTROLLER_SERVER_SHUTDOWN_WAITING_TIMEOUT = 10000;
@@ -144,7 +144,7 @@ public class AgentControllerServerDaemon {
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return ((AgentProcessControl) agentControllerServer.getComponent(AgentProcessControlImplementation.class))
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
 				.getNumberOfLiveAgents();
 	}
 

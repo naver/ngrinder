@@ -13,12 +13,8 @@
  */
 package org.ngrinder.perftest.repository;
 
-import java.util.Date;
-import java.util.List;
-
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
-import org.ngrinder.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,110 +23,60 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * {@link PerfTest} Repository.
- * 
+ *
  * @author junHo Yoon
  * @since 3.0
  */
 public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
 	/**
 	 * Find the paged {@link PerfTest}s based on the given spec.
-	 * 
-	 * @param spec
-	 *            {@link Specification} of {@link PerfTest} query
-	 * @param pageable
-	 *            page info
-	 * 
+	 *
+	 * @param spec     {@link Specification} of {@link PerfTest} query
+	 * @param pageable page info
 	 * @return {@link PerfTest} list
 	 */
 	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
 
-	/**
-	 * Find the paged {@link PerfTest}s having the given created user.
-	 * 
-	 * @param user
-	 *            user
-	 * @param pageable
-	 *            page info
-	 * 
-	 * @return {@link PerfTest} list
-	 */
-	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User user, Pageable pageable);
-
-	/**
-	 * Find all {@link PerfTest}s having the given {@link Status} ordered by createdDate.
-	 * 
-	 * @param status
-	 *            status
-	 * 
-	 * @return {@link PerfTest} list
-	 */
-	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
-
-	/**
-	 * Find the paged {@link PerfTest}s having the given {@PerfTest#status} ordered by createdDate.
-	 * 
-	 * @param status
-	 *            status
-	 * @param pageable
-	 *            page info
-	 * @return {@link PerfTest} list
-	 */
-	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
-
-	/**
-	 * Find the paged {@link PerfTest}s having the given {@PerfTest#status} ordered by scheduledTime
-	 * ascending.
-	 * 
-	 * @param status
-	 *            status
-	 * @param pageable
-	 *            page info
-	 * @return {@link PerfTest} list
-	 */
-	Page<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status, Pageable pageable);
 
 	/**
 	 * Find all {@link PerfTest}s having the given {@PerfTest#status} ordered by scheduledTime
 	 * ascending.
-	 * 
-	 * @param status
-	 *            status
+	 *
+	 * @param status status
 	 * @return {@link PerfTest} list
 	 */
 	List<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status);
 
 	/**
 	 * Find all {@link PerfTest}s having the given {@PerfTest#status} and {@PerfTest#region
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
 	 * } ordered by scheduledTime ascending.
-	 * 
-	 * @param status
-	 *            perf test status to search
-	 * @param region
-	 *            region where the test belong to
+	 *
+	 * @param status perf test status to search
+	 * @param region region where the test belong to
 	 * @return perf test list
 	 */
 	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
 
 	/**
 	 * Update the runtime statistics on the perf test having the given {@link PerfTest} id.
-	 * 
-	 * @param id
-	 *            {@link PerfTest} id
-	 * @param runningSample
-	 *            running sample json string
-	 * @param agentState
-	 *            agent status json string
+	 *
+	 * @param id            {@link PerfTest} id
+	 * @param runningSample running sample json string
+	 * @param agentState    agent status json string
 	 * @return the count of updated row
 	 */
 	@Modifying
@@ -139,11 +85,9 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 
 	/**
 	 * Update the monitor statistics on the perf test having the given {@link PerfTest} id.
-	 * 
-	 * @param id
-	 *            {@link PerfTest} id
-	 * @param monitorStatus
-	 *            monitor status json string
+	 *
+	 * @param id            {@link PerfTest} id
+	 * @param monitorStatus monitor status json string
 	 * @return the count of updated row
 	 */
 	@Modifying
@@ -152,13 +96,10 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 
 	/**
 	 * Find all {@link PerfTest}s created between the given start and end date and having the the given region.
-	 * 
-	 * @param start
-	 *            time
-	 * @param end
-	 *            time
-	 * @param region
-	 *            region
+	 *
+	 * @param start  time
+	 * @param end    time
+	 * @param region region
 	 * @return {@link PerfTest} list
 	 */
 	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2 and region=?3")
@@ -166,12 +107,9 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 
 	/**
 	 * Find all {@link PerfTest} created between the given start and end dates.
-	 * 
-	 * @param start
-	 *            time
-	 * @param end
-	 *            time
-	 * 
+	 *
+	 * @param start time
+	 * @param end   time
 	 * @return {@link PerfTest} list
 	 */
 	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2")

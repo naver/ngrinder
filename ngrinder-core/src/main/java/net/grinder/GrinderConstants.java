@@ -18,16 +18,20 @@ package net.grinder;
  */
 public abstract class GrinderConstants {
 
-	/** The Constant P_PROCESS. */
+	/**
+	 * The Constant P_PROCESS.
+	 */
 	public static final String P_PROCESS = "process";
 
-	/** The Constant P_THREAD. */
+	/**
+	 * The Constant P_THREAD.
+	 */
 	public static final String P_THREAD = "thread";
 
-	/** Agent daemon retry interval. */
-	public static final long AGENT_RETRY_INTERVAL = 1000;
 
-	/** Agent controller HeartBeat interval. */
+	/**
+	 * Agent controller HeartBeat interval.
+	 */
 	public static final long AGENT_CONTROLLER_HEARTBEAT_INTERVAL = 990;
 
 	/**

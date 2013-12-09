@@ -21,7 +21,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.operation.cotroller.ScriptConsoleController;
-import org.python.util.PythonInterpreter;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 
@@ -32,15 +31,15 @@ public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTe
 		ScriptConsoleController scriptController = new ScriptConsoleController();
 
 		Model model = new ExtendedModelMap();
-		scriptController.runScript("", model);
+		scriptController.run("", model);
 		assertThat((String) model.asMap().get("result"), nullValue());
 		String command = "print \'hello\'";
-		scriptController.runScript(command, model);
+		scriptController.run(command, model);
 		assertThat(model.containsAttribute("result"), is(true));
 		assertThat((String) model.asMap().get("result"), containsString("hello"));
 
-		scriptController.runScript("var a = 1", model);
-		scriptController.runScript("print a", model);
+		scriptController.run("var a = 1", model);
+		scriptController.run("print a", model);
 		assertThat((String) model.asMap().get("result"), containsString("No such property"));
 
 	}

@@ -15,7 +15,7 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+import static org.ngrinder.common.constant.Constants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -81,8 +81,8 @@ public class ConsoleManager {
 	 * @return base port number
 	 */
 	protected int getConsolePortBase() {
-		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE,
-				NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
+		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_CONSOLE_PORT_BASE,
+				Constants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
 	}
 
 	/**
@@ -91,8 +91,8 @@ public class ConsoleManager {
 	 * @return console size.
 	 */
 	protected int getConsoleSize() {
-		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+				Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class ConsoleManager {
 	 */
 	protected long getMaxWaitingMilliSecond() {
 		return config.getSystemProperties().getPropertyInt(NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS,
-				NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
+				Constants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
 	}
 
 	/**
@@ -172,13 +172,11 @@ public class ConsoleManager {
 	 * elapsed, the timeout error occurs and throws {@link org.ngrinder.common.exception.NGrinderRuntimeException} . The
 	 * timeout can be adjusted by overriding {@link #getMaxWaitingMilliSecond()}.
 	 *
-	 * @param testIdentifier        test identifier
-	 * @param baseConsoleProperties base {@link ConsoleProperties}
+	 * @param baseConsoleProperties base {@link net.grinder.console.model.ConsoleProperties}
 	 * @return console
 	 */
-	public SingleConsole getAvailableConsole(String testIdentifier, ConsoleProperties baseConsoleProperties) {
+	public SingleConsole getAvailableConsole(ConsoleProperties baseConsoleProperties) {
 		ConsoleEntry consoleEntry = null;
-		SingleConsole singleConsole = null;
 		try {
 			consoleEntry = consoleQueue.poll(getMaxWaitingMilliSecond(), TimeUnit.MILLISECONDS);
 			if (consoleEntry == null) {
@@ -186,7 +184,8 @@ public class ConsoleManager {
 			}
 			synchronized (this) {
 				// FIXME : It might fail here
-				singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(), baseConsoleProperties);
+				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
+						baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}
@@ -281,7 +280,7 @@ public class ConsoleManager {
 	public SingleConsole getConsoleUsingPort(Integer port) {
 		for (SingleConsole each : consoleInUse) {
 			// Avoid to Klocwork error.
-			if (each instanceof  NullSingleConsole) {
+			if (each instanceof NullSingleConsole) {
 				continue;
 			}
 			if (each.getConsolePort() == port) {

@@ -13,7 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.Pair;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
@@ -25,7 +25,7 @@ import net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Dynamic cache configuration. This get the control of EhCache configuration from Spring. Depending
@@ -68,7 +68,7 @@ public class DynamicCacheConfig {
 		Configuration cacheManagerConfig;
 		InputStream inputStream = null;
 		try {
-			if (!config.isCluster()) {
+			if (!config.isClustered()) {
 				CoreLogger.LOGGER.info("In no cluster mode.");
 				inputStream = new ClassPathResource("ehcache.xml").getInputStream();
 				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
@@ -81,8 +81,8 @@ public class DynamicCacheConfig {
 				FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 				peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 				List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
-				Pair<NetworkUtil.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
-				NetworkUtil.IPPortPair currentListener = properties.getFirst();
+				Pair<NetworkUtils.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
+				NetworkUtils.IPPortPair currentListener = properties.getFirst();
 				System.setProperty("java.rmi.server.hostname", currentListener.getIP());
 				String peers = properties.getSecond();
 				peerProviderConfig.setProperties(peers);
@@ -115,14 +115,14 @@ public class DynamicCacheConfig {
 		return "cacheManager";
 	}
 
-	protected Pair<NetworkUtil.IPPortPair, String> createCacheProperties(List<String> replicatedCacheNames) {
+	protected Pair<NetworkUtils.IPPortPair, String> createCacheProperties(List<String> replicatedCacheNames) {
 		int clusterListenerPort = getClusterListenerPort();
 		String listenerProperty = "";
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
-		NetworkUtil.IPPortPair local = null;
+		NetworkUtils.IPPortPair local = null;
 		for (String ip : config.getClusterURIs()) {
-			NetworkUtil.IPPortPair ipAndPortPair = NetworkUtil.convertIPAndPortPair(ip, clusterListenerPort);
+			NetworkUtils.IPPortPair ipAndPortPair = NetworkUtils.convertIPAndPortPair(ip, clusterListenerPort);
 			if (ipAndPortPair.isIP4AndLocalHost()) {
 				local = ipAndPortPair;
 				continue;
@@ -141,7 +141,7 @@ public class DynamicCacheConfig {
 	}
 
 	int getClusterListenerPort() {
-		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
+		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
 				Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 	}
 

@@ -1,8 +1,10 @@
 package org.ngrinder.script.service;
 
-import org.ngrinder.infra.annotation.TestOnlyComponent;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockScriptValidationService extends ScriptValidationService {
 	@Override
 	protected int getTimeout() {

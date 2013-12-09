@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -34,7 +34,7 @@ import com.google.gson.JsonParser;
  * @author Mavlarn
  * @since
  */
-public class JSONUtilTest extends NGrinderBaseController {
+public class JSONUtilTest extends BaseController {
 
 	JsonParser parser = new JsonParser();
 

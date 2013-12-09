@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.model.PerfTest;
 
 /**
@@ -66,7 +66,7 @@ public class PerfTestTest {
 		PerfTest test = new PerfTest();
 		for (int i = 0; i < 1000; i++) {
 			test.setLastProgressMessage("HELLO");
-			assertThat(test.getProgressMessage().length(), lessThan(NGrinderConstants.MAX_STACKTRACE_STRING_SIZE));
+			assertThat(test.getProgressMessage().length(), lessThan(Constants.MAX_STACKTRACE_STRING_SIZE));
 		}
 	}
 

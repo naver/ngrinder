@@ -13,13 +13,8 @@
  */
 package net.grinder.scriptengine.groovy;
 
-import static net.grinder.util.NoOp.noOp;
-
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovySystem;
-
-import java.io.IOException;
-
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.script.Grinder;
@@ -28,13 +23,15 @@ import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.scriptengine.ScriptEngineService.ScriptEngine;
 import net.grinder.scriptengine.ScriptExecutionException;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
-import net.grinder.scriptengine.groovy.junit.GrinderRunner;
-
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
+
+import java.io.IOException;
+
+import static net.grinder.util.NoOp.noOp;
 
 /**
  * Groovy implementation of {@link ScriptEngine}.
@@ -94,7 +91,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	public ScriptEngineService.WorkerRunnable createWorkerRunnable(Object testRunner) throws EngineException {
 		try {
 			return new GroovyWorkerRunnable(new GrinderContextExecutor(m_groovyClass, testRunner));
-		} catch (InitializationError e)	{
+		} catch (InitializationError e) {
 			throw new EngineException("Exception occurred during initializing runner", e);
 		}
 	}
@@ -115,8 +112,6 @@ public class GroovyScriptEngine implements ScriptEngine {
 				}
 				super.fireTestFailure(failure);
 			}
-
-			;
 		};
 
 		private GroovyWorkerRunnable(GrinderContextExecutor groovyRunner) throws EngineException {

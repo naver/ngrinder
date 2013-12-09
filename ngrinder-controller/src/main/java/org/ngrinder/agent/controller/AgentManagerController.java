@@ -18,10 +18,9 @@ import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +50,10 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 @Controller
 @RequestMapping("/agent")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class AgentManagerController extends NGrinderBaseController {
+public class AgentManagerController extends BaseController {
 
 	@Autowired
 	private AgentManagerService agentManagerService;
-
-	@Autowired
-	private Config config;
 
 	@Autowired
 	private HttpContainerContext httpContainerContext;
@@ -78,8 +74,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
-	public String getAgents(@RequestParam(value = "region", required = false) final String region,
-	                        HttpServletRequest request, ModelMap model) {
+	public String getAll(@RequestParam(value = "region", required = false) final String region,
+	                     HttpServletRequest request, ModelMap model) {
 		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
 		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
 			@Override
@@ -94,10 +90,10 @@ public class AgentManagerController extends NGrinderBaseController {
 			}
 		}));
 		model.addAttribute("region", region);
-		model.addAttribute("regions", regionService.getRegions().keySet());
+		model.addAttribute("regions", regionService.getAll().keySet());
 		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 
-		if (!config.isCluster() || StringUtils.isNotBlank(region)) {
+		if (!isClustered() || StringUtils.isNotBlank(region)) {
 			File agentPackage = agentPackageService.createAgentPackage(
 					request == null ? "" : request.getServerName(), region, null);
 			model.addAttribute("downloadLink", contextPath + "/agent/download/" + agentPackage.getName());
@@ -115,12 +111,12 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
-	public String approveAgent(@PathVariable("id") Long id,
-	                           @RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
-	                           @RequestParam(value = "region", required = false) final String region, ModelMap model) {
+	public String approve(@PathVariable("id") Long id,
+	                      @RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
+	                      @RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		agentManagerService.approve(id, approve);
 		model.addAttribute("region", region);
-		model.addAttribute("regions", regionService.getRegions().keySet());
+		model.addAttribute("regions", regionService.getAll().keySet());
 		return "agent/list";
 	}
 
@@ -132,8 +128,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return agent/agentDetail
 	 */
 	@RequestMapping("/{id}")
-	public String getAgent(@PathVariable Long id, ModelMap model) {
-		model.addAttribute("agent", agentManagerService.getAgent(id, false));
+	public String getOne(@PathVariable Long id, ModelMap model) {
+		model.addAttribute("agent", agentManagerService.getOne(id));
 		return "agent/detail";
 	}
 
@@ -178,7 +174,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
 	public HttpEntity<String> getOne(@PathVariable("id") Long id) {
-		return toJsonHttpEntity(agentManagerService.getAgent(id, false));
+		return toJsonHttpEntity(agentManagerService.getOne(id));
 	}
 
 	@RestAPI
@@ -226,7 +222,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", params = "action=update", method = RequestMethod.PUT)
 	public HttpEntity<String> update(@PathVariable("id") Long id) {
-		agentManagerService.updateAgent(id);
+		agentManagerService.update(id);
 		return successJsonHttpEntity();
 	}
 

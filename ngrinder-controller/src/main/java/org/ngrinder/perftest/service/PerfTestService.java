@@ -35,7 +35,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Hibernate;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.*;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -48,7 +48,7 @@ import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.service.IPerfTestService;
+import org.ngrinder.service.AbstractPerfTestService;
 import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestService implements NGrinderConstants, IPerfTestService {
+public class PerfTestService extends AbstractPerfTestService implements Constants {
 
 	private static final int MAX_POINT_COUNT = 100;
 
@@ -116,7 +116,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private ScriptHandlerFactory scriptHandlerFactory;
 
 	/**
-	 * Get {@link PerfTest} list on the user.
+	 * Get {@link PerfTest} list for the given user.
 	 *
 	 * @param user        user
 	 * @param query       query string on test name or description
@@ -125,7 +125,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param pageable    paging info
 	 * @return found {@link PerfTest} list
 	 */
-	public Page<PerfTest> getPerfTest(User user, String query, String tag, String queryFilter, Pageable pageable) {
+	public Page<PerfTest> getPagedAll(User user, String query, String tag, String queryFilter, Pageable pageable) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
@@ -155,18 +155,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param user user
 	 * @return found {@link PerfTest} list
 	 */
-	List<PerfTest> getPerfTest(User user) {
+	List<PerfTest> getAll(User user) {
 		Specifications<PerfTest> spec = Specifications.where(createdBy(user));
 		return perfTestRepository.findAll(spec);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder .model.User, java.lang.Integer)
-	 */
+
 	@Override
-	public PerfTest getPerfTest(User user, Long id) {
+	public PerfTest getOne(User user, Long id) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
@@ -177,13 +173,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestRepository.findOne(spec);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder .model.User, java.lang.Integer[])
-	 */
 	@Override
-	public List<PerfTest> getPerfTest(User user, Long[] ids) {
+	public List<PerfTest> getOne(User user, Long[] ids) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
@@ -194,14 +185,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestRepository.findAll(spec);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestCount(org.ngrinder .model.User,
-	 * org.ngrinder.perftest.model.Status)
-	 */
 	@Override
-	public long getPerfTestCount(User user, Status[] statuses) {
+	public long count(User user, Status[] statuses) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
@@ -216,14 +201,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestRepository.count(spec);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder .model.User,
-	 * org.ngrinder.perftest.model.Status)
-	 */
 	@Override
-	public List<PerfTest> getPerfTest(User user, Status[] statuses) {
+	public List<PerfTest> getOne(User user, Status[] statuses) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
@@ -237,13 +216,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestRepository.findAll(spec);
 	}
 
-	private List<PerfTest> getPerfTest(User user, String region, Status[] statuses) {
+	private List<PerfTest> getOne(User user, String region, Status[] statuses) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 		// User can see only his own test
 		if (user != null) {
 			spec = spec.and(createdBy(user));
 		}
-		if (config.isCluster()) {
+		if (config.isClustered()) {
 			spec = spec.and(idRegionEqual(region));
 		}
 		if (statuses.length != 0) {
@@ -256,15 +235,29 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Override
 	@Transactional
-	public PerfTest savePerfTest(User user, PerfTest perfTest) {
+	public PerfTest save(User user, PerfTest perfTest) {
 		attachFileRevision(user, perfTest);
 		attachTags(user, perfTest, perfTest.getTagString());
-		return savePerfTest(perfTest);
+		return save(perfTest);
+
 	}
+
+	private PerfTest save(PerfTest perfTest) {
+		checkNotNull(perfTest);
+		// Merge if necessary
+		if (perfTest.exist()) {
+			PerfTest existingPerfTest = perfTestRepository.findOne(perfTest.getId());
+			perfTest = existingPerfTest.merge(perfTest);
+		} else {
+			perfTest.clearMessages();
+		}
+		return perfTestRepository.saveAndFlush(perfTest);
+	}
+
 
 	private void attachFileRevision(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
-			FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName());
+			FileEntry scriptEntry = fileEntryService.getOne(user, perfTest.getScriptName());
 			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
 			perfTest.setScriptRevision(revision);
 		}
@@ -298,24 +291,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestRepository.flush();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder .perftest.model.PerfTest )
-	 */
-	@Override
-	@Transactional
-	public PerfTest savePerfTest(PerfTest perfTest) {
-		checkNotNull(perfTest);
-		// Merge if necessary
-		if (perfTest.exist()) {
-			PerfTest existingPerfTest = perfTestRepository.findOne(perfTest.getId());
-			perfTest = existingPerfTest.merge(perfTest);
-		} else {
-			perfTest.clearMessages();
-		}
-		return perfTestRepository.saveAndFlush(perfTest);
-	}
 
 	/**
 	 * Mark test error on {@link PerfTest} instance.
@@ -343,12 +318,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, reason);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.service.IPerfTestService#markStatusAndProgress(org.ngrinder.model.PerfTest,
-	 * org.ngrinder.model.Status, java.lang.String)
-	 */
+
 	@Transactional
 	@Override
 	public PerfTest markStatusAndProgress(PerfTest perfTest, Status status, String message) {
@@ -416,14 +386,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				+ consolePort);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(long)
-	 */
+
 	@Transactional
 	@Override
-	public PerfTest getPerfTestWithTag(Long testId) {
+	public PerfTest getOneWithTag(Long testId) {
 		PerfTest findOne = perfTestRepository.findOne(testId);
 		if (findOne != null) {
 			Hibernate.initialize(findOne.getTags());
@@ -431,13 +397,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return findOne;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(long)
-	 */
+
 	@Override
-	public PerfTest getPerfTest(Long testId) {
+	public PerfTest getOne(Long testId) {
 		return perfTestRepository.findOne(testId);
 	}
 
@@ -459,7 +421,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return running test list
 	 */
 	public List<PerfTest> getCurrentlyRunningTest() {
-		return getPerfTest(null, Status.getProcessingOrTestingTestStatus());
+		return getOne(null, Status.getProcessingOrTestingTestStatus());
 	}
 
 	/**
@@ -484,36 +446,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestLists;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getTestingPerfTest()
-	 */
 	@Override
-	public List<PerfTest> getTestingPerfTest() {
-		return getPerfTest(null, config.getRegion(), Status.getTestingTestStates());
+	public List<PerfTest> getAllTesting() {
+		return getOne(null, config.getRegion(), Status.getTestingTestStates());
 	}
 
-	/**
-	 * Get abnormally testing PerfTest.
-	 *
-	 * @return found {@link PerfTest} list
-	 */
-	public List<PerfTest> getAbnormalTestingPerfTest() {
-		return getPerfTest(null, config.getRegion(), new Status[]{Status.ABNORMAL_TESTING});
+	public List<PerfTest> getAllAbnormalTesting() {
+		return getOne(null, config.getRegion(), new Status[]{Status.ABNORMAL_TESTING});
 	}
 
-	/**
-	 * Delete PerfTest by id.
-	 *
-	 * Never use this method in runtime. This method is used only for testing.
-	 *
-	 * @param user user
-	 * @param id   {@link PerfTest} id
-	 */
+
 	@Transactional
-	public void deletePerfTest(User user, long id) {
-		PerfTest perfTest = getPerfTest(id);
+	public void delete(User user, long id) {
+		PerfTest perfTest = getOne(id);
 		// If it's not requested by user who started job. It's wrong request.
 		if (!hasPermission(perfTest, user, Permission.DELETE_TEST_OF_OTHER)) {
 			return;
@@ -542,12 +487,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
-	public File getPerfTestStatisticPath(PerfTest perfTest) {
-		File perfTestStatisticPath = config.getHome().getPerfTestStatisticPath(perfTest);
-		if (!perfTestStatisticPath.exists()) {
-			perfTestStatisticPath.mkdirs();
-		}
-		return perfTestStatisticPath;
+	public File getStatisticPath(PerfTest perfTest) {
+		return config.getHome().getPerfTestStatisticPath(perfTest);
 	}
 
 	/*
@@ -556,7 +497,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
-	public File getPerfTestDistributionPath(PerfTest perfTest) {
+	public File getDistributionPath(PerfTest perfTest) {
 		return config.getHome().getPerfTestDistDirectory(perfTest);
 	}
 
@@ -566,8 +507,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param perfTest perftest
 	 * @return custom class path.
 	 */
+
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public String getCustomClassPath(PerfTest perfTest) {
-		File perfTestDirectory = getPerfTestDistributionPath(perfTest);
+		File perfTestDirectory = getDistributionPath(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
 
 		final StringBuffer customClassPath = new StringBuffer();
@@ -613,8 +556,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 			// Get all files in the script path
 			String scriptName = perfTest.getScriptName();
-			FileEntry userDefinedGrinderProperties = fileEntryService.getFileEntry(user,
-					FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES_PATH), -1);
+			FileEntry userDefinedGrinderProperties = fileEntryService.getOne(user,
+					FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES_PATH), -1L);
 			if (!config.isSecurityEnabled() && userDefinedGrinderProperties != null) {
 				// Make the property overridden by user property.
 				GrinderProperties userProperties = new GrinderProperties();
@@ -684,11 +627,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return File location in which the perftest script and resources are distributed.
 	 */
 	public ScriptHandler prepareDistribution(PerfTest perfTest) {
-		File perfTestDistDirectory = getPerfTestDistributionPath(perfTest);
-		perfTestDistDirectory.mkdirs();
+		File perfTestDistDirectory = getDistributionPath(perfTest);
 		User user = perfTest.getCreatedUser();
 		FileEntry scriptEntry = checkNotNull(
-				fileEntryService.getFileEntry(user,
+				fileEntryService.getOne(user,
 						checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name"),
 						getSafe(perfTest.getScriptRevision())), "script should exist");
 		// Get all files in the script path
@@ -751,7 +693,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public int getReportDataInterval(long testId, String dataType, int imgWidth) {
 		int pointCount = Math.max(imgWidth, MAX_POINT_COUNT);
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		int lineNumber;
 		int interval = 0;
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
@@ -767,8 +708,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			isr = new InputStreamReader(in);
 			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int) (lineNumber / pointCount), 1);
+			int lineNumber = lnr.getLineNumber() + 1;
+			interval = Math.max(lineNumber / pointCount, 1);
 		} catch (Exception e) {
 			LOGGER.error("Failed to get report data for {}", dataType, e);
 		} finally {
@@ -787,18 +728,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return reportFile data report file
 	 */
 	public File getReportFile(PerfTest perfTest) {
-		return new File(config.getHome().getPerfTestReportDirectory(perfTest), NGrinderConstants.REPORT_CSV);
-	}
-
-	/**
-	 * Get log file names for give test .
-	 *
-	 * @param perfTest perfTest
-	 * @param fileName file name of one logs of the test
-	 * @return file report file path
-	 */
-	public File getLogFile(PerfTest perfTest, String fileName) {
-		return new File(getLogFileDirectory(perfTest), fileName);
+		return new File(config.getHome().getPerfTestReportDirectory(perfTest), Constants.REPORT_CSV);
 	}
 
 	/**
@@ -848,15 +778,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return Arrays.asList(logFileDirectory.list());
 	}
 
-	/**
-	 * Get report file directory for give test id .
-	 *
-	 * @param testId testId
-	 * @return reportDir report file path
-	 */
-	public File getReportFileDirectory(long testId) {
-		return config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-	}
 
 	/**
 	 * Get report file directory for give test .
@@ -960,28 +881,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return gson.fromJson(perfTest.getRunningSample(), HashMap.class);
 	}
 
-	/**
-	 * get test running statistic data from cache. If there is no cache data, will return empty statistic data.
-	 *
-	 * @param perfTest perfTest
-	 * @return test running statistic data
-	 */
-	public String getStatisticsJson(PerfTest perfTest) {
-		return perfTest.getRunningSample();
-	}
 
 	private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-	/**
-	 * Save system monitor data of all agents connected to one console. If the console is not available, it returns
-	 * empty map. After getting, it will be put into cache.
-	 *
-	 * @param singleConsole singleConsole of the test add this parameter just for the key of cache.
-	 * @param perfTest      perfTest
-	 */
-	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
-		savePerfTest(perfTest);
-	}
 
 	/**
 	 * Get agent info from saved file.
@@ -1013,7 +914,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public ConsoleProperties createConsoleProperties(PerfTest perfTest) {
 		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
 		try {
-			consoleProperties.setAndSaveDistributionDirectory(new Directory(getPerfTestDistributionPath(perfTest)));
+			consoleProperties.setAndSaveDistributionDirectory(new Directory(getDistributionPath(perfTest)));
 			consoleProperties.setConsoleHost(config.getCurrentIP());
 			consoleProperties.setIgnoreSampleCount(getSafe(perfTest.getIgnoreSampleCount()));
 			consoleProperties.setSampleInterval(1000 * getSafe(perfTest.getSamplingInterval()));
@@ -1068,8 +969,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return maximum concurrent test
 	 */
 	public int getMaximumConcurrentTestCount() {
-		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+				Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
 
 	/**
@@ -1078,18 +979,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return true if possible
 	 */
 	public boolean canExecuteTestMore() {
-		return getPerfTestCount(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
+		return count(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#stopPerfTest(org.ngrinder .model.User, java.lang.Long)
+	 * @see org.ngrinder.perftest.service.IPerfTestService#stop(org.ngrinder .model.User, java.lang.Long)
 	 */
 	@Override
 	@Transactional
-	public void stopPerfTest(User user, Long id) {
-		PerfTest perfTest = getPerfTest(id);
+	public void stop(User user, Long id) {
+		PerfTest perfTest = getOne(id);
 		// If it's not requested by user who started job. It's wrong request.
 		if (!hasPermission(perfTest, user, Permission.STOP_TEST_OF_OTHER)) {
 			return;
@@ -1117,20 +1018,17 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (perfTest == null) {
 			return false;
 		}
-		if (perfTest.getCreatedUser().equals(user)) {
-			return true;
-		}
-		return user.getRole().hasPermission(type);
+		return perfTest.getCreatedUser().equals(user) || user.getRole().hasPermission(type);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getStopRequestedPerfTest()
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getAllStopRequested()
 	 */
 	@Override
-	public List<PerfTest> getStopRequestedPerfTest() {
-		final List<PerfTest> perfTests = getPerfTest(null, config.getRegion(), getProcessingOrTestingTestStatus());
+	public List<PerfTest> getAllStopRequested() {
+		final List<PerfTest> perfTests = getOne(null, config.getRegion(), getProcessingOrTestingTestStatus());
 		CollectionUtils.filter(perfTests, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
@@ -1148,7 +1046,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Override
 	@Transactional
 	public void addCommentOn(User user, Long testId, String testComment, String tagString) {
-		PerfTest perfTest = getPerfTest(user, testId);
+		PerfTest perfTest = getOne(user, testId);
 		perfTest.setTestComment(testComment);
 		attachTags(user, perfTest, tagString);
 		perfTestRepository.save(perfTest);
@@ -1163,7 +1061,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();
-		for (PerfTest each : getPerfTest(null, getProcessingOrTestingTestStatus())) {
+		for (PerfTest each : getOne(null, getProcessingOrTestingTestStatus())) {
 			User lastModifiedUser = each.getCreatedUser().getUserBaseInfo();
 			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
 			if (perfTestStatistics == null) {
@@ -1193,8 +1091,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return deleted {@link PerfTest} list
 	 */
 	@Transactional
-	public List<PerfTest> deleteAllPerfTests(User user) {
-		List<PerfTest> perfTestList = getPerfTest(user);
+	public List<PerfTest> deleteAll(User user) {
+		List<PerfTest> perfTestList = getAll(user);
 		for (PerfTest each : perfTestList) {
 			each.getTags().clear();
 		}
@@ -1213,7 +1111,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param tag       tag to be deleted
 	 */
 	@Transactional
-	public void removeTag(Collection<PerfTest> perfTests, Tag tag) {
+	public void deleteTag(Collection<PerfTest> perfTests, Tag tag) {
 		for (PerfTest each : perfTests) {
 			each.getTags().remove(tag);
 		}
@@ -1238,7 +1136,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param perfTest perf test
 	 */
 	public void cleanUpDistFolder(PerfTest perfTest) {
-		FileUtils.deleteQuietly(getPerfTestDistributionPath(perfTest));
+		FileUtils.deleteQuietly(getDistributionPath(perfTest));
 	}
 
 	/**
@@ -1250,7 +1148,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTest.setRunningSample("");
 		perfTest.setAgentState("");
 		perfTest.setMonitorState("");
-		savePerfTest(perfTest);
+		save(perfTest);
 	}
 
 	/**
@@ -1299,21 +1197,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public int getSystemMonitorDataInterval(long testId, String targetIP, int imageWidth) {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + targetIP + ".data");
+				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		FileInputStream in = null;
 		InputStreamReader isr = null;
 		LineNumberReader lnr = null;
-		int lineNumber = 0;
 		int interval = 0;
 		try {
 			in = new FileInputStream(monitorDataFile);
 			isr = new InputStreamReader(in);
 			lnr = new LineNumberReader(isr);
 			lnr.skip(monitorDataFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int) (lineNumber / pointCount), 1);
+			int lineNumber = lnr.getLineNumber() + 1;
+			interval = Math.max(lineNumber / pointCount, 1);
 		} catch (FileNotFoundException e) {
 			LOGGER.info("Monitor data file does not exist at {}", monitorDataFile);
 		} catch (IOException e) {
@@ -1333,12 +1230,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param testId       test id
 	 * @param targetIP     ip address of the monitor target
 	 * @param dataInterval interval value to get data. Interval value "2" means, get one record for every "2" records.
-	 * @return return the data in map
+	 * @return r  eturn the data in map
 	 */
 	public Map<String, String> getSystemMonitorDataAsString(long testId, String targetIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + targetIP + ".data");
+				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
 		BufferedReader br = null;
 		try {
 
@@ -1362,7 +1259,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
-					continue;
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
@@ -1423,7 +1319,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, targetIP);
 		List<SystemDataModel> rtnList = Lists.newArrayList();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + targetIP + ".data");
+				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(monitorDataFile));
@@ -1582,20 +1478,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date)
+	 * @see org.ngrinder.service.IPerfTestService#getAll(java.util.Date, java.util.Date)
 	 */
 	@Override
-	public List<PerfTest> getPerfTest(Date start, Date end) {
+	public List<PerfTest> getAll(Date start, Date end) {
 		return perfTestRepository.findAllByCreatedTime(start, end);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date, java.lang.String)
+	 * @see org.ngrinder.service.IPerfTestService#getAll(java.util.Date, java.util.Date, java.lang.String)
 	 */
 	@Override
-	public List<PerfTest> getPerfTest(Date start, Date end, String region) {
+	public List<PerfTest> getAll(Date start, Date end, String region) {
 		return perfTestRepository.findAllByCreatedTimeAndRegion(start, end, region);
 	}
 

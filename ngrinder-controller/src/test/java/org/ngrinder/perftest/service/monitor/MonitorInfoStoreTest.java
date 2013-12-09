@@ -32,6 +32,6 @@ public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
 		SystemInfo systemInfo = monitorStore.getSystemInfo(ip, 13243);
 		assertThat(systemInfo, not(nullValue()));
 		assertThat(systemInfo.getFreeMemory(), not(0L));
-		monitorStore.remove(ip);
+		monitorStore.close(ip);
 	}
 }

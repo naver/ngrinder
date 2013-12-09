@@ -20,7 +20,7 @@ import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.util.CompressionUtil;
+import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class AgentUpdateHandler implements Closeable {
 
 		if (FilenameUtils.isExtension(download.getName(), "tar")) {
 			File outFile = new File(toDir, "ngrinder-agent.tar");
-			CompressionUtil.untar(download, interDir);
+			CompressionUtils.untar(download, interDir);
 			FileUtils.deleteQuietly(outFile);
 		} else {
 			LOGGER.error("{} is not allowed to be unzipped.", download.getName());

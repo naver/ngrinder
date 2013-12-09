@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 
 /**
  * Comparable Version number.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.1
  */
@@ -29,9 +29,8 @@ public class VersionNumber implements Comparable<VersionNumber> {
 
 	/**
 	 * Parses a string like "1.0.2" into the version number.
-	 * 
-	 * @param num
-	 *            parameter string
+	 *
+	 * @param num parameter string
 	 */
 	public VersionNumber(String num) {
 		StringTokenizer tokens = new StringTokenizer(num, ".-_");
@@ -59,7 +58,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < this.digits.length; i++) {
 			if (i != 0) {
 				buf.append('.');
@@ -69,34 +68,9 @@ public class VersionNumber implements Comparable<VersionNumber> {
 		return buf.toString();
 	}
 
-	/**
-	 * Compare the versions.
-	 * 
-	 * @param rhs
-	 *            version to be compared
-	 * @return true if this version is older
-	 */
-	public boolean isOlderThan(VersionNumber rhs) {
-		return compareTo(rhs) < 0;
-	}
-
-	/**
-	 * Compare the versions.
-	 * 
-	 * @param rhs
-	 *            version to be compared
-	 * @return true if this version is newer
-	 */
-	public boolean isNewerThan(VersionNumber rhs) {
-		return compareTo(rhs) > 0;
-	}
-
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof VersionNumber)) {
-			return false;
-		}
-		return compareTo((VersionNumber) o) == 0;
+		return o instanceof VersionNumber && compareTo((VersionNumber) o) == 0;
 	}
 
 	@Override
@@ -115,7 +89,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	 */
 	@Override
 	public int compareTo(VersionNumber rhs) {
-		for (int i = 0;; i++) {
+		for (int i = 0; ; i++) {
 			if (i == this.digits.length && i == rhs.digits.length) {
 				return 0; // equals
 			}

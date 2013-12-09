@@ -28,7 +28,7 @@ import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
-import net.grinder.util.LogCompressUtil;
+import net.grinder.util.LogCompressUtils;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -270,7 +270,7 @@ public class AgentController implements Agent {
 		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
 			logFiles = new File[]{logFiles[0]};
 		}
-		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(logFiles),
+		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtils.compress(logFiles),
 				new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
 		FileUtils.deleteQuietly(logFolder);

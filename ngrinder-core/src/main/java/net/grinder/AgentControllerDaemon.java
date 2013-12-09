@@ -105,14 +105,6 @@ public class AgentControllerDaemon implements Agent {
 		return this.m_listeners;
 	}
 
-	/**
-	 * Add agent controller shutdown listener.
-	 *
-	 * @param listener listener
-	 */
-	public void addListener(AgentControllerShutDownListener listener) {
-		m_listeners.add(listener);
-	}
 
 	/**
 	 * Shutdown agent controller.

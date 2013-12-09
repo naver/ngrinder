@@ -120,7 +120,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 	private boolean isUsefulForForemostReferenceProject(String path) {
 		return junitContext && new File(path).isDirectory()
-				&& path.contains(File.separator + "ngrinder-dns" + File.separator);
+				&& path.contains(File.separator + "ngrinder-runtime" + File.separator);
 	}
 
 	private boolean isPatchJar(String jarFilename) {
@@ -138,7 +138,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * Initialize.
 	 */
 	public void init() {
-		foreMostJarList.add("ngrinder-dns");
+		foreMostJarList.add("ngrinder-runtime");
 		patchJarList.add("patch");
 		// TODO: If we have need another jar files, we should append it here.
 		usefulJarList.add("grinder");
@@ -250,16 +250,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 				builder.append(each).append(File.pathSeparator);
 			}
 		}
-		System.out.println(builder.toString());
 		return filterClassPath(builder.toString(), logger);
-	}
-
-	public List<String> getForeMostJarList() {
-		return foreMostJarList;
-	}
-
-	public List<String> getPatchJarList() {
-		return patchJarList;
 	}
 
 	public List<String> getUsefulJarList() {

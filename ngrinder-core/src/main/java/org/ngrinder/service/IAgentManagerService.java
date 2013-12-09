@@ -19,10 +19,7 @@ import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +84,7 @@ public interface IAgentManagerService {
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getLocalAgentListFromDB();
+	public abstract List<AgentInfo> getLocalAgentsFromDB();
 
 	/**
 	 * Get all active agents from DB.
@@ -104,14 +101,23 @@ public interface IAgentManagerService {
 	public abstract List<AgentInfo> getAllVisibleAgentInfoFromDB();
 
 	/**
+	 * Get the agent for the given id without agent identity info. If it's called from the other controller, only
+	 * limited info available in db will be return.
+	 *
+	 * @param id agent id
+	 * @return agent
+	 */
+	public abstract AgentInfo getOne(Long id);
+
+	/**
 	 * Get the agent for the given id. If it's called from the other controller, only
 	 * limited info available in db will be return.
 	 *
 	 * @param id                   agent id
-	 * @param includeAgentIdentity include agent identity
+	 * @param includeAgentIdentity include agent identity field.
 	 * @return agent
 	 */
-	public abstract AgentInfo getAgent(long id, boolean includeAgentIdentity);
+	public abstract AgentInfo getOne(Long id, boolean includeAgentIdentity);
 
 	/**
 	 * Get the agent system data model for the given ip. This method is cluster
@@ -127,21 +133,8 @@ public interface IAgentManagerService {
 	/**
 	 * Update agent
 	 *
-	 * @param ids ids.
-	 */
-	public abstract void updateAgent(List<Long> ids) throws IOException;
-
-	/**
-	 * Update agent
-	 *
 	 * @param id ids.
 	 */
-	public abstract void updateAgent(Long id) throws IOException;
+	public abstract void update(Long id) throws IOException;
 
-	/**
-	 * Get the agent package directory
-	 *
-	 * @return package stored directory
-	 */
-	public abstract File getAgentPackagesDir();
 }

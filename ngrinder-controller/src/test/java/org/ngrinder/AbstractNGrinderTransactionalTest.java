@@ -13,14 +13,9 @@
  */
 package org.ngrinder;
 
-import net.grinder.AgentControllerDaemon;
 import org.junit.Before;
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.infra.ArchLoaderInit;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
@@ -35,7 +30,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.sql.DataSource;
-import java.util.Set;
 
 
 /**
@@ -48,7 +42,7 @@ import java.util.Set;
 @ActiveProfiles("unit-test")
 @ContextConfiguration({"classpath:applicationContext.xml"})
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
-		NGrinderConstants {
+		Constants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
 
 	static {

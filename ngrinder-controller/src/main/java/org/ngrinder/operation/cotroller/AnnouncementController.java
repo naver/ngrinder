@@ -13,7 +13,7 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/operation/announcement")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class AnnouncementController extends NGrinderBaseController {
+public class AnnouncementController extends BaseController {
 
 	@Autowired
 	private AnnouncementService announcementService;
@@ -45,8 +45,8 @@ public class AnnouncementController extends NGrinderBaseController {
 	 * @return operation/announcement
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public String openAnnouncement(Model model) {
-		String announcement = announcementService.getAnnouncement();
+	public String open(Model model) {
+		String announcement = announcementService.getOne();
 		model.addAttribute("announcement", announcement);
 		model.addAttribute("content", announcement);
 		return "operation/announcement";
@@ -62,9 +62,9 @@ public class AnnouncementController extends NGrinderBaseController {
 	 * @return operation/announcement
 	 */
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	public String saveAnnouncement(Model model, @RequestParam final String content) {
-		model.addAttribute("success", announcementService.saveAnnouncement(content));
-		String announcement = announcementService.getAnnouncement();
+	public String save(Model model, @RequestParam final String content) {
+		model.addAttribute("success", announcementService.save(content));
+		String announcement = announcementService.getOne();
 		model.addAttribute("announcement", announcement);
 		model.addAttribute("content", announcement);
 		return "operation/announcement";

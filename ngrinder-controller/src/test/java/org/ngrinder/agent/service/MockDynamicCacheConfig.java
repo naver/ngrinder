@@ -13,7 +13,7 @@
  */
 package org.ngrinder.agent.service;
 
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.Pair;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.Configuration;
@@ -22,11 +22,12 @@ import net.sf.ehcache.config.FactoryConfiguration;
 import net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.infra.config.DynamicCacheConfig;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,8 @@ import java.util.List;
 /**
  * Mock DynamicCacheConfig which use cluster mode.
  */
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockDynamicCacheConfig extends DynamicCacheConfig {
 
 	@SuppressWarnings("rawtypes")
@@ -53,8 +55,8 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 			FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 			peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 			List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
-			Pair<NetworkUtil.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
-			NetworkUtil.IPPortPair currentListener = properties.getFirst();
+			Pair<NetworkUtils.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
+			NetworkUtils.IPPortPair currentListener = properties.getFirst();
 			String peerProperty = properties.getSecond();
 			peerProviderConfig.setProperties(peerProperty);
 			cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);

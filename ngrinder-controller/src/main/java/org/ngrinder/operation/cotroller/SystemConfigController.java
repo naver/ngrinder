@@ -13,7 +13,7 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 @Controller
 @RequestMapping("/operation/system_config")
 @PreAuthorize("hasAnyRole('A')")
-public class SystemConfigController extends NGrinderBaseController {
+public class SystemConfigController extends BaseController {
 
 	@Autowired
 	private SystemConfigService systemConfigService;
@@ -48,8 +48,8 @@ public class SystemConfigController extends NGrinderBaseController {
 	 * @return operation/system_config
 	 */
 	@RequestMapping("")
-	public String get(Model model) {
-		model.addAttribute("content", systemConfigService.getSystemConfig());
+	public String getOne(Model model) {
+		model.addAttribute("content", systemConfigService.getOne());
 		return "operation/system_config";
 	}
 
@@ -63,8 +63,8 @@ public class SystemConfigController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/save")
 	public String save(Model model, @RequestParam final String content) {
-		model.addAttribute("success", systemConfigService.saveSystemConfig(content));
-		return get(model);
+		model.addAttribute("success", systemConfigService.save(content));
+		return getOne(model);
 	}
 
 
@@ -75,8 +75,8 @@ public class SystemConfigController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api", method = RequestMethod.GET)
-	public HttpEntity<String> get() {
-		return toJsonHttpEntity(systemConfigService.getSystemConfig());
+	public HttpEntity<String> getOne() {
+		return toJsonHttpEntity(systemConfigService.getOne());
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class SystemConfigController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping(value = "/api", method = RequestMethod.POST)
 	public HttpEntity<String> save(@RequestParam(required = true) final String content) {
-		systemConfigService.saveSystemConfig(checkNotEmpty(content, "content should be " +
+		systemConfigService.save(checkNotEmpty(content, "content should be " +
 				"passed as parameter"));
 		return successJsonHttpEntity();
 	}

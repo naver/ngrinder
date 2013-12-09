@@ -24,16 +24,22 @@ import org.apache.commons.io.FilenameUtils;
 
 /**
  * Supported Language Enum.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
 public enum Lang {
-	/** Groovy. */
+	/**
+	 * Groovy.
+	 */
 	Groovy(new GroovyHandler()),
-	/** Jython. */
+	/**
+	 * Jython.
+	 */
 	Jython(new JythonHandler()),
-	/** Unknown. */
+	/**
+	 * Unknown.
+	 */
 	Unknown(new UnknownHandler());
 	private final AbstractLanguageHandler handler;
 
@@ -43,9 +49,8 @@ public enum Lang {
 
 	/**
 	 * Get {@link Lang} enum by the given file's name.
-	 * 
-	 * @param file
-	 *            file
+	 *
+	 * @param file file
 	 * @return {@link Lang} enum value
 	 */
 	public static Lang getByFileName(File file) {
@@ -54,9 +59,8 @@ public enum Lang {
 
 	/**
 	 * Get {@link Lang} enum by the given filename.
-	 * 
-	 * @param fileName
-	 *            filename
+	 *
+	 * @param fileName filename
 	 * @return {@link Lang} enum value
 	 */
 	public static Lang getByFileName(String fileName) {
@@ -70,30 +74,8 @@ public enum Lang {
 	}
 
 	/**
-	 * Check if the filename can be script.
-	 * 
-	 * @param filename
-	 *            filename
-	 * @return true if it's script.
-	 */
-	public static boolean isHandlableFileType(String filename) {
-		return (getByFileName(filename) != Unknown);
-	}
-
-	/**
-	 * Get the handler by the given file name.
-	 * 
-	 * @param fileName
-	 *            file name
-	 * @return {@link AbstractLanguageHandler}
-	 */
-	public static AbstractLanguageHandler getHandlerByFileName(String fileName) {
-		return getByFileName(fileName).getHandler();
-	}
-
-	/**
 	 * Get the language handler.
-	 * 
+	 *
 	 * @return language handler.
 	 */
 	public AbstractLanguageHandler getHandler() {

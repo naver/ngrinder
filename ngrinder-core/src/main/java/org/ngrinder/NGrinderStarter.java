@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import static net.grinder.util.NetworkUtil.getIP;
+import static net.grinder.util.NetworkUtils.getIP;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -113,7 +113,6 @@ public class NGrinderStarter {
 		printLog("***************************************************");
 		printLog("* Start nGrinder Monitor... ");
 		printLog("***************************************************");
-		MonitorConstants.init(agentConfig);
 		try {
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
 			AgentMonitorServer.getInstance().init(monitorPort, agentConfig);
@@ -156,8 +155,6 @@ public class NGrinderStarter {
 
 		String controllerIP = getIP(defaultIfBlank(directControllerIP, agentConfig.getControllerIP()));
 		int controllerPort = agentConfig.getControllerPort();
-		String region = agentConfig.getRegion();
-
 		agentConfig.setControllerIP(controllerIP);
 		LOG.info("connecting to controller {}:{}", controllerIP, controllerPort);
 

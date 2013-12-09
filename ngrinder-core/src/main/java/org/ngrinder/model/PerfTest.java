@@ -21,7 +21,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
-import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.PathUtils;
 
 import javax.persistence.*;
@@ -393,7 +393,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getLastModifiedDateToStr() {
-		return DateUtil.dateToString(getLastModifiedDate());
+		return DateUtils.dateToString(getLastModifiedDate());
 	}
 
 	public void setDescription(String description) {
@@ -611,7 +611,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * @return formatted duration string
 	 */
 	public String getDurationStr() {
-		return DateUtil.ms2Time(this.duration);
+		return DateUtils.ms2Time(this.duration);
 	}
 
 
@@ -623,7 +623,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getRuntimeStr() {
 		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
 				- this.startTime.getTime();
-		return DateUtil.ms2Time(ms);
+		return DateUtils.ms2Time(ms);
 	}
 
 	@Override

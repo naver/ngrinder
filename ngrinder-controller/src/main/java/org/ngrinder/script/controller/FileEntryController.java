@@ -13,29 +13,14 @@
  */
 package org.ngrinder.script.controller;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
+import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -62,8 +47,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * FileEntry manipulation controller.
@@ -73,7 +62,7 @@ import com.google.common.collect.Collections2;
  */
 @Controller
 @RequestMapping("/script")
-public class FileEntryController extends NGrinderBaseController {
+public class FileEntryController extends BaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryController.class);
 
@@ -86,6 +75,8 @@ public class FileEntryController extends NGrinderBaseController {
 	@Autowired
 	private ScriptHandlerFactory handlerFactory;
 
+	@Autowired
+	HttpContainerContext httpContainerContext;
 
 	/**
 	 * Get the list of file entries for the given user.
@@ -96,8 +87,8 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/list
 	 */
 	@RequestMapping({"/list/**", ""})
-	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
-		List<FileEntry> files = fileEntryService.getFileEntries(user, path, null);
+	public String getAll(User user, @RemainedPath String path, ModelMap model) { // "fileName"
+		List<FileEntry> files = fileEntryService.getAll(user, path, null);
 		Collections.sort(files, new Comparator<FileEntry>() {
 			@Override
 			public int compare(FileEntry o1, FileEntry o2) {
@@ -127,7 +118,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return generated HTML
 	 */
 	public String getSvnUrlBreadcrumbs(User user, String path) {
-		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
+		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		String[] parts = StringUtils.split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
 		StringBuilder returnHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
@@ -137,19 +128,18 @@ public class FileEntryController extends NGrinderBaseController {
 			accumulatedPart.append("/").append(each);
 			returnHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
 		}
-		String result = returnHtml.toString();
-		return result;
+		return returnHtml.toString();
 	}
+
 
 	/**
 	 * Get the script path BreadCrumbs HTML string.
 	 *
-	 * @param user user
 	 * @param path path
 	 * @return generated HTML
 	 */
-	public String getScriptPathBreadcrumbs(User user, String path) {
-		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
+	public String getScriptPathBreadcrumbs(String path) {
+		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		String[] parts = StringUtils.split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
 		StringBuilder returnHtml = new StringBuilder();
@@ -175,14 +165,10 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param model      model.
 	 * @return redirect:/script/list/${path}
 	 */
-	@RequestMapping(value = "/create/**", params = "type=folder", method = RequestMethod.POST)
+	@RequestMapping(value = "/new/**", params = "type=folder", method = RequestMethod.POST)
 	public String addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName,
 	                        ModelMap model) { // "fileName"
-		try {
-			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
-		} catch (Exception e) {
-			return "error/errors";
-		}
+		fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
 		model.clear();
 		return "redirect:/script/list/" + path;
 	}
@@ -200,7 +186,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param model                 model.
 	 * @return script/scriptEditor"
 	 */
-	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
+	@RequestMapping(value = "/new/**", params = "type=script", method = RequestMethod.POST)
 	public String createForm(User user, @RemainedPath String path,
 	                         @RequestParam(value = "testUrl", required = false) String testUrl,
 	                         @RequestParam("fileName") String fileName,
@@ -232,13 +218,13 @@ public class FileEntryController extends NGrinderBaseController {
 		} else {
 			String fullPath = PathUtils.join(path, fileName);
 			if (fileEntryService.hasFileEntry(user, fullPath)) {
-				model.addAttribute("file", fileEntryService.getFileEntry(user, fullPath));
+				model.addAttribute("file", fileEntryService.getOne(user, fullPath));
 			} else {
 				model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl,
 						scriptHandler, createLibAndResources));
 			}
 		}
-		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, PathUtils.join(path, fileName)));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(PathUtils.join(path, fileName)));
 		model.addAttribute("scriptHandler", scriptHandler);
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		return "script/editor";
@@ -254,9 +240,9 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptEditor
 	 */
 	@RequestMapping("/detail/**")
-	public String getDetail(User user, @RemainedPath String path,
-	                        @RequestParam(value = "r", required = false) Long revision, ModelMap model) {
-		FileEntry script = fileEntryService.getFileEntry(user, path, revision);
+	public String getOne(User user, @RemainedPath String path,
+	                     @RequestParam(value = "r", required = false) Long revision, ModelMap model) {
+		FileEntry script = fileEntryService.getOne(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
 			model.clear();
@@ -267,7 +253,7 @@ public class FileEntryController extends NGrinderBaseController {
 		model.addAttribute("curRevision", script.getRevision());
 		model.addAttribute("scriptHandler", fileEntryService.getScriptHandler(script));
 		model.addAttribute("ownerId", user.getUserId());
-		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, path));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(path));
 		return "script/editor";
 	}
 
@@ -280,7 +266,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/download/**")
 	public void download(User user, @RemainedPath String path, HttpServletResponse response) {
-		FileEntry fileEntry = fileEntryService.getFileEntry(user, path);
+		FileEntry fileEntry = fileEntryService.getOne(user, path);
 		if (fileEntry == null) {
 			LOG.error("{} requested to download not existing file entity {}", user.getUserId(), path);
 			return;
@@ -323,10 +309,10 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/list
 	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
-	                               ModelMap model) {
+	public String search(User user, @RequestParam(required = true, value = "query") final String query,
+	                     ModelMap model) {
 		final String trimmedQuery = StringUtils.trimToEmpty(query);
-		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
+		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAll(user),
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(FileEntry input) {
@@ -343,16 +329,15 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Save a fileEntry and return to the the path.
 	 *
 	 * @param user                 current user
-	 * @param path                 path to which this will forward.
 	 * @param fileEntry            file to be saved
 	 * @param targetHosts          target host parameter
-	 * @param createLibAndResource true if lib and resources should be created as well.
 	 * @param validated            validated the script or not, 1 is validated, 0 is not.
+	 * @param createLibAndResource true if lib and resources should be created as well.
 	 * @param model                model
 	 * @return script/list
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String save(User user, @RemainedPath String path, FileEntry fileEntry,
+	public String save(User user, FileEntry fileEntry,
 	                   @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
 	                   @RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
@@ -409,27 +394,16 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param user        user
 	 * @param path        base path
 	 * @param filesString file list delimited by ","
-	 * @param model       model
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
 	@ResponseBody
-	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString,
-	                     ModelMap model) {
+	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString) {
 		String[] files = filesString.split(",");
 		fileEntryService.delete(user, path, files);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1);
 		rtnMap.put(JSON_SUCCESS, true);
 		return toJson(rtnMap);
-	}
-
-	/**
-	 * Only for unit test.
-	 *
-	 * @param fileEntryService fileEntryService
-	 */
-	void setFileEntryService(FileEntryService fileEntryService) {
-		this.fileEntryService = fileEntryService;
 	}
 
 	/**
@@ -466,7 +440,7 @@ public class FileEntryController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/**", params = "action=view", method = RequestMethod.GET)
 	public HttpEntity<String> viewOne(User user, @RemainedPath String path) {
-		FileEntry fileEntry = fileEntryService.getFileEntry(user, path, (long) -1L);
+		FileEntry fileEntry = fileEntryService.getOne(user, path, -1L);
 		return toJsonHttpEntity(checkNotNull(fileEntry
 				, "%s file is not viewable", path));
 	}
@@ -475,13 +449,13 @@ public class FileEntryController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping(value = {"/api/**", "/api/", "/api"}, params = "action=all", method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user) {
-		return toJsonHttpEntity(fileEntryService.getAllFileEntries(user));
+		return toJsonHttpEntity(fileEntryService.getAll(user));
 	}
 
 	@RestAPI
 	@RequestMapping(value = {"/api/**", "/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
-		return toJsonHttpEntity(fileEntryService.getFileEntries(user, StringUtils.trimToEmpty(path), -1L));
+		return toJsonHttpEntity(fileEntryService.getAll(user, StringUtils.trimToEmpty(path), -1L));
 	}
 
 
@@ -504,8 +478,8 @@ public class FileEntryController extends NGrinderBaseController {
 	@RequestMapping(value = "/api/validate", method = RequestMethod.POST)
 	@RestAPI
 	public HttpEntity<String> validate(User user, FileEntry fileEntry,
-	                       @RequestParam(value = "hostString", required = false) String hostString) {
+	                                   @RequestParam(value = "hostString", required = false) String hostString) {
 		fileEntry.setCreatedUser(user);
-		return toJsonHttpEntity(scriptValidationService.validateScript(user, fileEntry, false, hostString));
+		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
 	}
 }

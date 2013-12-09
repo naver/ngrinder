@@ -13,20 +13,11 @@
  */
 package org.ngrinder.region.service;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
@@ -38,12 +29,15 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
+import java.util.Map;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Region service class. This class responsible to keep the status of available regions.
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 3.1
@@ -63,11 +57,10 @@ public class RegionService {
 
 	/**
 	 * Set current region into cache, using the IP as key and region name as value.
-	 * 
 	 */
 	@PostConstruct
 	public void initRegion() {
-		if (config.isCluster()) {
+		if (config.isClustered()) {
 			cache = cacheManager.getCache("regions");
 			verifyDuplicateRegion();
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
@@ -82,17 +75,17 @@ public class RegionService {
 
 	/**
 	 * Verify duplicate region when starting with cluster mode.
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	private void verifyDuplicateRegion() {
-		Map<String, RegionInfo> regions = getRegions();
-		String localRegion = getCurrentRegion();
+		Map<String, RegionInfo> regions = getAll();
+		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
 		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentPublicIP())) {
 			throw processException("The region name, " + localRegion
-							+ ", is already used by other controller " + regionInfo.getIp()
-							+ ". Please set the different region name in this controller.");
+					+ ", is already used by other controller " + regionInfo.getIp()
+					+ ". Please set the different region name in this controller.");
 		}
 	}
 
@@ -105,47 +98,38 @@ public class RegionService {
 	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
 			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
-			cache.put(getCurrentRegion(), new RegionInfo(config.getCurrentPublicIP(), newHashSet));
+			cache.put(getCurrent(), new RegionInfo(config.getCurrentPublicIP(), newHashSet));
 		}
 	}
 
-	/**
-	 * Destroy method. this method is responsible to delete our current region from dist cache.
-	 */
-	@PreDestroy
-	public void destroy() {
-		if (config.isCluster()) {
-			@SuppressWarnings("deprecation")
-			File file = new File(config.getHome().getControllerShareDirectory(), config.getRegion());
-			FileUtils.deleteQuietly(file);
-		}
-	}
 
 	/**
 	 * Get current region. This method returns where this service is running.
-	 * 
+	 *
 	 * @return current region.
 	 */
-	public String getCurrentRegion() {
+	public String getCurrent() {
 		return config.getRegion();
 	}
 
 	/**
 	 * Get region by region name
+	 *
 	 * @param regionName
 	 * @return region info
 	 */
-	public RegionInfo getRegion(String regionName) {
-		return (RegionInfo)cache.get(regionName);
+	public RegionInfo getOne(String regionName) {
+		return (RegionInfo) cache.get(regionName);
 	}
+
 	/**
 	 * Get region list of all clustered controller.
-	 * 
+	 *
 	 * @return region list
 	 */
-	public Map<String, RegionInfo> getRegions() {
+	public Map<String, RegionInfo> getAll() {
 		Map<String, RegionInfo> regions = Maps.newHashMap();
-		if (config.isCluster()) {
+		if (config.isClustered()) {
 			for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
 				ValueWrapper valueWrapper = cache.get(eachKey);
 				if (valueWrapper != null && valueWrapper.get() != null) {

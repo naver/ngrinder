@@ -20,7 +20,7 @@ import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.util.AbstractGrinderClassPathProcessor;
 import net.grinder.util.Directory;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -36,34 +36,30 @@ import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Script validation service.
- * 
+ *
  * It works on local instead of remote agent. The reason this class is located
  * in ngrinder-core is... some The Grinder core class doesn't have public
  * access..
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
 	public static final int DEFAULT_TIMEOUT = 100;
+
 	/**
 	 * Validate script with 100 sec timeout.
-	 * 
-	 * @param base
-	 *            working directory
-	 * @param script
-	 *            script file
-	 * @param eventSynchronisation
-	 *            condition for event synchronization
-	 * @param securityEnabled
-	 *            if security is set or not.
-	 * @param hostString
-	 *            hostString
+	 *
+	 * @param base                 working directory
+	 * @param script               script file
+	 * @param eventSynchronisation condition for event synchronization
+	 * @param securityEnabled      if security is set or not.
+	 * @param hostString           hostString
 	 * @return File which stores validation result.
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-					String hostString) {
+	                       String hostString) {
 		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, getDefaultTimeout());
 	}
 
@@ -73,22 +69,18 @@ public class LocalScriptTestDriveService {
 
 	/**
 	 * Validate script.
-	 * 
-	 * @param base
-	 *            working directory
-	 * @param script
-	 *            script file
-	 * @param eventSynchronisation
-	 *            condition for event synchronization
-	 * @param securityEnabled
-	 *            if security is set or not.
-	 * @param hostString
-	 *            hostString
-	 * @param timeout timeout in sec. 
+	 *
+	 * @param base                 working directory
+	 * @param script               script file
+	 * @param eventSynchronisation condition for event synchronization
+	 * @param securityEnabled      if security is set or not.
+	 * @param hostString           hostString
+	 * @param timeout              timeout in sec.
 	 * @return File which stores validation result.
 	 */
+	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-			String hostString, final int timeout) {
+	                       String hostString, final int timeout) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -103,7 +95,7 @@ public class LocalScriptTestDriveService {
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
-					NetworkUtil.getLocalHostName());
+					NetworkUtils.getLocalHostName());
 			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
@@ -188,18 +180,19 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, errorValidationResult);
 		}
 		if (stopByTooMuchExecution) {
-			appendingMessageOn(file, "Validation should be performed within " + timeout  + " sec. Stop it by force");
+			appendingMessageOn(file, "Validation should be performed within " + timeout + " sec. Stop it by force");
 		}
 		return file;
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void deleteLogs(File base) {
 		base.listFiles(new FileFilter() {
 			@Override
-			public boolean accept(File pathname) {
-				String extension = FilenameUtils.getExtension(pathname.getName());
+			public boolean accept(File pathName) {
+				String extension = FilenameUtils.getExtension(pathName.getName());
 				if (extension.startsWith("log")) {
-					pathname.delete();
+					pathName.delete();
 				}
 				return true;
 			}
@@ -210,7 +203,7 @@ public class LocalScriptTestDriveService {
 		FileWriter fileWriter = null;
 		try {
 			fileWriter = new FileWriter(file, true);
-			fileWriter.append("\n\n" + msg);
+			fileWriter.append("\n\n").append(msg);
 		} catch (IOException e) {
 			LOGGER.error("Error during appending validation messages", e);
 		} finally {

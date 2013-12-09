@@ -15,7 +15,7 @@ package org.ngrinder.home.model;
 
 import java.util.Date;
 
-import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.DateUtils;
 
 /**
  * Panel entry which will be shown in main page.
@@ -63,7 +63,7 @@ public class PanelEntry implements Comparable<PanelEntry> {
 	}
 
 	public boolean isNew() {
-		return DateUtil.addDay(lastUpdatedDate, NEW_LIMIT).compareTo(new Date()) > 0;
+		return DateUtils.addDay(lastUpdatedDate, NEW_LIMIT).compareTo(new Date()) > 0;
 	}
 
 	@Override

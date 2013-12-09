@@ -10,6 +10,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
  * @author junoyoon
  * @since 3.2.3
  */
+@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public abstract class ExceptionUtils {
 	/**
 	 * Check if the exception is {@link NGrinderRuntimeException}. If so, throw it. If

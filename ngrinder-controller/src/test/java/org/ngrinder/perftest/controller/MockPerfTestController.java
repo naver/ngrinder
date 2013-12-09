@@ -13,23 +13,24 @@
  */
 package org.ngrinder.perftest.controller;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.infra.annotation.TestOnlyController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@TestOnlyController
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@Profile("unit-test")
+@Component
 public class MockPerfTestController extends PerfTestController {
 
 	@Autowired

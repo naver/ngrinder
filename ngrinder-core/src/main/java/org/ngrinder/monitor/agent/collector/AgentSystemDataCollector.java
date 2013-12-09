@@ -13,18 +13,8 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
-import org.hyperic.sigar.Cpu;
-import org.hyperic.sigar.Mem;
-import org.hyperic.sigar.NetInterfaceStat;
-import org.hyperic.sigar.OperatingSystem;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
+import org.hyperic.sigar.*;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
@@ -32,6 +22,11 @@ import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * 

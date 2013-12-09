@@ -13,15 +13,9 @@
  */
 package org.ngrinder.user.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.ui.ModelMap;
+
+import java.util.Date;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Class description.
@@ -52,26 +51,26 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = new PageRequest(1, 10);
 
 		ModelMap model = new ModelMap();
-		userController.getUsers(model, null, page, null);
+		userController.getAll(model, null, page, null);
 
 		model.clear();
-		userController.getUsers(model, Role.ADMIN, page, null);
+		userController.getAll(model, Role.ADMIN, page, null);
 
 		model.clear();
-		userController.getUsers(model, null, page, "user");
+		userController.getAll(model, null, page, "user");
 
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#getUserDetail(org.ngrinder.model.User,
+	 * {@link org.ngrinder.user.controller.UserController#getOne(org.ngrinder.model.User,
 	 * org.springframework.ui.ModelMap, java.lang.String)}
 	 * .
 	 */
 	@Test
 	public void testGetUserDetail() {
 		ModelMap model = new ModelMap();
-		userController.getUserDetail(getTestUser(), model, getTestUser().getUserId());
+		userController.getOne(getTestUser(), model, getTestUser().getUserId());
 		User user = (User) model.get("user");
 		assertThat(user.getId(), is(getTestUser().getId()));
 	}
@@ -88,21 +87,21 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
-		userController.saveUser(currUser, model, currUser);
-		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
+		userController.save(currUser, currUser, model);
+		userController.getOne(getTestUser(), model, currUser.getUserId());
 		User user = (User) model.get("user");
 		assertThat(user.getUserName(), is("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 
 		User admin = getAdminUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
-		userController.saveUser(admin, model, temp);
+		userController.save(admin, temp, model);
 		temp = new User("temp2", "temp2", "temp2", "temp@nhn.com", Role.USER);
-		userController.saveUser(admin, model, temp);
+		userController.save(admin, temp, model);
 		model.clear();
 		currUser.setFollowersStr("temp1, temp2");
-		userController.saveUser(currUser, model, currUser);
-		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
+		userController.save(currUser, currUser, model);
+		userController.getOne(getTestUser(), model, currUser.getUserId());
 		user = (User) model.get("user");
 		assertThat(user.getFollowers().size(), is(2));
 		assertThat(user.getFollowers().get(0).getUserId(), is("temp1"));
@@ -120,9 +119,9 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
-		userController.saveUser(currUser, model, updatedUser);
+		userController.save(currUser, updatedUser, model);
 
-		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
+		userController.getOne(getTestUser(), model, currUser.getUserId());
 		User user = (User) model.get("user");
 		assertThat(user.getUserName(), is(currUser.getUserName()));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
@@ -138,12 +137,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
 		ModelMap model = new ModelMap();
-		userController.saveUser(getAdminUser(), model, newUser);
+		userController.save(getAdminUser(), newUser, model);
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#deleteUser(org.springframework.ui.ModelMap, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#delete(org.springframework.ui.ModelMap, java.lang.String)}
 	 * .
 	 */
 	@SuppressWarnings("unchecked")
@@ -158,48 +157,46 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = new PageRequest(0, 10);
 
 		// search
-		userController.getUsers(model, null, page, "NewUserName");
+		userController.getAll(model, null, page, "NewUserName");
 		PageImpl userList = (PageImpl<User>) model.get("users");
 		assertThat(userList.getContent().size(), is(3));
 
 		// test to delete one
 		model.clear();
-		userController.deleteUser(model, "NewUserId1");
+		userController.delete(model, "NewUserId1");
 		model.clear();
-		userController.getUsers(model, Role.USER, page, "NewUserName");
+		userController.getAll(model, Role.USER, page, "NewUserName");
 		userList = (PageImpl<User>) model.get("users");
 		assertThat(userList.getContent().size(), is(2));
 
 		// test to delete more
 		model.clear();
-		userController.deleteUser(model, "NewUserId2,NewUserId3");
+		userController.delete(model, "NewUserId2,NewUserId3");
 		model.clear();
-		userController.getUsers(model, Role.USER, page, "NewUserName");
+		userController.getAll(model, Role.USER, page, "NewUserName");
 		userList = (PageImpl<User>) model.get("users");
 		assertThat(userList.getContent().size(), is(0));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#checkDuplication(org.springframework.ui.ModelMap,
-	 * java.lang.String)}
+	 * {@link UserController#checkDuplication(String)}
 	 * .
 	 */
 	@Test
 	public void testCheckDuplicatedID() {
-		NGrinderBaseController ngrinderBaseController = new NGrinderBaseController();
-		ModelMap model = new ModelMap();
-		HttpEntity<String> rtnStr = userController.checkDuplication(model, "not-exist");
+		BaseController ngrinderBaseController = new BaseController();
+		HttpEntity<String> rtnStr = userController.checkDuplication("not-exist");
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
 
-		rtnStr = userController.checkDuplication(model, getTestUser().getUserId());
+		rtnStr = userController.checkDuplication(getTestUser().getUserId());
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnError()));
 	}
 
 	@Test
 	public void testUserProfile() {
 		ModelMap model = new ModelMap();
-		String viewName = userController.userProfile(getTestUser(), model);
+		String viewName = userController.getOne(getTestUser(), model);
 		assertThat(viewName, is("user/info"));
 	}
 

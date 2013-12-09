@@ -13,13 +13,14 @@
  */
 package org.ngrinder.script.repository;
 
+import org.ngrinder.model.User;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 
-import org.ngrinder.infra.annotation.TestOnlyComponent;
-import org.ngrinder.model.User;
-import org.ngrinder.script.repository.FileEntryRepository;
-
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockFileEntityRepository extends FileEntryRepository {
 
 	private File userRepoDir;

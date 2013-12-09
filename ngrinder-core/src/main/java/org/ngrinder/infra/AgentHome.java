@@ -86,11 +86,16 @@ public class AgentHome {
 	 * @return agent native directory
 	 */
 	public File getNativeDirectory() {
-		File nativeFile = getFile("native");
-		if (!nativeFile.exists()) {
-			nativeFile.mkdir();
+		return mkDir(getFile("native"));
+	}
+
+	public File mkDir(File file) {
+		if (!file.exists()) {
+			if (file.mkdirs()) {
+				LOGGER.info("{} is created.", file.getPath());
+			}
 		}
-		return nativeFile;
+		return file;
 	}
 
 	/**
@@ -99,10 +104,7 @@ public class AgentHome {
 	 * @return temp directory
 	 */
 	public File getTempDirectory() {
-		File tempFile = getFile("temp");
-		if (!tempFile.exists())
-			tempFile.mkdir();
-		return tempFile;
+		return mkDir(getFile("temp"));
 	}
 
 	/**
@@ -133,25 +135,6 @@ public class AgentHome {
 			FileUtils.write(targetFile, content);
 		} catch (IOException e) {
 			throw processException("Failed to write a sourceFile to " + target, e);
-		}
-	}
-
-	/**
-	 * Copy the {@link InputStream} to path in the target.
-	 *
-	 * @param io     {@link InputStream}
-	 * @param target target path. only sourceFile name will be used.
-	 * @deprecated 3.3
-	 */
-	public void copyFileTo(InputStream io, File target) {
-		// Copy missing files
-		try {
-			target = new File(directory, target.getName());
-			if (!(target.exists())) {
-				FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
-			}
-		} catch (IOException e) {
-			throw processException("Failed to write a sourceFile to " + target.getAbsolutePath(), e);
 		}
 	}
 

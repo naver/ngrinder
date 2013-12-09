@@ -18,7 +18,7 @@ import org.ngrinder.model.User;
 
 /**
  * Interface of ScriptValidationService. This interface can be injected in the plugin
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.3
  */
@@ -26,32 +26,17 @@ public interface IScriptValidationService {
 
 	/**
 	 * Validate Script.
-	 * 
+	 *
 	 * It's quite complex.. to validate script, we need to write jar files and script. Furthermore, to
 	 * make a small log.. We have to copy optimized logback_worker.xml
-	 * 
+	 *
 	 * Finally this method returns the path of validating result file.
-	 * 
-	 * @param user
-	 *            user
-	 * @param scriptEntry
-	 *            scriptEntity.. at least path should be provided.
-	 * @param useScriptInSVN
-	 *            true if the script content in SVN is used. otherwise, false
-	 * @param hostString
-	 *            HOSTNAME:IP,... pairs for host manipulation
+	 *
+	 * @param user           user
+	 * @param scriptEntry    scriptEntity.. at least path should be provided.
+	 * @param useScriptInSVN true if the script content in SVN is used. otherwise, false
+	 * @param hostString     HOSTNAME:IP,... pairs for host manipulation
 	 * @return validation result.
 	 */
-	public abstract String validateScript(User user, IFileEntry scriptEntry, boolean useScriptInSVN, String hostString);
-
-	/**
-	 * Run jython parser to find out the syntax error..
-	 * 
-	 * @param script
-	 *            script
-	 * @return script syntax error message. null otherwise.
-	 * @deprecated
-	 */
-	public abstract String checkSyntaxErrors(String script);
-
+	public abstract String validate(User user, IFileEntry scriptEntry, boolean useScriptInSVN, String hostString);
 }

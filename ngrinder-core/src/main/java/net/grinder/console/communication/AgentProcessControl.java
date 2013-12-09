@@ -24,45 +24,45 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
  * AgentProcessControl interface.
- * 
+ *
  * This class is core of handling agent action.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
- * 
+ *
  */
 public interface AgentProcessControl {
 
 	/**
 	 * Signal the worker processes to start.
-	 * 
+	 *
 	 * @param agents
 	 *            agent list to be started.
 	 * @param properties
 	 *            Properties that override the agent's local properties.
-	 * 
+	 *
 	 */
 	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties);
 
 	/**
 	 * Stop agent.
-	 * 
+	 *
 	 * @param agentIdentity
 	 *            agent to be stopped
-	 * 
+	 *
 	 */
 	public void stopAgent(AgentIdentity agentIdentity);
 
 	/**
 	 * Get the number of agents.
-	 * 
+	 *
 	 * @return avalable agent's count
 	 */
 	public int getNumberOfLiveAgents();
 
 	/**
 	 * Get the agents for given state and count.
-	 * 
+	 *
 	 * @param state
 	 *            current state of agent
 	 * @param count
@@ -73,7 +73,7 @@ public interface AgentProcessControl {
 
 	/**
 	 * Get all available agents.
-	 * 
+	 *
 	 * @return agent list
 	 */
 	public Set<AgentIdentity> getAllAgents();
@@ -90,7 +90,7 @@ public interface AgentProcessControl {
 
 	/**
 	 * Get {@link JavaDataModel} for given {@link AgentIdentity}.
-	 * 
+	 *
 	 * @param agentIdentity
 	 *            agent identity
 	 * @return {@link JavaDataModel} instance if available. null otherwise
@@ -99,7 +99,7 @@ public interface AgentProcessControl {
 
 	/**
 	 * Get agent controller state for the given agent identity.
-	 * 
+	 *
 	 * @param agentIdentity
 	 *            agent identity
 	 * @return {@link AgentControllerState} member
@@ -108,7 +108,7 @@ public interface AgentProcessControl {
 
 	/**
 	 * Get agent connecting port for the given agent identity.
-	 * 
+	 *
 	 * @param agentIdentity
 	 *            agent identity
 	 * @return {@link AgentControllerState} member
@@ -117,7 +117,7 @@ public interface AgentProcessControl {
 
 	/**
 	 * Add agent status update listener.
-	 * 
+	 *
 	 * @param listener
 	 *            listener.
 	 */

@@ -28,8 +28,8 @@ import net.grinder.console.model.SampleModelImplementationEx;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.CompressionUtil;
+import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.controller.PerfTestController;
@@ -37,9 +37,8 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.ui.ModelMap;
 
-public class PerfTestCancellationTest extends AbstractAgentReadyTest implements NGrinderConstants {
+public class PerfTestCancellationTest extends AbstractAgentReadyTest implements Constants {
 
 	@Autowired
 	private MockPerfTestRunnableForCancellation perfTestRunnable;
@@ -62,7 +61,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 
 		testUserRoot.mkdirs();
-		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
 		FileEntry fileEntry = new FileEntry();
@@ -102,10 +101,11 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 				SampleModelImplementationEx sampleModelMock = mock(SampleModelImplementationEx.class);
 				singleConsole.setSampleModel(sampleModelMock);
 				assertThat(singleConsole, notNullValue());
-				perfTestController.stopPerfTests(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
+				perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
 			}
 		}, 1);
-		perfTestRunnable.testDrive();
+		perfTestRunnable.start();
+
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		// Then
 		assertThat(allPerfTest.get(0).getStatus(), is(Status.CANCELED));
@@ -117,10 +117,10 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 		// Given the testing perftest
 		perfTest = createPerfTest("test1", Status.TESTING, null);
 		// When the stop is requested
-		perfTestController.stopPerfTests(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
-		perfTestRunnable.finishTest();
+		perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
+		perfTestRunnable.finishPeriodically();
 		// Then it should be canceled.
-		assertThat(perfTestService.getPerfTest(perfTest.getId()).getStatus(), is(Status.CANCELED));
+		assertThat(perfTestService.getOne(perfTest.getId()).getStatus(), is(Status.CANCELED));
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 
 	}

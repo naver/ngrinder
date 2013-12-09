@@ -19,7 +19,6 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.engine.common.EngineException;
 import net.grinder.util.Directory.DirectoryException;
 import net.grinder.util.thread.Condition;
@@ -30,7 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.common.util.CompressionUtil;
+import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.init.ClassPathInit;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
@@ -71,7 +70,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	public void before() throws IOException {
 		repoDir = new File(System.getProperty("java.io.tmpdir"), "repo");
 		FileUtils.deleteQuietly(repoDir);
-		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), repoDir);
+		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), repoDir);
 		repo.setUserRepository(new File(repoDir, getTestUser().getUserId()));
 	}
 
@@ -95,7 +94,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script.py");
 		fileEntry.setContent(script);
-		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false, "");
+		String validateScript = scriptValidationService.validate(getTestUser(), fileEntry, false, "");
 	}
 
 	@Test
@@ -104,7 +103,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script2.py");
 		fileEntry.setContent(script);
-		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false, "");
+		String validateScript = scriptValidationService.validate(getTestUser(), fileEntry, false, "");
 		assertThat(validateScript, not(containsString("Validation should be performed within")));
 		assertThat(validateScript.length(), lessThan(10000));
 	}
@@ -117,7 +116,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		fileEntry.setContent(script);
 		fileEntryService.save(getTestUser(), fileEntry);
 		fileEntry.setContent("");
-		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, true, "");
+		String validateScript = scriptValidationService.validate(getTestUser(), fileEntry, true, "");
 		assertThat(validateScript, not(containsString("Validation should be performed")));
 		assertThat(validateScript.length(), lessThan(10000));
 	}

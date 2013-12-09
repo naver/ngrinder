@@ -14,7 +14,7 @@
 package org.ngrinder.perftest.service.monitor;
 
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.controller.domain.MonitorCollectionInfoDomain;
 import org.ngrinder.monitor.share.domain.MBeanClient;
@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Used to get monitor data directly from MBeanClient and save. For every
@@ -83,9 +83,9 @@ public class MonitorClientService {
 			mbeanClient = new MBeanClient(ip, port);
 			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
 			ObjectName systemName = new ObjectName(objNameStr);
-			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
+			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo");
 
-			fileWriter = new FileWriter(new File(reportPath, NGrinderConstants.MONITOR_FILE_PREFIX + ip + ".data"),
+			fileWriter = new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + ".data"),
 					false);
 			bw = new BufferedWriter(fileWriter);
 			// write header info
@@ -110,7 +110,7 @@ public class MonitorClientService {
 			mbeanClient = new MBeanClient(ip, port);
 			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
 			ObjectName systemName = new ObjectName(objNameStr);
-			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
+			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo");
 		} catch (Exception e) {
 			LOGGER.error("Init Error while {} and {}.", new Object[]{ip, port}, e);
 		}
@@ -204,8 +204,12 @@ public class MonitorClientService {
 	 */
 	public void record(boolean empty) {
 		ValueWrapper valueWrapper = cache.get(ip);
-		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
-				: (SystemInfo) cast(valueWrapper.get());
+		SystemInfo systemInfo;
+		if (valueWrapper == null) {
+			systemInfo = new SystemInfo();
+		} else {
+			systemInfo = cast(valueWrapper.get());
+		}
 		try {
 			if (empty) {
 				bw.write(systemInfo.toEmptyRecordString());

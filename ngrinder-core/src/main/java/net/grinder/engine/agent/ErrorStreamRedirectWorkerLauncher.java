@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 
 /**
  * WorkerLauncher which redirect stdout/stderr stream to user.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -54,42 +54,32 @@ public class ErrorStreamRedirectWorkerLauncher {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param numberOfWorkers
-	 *            numbderOfWorks
-	 * @param workerFactory
-	 *            worker factory
-	 * @param notifyOnFinish
-	 *            synchronization condition
-	 * @param logger
-	 *            logger
-	 * @param errStream
-	 *            redirect stream
+	 *
+	 * @param numberOfWorkers numbderOfWorks
+	 * @param workerFactory   worker factory
+	 * @param notifyOnFinish  synchronization condition
+	 * @param logger          logger
+	 * @param errStream       redirect stream
 	 */
 	public ErrorStreamRedirectWorkerLauncher(int numberOfWorkers, WorkerFactory workerFactory,
-					Condition notifyOnFinish, Logger logger, OutputStream errStream) {
+	                                         Condition notifyOnFinish, Logger logger, OutputStream errStream) {
 
 		this(ExecutorFactory.createThreadPool("WorkerLauncher", 1), numberOfWorkers, workerFactory, notifyOnFinish,
-						logger);
+				logger);
 		this.errStream = errStream;
 	}
 
 	/**
 	 * Package scope for unit tests.
-	 * 
-	 * @param executor
-	 *            executors
-	 * @param numberOfWorkers
-	 *            numbderOfWorks
-	 * @param workerFactory
-	 *            worker factory
-	 * @param notifyOnFinish
-	 *            synchronization condition
-	 * @param logger
-	 *            logger
+	 *
+	 * @param executor        executors
+	 * @param numberOfWorkers numbderOfWorks
+	 * @param workerFactory   worker factory
+	 * @param notifyOnFinish  synchronization condition
+	 * @param logger          logger
 	 */
 	ErrorStreamRedirectWorkerLauncher(ExecutorService executor, int numberOfWorkers, WorkerFactory workerFactory,
-					Condition notifyOnFinish, Logger logger) {
+	                                  Condition notifyOnFinish, Logger logger) {
 		m_executor = executor;
 		m_workerFactory = workerFactory;
 		m_notifyOnFinish = notifyOnFinish;
@@ -100,9 +90,8 @@ public class ErrorStreamRedirectWorkerLauncher {
 
 	/**
 	 * Start all workers.
-	 * 
-	 * @throws EngineException
-	 *             engine exception
+	 *
+	 * @throws EngineException engine exception
 	 */
 	public void startAllWorkers() throws EngineException {
 		startSomeWorkers(m_workers.length - m_nextWorkerIndex);
@@ -110,12 +99,10 @@ public class ErrorStreamRedirectWorkerLauncher {
 
 	/**
 	 * Start some of all workers.
-	 * 
-	 * @param numberOfWorkers
-	 *            worker count
+	 *
+	 * @param numberOfWorkers worker count
 	 * @return true if all workers is not available.
-	 * @throws EngineException
-	 *             engine exception
+	 * @throws EngineException engine exception
 	 */
 	public boolean startSomeWorkers(int numberOfWorkers) throws EngineException {
 
@@ -184,7 +171,7 @@ public class ErrorStreamRedirectWorkerLauncher {
 
 	/**
 	 * Check if all workers are finished.
-	 * 
+	 *
 	 * @return true if all finished
 	 */
 	public boolean allFinished() {
@@ -193,8 +180,8 @@ public class ErrorStreamRedirectWorkerLauncher {
 		}
 
 		synchronized (m_workers) {
-			for (int i = 0; i < m_workers.length; i++) {
-				if (m_workers[i] != null) {
+			for (Worker m_worker : m_workers) {
+				if (m_worker != null) {
 					return false;
 				}
 			}
@@ -224,9 +211,9 @@ public class ErrorStreamRedirectWorkerLauncher {
 		dontStartAnyMore();
 
 		synchronized (m_workers) {
-			for (int i = 0; i < m_workers.length; i++) {
-				if (m_workers[i] != null) {
-					m_workers[i].destroy();
+			for (Worker m_worker : m_workers) {
+				if (m_worker != null) {
+					m_worker.destroy();
 				}
 			}
 		}

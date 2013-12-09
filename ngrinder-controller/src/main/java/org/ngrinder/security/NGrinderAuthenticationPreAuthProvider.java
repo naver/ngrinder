@@ -94,14 +94,14 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setCreatedDate(new Date());
-		User findOneByUserId = userService.getUserById(user.getUserId());
+		User findOneByUserId = userService.getOne(user.getUserId());
 		if (findOneByUserId != null) {
 			user = findOneByUserId.merge(user);
 		}
 		if (user.getRole() == null) {
 			user.setRole(Role.USER);
 		}
-		User savedUser = userService.saveUser(user);
+		User savedUser = userService.save(user);
 		securedUser.setUser(savedUser);
 	}
 

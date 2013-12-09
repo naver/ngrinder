@@ -34,7 +34,7 @@ public final class AgentControllerServerListener {
 	 *
 	 * @see #received
 	 */
-	public static final int START = 1 << 0;
+	public static final int START = 1;
 
 	/**
 	 * Constant that represents a a reset message.

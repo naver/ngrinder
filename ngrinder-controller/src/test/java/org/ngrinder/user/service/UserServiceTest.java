@@ -47,7 +47,7 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user.setPassword("www");
 		user.setEmail("www@test.com");
 		user.setRole(Role.SUPER_USER);
-		user = userService.saveUser(user);
+		user = userService.save(user);
 		assertThat(user.getRole().hasPermission(Permission.GET_ALL_TESTS), is(true));
 		assertThat(user.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER), is(true));
 		assertThat(user.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER), is(true));
@@ -66,11 +66,11 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user2.setPassword("www222");
 		user2.setEmail("www@test.com");
 		user2.setRole(Role.ADMIN);
-		user2 = userService.saveUser(user2);
-		User userById = userService.getUserById("hello");
+		user2 = userService.save(user2);
+		User userById = userService.getOne("hello");
 		assertThat(userById.getId(), is(user.getId()));
-		userService.saveUser(user2);
-		userById = userService.getUserById("hello");
+		userService.save(user2);
+		userById = userService.getOne("hello");
 		assertThat(userById.getRole().hasPermission(Permission.GET_ALL_TESTS), is(true));
 		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OF_OTHER), is(true));
 		assertThat(userById.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OF_OTHER), is(true));
@@ -82,8 +82,8 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 	public void testDeleteUsers() {
 		final User user = createTestUser("testId3");
 		assertThat(user, notNullValue());
-		userService.deleteUser(user.getUserId());
-		assertThat(userService.getUserById(user.getUserId()), nullValue());
+		userService.delete(user.getUserId());
+		assertThat(userService.getOne(user.getUserId()), nullValue());
 	}
 
 	@Autowired
@@ -101,9 +101,9 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		PerfTest perfTest = new PerfTest();
 		perfTest.setTestName("Hello");
 		perfTest.setTagString("Hello,World");
-		perfTest = perfTestService.savePerfTest(user, perfTest);
-		userService.deleteUser(user.getUserId());
-		assertThat(perfTestService.getPerfTest(perfTest.getId()), nullValue());
+		perfTest = perfTestService.save(user, perfTest);
+		userService.delete(user.getUserId());
+		assertThat(perfTestService.getOne(perfTest.getId()), nullValue());
 		assertThat(scriptDirectory.exists(), is(false));
 	}
 
@@ -115,13 +115,13 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user.setPassword("111111");
 		user.setEmail("testIdForNameSearch@test.com");
 		user.setRole(Role.USER);
-		user = userService.saveUser(user);
+		user = userService.save(user);
 		assertThat(user.getUserId(), is("testIdForNameSearch"));
 
-		List<User> userList = userService.getUsersByKeyWord("ForNameSearch");
+		List<User> userList = userService.getAll("ForNameSearch");
 		assertThat(userList.size(), is(1));
 
-		userList = userService.getUsersByKeyWord("ForName");
+		userList = userService.getAll("ForName");
 		assertThat(userList.size(), is(1));
 	}
 }

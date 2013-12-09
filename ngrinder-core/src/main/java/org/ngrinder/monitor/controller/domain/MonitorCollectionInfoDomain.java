@@ -18,7 +18,6 @@ import javax.management.ObjectName;
 import org.ngrinder.monitor.share.domain.MonitorInfo;
 
 /**
- * 
  * Monitor collection info domain.
  *
  * @author Mavlarn
@@ -27,20 +26,17 @@ import org.ngrinder.monitor.share.domain.MonitorInfo;
 public class MonitorCollectionInfoDomain {
 	private ObjectName objectName;
 	private String attrName;
-	@SuppressWarnings("unused")
-	private Class<? extends MonitorInfo> resultClass;
 
 	/**
 	 * Constructor for the collection info.
-	 * @param objectName is the object name related with JMX domain name
-	 * @param attrName	is the attribute name in this domain, used to get concrete monitor data
+	 *
+	 * @param objectName  is the object name related with JMX domain name
+	 * @param attrName    is the attribute name in this domain, used to get concrete monitor data
 	 * @param resultClass is the Class type of that monitor data with that attribute name
 	 */
-	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName,
-			Class<? extends MonitorInfo> resultClass) {
+	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName) {
 		this.objectName = objectName;
 		this.attrName = attrName;
-		this.resultClass = resultClass;
 	}
 
 	public ObjectName getObjectName() {

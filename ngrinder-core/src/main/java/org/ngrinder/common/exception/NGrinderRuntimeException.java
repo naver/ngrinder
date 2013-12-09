@@ -16,7 +16,7 @@ package org.ngrinder.common.exception;
 /**
  * NGrinderRuntimeException. This is for translating a general exception to
  * {@link RuntimeException} .
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -27,9 +27,8 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
+	 *
+	 * @param message message
 	 */
 	public NGrinderRuntimeException(String message) {
 		super(message);
@@ -37,11 +36,9 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 * @param t
-	 *            root cause
+	 *
+	 * @param message message
+	 * @param t       root cause
 	 */
 	public NGrinderRuntimeException(String message, Throwable t) {
 		this(message, t, false);
@@ -49,13 +46,10 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 * @param t
-	 *            root cause
-	 * @param sanitized
-	 *            sanitized
+	 *
+	 * @param message   message
+	 * @param t         root cause
+	 * @param sanitized sanitized
 	 */
 	public NGrinderRuntimeException(String message, Throwable t, boolean sanitized) {
 		super(message, t);
@@ -64,9 +58,8 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param t
-	 *            root cause
+	 *
+	 * @param t root cause
 	 */
 	public NGrinderRuntimeException(Throwable t) {
 		super(t.getMessage(), t);
@@ -74,11 +67,9 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param t
-	 *            root cause
-	 * @param sanitized
-	 *            sanitized
+	 *
+	 * @param t         root cause
+	 * @param sanitized sanitized
 	 */
 	public NGrinderRuntimeException(Throwable t, boolean sanitized) {
 		super(t.getMessage(), t);

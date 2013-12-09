@@ -26,7 +26,7 @@ import org.springframework.stereotype.Repository;
 /**
  * Agent Repository. This is necessary due to lack of agent info in the Grinder.
  * We need to keep the additional info for each agent in the DB not memory.
- * 
+ *
  * @author Tobi
  * @author JunHo Yoon
  * @since 3.0
@@ -36,50 +36,26 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 
 	/**
 	 * Find a {@link AgentInfo} by ip and host name.
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param hostName
-	 *            host name
+	 *
+	 * @param ip       ip
+	 * @param hostName host name
 	 * @return found agent
 	 */
 	AgentInfo findByIpAndHostName(String ip, String hostName);
 
 	/**
 	 * Find a {@link AgentInfo} by ip.
-	 * 
-	 * @param ip
-	 *            ip of agent
+	 *
+	 * @param ip ip of agent
 	 * @return found {@link AgentInfo}
 	 */
 	AgentInfo findByIp(String ip);
 
-	/**
-	 * Find {@link AgentInfo}s by ip.
-	 * 
-	 * @param ip
-	 *            ip of agent
-	 * @return found {@link AgentInfo} list
-	 */
-	List<AgentInfo> findAllByIp(String ip);
-
-	/**
-	 * Find all agents which matches with the given the status and are approved
-	 * .
-	 * 
-	 * @param state
-	 *            AgentControllerState
-	 * @param isApproved
-	 *            whether the agent is approved
-	 * @return agent list
-	 */
-	List<AgentInfo> findAllByStateAndApproved(AgentControllerState state, boolean isApproved);
 
 	/**
 	 * Get the count of {@link AgentInfo} matching the given specification.
-	 * 
-	 * @param spec
-	 *            Query specification
+	 *
+	 * @param spec Query specification
 	 * @return agent count
 	 */
 	long count(Specification<AgentInfo> spec);

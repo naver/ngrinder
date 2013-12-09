@@ -15,7 +15,7 @@ package org.ngrinder.infra.config;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ConfigTest implements NGrinderConstants {
+public class ConfigTest implements Constants {
 
 	private MockConfig config;
 

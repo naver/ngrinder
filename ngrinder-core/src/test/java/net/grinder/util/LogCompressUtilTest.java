@@ -26,12 +26,12 @@ public class LogCompressUtilTest {
 	@Test
 	public void testLogCompressDecompress() throws IOException {
 		File file = new File(LogCompressUtilTest.class.getResource("/grinder1.properties").getFile());
-		byte[] zippedContent = LogCompressUtil.compressFile(file);
+		byte[] zippedContent = LogCompressUtils.compress(file);
 		File createTempFile2 = File.createTempFile("a22", "zip");
 		createTempFile2.deleteOnExit();
 		FileUtils.writeByteArrayToFile(createTempFile2, zippedContent);
 		File createTempFile = File.createTempFile("a22", "tmp");
-		LogCompressUtil.decompress(zippedContent, createTempFile);
+		LogCompressUtils.decompress(zippedContent, createTempFile);
 		assertThat(createTempFile.exists(), is(true));
 		byte[] unzippedContent = FileUtils.readFileToByteArray(createTempFile);
 		assertThat(unzippedContent, is(FileUtils.readFileToByteArray(file)));

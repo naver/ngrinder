@@ -13,8 +13,8 @@
  */
 package org.ngrinder.region.service;
 
-import static net.grinder.util.NetworkUtil.DEFAULT_LOCAL_IP4_ADDRESSES;
-import static net.grinder.util.NetworkUtil.removeScopedMarkerFromIP;
+import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_IP4_ADDRESSES;
+import static net.grinder.util.NetworkUtils.removeScopedMarkerFromIP;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -57,7 +56,7 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testGetRegionsInCluster() throws IOException {
 		Config spiedConfig = spy(config);
-		when(spiedConfig.isCluster()).thenReturn(true);
+		when(spiedConfig.isClustered()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TEST_REGION");
 
 		RegionService spiedRegionService = spy(regionService);
@@ -77,7 +76,7 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
 		spiedRegionService.initRegion();
 		spiedRegionService.checkRegionUpdate();
-		Collection<String> regions = spiedRegionService.getRegions().keySet();
+		Collection<String> regions = spiedRegionService.getAll().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
 

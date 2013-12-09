@@ -35,7 +35,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Agent service test.
@@ -60,17 +60,16 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getAgent(agent.getId(), false);
+		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNotNull(agent2);
 
-		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentListFromDB();
-		agentListDB = agentManagerService.getLocalAgentListFromDB();
+		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
 		Assert.assertNotNull(agentListDB);
 
 		agentManagerService.approve(agent.getId(), true);
 
 		agentManagerService.deleteAgent(agent.getId());
-		agent2 = agentManagerService.getAgent(agent.getId(), false);
+		agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNull(agent2);
 	}
 
@@ -143,7 +142,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
 		agentManagerService.setAgentManager(agentManagerService.getAgentManager());
-		agentManagerService.setAgentRepository(agentManagerService.getAgentRepository());
 	}
 
 }

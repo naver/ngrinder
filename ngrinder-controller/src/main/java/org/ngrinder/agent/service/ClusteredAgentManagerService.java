@@ -41,7 +41,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Cluster enabled version of {@link AgentManagerService}.
@@ -83,7 +82,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	@PostConstruct
 	public void init() {
 		agentMonitoringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
-		if (getConfig().isCluster()) {
+		if (getConfig().isClustered()) {
 			agentRequestCache = cacheManager.getCache("agent_request");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
@@ -131,7 +130,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			attachedAgentMap.put(createAgentKey(existingAgent), existingAgent);
 		}
 
-		List<AgentInfo> agentsInDB = getAgentRepository().findAll(startWithRegion(curRegion));
+		List<AgentInfo> agentsInDB = getAgentManagerRepository().findAll(startWithRegion(curRegion));
 		Map<String, AgentInfo> agentsInDBMap = Maps.newHashMap();
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
@@ -164,7 +163,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			AgentInfo agentInfo = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(),
+			AgentInfo agentInfo = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
 					agentIdentity.getName());
 			if (agentInfo == null) {
 				agentInfo = new AgentInfo();
@@ -183,7 +182,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 
 		// step3. update into DB
-		getAgentRepository().save(changeAgents);
+		agentManagerRepository.save(changeAgents);
 	}
 
 	private boolean hasSamePortAndState(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
@@ -212,7 +211,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonitoringTargetsCache.get(each);
 			AgentControllerIdentityImplementation agentIdentity = cast(value.get());
-			if (value != null && agentIdentity != null) {
+			if (agentIdentity != null) {
 				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
 						agentIdentity.getName());
 				if (found != null) {
@@ -237,7 +236,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
 		List<AgentInfo> result = Lists.newArrayList();
 		Set<String> regions = getRegions();
-		for (AgentInfo each : getAgentRepository().findAll(visible())) {
+		for (AgentInfo each : agentManagerRepository.findAll(visible())) {
 			if (regions.contains(extractRegionFromAgentRegion(each.getRegion()))) {
 				result.add(each);
 			}
@@ -279,10 +278,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			// It's my own agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
 				incrementAgentCount(availUserOwnAgent, region, user.getUserId());
-			} else if (fullRegion.contains("_owned_")) {
-				// If it's the others agent.. skip..
-				continue;
-			} else {
+			} else if (!fullRegion.contains("_owned_")) {
 				incrementAgentCount(availShareAgents, region, user.getUserId());
 			}
 		}
@@ -299,7 +295,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	protected Set<String> getRegions() {
-		return regionService.getRegions().keySet();
+		return regionService.getAll().keySet();
 	}
 
 	String extractRegionFromAgentRegion(String agentRegion) {
@@ -326,8 +322,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * @return agent list
 	 */
 	@Override
-	public List<AgentInfo> getLocalAgentListFromDB() {
-		return getAgentRepository().findAll(startWithRegion(getConfig().getRegion()));
+	public List<AgentInfo> getLocalAgentsFromDB() {
+		return agentManagerRepository.findAll(startWithRegion(getConfig().getRegion()));
 	}
 
 	/**
@@ -338,7 +334,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public void stopAgent(Long id) {
-		AgentInfo agent = getAgent(id, false);
+		AgentInfo agent = getOne(id);
 		if (agent == null) {
 			return;
 		}
@@ -353,7 +349,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public void requestShareAgentSystemDataModel(Long id) {
-		AgentInfo agent = getAgent(id, false);
+		AgentInfo agent = getOne(id);
 		if (agent == null) {
 			return;
 		}
@@ -371,7 +367,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		AgentInfo found = getAgentRepository().findByIpAndHostName(ip, name);
+		AgentInfo found = agentManagerRepository.findByIpAndHostName(ip, name);
 		String systemStat = (found == null) ? null : found.getSystemStat();
 		return (StringUtils.isEmpty(systemStat)) ? new SystemDataModel() : gson.fromJson(systemStat,
 				SystemDataModel.class);
@@ -406,8 +402,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	@Override
-	public void updateAgent(Long id) {
-		AgentInfo agent = getAgent(id, false);
+	public void update(Long id) {
+		AgentInfo agent = getOne(id);
 		if (agent == null) {
 			return;
 		}
@@ -415,11 +411,4 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				new ClusteredAgentRequest(agent.getIp(), agent.getName(), UPDATE_AGENT));
 	}
 
-	/**
-	 * Get the agent package containing folder.
-	 */
-	@Override
-	public File getAgentPackagesDir() {
-		return getConfig().getExHome().getSubFile("download");
-	}
 }

@@ -17,27 +17,27 @@ import java.lang.reflect.Method;
 
 /**
  * {@link Test} extension to be distinguishable from {@link org.junit.Test} in JUnit4 tests.
- * 
+ *
  * <pre>
  * request = new HTTPRequest();
  * GTest(1, &quot;Test&quot;).record(request);
  * </pre>
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
 public class GTest extends Test {
 
-	/** UID. */
+	/**
+	 * UID.
+	 */
 	private static final long serialVersionUID = 8370116882992463352L;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param number
-	 *            the test number
-	 * @param description
-	 *            test description
+	 *
+	 * @param number      the test number
+	 * @param description test description
 	 */
 	public GTest(int number, String description) {
 		super(number, description);
@@ -47,13 +47,10 @@ public class GTest extends Test {
 	 * Instrument the supplied {@code target} object's method which has the given name. Subsequent
 	 * calls to {@code target}'s given method will be recorded against the statistics for this
 	 * {@code Test}.
-	 * 
-	 * @param target
-	 *            Object to instrument.
-	 * @param methodName
-	 *            method name to instrument
-	 * @throws NonInstrumentableTypeException
-	 *             If {@code target} could not be instrumented.
+	 *
+	 * @param target     Object to instrument.
+	 * @param methodName method name to instrument
+	 * @throws NonInstrumentableTypeException If {@code target} could not be instrumented.
 	 * @since 3.2.1
 	 */
 	public final void record(Object target, String methodName) throws NonInstrumentableTypeException {
@@ -62,7 +59,7 @@ public class GTest extends Test {
 
 	/**
 	 * Method name filter.
-	 * 
+	 *
 	 * @author junoyoon
 	 * @since 3.2.1
 	 */
@@ -71,9 +68,8 @@ public class GTest extends Test {
 
 		/**
 		 * Constructor.
-		 * 
-		 * @param methodName
-		 *            method name
+		 *
+		 * @param methodName method name
 		 */
 		public MethodNameFilter(String methodName) {
 			this.methodName = methodName;
@@ -81,10 +77,7 @@ public class GTest extends Test {
 
 		@Override
 		public boolean matches(Object item) {
-			if (item instanceof Method) {
-				return ((Method) item).getName().equals(methodName);
-			}
-			return false;
+			return item instanceof Method && ((Method) item).getName().equals(methodName);
 		}
 	}
 }

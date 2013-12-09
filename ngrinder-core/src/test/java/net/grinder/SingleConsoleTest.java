@@ -59,6 +59,7 @@ public class SingleConsoleTest {
 		}
 		return -1;
 	}
+
 	@Test
 	public void testSingleConsoleTooManyError() {
 		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
@@ -72,7 +73,7 @@ public class SingleConsoleTest {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				Map<Object, Object> errorMap = new HashMap<Object, Object>();
 
-				errorMap.put("Errors", new Double(errorCount));
+				errorMap.put("Errors", errorCount);
 				newMap.put("totalStatistics", errorMap);
 				return newMap;
 			}
@@ -112,19 +113,19 @@ public class SingleConsoleTest {
 		ProcessReports report = mock(ProcessReports.class);
 		WorkerProcessReport workerProcessReport = mock(WorkerProcessReport.class);
 		WorkerProcessReport workerProcessReport2 = mock(WorkerProcessReport.class);
-		WorkerProcessReport[] workerProcessReports = new WorkerProcessReport[] { workerProcessReport,
-				workerProcessReport2 };
-		when(workerProcessReport.getNumberOfRunningThreads()).thenReturn(new Short((short) 3));
-		when(workerProcessReport2.getNumberOfRunningThreads()).thenReturn(new Short((short) 2));
+		WorkerProcessReport[] workerProcessReports = new WorkerProcessReport[]{workerProcessReport,
+				workerProcessReport2};
+		when(workerProcessReport.getNumberOfRunningThreads()).thenReturn((short) 3);
+		when(workerProcessReport2.getNumberOfRunningThreads()).thenReturn((short) 2);
 
 		when(report.getWorkerProcessReports()).thenReturn(workerProcessReports);
 
-		ProcessReports[] processReports = new ProcessReports[] { report };
+		ProcessReports[] processReports = new ProcessReports[]{report};
 		singleConsole.update(processReports);
 		assertThat(singleConsole.getRunningProcess(), is(2));
 		assertThat(singleConsole.getRunningThread(), is(5));
 
-		processReports = new ProcessReports[] {};
+		processReports = new ProcessReports[]{};
 		singleConsole.waitUntilAgentConnected(1);
 		singleConsole.update(processReports);
 		try {
@@ -136,7 +137,7 @@ public class SingleConsoleTest {
 
 		singleConsole.waitUntilAllAgentDisconnected();
 
-		processReports = new ProcessReports[] { report };
+		processReports = new ProcessReports[]{report};
 		singleConsole.update(processReports);
 		try {
 			singleConsole.waitUntilAllAgentDisconnected();
@@ -171,8 +172,8 @@ public class SingleConsoleTest {
 			public Map<String, Object> getStatisticsData() {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				Map<Object, Object> errorMap = new HashMap<Object, Object>();
-				errorMap.put("Tests", new Double(testCount));
-				errorMap.put("Errors", new Double(errorCount));
+				errorMap.put("Tests", testCount);
+				errorMap.put("Errors", errorCount);
 				newMap.put("totalStatistics", errorMap);
 				return newMap;
 			}
@@ -192,25 +193,21 @@ public class SingleConsoleTest {
 			public Map<String, Object> getStatisticsData() {
 				Map<String, Object> newMap = new HashMap<String, Object>();
 				Map<Object, Object> errorMap = new HashMap<Object, Object>();
-				errorMap.put("Tests", new Double(testCount));
-				errorMap.put("Errors", new Double(errorCount));
+				errorMap.put("Tests", testCount);
+				errorMap.put("Errors", errorCount);
 				newMap.put("totalStatistics", errorMap);
 				return newMap;
 			}
 
 			@Override
 			protected void updateStatistics(StatisticsSet intervalStatisticsSnapshot,
-							StatisticsSet accumulatedStatisticsSnapshot) {
+			                                StatisticsSet accumulatedStatisticsSnapshot) {
 			}
 
-			@Override
-			protected Map<String, Object> getStatisticData() {
-				return new HashMap<String, Object>();
-			}
 		};
 
 		singleConsole.update(null, null);
-		singleConsole.startSampling(0);
+		singleConsole.startSampling();
 
 		SampleModelImplementationEx sampleModelMock = mock(SampleModelImplementationEx.class);
 

@@ -172,7 +172,8 @@
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/create" method="POST" 
+		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/new"
+			  method="POST"
     		style="margin-bottom: 0px">
 			<div class="well">
 				<input type="hidden" id="test_id" name="id" value="${(test.id)!}"> 

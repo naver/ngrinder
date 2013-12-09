@@ -74,7 +74,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			return false;
 		}
 
-		return getFileEntryRepository().hasFileEntry(fileEntry.getCreatedUser(), getBasePath(path) + "/pom.xml");
+		return getFileEntryRepository().hasOne(fileEntry.getCreatedUser(), getBasePath(path) + "/pom.xml");
 	}
 
 	@Override

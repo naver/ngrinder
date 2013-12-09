@@ -20,7 +20,7 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.DateUtils;
 
 /**
  * 
@@ -186,7 +186,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	public String toRecordString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ip).append(",").append(system).append(",");
-		sb.append(DateUtil.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
+		sb.append(DateUtils.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
 		sb.append(totalMemory).append(",").append(cpuUsedPercentage);
 		if (bandWidth != null) {
 			sb.append(",").append(bandWidth.getReceivedPerSec()).append(",").append(bandWidth.getSentPerSec());

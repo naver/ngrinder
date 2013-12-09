@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.ngrinder.common.util.EncodingUtil;
+import org.ngrinder.common.util.EncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +96,7 @@ public class UserMessageSource extends AbstractMessageSource {
 				if (file.exists()) {
 					try {
 						byte[] propByte = FileUtils.readFileToByteArray(file);
-						String propString = EncodingUtil.getAutoDecodedString(propByte, "UTF-8");
+						String propString = EncodingUtils.getAutoDecodedString(propByte, "UTF-8");
 						Properties prop = new Properties();
 						prop.load(new StringReader(propString));
 						for (Map.Entry<Object, Object> eachEntry : prop.entrySet()) {

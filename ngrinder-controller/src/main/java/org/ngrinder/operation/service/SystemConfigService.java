@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 public class SystemConfigService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SystemConfigService.class);
+
 	@Autowired
 	private Config config;
 
@@ -40,7 +41,7 @@ public class SystemConfigService {
 	 * 
 	 * @return file content.
 	 */
-	public String getSystemConfig() {
+	public String getOne() {
 		try {
 			return FileUtils.readFileToString(config.getHome().getSubFile("system.conf"), "UTF-8");
 		} catch (Exception e) {
@@ -56,7 +57,7 @@ public class SystemConfigService {
 	 *            file content.
 	 * @return save successfully or not.
 	 */
-	public boolean saveSystemConfig(String content) {
+	public boolean save(String content) {
 		try {
 			FileUtils.writeStringToFile(config.getHome().getSubFile("system.conf"), content, "UTF-8");
 		} catch (IOException e) {

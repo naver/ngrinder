@@ -13,11 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
-import java.util.Map;
-import java.util.concurrent.*;
-
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
@@ -28,9 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.Maps;
+import java.util.concurrent.*;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -41,7 +37,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @Controller
 @RequestMapping("/monitor")
-public class MonitorManagerController extends NGrinderBaseController {
+public class MonitorManagerController extends BaseController {
 
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
@@ -66,13 +62,12 @@ public class MonitorManagerController extends NGrinderBaseController {
 	/**
 	 * Get the target's monitored data by the given IP.
 	 *
-	 * @param model model
-	 * @param ip    target host IP
+	 * @param ip target host IP
 	 * @return json message containing the target's monitoring data.
 	 */
 	@RequestMapping("/state")
 	@RestAPI
-	public HttpEntity<String> getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
+	public HttpEntity<String> getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
 		Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
 			@Override
 			public SystemInfo call() {
@@ -91,10 +86,9 @@ public class MonitorManagerController extends NGrinderBaseController {
 	 * @return success if succeeded.
 	 */
 	@RequestMapping("/close")
-	@ResponseBody
-	public String closeMonitorConnection(ModelMap model, @RequestParam String ip) {
-		monitorInfoStore.remove(ip);
-		return returnSuccess();
+	public HttpEntity<String> closeMonitorConnection(@RequestParam String ip) {
+		monitorInfoStore.close(ip);
+		return successJsonHttpEntity();
 	}
 
 }

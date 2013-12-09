@@ -32,6 +32,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,7 @@ import static org.mockito.Mockito.when;
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestServiceTest extends AbstractAgentReadyTest {
+public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private PerfTestService testService;
@@ -62,9 +63,9 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 		clearAllPerfTest();
 	}
 
+
 	@Test
 	public void testGetTestListAll() {
-
 		createPerfTest("new Test1", Status.TESTING, new Date());
 		createPerfTest("new Test2", Status.FINISHED, new Date());
 
@@ -72,25 +73,25 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 		assertThat(candidate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
-		Page<PerfTest> testList = testService.getPerfTest(getTestUser(), null, null, null, pageable);
+		Page<PerfTest> testList = testService.getPagedAll(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTest(getTestUser(), null, null, "F", pageable);
+		testList = testService.getPagedAll(getTestUser(), null, null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
 
 		// test with no paging
-		testList = testService.getPerfTest(getTestUser(), null, null, null, null);
+		testList = testService.getPagedAll(getTestUser(), null, null, null, null);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTest(getTestUser(), null, null, "F", null);
+		testList = testService.getPagedAll(getTestUser(), null, null, "F", null);
 		assertThat(testList.getContent().size(), is(1));
 
-		List<PerfTest> list = testService.getTestingPerfTest();
+		List<PerfTest> list = testService.getAllTesting();
 		assertThat(list.size(), is(1));
 
 		for (PerfTest test : list) {
 			long systemTimeMills = System.currentTimeMillis();
 			test.setStartTime(new Date(systemTimeMills));
 
-			PerfTest testTemp = testService.getPerfTest(getTestUser(), test.getId());
+			PerfTest testTemp = testService.getOne(getTestUser(), test.getId());
 			assertThat(testTemp.getId(), is(test.getId()));
 			assertThat(testTemp.getStartTime().getTime(), is(systemTimeMills));
 
@@ -98,10 +99,10 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 			testService.markProgress(testTemp, "this test will be TESTING again");
 			testService.markStatusAndProgress(testTemp, Status.TESTING, "this is just test unit");
 
-			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), new Status[]{Status.TESTING});
+			List<PerfTest> testingList = testService.getOne(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testingList.size(), is(1));
 
-			Long testCount = testService.getPerfTestCount(getTestUser(), new Status[]{Status.TESTING});
+			Long testCount = testService.count(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testCount, is(1L));
 
 			GrinderProperties properties = testService.getGrinderProperties(test);
@@ -115,14 +116,14 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 
 		PerfTest finishedTest = createPerfTest("new Test3", Status.ABNORMAL_TESTING, new Date());
 		finishedTest.setPort(0); // need port number for finishing
-		list = testService.getAbnormalTestingPerfTest();
+		list = testService.getAllAbnormalTesting();
 		assertThat(list.size(), is(1));
 
 		testService.updatePerfTestAfterTestFinish(finishedTest);
 
 		createPerfTest("new Test3", Status.START_AGENTS, new Date());
 
-		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), new Status[]{Status.START_AGENTS});
+		List<PerfTest> errorList = testService.getOne(getTestUser(), new Status[]{Status.START_AGENTS});
 		assertThat(errorList.size(), is(1));
 		testService.markAbnormalTermination(errorList.get(0), "this is error test");
 	}
@@ -138,7 +139,7 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 		PerfTest testing = testService.markProgressAndStatus(testScript, Status.TESTING, "It is testing from ready");
 		assertThat(testing.getStatus(), is(Status.TESTING));
 
-		File testPath = testService.getPerfTestDistributionPath(testScript);
+		File testPath = testService.getDistributionPath(testScript);
 		assertThat(testPath, not(nullValue()));
 
 		List<String> fileList = testService.getLogFiles(testScript.getId());
@@ -231,15 +232,15 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 		test.setAgentState("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"receivedPerSec\":1874668,\"sentPerSec\":1881129}}");
 		test.setMonitorState("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"receivedPerSec\":102718,\"sentPerSec\":135072}}");
 		test.setRunningSample("{\"process\":1,\"peakTpsForGraph\":2192.0,\"lastSampleStatistics\":[{\"Peak_TPS\":0.0,\"Tests\":2145.0,\"Mean_time_to_first_byte\":0.3142191142191142,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":62205.0,\"Errors\":0.0,\"TPS\":2145.0,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4205128205128205}],\"thread\":1,\"cumulativeStatistics\":[{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4425539468012273}],\"tpsChartData\":2145.0,\"success\":true,\"totalStatistics\":{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"Mean_Test_Time_(ms)\":0.4425539468012273},\"test_time\":105}");
-		perfTestService.savePerfTest(test);
+		perfTestService.save(getTestUser(), test);
 
-		PerfTest testInDB = perfTestService.getPerfTest(test.getId());
+		PerfTest testInDB = perfTestService.getOne(test.getId());
 		assertTrue(testInDB.getAgentState().length() > 0 && testInDB.getMonitorState().length() > 0);
 		test.setAgentState(null);
 		test.setMonitorState(null);
 		test.setRunningSample(null);
-		perfTestService.savePerfTest(test);
-		testInDB = perfTestService.getPerfTest(test.getId());
+		perfTestService.save(getTestUser(), test);
+		testInDB = perfTestService.getOne(test.getId());
 		assertTrue(testInDB.getAgentState() == null && testInDB.getMonitorState() == null);
 
 	}

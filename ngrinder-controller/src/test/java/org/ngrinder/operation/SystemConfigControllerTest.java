@@ -40,22 +40,21 @@ public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTes
 	@Test
 	public void testGetSystemConfiguration() {
 		Model model = new ExtendedModelMap();
-		controller.get(model);
-
+		controller.getOne(model);
 		assertThat(model.containsAttribute("content"), is(true));
 	}
 
 	@Test
 	public void testSaveSystemConfiguration() {
-		String oriContent = service.getSystemConfig();
+		String oriContent = service.getOne();
 		Model model = new ExtendedModelMap();
 		String content = "test=My test.";
 		try {
 			controller.save(model, content);
 			ThreadUtils.sleep(2500); //sleep a while to wait for the file monitor to update the system properties.
-	
+
 			assertThat(model.containsAttribute("success"), is(true));
-			assertThat(service.getSystemConfig(), is(content));
+			assertThat(service.getOne(), is(content));
 			assertThat(config.getSystemProperties().getProperty("test", ""), is("My test."));
 		} finally {
 			//reset system config

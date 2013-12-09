@@ -74,7 +74,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 
 		ModelMap model = new ModelMap();
-		agentController.getAgents("", null, model);
+		agentController.getAll("", null, model);
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -95,12 +95,12 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 
 		model.clear();
-		agentController.getAgents("", null, model);
+		agentController.getAll("", null, model);
 		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
 		if (!agents.isEmpty()) {
 			AgentInfo testAgt = agents.iterator().next();
 			model.clear();
-			agentController.getAgent(testAgt.getId(), model);
+			agentController.getOne(testAgt.getId(), model);
 			AgentInfo agentInDB = (AgentInfo) model.get("agent");
 			assertThat(agentInDB.getId(), is(testAgt.getId()));
 			assertThat(agentInDB.getIp(), is(testAgt.getIp()));
@@ -120,7 +120,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		ModelMap model = new ModelMap();
 		// test get agent
-		agentController.getAgent(agent.getId(), model);
+		agentController.getOne(agent.getId(), model);
 		AgentInfo agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.getName(), is(agent.getName()));
 		assertThat(agentInDB.getIp(), is(agent.getIp()));
@@ -128,15 +128,15 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		// test approve agent
 		model.clear();
-		agentController.approveAgent(agentInDB.getId(), true, "", model);
-		agentController.getAgent(agent.getId(), model);
+		agentController.approve(agentInDB.getId(), true, "", model);
+		agentController.getOne(agent.getId(), model);
 		agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.isApproved(), is(true));
 
 		// test un-approve
 		model.clear();
-		agentController.approveAgent(agentInDB.getId(), false, "", model);
-		agentController.getAgent(agent.getId(), model);
+		agentController.approve(agentInDB.getId(), false, "", model);
+		agentController.getOne(agent.getId(), model);
 		agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.isApproved(), is(false));
 	}

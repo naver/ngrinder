@@ -18,8 +18,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
-import java.beans.BeanInfo;
-import java.beans.Introspector;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -66,7 +64,7 @@ public class BaseEntity<M> implements Serializable {
 	 * @return true if exists
 	 */
 	public boolean exist() {
-		return id != null && id.longValue() != 0;
+		return id != null && id != 0;
 	}
 
 	/**

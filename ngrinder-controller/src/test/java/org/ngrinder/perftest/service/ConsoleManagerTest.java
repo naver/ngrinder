@@ -36,8 +36,8 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 	@Test
 	public void testConsoleManager() {
 		int initialSize = manager.getAvailableConsoleSize();
-		SingleConsole availableConsole = manager.getAvailableConsole("test",
-						ConsolePropertiesFactory.createEmptyConsoleProperties());
+		SingleConsole availableConsole = manager.getAvailableConsole(
+				ConsolePropertiesFactory.createEmptyConsoleProperties());
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize - 1));
 		manager.returnBackConsole("test", availableConsole);
 		sleep(1000);
@@ -50,8 +50,8 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;
 		for (int i = 1; i <= initialSize; i++) {
-			availableConsole = manager.getAvailableConsole("test",
-							ConsolePropertiesFactory.createEmptyConsoleProperties());
+			availableConsole = manager.getAvailableConsole(
+					ConsolePropertiesFactory.createEmptyConsoleProperties());
 		}
 		final SingleConsole lastConsole = availableConsole;
 		assertThat(manager.getAvailableConsoleSize(), is(0));
@@ -59,7 +59,7 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 		elapseTime.start();
 		// Try to get more console, it will take time
 		try {
-			manager.getAvailableConsole("test", ConsolePropertiesFactory.createEmptyConsoleProperties());
+			manager.getAvailableConsole(ConsolePropertiesFactory.createEmptyConsoleProperties());
 			fail("should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 		}
@@ -82,8 +82,8 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 		thread.start();
 		// Try to get more console, it will return console just after console is
 		// returned back
-		SingleConsole anotherConsole = manager.getAvailableConsole("test",
-						ConsolePropertiesFactory.createEmptyConsoleProperties());
+		SingleConsole anotherConsole = manager.getAvailableConsole(
+				ConsolePropertiesFactory.createEmptyConsoleProperties());
 		elapseTime.stop();
 		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		assertThat(manager.getAvailableConsoleSize(), is(0));

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Aspect to inject the created/modified user and date to the model.
- * 
+ *
  * @author Liu Zhifei
  * @author JunHo Yoon
  * @since 3.0
@@ -48,16 +48,13 @@ public class ModelAspect {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private Config config;
+
 
 	/**
 	 * Inject the created/modified user and date to the model. It's only applied
 	 * in the servlet context.
-	 * 
-	 * @param joinPoint
-	 *            joint point
+	 *
+	 * @param joinPoint joint point
 	 */
 	@Before(EXECUTION_SAVE)
 	public void beforeSave(JoinPoint joinPoint) {

@@ -13,14 +13,10 @@
  */
 package org.ngrinder.script.model;
 
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -29,15 +25,17 @@ import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 /**
  * File entity which will be stored in SVN.
- * 
- * 
+ *
  * @author Liu Zhifei
  * @author JunHo Yoon
  * @since 3.0
@@ -89,11 +87,12 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	@Expose
 	private long revision;
-	
+
 	private long lastRevision;
+
 	/**
 	 * Get path of entry.
-	 * 
+	 *
 	 * @return path
 	 */
 	public String getPath() {
@@ -101,7 +100,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	}
 
 	public String getPathInShort() {
-		return PathUtils.getShortPath(path.toString());
+		return PathUtils.getShortPath(path);
 	}
 
 	public String getFileName() {
@@ -116,13 +115,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.fileSize = fileSize;
 	}
 
-	public String getTestURL() {
-		return testURL;
-	}
-
-	public void setTestURL(String testURL) {
-		this.testURL = testURL;
-	}
 
 	public byte[] getContentBytes() {
 		return contentBytes;
@@ -130,9 +122,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/**
 	 * set content bytes.
-	 * 
-	 * @param contentBytes
-	 *            contentByte.
+	 *
+	 * @param contentBytes contentByte.
 	 */
 	public void setContentBytes(byte[] contentBytes) {
 		this.fileSize = contentBytes.length;
@@ -151,9 +142,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/**
 	 * Set content in string form.
-	 * 
-	 * @param content
-	 *            content string
+	 *
+	 * @param content content string
 	 */
 	public void setContent(String content) {
 		this.fileSize = content.length();
@@ -175,7 +165,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	/**
 	 * Get file type. If fileType is set, it returns the set fileType.
 	 * Otherwise, it tries to detect the file type by the extension.
-	 * 
+	 *
 	 * @return file type.
 	 */
 	public FileType getFileType() {
@@ -187,14 +177,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	public void setFileType(FileType fileType) {
 		this.fileType = fileType;
-	}
-
-	public List<Long> getRevisions() {
-		return revisions;
-	}
-
-	public void setRevisions(List<Long> revisions) {
-		this.revisions = revisions;
 	}
 
 	public void setPath(String path) {
@@ -211,7 +193,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/**
 	 * Get current revision.
-	 * 
+	 *
 	 * @return the revision
 	 */
 	public long getRevision() {
@@ -220,9 +202,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/**
 	 * Set current revision.
-	 * 
-	 * @param revision
-	 *            the revision to set
+	 *
+	 * @param revision the revision to set
 	 */
 	public void setRevision(long revision) {
 		this.revision = revision;
@@ -230,7 +211,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/**
 	 * Get properties.
-	 * 
+	 *
 	 * @return properties, empty map if null.
 	 */
 	public Map<String, String> getProperties() {
@@ -254,7 +235,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/**
 	 * FileEntry to JSON serializer.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 * @since 3.2.1
 	 */

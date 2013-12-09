@@ -195,7 +195,6 @@ public class User extends BaseModel<User> {
 		return mobilePhone;
 	}
 
-	@ForceMergable
 	public void setMobilePhone(String mobilePhone) {
 		this.mobilePhone = mobilePhone;
 	}
@@ -252,7 +251,6 @@ public class User extends BaseModel<User> {
 		return email;
 	}
 
-	@ForceMergable
 	public void setEmail(String email) {
 		this.email = email.toLowerCase();
 	}

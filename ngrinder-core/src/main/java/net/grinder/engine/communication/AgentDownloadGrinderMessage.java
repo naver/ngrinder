@@ -30,16 +30,6 @@ public class AgentDownloadGrinderMessage implements AddressAwareMessage {
 	private final String version;
 	private int next;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param version version
-	 * @param next    next offset to start
-	 */
-	public AgentDownloadGrinderMessage(String version, int next) {
-		this.version = version;
-		this.next = next;
-	}
 
 	/**
 	 * Constructor.

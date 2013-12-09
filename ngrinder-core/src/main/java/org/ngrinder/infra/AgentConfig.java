@@ -14,7 +14,7 @@
 package org.ngrinder.infra;
 
 import net.grinder.communication.AgentControllerCommunicationDefaults;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -62,9 +62,7 @@ public class AgentConfig {
 	private AgentHome home = null;
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper internalProperties;
-	private String agentHostID;
 	private boolean silent = false;
-	private int controllerPort;
 
 	/**
 	 * Initialize.
@@ -119,15 +117,6 @@ public class AgentConfig {
 		}
 	}
 
-	/**
-	 * Load the internal files for the given path by searching class paths.
-	 *
-	 * @param path path in the classpath
-	 * @return {@link InputStream}
-	 */
-	public InputStream loadFromClassPath(String path) {
-		return AgentConfig.class.getClassLoader().getResourceAsStream(path);
-	}
 
 	private void loadAgentProperties() {
 		checkNotNull(home);
@@ -323,15 +312,11 @@ public class AgentConfig {
 	}
 
 	public String getAgentHostID() {
-		return getProperty(AGENT_HOST_ID, NetworkUtil.DEFAULT_LOCAL_HOST_NAME);
+		return getProperty(AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
 	}
 
 	public boolean isServerMode() {
 		return getPropertyBoolean("agent.servermode", false);
-	}
-
-	public String getLocalIP() {
-		return getProperty(MONITOR_LISTEN_IP, NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public boolean isSilentMode() {

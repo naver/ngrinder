@@ -38,7 +38,7 @@ public interface IPerfTestService {
 	 *            test id
 	 * @return perftestDetail perftest detail
 	 */
-	public abstract PerfTest getPerfTest(User user, Long id);
+	public abstract PerfTest getOne(User user, Long id);
 
 	/**
 	 * Get {@link PerfTest} list created within the given time frame.
@@ -50,7 +50,7 @@ public interface IPerfTestService {
 	 * 
 	 * @return found {@link PerfTest} list
 	 */
-	public abstract List<PerfTest> getPerfTest(Date start, Date end);
+	public abstract List<PerfTest> getAll(Date start, Date end);
 
 	/**
 	 * Get {@link PerfTest} list created within the given time frame and region name.
@@ -64,7 +64,7 @@ public interface IPerfTestService {
 	 * 
 	 * @return found {@link PerfTest} list
 	 */
-	public abstract List<PerfTest> getPerfTest(Date start, Date end, String region);
+	public abstract List<PerfTest> getAll(Date start, Date end, String region);
 
 	/**
 	 * Get {@link PerfTest} list of some IDs.
@@ -75,7 +75,7 @@ public interface IPerfTestService {
 	 *            test IDs, which is in format: "1,3,6,11"
 	 * @return perftestList test list of those IDs
 	 */
-	public abstract List<PerfTest> getPerfTest(User user, Long[] ids);
+	public abstract List<PerfTest> getOne(User user, Long[] ids);
 
 	/**
 	 * Get PerfTest count which have given status.
@@ -86,7 +86,7 @@ public interface IPerfTestService {
 	 *            status set
 	 * @return the count
 	 */
-	public abstract long getPerfTestCount(User user, Status[] statuses);
+	public abstract long count(User user, Status[] statuses);
 
 	/**
 	 * Get {@link PerfTest} list which have give state.
@@ -97,7 +97,7 @@ public interface IPerfTestService {
 	 *            set of {@link Status}
 	 * @return found {@link PerfTest} list.
 	 */
-	public abstract List<PerfTest> getPerfTest(User user, Status[] statuses);
+	public abstract List<PerfTest> getOne(User user, Status[] statuses);
 
 	/**
 	 * Save {@link PerfTest}. This function includes logic the updating script revision when it's
@@ -109,16 +109,7 @@ public interface IPerfTestService {
 	 *            {@link PerfTest} instance to be saved.
 	 * @return Saved {@link PerfTest}
 	 */
-	public abstract PerfTest savePerfTest(User user, PerfTest perfTest);
-
-	/**
-	 * Save {@link PerfTest}.
-	 * 
-	 * @param perfTest
-	 *            {@link PerfTest} instance to be saved.
-	 * @return Saved {@link PerfTest}
-	 */
-	public abstract PerfTest savePerfTest(PerfTest perfTest);
+	public abstract PerfTest save(User user, PerfTest perfTest);
 
 	/**
 	 * Get PerfTest by testId.
@@ -127,7 +118,7 @@ public interface IPerfTestService {
 	 *            PerfTest id
 	 * @return found {@link PerfTest}, null otherwise
 	 */
-	public abstract PerfTest getPerfTest(Long testId);
+	public abstract PerfTest getOne(Long testId);
 
 	/**
 	 * Get PerfTest with tag infos by testId.
@@ -136,14 +127,14 @@ public interface IPerfTestService {
 	 *            PerfTest id
 	 * @return found {@link PerfTest}, null otherwise
 	 */
-	public abstract PerfTest getPerfTestWithTag(Long testId);
+	public abstract PerfTest getOneWithTag(Long testId);
 
 	/**
 	 * Get currently testing PerfTest.
 	 * 
 	 * @return found {@link PerfTest} list
 	 */
-	public abstract List<PerfTest> getTestingPerfTest();
+	public abstract List<PerfTest> getAllTesting();
 
 	/**
 	 * Get PerfTest Directory in which the distributed file is stored.
@@ -152,7 +143,7 @@ public interface IPerfTestService {
 	 *            pefTest from which distribution directory calculated
 	 * @return path on in files are saved.
 	 */
-	public abstract File getPerfTestDistributionPath(PerfTest perfTest);
+	public abstract File getDistributionPath(PerfTest perfTest);
 
 	/**
 	 * Get perf test base directory.
@@ -181,14 +172,14 @@ public interface IPerfTestService {
 	 * @param id
 	 *            perftest id
 	 */
-	public abstract void stopPerfTest(User user, Long id);
+	public abstract void stop(User user, Long id);
 
 	/**
 	 * Return stop requested test.
 	 * 
 	 * @return stop requested perf test
 	 */
-	public abstract List<PerfTest> getStopRequestedPerfTest();
+	public abstract List<PerfTest> getAllStopRequested();
 
 	/**
 	 * Add comment on {@link PerfTest}.
@@ -226,6 +217,6 @@ public interface IPerfTestService {
 	 *            perftest
 	 * @return statistic path
 	 */
-	public abstract File getPerfTestStatisticPath(PerfTest perfTest);
+	public abstract File getStatisticPath(PerfTest perfTest);
 
 }

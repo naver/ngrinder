@@ -13,20 +13,22 @@
  */
 package org.ngrinder.infra.spring;
 
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Convenient class to determine if the current runtime is in the spring context.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
+@Profile("production")
+@Component
 public class SpringContext {
 	/**
 	 * Determine if the current thread is from servlet context.
-	 * 
+	 *
 	 * @return true if it's servlet context.
 	 */
 	public boolean isServletRequestContext() {
@@ -35,9 +37,9 @@ public class SpringContext {
 
 	/**
 	 * Determine if this context is on unit test.
-	 * 
-	 * @see MockSpringContext
+	 *
 	 * @return always false.
+	 * @see MockSpringContext
 	 */
 	public boolean isUnitTestContext() {
 		return false;

@@ -13,7 +13,7 @@
  */
 package org.ngrinder.security;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 import java.util.Collection;
 import java.util.List;

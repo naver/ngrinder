@@ -25,8 +25,8 @@ public class MonitorManagerControllerTest extends AbstractAgentReadyTest {
 
 	@Test
 	public void testGetMonitorData() throws Exception {
-		monitorManagerController.getRealTimeMonitorData(null, "127.0.0.1");
-		monitorManagerController.closeMonitorConnection(null, "127.0.0.1");
+		monitorManagerController.getRealTimeMonitorData("127.0.0.1");
+		monitorManagerController.closeMonitorConnection("127.0.0.1");
 	}
 
 }

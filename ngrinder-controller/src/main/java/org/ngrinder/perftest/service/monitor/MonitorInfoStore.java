@@ -69,10 +69,10 @@ public class MonitorInfoStore {
 	 * Delete the unused monitor clients periodically.
 	 */
 	@Scheduled(fixedDelay = 30000)
-	public void deleteUnusedMonitorClient() {
+	public void closeUnusedMonitorClient() {
 		for (Entry<String, MonitorClientService> each : monitorInfoMap.entrySet()) {
 			if ((System.currentTimeMillis() - each.getValue().getLastAccessedTime()) > 30000) {
-				remove(each.getKey());
+				close(each.getKey());
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class MonitorInfoStore {
 	 * @param ip
 	 *            ip
 	 */
-	public void remove(String ip) {
+	public void close(String ip) {
 		synchronized (this) {
 			MonitorClientService monitorClient = monitorInfoMap.get(ip);
 			if (monitorClient == null) {

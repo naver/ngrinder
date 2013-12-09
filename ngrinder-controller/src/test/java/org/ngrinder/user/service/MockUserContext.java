@@ -13,25 +13,26 @@
  */
 package org.ngrinder.user.service;
 
-import javax.annotation.PostConstruct;
-
-import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * user util
- * 
+ *
  * @author Tobi
- * @since
  * @date 2012-6-28
  */
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockUserContext extends UserContext {
 	public static final String TEST_USER_ID = "TEST_USER";
 	public static final String TEST_USER_TIMEZONE_US = "America/New_York";
@@ -45,7 +46,7 @@ public class MockUserContext extends UserContext {
 
 	@Autowired
 	private SaltSource saltSource;
-	
+
 	@PostConstruct
 	public void init() {
 		User user = userRepository.findOneByUserId(TEST_USER_ID);
@@ -56,11 +57,11 @@ public class MockUserContext extends UserContext {
 			user.setEmail("TEST_USER@nhn.com");
 			user.setPassword("123");
 			user.setRole(Role.USER);
-			
+
 			SecuredUser securedUser = new SecuredUser(user, null);
 			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
 			user.setPassword(encodePassword);
-			
+
 			userRepository.save(user);
 		}
 	}

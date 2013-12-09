@@ -18,7 +18,7 @@ public class GroovyMavenProjectScriptHandlerTest {
 		GroovyMavenProjectScriptHandler handler = new GroovyMavenProjectScriptHandler();
 		User user = new User("my", "my", "password", Role.ADMIN);
 		FileEntryRepository serviceMock = mock(FileEntryRepository.class);
-		when(serviceMock.hasFileEntry(user, "/hello/world/pom.xml")).thenReturn(true);
+		when(serviceMock.hasOne(user, "/hello/world/pom.xml")).thenReturn(true);
 		handler.setFileEntryRepository(serviceMock);
 
 		FileEntry entry = new FileEntry();
@@ -32,7 +32,7 @@ public class GroovyMavenProjectScriptHandlerTest {
 		entry.setPath("/hello/world/src/main/java/Global.py");
 		assertThat(handler.canHandle(entry)).isFalse();
 
-		when(serviceMock.hasFileEntry(user, "/hello/world/pom.xml")).thenReturn(false);
+		when(serviceMock.hasOne(user, "/hello/world/pom.xml")).thenReturn(false);
 		entry.setPath("/hello/world/src/main/java/Global.groovy");
 		assertThat(handler.canHandle(entry)).isFalse();
 	}

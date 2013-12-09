@@ -16,8 +16,7 @@ package org.ngrinder.operation.cotroller;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.infra.annotation.RuntimeOnlyController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -30,13 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -52,11 +51,11 @@ import java.io.StringWriter;
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyController
+@Profile("production")
+@Controller
 @RequestMapping("/operation/script_console")
 @PreAuthorize("hasAnyRole('A')")
-public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
-	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
+public class ScriptConsoleController extends BaseController implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -99,7 +98,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 * @return operation/script_console
 	 */
 	@RequestMapping("")
-	public String runScript(@RequestParam(value = "script", defaultValue = "") String script, Model model) {
+	public String run(@RequestParam(value = "script", defaultValue = "") String script, Model model) {
 		if (StringUtils.isNotBlank(script)) {
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("Groovy");
 			engine.put("applicationContext", this.applicationContext);

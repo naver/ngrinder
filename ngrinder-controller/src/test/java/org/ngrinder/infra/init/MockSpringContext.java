@@ -13,8 +13,9 @@
  */
 package org.ngrinder.infra.init;
 
-import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.infra.spring.SpringContext;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 /**
  * Convenient class to determine spring context. It's mocked version which will be used in unit test
@@ -22,7 +23,8 @@ import org.ngrinder.infra.spring.SpringContext;
  * @author JunHo Yoon
  * @since 3.0
  */
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockSpringContext extends SpringContext {
 	/**
 	 * Determine if this context is on unit test.

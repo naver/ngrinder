@@ -13,12 +13,14 @@
  */
 package org.ngrinder.infra.plugin;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.ngrinder.infra.annotation.TestOnlyComponent;
-
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockPluginManager extends PluginManager {
 
 	@PostConstruct
