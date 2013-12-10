@@ -22,4 +22,5 @@ target/
 /resources/perftest*
 *.iml
 /atlassian-ide-plugin.xml
+src/main/generated/
 

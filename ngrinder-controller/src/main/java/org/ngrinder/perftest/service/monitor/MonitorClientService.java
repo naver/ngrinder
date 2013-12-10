@@ -79,8 +79,7 @@ public class MonitorClientService implements Closeable {
 			mbeanClient = new MBeanClient(ip, port);
 			mbeanClient.connect();
 			if (reportPath != null) {
-				bw = new BufferedWriter(new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + "" +
-						".data"), false));
+				bw = new BufferedWriter(new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + ".data"), false));
 				// write header info
 				bw.write(SystemInfo.HEADER);
 				bw.newLine();
