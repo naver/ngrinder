@@ -665,7 +665,7 @@ public class PerfTestController extends BaseController {
 		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
 		PerfTest perfTest = perfTestService.getOne(id);
 		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest
-				.getSamplingInterval() : Constants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
+				.getSamplingInterval() : SAMPLING_INTERVAL_DEFAULT_VALUE)));
 		return sysMonitorMap;
 	}
 

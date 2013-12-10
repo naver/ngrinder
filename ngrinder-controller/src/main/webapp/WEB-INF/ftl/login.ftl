@@ -30,7 +30,7 @@
 		</script>	
 		<div class="logo"><img src="${req.getContextPath()}/img/logo_ngrinder_a.png" width="400" height="106" alt="nGrinder"></div>
 		<div class="content">
-			<form action="${req.getContextPath()}/form_Login" method="POST">
+			<form action="${req.getContextPath()}/form_login" method="POST">
 				<fieldset>
 					<div class="login">
 						<span class="lgn_ipt">
@@ -41,7 +41,7 @@
 					</div>
 					
 					<div class="prompt">
-						<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remeber me :
+						<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remember me :
 						<select  id="native_language" name="native_language" style="margin-left:60px;"> 
 							  <option value="en">English</option>
 							  <option value="kr">한국어</option>
