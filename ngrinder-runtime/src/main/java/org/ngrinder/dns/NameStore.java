@@ -73,6 +73,9 @@ public class NameStore {
 		initFromSystemProperty();
 	}
 
+	private void noOp() {
+	}
+
 	/**
 	 * Put hostname with ipAddress.
 	 *
@@ -90,7 +93,7 @@ public class NameStore {
 			InetAddress address = InetAddress.getByAddress(DnsUtils.textToNumericFormat(ipAddress));
 			ipAddresses.add(address);
 		} catch (UnknownHostException ignored) {
-			// Fall through
+			noOp();
 		}
 	}
 

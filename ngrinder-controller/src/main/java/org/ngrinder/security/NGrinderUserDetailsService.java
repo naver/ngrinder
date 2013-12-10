@@ -28,11 +28,10 @@ import org.springframework.stereotype.Service;
 
 /**
  * NGrinder {@link UserDetailsService}.
- * 
+ *
  * This resolves user info using plugins implementing {@link OnLoginRunnable}.
- * 
+ *
  * @author JunHo Yoon
- * 
  */
 @Service("ngrinderUserDetailsService")
 public class NGrinderUserDetailsService implements UserDetailsService {
@@ -48,19 +47,15 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String userId) {
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, defaultPlugin)) {
-			try {
-				User user = each.loadUser(userId);
-				if (user != null) {
-					checkNotEmpty(user.getUserId(), "User info's userId provided by " + each.getClass().getName()
-							+ " should not be empty");
-					checkNotEmpty(user.getUserName(), "User info's userName provided by " + each.getClass().getName()
-							+ " should not be empty");
-					checkNotEmpty(user.getEmail(), "User info's email provided by " + each.getClass().getName()
-							+ " should not be empty");
-					return new SecuredUser(user, user.getAuthProviderClass());
-				}
-			} catch (NullPointerException e) {
-				LOG.error("User Info retrieval is failed", e);
+			User user = each.loadUser(userId);
+			if (user != null) {
+				checkNotEmpty(user.getUserId(), "User info's userId provided by " + each.getClass().getName()
+						+ " should not be empty");
+				checkNotEmpty(user.getUserName(), "User info's userName provided by " + each.getClass().getName()
+						+ " should not be empty");
+				checkNotEmpty(user.getEmail(), "User info's email provided by " + each.getClass().getName()
+						+ " should not be empty");
+				return new SecuredUser(user, user.getAuthProviderClass());
 			}
 		}
 		throw new UsernameNotFoundException(userId + " is not found.");

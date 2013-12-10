@@ -17,7 +17,7 @@ import net.grinder.util.weave.WeavingException;
 
 /**
  * Jython {@link net.grinder.scriptengine.ScriptEngineService} implementation.
- * 
+ *
  * @author Philip Aston
  * @author JunHo Yoon (modified by)
  */
@@ -30,13 +30,10 @@ public final class JythonScriptEngineService implements ScriptEngineService {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param properties
-	 *            Properties.
-	 * @param dcrContext
-	 *            DCR context.
-	 * @param scriptLocation
-	 *            Script location.
+	 *
+	 * @param properties     Properties.
+	 * @param dcrContext     DCR context.
+	 * @param scriptLocation Script location.
 	 */
 	public JythonScriptEngineService(GrinderProperties properties, DCRContext dcrContext, ScriptLocation scriptLocation) {
 
@@ -45,8 +42,8 @@ public final class JythonScriptEngineService implements ScriptEngineService {
 		// instrumenter". I'm not renaming it, since I expect it only to last
 		// a few releases, until DCR becomes the default.
 		m_forceDCRInstrumentation = properties.getBoolean("grinder.dcrinstrumentation", false) ||
-		// Hack: force DCR instrumentation for non-Jython scripts.
-						!m_pyFileMatcher.accept(scriptLocation.getFile());
+				// Hack: force DCR instrumentation for non-Jython scripts.
+				!m_pyFileMatcher.accept(scriptLocation.getFile());
 
 		m_dcrContext = dcrContext;
 	}
@@ -57,6 +54,9 @@ public final class JythonScriptEngineService implements ScriptEngineService {
 	public JythonScriptEngineService() {
 		m_dcrContext = null;
 		m_forceDCRInstrumentation = false;
+	}
+
+	public void noOp() {
 	}
 
 	/**
@@ -71,9 +71,9 @@ public final class JythonScriptEngineService implements ScriptEngineService {
 				try {
 					instrumenters.add(new TraditionalJythonInstrumenter());
 				} catch (EngineException e) {
-					// Ignore.
+					noOp();
 				} catch (VerifyError e) {
-					// Ignore.
+					noOp();
 				}
 			}
 
@@ -88,7 +88,7 @@ public final class JythonScriptEngineService implements ScriptEngineService {
 				}
 			}
 		} catch (NoClassDefFoundError e) {
-			// Do nothing.
+			noOp();
 		}
 		return instrumenters;
 	}

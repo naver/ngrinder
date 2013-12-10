@@ -14,6 +14,7 @@
 package org.ngrinder.monitor.share.domain;
 
 import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.*;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 /**
  * Client for the JMX monitor server.
  *
@@ -37,20 +40,9 @@ public class MBeanClient {
 
 	private static final String JMX_URI = "/jndi/rmi://%s:%s/jmxrmi";
 
-	/**
-	 * Enum class for connection state.
-	 */
-	public enum ConnectionState {
-		CONNECTED, DISCONNECTED, CONNECTING
-	}
-
-	private ConnectionState connectionState = ConnectionState.DISCONNECTED;
-
-	private String hostName = null;
-	private int port = 0;
 	private JMXServiceURL jmxUrl = null;
 
-	private volatile boolean isDead = true;
+	private volatile boolean connected = false;
 
 	private MBeanServerConnection server = null;
 	private JMXConnector jmxConnector = null;
@@ -63,31 +55,18 @@ public class MBeanClient {
 	 * @throws IOException wraps JMX MalformedURLException exception
 	 */
 	public MBeanClient(String hostName, int port) throws IOException {
-		JMXServiceURL url = new JMXServiceURL("rmi", hostName, port, String.format(JMX_URI, hostName, port));
-		this.jmxUrl = url;
-		this.hostName = url.getHost();
-		this.port = url.getPort();
+		this.jmxUrl = new JMXServiceURL("rmi", hostName, port, String.format(JMX_URI, hostName, port));
 	}
 
 	/**
 	 * connect with target JMX.
 	 */
 	public void connect() {
-		setConnectionState(ConnectionState.CONNECTING);
-		boolean bConnect = true;
-
 		try {
 			connectClient();
-		} catch (IOException ex) {
-			LOGGER.debug(ex.getMessage());
-			LOGGER.trace(ex.getMessage(), ex.getCause());
-			bConnect = false;
-		}
-
-		if (!bConnect) {
-			setConnectionState(ConnectionState.DISCONNECTED);
-		} else {
-			setConnectionState(ConnectionState.CONNECTED);
+		} catch (Exception ex) {
+			LOGGER.info("Error while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
+			LOGGER.info("Details is ", ex.getMessage());
 		}
 	}
 
@@ -97,14 +76,10 @@ public class MBeanClient {
 	 */
 	public void disconnect() {
 		IOUtils.closeQuietly(jmxConnector);
-
 		server = null;
-
-		if (!isDead) {
-			isDead = true;
-			setConnectionState(ConnectionState.DISCONNECTED);
-		}
+		connected = false;
 	}
+
 
 	/**
 	 * get the monitor object of the object name and attribute name. See
@@ -120,40 +95,32 @@ public class MBeanClient {
 	}
 
 	private void connectClient() throws IOException {
-		if (jmxUrl == null && "localhost".equals(hostName) && port == 0) {
+		if (jmxUrl == null || ("localhost".equals(jmxUrl.getHost()) && jmxUrl.getPort() == 0)) {
 			server = ManagementFactory.getPlatformMBeanServer();
 		} else {
-			try {
-				jmxConnector = connectWithTimeout(jmxUrl, 1000);
-				server = jmxConnector.getMBeanServerConnection();
-				this.isDead = false;
-			} catch (Exception e) {
-				LOGGER.error("Error while connecting to {}", jmxUrl.getURLPath());
-				LOGGER.debug("Detail is", e);
-			}
+			jmxConnector = connectWithTimeout(jmxUrl, 1000);
+			server = jmxConnector.getMBeanServerConnection();
+		}
+		this.connected = true;
+	}
+
+	private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws NGrinderRuntimeException {
+		try {
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Future<JMXConnector> future = executor.submit(new Callable<JMXConnector>() {
+				public JMXConnector call() throws IOException {
+					return JMXConnectorFactory.connect(jmxUrl);
+				}
+			});
+
+			return future.get(timeout, TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			throw processException(e);
 		}
 
 	}
 
-	private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws Exception {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<JMXConnector> future = executor.submit(new Callable<JMXConnector>() {
-			public JMXConnector call() throws IOException {
-				return JMXConnectorFactory.connect(jmxUrl);
-			}
-		});
-		return future.get(timeout, TimeUnit.MILLISECONDS);
-	}
-
-	private void setConnectionState(ConnectionState connectionState) {
-		this.connectionState = connectionState;
-	}
-
-	public ConnectionState getConnectionState() {
-		return connectionState;
-	}
-
 	public boolean isConnected() {
-		return !isDead;
+		return connected;
 	}
 }

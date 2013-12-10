@@ -75,6 +75,7 @@ import java.util.Map.Entry;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
 /**
@@ -135,20 +136,34 @@ public class PerfTestController extends BaseController {
 	public String getAll(User user, @RequestParam(required = false) String query,
 	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
 	                     @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
-		PageRequest pageReq = ((PageRequest) pageable);
-		Sort sort = pageReq == null ? null : pageReq.getSort();
-		if (sort == null && pageReq != null) {
-			sort = new Sort(Direction.DESC, "lastModifiedDate");
-			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
-		}
-		Page<PerfTest> testList = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 
+		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+				defaultIfNull(pageable.getSort(),
+						new Sort(Direction.DESC, "lastModifiedDate")));
+		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
+
+		annotateDateMarker(tests);
+		model.addAttribute("tag", tag);
+		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
+		model.addAttribute("testListPage", tests);
+		model.addAttribute("queryFilter", queryFilter);
+		model.addAttribute("query", query);
+		model.addAttribute("page", pageable);
+		final Iterator<Order> iterator = pageable.getSort().iterator();
+		if (iterator.hasNext()) {
+			Order sortProp = iterator.next();
+			model.addAttribute("sortColumn", sortProp.getProperty());
+			model.addAttribute("sortDirection", sortProp.getDirection());
+		}
+		return "perftest/list";
+	}
+
+	private void annotateDateMarker(Page<PerfTest> tests) {
 		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
 		Calendar userToday = Calendar.getInstance(userTZ);
 		Calendar userYesterday = Calendar.getInstance(userTZ);
 		userYesterday.add(Calendar.DATE, -1);
-
-		for (PerfTest test : testList) {
+		for (PerfTest test : tests) {
 			Calendar localedModified = Calendar.getInstance(userTZ);
 			localedModified.setTime(DateUtils.convertToUserDate(getCurrentUser().getTimeZone(),
 					test.getLastModifiedDate()));
@@ -160,18 +175,6 @@ public class PerfTestController extends BaseController {
 				test.setDateString("earlier");
 			}
 		}
-		model.addAttribute("tag", tag);
-		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
-		model.addAttribute("testListPage", testList);
-		model.addAttribute("queryFilter", queryFilter);
-		model.addAttribute("query", query);
-		model.addAttribute("page", pageable);
-		if (sort != null) {
-			Order sortProp = sort.iterator().next();
-			model.addAttribute("sortColumn", sortProp.getProperty());
-			model.addAttribute("sortDirection", sortProp.getDirection());
-		}
-		return "perftest/list";
 	}
 
 	/**
@@ -270,9 +273,9 @@ public class PerfTestController extends BaseController {
 	 * @return perftest/detail
 	 */
 	@RequestMapping("/quickstart")
-	public String getQuickStart(User user, //
-	                            @RequestParam(value = "url", required = true) String urlString, // LF
-	                            @RequestParam(value = "scriptType", required = true) String scriptType, // LF
+	public String getQuickStart(User user,
+	                            @RequestParam(value = "url", required = true) String urlString,
+	                            @RequestParam(value = "scriptType", required = true) String scriptType,
 	                            ModelMap model) {
 		URL url = checkValidURL(urlString);
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,

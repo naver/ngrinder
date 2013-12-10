@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import java.io.*;
@@ -42,7 +43,17 @@ public class MonitorClientService implements Closeable {
 
 	private MBeanClient mbeanClient;
 
-	private MonitorCollectionInfoDomain sysInfoMBeanObj;
+	private static ObjectName objectName;
+
+	static {
+		try {
+			objectName = new ObjectName(MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" +
+					MonitorConstants.SYSTEM);
+		} catch (MalformedObjectNameException e) {
+			LOGGER.error("Error while creating ObjectName", e);
+		}
+	}
+
 
 	private String ip;
 
@@ -50,15 +61,7 @@ public class MonitorClientService implements Closeable {
 
 	private BufferedWriter bw;
 
-	private FileWriter fileWriter;
-
 	private long lastAccessedTime = 0;
-
-	/**
-	 * default constructor, used to debug the non-singleton of this class.
-	 */
-	public MonitorClientService() {
-	}
 
 	/**
 	 * Initialize the mbeanClient connection.
@@ -74,14 +77,10 @@ public class MonitorClientService implements Closeable {
 		this.cache = cache;
 		try {
 			mbeanClient = new MBeanClient(ip, port);
-			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
-			ObjectName systemName = new ObjectName(objNameStr);
-			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo");
 			mbeanClient.connect();
 			if (reportPath != null) {
-				fileWriter = new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + ".data"),
-						false);
-				bw = new BufferedWriter(fileWriter);
+				bw = new BufferedWriter(new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + "" +
+						".data"), false));
 				// write header info
 				bw.write(SystemInfo.HEADER);
 				bw.newLine();
@@ -113,14 +112,14 @@ public class MonitorClientService implements Closeable {
 				// if the monitor client can not be connected, just return, to avoid error.
 				return SystemInfo.NullSystemInfo.getNullSystemInfo();
 			}
-			CompositeData cd = cast(mbeanClient.getAttribute(sysInfoMBeanObj.getObjectName(), sysInfoMBeanObj.getAttrName()));
+			CompositeData cd = cast(mbeanClient.getAttribute(objectName, "SystemInfo"));
 			SystemInfo systemInfo = new SystemInfo();
 			systemInfo.parse(cd);
 			systemInfo.setIp(ip);
 			return systemInfo;
 		} catch (Exception e) {
 			LOGGER.error("Error while MonitorExecutorWorker is running. Disconnect this MBean client.", e);
-			closeMbeanClient();
+			close();
 			return SystemInfo.NullSystemInfo.getNullSystemInfo();
 		}
 	}
@@ -129,21 +128,10 @@ public class MonitorClientService implements Closeable {
 	 * close the MBClient.
 	 */
 	public void close() {
-		closeMbeanClient();
-		flushAndClose();
-	}
-
-	/**
-	 * Only close the MBClient.
-	 */
-	private void closeMbeanClient() {
 		if (mbeanClient != null) {
 			mbeanClient.disconnect();
 		}
 		mbeanClient = null;
-	}
-
-	private void flushAndClose() {
 		try {
 			if (bw != null) {
 				bw.flush();
@@ -153,7 +141,6 @@ public class MonitorClientService implements Closeable {
 			LOGGER.error("Details : ", e);
 		}
 		IOUtils.closeQuietly(bw);
-		IOUtils.closeQuietly(fileWriter);
 	}
 
 	/**
@@ -165,13 +152,6 @@ public class MonitorClientService implements Closeable {
 		final SystemInfo monitorData = getMonitorData();
 		cache.put(ip, monitorData);
 		return monitorData;
-	}
-
-	/**
-	 * Record the data into file.
-	 */
-	public void record() {
-		record(false);
 	}
 
 	/**

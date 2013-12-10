@@ -40,8 +40,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
 /**
@@ -75,12 +77,9 @@ public class UserController extends BaseController {
 	                     @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
 	                     @RequestParam(required = false) String keywords) {
 
-		PageRequest pageReq = ((PageRequest) pageable);
-		Sort sort = pageReq == null ? null : pageReq.getSort();
-		if (sort == null && pageReq != null) {
-			sort = new Sort(Direction.ASC, "userName");
-			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
-		}
+		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+				defaultIfNull(pageable.getSort(),
+						new Sort(Direction.ASC, "userName")));
 		Page<User> pagedUser;
 		if (StringUtils.isEmpty(keywords)) {
 			pagedUser = userService.getPagedAll(role, pageable);
@@ -93,11 +92,13 @@ public class UserController extends BaseController {
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("role", role);
 		model.addAttribute("page", pageable);
-		if (sort != null) {
-			Order sortProp = sort.iterator().next();
+		final Iterator<Order> iterator = pageable.getSort().iterator();
+		if (iterator.hasNext()) {
+			Order sortProp = iterator.next();
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
+
 		return "user/list";
 	}
 
