@@ -55,7 +55,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.web.PageableDefaults;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
@@ -428,17 +427,18 @@ public class PerfTestController extends BaseController {
 	}
 
 
-	private Map<String, Object> getReportGraphStrings(PerfTest perfTest, String[] dataTypes, int interval) {
+	private Map<String, Object> getPerfGraphData(Long id, String[] dataTypes, int imgWidth) {
+		final PerfTest test = perfTestService.getOne(id);
+		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		Map<String, Object> resultMap = Maps.newHashMap();
 		for (String each : dataTypes) {
-			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(perfTest.getId(),
-					each, interval);
+			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(id, each, interval);
 			Map<String, Object> dataMap = Maps.newHashMap();
 			dataMap.put("lables", tpsResult.getFirst());
 			dataMap.put("data", tpsResult.getSecond());
 			resultMap.put(StringUtils.replaceChars(each, "()", ""), dataMap);
 		}
-		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
+		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		return resultMap;
 	}
 
@@ -603,8 +603,50 @@ public class PerfTestController extends BaseController {
 	@RequestMapping(value = {"/{id}/detail_report", /** for backward compatibility */"/{id}/report"})
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getOne(id));
+		model.addAttribute("plugins", perfTestService.getAvailableReportPlugins(id));
 		return "perftest/detail_report";
 	}
+
+	/**
+	 * Get the detailed perf test report.
+	 *
+	 * @param id test id
+	 * @return perftest/detail_report
+	 */
+	@RequestMapping("/{id}/detail_report/perf")
+	public String getDetailPerfReport(@PathVariable("id") long id) {
+		return "perftest/detail_report/perf";
+	}
+
+	/**
+	 * Get the detailed perf test monitor report.
+	 *
+	 * @param id test id
+	 * @return perftest/detail_report/monitor
+	 */
+	@RequestMapping("/{id}/detail_report/monitor")
+	public String getDetailMonitorReport(@PathVariable("id") long id, @RequestParam("targetIP") String targetIP,
+	                                     ModelMap modelMap) {
+		modelMap.addAttribute("targetIP", targetIP);
+		return "perftest/detail_report/monitor";
+	}
+
+	/**
+	 * Get the detailed perf test report.
+	 *
+	 * @param model          model
+	 * @param id             test id
+	 * @param reportCategory test report plugin category
+	 * @return perftest/detail_report/target
+	 */
+	@RequestMapping("/{id}/detail_report/plugin/{plugin}")
+	public String getDetailPluginReport(ModelMap model, @PathVariable("id") long id,
+	                                    @PathVariable("plugin") String plugin, @RequestParam("kind") String kind, ModelMap modelMap) {
+		modelMap.addAttribute("plugin", plugin);
+		modelMap.addAttribute("kind", kind);
+		return "perftest/detail_report/plugin";
+	}
+
 
 	private PerfTest getOneWithPermissionCheck(User user, Long id, boolean withTag) {
 		PerfTest perfTest = withTag ? perfTestService.getOneWithTag(id) : perfTestService.getOne(id);
@@ -618,17 +660,15 @@ public class PerfTestController extends BaseController {
 	}
 
 
-	private Map<String, String> getMonitorData(long id, String targetIP, int imgWidth) {
-		int interval = perfTestService.getSystemMonitorDataInterval(id, targetIP, imgWidth);
-		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, targetIP, interval);
+	private Map<String, String> getMonitorGraphData(long id, String targetIP, int imgWidth) {
+		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
+		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
 		PerfTest perfTest = perfTestService.getOne(id);
-		sysMonitorMap.put(
-				"interval",
-				String.valueOf(interval
-						* (perfTest != null ? perfTest.getSamplingInterval()
-						: Constants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
+		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest
+				.getSamplingInterval() : Constants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
 		return sysMonitorMap;
 	}
+
 
 	/**
 	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
@@ -724,16 +764,13 @@ public class PerfTestController extends BaseController {
 	 * @return json string.
 	 */
 	@RestAPI
-	@RequestMapping("/api/{id}/graph")
-	public HttpEntity<String> getGraph(@PathVariable("id") long id,
-	                                   @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
-		String[] dataTypes = StringUtils.split(dataType, ",");
-		if (dataTypes.length <= 0) {
-			return errorJsonHttpEntity();
-		}
-		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
-		return toJsonHttpEntity(getReportGraphStrings(perfTestService.getOne(id), dataTypes, interval));
+	@RequestMapping({"/api/{id}/perf", "/api/{id}/graph"})
+	public HttpEntity<String> getPerfGraph(@PathVariable("id") long id,
+	                                       @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
+		String[] dataTypes = checkNotEmpty(StringUtils.split(dataType, ","), "dataType argument should be provided");
+		return toJsonHttpEntity(getPerfGraphData(id, dataTypes, imgWidth));
 	}
+
 
 	/**
 	 * Get the monitor data of the target having the given IP.
@@ -745,10 +782,36 @@ public class PerfTestController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping("/api/{id}/monitor")
-	public HttpEntity<String> getMonitor(@PathVariable("id") long id,
-	                                     @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
-		return toJsonHttpEntity(getMonitorData(id, targetIP, imgWidth));
+	public HttpEntity<String> getMonitorGraph(@PathVariable("id") long id,
+	                                          @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
+		return toJsonHttpEntity(getMonitorGraphData(id, targetIP, imgWidth));
 	}
+
+	/**
+	 * Get the plugin monitor data of the target.
+	 *
+	 * @param id             test Id
+	 * @param reportCategory monitor plugin category
+	 * @param targetIP       monitor target IP
+	 * @param imgWidth       image width
+	 * @return json message
+	 */
+	@RestAPI
+	@RequestMapping("/api/{id}/plugin/{plugin}")
+	public HttpEntity<String> getPluginGraph(@PathVariable("id") long id,
+	                                         @PathVariable("plugin") String plugin,
+	                                         @RequestParam("kind") String kind, @RequestParam int imgWidth) {
+		return toJsonHttpEntity(getReportPluginGraphData(id, plugin, kind, imgWidth));
+	}
+
+	private Map<String, String> getReportPluginGraphData(long id, String plugin, String kind, int imgWidth) {
+		int interval = perfTestService.getReportPluginGraphInterval(id, plugin, kind, imgWidth);
+		Map<String, String> pluginMonitorData = perfTestService.getReportPluginGraph(id, plugin, kind, interval);
+		pluginMonitorData.put("interval",
+				String.valueOf(interval * perfTestService.getReportPluginGraphSamplingInterval(id, plugin)));
+		return pluginMonitorData;
+	}
+
 
 	/**
 	 * Get the last perf test details in the form of json.

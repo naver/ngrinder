@@ -310,7 +310,7 @@
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
 					$.ajax({
-						url: "${req.getContextPath()}/perftest/api/"+ id +"/graph",
+						url: "${req.getContextPath()}/perftest/api/"+ id +"/perf",
 						dataType:'json',
 		                cache: false,
 		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},

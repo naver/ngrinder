@@ -32,7 +32,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -189,8 +188,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		mockService.setConfig(mockConfig);
 
 		// When
-		int interval = mockService.getSystemMonitorDataInterval(testId, "127.0.0.1", 700);
-		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsString(testId, "127.0.0.1", interval);
+		int interval = mockService.getMonitorGraphInterval(testId, "127.0.0.1", 700);
+		Map<String, String> reportDataMap = mockService.getMonitorGraph(testId, "127.0.0.1", interval);
 
 		// Then
 		assertThat(reportDataMap.get("cpu").length(), greaterThanOrEqualTo(300));

@@ -308,7 +308,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		controller.getReport(model, test.getId());
 
 		model.clear();
-		controller.getGraph(test.getId(), "TPS,mean_time(ms)", 0);
+		controller.getPerfGraph(test.getId(), "TPS,mean_time(ms)", 0);
 
 		model.clear();
 		controller.getReportSection(getTestUser(), model, test.getId(), 700);
@@ -318,10 +318,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetMonitorData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
-		controller.getMonitor(test.getId(), "127.0.0.1", 0);
+		controller.getMonitorGraph(test.getId(), "127.0.0.1", 0);
 
 		long testId = 123456L;
-		controller.getMonitor(testId, "127.0.0.1", 700);
+		controller.getMonitorGraph(testId, "127.0.0.1", 700);
 	}
 
 	@Test
@@ -354,7 +354,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
-	public void testUpdateSatus() {
+	public void testUpdateSatuts() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		String testName2 = "test1";

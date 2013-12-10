@@ -33,7 +33,6 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
@@ -49,7 +48,6 @@ import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.AbstractPerfTestService;
-import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +66,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import static org.ngrinder.common.util.AccessUtils.getSafe;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -1015,10 +1014,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @return true if it has
 	 */
 	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {
-		if (perfTest == null) {
-			return false;
-		}
-		return perfTest.getCreatedUser().equals(user) || user.getRole().hasPermission(type);
+		return perfTest != null && (perfTest.getCreatedUser().equals(user) || user.getRole().hasPermission(type));
 	}
 
 	/*
@@ -1195,7 +1191,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param imageWidth image with of the chart.
 	 * @return interval value.
 	 */
-	public int getSystemMonitorDataInterval(long testId, String targetIP, int imageWidth) {
+	public int getMonitorGraphInterval(long testId, String targetIP, int imageWidth) {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
 
@@ -1232,7 +1228,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param dataInterval interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return r  eturn the data in map
 	 */
-	public Map<String, String> getSystemMonitorDataAsString(long testId, String targetIP, int dataInterval) {
+	public Map<String, String> getMonitorGraph(long testId, String targetIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
@@ -1295,6 +1291,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		return returnMap;
 	}
 
+
 	private void addCustomData(StringBuilder customData, int index, String[] data) {
 		if (data.length > index) {
 			customData.append(data[index]).append(",");
@@ -1308,49 +1305,179 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		returnMap.put(key, customData.append("]").toString());
 	}
 
+
 	/**
-	 * Get all{@link SystemDataModel} from monitor data file of one test and target.
+	 * Get report file directory for give test id .
 	 *
-	 * @param testId   test id
-	 * @param targetIP IP address of the monitor target
-	 * @return SystemDataModel list
+	 * @param testId testId
+	 * @return reportDir report file path
 	 */
-	public List<SystemDataModel> getSystemMonitorData(long testId, String targetIP) {
-		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, targetIP);
-		List<SystemDataModel> rtnList = Lists.newArrayList();
-		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
-		BufferedReader br = null;
+	public File getReportFileDirectory(long testId) {
+		return config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
+	}
+
+	/**
+	 * /**
+	 * Get interval value of the monitor data of a plugin, like jvm monitor plugin.
+	 * The usage of interval value is same as system monitor data.
+	 *
+	 * @param testId     test id
+	 * @param plugin     plugin name
+	 * @param kind       plugin kind
+	 * @param imageWidth image with of the chart.
+	 * @return interval value.
+	 */
+	public int getReportPluginGraphInterval(long testId, String plugin, String kind, int imageWidth) {
+		return getRecordInterval(imageWidth, getReportPluginDataFile(testId, plugin, kind));
+	}
+
+	/**
+	 * Get sampling interval of plugin. It is configured by plugin, so need to get it from plugin directory.
+	 *
+	 * @param testId         test id
+	 * @param reportCategory monitor plugin name
+	 * @return sampling interval value
+	 */
+	public int getReportPluginGraphSamplingInterval(Long testId, String plugin) {
+		File reportDir = getReportFileDirectory(testId);
+		File pluginIntervalFile = new File(new File(reportDir, plugin), "interval");
 		try {
-			br = new BufferedReader(new FileReader(monitorDataFile));
-			br.readLine(); // skip the header.
-			// header:
-			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"
-			String line = br.readLine();
-			while (StringUtils.isNotBlank(line)) {
-				SystemDataModel model = new SystemDataModel();
-				String[] datalist = StringUtils.split(line, ",");
-				model.setIp(datalist[0]);
-				model.setSystem(datalist[1]);
-				model.setCollectTime(NumberUtils.toLong(datalist[2]));
-				model.setFreeMemory(NumberUtils.toLong(datalist[3]));
-				model.setTotalMemory(NumberUtils.toLong(datalist[4]));
-				model.setCpuUsedPercentage(NumberUtils.toFloat(datalist[5]));
-				rtnList.add(model);
-				line = br.readLine();
+			String intervalStr = FileUtils.readFileToString(pluginIntervalFile);
+			return Integer.valueOf(intervalStr);
+		} catch (IOException e) {
+			return 3; // default value 3.
+		}
+	}
+
+	/**
+	 * Get available report plugins list for the given test.
+	 *
+	 * @param testId test id
+	 * @return plugin names
+	 */
+	public List<Pair<String, String>> getAvailableReportPlugins(Long testId) {
+		List<Pair<String, String>> result = newArrayList();
+		File reportDir = getReportFileDirectory(testId);
+		for (File plugin : checkNotNull(reportDir.listFiles())) {
+			if (plugin.isDirectory()) {
+				for (String kind : plugin.list()) {
+					if (kind.endsWith(".data")) {
+						result.add(Pair.of(plugin.getName(), FilenameUtils.getBaseName(kind)));
+					}
+				}
 			}
+		}
+		return result;
+	}
+
+	/*
+	 * Plugin monitor data should be {TestReportDir}/{plugin}/{kind}.data
+	 */
+	private File getReportPluginDataFile(Long testId, String plugin, String kind) {
+		File reportDir = getReportFileDirectory(testId);
+		File pluginDir = new File(reportDir, plugin);
+		return new File(pluginDir, kind + ".data");
+	}
+
+	/*
+	 * Get the interval value. In the normal, the image width is 700, and if the data count is too big,
+	 * there will be too many points in the chart. So we will calculate the interval to get appropriate count of data to
+	 * display. For example, interval value "2" means, get one record for every "2" records.
+	 */
+	private int getRecordInterval(int imageWidth, File dataFile) {
+		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
+		FileInputStream in = null;
+		InputStreamReader isr = null;
+		LineNumberReader lnr = null;
+		int interval = 0;
+		try {
+			in = new FileInputStream(dataFile);
+			isr = new InputStreamReader(in);
+			lnr = new LineNumberReader(isr);
+			lnr.skip(dataFile.length());
+			interval = Math.max((lnr.getLineNumber() + 1) / pointCount, 1);
 		} catch (FileNotFoundException e) {
-			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
+			LOGGER.error("data file not exist:{}", dataFile);
 			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
+			LOGGER.error("Error while getting data file:{}", dataFile);
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(lnr);
+			IOUtils.closeQuietly(isr);
+			IOUtils.closeQuietly(in);
+		}
+		return interval;
+	}
+
+	/**
+	 * Get plugin monitor data and wrap the data as a string value like "[22,11,12,34,....]", which can be used directly
+	 * in JS as a vector.
+	 *
+	 * @param testId   test id
+	 * @param plugin   plugin name
+	 * @param kind     kind
+	 * @param interval interval value to get data. Interval value "2" means, get one record for every "2" records.
+	 * @return return the data in map
+	 */
+	public Map<String, String> getReportPluginGraph(long testId, String plugin, String kind, int interval) {
+		Map<String, String> returnMap = Maps.newHashMap();
+		File pluginDataFile = getReportPluginDataFile(testId, plugin, kind);
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(pluginDataFile));
+			String header = br.readLine();
+
+			StringBuilder headerSB = new StringBuilder("[");
+			String[] headers = StringUtils.split(header, ",");
+			String[] refinedHeaders = StringUtils.split(header, ",");
+			List<StringBuilder> dataStringBuilders = new ArrayList<StringBuilder>(headers.length);
+
+			for (int i = 0; i < headers.length; i++) {
+				dataStringBuilders.add(new StringBuilder("["));
+				String refinedHead = headers[i].trim().replaceAll(" ", "_");
+				refinedHeaders[i] = refinedHead;
+				headerSB.append("'").append(refinedHead).append("'").append(",");
+			}
+			String headerStringInJSONList = headerSB.deleteCharAt(headerSB.length() - 1).append("]").toString();
+			returnMap.put("header", headerStringInJSONList);
+
+			String line = br.readLine();
+			int skipCount = interval;
+			// to be compatible with previous version, check the length before adding
+			while (StringUtils.isNotBlank(line)) {
+				if (skipCount < interval) {
+					skipCount++;
+				} else {
+					skipCount = 1;
+					String[] records = StringUtils.split(line, ",");
+					for (int i = 0; i < records.length; i++) {
+						if ("null".equals(records[i]) || "undefined".equals(records[i])) {
+							dataStringBuilders.get(i).append("null").append(",");
+						} else {
+							dataStringBuilders.get(i).append(records[i]).append(",");
+						}
+					}
+					line = br.readLine();
+				}
+			}
+			for (int i = 0; i < refinedHeaders.length; i++) {
+				StringBuilder dataSB = dataStringBuilders.get(i);
+				if (dataSB.charAt(dataSB.length() - 1) == ',') {
+					dataSB.deleteCharAt(dataSB.length() - 1);
+				}
+				dataSB.append("]");
+				returnMap.put(refinedHeaders[i], dataSB.toString());
+			}
+		} catch (IOException e) {
+			LOGGER.error("Error while getting monitor: {} data file:{}", plugin, pluginDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(br);
 		}
-		LOGGER.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, targetIP);
-		return rtnList;
+		return returnMap;
 	}
+
 
 	/**
 	 * Get list that contains test report data as a json string.
