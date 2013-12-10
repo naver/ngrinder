@@ -49,7 +49,7 @@ public class MockAgentManagerServiceConfig implements ApplicationContextAware {
 	@Bean(name = "agentManagerService")
 	public AgentManagerService agentManagerService() {
 		AgentManagerService createBean = (AgentManagerService) applicationContext.getAutowireCapableBeanFactory()
-				.autowire(MockAgentManagerServiceConfig.class,
+				.autowire(MockAgentManagerService.class,
 						AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, true);
 		return createBean;
 	}
