@@ -56,12 +56,22 @@ public class MonitorScheduledTask implements Runnable, Closeable {
 	 */
 	public void add(Set<AgentInfo> monitorTargets, File reportPath) {
 		for (AgentInfo target : monitorTargets) {
-			String targetKey = createTargetKey(target);
-			if (!monitorClientsMap.containsKey(targetKey)) {
-				MonitorClientService bean = new MonitorClientService();
-				bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
-				monitorClientsMap.put(targetKey, bean);
-			}
+			add(target, reportPath);
+		}
+	}
+
+	/**
+	 * Add MBean monitors on the given target.
+	 *
+	 * @param target     monitor target
+	 * @param reportPath report path
+	 */
+	public void add(AgentInfo target, File reportPath) {
+		String targetKey = createTargetKey(target);
+		if (!monitorClientsMap.containsKey(targetKey)) {
+			MonitorClientService bean = new MonitorClientService();
+			bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
+			monitorClientsMap.put(targetKey, bean);
 		}
 	}
 

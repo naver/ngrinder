@@ -163,12 +163,12 @@ public class MonitorClientService implements Closeable {
 		ValueWrapper valueWrapper = cache.get(ip);
 		SystemInfo systemInfo = cast(valueWrapper.get());
 		try {
-			if (systemInfo.isParsed() || includeEmpty) {
+			if (mbeanClient.isConnected() && (systemInfo.isParsed() || includeEmpty)) {
 				bw.write(systemInfo.toRecordString());
 				bw.write("\n");
 			}
 		} catch (IOException e) {
-			LOGGER.error("Error while recoding system info, e", e);
+			LOGGER.error("Error while recording system monitoring data into file, e", e);
 		}
 	}
 

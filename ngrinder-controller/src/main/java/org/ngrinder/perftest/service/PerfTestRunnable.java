@@ -345,17 +345,20 @@ public class PerfTestRunnable implements Constants {
 				agentManager, scheduledTaskService));
 	}
 
-	private MonitorCollectorListener createMonitorCollectionListener(final PerfTest perfTest,
-	                                                                 final SingleConsole singleConsole) {
+	private MonitorCollectorListener createMonitorCollectionListener(PerfTest perfTest,
+	                                                                 SingleConsole singleConsole) {
 		final MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
 		monitorScheduledTask.setCorrespondingPerfTestId(perfTest.getId());
-		// To speed up, make the monitor connection in the async way.
-		scheduledTaskService.runAsync(new Runnable() {
-			@Override
-			public void run() {
-				monitorScheduledTask.add(createMonitorTargets(perfTest), singleConsole.getReportPath());
-			}
-		});
+		final File reportPath = singleConsole.getReportPath();
+		for (final AgentInfo each : createMonitorTargets(perfTest)) {
+			// To speed up, make the monitor connection in the async way.
+			scheduledTaskService.runAsync(new Runnable() {
+				@Override
+				public void run() {
+					monitorScheduledTask.add(each, reportPath);
+				}
+			});
+		}
 		return new MonitorCollectorListener(monitorScheduledTask, scheduledTaskService, perfTest.getSamplingInterval());
 	}
 
