@@ -260,7 +260,7 @@ public class FileEntryService {
 		try {
 			URL url = new URL(urlString);
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
-			return (url.getHost() + urlPath).replaceAll("[;\\&\\?\\%\\-]", "_");
+			return (url.getHost() + urlPath).replaceAll("[;\\&\\?\\%\\$\\-\\#]", "_");
 		} catch (MalformedURLException e) {
 			throw processException("Error while translating " + urlString, e);
 		}
