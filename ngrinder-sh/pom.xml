@@ -1,53 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated from archetype; please customize. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.ngrinder</groupId>
-        <artifactId>ngrinder</artifactId>
-        <version>3.3-SNAPSHOT</version>
-    </parent>
-    <artifactId>ngrinder-sh</artifactId>
-    <name>ngrinder-sh</name>
-    <version>3.3-SNAPSHOT</version>
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.ngrinder</groupId>
+		<artifactId>ngrinder</artifactId>
+		<version>3.3-SNAPSHOT</version>
+	</parent>
+	<artifactId>ngrinder-sh</artifactId>
+	<name>ngrinder-sh</name>
+	<version>3.3-SNAPSHOT</version>
 
-    <packaging>jar</packaging>
-    <dependencies>
-
-    </dependencies>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>*</exclude>
-                </excludes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>convert_cr_lf</id>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <tasks>
-                                <fixcrlf srcdir="${basedir}/src/main/resources"
-                                         destdir="${project.build.outputDirectory}" includes="**/*.sh" eol="unix"/>
-                                <fixcrlf srcdir="${basedir}/src/main/resources"
-                                         destdir="${project.build.outputDirectory}" includes="**/*.bat" eol="dos"/>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<packaging>jar</packaging>
+	<build>
+		<resources>
+			<resource>
+				<directory>${project.basedir}/src/main/generated</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>convert_cr_lf</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<tasks>
+								<fixcrlf srcdir="${project.basedir}/src/main/shell"
+										 destdir="${project.basedir}/src/main/generated" includes="**/*.sh" eol="unix"/>
+								<fixcrlf srcdir="${project.basedir}/src/main/shell"
+										 destdir="${project.basedir}/src/main/generated" includes="**/*.bat"
+										 eol="dos"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
