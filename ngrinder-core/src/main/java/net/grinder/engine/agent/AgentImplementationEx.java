@@ -144,7 +144,7 @@ public class AgentImplementationEx implements Agent {
 							consoleCommunication = new ConsoleCommunication(connector, grinderProperties.getProperty(
 									"grinder.user", "_default"));
 							consoleCommunication.start();
-							m_logger.info("connect to console at {}", connector.getEndpointAsString());
+							m_logger.info("Connect to console at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							if (m_proceedWithoutConsole) {
 								m_logger.warn("{}, proceeding without the console; set "
@@ -157,7 +157,7 @@ public class AgentImplementationEx implements Agent {
 					}
 
 					if (consoleCommunication != null && startMessage == null) {
-						m_logger.info("waiting for console signal");
+						m_logger.info("Waiting for console signal");
 						m_consoleListener.waitForMessage();
 
 						if (m_consoleListener.received(ConsoleListener.START)) {
@@ -236,12 +236,12 @@ public class AgentImplementationEx implements Agent {
 						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender,
 								consoleCommunication != null, script, properties);
 					}
-					m_logger.debug("worker launcher is prepared.");
+					m_logger.debug("Worker launcher is prepared.");
 					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1),
 							workerFactory, m_eventSynchronisation, m_logger);
 					m_workerLauncherForShutdown = workerLauncher;
 					final int increment = properties.getInt("grinder.processIncrement", 0);
-					m_logger.debug("rampup mode by {}.", increment);
+					m_logger.debug("Rampup mode by {}.", increment);
 					if (increment > 0) {
 						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties.getInt(
 								"grinder.initialProcesses", increment));
@@ -263,11 +263,11 @@ public class AgentImplementationEx implements Agent {
 						final long maximumShutdownTime = 5000;
 						long consoleSignalTime = -1;
 						while (!workerLauncher.allFinished()) {
-							m_logger.debug("waiting until all workers are finished");
+							m_logger.debug("Waiting until all workers are finished");
 							if (consoleSignalTime == -1
 									&& m_consoleListener.checkForMessage(ConsoleListener.ANY
 									^ ConsoleListener.START)) {
-								m_logger.info("dont start anymore by message from controller.");
+								m_logger.info("Don't start anymore by message from controller.");
 								workerLauncher.dontStartAnyMore();
 								consoleSignalTime = System.currentTimeMillis();
 							}
@@ -282,9 +282,9 @@ public class AgentImplementationEx implements Agent {
 							}
 							m_eventSynchronisation.waitNoInterrruptException(maximumShutdownTime);
 						}
-						m_logger.info("all workers are finished");
+						m_logger.info("All workers are finished");
 					}
-					m_logger.debug("normal shutdown");
+					m_logger.debug("Normal shutdown");
 					workerLauncher.shutdown();
 					break;
 				}
@@ -298,7 +298,7 @@ public class AgentImplementationEx implements Agent {
 
 					if (!m_consoleListener.received(ConsoleListener.ANY)) {
 						// We've got here naturally, without a console signal.
-						m_logger.debug("test is finished, waiting for console signal");
+						m_logger.debug("Test is finished, wait for console signal");
 						m_consoleListener.waitForMessage();
 					}
 
@@ -306,10 +306,10 @@ public class AgentImplementationEx implements Agent {
 						startMessage = m_consoleListener.getLastStartGrinderMessage();
 
 					} else if (m_consoleListener.received(ConsoleListener.STOP | ConsoleListener.SHUTDOWN)) {
-						m_logger.debug("got shutdown message");
+						m_logger.debug("Got shutdown message");
 						break;
 					} else {
-						m_logger.debug("natural death");
+						m_logger.debug("Natural death");
 						// ConsoleListener.RESET or natural death.
 						startMessage = null;
 					}
@@ -448,7 +448,7 @@ public class AgentImplementationEx implements Agent {
 		if (m_workerLauncherForShutdown != null && !m_workerLauncherForShutdown.allFinished()) {
 			m_workerLauncherForShutdown.destroyAllWorkers();
 		}
-		m_logger.info("agent is terminated by force");
+		m_logger.info("Agent is terminated by force");
 	}
 
 	private static class RampUpTimerTask extends TimerTask {
@@ -543,7 +543,7 @@ public class AgentImplementationEx implements Agent {
 			try {
 				m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_FINISHED, m_fileStore
 						.getCacheHighWaterMark()));
-				m_logger.debug("shut down message is sent");
+				m_logger.debug("Shut down message was sent");
 			} catch (CommunicationException e) {
 				NoOp.noOp();
 			} finally {
