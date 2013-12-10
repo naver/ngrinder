@@ -135,26 +135,18 @@ public class PerfTestController extends BaseController {
 	@RequestMapping({"/list", "/", ""})
 	public String getAll(User user, @RequestParam(required = false) String query,
 	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
-	                     @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
-
+	                     @PageableDefaults Pageable pageable, ModelMap model) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
 				defaultIfNull(pageable.getSort(),
 						new Sort(Direction.DESC, "lastModifiedDate")));
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
-
 		annotateDateMarker(tests);
 		model.addAttribute("tag", tag);
 		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
 		model.addAttribute("testListPage", tests);
 		model.addAttribute("queryFilter", queryFilter);
 		model.addAttribute("query", query);
-		model.addAttribute("page", pageable);
-		final Iterator<Order> iterator = pageable.getSort().iterator();
-		if (iterator.hasNext()) {
-			Order sortProp = iterator.next();
-			model.addAttribute("sortColumn", sortProp.getProperty());
-			model.addAttribute("sortDirection", sortProp.getDirection());
-		}
+		putPageIntoModelMap(model, pageable);
 		return "perftest/list";
 	}
 
@@ -562,6 +554,7 @@ public class PerfTestController extends BaseController {
 			return StringUtils.EMPTY;
 		}
 		List<String> perfStringList = Lists.newArrayList();
+		DecimalFormat format = new DecimalFormat("#00.0");
 		for (Entry<String, HashMap> each : statMap.entrySet()) {
 			Map value = each.getValue();
 			if (value == null) {
@@ -577,17 +570,10 @@ public class PerfTestController extends BaseController {
 			if (totalMemory != 0) {
 				memUsage = ((totalMemory - freeMemory) / totalMemory) * 100;
 			}
-			DecimalFormat format = new DecimalFormat("#00.0");
-			if (cpuUsedPercentage > 99.9f) {
-				cpuUsedPercentage = 99.9f;
-			}
-			if (memUsage > 99.9f) {
-				memUsage = 99.9f;
-			}
 			String perfString = String.format(" {'agent' : '%s', 'agentFull' : '%s', 'cpu' : '%s',"
 					+ " 'mem' : '%s', 'sentPerSec' : '%s', 'receivedPerSec' : '%s'}",
-					StringUtils.abbreviate(each.getKey(), 15), each.getKey(), format.format(cpuUsedPercentage),
-					format.format(memUsage), UnitUtils.byteCountToDisplaySize(sentPerSec),
+					StringUtils.abbreviate(each.getKey(), 15), each.getKey(), format.format(Math.min(cpuUsedPercentage, 99.9f)),
+					format.format(Math.min(memUsage, 99.9f)), UnitUtils.byteCountToDisplaySize(sentPerSec),
 					UnitUtils.byteCountToDisplaySize(receivedPerSec));
 			perfStringList.add(perfString);
 		}

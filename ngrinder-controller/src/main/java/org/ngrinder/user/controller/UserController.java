@@ -74,7 +74,7 @@ public class UserController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"", "/"})
 	public String getAll(ModelMap model, @RequestParam(required = false) Role role,
-	                     @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
+	                     @PageableDefaults Pageable pageable,
 	                     @RequestParam(required = false) String keywords) {
 
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
@@ -91,16 +91,11 @@ public class UserController extends BaseController {
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("role", role);
-		model.addAttribute("page", pageable);
-		final Iterator<Order> iterator = pageable.getSort().iterator();
-		if (iterator.hasNext()) {
-			Order sortProp = iterator.next();
-			model.addAttribute("sortColumn", sortProp.getProperty());
-			model.addAttribute("sortDirection", sortProp.getDirection());
-		}
-
+		putPageIntoModelMap(model, pageable);
 		return "user/list";
 	}
+
+
 
 	/**
 	 * Get user creation form page.

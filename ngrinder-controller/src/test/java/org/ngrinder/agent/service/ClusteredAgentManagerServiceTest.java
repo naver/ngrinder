@@ -151,7 +151,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentInfo.setPort(1);
 		agentInfo.setState(AgentControllerState.READY);
 		agentManagerService.saveAgent(agentInfo);
-		agentManagerService.checkAgentStateRegularly();
+		agentManagerService.checkAgentStatePeriodically();
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));

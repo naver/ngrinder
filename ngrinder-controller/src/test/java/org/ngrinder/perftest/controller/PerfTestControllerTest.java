@@ -218,7 +218,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetTestList() {
 		createPerfTest("new test1", Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.getAll(getTestUser(), null, null, null, null, model);
+		controller.getAll(getTestUser(), null, null, null, new PageRequest(0, 10), model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -236,7 +236,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		testAdmin.setTimeZone("Asia/Seoul");
 		testAdmin = userService.save(testAdmin);
 
-		controller.getAll(testAdmin, null, null, null, null, model);
+		controller.getAll(testAdmin, null, null, null, new PageRequest(0, 10), model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
@@ -262,7 +262,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		otherTestUser.setRole(Role.USER);
 		otherTestUser = userService.save(otherTestUser);
 		otherTestUser.setTimeZone("Asia/Seoul");
-		controller.getAll(otherTestUser, null, null, null, null, model);
+		controller.getAll(otherTestUser, null, null, null, new PageRequest(0, 10), model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();

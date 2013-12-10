@@ -70,7 +70,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	@Scheduled(fixedDelay = 5000)
 	@Transactional
-	public void checkAgentStateRegularly() {
+	public void checkAgentStatePeriodically() {
 		checkAgentState();
 	}
 

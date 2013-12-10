@@ -64,7 +64,6 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
 	@Before
 	public void init() {
-
 		agentManagerService = new ClusteredAgentManagerService() {
 			@SuppressWarnings("serial")
 			@Override

@@ -24,9 +24,12 @@ import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -87,6 +91,16 @@ public class BaseController implements Constants {
 	 */
 	public User getCurrentUser() {
 		return userContext.getCurrentUser();
+	}
+
+	protected void putPageIntoModelMap(ModelMap model, Pageable pageable) {
+		model.addAttribute("page", pageable);
+		final Iterator<Sort.Order> iterator = pageable.getSort().iterator();
+		if (iterator.hasNext()) {
+			Sort.Order sortProp = iterator.next();
+			model.addAttribute("sortColumn", sortProp.getProperty());
+			model.addAttribute("sortDirection", sortProp.getDirection());
+		}
 	}
 
 	/**
