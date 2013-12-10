@@ -1358,11 +1358,13 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	public List<Pair<String, String>> getAvailableReportPlugins(Long testId) {
 		List<Pair<String, String>> result = newArrayList();
 		File reportDir = getReportFileDirectory(testId);
-		for (File plugin : checkNotNull(reportDir.listFiles())) {
-			if (plugin.isDirectory()) {
-				for (String kind : plugin.list()) {
-					if (kind.endsWith(".data")) {
-						result.add(Pair.of(plugin.getName(), FilenameUtils.getBaseName(kind)));
+		if (reportDir.exists()) {
+			for (File plugin : checkNotNull(reportDir.listFiles())) {
+				if (plugin.isDirectory()) {
+					for (String kind : checkNotNull(plugin.list())) {
+						if (kind.endsWith(".data")) {
+							result.add(Pair.of(plugin.getName(), FilenameUtils.getBaseName(kind)));
+						}
 					}
 				}
 			}
