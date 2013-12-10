@@ -74,7 +74,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		checkAgentState();
 	}
 
-	protected void checkAgentState() {
+	public void checkAgentState() {
 		List<AgentInfo> changeAgents = Lists.newArrayList();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
