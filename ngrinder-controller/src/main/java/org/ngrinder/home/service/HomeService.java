@@ -89,7 +89,7 @@ public class HomeService {
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
 			feedConnection.setConnectTimeout(2000);
-
+			feedConnection.setReadTimeout(2000);
 			reader = new XmlReader(feedConnection);
 			SyndFeed feed = input.build(reader);
 			int count = 0;
