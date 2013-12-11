@@ -1,4 +1,5 @@
 <#import "../common/spring.ftl" as spring/>
+<#include "../common/ngrinder_macros.ftl">
 <style>
 	.form-horizontal-3 .control-label-wide {
 		width:170px;
@@ -9,44 +10,39 @@
 		<fieldset>
 			<legend>
 				<@spring.message "perfTest.report.summary"/>
-			</legend>
+            </legend>
 		</fieldset>
 		<div class="form-horizontal form-horizontal-3"
 			style="margin-left: 10px">
 			<fieldset>
-				<div class="control-group">
-					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.tps"/></label>
-					<div class="controls">
-						<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.meantime"/></label>
-					<div class="controls">
-						${(test.meanTestTime!0)?string("0.##")}
-						<code>MS</code>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.peakTPS"/></label>
-					<div class="controls">${test.peakTps!0}</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.totalTests"/></label>
-					<div class="controls">${(test.tests + test.errors)!0}</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.successfulTests"/></label>
-					<div class="controls">${test.tests!0}</div>
-				</div>
-				<div class="control-group">
-					<label  class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.errors"/></label>
-					<div class="controls">${test.errors!0}</div>
-				</div>
-				<div class="control-group">
-                    <label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.runtime"/></label>
-                    <div class="controls">${test.runtimeStr!""}</div>
-                </div>
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.tps">
+            		<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
+				</@control_group>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.meantime">
+					${(test.meanTestTime)?string("0.##")}
+					<code>MS</code>
+				</@control_group>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.peakTPS">
+					${test.peakTps}
+				</@control_group>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.totalTests">
+					${test.tests + test.errors}
+				</@control_group>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.successfulTests">
+					${test.tests}
+				</@control_group>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.errors">
+					${test.errors}
+				</@control_group>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.runtime">
+					${test.runtimeStr}
+				</@control_group>
 			</fieldset>
 		</div>
 	</div>
@@ -75,15 +71,14 @@
 			</legend>
 		</fieldSet>
 		<div style="mgin-left: 10px">
-			<#if logs?has_content> 
-				<#list logs as eachLog>
-					<div style="width:100%;" class="ellipsis">
-						<a href="${req.getContextPath()}/perftest/${test.id?c}/show_log/${eachLog}" target="log" title="open the log in the new window"><img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>  <a href="${req.getContextPath()}/perftest/${test.id?c}/download_log/${eachLog}">${eachLog}</a>
-					</div>
-				</#list> 
-			<#else> 
-				<@spring.message "perfTest.report.message.noLog"/>
-			</#if>
+			<@list list_items=logs others="message" message="perfTest.report.message.noLog"; eachLog >
+				<div style="width:100%;" class="ellipsis">
+					<a href="${req.getContextPath()}/perftest/${test.id?c}/show_log/${eachLog}" target="log"
+					   title="open the log in the new window">
+					<img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>
+					<a href="${req.getContextPath()}/perftest/${test.id?c}/download_log/${eachLog}">${eachLog}</a>
+				</div>
+			</@list>
 		</div>
 	</div>
 	<div class="span8">

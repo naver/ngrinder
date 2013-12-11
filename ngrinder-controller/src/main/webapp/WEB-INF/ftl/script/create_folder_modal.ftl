@@ -6,26 +6,17 @@
 	<div class="modal-body">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/new/${currentPath}">
 			<fieldset>
-				<div class="control-group">
-					<label for="folder_name_input" class="control-label">
-						<@spring.message "script.list.label.folderName"/>
-					</label>
-					<div class="controls"> 
-					  <#assign content_message>
-					  	<@spring.message "common.form.rule.sampleName"/>
-					  </#assign>
-					  <input type="hidden" name="type" value="folder"/>
-					  <input type="text" id="folder_name_input" name="folderName"
-					  		class="span2" 
-					  		rel='create_folder_modal_popover'
-							title='<@spring.message "script.list.label.folderName"/>'
-							data-html='true'
-							data-placement="right"
-					  		data-content="${content_message?js_string}"
-					  />
-					  <span class="help-inline"></span>
-					</div>
-				</div>					
+				<@control_group name="folderName" inline_help="true" label_message_key="script.list.label.folderName">
+					<#assign content_message>
+						<@spring.message "common.form.rule.sampleName"/>
+					</#assign>
+					<input type="hidden" name="type" value="folder"/>
+					<@input_popover name="folderName" rel="create_folder_modal_popover"
+						data_placement="right"
+						message="script.list.label.folderName"
+						message_content="${content_message?js_string}"
+						extra_css="input-medium" />
+				</@control_group>
 			</fieldset> 
 		</form>
 	</div>
@@ -39,7 +30,7 @@
 	$(document).ready(function() {
 		$("input[rel='create_folder_modal_popover']").popover({trigger: 'focus', container:'#create_folder_modal'});
 		$("#create_folder_button").click(function() {
-			var $name = $("#folder_name_input");
+			var $name = $("#folder_name");
 			if (checkEmptyByObj($name)) {
 				markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
 				return;

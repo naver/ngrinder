@@ -35,6 +35,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
 /**
  * Performance Test Entity.
  */
+
 @Entity
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
@@ -46,6 +47,19 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private static final long serialVersionUID = 1369809450686098944L;
 
 	private static final int MAX_STRING_SIZE = 2048;
+
+	public PerfTest() {
+
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param createdUser crested user.
+	 */
+	public PerfTest(User createdUser) {
+		this.setCreatedUser(createdUser);
+	}
 
 	@Expose
 	@Cloneable
@@ -287,10 +301,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.status = getSafe(this.status, Status.SAVED);
 		this.agentCount = getSafe(this.agentCount);
 		this.port = getSafe(this.port);
-		this.processes = getSafe(this.processes);
-		this.threads = getSafe(this.threads);
-
-		this.useRampUp = getSafe(this.useRampUp);
+		this.processes = getSafe(this.processes, 1);
+		this.threads = getSafe(this.threads, 1);
 		this.scriptName = getSafe(this.scriptName, "");
 		this.testName = getSafe(this.testName, "");
 		this.progressMessage = getSafe(this.progressMessage, "");
@@ -308,6 +320,16 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.scriptRevision = getSafe(this.scriptRevision, -1L);
 		this.param = getSafe(this.param, "");
 		this.region = getSafe(this.region, "NONE");
+		this.targetHosts = getSafe(this.targetHosts, "");
+		this.description = getSafe(this.description, "");
+		this.tagString = getSafe(this.tagString, "");
+		this.vuserPerAgent = getSafe(this.vuserPerAgent, 1);
+		this.safeDistribution = getSafe(this.safeDistribution, false);
+		this.useRampUp = getSafe(this.useRampUp, false);
+		this.initProcesses = getSafe(this.initProcesses, 0);
+		this.processIncrement = getSafe(this.processIncrement, 1);
+		this.initSleepTime = getSafe(this.initSleepTime, 0);
+		this.processIncrementInterval = getSafe(this.processIncrementInterval, 1000);
 	}
 
 

@@ -197,7 +197,11 @@ img.status {
 }
 
 .left-float {
- 	float: left !important;
+ 	float: left ;
+}
+
+.right-float {
+    float: right ;
 }
 
 div.ellipsis {

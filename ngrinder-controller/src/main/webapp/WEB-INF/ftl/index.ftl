@@ -42,70 +42,71 @@
 				</div>
 		   		<div class="well">
 			  		<br/>
-				  	<#if left_panel_entries?has_content>
-					  	<table class="table table-striped ellipsis">
-					  		<colgroup>
-							 	<col width="350px"/>
-							 	<col />
-							</colgroup>
-					  		<#list left_panel_entries as each_left_entry>
-					  			<#if each_left_entry_index lt 6>
-					  			<tr>
-					  				<td class="ellipsis">
-					  					<#if each_left_entry.isNew()><span class="label label-info">new</span></#if>
-					  					<a href="${each_left_entry.link }" target="_blank">${each_left_entry.title}
-					  					</a> 
-					  				</td>
-					  				<td>${each_left_entry.lastUpdatedDate?string("yyyy-MM-dd")}
-					  				</td>
-					  			</tr>
-					  			</#if>
-					  		</#list>
-				  			<tr>
-				  				<td>
-				  					<img src="${req.getContextPath()}/img/asksupport.gif"/> 
-				  					<a href="${ask_question_url}" target="_blank"><@spring.message "home.button.ask"/></a>
-				  					&nbsp;&nbsp;&nbsp; <img src="${req.getContextPath()}/img/bug_icon.gif"/>
-				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug" target="_blank"><@spring.message "home.button.bug"/></a>	
-				  				</td>
-				  				<td><a href="${see_more_question_url}" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
-				  			</tr>
-				  			</div>
-		  				</table>
-		   		 	 </#if> 	
-  			    </div>
+					<table class="table table-striped ellipsis">
+						<colgroup>
+							<col width="350px"/>
+							<col />
+						</colgroup>
+						<@list list_items=left_panel_entries ; each_left_entry , each_left_entry_index>
+							<#if each_left_entry_index lt 6>
+							<tr>
+								<td class="ellipsis">
+									<#if each_left_entry.isNew()><span class="label label-info">new</span></#if>
+									<a href="${each_left_entry.link }" target="_blank">${each_left_entry.title}
+									</a>
+								</td>
+								<td>${each_left_entry.lastUpdatedDate?string("yyyy-MM-dd")}
+								</td>
+							</tr>
+							</#if>
+						</@list>
+
+						<#if left_panel_entries?has_content>
+						<tr>
+							<td>
+								<img src="${req.getContextPath()}/img/asksupport.gif"/>
+								<a href="${ask_question_url}" target="_blank"><@spring.message "home.button.ask"/></a>
+								&nbsp;&nbsp;&nbsp; <img src="${req.getContextPath()}/img/bug_icon.gif"/>
+								<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug" target="_blank"><@spring.message "home.button.bug"/></a>
+							</td>
+							<td><a href="${see_more_question_url}" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
+						</tr>
+						</#if>
+					</table>
+  				</div>
 			</div>
 			<div class="span6">
 				<div class="page-header">
 	 				 <h4><@spring.message "home.developerResources.title"/></h4> 
-				</div> 
+				</div>
+
 		   		<div class="well">
 			  		<br/>
-				  	<#if right_panel_entries?has_content>
-					  	<table class="table table-striped ellipsis">
-					  		<colgroup>
-							 	<col width="350px"/> 
-							 	<col />
-							</colgroup>
-					  		<#list right_panel_entries as each_right_entry>
-					  			<#if each_right_entry_index lt 6>
-					  			<tr>
-					  				<td class="ellipsis"> 
-					  					<#if each_right_entry.isNew()><span class="label label-info">new</span></#if>
-					  					<a href="${each_right_entry.link}" target="_blank">${each_right_entry.title}</a>
-					  				</td>
-					  				<td>${each_right_entry.lastUpdatedDate?string("yyyy-MM-dd")}</td>
-					  			</tr>
-					  			</#if>
-					  		</#list>
-				  			<tr>
-				  				<td></td>
-				  				<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
-				  			</tr>
-				  			</div>
-		  				</table>
-		   		 	 </#if> 
+					<table class="table table-striped ellipsis">
+						<colgroup>
+							<col width="350px"/>
+							<col />
+						</colgroup>
+						<@list list_items=right_panel_entries ; each_right_entry , each_right_entry_index>
+							<#if each_right_entry_index lt 6>
+							<tr>
+								<td class="ellipsis">
+									<#if each_right_entry.isNew()><span class="label label-info">new</span></#if>
+									<a href="${each_right_entry.link}" target="_blank">${each_right_entry.title}</a>
+								</td>
+								<td>${each_right_entry.lastUpdatedDate?string("yyyy-MM-dd")}</td>
+							</tr>
+							</#if>
+						</@list>
+						<#if right_panel_entries?has_content>
+						<tr>
+							<td></td>
+							<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
+						</tr>
+						</#if>
+					</table>
 			  	</div>
+
 			</div>
 		</div>
 		<#include "common/copyright.ftl">
@@ -130,18 +131,18 @@
 				return false;
 			})
 			
-	        $("#quick_start").validate({
-	            errorPlacement: function(error, element) {
+			$("#quick_start").validate({
+				errorPlacement: function(error, element) {
 	            	$("div.quick-start").popover("show");
-		        }
-		    });
-		   	
+				}
+			});
+
 		    $("#url").change(function() {
 		    	if ($(this).valid()) {
 		    		$("div.quick-start").popover("hide");
 		    	}
-		    });
-	    });
+			});
+		});
 	</script>
 	</body>
 </html>

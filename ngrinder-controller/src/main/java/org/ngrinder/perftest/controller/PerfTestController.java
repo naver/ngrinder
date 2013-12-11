@@ -191,16 +191,19 @@ public class PerfTestController extends BaseController {
 	@RequestMapping("/{id}")
 	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
 		PerfTest test = null;
+
 		if (id != null) {
 			test = getOneWithPermissionCheck(user, id, true);
+		} else {
+			test = new PerfTest(user);
+			test.init();
 		}
 
 		model.addAttribute(PARAM_TEST, test);
 		// Retrieve the agent count map based on create user, if the test is
 		// created by the others.
-		if (test != null) {
-			user = test.getCreatedUser();
-		}
+		user = test.getCreatedUser() != null ? test.getCreatedUser() : user;
+
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
@@ -265,22 +268,37 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping("/quickstart")
 	public String getQuickStart(User user,
-	                            @RequestParam(value = "url", required = true) String urlString,
-	                            @RequestParam(value = "scriptType", required = true) String scriptType,
-	                            ModelMap model) {
+								@RequestParam(value = "url", required = true) String urlString,
+								@RequestParam(value = "scriptType", required = true) String scriptType,
+								ModelMap model) {
 		URL url = checkValidURL(urlString);
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
 				scriptHandlerFactory.getHandler(scriptType));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
-		model.addAttribute(PARAM_TEST_NAME, "Test for " + url.getHost());
-		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
+		model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
 		addDefaultAttributeOnModel(model);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
+	}
+
+	/**
+	 * Create a new test from quick start mode.
+	 *
+	 * @param user       user
+	 * @param testName   test name
+	 * @param targetHost target host
+	 * @return PerfTest
+	 */
+	private PerfTest createPerfTestFromQuickStart(User user, String testName, String targetHost) {
+		PerfTest test = new PerfTest(user);
+		test.init();
+		test.setTestName(testName);
+		test.setTargetHosts(targetHost);
+		return test;
 	}
 
 	/**
@@ -714,7 +732,6 @@ public class PerfTestController extends BaseController {
 	 *
 	 * @param user       user
 	 * @param scriptPath script path
-	 * @param revision   revision
 	 * @param ownerId    ownerId
 	 * @return json string representing resources and libs.
 	 */
@@ -799,8 +816,8 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/{id}/plugin/{plugin}")
 	public HttpEntity<String> getPluginGraph(@PathVariable("id") long id,
-	                                         @PathVariable("plugin") String plugin,
-	                                         @RequestParam("kind") String kind, @RequestParam int imgWidth) {
+											 @PathVariable("plugin") String plugin,
+											 @RequestParam("kind") String kind, @RequestParam int imgWidth) {
 		return toJsonHttpEntity(getReportPluginGraphData(id, plugin, kind, imgWidth));
 	}
 

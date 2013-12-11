@@ -42,35 +42,31 @@
 	}
 
 	function getState() {
-		var result = true;
-		$.ajax({
-			url : "${req.getContextPath()}/monitor/state",
-			async : false,
-			cache : false,
-			dataType : 'json',
-			data : {
-				'ip' : '${(targetIP)!}'
-			},
-			success : function(res) {
-				getChartData(res);
-				maxCPU = getMax(maxCPU, cpuUsage.aElement);
-				showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
-				maxMemory = getMax(maxMemory, memoryUsage.aElement);
-				showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
-				result = true;
-				errorCount = 0;
-			},
-			error : function() {
-				errorCount = errorCount + 1;
-				if (errorCount > 3) {
-					showErrorMsg("Failed to get the monitoring data.");
-					result = false;
-					if (timer) {
-						window.clearInterval(timer);
-					}
+		var result = false;
+		var obj = new AjaxObj("/monitor/state");
+		obj.params = {'ip' : '${(targetIP)!}'};
+		obj.async = false;
+		obj.success = function(res) {
+			getChartData(res);
+			maxCPU = getMax(maxCPU, cpuUsage.aElement);
+			showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+			maxMemory = getMax(maxMemory, memoryUsage.aElement);
+			showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+			result = true;
+			errorCount = 0;
+		};
+		obj.error = function() {
+			errorCount = errorCount + 1;
+			if (errorCount > 3) {
+				showErrorMsg("Failed to get the monitoring data.");
+				result = false;
+				if (timer) {
+					window.clearInterval(timer);
 				}
 			}
-		});
+		};
+
+		callAjaxAPI(obj);
 		return result;
 	}
 

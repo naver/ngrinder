@@ -27,18 +27,18 @@
 								<td>
 								<#if svnUrl?has_content>
 									<div class="input-prepend pull-right" rel="popover" 
-						               		title="Subversion" data-placement="bottom"
-						               		data-content='<@spring.message "script.list.message.svn"/>'
-						               		data-html="true"> 
-						               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
+										title="Subversion" data-placement="bottom"
+										data-content='<@spring.message "script.list.message.svn"/>'
+										data-html="true">
+										<span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
 						        	</div>  
 					        	</#if>
 				        		</td>
 				        	</tr>
 			        	</table>
-			        </td>	
-			     </tr>
-			     <tr>
+					</td>
+				</tr>
+				<tr>
 			     	<td>
 						<table  style="width:100%; margin-top:5px">
 							<colgroup>
@@ -63,7 +63,7 @@
 									</#if>
 								</td>
 								<td>
-									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="delete_script_button">
+									<a class="pointer-cursor btn btn-danger pull-right" id="delete_script_button">
 										<i class="icon-remove icon-white"></i>
 										<@spring.message "script.list.button.delete"/>
 									</a>
@@ -100,55 +100,46 @@
 				</tr>
 			</thead>
 			<tbody>
-				<#if files?has_content>	
-					<#list files as script>
-						<tr>
-							<td><#if script.fileName != ".."><input type="checkbox" class="checkbox"  value="${script.fileName}"></#if></td>
-							<td>
-								<#if script.fileType.fileCategory.isEditable()>
-									<i class="icon-file"></i>
-								<#elseif script.fileType == "dir">
-									<i class="icon-folder-open"></i>
-								<#else>	
-									<i class="icon-briefcase"></i>
-								</#if>
-							</td>
-							<td class="ellipsis">
-								<#if script.fileType.fileCategory.isEditable()>
-									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
-								<#elseif script.fileType == "dir">
-									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
-								<#else>	
-									<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank" title="${script.path}">${script.fileName}</a>
-								</#if> 
-							</td> 
-							<td class="ellipsis" title="${(script.description)!?html}">${(script.description)!}</td>
-							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
-							<td>${script.revision}</td>
-							<td>
-								<#if script.fileType != "dir">
-									<#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}
-								</#if>
-							</td>
-							<td class="center">
-								<#if script.fileType != "dir">
-									<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}"></i>
-									</a>
-								</#if>
-							</td>
-						</tr>
-					</#list>
-				<#else>
+				<@list list_items=files ; script>
 					<tr>
-						<td colspan="8" class="center">
-							<@spring.message "common.message.noData"/>
+						<td><#if script.fileName != ".."><input type="checkbox" class="checkbox"  value="${script.fileName}"></#if></td>
+						<td>
+							<#if script.fileType.fileCategory.isEditable()>
+								<i class="icon-file"></i>
+							<#elseif script.fileType == "dir">
+								<i class="icon-folder-open"></i>
+							<#else>
+								<i class="icon-briefcase"></i>
+							</#if>
+						</td>
+						<td class="ellipsis">
+							<#if script.fileType.fileCategory.isEditable()>
+								<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
+							<#elseif script.fileType == "dir">
+								<a href="${req.getContextPath()}/script/list/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
+							<#else>
+								<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank" title="${script.path}">${script.fileName}</a>
+							</#if>
+						</td>
+						<td class="ellipsis" title="${(script.description)!?html}">${(script.description)!}</td>
+						<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
+						<td>${script.revision}</td>
+						<td>
+							<#if script.fileType != "dir">
+								<#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}
+							</#if>
+						</td>
+						<td class="center">
+							<#if script.fileType != "dir">
+								<i class="pointer-cursor icon-download-alt script-download" spath="${script.path}"></i>
+							</#if>
 						</td>
 					</tr>
-				</#if>		
-				</tbody>
-				</table>
-				<#include "../common/copyright.ftl">
-			</div>
+				</@list>
+			</tbody>
+		</table>
+	<#include "../common/copyright.ftl">
+	</div>
 	<#if !(query??)>
 	<#include "create_script_modal.ftl">
 	<#include "create_folder_modal.ftl">
@@ -170,16 +161,13 @@
 							return $(this).val();
 						}).get().join(",");
 
-						$.ajax({
-					          url: "${req.getContextPath()}/script/delete/${currentPath}",
-					          type: 'POST',
-					          data: {
-					              'filesString': scriptsStr
-					          },
-					          success: function (res) {
-					          	  document.location.reload();
-					          }
-					    });
+						var ajaxObj = new AjaxObj("${req.getContextPath()}/script/delete/${currentPath}");
+						ajaxObj.type = "POST"
+						ajaxObj.params = {'filesString': scriptsStr};
+						ajaxObj.success = function (res) {
+							document.location.reload();
+						};
+						ajaxObj.call();
 					}
 				});
 			});

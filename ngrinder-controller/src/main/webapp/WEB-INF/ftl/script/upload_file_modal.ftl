@@ -8,23 +8,20 @@
 				id="uploadForm" enctype="multipart/form-data">
 			<fieldset>
 				<input type="hidden" id="path" name="path"/>
-				<div class="control-group">
-					<label for="descripton_input" class="control-label"><@spring.message "script.option.commit"/></label>
-					<div class="controls">
-					  <input type="text" id="descripton_input" name="description">
-					  <span class="help-inline"></span>
+
+				<@control_group name="descriptonInput" inline_help="true" label_message_key="script.option.commit">
+					<input type="text" id="descripton_input" name="description">
+				</@control_group>
+
+				<@control_group name="fileInput" label_message_key="script.list.label.file">
+					<div rel='upload_file_modal_popover' data-html='true'
+						 title='<@spring.message "script.list.popover.upload.title"/>'
+						 data-content='<@spring.message "script.list.popover.upload.content"/>'>
+						<input type="file" class="input-file" id="file_input" name="uploadFile"/>
+						<span class="help-inline"></span>
 					</div>
-				</div>
-				<div class="control-group">
-					<label for="file_input" class="control-label"><@spring.message "script.list.label.file"/></label>
-					<div class="controls" rel='upload_file_modal_popover' 
-					  		title='<@spring.message "script.list.popover.upload.title"/>'
-					  		data-html='true'
-					   		data-content='<@spring.message "script.list.popover.upload.content"/>'>
-					  <input type="file" class="input-file" id="file_input" name="uploadFile"/> 
-					  <span class="help-inline"></span>
-					</div>
-				</div>				
+				</@control_group>
+
 			</fieldset>
 		</form>
 	</div>

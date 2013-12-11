@@ -176,36 +176,23 @@
 			  method="POST"
     		style="margin-bottom: 0px">
 			<div class="well">
-				<input type="hidden" id="test_id" name="id" value="${(test.id)!}"> 
+				<input type="hidden" id="test_id" name="id" value="${(test.id)!}">
 				<div class="form-horizontal" id="query_div">
 					<fieldset>
 						<div class="control-group">
 							<div class="row">
 								<div class="span4-5">
-									<div class="control-group">
-										<label for="test_name" class="control-label"><@spring.message "perfTest.configuration.testName"/></label>
-										<#if test?? && test.testName??>
-											<#assign initTestName = test.testName>
-										<#elseif testName??> 
-											<#assign initTestName = testName> 
-										<#else>
-				                 	   		<#assign initTestName = "">
-			                    		</#if>
-			                    		<div class="controls" style="margin-left: 120px;">
-											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${(initTestName)!}"/>
-										</div>  
-									</div>
+									<@control_group name = "testName" controls_style = "margin-left: 120px;" label_message_key = "perfTest.configuration.testName">
+										<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${test.testName}"/>
+									</@control_group>
 								</div>
 								<div class="span3-4">
-									<div class="control-group">
-										<label for="tag_string" class="control-label" style="width:60px;"><@spring.message "perfTest.configuration.tags"/></label>
-										<div class="controls" style="margin-left: 40px;"> 
-											<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${(test.tagString)!}">
-										</div> 
-									</div>  
+									<@control_group name = "tagString" label_style = "width:60px;" controls_style = "margin-left: 40px;" label_message_key = "perfTest.configuration.tags">
+										<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${test.tagString}">
+									</@control_group>
 								</div>
 								<div class="span1">
-									<#if test??> 
+									<#if test.id??>
 										<img id="test_status_img" 
 										src="${req.getContextPath()}/img/ball/${test.status.iconName}"
 										rel='popover'
@@ -216,21 +203,17 @@
 										/>
 									</#if>
 								</div>
-								<#if test??>
-									<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
-										<#assign isClone = true/>
-									<#else>
-										<#assign isClone = false/> 
-									</#if>
+								<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
+									<#assign isClone = true/>
 								<#else>
-									<#assign isClone = false/> 
+									<#assign isClone = false/>
 								</#if>
 								
 								<div class="span2-3" style="margin-left:0px"> 
 									<div class="control-group">
 										<input type="hidden" name="isClone" value="${isClone?string}"/>
 										<#--  Save/Clone is available only when the test owner is current user.   -->
-										<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
+										<#if test.createdUser.userId != currentUser.factualUser.userId>
 											<#assign disabled = "disabled">
 										</#if>
 										<button type="submit" class="btn btn-success" id="save_test_btn" style="width:55px" ${disabled!}>
@@ -250,7 +233,7 @@
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label"><@spring.message "common.label.description"/></label>
 							<div class="controls" style="margin-left: 120px;">
-								<textarea id="description" name="description" style="resize: none; width:751px; height:36px">${(test.description)!}</textarea>
+								<textarea id="description" name="description" style="resize: none; width:751px; height:36px">${test.description}</textarea>
 							</div>
 						</div>
 					</fieldset>
@@ -258,7 +241,7 @@
 			</div>
 			<!-- end well -->
 			<@security.authorize ifAnyGranted="A, S">
-				<#if test?? && test.createdUser?? && currentUser.userId != test.createdUser.userId>
+				<#if test.createdUser?? && currentUser.userId != test.createdUser.userId>
 					<div class="pull-right">
 						<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})		
 					</div>
@@ -299,7 +282,7 @@
 			</div>
 			<!-- end tabbable -->
 			<input type="hidden" id="scheduled_time" name="scheduledTime" /> 
-			<#if test??> 
+			<#if test.id??>
 				<input type="hidden" id="test_status" name="status" value="${(test.status)}">
 				<input type="hidden" id="test_status_type" name="statusType" value="${(test.status.category)}"> 
 			<#else>
@@ -365,39 +348,34 @@ $(document).ready(function () {
 	updateTotalVuser();
 	updateRampupChart();
 	
-	<#if test??>
-		<#assign category = test.status.category>
-		<#if category == "TESTING"> 
-  			displayConfigAndRunningSection(); 
-		<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR"> 
-			finished = true;
-			displayConfigAndReportSection();
-		<#else>
-			displayConfigOnly(); 
-		</#if>
+
+	<#assign category = test.status.category>
+	<#if category == "TESTING">
+		displayConfigAndRunningSection();
+	<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR">
+		finished = true;
+		displayConfigAndReportSection();
 	<#else>
 		displayConfigOnly();
 	</#if>
+
 	(function refreshContent() {
-		var ids = [];
 		if (!testId || finished == true) {
 			return;
 		}
 
-		$.ajax({
-			url : '${req.getContextPath()}/perftest/api/<#if test??>${(test.id)?c}</#if>/status',
-			type : 'GET',
-			success : function(perfTestData) {
-				perfTestData = eval(perfTestData);
-				data = perfTestData.status;
-				for ( var i = 0; i < data.length; i++) {
-					updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
-				}
-			},
-			complete : function() {
-				setTimeout(refreshContent, 3000);
+		var ajaxObj = new AjaxObj("/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status");
+		ajaxObj.success = function(data) {
+			data = eval(data);
+			data = data.status;
+			for ( var i = 0; i < data.length; i++) {
+				updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 			}
-		});
+		};
+		ajaxObj.complete = function() {
+			setTimeout(refreshContent, 3000);
+		};
+        ajaxObj.call();
 	})();
 });
 
@@ -434,21 +412,14 @@ function initTags() {
 		maximumSelectionSize: 5,
 		query: function(query) {
 			var data = {results:[]};
-			$.ajax({
-				url : "${req.getContextPath()}/perftest/search_tag",
-				dataType : 'json',
-				type : 'POST',
-				cache : true,
-				data : {
-					'query' : query.term
-				},
-				success : function(res) {
-					for (var i = 0; i < res.length; i++) {
-						data.results.push({id:"q_" + res[i], text:res[i]});
-					} 
-					query.callback(data);
+			var ajaxObj = new AjaxPostObj("/perftest/search_tag", {'query' : query.term});
+			ajaxObj.success = function(res) {
+				for (var i = 0; i < res.length; i++) {
+					data.results.push({id:"q_" + res[i], text:res[i]});
 				}
-			});
+				query.callback(data);
+			};
+            ajaxObj.call();
 		}
 	}).change(formatTags);
 	
@@ -887,8 +858,8 @@ function bindEvent() {
 		if (currentScript) {
 			var ownerId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
-				<#if test??>
-					ownerId = "&ownerId=${(test.createdUser.userId)!}";
+				<#if test.id??>
+					ownerId = "&ownerId=${test.createdUser.userId}";
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#script_revision").val();
@@ -986,42 +957,39 @@ function initChartData(size) {
 }
 
 function updateScript() {
-	$.ajax({
-		url : "${req.getContextPath()}/perftest/api/script",
-		dataType : 'json',
-		data : {
-			<@security.authorize ifAnyGranted="A, S">
-			<#if test??>'ownerId' : '${test.createdUser.userId}'</#if> 
-			</@security.authorize>
-		},
-		success : function(res) {
-			$scriptSelection = $("#script_name");
-			var selectedScript = $scriptSelection.attr("old_script");
-			var exists = false;
-			for (var i = 0; i < res.length; i++) {
-				if (selectedScript == res[i].path) {
-					exists = true;
-				}
-				$scriptSelection.append($("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>"));	
+	var ajaxObj = new AjaxObj("/perftest/api/script", null, "<@spring.message "common.error.error"/>");
+	ajaxObj.params = {
+		<@security.authorize ifAnyGranted="A, S">
+				<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
+		</@security.authorize>
+	};
+	ajaxObj.success = function(res) {
+		var $scriptSelection = $("#script_name");
+		var selectedScript = $scriptSelection.attr("old_script");
+		var exists = false;
+		for (var i = 0; i < res.length; i++) {
+			if (selectedScript == res[i].path) {
+				exists = true;
 			}
-			if (exists) {
-				$scriptSelection.select2("val", selectedScript);
-			} else if (selectedScript) {
-				$scriptSelection.append($("<option value='' revision='-1' validated='false'>(deleted)" + selectedScript +"</option>"));
-				$scriptSelection.select2("val", ""); 
-			} else {
-				$scriptSelection.append($("<option value='' revision='-1' validated='false'>" + selectedScript +"</option>"));
-				$scriptSelection.select2("val", ""); 
-			}
-		
-			bindNewScript($scriptSelection, true);
-			hideProgressBar();
-		},
-		error : function() {
-			showErrorMsg("<@spring.message "common.error.error"/>");
-			return false;
+			$scriptSelection.append($("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>"));
 		}
-	});
+		if (exists) {
+			$scriptSelection.select2("val", selectedScript);
+		} else if (selectedScript) {
+			$scriptSelection.append($("<option value='' revision='-1' validated='false'>(deleted)" + selectedScript +"</option>"));
+			$scriptSelection.select2("val", "");
+		} else {
+			$scriptSelection.append($("<option value='' revision='-1' validated='false'>" + selectedScript +"</option>"));
+			$scriptSelection.select2("val", "");
+		}
+
+		bindNewScript($scriptSelection, true);
+	};
+    ajaxObj.complete = function() {
+        hideProgressBar();
+    };
+
+    ajaxObj.call();
 }
 
 function updateScriptResources(first) {
@@ -1029,37 +997,31 @@ function updateScriptResources(first) {
 	if (!scriptName) {
 		return;
 	}
-	
-	$.ajax({
-		url : "${req.getContextPath()}/perftest/api/resource",
-		dataType : 'json',
-		data : {
-			'scriptPath' : scriptName,
-			'r' : $("#script_revision").val()
-			<@security.authorize ifAnyGranted="A, S">
-			<#if test??>,'ownerId' : '${test.createdUser.userId}'</#if> 
-			</@security.authorize>
-		},
-		success : function(res) {
-			var html = "";
-			var len = res.resources.length;
-			if (first == false) {
-				initHosts(res.targetHosts);
-			}
-			for ( var i = 0; i < len; i++) {
-				var value = res.resources[i];
-				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
-			}
-			$("#scriptResources").html(html);
-		},
-		complete : function() {
-			hideProgressBar();
-		},
-		error : function() {
-			showErrorMsg("<@spring.message "common.error.error"/>");
-			return false;
+
+	var ajaxObj = new AjaxObj("/perftest/api/resource", null, "<@spring.message "common.error.error"/>");
+	ajaxObj.params = {
+		'scriptPath' : scriptName,
+		'r' : $("#script_revision").val()
+		<@security.authorize ifAnyGranted="A, S">
+			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
+		</@security.authorize>
+    };
+	ajaxObj.success = function(res) {
+		var html = "";
+		var len = res.resources.length;
+		if (first == false) {
+			initHosts(res.targetHosts);
 		}
-	});
+		for ( var i = 0; i < len; i++) {
+			var value = res.resources[i];
+			html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
+		}
+		$("#script_resources").html(html);
+	};
+	ajaxObj.complete = function() {
+		hideProgressBar();
+	};
+	ajaxObj.call();
 }
 
 function updateVuserPolicy(vuser) {
@@ -1114,7 +1076,7 @@ function getOption(cnt) {
 }
 
 function openReportDiv(onFinishHook) {
-	$("#report_section").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
+	$("#report_section").load("${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
 		function() {
 			if (onFinishHook !== undefined) {
 				onFinishHook();

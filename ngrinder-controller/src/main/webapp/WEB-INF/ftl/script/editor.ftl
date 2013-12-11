@@ -33,7 +33,7 @@
 				min-width:500px; 
 				margin-bottom:12px; 
 				padding:5px 
-		    }
+			}
 		</style>
 	</head>
 
@@ -62,10 +62,10 @@
 											</td>
 											<td>
 											<#if scriptHandler.isValidatable()>
-												<a class="btn btn-success" href="javascript:void(0);" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
-												<a class="btn btn-primary" href="javascript:void(0);" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="pointer-cursor btn btn-primary" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
 											<#else>
-												<a class="btn btn-success" href="javascript:void(0);" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
 											</#if>
 											</td>
 										</tr> 
@@ -113,28 +113,28 @@
 					title="Tip" data-html="ture"
 					data-placement="left"
 				 	data-content="
-			      Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/> 
-			      Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
-			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
-			      Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
-			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
-			      F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
-			      ESC : <@spring.message 'script.editor.tip.back'/>
-			      "><code>Tip</code></div> 
+						Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/>
+						Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
+						Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
+						Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
+						Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
+						F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
+						ESC : <@spring.message 'script.editor.tip.back'/>
+						"><code>Tip</code></div>
 			</div>
 		</div>
 		<div id="validation_result_panel" style="display:none;">
 			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
 			</pre>
-			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a href="javascript:void(0)" id="expand_btn"><code>+</code></a></div>
+			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
 		</div>		 
 		<#include "../common/copyright.ftl"> 
 	</div>
 	
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
-    <#include "../perftest/host_modal.ftl">
-    <script>
+	<#include "../perftest/host_modal.ftl">
+	<script>
     	var changed = false;
     	var curRevision = ${curRevision!0};
     	var lastRevision = ${lastRevision!0};
@@ -149,30 +149,30 @@
     	}
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
-			   mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
-			   theme: "eclipse",
-			   lineNumbers: true,
-			   lineWrapping: true,
-			   indentUnit:4,
-			   tabSize:4,
-			   indentWithTabs:true,
-			   smartIndent:false,
-			   extraKeys: {
-		         "F11": function(cm) {
-		           setFullScreen(cm, !isFullScreen(cm));
-		         },
-		         "Esc": function(cm) {
-		           if (isFullScreen(cm)) setFullScreen(cm, false);
-		         },
-		         Tab: "indentMore"
-		       },
-			   onCursorActivity: function() {
-			     editor.setLineClass(hlLine, null, null);
-			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-			   },
-			   onChange : function() {
+				mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
+				theme: "eclipse",
+				lineNumbers: true,
+				lineWrapping: true,
+				indentUnit:4,
+				tabSize:4,
+				indentWithTabs:true,
+				smartIndent:false,
+				extraKeys: {
+				 "F11": function(cm) {
+				   setFullScreen(cm, !isFullScreen(cm));
+				 },
+				 "Esc": function(cm) {
+				   if (isFullScreen(cm)) setFullScreen(cm, false);
+				 },
+				 Tab: "indentMore"
+				},
+				onCursorActivity: function() {
+				 editor.setLineClass(hlLine, null, null);
+				 hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+				},
+				onChange : function() {
 				   changed = true;
-			   }
+				}
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 
@@ -205,29 +205,28 @@
 				$('#validation_result_panel').hide();
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
-				$.ajax({
-			  		url: "${req.getContextPath()}/script/api/validate",
-			    	async: true,
-			    	type: "POST",
-					data: {'path':scriptPath, 'content': newContent, 
-						<@security.authorize ifAnyGranted="A, S">
-							<#if ownerId??>'ownerId': "${ownerId}",	</#if>
-						</@security.authorize>
-					'hostString': hostString },
-			    	success: function(res) {
-			    		validating = false;
-						$('#validation_result_pre_div').text(res);
-						$('#validation_result_panel').show();
-						$('#validated').val("1");//should control the validation success or not later.
-						$("#old_content").val(newContent);
-						hideProgressBar();
-			    	},
-			    	error: function() {
-			    		validating = false;
-						hideProgressBar();
-			    		showErrorMsg("<@spring.message 'script.editor.error.validate'/>");
-			    	}
-			  	});
+
+				var ajaxObj = new AjaxPostObj("/script/api/validate",
+									null,
+									"<@spring.message 'script.editor.error.validate'/>");
+				ajaxObj.params = {'path':scriptPath, 'content': newContent,
+									<@security.authorize ifAnyGranted="A, S"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
+									'hostString': hostString };
+				ajaxObj.success = function(res) {
+					validating = false;
+					$('#validation_result_pre_div').text(res);
+					$('#validation_result_panel').show();
+					$('#validated').val("1");//should control the validation success or not later.
+					$("#old_content").val(newContent);
+				};
+				ajaxObj.complete = function() {
+                    hideProgressBar();
+                }
+				ajaxObj.error = function() {
+					validating = false;
+				}
+                ajaxObj.call();
+
 			});
 			
 			$("#expand_btn").click(function() {

@@ -26,8 +26,8 @@
 		            		<#if (currentUser.ownerUser)?exists>
 			            		<li><a href="${req.getContextPath()}/user/switch?to="><@spring.message "common.button.return"/></a></li>
 		            		<#else>
-			                	<li><a id="user_profile_menu" href="javascript:void(0)"><@spring.message "navigator.dropdown.profile"/></a></li>
-			                	<li><a id="switch_user_menu" href="javascript:void(0)"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+			                	<li><a id="user_profile_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.profile"/></a></li>
+			                	<li><a id="switch_user_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.switchUser"/></a></li>
 		                	</#if>
 		                	 
 			            	<@security.authorize ifAnyGranted="A">
@@ -88,15 +88,12 @@
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 	</div>
 	<div class="modal-body" > 
-		<div class="form-horizontal" style="margin-left:20px">
+		<div class="form-horizontal" style="margin-left:20px;overflow-y:hidden">
 			<fieldset>
-				<div class="control-group">
-					<label class="control-label" style="width:100px"><@spring.message "user.switch.title"/></label>
-					<div class="controls" style="margin-left:140px">
-						<select id="switch_user_select" style="width:310px">  
-						</select>
-					</div>
-				</div>
+				<@control_group label_style = "width:100px" controls_style = "margin-left:140px" label_message_key = "user.switch.title">
+                    <select id="switch_user_select" style="width:310px">
+                    </select>
+				</@control_group>
 			</fieldset>
 		</div>
 	</div>	

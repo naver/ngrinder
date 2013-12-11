@@ -27,7 +27,7 @@
 					<i class="icon-search"></i> <@spring.message "common.button.search"/>
 				</a>
 				<span class="pull-right">
-					<a class="btn" href="${req.getContextPath()}/user/new" id="createBtn" data-toggle="modal">
+					<a class="btn" href="${req.getContextPath()}/user/new" id="create_btn" data-toggle="modal">
 						<i class="icon-user"></i> <@spring.message "user.list.button.create"/>
 					</a>
 					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">

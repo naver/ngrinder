@@ -6,62 +6,61 @@
 	<div class="modal-body">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/new/${currentPath}">
 			<fieldset>
-				<div class="control-group">
-					<label for="script_name_input" class="control-label"><@spring.message "script.option.name"/></label>
-					<div class="controls">
-						<#assign sample_name_message>
-						  	<@spring.message "common.form.rule.sampleName"/>
-						</#assign>	
-					  	<input type="text" id="script_name_input" name="fileName"
-					  		class="input-medium" 
-					  		rel="create_script_modal_popover"
-					  		data-html="true"
-					  		data-content="${sample_name_message?html}"
-							title="<@spring.message "script.option.name"/>">
-							
-					  <span class="help-inline"></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label for="language_select" class="control-label"><@spring.message "script.list.label.type"/></label>
-					<div class="controls">
-						<input type="hidden" name="type" value="script"/>
-						<select id="language_select" name="scriptType">
-							<#list handlers as handler>
+
+				<@control_group name="fileName" inline_help="true" label_message_key="script.option.name">
+					<#assign name_message>
+						<@spring.message "common.form.rule.sampleName"/>
+					</#assign>
+
+					<@input_popover name="fileName" rel="create_script_modal_popover"
+						data_placement="right"
+						message="script.option.name"
+						message_content="${name_message?js_string}"
+						extra_css="input-large" />
+				</@control_group>
+
+				<@control_group name="scriptType" inline_help="true" label_message_key="script.list.label.type">
+					<input type="hidden" name="type" value="script"/>
+					<select id="script_type" name="scriptType">
+						<#list handlers as handler>
 							<option value="${handler.key}" extension="${handler.extension}" project_handler="${handler.isProjectHandler()?string}">${handler.title}</option>
-							</#list>
-						</select> 
-					  <span class="help-inline"></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label for="url_input" class="control-label"><@spring.message "script.list.label.url"/></label>
-					<div class="controls">
-					  <input type="text" id="url_input" class="url" 
-					         placeholder='<@spring.message "home.placeholder.url"/>' 
-					         class="input-medium" 
-					         name="testUrl"
-					         rel="create_script_modal_popover"
-					  		 data-html="true"
-					         title='<@spring.message "home.tip.url.title"/>'
-					         data-content="<@spring.message "home.tip.url.content"/>"/>
-					  <span class="help-inline"></span>
-					</div>
-				</div>
+						</#list>
+					</select>
+				</@control_group>
+
+				<@control_group name="testUrl" inline_help="true" label_message_key="script.list.label.url">
+					<#assign url_message>
+						<@spring.message "home.tip.url.content"/>
+					</#assign>
+
+					<@input_popover name="testUrl" rel="create_script_modal_popover"
+						data_placement="right"
+						message="home.tip.url.title"
+						message_content="${url_message}"
+						placeholder="home.placeholder.url"
+						extra_css="input-large" />
+				</@control_group>
+
 				<div class="control-group">
 					<div class="controls">
 						<label class="checkbox">
-					    <input type="checkbox" id="create_lib_and_resource" 
-					         name="createLibAndResource"
-					         rel="create_script_modal_popover"
-					  		 data-html="true" 
-					         title='<@spring.message "script.list.label.createResourceAndLib"/>' 
-					         data-content='<@spring.message "script.tip.libAndResource"/>'/> 
-					         <@spring.message "script.list.label.createResourceAndLib"/>
-					  	</label>
-					  <span class="help-inline well"><@spring.message "script.list.label.createResourceAndLib.help"/>
-					  	 <a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
-					  </span>
+						<#assign lib_message>
+							<@spring.message "script.tip.libAndResource"/>
+						</#assign>
+
+						<@input_popover name="createLibAndResource"
+							rel="create_script_modal_popover"
+							data_placement="right"
+							type="checkbox"
+							message="script.list.label.createResourceAndLib"
+							message_content="${lib_message}"
+							extra_css="input-medium" />
+
+							<@spring.message "script.list.label.createResourceAndLib"/>
+						</label>
+						<span class="help-inline well"><@spring.message "script.list.label.createResourceAndLib.help"/>
+						<a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
+						</span>
 					</div> 
 				</div>
 			</fieldset>
@@ -76,10 +75,10 @@
 <script>
 	$(document).ready(function() {
 		$("input[rel='create_script_modal_popover']").popover({trigger: 'focus', container:'#create_script_modal'});
-		$("#script_name_input").val("");
-		$("#url_input").val("");
+		$("#file_name").val("");
+		$("#test_url").val("");
 		$("#create_script_btn").on('click', function() {
-			var $name = $("#script_name_input");
+			var $name = $("#file_name");
 			if (checkEmptyByObj($name)) {
 				markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
 				return;
@@ -93,7 +92,7 @@
 			}
 			
 			var name = $name.val();
-			var $selectedElement = $("#language_select option:selected");
+			var $selectedElement = $("#script_type option:selected");
 			var extension = $selectedElement.attr("extension").toLowerCase();
 			var projectHandler = $selectedElement.attr("project_handler");
 			if (projectHandler != "true") {
@@ -102,9 +101,9 @@
 				if (idx == -1) {
 					$name.val(name + extension);
 				}
-				var urlValue = $("#url_input");
+				var urlValue = $("#test_url");
 				if (urlValue.val() == "Type URL...") {
-					$("#url_input").val("");
+					$("#test_url").val("");
 				}
 				if (!checkEmptyByObj(urlValue)) {
 					if (!urlValue.valid()) {

@@ -16,7 +16,6 @@ package org.ngrinder.perftest.service.monitor;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.constant.Constants;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.controller.domain.MonitorCollectionInfoDomain;
 import org.ngrinder.monitor.share.domain.MBeanClient;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;

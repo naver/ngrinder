@@ -29,27 +29,27 @@
 	<script>
 		$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("sys_config_editor"), {
-			   mode: "properties",
-			   theme: "eclipse",
-			   lineNumbers: true,
-			   lineWrapping: true,
-			   indentUnit:4,
-			   tabSize:4,
-			   indentWithTabs:true,
-			   smartIndent:false,
-			   extraKeys: {
-		         "F11": function(cm) {
-		           setFullScreen(cm, !isFullScreen(cm));
-		         },
-		         "Esc": function(cm) {
-		           if (isFullScreen(cm)) setFullScreen(cm, false);
-		         },
-		         Tab: "indentMore"
-		       },
-			   onCursorActivity: function() {
-			     editor.setLineClass(hlLine, null, null);
-			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-			   }
+				mode: "properties",
+				theme: "eclipse",
+				lineNumbers: true,
+				lineWrapping: true,
+				indentUnit:4,
+				tabSize:4,
+				indentWithTabs:true,
+				smartIndent:false,
+				extraKeys: {
+					"F11": function(cm) {
+						setFullScreen(cm, !isFullScreen(cm));
+					},
+					"Esc": function(cm) {
+						if (isFullScreen(cm)) setFullScreen(cm, false);
+					},
+				Tab: "indentMore"
+				},
+				onCursorActivity: function() {
+				 editor.setLineClass(hlLine, null, null);
+				 hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+				}
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 			

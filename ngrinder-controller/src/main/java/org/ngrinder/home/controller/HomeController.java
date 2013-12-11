@@ -260,7 +260,6 @@ public class HomeController extends BaseController {
 	/**
 	 * Error redirection to 404.
 	 *
-	 * @param model model
 	 * @return "redirect:/doError"
 	 */
 	@RequestMapping(value = "/error_404")

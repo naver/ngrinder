@@ -6,31 +6,16 @@
 		<div class="form-horizontal form-horizontal-2">
 
 			<div class="control-group">
-				
 				<div class="row">
 					<div class="span4">
-						<div class="control-group">
-							<label for="agent_count" class="control-label">
-								<@spring.message "perfTest.configuration.agent"/>
-							</label>
-							<div class="controls">
-								<div class="input-append">
-									<input type="text" class="input input-mini" 
-										rel="popover" id="agent_count" name="agentCount"
-										value="${(test.agentCount)!0}" data-html="true"
-										data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-										title='<@spring.message "perfTest.configuration.agent"/>'/>
-									<span class="add-on">
-										<@spring.message "perfTest.configuration.max"/>
-										<span id="maxAgentCount"></span>
-									</span>
-								</div>
-							
-							</div>
-							<div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
-							</div>
-						</div>
+						<@control_group name="agentCount" label_message_key="perfTest.configuration.agent" err_style="margin-left:120px;">
+							<@input_append name="agentCount"
+								value="${test.agentCount}"
+								message="perfTest.configuration.agent"
+								append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
+						</@control_group>
 					</div>
+
 					<div class="span2">
 						<#if clustered == true>
 							<label for="region" class="control-label" style="margin-left:-50px;width:80px">
@@ -43,253 +28,152 @@
 							</label> 
 							<select id="region" name="region" class="pull-right" style="width: 110px">
 								<#list regionList as eachRegion>
-									<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected</#if> > 
+									<option value="${eachRegion}" <#if (test.region?? && test.region == eachRegion)>selected</#if> >
 										<@spring.message "${eachRegion}"/>
 									</option> 
 								</#list>
 							</select> 
-							<div id="err_aregion">
+							<div id="err_region">
 							</div>
 						</#if>
 					</div>
 				</div>
 			</div>
-			<div class="control-group">
-				<label for="vuser_per_agent" class="control-label">
-					<@spring.message "perfTest.configuration.vuserPerAgent"/>
-				</label>
-				<div class="controls">
-					<table style="width: 100%">
-						<colgroup>
-							<col width="300px" />
-							<col width="*" />
-						</colgroup>
-						<tr>
-							<td>
-								<div class="input-append">
-									<input type="text" class="input input-mini" id="vuser_per_agent" 
-										name="vuserPerAgent"
-										value="${(test.vuserPerAgent)!1}" 
-										rel="popover" 
-										data-html="true"
-										data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>' 
-										title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"/>
-									<span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
-								</div> 
-								<a href="javascript:void(0)">
-									<i class="expand" id="expand_collapse_btn"></i>
-								</a>
-							</td>
-							<td>
-								<div class="pull-right">
-									<span class="badge badge-info pull-right" style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
-										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="total_vuser"></span>
-									</span>
-								</div>
-							</td>
-						</tr>
-						<tr id="process_thread_config_panel" style="display: none;">
-							<td colspan="2">
-								<span>
-									<div class="input-prepend control-group" style="margin-bottom: 0">
-										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'>
-											<@spring.message "perfTest.report.process"/>
-										</span>
-										<input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}" />
-									</div>
-									<div class="input-prepend control-group" style="margin-bottom: 0">
-										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'>
-											<@spring.message "perfTest.report.thread"/>
-										</span>
-										<input class="input span1" type="text" id="threads" name="threads" value="${(test.threads)!1}" />
-									</div>
-								</span>
-							</td>
-						</tr>
-						<tr>
-							<td class="vuser-per-agent processes threads"></td>
-						</tr>
-					</table>
+
+			<@control_group  name="vuserPerAgent" label_message_key="perfTest.configuration.vuserPerAgent">
+				<@input_append name="vuserPerAgent"
+					value="${(test.vuserPerAgent)!1}"
+					message="perfTest.configuration.vuserPerAgent"
+					append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
+				<i class="pointer-cursor expand" id="expand_collapse_btn"></i>
+				<div class="pull-right">
+							<span class="badge badge-info pull-right"
+								  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
+								<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
+									id="total_vuser"></span>
+							</span>
 				</div>
-			</div>
-			<div class="control-group" id="script_control">
-				<label for="script_name" class="control-label">
-					<@spring.message "perfTest.configuration.script"/>
-				</label>
-				<div class="controls">
-					<table style="width: 100%">
-						<colgroup>
-							<col width="*" />
-							<col width="100px" />
-						</colgroup>
-						<tr>
-							<td>
-								<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>">
-								</select>
-							</td>
-							<td>
-								<input type="hidden" id="script_revision" 
-									name="scriptRevision" 
-									value="${(test.scriptRevision)!-1}"
-									old_revision="${(test.scriptRevision)!-1}"/>
-								<button class="btn btn-mini btn-info pull-right" type="button" 
-									id="show_script_btn"
-									style="margin-top: 3px; display: none;">R 
-									<#if test?? && test.scriptRevision != -1> 
-										${test.scriptRevision} 
-									<#else> 
-										<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if> 
-									</#if>
-								</button>
-							</td>
-						</tr>
-					</table>
+				<div id="process_thread_config_panel" style="display: none;">
+					<@input_prepend name="processes" value="${test.processes}" message="perfTest.report.process"
+						extra_css="control-group" />
+					<@input_prepend name="threads" value="${test.threads}" message="perfTest.report.thread"
+						extra_css="control-group" />
 				</div>
-			</div>
-			<div class="control-group">
-				<label for="Script Resources" class="control-label">
-					<@spring.message "perfTest.configuration.scriptResources"/>
-				</label>
-				<div class="controls">
-					<div class="div-resources" id="scriptResources"></div>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label">
-					<@spring.message "perfTest.configuration.targetHost"/></label>
-					<#if test?? && test.targetHosts??>
-						<#assign targetHosts = test.targetHosts>
-					<#elseif targetHostString??>
-						<#assign targetHosts = targetHostString> 
+			</@control_group>
+
+			<@control_group group_id="script_control" name="scriptName" label_message_key="perfTest.configuration.script">
+				<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
+				<input type="hidden" id="script_revision"
+					name="scriptRevision"
+					value="${(test.scriptRevision)!-1}"
+					old_revision="${(test.scriptRevision)!-1}"/>
+				<button class="btn btn-mini btn-info pull-right" type="button"
+						id="show_script_btn"
+						style="margin-top: 3px; display: none;">R
+					<#if test.scriptRevision != -1>
+					${test.scriptRevision}
 					<#else>
-						<#assign targetHosts = "">
+						<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if>
 					</#if>
-				<div class="controls">
-					<#include "host.ftl">
-				</div>
-			</div>
+				</button>
+			</@control_group>
+
+			<@control_group name="scriptResources" label_message_key="perfTest.configuration.scriptResources">
+            	<div class="div-resources" id="script_resources"></div>
+			</@control_group>
+
+			<#assign targetHosts = test.targetHosts>
+
+			<@control_group label_message_key="perfTest.configuration.targetHost">
+				<#include "host.ftl">
+			</@control_group>
 			<hr>
+
+			<#assign duration_checked><#if test.threshold == "D">checked</#if></#assign>
+
+			<@control_group label_message_key="perfTest.configuration.duration" controls_extra_class="docs-input-sizes"
+				input_id="duration_ratio" input_name="threshold" input_value="D" radio_checked="${duration_checked}" >
+
+				<select class="select-item" id="select_hour"></select> :
+				<select class="select-item" id="select_min"></select> :
+				<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
+				<code>HH:MM:SS</code>
+				<input type="hidden" id="duration" name="duration" value="${test.duration}"/>
+				<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
+				<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
+				<input id="hidden_duration_input" class="hide" data-step="1"/>
+
+			</@control_group>
+
+			<#assign count_checked><#if test.threshold == "R">checked</#if></#assign>
+
+			<@control_group label_message_key="perfTest.configuration.runCount"
+				input_id="run_count_radio" input_name="threshold" input_value="R" radio_checked="${count_checked}" >
+					<@input_append  name="runCount"
+						value="${test.runCount}"
+						message="perfTest.configuration.runCount"
+						others='number_limit="${maxRunCount}"'
+						append_prefix="perfTest.configuration.max" append="${maxRunCount}" />
+			</@control_group>
+
 			<div class="control-group">
-				<label class="control-label"> 
-					<input type="radio" id="duration_ratio" name="threshold" value="D"
-						<#if (test?? && test.threshold == "D")||!(test??) >checked</#if>/> 
-					<@spring.message "perfTest.configuration.duration"/>
-				</label>
-				<div class="controls docs-input-sizes">
-					<select class="select-item" id="select_hour"></select> : 
-					<select class="select-item" id="select_min"></select> : 
-					<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
-					<code>HH:MM:SS</code>
-					<input type="hidden" id="duration" name="duration" value="${(test.duration)!60000}"/>
-					<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
-					<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
-					<input id="hidden_duration_input" class="hide" data-step="1"/>
-				</div>
-			</div>
-			<div class="control-group">
-				<label for="run_count" class="control-label"> 
-					<input type="radio" id="run_count_radio" name="threshold" value="R"<#if test?? && test.threshold == "R" >checked</#if>/>
-					<@spring.message "perfTest.configuration.runCount"/>
-				</label>
-				<div class="controls">
-					<div class="input-append">
-						<input type='text' 
-							rel='popover' data-html='true'
-							title='<@spring.message "perfTest.configuration.runCount"/>'
-							data-content='<@spring.message "perfTest.configuration.runCount.help"/>' 
-							id="run_count" class="input input-mini" number_limit="${(maxRunCount)}" name="runCount" value="${(test.runCount)!0}">
-						<span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxRunCount)}</span>
+				<div class="row">
+					<div class="span3">
+						<@control_group name="samplingInterval" label_message_key="perfTest.configuration.samplingInterval">
+							<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
+							<select class="select-item" id="sampling_interval" name="samplingInterval">
+								<#list samplingIntervalArray as eachInterval>
+									<option value="${eachInterval}"
+										<#if test.samplingInterval != 0>
+											<#if eachInterval == test.samplingInterval> selected="selected" </#if>
+										<#else>
+											<#if eachInterval == 2>
+											selected="selected"
+											</#if>
+										</#if> >
+									${eachInterval}
+									</option>
+								</#list>
+							</select>
+						</@control_group>
+					</div>
+					<div class="span3">
+						<@control_group name="ignoreSampleCount" label_message_key="perfTest.configuration.ignoreSampleCount"
+							label_style="width:150px;margin-left:-20px"
+							err_style="margin-left:100px">
+							<@input_popover name="ignoreSampleCount"
+								value="${test.ignoreSampleCount}"
+								message="perfTest.configuration.ignoreSampleCount"
+								extra_css="input-mini" />
+						</@control_group>
 					</div>
 				</div>
 			</div>
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
-						<div class="control-group">
-							<label for="sampling_interval" class="control-label">
-								<@spring.message "perfTest.configuration.samplingInterval"/>
-							</label>
-							<div class="controls">
-								<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]> 
-								<select class="select-item" id="sampling_interval" name="samplingInterval"> 
-									<#list samplingIntervalArray as eachInterval>
-										<option value="${eachInterval}"
-											<#if test?? && test.samplingInterval != 0> 
-												<#if eachInterval == test.samplingInterval> selected="selected" </#if> 
-											<#else> 
-												<#if eachInterval == 2>
-													selected="selected" 
-												</#if> 
-											</#if> >
-											${eachInterval}
-										</option>
-									</#list>
-								</select>
-							</div>
-						</div>
+						<@control_group name="safeDistribution" label_message_key="perfTest.configuration.safeDistribution">
+							<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
+							<#if test.safeDistribution == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> />
+							<span style="margin-top: 10px; margin-left: 10px"
+								rel='popover' data-html='true'
+								data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>'
+								title='<@spring.message "perfTest.configuration.safeDistribution"/>'
+								id="dist_comment">
+								<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
+							</span>
+						</@control_group>
 					</div>
 					<div class="span3">
-						<div class="control-group">
-							<label for="ignore_sample_count" class="control-label" style="width: 150px;margin-left:-20px">
-								<@spring.message "perfTest.configuration.ignoreSampleCount"/>
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" 
-										id="ignore_sample_count" name="ignoreSampleCount" 
-										rel='popover'
-										title='<@spring.message "perfTest.configuration.ignoreSampleCount"/>' 
-										data-html='true'
-										data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>' 
-										data-placement='top'
-										value="${(test.ignoreSampleCount)!0}"/>
-							</div>
-							<div id="err_ignore_sample_count" class="small_error_box" style="margin-left:100px">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="row">
-					<div class="span3"> 
-						<div class="control-group">
-							<label for="safeDistribution" class="control-label"> 
-								<@spring.message "perfTest.configuration.safeDistribution"/>
-							</label>
-							<div class="controls">
-								<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
-								<#if test?? && test.safeDistribution?default(false) == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> /> 
-								<span style="margin-top: 10px; margin-left: 10px" 
-									rel='popover' data-html='true'
-									data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>' 
-									title='<@spring.message "perfTest.configuration.safeDistribution"/>'
-									id="dist_comment"> 
-									<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
-								</span> 
-							</div>
-						</div>
-					</div>
-					<div class="span3">
-						<div class="control-group">
-							<label for="param" class="control-label" style="width:70px;margin-left:-20px">
-								<@spring.message "perfTest.configuration.param"/>
-							</label>
-							<div class="controls" style="margin-left:70px">
-								<#assign paramHelp>
-									<@spring.message 'perfTest.configuration.param.help'/>
-								</#assign>
-								<input type="text" class="input" style="width:120px" 
-										id="param" name="param" 
-										rel="popover"
-										title="<@spring.message 'perfTest.configuration.param'/>"
-										data-html="true"
-										data-content="${paramHelp?html}" 
-										data-placement="top"
-										value="${(test.param?html)!""}"/>
-							</div>
-							<div id="err_param" class="small_error_box" style="margin-left:-25px">
-							</div>
-						</div>
+						<@control_group name="param" label_message_key="perfTest.configuration.param"
+							label_style="width:70px;margin-left:-20px"
+							err_style="margin-left:-25px"
+							controls_style="margin-left:70px">
+							<@input_popover name="param"
+								value="${(test.param?html)}"
+								message="perfTest.configuration.param"
+								others='style="width:120px"'/>
+						</@control_group>
 					</div>					
 				</div>
 			</div>
@@ -301,7 +185,7 @@
 		<fieldset>
 			<legend>
 				<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
-					<#if test?? && test.useRampUp?default(false) == true>checked</#if> /> 
+					<#if test.useRampUp == true>checked</#if> />
 				<@spring.message "perfTest.configuration.rampEnable"/>
 			</legend>
 		</fieldset>
@@ -309,57 +193,25 @@
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
-						<div class="control-group">
-							<label for="init_processes" class="control-label"> 
-								<@spring.message "perfTest.configuration.initalProcesses"/> 
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="init_processes" name="initProcesses" 
-									value="${(test.initProcesses)!0}" style="width:40px"/>
-							</div>
-							<div id="err_init_processes" style="margin-bottom: 0px;height: 15px;line-height:15px"></div> 
-						</div>
+						<@input_label name="initProcesses"
+							value="${test.initProcesses}" message="perfTest.configuration.initalProcesses" />
 					</div>
+
 					<div class="span3">
-						<div class="control-group">
-							<label for="process_increment" class="control-label"> 
-								<@spring.message "perfTest.configuration.rampup"/>
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="process_increment" name="processIncrement"
-									value="${(test.processIncrement)!1}" style="width:40px">
-							</div>
-							<div id="err_process_increment" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>							
-						</div>
+						<@input_label name="processIncrement"
+							value="${test.processIncrement}" message="perfTest.configuration.rampup" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="span3">
-						<div class="control-group">
-							<label for="init_sleep_time" class="control-label"> <@spring.message
-								"perfTest.configuration.initalSleepTime"/> </label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="init_sleep_time" name="initSleepTime"
-									value="${(test.initSleepTime)!0}" style="width:40px">
-								<code>MS</code>
-							</div>
-							<div id="err_init_sleep_time" style="margin-bottom: 0px;height: 15px;line-height:15px">
-							</div>
-						</div>
+						<@input_label name="initSleepTime"
+							value="${test.initSleepTime}"
+							message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
 					</div>
 					<div class="span3">
-						<div class="control-group">
-							<label for="process_increment_interval" class="control-label"> 
-								<@spring.message "perfTest.configuration.processesEvery"/>
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="process_increment_interval" name="processIncrementInterval"
-									value="${(test.processIncrementInterval)!1000}" style="width:40px">
-								<code>MS</code>
-							</div>
-							<div id="err_process_increment_interval" style="margin-bottom: 0px;height: 15px;line-height:15px">
-							</div>
-						</div>
+						<@input_label name="processIncrementInterval"
+							value="${test.processIncrementInterval}"
+							message="perfTest.configuration.processesEvery" others="<code>MS</code>" />
 					</div>
 				</div>
 			</div>

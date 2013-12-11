@@ -18,8 +18,3 @@
 		<a class="btn" data-dismiss="modal" aria-hidden="true" id="cancel_ensemble_member_btn"><@spring.message "common.button.cancel"/></a>
 	</div>
 </div>
-<script>
-	$(document).ready(function() {
-	});
-		
-</script>

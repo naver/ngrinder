@@ -39,7 +39,7 @@
 			</li>
 			<#list startPage..endPage as i>
 				<#if i == pageNo >
-					<li class="active"><a href="javascript:void(0);">${i}</a></li>
+					<li class="active"><a class="pointer-cursor">${i}</a></li>
 				<#else>
 					<li><a href="javascript:doSubmit('${i}')">${i}</a></li>
 				</#if>

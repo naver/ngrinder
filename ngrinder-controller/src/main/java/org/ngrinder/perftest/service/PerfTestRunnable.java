@@ -346,7 +346,7 @@ public class PerfTestRunnable implements Constants {
 	}
 
 	private MonitorCollectorListener createMonitorCollectionListener(PerfTest perfTest,
-	                                                                 SingleConsole singleConsole) {
+																	 SingleConsole singleConsole) {
 		final MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
 		monitorScheduledTask.setCorrespondingPerfTestId(perfTest.getId());
 		final File reportPath = singleConsole.getReportPath();

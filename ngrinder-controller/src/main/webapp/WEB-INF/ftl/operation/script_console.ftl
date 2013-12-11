@@ -59,32 +59,32 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
-    <#include "../common/codemirror.ftl">
+	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/groovy.js"></script>
-    <script>
-	    $(document).ready(function() {
+	<script>
+		$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("script_editor"), {
-			   mode: "groovy",
-			   theme: "eclipse",
-			   lineNumbers: true,
-			   lineWrapping: true,
-			   indentUnit:4,
-			   tabSize:4,
-			   indentWithTabs:true,
-			   smartIndent:false,
-			   extraKeys: {
-		         "F11": function(cm) {
-		           setFullScreen(cm, !isFullScreen(cm));
-		         },
-		         "Esc": function(cm) {
-		           if (isFullScreen(cm)) setFullScreen(cm, false);
-		         },
-		         Tab: "indentMore"
-		       },
-			   onCursorActivity: function() {
-			     editor.setLineClass(hlLine, null, null);
-			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-			   }
+				mode: "groovy",
+				theme: "eclipse",
+				lineNumbers: true,
+				lineWrapping: true,
+				indentUnit:4,
+				tabSize:4,
+				indentWithTabs:true,
+				smartIndent:false,
+				extraKeys: {
+					"F11": function(cm) {
+						setFullScreen(cm, !isFullScreen(cm));
+					},
+					"Esc": function(cm) {
+						if (isFullScreen(cm)) setFullScreen(cm, false);
+					},
+				Tab: "indentMore"
+				},
+				onCursorActivity: function() {
+					editor.setLineClass(hlLine, null, null);
+					hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+				}
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 			
@@ -93,6 +93,6 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 				document.forms.script_form.submit();
 			});
 		});
-	 </script>
+	</script>
 </body>
 </html>

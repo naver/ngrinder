@@ -7,58 +7,43 @@
 		</fieldSet>
 		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
-				<div class="control-group"> 
-					<label class="control-label"><@spring.message "perfTest.testRunning.vusers"/></label>
-					<div class="controls">
-						<strong>${(test.vuserPerAgent)!}</strong>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
-					<div class="controls">
-						<span>${(test.agentCount)!}</span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.processes"/></label>
-					<div class="controls">
-						${(test.processes)!} 
-						<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.threads"/></label>
-					<div class="controls">
-						${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span></span>
-					</div>
-				</div>
+
+				<@control_group label_message_key="perfTest.testRunning.vusers">
+					<strong>${(test.vuserPerAgent)!}</strong>
+				</@control_group>
+
+				<@control_group label_message_key="perfTest.testRunning.agents">
+					<span>${(test.agentCount)!}</span>
+				</@control_group>
+
+				<@control_group label_message_key="perfTest.testRunning.processes">
+					${(test.processes)!}
+					<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span></span>
+				</@control_group>
+
+				<@control_group label_message_key="perfTest.testRunning.threads">
+					${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span></span>
+				</@control_group>
+				<hr>
+				<@control_group label_message_key="perfTest.configuration.targetHost">
+					<@list list_items = test.targetHosts?split(",") ; host >
+					${host?trim}<br>
+					</@list>
+				</@control_group>
 				<hr>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
-					<div class="controls">
-						<#if test?exists && test.targetHosts?has_content>
-							<#list test.targetHosts?split(",") as host>
-								${host?trim}<br>
-							</#list>
-						</#if>
-					</div>
-				</div>
-				<hr>
-				<div class="control-group">
-					<#if test??>
-						<#if test.threshold == "D">
-							<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
-							<div class="controls">
-								<span>${(test.durationStr)!}</span>
-								<code>HH:MM:SS</code>
-							</div>
-						<#else>
-							<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
-							<div class="controls">
-								${(test.runCount)!}
-								<span class="badge badge-success pull-right"> <span id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
-							</div>
-						</#if>
+					<#if test.threshold == "D">
+						<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
+						<div class="controls">
+							<span>${(test.durationStr)!}</span>
+							<code>HH:MM:SS</code>
+						</div>
+					<#else>
+						<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
+						<div class="controls">
+							${(test.runCount)!}
+							<span class="badge badge-success pull-right"> <span id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
+						</div>
 					</#if>
 				</div>
 				<div class="control-group">
@@ -175,7 +160,7 @@
 		var refreshDiv = $("<div></div>");
 		var peakTps = 50;
 		refreshDiv.load(
-			"${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/running/sample",
+			"${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/running/sample",
 			{},
 			function() {
 				$("#running_time").text(showRunTime(curRunningTime));
@@ -249,18 +234,12 @@
 	}
 	
 	function stopTests(ids) {
-		$.ajax({
-	  		url: "${req.getContextPath()}/perftest/api/stop",
-			type: "POST",
-	  		data: {"ids":ids},
-			dataType:'json',
-	    	success: function(res) {
-				showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-		    },
-        	error: function() {
-            	showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-            }
-	  	});
+		var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/stop",
+				"<@spring.message "perfTest.table.message.success.stop"/>",
+				"<@spring.message "perfTest.table.message.error.stop"/>");
+		ajaxObj.type = "POST";
+		ajaxObj.params = { "ids":ids };
+		ajaxObj.call();
 	}
 	
 	$(document).ready(function() {

@@ -4,7 +4,6 @@
 <#include "../common/common.ftl">
 <#include "../common/jqplot.ftl">
 	<title><@spring.message "perfTest.report.title"/></title>
-
 	<style>
 		body {
 			padding-top: 0;
@@ -116,17 +115,18 @@
 				<tr>
 					<td colspan="2" class="divider"></td>
 				</tr>
-			<#if test.threshold?? && test.threshold == "D">
+
+				<#if test.threshold == "D">
 				<tr>
 					<th><@spring.message "perfTest.configuration.duration"/></th>
 					<td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
 				</tr>
-			<#else>
+				<#else>
 				<tr>
 					<th><@spring.message "perfTest.configuration.runCount"/></th>
 					<td><span>${test.runCount}</td>
 				</tr>
-			</#if>
+				</#if>
 				<tr>
 					<th><@spring.message "perfTest.configuration.runtime"/></th>
 					<td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
@@ -170,17 +170,19 @@
 						<a href="#"><@spring.message "perfTest.report.performanceReport"/></a>
 					</li>
 					<li class="nav-header"><@spring.message "perfTest.report.targetHost"/></li>
-				<#if test.targetHostIP?has_content>	<#list test.targetHostIP as targetIP>
-					<li class="monitor pointer-cursor" ip="${targetIP}">
-						<a href="#"> ${targetIP}</a>
-					</li>
-				</#list></#if>
-					<li  class="nav-header"><@spring.message "perfTest.report.plugins"/></li>
-				<#if plugins?has_content><#list plugins as each>
-					<li class="plugin pointer-cursor" plugin="${each.first}" ip="${each.second}">
-						<a href="#">${each.first} - ${each.second}</a>
-					</li>
-				</#list></#if>
+
+					<@list list_items=test.targetHostIP others="no_message" ; targetIP >
+						<li class="monitor pointer-cursor" ip="${targetIP}">
+							<a href="#"> ${targetIP}</a>
+						</li>
+					</@list>
+
+				<li  class="nav-header"><@spring.message "perfTest.report.plugins"/></li>
+					<@list list_items=plugins others="no_message" ; each >
+						<li class="plugin pointer-cursor" plugin="${each.first}" ip="${each.second}">
+							<a href="#">${each.first} - ${each.second}</a>
+						</li>
+					</@list>
 				</ul>
 			</div>
 		</div>

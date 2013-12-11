@@ -14,10 +14,7 @@
 package org.ngrinder.user.controller;
 
 
-import static org.ngrinder.common.util.Preconditions.checkArgument;
-
-import java.util.EnumSet;
-
+import com.google.common.collect.Lists;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.model.Role;
@@ -30,6 +27,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.EnumSet;
+
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 
 
 /**
@@ -55,7 +56,9 @@ public class UserRegistrationController extends BaseController {
 	@RequestMapping("/sign_up")
 	public String getUserForm(ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.of(Role.USER));
-		model.addAttribute("isSelfRegistration", getConfig().isSelfUserRegistration());
+		model.addAttribute("selfRegistration", getConfig().isSelfUserRegistration());
+		model.addAttribute("followers", Lists.newArrayList());
+		model.addAttribute("shareUserList", Lists.newArrayList());
 		return "user/user_sign_up_modal";
 	}
 

@@ -28,7 +28,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.web.PageableDefaults;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +39,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
@@ -108,6 +106,7 @@ public class UserController extends BaseController {
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String openForm(User user, final ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
+		getUserShareList(null, model);
 		return "user/detail";
 	}
 
@@ -135,7 +134,6 @@ public class UserController extends BaseController {
 	 * @param user         current user
 	 * @param model        model
 	 * @param updatedUser  user to be updated.
-	 * @param followersStr user Id list that current will share his permission to.
 	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
@@ -229,7 +227,6 @@ public class UserController extends BaseController {
 	 *
 	 * @param model    model
 	 * @param to       the user to whom a user will switch
-	 * @param request  request
 	 * @param response response
 	 * @return redirect:/perftest/list
 	 */

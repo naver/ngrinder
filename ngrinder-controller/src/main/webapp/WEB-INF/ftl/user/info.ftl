@@ -1,135 +1,102 @@
 <#import "../common/spring.ftl" as spring/>
+<#include "../common/ngrinder_macros.ftl">
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form class="form-horizontal form-horizontal-left" id="user_form" method="POST">
 	<#if !(popover_place??)>
 		<#assign popover_place='bottom'/>
 	</#if>
 	<fieldset>
-		<div class="control-group">
-			<label class="control-label" for="user_id"><@spring.message "user.info.form.userId"/></label>
-			<div class="controls">
-				<#assign userIdMsg>
-					<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/> 
-				</#assign>
-				<input type="text" class="span4"  
-					name="userId" value="${(user.userId)!}"
-					id="user_id"
-				    rel="popover" 
-					data-placement='${popover_place}'
-					data-html="true"
-					data-content="${userIdMsg?html}"
-					title='<@spring.message "user.info.form.userId"/>'
-					<#if user?? && user.userId??>readonly</#if> />
-				<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
-			</div>
-		</div>
-		
-		<div class="control-group">
-			<label class="control-label" for="user_name"><@spring.message "user.option.name"/></label>
-			<div class="controls">
-				<input type="text" class="span4" 
-					name="userName" value="${(user.userName)!}"
-					id="user_name" 
-					rel="popover"
-					data-placement="${popover_place}" 
-					data-content='<@spring.message "user.info.warning.userName"/>'
-					data-placement='bottom'
-					title='<@spring.message "user.option.name"/>'/>
-			</div>
-		</div>
+
+		<@control_group name="userId" label_message_key="user.info.form.userId">
+			<#assign userIdMsg>
+				<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
+			</#assign>
+
+			<#assign others>
+				<#if user?? && user.userId??>readonly</#if>
+			</#assign>
+
+			<@input_append name = "userId" value = "${(user.userId)!}"
+			class="span4" data_content=userIdMsg
+			data_placement='${popover_place}'
+			message="user.info.form.userId"
+			others=others />
+			<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
+		</@control_group>
+
+
+		<@control_group name="userName" label_message_key="user.option.name">
+			<@input_append name="userName" value="${(user.userName)!}"
+				class="span4" data_placement='${popover_place}'
+				message="user.option.name"/>
+		</@control_group>
 
 		<#if !(action?has_content)>
-		<div class="control-group">
-			<label class="control-label" for="role"><@spring.message "user.option.role"/></label>
-			<div class="controls">
+			<@control_group name="role" label_message_key="user.option.role">
 				<select class="span4" name="role" id="role">
 					<#list roleSet as role>
 						<option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
 					</#list>
 				</select>
-			</div>
-		</div>
+			</@control_group>
 		</#if>
 
-		<div class="control-group">
-			<label class="control-label" for="email"><@spring.message "user.info.form.email"/></label>
-			<div class="controls">
-				<input type="text" class="span4" id="email" maxlength="30"
-					name="email" value="${(user.email)!}"
-					rel="popover" 
-					data-content='<@spring.message "user.info.warning.email.required"/>'
-					data-placement='${popover_place}'
-					title='<@spring.message "user.info.form.email"/>'/>
-			</div>
-		</div>
+		<@control_group name="email" label_message_key="user.info.form.email">
+			<@input_append name="email" value="${(user.email)!}"
+				class="span4" data_placement='${popover_place}'
+				message="user.info.form.email"/>
+		</@control_group>
 
-		<div class="control-group">
-			<label class="control-label" for="description"><@spring.message "common.label.description"/></label>
-			<div class="controls">
-				<textarea cols="30" id="description" name="description"
-					rows="3" title="Description" class="tx_area span4" 
-					style="resize: none;">${(user.description)!}</textarea>
-			</div>
-		</div>
+		<@control_group name="description" label_message_key="common.label.description">
+			<textarea cols="30" id="description" name="description"
+				rows="3" title="Description" class="tx_area span4"
+				style="resize: none;">${(user.description)!}</textarea>
+		</@control_group>
 
-		<div class="control-group" >
-			<label class="control-label" for="mobile_phone"><@spring.message "user.info.form.phone"/></label>
-			<div class="controls">
-				<input type="text" class="span4"   
-					name="mobilePhone" value="${(user.mobilePhone)!}"
-					id="mobile_phone" rel="popover"
-					data-content='<@spring.message "common.form.rule.phoneNumber"/>'
-					data-placement='${popover_place}'
-					title="<@spring.message "user.info.form.phone"/>">
-			</div>
-		</div>
+		<@control_group name="mobilePhone" label_message_key="user.info.form.phone">
+			<@input_append name="mobilePhone" value="${(user.mobilePhone)!}"
+				class="span4" data_placement='${popover_place}'
+				message="user.info.form.phone"/>
+		</@control_group>
+
 		<#if user?exists>
-		<div class="control-group" >
-			<label class="control-label" for=""><@spring.message "user.share.title"/></label>
-			<div class="controls">
+
+			<@control_group label_message_key="user.share.title">
 				<select id="user_switch_select" name="followersStr" style="width:300px" multiple>
 					<#include "switch_options.ftl">
 				</select>
-			</div>
-		</div>
+			</@control_group>
 		</#if>
+
 		<#if !(demo!false)>
   		<div class="control-group">
-  			<#if !(isSelfRegistration?? && isSelfRegistration)>
+  			<#if (selfRegistration)!false >
 				<div class="accordion-heading"> 
-	               	<a id="change_password_btn" class="pointer-cursor"> 
-	                 	<@spring.message "user.info.form.button.changePwd"/>
-	               	</a> 
+					<a id="change_password_btn" class="pointer-cursor">
+						<@spring.message "user.info.form.button.changePwd"/>
+					</a>
              	</div> 
 			</#if>
 			
-             <div id="user_password_section" style='display:none'> 
-	            <div class="accordion-inner" style="padding:9px 0" > 
-	           		<div class="control-group" >
-						<label class="control-label" for="password"><@spring.message "user.info.form.pwd"/></label>
-						<div class="controls">
-							<input type="password" class="span4"  
-								name="password" value="${(user.psw)!}"
-								id="password" rel="popover"
-								data-content='<@spring.message "user.info.warning.pwd.rangeLength"/>'
-								data-placement='${popover_place}'
-								title='<@spring.message "user.info.form.pwd"/>'>
-						</div>
-					</div>
-						
-					<div class="control-group" >
-						<label class="control-label" for="confirm_password"><@spring.message "user.info.form.cpwd"/></label>
-						<div class="controls">
-							<input type="password" class="span4" 
-								name="cpwd" value="${(user.psw)!}"
-								id="confirm_password" rel="popover"
-								data-content='<@spring.message "user.info.warning.cpwd.equalTo"/>'
-								data-placement='${popover_place}'
-								title='<@spring.message "user.info.form.cpwd"/>'>
-						</div>
-					</div>
-	             </div> 
-	 	 	 </div>
+			<div id="user_password_section" style='display:none'>
+				<div class="accordion-inner" style="padding:9px 0" >
+
+					<@control_group name="password" label_message_key="user.info.form.pwd">
+						<@input_append name="password" value="${(user.psw)!}"
+							class="span4" type="password"
+							data_placement='${popover_place}'
+							message="user.info.form.pwd"/>
+					</@control_group>
+
+					<@control_group name="confirmPassword" label_message_key="user.info.form.cpwd">
+						<@input_append name="confirmPassword" value="${(user.psw)!}"
+							class="span4" type="password"
+							data_placement='${popover_place}'
+							message="user.info.form.cpwd"/>
+					</@control_group>
+
+				</div>
+			</div>
 		</div>
 		</#if>
 		<div class="control-group">
@@ -156,29 +123,19 @@
 	
 			$.validator.addMethod("userIdExist", function(userId, element) {
 				if(userId != null && userId.length > 0){
-					<#if isSelfRegistration?? && isSelfRegistration>
-						url = "${req.getContextPath()}/registration/api/" + userId + "/check_duplication";
-					<#else>
-						url = "${req.getContextPath()}/user/api/" + userId + "/check_duplication";
-					</#if>
-					var result ;
-					$.ajax({
-						  url: url,
-						  async: false,
-						  cache: false,
-						  type: "GET",
-						  dataType:'json',
-						  success: function(res) {
-						  	result = res.success;
-	  					  }
-					});
-					if (!result) {
-						removeSuccess(element);
-					}
-					
+					var result = false;
+					var url = "/<#if (selfRegistration)!false>registration<#else>user</#if>/api/" + userId + "/check_duplication";
+					var ajaxObj = new AjaxObj(url);
+					ajaxObj.async = false;
+					ajaxObj.success = function(res) {
+                        result = res.success;
+                        if (!result) {
+                            removeSuccess(element);
+                        }
+					};
+                    ajaxObj.call();
 					return result;
 				}
-				
 				return false;
 			}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		</#if>
@@ -222,75 +179,73 @@
 	    			</#if>
 	    			rangelength: [6,15]
 	    		},
-	    		cpwd: {
+				confirmPassword: {
 	    			<#if !(user?has_content)>
 	    			required: true,
 	    			</#if>
 	    			rangelength: [6,15]
 	    		}
 	    	}, 
-	        messages:{
+			messages:{
 	        	user_id: {
 	        		required: "<@spring.message "user.info.warning.userId.required"/>"
 	        	},
 	        	userName: {
-	            	required: "<@spring.message "user.info.warning.userName"/>"
-	            },
-	            email: {
-	                required:"<@spring.message "user.info.warning.email.required"/>",
-	                email:"<@spring.message "user.info.warning.email.rule"/>"
-	            },
-	            password: {
-	                required:"<@spring.message "user.info.warning.pwd.required"/>"
-	            },
-	            cpwd: {
-	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
-	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
-	            }
-	        },
-	        errorClass: "help-inline",
-	        errorElement: "span",
-	        highlight:function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').addClass('error');
-	            $(element).parents('.control-group').removeClass('success');
-	        },
-	        unhighlight: function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').removeClass('error');
-	            $(element).parents('.control-group').addClass('success');
-	        }
-	    });
+	            	required: "<@spring.message "user.option.name.help"/>"
+				},
+				email: {
+					required:"<@spring.message "user.info.form.email.help"/>",
+					email:"<@spring.message "user.info.warning.email.rule"/>"
+				},
+				password: {
+					required:"<@spring.message "user.info.warning.pwd.required"/>"
+				},
+				confirmPassword: {
+					required:"<@spring.message "user.info.warning.cpwd.required"/>",
+					equalTo:"<@spring.message "user.info.form.cpwd.help"/>"
+				}
+			},
+			errorClass: "help-inline",
+			errorElement: "span",
+			highlight:function(element, errorClass, validClass) {
+				$(element).parents('.control-group').addClass('error');
+				$(element).parents('.control-group').removeClass('success');
+			},
+			unhighlight: function(element, errorClass, validClass) {
+				$(element).parents('.control-group').removeClass('error');
+				$(element).parents('.control-group').addClass('success');
+			}
+		});
 		
-	    <#if !(user?has_content)>
-	    	showPassword();
-	    <#else>
-	    	hidePassword();
-	    </#if>
-	    
-	    $("#change_password_btn").click(function() {
-	    	if ($("#user_password_section").is(":hidden")) {
+		<#if !(user?has_content)>
+			showPassword();
+		<#else>
+			hidePassword();
+		</#if>
+
+		$("#change_password_btn").click(function() {
+			if ($("#user_password_section").is(":hidden")) {
 				showPassword();
 			} else {
 				hidePassword();
 			}
-	    });
+		});
 		
-	    var switchedUsers = [];
-	    <#if followers?has_content>
-	    	<#list followers as user>
-	    		switchedUsers.push("${user.userId}");
-	    	</#list>
-	    </#if>
-	    $("#user_switch_select").val(switchedUsers).select2();
+		var switchedUsers = [];
+		<@list list_items = followers others = "no_message"  ; user >
+			switchedUsers.push("${user.userId}");
+		</@list>
+		$("#user_switch_select").val(switchedUsers).select2();
 	    
-	    $("#update_or_create_user_btn").click(function() {
-			<#if isSelfRegistration?? && isSelfRegistration>
+		$("#update_or_create_user_btn").click(function() {
+			<#if (selfRegistration)!false>
 				url = "${req.getContextPath()}/registration/save";
 			<#else>
 				url = "${req.getContextPath()}/user/save";
-			</#if>	
+			</#if>
 			document.forms.user_form.action = url;
 			if($("#user_form").valid())
-				document.forms.user_form.submit();
+			document.forms.user_form.submit();
 		});
 	    
 	});

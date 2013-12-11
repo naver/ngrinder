@@ -174,6 +174,9 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 
 	@Override
 	public List<PerfTest> getOne(User user, Long[] ids) {
+		if (ids.length == 0) {
+			return newArrayList();
+		}
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
@@ -193,11 +196,12 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 			spec = spec.and(createdBy(user));
 		}
 
-		if (statuses.length != 0) {
-			spec = spec.and(statusSetEqual(statuses));
+		if (statuses.length == 0) {
+			return 0;
+		} else {
+			return perfTestRepository.count(spec.and(statusSetEqual(statuses)));
 		}
 
-		return perfTestRepository.count(spec);
 	}
 
 	@Override
@@ -1335,7 +1339,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * Get sampling interval of plugin. It is configured by plugin, so need to get it from plugin directory.
 	 *
 	 * @param testId         test id
-	 * @param reportCategory monitor plugin name
+	 * @param plugin plugin name
 	 * @return sampling interval value
 	 */
 	public int getReportPluginGraphSamplingInterval(Long testId, String plugin) {

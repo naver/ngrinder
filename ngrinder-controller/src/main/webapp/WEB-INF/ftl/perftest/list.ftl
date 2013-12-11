@@ -38,6 +38,7 @@
 			td.jqplot-table-legend {
 				padding-bottom: 0px;
 			}
+
 		</style>
 	</head>
 
@@ -47,49 +48,46 @@
 		<div class="container">
 			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
 
-			<form id="test_list_form" class="well form-inline search-bar" style="margin-top:0px" action="${req.getContextPath()}/perftest/list" method="POST">
+			<form id="test_list_form" class="well form-inline search-bar" style="margin-top:0px;height:30px;"
+					action="${req.getContextPath()}/perftest/list" method="POST">
 				<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 				<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
 
-				<table style="width:100%">
-					<colgroup>
-						<col width="*"/>
-						<col width="300px"/>
-					</colgroup>
-					<tr>
-						<td>
-							<select id="tag" name="tag" style="width:150px">
-							<option value=""></option>
-							<#if availTags?has_content>
-							    <#list availTags as eachTag>
-							  	   <option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
-						        </#list>
-						    </#if>
-							</select>
-							<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords" name ="query" id="query" value="${query!}">
+				<div class="left-float">
+					<select id="tag" name="tag" style="width:150px">
+					<option value=""></option>
+						<@list list_items = availTags  ; eachTag >
+						<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
+						</@list>
+					</select>
+					<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords"
+							name="query" id="query" value="${query!}">
 
-							<button type="submit" class="btn" id="search_btn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
-							<label class="checkbox" style="position:relative; margin-left:5px">
-								<input type="checkbox" id="running_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'R'>checked</#if> value="R"> <@spring.message "perfTest.formInline.running"/>
-							</label>
-							<label class="checkbox" style="position:relative; margin-left:5px">
-								<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if> value="S"> <@spring.message "perfTest.formInline.scheduled"/>
-							</label>
-						</td>
-						<td>
-							<span class="pull-right">
-								<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="createBtn">
-									<i class="icon-file icon-white"></i>
-									<@spring.message "perfTest.formInline.createTest"/>
-								</a>
-								<a class="btn btn-danger" href="javascript:void(0);" id="delete_btn">
-									<i class="icon-remove icon-white"></i>
-									<@spring.message "perfTest.formInline.deletetSelectedTest"/>
-								</a>
-							</span>
-						</td>
-					</tr>
-				</table>
+					<button type="submit" class="btn" id="search_btn">
+						<iclass="icon-search"></i> <@spring.message "common.button.search"/></button>
+					<label class="checkbox" style="position:relative; margin-left:5px">
+						<input type="checkbox" id="running_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'R'>checked</#if>
+							value="R">
+							<@spring.message "perfTest.formInline.running"/>
+					</label>
+					<label class="checkbox" style="position:relative; margin-left:5px">
+					<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if>
+							value="S">
+							<@spring.message "perfTest.formInline.scheduled"/>
+					</label>
+				</div>
+
+				<div class="right-float">
+					<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
+					<i class="icon-file icon-white"></i>
+						<@spring.message "perfTest.formInline.createTest"/>
+					</a>
+					<a class="pointer-cursor btn btn-danger" id="delete_btn">
+					<i class="icon-remove icon-white"></i>
+						<@spring.message "perfTest.formInline.deletetSelectedTest"/>
+					</a>
+				</div>
+
 				<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
 				<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 			</form>
@@ -105,8 +103,8 @@
 					<col width="50">
 					<col>
 					<col>
-			        <col width="70">
-			        <#if clustered>
+					<col width="70">
+					<#if clustered>
 						<col width="70">
 					</#if>
 					<col width="120">
@@ -138,9 +136,8 @@
 				</thead>
 				<tbody>
 					<#assign testList = testListPage.content/>
-					<#if testList?has_content>
-						<#list testList as test>
-							<#assign totalVuser = (test.vuserPerAgent!0) * (test.agentCount!0) />
+					<@list list_items=testList colspan="12"; test, test_index>
+							<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
 							<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>
@@ -157,7 +154,7 @@
 									</div>
 								</td>
 								<td class="ellipsis ${test.dateString!""}">
-									<div
+									<div class="ellipsis"
 										 rel="popover"
 										 data-html="true"
 										 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"
@@ -168,7 +165,7 @@
 								<td class="ellipsis">
 									<div class="ellipsis"
 										rel="popover"
-										data-html="   "
+										data-html="true"
 										data-content="${test.scriptName}<br/> - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}"
 										title="<@spring.message "perfTest.table.scriptName"/>">
 										<#if isAdmin??>
@@ -226,22 +223,12 @@
 		            				<div>
 		            			</td>
 								<td class="center">
-									<a href="javascript:void(0)"
-									   	style="<#if test.status != 'FINISHED' && test.status !=	'CANCELED'>display:none;</#if>">
-										<i class="icon-download test-display" sid="${test.id}"></i>
-									</a>
-									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
-									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
+									<a class="pointer-cursor" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download test-display" sid="${test.id}"></i></a>
+									<a class="pointer-cursor" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
+									<a class="pointer-cursor" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>
 							</tr>
-						</#list>
-					<#else>
-						<tr>
-							<td colspan="13" class="center">
-								<@spring.message "common.message.noData"/>
-							</td>
-						</tr>
-					</#if>
+					</@list>
 				</tbody>
 			</table>
 			<#if testList?has_content>
@@ -258,7 +245,7 @@
 	<script>
 		$(document).ready(function() {
 
-            var columnCount = $('#head_tr_id th').length;
+			var columnCount = $('#head_tr_id th').length;
 
 			$("#tag").select2({
 				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
@@ -279,22 +266,22 @@
 				}
 
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-				    if (result) {
-				    	var ids = list.map(function() {
+					if (result) {
+						var ids = list.map(function() {
 							return $(this).val();
 						}).get().join(",");
 
 						deleteTests(ids);
-				    }
+					}
 				});
 			});
 
 			$("i.test-remove").click(function() {
 				var id = $(this).attr("sid");
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-				    if (result) {
-				    	deleteTests(id);
-				    }
+					if (result) {
+						deleteTests(id);
+					}
 				});
 			});
 
@@ -309,27 +296,20 @@
 							columnCount +"' class='no-padding'><table style='width:100%'><tr><td><div " +
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
-					$.ajax({
-						url: "${req.getContextPath()}/perftest/api/"+ id +"/perf",
-						dataType:'json',
-		                cache: false,
-		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
-		                success: function(res) {
-							drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
-							drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-							drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
-							return true;
-		                },
-		                error: function() {
-			                showErrorMsg("Failed to get graph.");
-		                    return false;
-		                }
-		            });
-                    testInfoTr.show("slow");
+					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph", null, "Failed to get graph.");
+					ajaxObj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
+					ajaxObj.success = function(res) {
+						drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
+						drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+						drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
+						return true;
+					};
+                    ajaxObj.call();
+					testInfoTr.show("slow");
 				}else{
-                    $("#"+perftestChartTrId).next('tr').remove();
-                    $("#"+perftestChartTrId).remove();
-                }
+					$("#"+perftestChartTrId).next('tr').remove();
+					$("#"+perftestChartTrId).remove();
+				}
 
 			});
 
@@ -393,36 +373,25 @@
 		}
 
 		function deleteTests(ids) {
-			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/api/delete",
-		  		type: "POST",
-		  		data: {"ids" : ids},
-				dataType:'json',
-		    	success: function(res) {
-					showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
-						setTimeout(function() {
-							getList(1);
-					}, 500);
-		    	},
-		    	error: function() {
-	                showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
-		    	}
-		  	});
+			var ajaxObj = new AjaxPostObj("/perftest/api/delete",
+                    { "ids" : ids },
+					"<@spring.message "perfTest.table.message.success.delete"/>",
+					"<@spring.message "perfTest.table.message.error.delete"/>");
+			ajaxObj.success = function(res) {
+				setTimeout(function() {
+					getList(1);
+				}, 500);
+			};
+            ajaxObj.call();
 		}
 
 		function stopTests(ids) {
-			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/api/stop",
-				type: "POST",
-		  		data: {"ids":ids},
-				dataType:'json',
-		    	success: function(res) {
-			    	showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-			    },
-				error: function() {
-					showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-				}
-		  	});
+			var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/stop",
+                    "<@spring.message "perfTest.table.message.success.stop"/>",
+					"<@spring.message "perfTest.table.message.error.stop"/>");
+			ajaxObj.type = "POST";
+			ajaxObj.params = { "ids" : ids };
+			ajaxObj.call();
 		}
 
 		function getSortColumn(colNum) {
@@ -464,35 +433,36 @@
 					return this.value;
 		  	}).get();
 
-		    $.ajax({
-			    url: '${req.getContextPath()}/perftest/api/status',
-			    type: 'POST',
-			    cache: false,
-			    data: {"ids": ids.join(",")},
-			    success: function(data) {
-			    	var perfTestData = eval(data);
-					var status = perfTestData.status;
-			    	var perfTest = perfTestData.perfTestInfo;
-			    	var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
-			    	$("#current_running_status").text(springMessage);
-			    	var testStatus;
-			    	for (var i = 0; i < status.length; i++) {
-					    var each = status[i];
-			    		var statusId = each.status_id;
-			    	    $("#check_" + each.id).attr("status", statusId);
+			var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
+			ajaxObj.type = "POST";
+			ajaxObj.params = {"ids": ids.join(",")};
+			ajaxObj.success = function (data) {
+				data = eval(data);
+				var status = data.status;
+				var perfTest = data.perfTestInfo;
+				var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
+				$("#current_running_status").text(springMessage);
+				for (var i = 0; i < status.length; i++) {
+					var each = status[i];
+					var statusId = each.status_id;
+					$("#check_" + each.id).attr("status", statusId);
 
-			    		if(statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED"){
-			    			location.reload();
-			    		}
-			    		updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
-			    	}
-			    	if (ids.length == 0) {
-		  				return;
-		  			}
-			    	setTimeout(updateStatuses, 2000);
-			    }
-		    });
-	  })();
+					if (statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED") {
+						location.reload();
+					}
+					updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
+				}
+				if (ids.length == 0) {
+					return;
+				}
+				setTimeout(updateStatuses, 2000);
+			};
+			ajaxObj.error = function () {
+				var springMessage = "0 <@spring.message "perfTest.currentRunning.summary"/>";
+				$("#current_running_status").text(springMessage);
+			};
+            ajaxObj.call();
+		})();
 	</script>
 	</body>
 </html>
