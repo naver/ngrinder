@@ -345,9 +345,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		// it is not a running test, can not test get statistic data.
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		test.setPort(11011);
-		ModelMap model = new ModelMap();
 		try {
-			controller.refreshTestRunning(getTestUser(), test.getId(), model);
+			controller.refreshTestRunning(getTestUser(), test.getId());
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}

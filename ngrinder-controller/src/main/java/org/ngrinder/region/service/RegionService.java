@@ -117,7 +117,7 @@ public class RegionService {
 	 * @return region info
 	 */
 	public RegionInfo getOne(String regionName) {
-		return (RegionInfo) cache.get(regionName);
+		return (RegionInfo) cache.get(regionName).get();
 	}
 
 	/**
