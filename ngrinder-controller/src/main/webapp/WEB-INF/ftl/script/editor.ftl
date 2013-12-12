@@ -232,13 +232,13 @@
 			});
 
 			$("#expand_btn").click(function() {
-				var #validationResultDiv = $("#validation_result_pre_div");
-				var heightStr = #validationResultDiv.css("height");
+				var $validationResultDiv = $("#validation_result_pre_div");
+				var heightStr = $validationResultDiv.css("height");
 				if (heightStr == "100px") {
-					#validationResultDiv.css("height", "300px");
+					$validationResultDiv.css("height", "300px");
 					editor.setSize(null, 300);
 				} else {
-					#validationResultDiv.css("height", "100px");
+					$validationResultDiv.css("height", "100px");
 					editor.setSize(null, 500);
 				}
 			});

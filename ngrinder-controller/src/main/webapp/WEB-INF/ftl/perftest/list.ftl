@@ -472,13 +472,15 @@
 					updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
 				}
 				if (ids.length == 0) {
-					return;
+					return true;
 				}
 				setTimeout(updateStatuses, 2000);
+				return true;
 			};
 			ajaxObj.error = function () {
 				var springMessage = "0 <@spring.message "perfTest.currentRunning.summary"/>";
 				$("#current_running_status").text(springMessage);
+				return true;
 			};
             ajaxObj.call();
 		})();

@@ -65,7 +65,7 @@
 	}
 
 	var $errorMsgDiv = $("#error_msg_div");
-	function showErrorMsg(message) {]
+	function showErrorMsg(message) {
 		$errorMsgDiv.hide();
 		//noinspection JSValidateTypes
 		$errorMsgDiv.children("span").html(message);
