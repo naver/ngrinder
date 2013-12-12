@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 /**
  * Verify clustering is set up well. such as check the region is not duplicated. check if they use
  * same home.
- * 
+ *
  * @since3.2
  */
 @Component
@@ -63,9 +63,8 @@ public class ClusterConfigurationVerifier {
 
 	/**
 	 * Check cluster configurations.
-	 * 
-	 * @throws IOException
-	 *             exception
+	 *
+	 * @throws IOException exception
 	 */
 	@PostConstruct
 	public void init() throws IOException {
@@ -85,9 +84,8 @@ public class ClusterConfigurationVerifier {
 
 	/**
 	 * check if they use same home.
-	 * 
-	 * @throws IOException
-	 *             exception
+	 *
+	 * @throws IOException exception
 	 */
 	private void checkHome() throws IOException {
 		checkArgument(systemConfFile.exists(), "File does not exist: %s", systemConfFile);
@@ -97,9 +95,9 @@ public class ClusterConfigurationVerifier {
 				ValueWrapper valueWrapper = cache.get(eachKey);
 				if (valueWrapper != null && valueWrapper.get() != null) {
 					checkState(systemConfFingerPrint.equals(valueWrapper.get()),
-									"Thie controller's ${NGRINDER_HOME} conflicts with other controller(" + eachKey
-													+ "), Please check if each controller"
-													+ " shares same ngrinder home folder.");
+							"Thie controller's ${NGRINDER_HOME} conflicts with other controller(" + eachKey
+									+ "), Please check if each controller"
+									+ " shares same ngrinder home folder.");
 				}
 			} catch (Exception e) {
 				noOp();
@@ -114,7 +112,9 @@ public class ClusterConfigurationVerifier {
 	 */
 	private void checkDB() {
 		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();
-		checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and Please use CUBRID !", db);
+		if (!config.isTestMode()) {
+			checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and Please use CUBRID !", db);
+		}
 	}
 
 	private void updateSystemConfFingerPrintToCache(File systemConfFile) {

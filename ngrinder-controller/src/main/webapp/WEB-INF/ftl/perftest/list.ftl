@@ -101,7 +101,7 @@
 				<colgroup>
 					<col width="30">
 					<col width="50">
-					<col width="150">
+					<col>
 					<col>
 					<col width="70">
 					<#if clustered>
@@ -112,8 +112,8 @@
 					<col width="65">
 					<col width="65">
 					<col width="70">
-					<col width="70">
-					<col width="70">
+					<col width="60">
+					<col width="60">
 				</colgroup>
 				<thead>
 					<tr id="head_tr_id">
