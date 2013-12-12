@@ -71,7 +71,6 @@ function updateRampupChart() {
 	
 	if ($("#use_ramp_up")[0].checked) {
 		enableRampup();
-
 		var curX = initialSleepTime;
 		var curY = initialProcesses;
 		if (initialSleepTime > 0) {
@@ -128,11 +127,12 @@ function drawRampup(data, internalTime, maxY) {
 		
 		axes : {
 			xaxis : {
-				min : 0,
+				min : 1,
 				pad : 0,
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
+                        value = value || 0;
 						if (internalTime < 1000) {
 							return (value / 1000).toFixed(1);							
 						} else {
@@ -148,6 +148,7 @@ function drawRampup(data, internalTime, maxY) {
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
+                        value = value || 0;
 						return (value).toFixed(0);
 					}
 				}

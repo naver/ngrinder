@@ -5,6 +5,7 @@
 		z-index:1152;
 	}
 </style>
+<input type="hidden" id="contextPath" value="${req.getContextPath()}"/>
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner" style="filter:none">
 		<div class="container">

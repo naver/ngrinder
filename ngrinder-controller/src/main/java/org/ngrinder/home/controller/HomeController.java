@@ -240,7 +240,7 @@ public class HomeController extends BaseController {
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
-		model.addAttribute("isSelfRegistration", getConfig().isSelfUserRegistration());
+		model.addAttribute("selfRegistrationEnabled", getConfig().isSelfUserRegistrationEnabled());
 		try {
 			getCurrentUser();
 		} catch (Exception e) {

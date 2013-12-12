@@ -106,15 +106,12 @@
 			return false;
 		});
 
-		$(".icon-remove-circle").live("click", function() {
+		$(".div-host").on("click", ".icon-remove-circle", function() {
 			deleteHost($(this));
 		});
 
-		$(".icon-remove-circle").live("click", function() {
-			deleteHost($(this));
-		});
 
-		$(".div-host p a[id='hostID']").live("click", function() {
+		$(".div-host").on("click", "p a[id='hostID']", function() {
 			var url = "${req.getContextPath()}/monitor/info?ip=" + $.trim($(this).text());
 			$("#target_info_modal_container").load(url, function() {
 				$('#target_info_modal').modal('show').css({"margin-top":"-80px"});

@@ -7,6 +7,6 @@
 	http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 
 	<task:annotation-driven executor="myExecutor" scheduler="myScheduler" />
-	<task:executor id="myExecutor" pool-size="10" />
-	<task:scheduler id="myScheduler" pool-size="10" />
+	<task:executor id="myExecutor" pool-size="100"/>
+	<task:scheduler id="myScheduler" pool-size="100" />
 </beans>

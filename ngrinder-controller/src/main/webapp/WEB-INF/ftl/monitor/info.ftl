@@ -5,100 +5,42 @@
 		<input type="hidden" id="target_ip" value="${(targetIP)!}">
 	</div>
 	<h6>CPU</h6>
+
 	<div class="chart" id="cpu_usage_chart"></div>
 	<h6 style="margin-top: 20px">Memory</h6>
+
 	<div class="chart" id="memory_usage_chart"></div>
 </div>
-
-
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
-	var interval = 1;
-	var timer;
-	var cpuUsage = new Queue();
-	var memoryUsage = new Queue();
-	var jqplots = [];
-	var maxCPU = 0;
-	var maxMemory = 0;
+	var interval = 3;
+	var cpuUsage = new Queue(60 / interval);
+	var memoryUsage = new Queue(60 / interval);
+	var cpuChart = new Chart("cpu_usage_chart", [cpuUsage.getArray()], interval,
+			{yAxisFormatter: formatPercentage}).plot();
+	var memoryChart = new Chart("memory_usage_chart", [memoryUsage.getArray()], interval,
+			{yAxisFormatter: formatMemory}).plot();
 	var errorCount = 0;
-	$(document).ready(function() {
-		initChartData();
-		if (getState()) {
-			timer = window.setInterval("getState()", interval * 1000);
-		}
-	});
-
-	function getMax(prev, current) {
-		var currentMax = 0;
-		for ( var i = 0; current.length > i; i++) {
-			if (current[i] > currentMax) {
-				currentMax = current[i];
-			}
-		}
-		if (prev > currentMax) {
-			return prev;
-		}
-		return currentMax;
-	}
 
 	function getState() {
-		var result = false;
-		var obj = new AjaxObj("/monitor/state");
-		obj.params = {'ip' : '${(targetIP)!}'};
-		obj.async = false;
-		obj.success = function(res) {
-			getChartData(res);
-			maxCPU = getMax(maxCPU, cpuUsage.aElement);
-			showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
-			maxMemory = getMax(maxMemory, memoryUsage.aElement);
-			showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
-			result = true;
-			errorCount = 0;
+		var ajaxObj = new AjaxObj("/monitor/state");
+		ajaxObj.params = {'ip': '${(targetIP)!}'};
+		ajaxObj.success = function (res) {
+			cpuUsage.enQueue(res.cpuUsedPercentage);
+			memoryUsage.enQueue(res.totalMemory - res.freeMemory);
+			cpuChart.plot();
+			memoryChart.plot();
+			return true;
 		};
-		obj.error = function() {
-			errorCount = errorCount + 1;
-			if (errorCount > 3) {
-				showErrorMsg("Failed to get the monitoring data.");
-				result = false;
-				if (timer) {
-					window.clearInterval(timer);
-				}
-			}
-		};
-
-		callAjaxAPI(obj);
-		return result;
+		ajaxObj.call();
 	}
 
-	function showChart(containerId, data, index, formatYaxis, maxY) {
-		var pt = jqplots[index];
-		if (pt) {
-			replotChart(pt, data, maxY, interval);
-		} else {
-			jqplots[index] = drawChart(containerId, data, formatYaxis);
+	getState();
+	var timer = window.setInterval("getState()", interval * 1000);
+	$('#target_info_modal').on('hidden', function () {
+		if (timer) {
+			window.clearInterval(timer);
 		}
-	}
-
-	function initChartData() {
-		for ( var i = 0; i < 60; i++) {
-			cpuUsage.enQueue(0);
-			memoryUsage.enQueue(0);
-		}
-	}
-
-	function getChartData(dataObj) {
-		cpuUsage.enQueue(dataObj.cpuUsedPercentage);
-		memoryUsage.enQueue(dataObj.totalMemory - dataObj.freeMemory);
-
-		if (cpuUsage.getSize() > 60) {
-			cpuUsage.deQueue();
-			memoryUsage.deQueue();
-		}
-	}
-
-	function cleanChartData() {
-		cpuUsage.makeEmpty();
-		memoryUsage.makeEmpty();
-		initChartData();
-	}
+	});
+	//@ sourceURL=monitor/info
 </script>

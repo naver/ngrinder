@@ -41,7 +41,7 @@
 					</div>
 
 					<div class="prompt">
-						<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remember me :
+						<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remember Me :
 						<select  id="native_language" name="native_language" style="margin-left:60px;">
 							<option value="en">English</option>
 							<option value="kr">한국어</option>
@@ -57,7 +57,7 @@
 						</select>
 					</div>
 
-					<#if isSelfRegistration?? && isSelfRegistration>
+					<#if selfRegistrationEnabled>
 						<div class="prompt">
 						 	<a id="user_sign_up" class="pointer-cursor" style="margin-left:200px;">Sign Up</a>
 						</div>
@@ -65,14 +65,14 @@
 
 				</fieldset>
 			</form>
-				<div class="row" id="foot_div" >
-					<div class="center">
-						<hr>
-						<footer>
-							<p>nGrinder ver ${nGrinderVersion}</p>
-						</footer>
-					</div>
+			<div class="row" id="foot_div" >
+				<div class="center">
+					<hr>
+					<footer>
+						<p>nGrinder ver ${nGrinderVersion}</p>
+					</footer>
 				</div>
+			</div>
 		</div>
 	</div>
 	<div id="user_sign_up_modal_container"></div>

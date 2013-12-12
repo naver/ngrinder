@@ -56,9 +56,9 @@ public class UserRegistrationController extends BaseController {
 	@RequestMapping("/sign_up")
 	public String getUserForm(ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.of(Role.USER));
-		model.addAttribute("selfRegistration", getConfig().isSelfUserRegistration());
 		model.addAttribute("followers", Lists.newArrayList());
 		model.addAttribute("shareUserList", Lists.newArrayList());
+		model.addAttribute("selfRegistration", getConfig().isSelfUserRegistrationEnabled());
 		return "user/user_sign_up_modal";
 	}
 

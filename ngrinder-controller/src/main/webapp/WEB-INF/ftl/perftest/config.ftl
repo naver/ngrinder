@@ -26,10 +26,11 @@
 									<i class="icon-question-sign" style="vertical-align: middle;"></i>
 								</span>
 							</label> 
-							<select id="region" name="region" class="pull-right" style="width: 110px">
-								<#list regionList as eachRegion>
-									<option value="${eachRegion}" <#if (test.region?? && test.region == eachRegion)>selected</#if> >
-										<@spring.message "${eachRegion}"/>
+							<select id="region" name="region" class="pull-right required" style="width: 110px">
+								<option value="">-</option>
+								<#list regionList as each>
+									<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
+										<@spring.message "${each}"/>
 									</option> 
 								</#list>
 							</select> 
@@ -47,11 +48,11 @@
 					append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
 				<i class="pointer-cursor expand" id="expand_collapse_btn"></i>
 				<div class="pull-right">
-							<span class="badge badge-info pull-right"
-								  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
-								<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
-									id="total_vuser"></span>
-							</span>
+					<span class="badge badge-info pull-right"
+						  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
+						<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
+							id="total_vuser"></span>
+					</span>
 				</div>
 				<div id="process_thread_config_panel" style="display: none;">
 					<@input_prepend name="processes" value="${test.processes}" message="perfTest.report.process"
@@ -194,7 +195,7 @@
 				<div class="row">
 					<div class="span3">
 						<@input_label name="initProcesses"
-							value="${test.initProcesses}" message="perfTest.configuration.initalProcesses" />
+							value="${test.initProcesses}" message="perfTest.configuration.initialProcesses" />
 					</div>
 
 					<div class="span3">
@@ -206,7 +207,7 @@
 					<div class="span3">
 						<@input_label name="initSleepTime"
 							value="${test.initSleepTime}"
-							message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
+							message="perfTest.configuration.initialSleepTime" others="<code>MS</code>" />
 					</div>
 					<div class="span3">
 						<@input_label name="processIncrementInterval"

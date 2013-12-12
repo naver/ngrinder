@@ -171,6 +171,10 @@ table td.center {
 	text-align: center
 }
 
+table th.center {
+    text-align: center
+}
+
 .center {
 	text-align: center
 }
@@ -252,3 +256,4 @@ legend a {
 	margin-bottom:-10px;
 	width:300px
 }
+

@@ -75,7 +75,7 @@ public interface IPerfTestService {
 	 *            test IDs, which is in format: "1,3,6,11"
 	 * @return perftestList test list of those IDs
 	 */
-	public abstract List<PerfTest> getOne(User user, Long[] ids);
+	public abstract List<PerfTest> getAll(User user, Long[] ids);
 
 	/**
 	 * Get PerfTest count which have given status.
@@ -97,7 +97,7 @@ public interface IPerfTestService {
 	 *            set of {@link Status}
 	 * @return found {@link PerfTest} list.
 	 */
-	public abstract List<PerfTest> getOne(User user, Status[] statuses);
+	public abstract List<PerfTest> getAll(User user, Status[] statuses);
 
 	/**
 	 * Save {@link PerfTest}. This function includes logic the updating script revision when it's

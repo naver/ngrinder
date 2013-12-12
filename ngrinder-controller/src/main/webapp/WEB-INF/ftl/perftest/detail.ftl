@@ -275,7 +275,6 @@
 					</div>
 					
 					<div class="tab-pane" id="running_section">
-						<#include "running.ftl">
 					</div>
 				</div>
 				<!-- end tab content -->
@@ -322,14 +321,11 @@
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 <script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
-<script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
 // vuser calc
 ${processthread_policy_script}
 
-var jqplotObj;
 var objTimer;
-var testTpsData = new Queue();
 var durationMap = [];
 
 $(document).ready(function () {
@@ -452,7 +448,7 @@ function initDuration() {
 			durationMap[i] = durationMap[i - 1] + 1;
 		} else if (i <= 20) {
 			durationMap[i] = durationMap[i - 1] + 5;
-		} else if (i <= 32) { //untill 180 min
+		} else if (i <= 32) { //until 180 min
 			durationMap[i] = durationMap[i - 1] + 10;
 		} else if (i <= 38) { //360 min
 			durationMap[i] = durationMap[i - 1] + 30;
@@ -500,8 +496,7 @@ function initDuration() {
 var validationOptions = {};
 function addValidation() {
 	$.validator.addMethod("paramFmt", function(param, element) {
-		var pattern = /^[a-zA-Z0-9_\,\|]{0,30}$/;
-		var rule = new RegExp(pattern);
+		var rule = /^[a-zA-Z0-9_,\|]{0,30}$/;
 		return rule.test($.trim(param));
 	});
 	
@@ -515,14 +510,19 @@ function addValidation() {
 				digits: true,
 				min: 0
 			},
+			<#if clustered>
+			region : {
+				required: true
+			},
+			</#if>
 			vuserPerAgent: {
 				required: true,
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
 			scriptName: {
-	        	required: true
-	        },
+				required: true
+			},
 			durationHour: {
 				max: ${maxRunHour}
 			},
@@ -567,6 +567,11 @@ function addValidation() {
 	        testName: {
 	        	required: "<@spring.message 'perfTest.warning.testName'/>"
 	        },
+		<#if clustered>
+			region : {
+				required: "<@spring.message 'perfTest.warning.region'/>"
+			},
+		</#if>
 	        agentCount: {
 	        	required: "<@spring.message 'perfTest.warning.agentNumber'/>"
 	        },
@@ -820,9 +825,9 @@ function bindEvent() {
 	});
 	
 	$("#threads, #processes").change(function() {
-		var $vuer = $("#vuser_per_agent");
-		$vuer.val($("#processes").val() * $("#threads").val());
-		if ($vuer.valid()) {
+		var $vuser = $("#vuser_per_agent");
+		$vuser.val($("#processes").val() * $("#threads").val());
+		if ($vuser.valid()) {
 			updateVuserGraph();
 			updateTotalVuser();
 		}
@@ -921,22 +926,10 @@ function changeAgentMaxCount(region, isValid) {
 }
 
 function validateForm() {
-	var result = true;
-	// For IE 7, 8
-	if ($.browser.msie  && parseInt($.browser.version, 10) <= 8) {
-		var rules = validationOptions["rules"];
-		$.each(rules, function(key, value) {
-			if (!$("select[name='" + key +"'],input[name='" + key +"']").valid() && result == true) { 
-				result = false;
-			}
-		});		
-	} else {
-		result = $("#test_config_form").valid();
-	}
+	var result = $("#test_config_form").valid();
 	if (!result) {
 		$("#test_config_section_tab a").tab('show');
 	}
-	
 	return result;
 }
 
@@ -948,12 +941,6 @@ function buildTagString() {
 	
 function updateTotalVuser() {
 	$("#total_vuser").text($("#agent_count").val() * $("#vuser_per_agent").val());
-}
-
-function initChartData(size) {
-	for ( var i = 0; i < size; i++) {
-		testTpsData.enQueue(0);
-	}
 }
 
 function updateScript() {
@@ -1068,12 +1055,23 @@ function getDurationMS() {
 
 function getOption(cnt) {
 	var contents = [];
-	var index;
-	for (i = 0; i < cnt; i++) {
+	for (var i = 0; i < cnt; i++) {
 		contents.push("<option value='" + i + "'>" + (i < 10 && cnt > 9 ? "0" + i : i) + "</option>");
 	}
 	return contents.join("\n");
 }
+
+
+function openRunningDiv(onFinishHook) {
+	$("#running_section").load("${req.getContextPath()}/perftest/${(test.id!0)?c}/running_div",
+			function() {
+				if (onFinishHook !== undefined) {
+					onFinishHook();
+				}
+			}
+	);
+}
+
 
 function openReportDiv(onFinishHook) {
 	$("#report_section").load("${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
@@ -1097,17 +1095,14 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 	var testStatusImgPopover = $testStatusImg.data('popover');
 	$testStatusImg.attr("data-original-title", statusName);
 	testStatusImgPopover.options.content = message;
-	
-
 	$testStatusType.val(statusType);
 
 	if ($testStatusImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		$testStatusImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
-
-	if (statusType == "TESTING") {
+	if (isRunningStatusType(statusType)) {
 		displayConfigAndRunningSection();
-	} else if (statusType == "FINISHED" || statusType == "STOP_BY_ERROR"|| statusType == "STOP_ON_ERROR" || statusType == "CANCELED") {
+	} else if (isFinishedStatusType(statusType)) {
 		finished = true; 
 		// Wait and run because it takes time to transfer logs.
 		setTimeout('displayConfigAndReportSection()', 3000);
@@ -1134,10 +1129,9 @@ function displayConfigAndRunningSection() {
 	$("#running_section_tab a").tab('show');
 	$("#running_section").show();
 	$("#report_section_tab").hide();
-	samplingInterval = $("#sampling_interval").val();
-	initChartData(60 / samplingInterval);
-	refreshData();
-	objTimer = window.setInterval("refreshData()", 1000 * samplingInterval);
+	openRunningDiv(function() {
+		$("#foot_div").show();
+	});
 }
 
 function displayConfigAndReportSection() {
@@ -1148,9 +1142,6 @@ function displayConfigAndReportSection() {
 	openReportDiv(function() {
 		$("#foot_div").show();
 	});
-	if (objTimer) {
-		window.clearInterval(objTimer);
-	}
 }
 
 function initScheduleTime() {

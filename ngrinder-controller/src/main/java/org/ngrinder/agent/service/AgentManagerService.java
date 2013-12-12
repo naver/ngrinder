@@ -310,7 +310,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getOne(long,
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getAll(long,
 	 * boolean)
 	 */
 	@Override
@@ -321,7 +321,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getOne(long,
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getAll(long,
 	 * boolean)
 	 */
 	@Override

@@ -117,7 +117,7 @@
 		removeClick();
 		enableChkboxSelectAll("agent_table");
 
-		$(".approved").live("click", function () {
+		$("#agent_table").on("click", ".approved", function () {
 			var sid = $(this).attr("sid");
 			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
 					{
@@ -129,7 +129,7 @@
 			);
 		});
 
-		$(".disapproved").live("click", function () {
+		$("#agent_table").on("click", ".disapproved", function () {
 			var sid = $(this).attr("sid");
 			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
 					{

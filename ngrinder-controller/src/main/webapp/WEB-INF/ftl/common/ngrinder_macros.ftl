@@ -11,8 +11,8 @@
 	<#return camelCase?replace("[A-Z]", "_$0", 'r')?lower_case>
 </#function>
 
-<#macro input_append name, value, message, data_placement = "right", class = "input input-mini",
-			type = "text", data_content ="", others = "", append = "", append_prefix = "">
+<#macro input_append name, value, message, data_placement="right", class="input input-mini",
+			type = "text", data_content="", others="", append="", append_prefix="">
 
 	<#if append!=""><div class="input-append"></#if>
 
@@ -98,10 +98,11 @@
 
 		<div class="controls ${controls_extra_class}" style="${controls_style}">
 			<#nested>
+			<#if inline_help="true">
+				<span class="help-inline"></span>
+			</#if>
 		</div>
-		<#if inline_help="true">
-			<span class="help-inline"></span>
-		</#if>
+
 		<#if err_style!="">
 			<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
 			</div>

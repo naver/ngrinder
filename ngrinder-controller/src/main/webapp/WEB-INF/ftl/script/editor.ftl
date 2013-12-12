@@ -207,11 +207,12 @@
 				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 
 				var ajaxObj = new AjaxPostObj("/script/api/validate",
-									null,
-									"<@spring.message 'script.editor.error.validate'/>");
-				ajaxObj.params = {'path':scriptPath, 'content': newContent,
+								{
+									'path':scriptPath, 'content': newContent,
 									<@security.authorize ifAnyGranted="A, S"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
-									'hostString': hostString };
+									'hostString': hostString
+								},
+								"<@spring.message 'script.editor.error.validate'/>");
 				ajaxObj.success = function(res) {
 					validating = false;
 					$('#validation_result_pre_div').text(res);

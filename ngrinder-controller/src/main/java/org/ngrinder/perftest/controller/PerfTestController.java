@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
@@ -698,7 +697,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/status")
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		List<PerfTest> perfTests = perfTestService.getOne(user, convertString2Long(ids));
+		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getStatus(perfTests)));
 	}
@@ -766,7 +765,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/{id}/status")
 	public HttpEntity<String> getStatus(User user, @PathVariable("id") Long id) {
-		List<PerfTest> perfTests = perfTestService.getOne(user, new Long[]{id});
+		List<PerfTest> perfTests = perfTestService.getAll(user, new Long[]{id});
 		return toJsonHttpEntity(buildMap("status", getStatus(perfTests)));
 	}
 

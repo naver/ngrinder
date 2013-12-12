@@ -98,7 +98,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 			testService.markProgress(testTemp, "this test will be TESTING again");
 			testService.markStatusAndProgress(testTemp, Status.TESTING, "this is just test unit");
 
-			List<PerfTest> testingList = testService.getOne(getTestUser(), new Status[]{Status.TESTING});
+			List<PerfTest> testingList = testService.getAll(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testingList.size(), is(1));
 
 			Long testCount = testService.count(getTestUser(), new Status[]{Status.TESTING});
@@ -122,7 +122,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		createPerfTest("new Test3", Status.START_AGENTS, new Date());
 
-		List<PerfTest> errorList = testService.getOne(getTestUser(), new Status[]{Status.START_AGENTS});
+		List<PerfTest> errorList = testService.getAll(getTestUser(), new Status[]{Status.START_AGENTS});
 		assertThat(errorList.size(), is(1));
 		testService.markAbnormalTermination(errorList.get(0), "this is error test");
 	}

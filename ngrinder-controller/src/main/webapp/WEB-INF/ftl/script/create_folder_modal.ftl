@@ -41,7 +41,6 @@
 				}
 				markInput($name, true);
 			}
-			
 			document.forms.createFolderForm.submit();
 		});
 	});

@@ -70,7 +70,7 @@
 
 		<#if !(demo!false)>
   		<div class="control-group">
-  			<#if (selfRegistration)!false >
+			<#if user?has_content>
 				<div class="accordion-heading"> 
 					<a id="change_password_btn" class="pointer-cursor">
 						<@spring.message "user.info.form.button.changePwd"/>

@@ -192,7 +192,7 @@ public class Config extends AbstractConfig implements Constants {
 	 *
 	 * @return true if enabled.
 	 */
-	public boolean isSelfUserRegistration() {
+	public boolean isSelfUserRegistrationEnabled() {
 		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_USER_SELF_REGISTRATION, false);
 	}
 

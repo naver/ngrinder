@@ -88,8 +88,8 @@
 					</a>
 				</div>
 
-				<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
-				<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
+				<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
+				<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 			</form>
 			<div class="pull-right" style="margin-top:-20px">
 				<code id="current_running_status" style="width:300px"></code>
@@ -101,7 +101,7 @@
 				<colgroup>
 					<col width="30">
 					<col width="50">
-					<col>
+					<col width="150">
 					<col>
 					<col width="70">
 					<#if clustered>
@@ -112,13 +112,13 @@
 					<col width="65">
 					<col width="65">
 					<col width="70">
-					<col width="60">
-					<col width="50">
+					<col width="70">
+					<col width="70">
 				</colgroup>
 				<thead>
 					<tr id="head_tr_id">
 						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
-						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
+						<th class="center nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="test_name" name="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="script_name" name="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier.oneline"/></#if></th>
@@ -126,12 +126,12 @@
 						<th id="region" name="region"><@spring.message "agent.table.region"/></th>
 						</#if>
 						<th id="start_time" name="startTime"><@spring.message "perfTest.table.startTime"/></th>
-						<th class="nothing"><@spring.message "perfTest.table.threshold"/></th>
+						<th class="nothing"><span class="ellipsis"><@spring.message "perfTest.table.threshold"/></th>
 						<th id="tps" name="tps"><@spring.message "perfTest.table.tps"/></th>
 						<th id="mean_test_time" name="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 						<th id="errors" class="ellipsis" name="errors"><@spring.message "perfTest.table.errorRate"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
-						<th class="nothing" title="<@spring.message "common.label.actions"/>"></th>
+						<th class="nothing"><@spring.message "common.label.actions"/></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -196,11 +196,12 @@
 									<#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
 								<td
-									<#if test.threshhold?? && test.threshold == "D">	>
-									${(test.durationStr)!}
+									<#if test.isThresholdDuration()>
+									title="<@spring.message "perfTest.configuration.duration"/>" >
+									${test.durationStr}
 									<#else>
 									title="<@spring.message "perfTest.configuration.runCount"/>" >
-									${(test.runCount)!}
+									${test.runCount}
 									</#if>
 								</td>
 								<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>
@@ -296,12 +297,29 @@
 							columnCount +"' class='no-padding'><table style='width:100%'><tr><td><div " +
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
-					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph", null, "Failed to get graph.");
-					ajaxObj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
+					var gridPadding = { top: 15, right: 10, bottom: 30, left: 40 };
+					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph");
+					ajaxObj.params = {
+						'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
+						'imgWidth':100
+					};
 					ajaxObj.success = function(res) {
-						drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
-						drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-						drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
+						var chartInterval = res.chartInterval;
+						new Chart(tpsId, res.TPS.data , chartInterval,
+								{
+									labels:["TPS"], gridPadding:gridPadding,
+									numXTicks:7, legend_margin:3
+								}).plot();
+						new Chart(meanTimeChartId, res.Mean_Test_Time_ms.data , chartInterval,
+								{
+									labels:["Mean Test Time"], gridPadding:gridPadding, numXTicks:7,
+									legend_margin:3
+								}).plot();
+						new Chart(errorChartId, res.Errors.data , chartInterval,
+								{
+									labels:["Errors"],
+									gridPadding:gridPadding, numXTicks:7, legend_margin:3
+								}).plot();
 						return true;
 					};
                     ajaxObj.call();
@@ -429,8 +447,9 @@
 		(function updateStatuses() {
 			var ids = $('input.perf_test').map(function() {
 		    	var perTestStatus = $(this).attr("status");
-				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_BY_ERROR"|| perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
+				if(!(isFinishedStatusType(perTestStatus))) {
 					return this.value;
+				}
 		  	}).get();
 
 			var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");

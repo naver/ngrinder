@@ -173,7 +173,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	}
 
 	@Override
-	public List<PerfTest> getOne(User user, Long[] ids) {
+	public List<PerfTest> getAll(User user, Long[] ids) {
 		if (ids.length == 0) {
 			return newArrayList();
 		}
@@ -205,7 +205,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	}
 
 	@Override
-	public List<PerfTest> getOne(User user, Status[] statuses) {
+	public List<PerfTest> getAll(User user, Status[] statuses) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
@@ -219,7 +219,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		return perfTestRepository.findAll(spec);
 	}
 
-	private List<PerfTest> getOne(User user, String region, Status[] statuses) {
+	private List<PerfTest> getAll(User user, String region, Status[] statuses) {
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 		// User can see only his own test
 		if (user != null) {
@@ -424,7 +424,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @return running test list
 	 */
 	public List<PerfTest> getCurrentlyRunningTest() {
-		return getOne(null, Status.getProcessingOrTestingTestStatus());
+		return getAll(null, Status.getProcessingOrTestingTestStatus());
 	}
 
 	/**
@@ -451,11 +451,11 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 
 	@Override
 	public List<PerfTest> getAllTesting() {
-		return getOne(null, config.getRegion(), Status.getTestingTestStates());
+		return getAll(null, config.getRegion(), Status.getTestingTestStates());
 	}
 
 	public List<PerfTest> getAllAbnormalTesting() {
-		return getOne(null, config.getRegion(), new Status[]{Status.ABNORMAL_TESTING});
+		return getAll(null, config.getRegion(), new Status[]{Status.ABNORMAL_TESTING});
 	}
 
 
@@ -1028,7 +1028,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 */
 	@Override
 	public List<PerfTest> getAllStopRequested() {
-		final List<PerfTest> perfTests = getOne(null, config.getRegion(), getProcessingOrTestingTestStatus());
+		final List<PerfTest> perfTests = getAll(null, config.getRegion(), getProcessingOrTestingTestStatus());
 		CollectionUtils.filter(perfTests, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
@@ -1061,7 +1061,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();
-		for (PerfTest each : getOne(null, getProcessingOrTestingTestStatus())) {
+		for (PerfTest each : getAll(null, getProcessingOrTestingTestStatus())) {
 			User lastModifiedUser = each.getCreatedUser().getUserBaseInfo();
 			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
 			if (perfTestStatistics == null) {
