@@ -19,7 +19,7 @@ function checkSimpleNameByObj(obj) {
 }
 
 function checkSimpleName(str) {
-    return checkStringFormat("^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){2,19}$", patrn);
+    return checkStringFormat(str, "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){2,19}$");
 }
 
 function checkEmptyByID(id) {
