@@ -3,7 +3,6 @@
 <head>
 <#include "../common/common.ftl"/>
 <#include "../common/datatables.ftl"/>
-<#import "spring.ftl" as spring/>
 	<title><@spring.message "agent.table.title"/></title>
 </head>
 <body>
