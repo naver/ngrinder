@@ -214,10 +214,10 @@ public class UserController extends BaseController {
 	public String switchOptions(User user, ModelMap model) {
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			List<User> allUserByRole = userService.getAll(Role.USER);
-			model.addAttribute("shareUserList", allUserByRole);
+			model.addAttribute("shareUsers", allUserByRole);
 		} else {
 			User currUser = userService.getOne(user.getUserId());
-			model.addAttribute("shareUserList", currUser.getOwners());
+			model.addAttribute("shareUsers", currUser.getOwners());
 		}
 		return "user/switch_options";
 	}
@@ -253,7 +253,7 @@ public class UserController extends BaseController {
 	private void getUserShareList(User user, ModelMap model) {
 		if (user == null) {
 			model.addAttribute("followers", Lists.newArrayList());
-			model.addAttribute("shareUserList", Lists.newArrayList());
+			model.addAttribute("shareUsers", Lists.newArrayList());
 			return;
 		}
 
@@ -266,7 +266,7 @@ public class UserController extends BaseController {
 			users.add(u.getUserBaseInfo());
 		}
 		model.addAttribute("followers", user.getFollowers());
-		model.addAttribute("shareUserList", users);
+		model.addAttribute("shareUsers", users);
 	}
 
 	/**

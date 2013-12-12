@@ -33,7 +33,10 @@ function generateImg(btnLabel, title) {
             $(this).after(outerDiv);
             outerDiv.hide();
 
-            outerDiv = header = div = close = null;
+            outerDiv = null;
+            header = null;
+            div = null;
+            close = null;
             if ($("#" + $(this).attr("id") + "_img_btn")[0] == undefined) {
                 var btn = $("<a href='javascript:void(0)' title='" + btnLabel + "'><i class='icon-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>");
                 btn.attr("id", $(this).attr("id") + "_img_btn"); 
@@ -55,14 +58,4 @@ function generateImg(btnLabel, title) {
             }
         });
     }
-}
-
-function cleanImgElem() {
-	$("button.jqplot-image-button").each(function() {
-		$(this).remove();
-	});
-	
-	$("div.jqplot-image-container").each(function() {
-		$(this).remove();
-	});
 }

@@ -134,7 +134,7 @@ public interface Constants {
 	public static final String PARAM_TEST_CHART_INTERVAL = "chartInterval";
 
 	public static final String PARAM_TIMEZONE_OFFSET = "timezone_offset";
-	public static final String PARAM_REGION_LIST = "regionList";
+	public static final String PARAM_REGION_LIST = "regions";
 	public static final String PARAM_REGION_AGENT_COUNT_MAP = "regionAgentCountMap";
 	public static final String PARAM_MAX_AGENT_COUNT = "maxAgentCount";
 	public static final String PARAM_SCRIPT_LIST = "scriptList";

@@ -40,7 +40,6 @@ import javax.annotation.PostConstruct;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -172,13 +171,13 @@ public class BaseController implements Constants {
 	/**
 	 * Provide the announcement hide cookie value as a model attribute.
 	 *
-	 * @param annoucnementHide true if hidden.
+	 * @param announcementHide true if hidden.
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_hide")
 	public boolean announcement(
-			@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
-		return annoucnementHide;
+			@CookieValue(value = "announcement_hide", defaultValue = "false") boolean announcementHide) {
+		return announcementHide;
 	}
 
 	/**
@@ -335,5 +334,6 @@ public class BaseController implements Constants {
 		modelAndView.addObject("exception", e.getMessage());
 		return modelAndView;
 	}
+
 
 }

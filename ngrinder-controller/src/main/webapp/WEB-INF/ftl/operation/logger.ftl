@@ -27,16 +27,19 @@
 			ajaxObj.success = function(data) {
 				var eachLog = $("tr#" +data.index + " td");
 				if (eachLog.size() != 0) {
+					//noinspection JSUnresolvedVariable
 					if (eachLog.attr("id") != data.modification) {
 						eachLog.html(data.log);
+						//noinspection JSUnresolvedVariable
 						eachLog.attr("id", data.modification);
 					}
 				} else {
-					var logEntries = $("#log_container tr");
+					var $logContainer = $("#log_container");
+					var logEntries = $logContainer.find("tr");
 					if (logEntries.size() > 5) {
 						logEntries.first().remove();
 					}
-					$("#log_container").append($("<tr id='" + data.index + "'><td id='" + data.modification + "'>" + data.log + "</td></tr>"));
+					$logContainer.append($("<tr id='" + data.index + "'><td id='" + data.modification + "'>" + data.log + "</td></tr>"));
 				}
 				setTimeout(pollingLogs, 5000);
 			};

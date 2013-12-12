@@ -204,6 +204,6 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testSwitchOptions() {
 		ModelMap model = new ModelMap();
 		userController.switchOptions(getTestUser(), model);
-		assertThat(model.containsAttribute("shareUserList"), is(true));
+		assertThat(model.containsAttribute("shareUsers"), is(true));
 	}
 }

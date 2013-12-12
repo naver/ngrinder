@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -68,12 +69,16 @@ public class AgentDownloadController extends BaseController {
 	                           @RequestParam(value = "region", required = false) String region, HttpServletRequest request,
 	                           HttpServletResponse response) {
 		String connectingIP = request.getServerName();
-		if (isClustered()) {
-			checkNotEmpty(region, "region should be provided to download agent.");
-			connectingIP = checkNotNull(regionService.getOne(region), "selecting region '" + region + "' is not " +
-					"available").getIp();
+		try {
+			if (isClustered()) {
+				checkNotEmpty(region, "region should be provided to download agent.");
+				connectingIP = checkNotNull(regionService.getOne(region), "selecting region '" + region + "' is not " +
+						"available").getIp();
+			}
+			FileDownloadUtils.downloadFile(response, agentPackageService.createAgentPackage(connectingIP, region, owner));
+		} catch (Exception e) {
+			throw processException(e);
 		}
-		FileDownloadUtils.downloadFile(response, agentPackageService.createAgentPackage(connectingIP, region, owner));
 	}
 
 }

@@ -10,7 +10,7 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<img src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}"/>
-		<div class="well form-inline search-bar" style="margin-top:0px" > 
+		<div class="well form-inline search-bar" style="margin-top:0" >
 			<table style="width:100%">
 				<tr>
 					<td>
@@ -122,7 +122,7 @@
 							</#if>
 						</td>
 						<td class="ellipsis" title="${(script.description)!?html}">${(script.description)!}</td>
-						<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
+						<td><#if script.lastModifiedDate??>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
 						<td>${script.revision}</td>
 						<td>
 							<#if script.fileType != "dir">
@@ -161,10 +161,10 @@
 							return $(this).val();
 						}).get().join(",");
 
-						var ajaxObj = new AjaxObj("${req.getContextPath()}/script/delete/${currentPath}");
-						ajaxObj.type = "POST"
+						var ajaxObj = new AjaxObj("/script/delete/${currentPath}");
+						ajaxObj.type = "POST";
 						ajaxObj.params = {'filesString': scriptsStr};
-						ajaxObj.success = function (res) {
+						ajaxObj.success = function () {
 							document.location.reload();
 						};
 						ajaxObj.call();

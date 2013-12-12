@@ -13,9 +13,9 @@
 			<legend class="header">
 				<@spring.message "navigator.dropdown.userManagement"/>
 				<select id="roles" class="pull-right" name="roles">
-					<option value="all" <#if listPage?exists && !role?exists>selected</#if>"><@spring.message "user.left.all"/></option>
+					<option value="all" <#if listPage?? && !role??>selected</#if>" ><@spring.message "user.left.all"/></option>
 					<#list roleSet as eachRole>
-						<option value="${eachRole}" <#if role?exists && role == eachRole>selected</#if>>${eachRole.fullName}</option>
+						<option value="${eachRole}" <#if role?exis??ole == eachRole>selected</#if>>${eachRole.fullName}</option>
 					</#list>
 				</select>
 			</legend> 
@@ -39,7 +39,7 @@
 			<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}"/>
 			<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 			<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
-		
+
 		</form>
 		<table class="table table-striped table-bordered ellipsis" id="user_table">
 			<#assign userList = users.content/>
@@ -66,11 +66,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				
+
 				<#list userList as user>
 				<tr class='${["odd", ""][user_index%2]}'>
-					<td class="center"><input type="checkbox" class="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
-						value="${user.userId}" uname="${user.userName}"/></td>
+					<td class="center">
+						<input type="checkbox" class="checkbox" id="user_info_check"
+							<#if user.userId == "admin">disabled</#if>
+							value="${user.userId}" uname="${user.userName}"/>
+					</td>
 					<td class="ellipsis"><a href="${req.getContextPath()}/user/${user.userId}">${user.userName}</a></td>
 					<td title="${user.role.fullName}">${user.role.fullName}</td>
 					<td class="ellipsis">${user.email!""}</td>
@@ -109,12 +112,12 @@
 			$("#page_number").val(page);
 			document.forms.user_list_form.submit();
 		}
-		
+
 		$(document).ready(function(){
 			$("#search_user").click(function() {
 				$("#user_list_form").submit();
 			});
-			
+
 			$("#roles").change(function() {
 				var selectedValue = $(this).val();
 				var destUrl = "${req.getContextPath()}/user/";
@@ -133,7 +136,7 @@
 			});
 			var sortColumn = $("#sort_column").val();
 			var sortDir = $("#sort_direction").val().toLowerCase();
-			
+
 			$("th[name='" + sortColumn + "']").addClass("sorting_" + sortDir);
 
 			$("th.sorting").click(function() {
@@ -142,14 +145,14 @@
 				if ($currObj.hasClass("sorting_asc")) {
 					sortDirection = "DESC";
 				}
-				
+
 				$("#sort_column").val($currObj.attr('name'));
 				$("#sort_direction").val(sortDirection);
 				getList(1);
 			});
 
 		});
-	
+
 		function deleteCheckedUsers() {
 			var list = $("input[id='user_info_check']:checked");
 			if(list.length == 0) {
@@ -164,10 +167,10 @@
 				checkedUserName.push($elem.attr("uname"));
 				checkedUserId.push($elem.val());
 			});
-			
+
 			deleteUsers(checkedUserId.join(","), checkedUserName.join(", "));	
 		}
-		
+
 		function deleteUsers(ids, names) {
 			bootbox.confirm('<@spring.message "user.list.confirm.delete"/> ' + names + '?', '<@spring.message "common.button.cancel"/>', '<@spring.message "common.button.ok"/>', function(result) {
 				if (result) {

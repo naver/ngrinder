@@ -1,19 +1,20 @@
 var plotObj;
 
-$(document).ready(function() {
-	$("#use_ramp_up").on("click", function() {
+$(document).ready(function () {
+	$("#use_ramp_up").on("click", function () {
 		updateRampupChart();
 	});
-	
+
 	$("#init_processes, #init_sleep_time, #process_increment, #process_increment_interval").on(
-		"change", function() {
+		"change", function () {
 			updateRampupChart();
-	});
+		});
 });
 
 function disableRampup() {
-	$('#init_processes').val(0);
-	$('#init_processes').attr("readonly", "readonly");
+	var $initProcesses = $('#init_processes');
+	$initProcesses.val(0);
+	$initProcesses.attr("readonly", "readonly");
 	$('#init_sleep_time').attr("readonly", "readonly");
 	$('#process_increment').attr("readonly", "readonly");
 	$('#process_increment_interval').attr("readonly", "readonly");
@@ -53,7 +54,6 @@ function updateRampupChart() {
 
 	if (modified) {
 		$("#message_div").empty();
-		modified = false;
 	}
 
 	var steps = (processes - initialProcesses) / processInc;
@@ -68,7 +68,7 @@ function updateRampupChart() {
 	}
 	var maxY = parseInt((processes / 5) + 1) * 5;
 	var seriesArray = [];
-	
+
 	if ($("#use_ramp_up")[0].checked) {
 		enableRampup();
 		var curX = initialSleepTime;
@@ -77,32 +77,32 @@ function updateRampupChart() {
 			seriesArray.push([0, 0]);
 			seriesArray.push([initialSleepTime, 0]);
 		}
-		seriesArray.push([curX  + 0.01, curY]);
+		seriesArray.push([curX + 0.01, curY]);
 		curX = curX + internalTime;
 		seriesArray.push([curX, curY]);
 
-		for ( var step = 1; step <= steps; step++) {
+		for (var step = 1; step <= steps; step++) {
 			curY = curY + processInc;
 			if (curY > processes) {
 				curY = processes;
 			}
-			seriesArray.push([curX  + 0.01, curY]);
+			seriesArray.push([curX + 0.01, curY]);
 			curX = curX + internalTime;
 			seriesArray.push([curX, curY]);
 		}
-		
+
 		$("#rampup_chart").empty();
 		drawRampup(seriesArray, internalTime, maxY);
 	} else {
 		disableRampup();
-		
+
 		var curX = 0;
-		for ( var step = 0; step <= steps; step++) {
-			seriesArray.push([curX  + 0.01, processes]);
+		for (var step = 0; step <= steps; step++) {
+			seriesArray.push([curX + 0.01, processes]);
 			curX = curX + internalTime;
 			seriesArray.push([curX, processes]);
 		}
-		
+
 		if (plotObj) {
 			plotObj.series[0].data = seriesArray;
 			plotObj.replot();
@@ -114,46 +114,46 @@ function updateRampupChart() {
 
 function drawRampup(data, internalTime, maxY) {
 	plotObj = $.jqplot("rampup_chart", [data], {
-		axesDefaults : {
-			tickRenderer : $.jqplot.AxisTickRenderer,
-			tickOptions : {
-				showMark : false
+		axesDefaults: {
+			tickRenderer: $.jqplot.AxisTickRenderer,
+			tickOptions: {
+				showMark: false
 			}
 		},
-		seriesDefaults : {
-			showMarker : false,
-			lineWidth : 1.5
+		seriesDefaults: {
+			showMarker: false,
+			lineWidth: 1.5
 		},
-		
-		axes : {
-			xaxis : {
-				min : 1,
-				pad : 0,
-				tickOptions : {
-					show : true,
-					formatter : function(format, value) {
-                        value = value || 0;
+
+		axes: {
+			xaxis: {
+				min: 1,
+				pad: 0,
+				tickOptions: {
+					show: true,
+					formatter: function (format, value) {
+						value = value || 0;
 						if (internalTime < 1000) {
-							return (value / 1000).toFixed(1);							
+							return (value / 1000).toFixed(1);
 						} else {
 							return (value / 1000).toFixed(0);
 						}
 					}
 				}
 			},
-			yaxis : {
-				min : 0,
-				pad : 10,
-				max : maxY,
-				tickOptions : {
-					show : true,
-					formatter : function(format, value) {
-                        value = value || 0;
+			yaxis: {
+				min: 0,
+				pad: 10,
+				max: maxY,
+				tickOptions: {
+					show: true,
+					formatter: function (format, value) {
+						value = value || 0;
 						return (value).toFixed(0);
 					}
 				}
 			}
-	
+
 		}
 	});
 }

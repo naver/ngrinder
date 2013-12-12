@@ -56,7 +56,6 @@
 			position: relative;
 			z-index: 11;
 			margin: auto;
-			display: none;
 			background-color: #ffffff;
 			border: 1px solid #999;
 			display: inline-block;
@@ -86,7 +85,7 @@
 	<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
 </div>
 <div class="container">
-	<form name="download_csv_form">
+	<form name="download_csv_form" name="download_csv_form">
 		<input type="hidden" id="test_id" name="testId" value="${test.id}">
 	</form>
 	<div class="row">
@@ -208,7 +207,7 @@
 <script src="${req.getContextPath()}/js/generate-img.js"></script>
 <script>
 	var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";
-	var imgTitle = "<@spring.message "perfTest.report.exportImg.title"/>"
+	var imgTitle =  <@spring.message "perfTest.report.exportImg.title"/> ;
 
 	$(document).ready(function () {
 		$("li.perf").click(function () {

@@ -1,3 +1,26 @@
+<#import "../common/spring.ftl" as spring>
+<#include "../common/ngrinder_macros.ftl">
+<style>
+	div.div-resources {
+        border: 1px solid #D6D6D6;
+        height: 50px;
+        margin-bottom: 8px;
+        overflow-y: scroll;
+        border-radius: 3px 3px 3px 3px;
+    }
+
+    div.div-resources .resource {
+        width: 300px;
+        color: #666666;
+        display: block;
+        margin-left: 7px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+
+
+</style>
+<!--suppress ALL -->
 <div class="row">
 	<div class="span6">
 		<fieldset>
@@ -21,19 +44,19 @@
 							<label for="region" class="control-label" style="margin-left:-50px;width:80px">
 								<@spring.message "perfTest.configuration.region"/>
 								<span rel="popover" data-html="true"
-									data-content='<@spring.message "perfTest.configuration.region.help"/>' 
-									data-placement='top' title='<@spring.message "perfTest.configuration.region"/>' > 
+									data-content='<@spring.message "perfTest.configuration.region.help"/>'
+									data-placement='top' title='<@spring.message "perfTest.configuration.region"/>' >
 									<i class="icon-question-sign" style="vertical-align: middle;"></i>
 								</span>
-							</label> 
+							</label>
 							<select id="region" name="region" class="pull-right required" style="width: 110px">
 								<option value=""></option>
-								<#list regionList as each>
+								<#list regions as each>
 									<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
 										<@spring.message "${each}"/>
-									</option> 
+									</option>
 								</#list>
-							</select> 
+							</select>
 							<div id="err_region">
 							</div>
 						</#if>
@@ -45,13 +68,13 @@
 				<@input_append name="vuserPerAgent"
 					value="${(test.vuserPerAgent)!1}"
 					message="perfTest.configuration.vuserPerAgent"
-					append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
+					append_prefix="perfTest.configuration.max" append="${maxVuserPerAgent!0}" />
 				<i class="pointer-cursor expand" id="expand_collapse_btn"></i>
 				<div class="pull-right">
 					<span class="badge badge-info pull-right"
 						  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
-						<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
-							id="total_vuser"></span>
+						<span id="vuser_label"><@spring.message "perfTest.configuration.availVuser"/></span>
+						<span id="total_vuser"></span>
 					</span>
 				</div>
 				<div id="process_thread_config_panel" style="display: none;">
@@ -155,7 +178,7 @@
 					<div class="span3">
 						<@control_group name="safeDistribution" label_message_key="perfTest.configuration.safeDistribution">
 							<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
-							<#if test.safeDistribution == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> />
+							<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
 							<span style="margin-top: 10px; margin-left: 10px"
 								rel='popover' data-html='true'
 								data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>'
@@ -175,7 +198,7 @@
 								message="perfTest.configuration.param"
 								others='style="width:120px"'/>
 						</@control_group>
-					</div>					
+					</div>
 				</div>
 			</div>
 		</div>
@@ -185,7 +208,7 @@
 	<div class="span6">
 		<fieldset>
 			<legend>
-				<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
+                <label for="use_ramp_up"></label><input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
 					<#if test.useRampUp == true>checked</#if> />
 				<@spring.message "perfTest.configuration.rampEnable"/>
 			</legend>
@@ -217,7 +240,7 @@
 				</div>
 			</div>
 		</div>
-		<legend class="center" style="margin-top:0px;padding-top:0px"> <@spring.message "perfTest.configuration.rampUpDes"/> </legend>
+		<legend class="center" style="margin-top:0;padding-top:0"> <@spring.message "perfTest.configuration.rampUpDes"/> </legend>
 		<div id="rampup_chart" class="rampup-chart" style="margin-left: 20px"></div>
 	</div>
 	<!-- end test content right -->

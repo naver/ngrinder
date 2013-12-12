@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><#include "../common/common.ftl"> <#include "../common/datatables.ftl">
+<head>
+<#include "../common/common.ftl"/>
+<#include "../common/datatables.ftl"/>
+<#import "spring.ftl" as spring/>
 	<title><@spring.message "agent.table.title"/></title>
 </head>
 <body>
@@ -56,46 +59,49 @@
 		</thead>
 		<tbody>
 		<@list list_items=agents ; agent>
-			<tr>
-				<td class="center"><input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}" value="${agent.id}"></td>
-				<td class="center" id="row_${agent.id}">
-					<div class="ball" id="ball_${agent.id}"
-						 data-html="true"
-						 rel="popover">
-						<img class="status" src="${req.getContextPath()}/img/ball/${agent.state.iconName}"/>
-					</div>
-				</td>
-				<td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self"
-					   value="${agent.ip}">${agent.ip}</a></td>
-				<td id="port_${agent.id}">${(agent.port)!}</td>
-				<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
-				<td class="ellipsis">${(agent.version)!"Prev 3.3"}</td>
-				<td>${(agent.region)!}</td>
-				<td>
-					<div class="btn-group" data-toggle="buttons-radio">
-						<button type="button"
-								class="btn btn-mini btn-primary disapproved <#if agent.isApproved() == false>active</#if>"
-								sid="${agent.id}">
-							<@spring.message "agent.table.disapproved"/>
-						</button>
-						<button type="button"
-								class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>"
-								sid="${agent.id}">
-							<@spring.message "agent.table.approved"/>
-						</button>
-					</div>
-				</td>
-			</tr>
+		<tr>
+			<td class="center">
+				<input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}" value="${agent.id}">
+			</td>
+			<td class="center" id="row_${agent.id}">
+				<div class="ball" id="ball_${agent.id}"
+					 data-html="true"
+					 rel="popover">
+					<img class="status" src="${req.getContextPath()}/img/ball/${agent.state.iconName}"/>
+				</div>
+			</td>
+			<td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+			</td>
+			<td id="port_${agent.id}">${(agent.port)!}</td>
+			<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
+			<td class="ellipsis">${(agent.version)!"Prev 3.3"}</td>
+			<td>${(agent.region)!}</td>
+			<td>
+				<div class="btn-group" data-toggle="buttons-radio">
+					<button type="button"
+							class="btn btn-mini btn-primary disapproved <#if agent.isApproved() == false>active</#if>"
+							sid="${agent.id}">
+						<@spring.message "agent.table.disapproved"/>
+					</button>
+					<button type="button"
+							class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>"
+							sid="${agent.id}">
+						<@spring.message "agent.table.approved"/>
+					</button>
+				</div>
+			</td>
+		</tr>
 		</@list>
 		</tbody>
 	</table>
 <#include "../common/copyright.ftl">
-    <!--content-->
+	<!--content-->
 </div>
 <script>
 	$(document).ready(function () {
+		var $agentTable = $("#agent_table");
 	<#if agents?has_content>
-		var oTable = $("#agent_table").dataTable({
+		$agentTable.dataTable({
 			"bAutoWidth": false,
 			"bFilter": false,
 			"bLengthChange": false,
@@ -117,7 +123,7 @@
 		removeClick();
 		enableChkboxSelectAll("agent_table");
 
-		$("#agent_table").on("click", ".approved", function () {
+		$agentTable.on("click", ".approved", function () {
 			var sid = $(this).attr("sid");
 			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
 					{
@@ -129,7 +135,7 @@
 			);
 		});
 
-		$("#agent_table").on("click", ".disapproved", function () {
+		$agentTable.on("click", ".disapproved", function () {
 			var sid = $(this).attr("sid");
 			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
 					{
@@ -143,7 +149,6 @@
 	</#if>
 
 		$("#stop_agent_button").click(function () {
-			var ids = "";
 			var list = $("td input:checked");
 			if (list.length == 0) {
 				bootbox.alert("<@spring.message "agent.table.message.alert.stop"/>", "<@spring.message "common.button.ok"/>");
@@ -179,23 +184,23 @@
 
 	function stopAgents(ids) {
 		var ajaxObj = new AjaxPostObj("/agent/api/stop",
-                { "ids": ids },
+				{ "ids": ids },
 				"<@spring.message "agent.table.message.success.stop"/>",
 				"<@spring.message "agent.table.message.error.stop"/>!");
-        ajaxObj.success = function (res) {
+		ajaxObj.success = function () {
 			setTimeout(function () {
 				location.reload();
 			}, 2000);
 		};
-        ajaxObj.call();
+		ajaxObj.call();
 	}
 
 	function updateAgents(ids) {
 		var ajaxObj = new AjaxPostObj("/agent/api/update",
-                { "ids": ids },
+				{ "ids": ids },
 				"<@spring.message "agent.table.message.success.update"/>",
 				"<@spring.message "agent.table.message.error.update"/>");
-        ajaxObj.call();
+		ajaxObj.call();
 	}
 
 	(function updateStatuses() {
@@ -204,7 +209,7 @@
 		}).get();
 
 		var ajaxObj = new AjaxObj("/agent/api/states", null, "<@spring.message "common.error.error"/>");
-        ajaxObj.success = function (data) {
+		ajaxObj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
 				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
 			}
@@ -212,8 +217,8 @@
 				return;
 			}
 			setTimeout(updateStatuses, 2000);
-		}
-        ajaxObj.call();
+		};
+		ajaxObj.call();
 	})();
 
 	function updateStatus(id, icon, port, state) {

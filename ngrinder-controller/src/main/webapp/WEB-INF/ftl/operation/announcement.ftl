@@ -9,7 +9,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form id="annountcement_form" method="POST">
+				<form id="announcement_form" name="announcement_form" method="POST">
 					<fieldset>
 						<legend class="header">
 							<@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
@@ -62,14 +62,15 @@
 			
 			$("#save_btn").click(function() {
 				$('#announcement_editor').text(editor.getValue());
-				document.forms.annountcement_form.action = "${req.getContextPath()}/operation/announcement/";
-				document.forms.annountcement_form.submit();
+				document.forms.announcement_form.action = "${req.getContextPath()}/operation/announcement/";
+				document.forms.announcement_form.submit();
 			});
 			
 			$("#test_btn").click(function() {
 				var content = editor.getValue();
+				var $announcementContainer = $("#announcement_container");
 				if (!content) {
-					$("#announcement_container").slideUp();
+					$announcementContainer.slideUp();
 					return false;
 				}
 				if (content.indexOf("</") < 0 && content.indexOf("<br>") < 0) {
@@ -77,12 +78,13 @@
 					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;');
 				}
 				$("#announcement_content").html(content);
-				$("#announcement_container").slideDown();
+				$announcementContainer.slideDown();
+				return true;
 			});
-			String.prototype.replaceAll = function(s1,s2) { 
-				return this.replace(new RegExp(s1,"gm"),s2);
-			}
-			<#if success?exists>
+			String.prototype.replaceAll = function (s1, s2) {
+				return this.replace(new RegExp(s1, "gm"), s2);
+			};
+			<#if success??>
 				<#if success>
 					showSuccessMsg("<@spring.message "common.message.alert.save.success"/>");
 				<#else>

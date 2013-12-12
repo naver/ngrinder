@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-	<head>	
+	<head>
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
 		<title><@spring.message "script.editor.title"/></title>
@@ -21,18 +21,18 @@
 				margin-top: 2px;
 				margin-bottom: 2px;
 			}
-			
+
 			.add-host-btn {
 				margin-top:-25px;
-				margin-right:67px 
+				margin-right:67px
 			}
-			
+
 			div.modal-body div.chart {
-				border:1px solid #878988; 
-				height:250px; 
-				min-width:500px; 
-				margin-bottom:12px; 
-				padding:5px 
+				border:1px solid #878988;
+				height:250px;
+				min-width:500px;
+				margin-bottom:12px;
+				padding:5px
 			}
 		</style>
 	</head>
@@ -42,7 +42,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form id="contentForm" class="well" method="post" target="_self" style="margin-bottom:10px;"> 	
+				<form id="content_form" name="content_form" class="well" method="post" target="_self" style="margin-bottom:10px;">
 					<div class="form-horizontal">
 						<fieldset>
 							<div class="control-group">
@@ -68,14 +68,14 @@
 												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
 											</#if>
 											</td>
-										</tr> 
+										</tr>
 									</table>
 							</div>
 							<div style="margin-bottom: 0" class="control-group">
-								<table style="width:100%"> 
-									<colgroup> 
+								<table style="width:100%">
+									<colgroup>
 										<col width="150px"/>
-										<col width="*"/> 
+										<col width="*"/>
 										<col width="300px"/>
 									</colgroup>
 									<tr>
@@ -84,15 +84,15 @@
 										</td>
 										<td>
 											<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
-										</td> 
+										</td>
 										<td>
 											<#if file?? && file.properties.targetHosts??>
 												<#assign targetHosts = file.properties.targetHosts/>
 											</#if>
 											<#include "../perftest/host.ftl"/>
-										</td> 
+										</td>
 									</tr>
-								</table>           
+								</table>
 							</div>
 						</fieldset>
 					</div>
@@ -100,19 +100,19 @@
 					<input type="hidden" id="validated" name="validated" value="${(file.properties.validated)!"0"}">
 					<input type="hidden" id="contentHd" name="content">
 					<@security.authorize ifAnyGranted="A, S">
-						<#if ownerId??>					
+						<#if ownerId??>
 							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 						</#if>
 					</@security.authorize>
 				</form>
-				
-				
+
+
 				<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
 				<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
-				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" 
+				<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
 					title="Tip" data-html="ture"
 					data-placement="left"
-				 	data-content="
+					data-content="
 						Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/>
 						Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
 						Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
@@ -126,28 +126,29 @@
 		<div id="validation_result_panel" style="display:none;">
 			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
 			</pre>
-			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
-		</div>		 
-		<#include "../common/copyright.ftl"> 
+			<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
+		</div>
+		<#include "../common/copyright.ftl">
 	</div>
-	
+
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
 	<#include "../perftest/host_modal.ftl">
 	<script>
-    	var changed = false;
-    	var curRevision = ${curRevision!0};
-    	var lastRevision = ${lastRevision!0};
-    	$(window).on('beforeunload', function() {
-    		if (changed == true) {
-    			return "<@spring.message "script.editor.message.exitwithoutsave"/>";
-    		}
-    	});
-    	function saveScript() {
-			document.forms.contentForm.action = "${req.getContextPath()}/script/save";
-			document.forms.contentForm.submit();					
-    	}
-    	$(document).ready(function() {
+		var changed = false;
+		var curRevision = ${curRevision!0};
+		var lastRevision = ${lastRevision!0};
+		$(window).on('beforeunload', function() {
+			if (changed == true) {
+				return "<@spring.message "script.editor.message.exitwithoutsave"/>";
+			}
+			return "";
+		});
+		function saveScript() {
+			document.forms.content_form.action = "${req.getContextPath()}/script/save";
+			document.forms.content_form.submit();
+		}
+		$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
 				mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
 				theme: "eclipse",
@@ -184,10 +185,10 @@
 				$('#contentHd').val(newContent);
 				changed = false;
 				if (curRevision > 0 && lastRevision > 0 && curRevision <  lastRevision) {
-					var $confirm = bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-					    if (result) {
+					bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+						if (result) {
 							saveScript();
-					    }
+						}
 					});
 				} else {
 					saveScript();
@@ -220,29 +221,30 @@
 					$('#validated').val("1");//should control the validation success or not later.
 					$("#old_content").val(newContent);
 				};
-				ajaxObj.complete = function() {
-                    hideProgressBar();
-                }
-				ajaxObj.error = function() {
+				ajaxObj.complete = function () {
+					hideProgressBar();
+				};
+				ajaxObj.error = function () {
 					validating = false;
-				}
-                ajaxObj.call();
+				};
+				ajaxObj.call();
 
 			});
-			
+
 			$("#expand_btn").click(function() {
-				var heightStr = $("#validation_result_pre_div").css("height");
+				var #validationResultDiv = $("#validation_result_pre_div");
+				var heightStr = #validationResultDiv.css("height");
 				if (heightStr == "100px") {
-					$("#validation_result_pre_div").css("height", "300px");
+					#validationResultDiv.css("height", "300px");
 					editor.setSize(null, 300);
 				} else {
-					$("#validation_result_pre_div").css("height", "100px");
+					#validationResultDiv.css("height", "100px");
 					editor.setSize(null, 500);
 				}
 			});
 		});
-    	
-    
+
+
 		</script>
 	</body>
 </html>

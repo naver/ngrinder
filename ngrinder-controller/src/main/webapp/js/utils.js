@@ -37,11 +37,9 @@ function checkEmptyByObj(obj) {
 }
 
 function checkEmpty(str) {
-    if ($.trim(str) == "") {
-        return true;
-    }
+    return $.trim(str) == "";
 
-    return false;
+
 }
 
 function isIPByObj(obj) {
@@ -140,13 +138,18 @@ function cookie(name, value, expiredays) {
     today.setDate(today.getDate() + expiredays);
     document.cookie = name + "=" + escape(value) + "; path=/; expires=" + today.toGMTString() + ";";
 }
+var ajaxCallContextPath = "";
+function setAjaxContextPath(contextPath) {
+    ajaxCallContextPath = contextPath;
+}
 
 function AjaxPostObj(url, params, successMessage, errorMessage) {
-   var ajaxObj = new AjaxObj(url, successMessage, errorMessage);
-   ajaxObj.type = "POST";
-   ajaxObj.params = params;
-   return ajaxObj;
+    var ajaxObj = new AjaxObj(url, successMessage, errorMessage);
+    ajaxObj.type = "POST";
+    ajaxObj.params = params;
+    return ajaxObj;
 }
+
 function AjaxObj(url, successMessage, errorMessage) {
     this.url = url;
     this.type = "GET";
@@ -154,34 +157,44 @@ function AjaxObj(url, successMessage, errorMessage) {
     this.cache = false;
     this.dataType = 'json';
     this.async = true;
-    this.successMessage = successMessage;
-    this.errorMessage = errorMessage;
-    this.complete = function() {
+    this.successMessage = successMessage || null;
+    this.errorMessage = errorMessage  || null;
+    this.complete = function () {
     };
-    this.success = function() {
+    this.success = function () {
     };
     this.error = function () {
         return false;
     };
-};
+}
 
 AjaxObj.prototype.call = function () {
     var that = this;
+    var path = ajaxCallContextPath + this.url;
+    var filteredParam = {};
+    $.each(this.params, function (key, value) {
+        var variable = "{" + key + "}";
+        if (path.indexOf(variable) != -1) {
+            path = path.replace("{" + key + "}", value);
+        } else {
+            filteredParam[key] = value;
+        }
+    });
     $.ajax({
-        url: contextPath + this.url,
+        url: path,
         type: this.type,
         async: this.async,
         cache: this.cache,
-        data: this.params,
+        data: filteredParam,
         dataType: this.dataType,
-        success: function(res) {
+        success: function (res) {
             if (that.successMessage != null) {
                 showSuccessMsg(that.successMessage);
             }
             return that.success(res);
         },
-        complete : this.complete,
-        error: function(xhr, res) {
+        complete: this.complete,
+        error: function (xhr, res) {
             if (xhr.status != 0) {
                 if (that.errorMessage != null) {
                     showErrorMsg(that.errorMessage);
@@ -192,5 +205,5 @@ AjaxObj.prototype.call = function () {
             return that.error();
         }
     });
-}
+};
 

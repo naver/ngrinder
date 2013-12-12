@@ -1,3 +1,4 @@
+<#import "../../common/spring.ftl" as spring/>
 <div class="page-header">
 	<h4>${plugin} - ${kind}</h4>
 </div>
@@ -6,8 +7,6 @@
 </div>
 
 <script>
-
-
 	function getPluginDataAndDraw(testId, plugin, kind) {
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/plugin/" + plugin);
 		ajaxObj.params = {'kind': kind, 'imgWidth': 700};

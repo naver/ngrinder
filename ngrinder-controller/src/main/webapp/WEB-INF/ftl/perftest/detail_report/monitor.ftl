@@ -1,3 +1,4 @@
+<#import "../../common/spring.ftl" as spring/>
 <div class="page-header page-header">
 	<h4>Monitor</h4>
 </div>

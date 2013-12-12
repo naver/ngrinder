@@ -17,14 +17,14 @@
 			<@control_group label_message_key="perfTest.testRunning.processes">
 			${test.processes}
 				<span class="badge badge-info pull-right">
-					<@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span>
+					<@spring.message "perfTest.testRunning.running"/> <span id="running_process"></span>
 				</span>
 			</@control_group>
 
 			<@control_group label_message_key="perfTest.testRunning.threads">
 			${test.threads}
 				<span class="badge badge-info pull-right">
-					<@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span>
+					<@spring.message "perfTest.testRunning.running"/> <span id="running_thread"></span>
 				</span>
 			</@control_group>
 				<hr>
@@ -75,8 +75,8 @@
 				<span class="badge badge-success" style="vertical-align:middle;">
 					<span id="running_time"></span>
 				</span>
-				<a id="stop_test_btn" class="btn btn-danger pull-right" sid="${(test.id)!}">
-				<@spring.message "common.button.stop"/>
+				<a id="stop_test_btn" class="btn btn-danger pull-right">
+					<@spring.message "common.button.stop"/>
 				</a>
 			</legend>
 		</fieldSet>
@@ -84,10 +84,11 @@
 		<div class="tabbable">
 			<ul class="nav nav-tabs" style="" id="sample_tab">
 				<li class="active">
-					<a href="#last_sample_tab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a>
+					<a href="#last_sample_tab"><@spring.message "perfTest.testRunning.latestsample"/></a>
 				</li>
-				<li><a href="#accumulated_sample_tab"
-					   tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
+				<li>
+					<a href="#accumulated_sample_tab"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a>
+				</li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="last_sample_tab">
@@ -157,20 +158,13 @@
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
 	var curPerf;
-	var curAgentStat
+	var curAgentStat;
 	var curMonitorStat;
 	var tpsQueue = new Queue(60 / ${test.samplingInterval});
 	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval});
 
-	var samplingAjax = new AjaxObj("/perftest/${test.id}/api/sample");
-	var $runningtime = $("#running_time");
-	var $processdata = $("#process_data");
-	var $threaddata = $("#thread_data");
-	var $runningcount = $("#running_count");
-	var $agentstate = $("#agent_state");
-	var $monitorstate = $("#monitor_state");
-	var $accumulatedSampleResult = $("#accumulated_sample_result");
-	var $lastSampleResult = $("#last_sample_result");
+	var samplingAjax = new AjaxObj("/perftest/{testId}/api/sample");
+	samplingAjax.params = { testId : ${test.id!""} };
 
 	function showLastPerTestResult(container, statistics) {
 		var existing = container.find("tr");
@@ -181,12 +175,12 @@
 				record = container.find("tr").get(i);
 			}
 			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
-			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>"
+			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Tests) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
-			output = output + "<td>" + toSize(statistics[i].Response_bytes_per_second) + "</td>";
+			output = output + "<td>" + formatNetwork(statistics[i].Response_bytes_per_second) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Mean_time_to_first_byte, 0) + "</td>";
 			$(record).html(output);
 		}
@@ -202,46 +196,55 @@
 				record = container.find("tr").get(i);
 			}
 			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
-			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>"
+			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Tests) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Peak_TPS) + "</td>";
-			output = output + "<td>" + toSize(statistics[i].Response_bytes_per_second) + "</td>";
+			output = output + "<td>" + formatNetwork((statistics[i].Response_bytes_per_second) + "</td>";
 			$(record).html(output);
 		}
 	}
 
 	samplingAjax.success = function (res) {
-		if (res.status == "TESTING") {
-			curPerf = res.perf;
-			curAgentStat = res.agent;
-			curMonitorStat = res.monitor;
-			$runningtime.text(showRunTime(curPerf.testTime));
-			$processdata.text($.number(curPerf.process));
-			$threaddata.text($.number(curPerf.thread));
-			$runningcount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
-			$agentstate.html(createMonitoringStatusString(curAgentStat));
-			$monitorstate.html(createMonitoringStatusString(curMonitorStat));
-			showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
-			showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
-			tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
-			tpsChart.plot();
-		} else {
-			if ($('#running_section_tab:hidden')[0]) {
-				window.clearInterval(objTimer);
-			}
-		}
-	}
+        if (res.status == "TESTING") {
+            curPerf = res.perf;
+            curAgentStat = res.agent;
+            curMonitorStat = res.monitor;
+            $runningTime.text(showRunTime(curPerf.testTime));
+            $runningProcess.text($.number(curPerf.process));
+            $runningThread.text($.number(curPerf.thread));
+            $runningCount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
+            $agentState.html(createMonitoringStatusString(curAgentStat));
+            $monitorState.html(createMonitoringStatusString(curMonitorStat));
+            showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
+            showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
+            tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
+            tpsChart.plot();
+        } else {
+            if ($('#running_section_tab:hidden')[0]) {
+                window.clearInterval(objTimer);
+            }
+        }
+    };
 
 	samplingAjax.error = function () {
-		if ($('#running_section_tab:hidden')[0]) {
-			window.clearInterval(objTimer);
-		}
-	}
+        if ($('#running_section_tab:hidden')[0]) {
+            window.clearInterval(objTimer);
+        }
+    };
 
-	function toNum(num, precision) {
+    var $runningTime = $("#running_time");
+    var $runningProcess = $("#running_process");
+    var $runningThread = $("#running_thread");
+    var $runningCount = $("#running_count");
+    var $agentState = $("#agent_state");
+    var $monitorState = $("#monitor_state");
+    var $accumulatedSampleResult = $("#accumulated_sample_result");
+    var $lastSampleResult = $("#last_sample_result");
+
+    function toNum(num, precision) {
 		if (num == undefined) {
 			return "-";
 		}
@@ -249,35 +252,18 @@
 		return $.number(num, precision);
 	}
 
-	function toPercent(num) {
-		return $.number(num / 100, 1) + "%"
-	}
-
-	function toSize(bytes) {
-		if (bytes == undefined) {
-			return "-";
-		}
-		bytes = bytes.toFixed(0);
-		var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-		if (bytes == 0) return 'n/a';
-		var i = parseInt(Math.floor(Math.log(Math.round(bytes)) / Math.log(1024)));
-		if (i == 0) return bytes +  sizes[i];
-		return (bytes / Math.pow(1024, i)).toFixed(1) + sizes[i];
-	}
-
-
 	function createMonitoringStatusString(status) {
 		var monitorStatusString = "<ul>";
 		$.each(status, function (name, value) {
 			monitorStatusString = monitorStatusString +
 					"<li class='monitor_state'><div style='width:100%;' class='ellipsis'>";
 			monitorStatusString = monitorStatusString +
-					"<span title='" + name + "'><b>" + name + "</b></span> " +
-					"CPU-" + toPercent(value.cpuUsedPercentage) + " MEM-" + toPercent(value.totalMemory / value
-					.freeMemory);
+					"<span title='" + name + "'><b>" + name + "</b></span>" +
+					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
+					" MEM-" + formatPercentage(null, value.totalMemory / value.freeMemory);
 			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {
-				monitorStatusString = monitorStatusString + "/ RX-" + toSize(value.receivedPerSec) +
-						" TX-" + toSize(value.sentPerSec) + "</dv></li>";
+				monitorStatusString = monitorStatusString + "/ RX-" + formatNetwork(null, value.receivedPerSec) +
+						" TX-" + formatNetwork(null, value.sentPerSec) + "</dv></li>";
 			}
 		});
 		monitorStatusString += "</ul>";
@@ -298,7 +284,7 @@
 	}
 
 	function stopTests(ids) {
-		var ajaxObj = new AjaxPostObj("${req.getContextPath()}/perftest/api/stop",
+		var ajaxObj = new AjaxPostObj("/perftest/api/stop",
 				{ "ids": ids },
 				"<@spring.message "perfTest.table.message.success.stop"/>",
 				"<@spring.message "perfTest.table.message.error.stop"/>");
@@ -306,19 +292,19 @@
 	}
 
 	$("#stop_test_btn").click(function () {
-		var id = $(this).attr("sid");
 		bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
 			if (result) {
-				stopTests(id);
+				stopTests("${test.id!""}");
 			}
 		});
 	});
 
-	$('#sample_tab a').click(function (e) {
+	var $samplingTab = $('#sample_tab');
+	$samplingTab.find('a').click(function (e) {
 		e.preventDefault();
 		$(this).tab('show');
 	});
-	$('#sample_tab a:first').tab('show');
+    $samplingTab.find('a:first').tab('show');
 	samplingAjax.call();
 	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
 </script>

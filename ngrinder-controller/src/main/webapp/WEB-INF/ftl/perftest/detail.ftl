@@ -9,72 +9,55 @@
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
-	div.div-resources {
-		border: 1px solid #D6D6D6;
-		height: 50px;
-		margin-bottom: 8px;
-		overflow-y: scroll;
-		border-radius: 3px 3px 3px 3px;
-	}
-	
-	div.div-resources .resource {
-		width: 300px;
-		color: #666666;
-		display: block;
-		margin-left: 7px;
-		margin-top: 2px;
-		margin-bottom: 2px;
-	}
-	
 	.select-item {
 		width: 60px;
 	}
-	
+
 	.control-label input {
 		vertical-align: top;
 		margin-left: 2px
 	}
-	
+
 	.controls code {
 		vertical-align: middle;
 	}
-	
+
 	.datepicker {
 		z-index:1151;
 	}
-	
-	
+
+
 	div.chart {
 		border: 1px solid #878988;
 		margin-bottom: 12px;
 	}
-	
-	
-    div.modal-body div.chart {
+
+
+	div.modal-body div.chart {
 		border:1px solid #878988; 
 		height:250px; 
 		min-width:500px; 
 		margin-bottom:12px; 
 		padding:5px 
-    }
-	
+	}
+
 	.table thead th {
 		vertical-align: middle;
 	}
-	
+
 	.jqplot-yaxis {
-	    margin-right: 20px; 
+		margin-right: 20px;
 	}
-	
+
 	.jqplot-xaxis {
-	    margin-top: 5px; 
+		margin-top: 5px;
 	} 
-	
+
 	.rampup-chart {
 		width: 430px;
 		height: 355px
 	}
-	
+
 	div.div-host {
 		border: 1px solid #D6D6D6;
 		height: 50px;
@@ -82,7 +65,7 @@
 		overflow-y: scroll;
 		border-radius: 3px 3px 3px 3px;
 	}
-	
+
 	div.div-host .host {
 		color: #666666;
 		display: inline-block;
@@ -90,70 +73,68 @@
 		margin-top: 2px;
 		margin-bottom: 2px;
 	}
-	
+
 	.add-host-btn {
 		margin-right:20px;
 		margin-top:-32px;
 	}
-	
+
 	i.expand {
-		background-image: url('${req.getContextPath()}/img/icon_expand.png');
-		background-repeat:no-repeat;
-		display: inline-block;
-	    height: 16px;
-	    width: 16px; 
-	    line-height: 16px;
-	    vertical-align: text-top;
+        background: url('${req.getContextPath()}/img/icon_expand.png') no-repeat;
+        display: inline-block;
+		height: 16px;
+		width: 16px;
+		line-height: 16px;
+		vertical-align: text-top;
 	}
-	
+
 	i.collapse{
-		background-image: url('${req.getContextPath()}/img/icon_collapse.png');
-		background-repeat:no-repeat;
-		display: inline-block;
-	    height: 16px;
-	    width: 16px;
-	    line-height: 16px;
-	    vertical-align: text-top;
+        background: url('${req.getContextPath()}/img/icon_collapse.png') no-repeat;
+        display: inline-block;
+		height: 16px;
+		width: 16px;
+		line-height: 16px;
+		vertical-align: text-top;
 	}
-	
+
 	#test_name + span {
 		float: left;
 	}
-	
+
 	#query_div label {
 		width: 100px;
 	}
-	
+
 	.form-horizontal .control-group {
 		margin-bottom:10px;
 	}
-	
+
 	.controls .span3 {
 		margin-left: 0;
 	}
-	
+
 	.control-group.success td > label[for="test_name"] {
 		color: #468847;
 	}
-	
+
 	.control-group.error td > label[for="test_name"] {
 		color: #B94A48;
 	}
-	
+
 	#script_control.error .select2-choice {
-	    border-color: #B94A48;
-	    color: #B94A48;
+		border-color: #B94A48;
+		color: #B94A48;
 	}
-	
+
 	#script_control.success .select2-choice {
-	    border-color: #468847;
-	    color: #468847;
+		border-color: #468847;
+		color: #468847;
 	}
 
 	label.region {
 		margin-left:-40px;
 	}
-	
+
 	.monitor_state {
 		line-height:12px \0/IE8+9;
 	}
@@ -168,13 +149,13 @@
 	}
 	</style>
 </head>
-  
+
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/new"
 			  method="POST"
-    		style="margin-bottom: 0px">
+			style="margin-bottom: 0">
 			<div class="well">
 				<input type="hidden" id="test_id" name="id" value="${(test.id)!}">
 				<div class="form-horizontal" id="query_div">
@@ -208,8 +189,8 @@
 								<#else>
 									<#assign isClone = false/>
 								</#if>
-								
-								<div class="span2-3" style="margin-left:0px"> 
+
+								<div class="span2-3" style="margin-left:0">
 									<div class="control-group">
 										<input type="hidden" name="isClone" value="${isClone?string}"/>
 										<#--  Save/Clone is available only when the test owner is current user.   -->
@@ -247,7 +228,7 @@
 					</div>
 				</#if>
 			</@security.authorize >
-			<div class="tabbable" style="margin-top: 0px"> 
+			<div class="tabbable" style="margin-top: 0">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
 					<li id="test_config_section_tab">
 						<a href="#test_config_section" data-toggle="tab">
@@ -259,7 +240,7 @@
 							<@spring.message "perfTest.testRunning.title"/>
 						</a>
 					</li>
-				
+
 					<li id="report_section_tab" style="display: none; ">
 						<a href="#report_section" data-toggle="tab" id="report_btn">
 							<@spring.message "perfTest.report.tab"/>
@@ -270,10 +251,10 @@
 					<div class="tab-pane" id="test_config_section">
 						<#include "config.ftl">
 					</div>
-					
+
 					<div class="tab-pane" id="report_section">
 					</div>
-					
+
 					<div class="tab-pane" id="running_section">
 					</div>
 				</div>
@@ -317,7 +298,7 @@
 			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="add_schedule_btn"><@spring.message "perfTest.testRunning.schedule"/></a>
 		</div>
 	</div>
-    <#include "host_modal.ftl">
+	<#include "host_modal.ftl">
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 <script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
@@ -335,15 +316,15 @@ $(document).ready(function () {
 	initTags();
 	initDuration();
 	initScheduleDate();
-	$("#sample_tab a:first").tab('show');
-	$("#test_config_section_tab a").tab('show');
-	
+	$("#sample_tab").find("a:first").tab('show');
+	$("#test_config_section_tab").find("a").tab('show');
+
 	addValidation();
 	bindEvent();
 	updateScript();
 	updateTotalVuser();
 	updateRampupChart();
-	
+
 
 	<#assign category = test.status.category>
 	<#if category == "TESTING">
@@ -360,50 +341,52 @@ $(document).ready(function () {
 			return;
 		}
 
-		var ajaxObj = new AjaxObj("/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status");
+		var ajaxObj = new AjaxObj("/perftest/api/{testId}/status");
+		ajaxObj.params = { testId : "${test.id!""}"};
 		ajaxObj.success = function(data) {
 			data = eval(data);
 			data = data.status;
 			for ( var i = 0; i < data.length; i++) {
-				updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
+				//noinspection JSUnresolvedVariable
+                updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 			}
 		};
 		ajaxObj.complete = function() {
 			setTimeout(refreshContent, 3000);
 		};
-        ajaxObj.call();
+		ajaxObj.call();
 	})();
 });
 
 function formatTags(e) {
-    if (e.added && (e.added.id.indexOf(",") >= 0 || e.added.id.indexOf(" ") >= 0)) {
-        var tagControl = $("#tag_string");
-        var values = tagControl.select2("val");
-        var newValues = [];
-        for (var i = 0; i < values.length; i++) {
-        	var splitted = values[i].split(/[\s,]+/);
-        	for (var j = 0; j < splitted.length; j++) {
-        		newValues.push(splitted[j].replace("q_", "")); 
-        	}
-        } 
-        
-        tagControl.select2("val", newValues);
-    }
+	if (e.added && (e.added.id.indexOf(",") >= 0 || e.added.id.indexOf(" ") >= 0)) {
+		var tagControl = $("#tag_string");
+		var values = tagControl.select2("val");
+		var newValues = [];
+		for (var i = 0; i < values.length; i++) {
+			var splitted = values[i].split(/[\s,]+/);
+			for (var j = 0; j < splitted.length; j++) {
+				newValues.push(splitted[j].replace("q_", ""));
+			}
+		}
+
+		tagControl.select2("val", newValues);
+	}
 }
 
 function initTags() {
 	$("#tag_string").select2({	
-        tokenSeparators: [",", " "],
+		tokenSeparators: [",", " "],
 		tags:[""],
 		placeholder: '<@spring.message "perfTest.configuration.tagInput"/>',
 		initSelection : function (element, callback) {
-   			var data = [];
-  			$(element.val().split(",")).each(function () {
-  			 	if (this.indexOf("q_") !== 0) {
-   			    	data.push({id: "q_" + this, text: this});
-   			    }
-  			});
-    		callback(data);
+			var data = [];
+			$(element.val().split(",")).each(function () {
+				if (this.indexOf("q_") !== 0) {
+					data.push({id: "q_" + this, text: this});
+				}
+			});
+			callback(data);
 		},
 		maximumSelectionSize: 5,
 		query: function(query) {
@@ -415,10 +398,10 @@ function initTags() {
 				}
 				query.callback(data);
 			};
-            ajaxObj.call();
+			ajaxObj.call();
 		}
 	}).change(formatTags);
-	
+
 	$("#script_name").select2({
 		placeholder: '<@spring.message "perfTest.configuration.scriptInput"/>'
 	});
@@ -430,11 +413,11 @@ function initScheduleDate() {
 	var month = date.getMonth() + 1;
 	var day = date.getDate();
 	$("#scheduled_date").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
-	
+
 	$('#scheduled_date').datepicker({
 		format : 'yyyy-mm-dd'
 	});
-	
+
 	$("#scheduled_hour").append(getOption(24));
 	$("#scheduled_min").append(getOption(60));
 }
@@ -442,7 +425,7 @@ function initScheduleDate() {
 function initDuration() {
 	var sliderMax = 1000;
 	durationMap[0] = 0;
-	
+
 	for ( var i = 1; i <= sliderMax; i++) {
 		if (i <= 10) {
 			durationMap[i] = durationMap[i - 1] + 1;
@@ -463,32 +446,33 @@ function initDuration() {
 		}
 		if ((durationMap[i]/60) >= ${maxRunHour}) {
 			 sliderMax = i;
-		     durationMap[i] = (${maxRunHour} - 1) * 60;
-		     break;
+			 durationMap[i] = (${maxRunHour} - 1) * 60;
+			 break;
 		}
 	}
-	
+
 	var durationVal = $("#duration").val();
-	$("#hidden_duration_input").attr("data-slider", "#duration_slider");
-	$("#hidden_duration_input").slider({min:1, max:sliderMax});
-	for ( var i = 0; i <= sliderMax; i++) {
+    var $hiddenDurationInput = $("#hidden_duration_input");
+    $hiddenDurationInput.attr("data-slider", "#duration_slider");
+	$hiddenDurationInput.slider({min:1, max:sliderMax});
+	for (i = 0; i <= sliderMax; i++) {
 		if (durationMap[i] * 60000 == durationVal) {
-			$("#hidden_duration_input").val(i);
+			$hiddenDurationInput.val(i);
 			break;
 		}
 	}
-	
+
 	var durationHour = parseInt(durationVal / 3600000) + 1;
 	var durationMaxHour = durationHour > ${maxRunHour} ? durationHour : ${maxRunHour};
-	$("#select_hour").append(getOption(durationMaxHour));
-	$("#select_hour").change(getDurationMS);
-	
-	$("#select_min").append(getOption(60));
-	$("#select_min").change(getDurationMS);
-	
-	$("#select_sec").append(getOption(60));
-	$("#select_sec").change(getDurationMS);
-	
+    var $selectHour = $("#select_hour");
+    var $selectSec = $("#select_sec");
+    var $selectMin = $("#select_min");
+    $selectHour.append(getOption(durationMaxHour));
+    $selectHour.change(getDurationMS);
+    $selectMin.append(getOption(60));
+	$selectMin.change(getDurationMS);
+    $selectSec.append(getOption(60));
+	$selectSec.change(getDurationMS);
 	setDuration();
 	setDurationHour(durationVal);
 }
@@ -499,11 +483,12 @@ function addValidation() {
 		var rule = /^[a-zA-Z0-9_,\|]{0,30}$/;
 		return rule.test($.trim(param));
 	});
-	
-	validationOptions = {
+
+    //noinspection JSUnusedLocalSymbols,JSUnusedLocalSymbols
+    validationOptions = {
 		rules: {
 			testName: { 
-			 	required: true
+				required: true
 			},
 			agentCount: {
 				required: true,
@@ -563,44 +548,44 @@ function addValidation() {
 				paramFmt:true
 			}
 		},
-	    messages: { 
-	        testName: {
-	        	required: "<@spring.message 'perfTest.warning.testName'/>"
-	        },
+		messages: {
+			testName: {
+				required: "<@spring.message 'perfTest.warning.testName'/>"
+			},
 		<#if clustered>
 			region : {
 				required: "<@spring.message 'perfTest.warning.region'/>"
 			},
 		</#if>
-	        agentCount: {
-	        	required: "<@spring.message 'perfTest.warning.agentNumber'/>"
-	        },
-	        vuserPerAgent: {
-	        	required: "<@spring.message 'perfTest.warning.vuserPerAgent'/>"
-	        },
-	        scriptName: {
-	        	required: "<@spring.message 'perfTest.warning.script'/>"
-	        },
-	        durationHour: {
-	        	max: "<@spring.message 'perfTest.warning.duration.maxHour'/>"
-	        },
-	        runCount: {
-	        	required: "<@spring.message 'perfTest.warning.runCount'/>"
-	        },
-	        processes: {
-	        	required: "<@spring.message 'perfTest.warning.processes'/>"
-	        },
-	        threads: {
-	        	required: "<@spring.message 'perfTest.warning.threads'/>"
-	        },
-	        targetHosts: {
-	        	required: "<@spring.message 'perfTest.warning.hostString'/>"
-	        },
-	        param : {
-	        	paramFmt: "<@spring.message 'perfTest.warning.param'/>"
-	        }
-	        
-	    },
+			agentCount: {
+				required: "<@spring.message 'perfTest.warning.agentNumber'/>"
+			},
+			vuserPerAgent: {
+				required: "<@spring.message 'perfTest.warning.vuserPerAgent'/>"
+			},
+			scriptName: {
+				required: "<@spring.message 'perfTest.warning.script'/>"
+			},
+			durationHour: {
+				max: "<@spring.message 'perfTest.warning.duration.maxHour'/>"
+			},
+			runCount: {
+				required: "<@spring.message 'perfTest.warning.runCount'/>"
+			},
+			processes: {
+				required: "<@spring.message 'perfTest.warning.processes'/>"
+			},
+			threads: {
+				required: "<@spring.message 'perfTest.warning.threads'/>"
+			},
+			targetHosts: {
+				required: "<@spring.message 'perfTest.warning.hostString'/>"
+			},
+			param : {
+				paramFmt: "<@spring.message 'perfTest.warning.param'/>"
+			}
+
+		},
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
 		errorElement : "span",
@@ -613,7 +598,6 @@ function addValidation() {
 			errorPlace = $("#err_"+element.attr("id"));
 			if (errorPlace[0]) {
 				errorPlace.html(error);
-				return;
 			} else {
 				var $elem = element.closest(".controls");
 				if ($elem[0]) {
@@ -638,7 +622,6 @@ function addValidation() {
 				$elem.siblings("span.help-inline:visible").each(function() {
 					if ($(this).attr("for") != $elem.attr("id")) {
 						isSuccess = false;
-						return;
 					}
 				});
 				if (isSuccess) {
@@ -648,16 +631,15 @@ function addValidation() {
 			}
 		}
 	};
-	
+
 	$("#test_config_form").validate(validationOptions);
 }
 
 function bindNewScript(target, first) {
-		var $this = target;
 		var $showScript = $("#show_script_btn");
 		var $scriptRevision = $("#script_revision");
 		var oldRevision = $scriptRevision.attr("old_revision");
-		if ($this.val() == $this.attr("old_script") && oldRevision != -1) {
+		if (target.val() == target.attr("old_script") && oldRevision != -1) {
 			$showScript.text("R " + oldRevision);
 			$scriptRevision.val(oldRevision);
 		} else {
@@ -669,12 +651,12 @@ function bindNewScript(target, first) {
 }
 
 function showScheduleModal() {
-	if ($("#script_name option:selected").attr("validated") == "0") {
+	if ($("#script_name").find("option:selected").attr("validated") == "0") {
 		$("small.error-color").text("<@spring.message "perfTest.detail.message.notValidatedScript"/>");
 	} else {
 		$("small.error-color").text("");
 	}
-  	initScheduleTime();
+	initScheduleTime();
 	$("#tag_string").val(buildTagString());
 	$('#schedule_modal').modal('show');
 }
@@ -691,13 +673,13 @@ function getBrowserTimeApplyingTimezone(time) {
 		return new Date(Date.UTC(resultDate.getFullYear(), resultDate.getMonth(), resultDate.getDate(), resultDate.getHours(), resultDate.getMinutes())); 
 	}
 }	
-	
-	
+
+
 function bindEvent() {
 	$("#script_name").change(function() {
 		bindNewScript($(this), false);
 	});
-	
+
 	$("#hidden_duration_input").bind("slide", function(e) {
 		var maxIndex = durationMap.length - 1;
 		var $duration = $("#duration");
@@ -709,7 +691,7 @@ function bindEvent() {
 		setDuration(); 
 		$("#duration_ratio").click();
 	});
-	
+
 	$("#save_schedule_btn").click(function() {		
 		$("#agent_count").rules("add", {
 			min:1
@@ -717,23 +699,29 @@ function bindEvent() {
 		if (!validateForm()) {
 			return false;
 		}
-		if (typeof(scheduleTestHook) != "undefined") {
-			if (scheduleTestHook()) {
+		//noinspection JSUnresolvedVariable
+        if (typeof(scheduleTestHook) != "undefined") {
+			//noinspection JSUnresolvedFunction
+            if (scheduleTestHook()) {
 				showScheduleModal();
 			}
-		} else if (typeof(scheduleTestUnBlockingHook) != "undefined") {
-			scheduleTestUnBlockingHook(showScheduleModal);
-		} else {
-			showScheduleModal(); 
-		}
+		} else { //noinspection JSUnresolvedVariable
+            if (typeof(scheduleTestUnBlockingHook) != "undefined") {
+	            //noinspection JSUnresolvedFunction
+                scheduleTestUnBlockingHook(showScheduleModal);
+            } else {
+	            showScheduleModal();
+            }
+        }
+		return true;
 	});
-	
-	
+
+
 	$("#save_test_btn").click(function() {
 		$("#agent_count").rules("add", {
 			min:0
 		});
-		
+
 		if (!validateForm()) {
 			return false;
 		}
@@ -741,41 +729,43 @@ function bindEvent() {
 		$("#test_status").val("SAVED");
 		$("#scheduled_time").attr('name', '');
 		$("#tag_string").val(buildTagString());
-		
+
 		return true;
 	});
-	
+
 	$("#run_now_btn").click(function() {
-		$("#schedule_modal").modal("hide");
-		$("#schedule_modal small").html("");
+        var $scheduleModal = $("#schedule_modal");
+        $scheduleModal.modal("hide");
+		$scheduleModal.find("small").html("");
 		$("#scheduled_time").attr('name', '');
 		$("#test_status").val("READY");
 		document.test_config_form.submit();
 	});
 
-	
-	
+
+
 	$("#add_schedule_btn").click(function() {
-		if (checkEmptyByID("scheduled_date")) {
-			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
+        var $scheduleModal = $("#schedule_modal");
+        if (checkEmptyByID("scheduled_date")) {
+			$scheduleModal.find("small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
 			return;
 		}
-	
+
 		var timeStr = $("#scheduled_date").val() + " " + $("#scheduled_hour").val() + ":" + $("#scheduled_min").val() + ":0";
 		// User input date time.
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
-		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime());
-		if (new Date() > scheduledTime) {
-			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
+		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime())
+        if (new Date() > scheduledTime) {
+			$scheduleModal.find("small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
 			return;
 		}
 		$("#scheduled_time").val(scheduledTime);
-		$("#schedule_modal").modal("hide");
-		$("#schedule_modal small").html("");
+        $scheduleModal.modal("hide");
+		$scheduleModal.find("small").html("");
 		$("#test_status").val("READY");
 		document.test_config_form.submit();
 	});
-	
+
 	$("#run_count_radio").click(function() {
 		if ($(this).attr("checked") == "checked") {
 			var $runCount = $("#run_count");
@@ -785,24 +775,26 @@ function bindEvent() {
 			$runCount.valid();
 
 			var $durationHour = $("#duration_hour");
-			if (!$durationHour.valid()) {
-				var maxVal = ${maxRunHour} * 3600000;
-				$("#duration").val(maxVal);
-				setDuration();
-				setDurationHour(maxVal);
+			if (!$durationHour.valid()) { //noinspection BadExpressionStatementJS
+                //noinspection UnterminatedStatementJS
+                var maxVal = ${maxRunHour} * 3600000;
+                $("#duration").val(maxVal);
+                setDuration();
+                //noinspection JSUnusedAssignment
+                setDurationHour(maxVal);
 			}
 			$durationHour.valid();
 		}
 	});
-	
+
 	$("#duration_ratio").click(function() {
 		if ($(this).attr("checked") == "checked") {
-			setDurationHour($("#duration").val());
+            var $duration = $("#duration");
+            setDurationHour($duration.val());
 			$("#duration_hour").valid();
-			var $duration = $("#duration");
 			$duration.addClass("positiveNumber");
 			$duration.valid();
-			
+
 			var $runCount = $("#run_count");
 			$runCount.rules("add", {
 				min:0
@@ -813,17 +805,17 @@ function bindEvent() {
 			$runCount.valid();
 		}
 	});
-	
+
 	$("#ignore_sample_count, #run_count").blur(function() {
 		if (!($.trim($(this).val()))) {
 			$(this).val(0);
 		}
 	});
-	
+
 	$("#agent_count").change(function() {
 		updateTotalVuser();
 	});
-	
+
 	$("#threads, #processes").change(function() {
 		var $vuser = $("#vuser_per_agent");
 		$vuser.val($("#processes").val() * $("#threads").val());
@@ -832,7 +824,7 @@ function bindEvent() {
 			updateTotalVuser();
 		}
 	});
-	
+
 	$("#vuser_per_agent").change(function() {
 		var $vuserElement = $(this);
 		var processCount = $("#processes").val();
@@ -845,15 +837,15 @@ function bindEvent() {
 			updateTotalVuser();
 		}
 	});
-	
+
 	$("#report_btn").click(function() {
 		$("#footer").hide();
 		openReportDiv(function() {
 			$("#footer").show();
 		});
 	});
-	
-	$('#sample_tab a').click(function(e) {
+
+	$("#sample_tab").find("a").click(function(e) {
 		e.preventDefault();
 		$(this).tab('show');
 	});
@@ -861,7 +853,8 @@ function bindEvent() {
 	$("#show_script_btn").click(function() {
 		var currentScript = $("#script_name").val();
 		if (currentScript) {
-			var ownerId = ""; 
+			//noinspection JSUnusedAssignment
+            var ownerId = "";
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test.id??>
 					ownerId = "&ownerId=${test.createdUser.userId}";
@@ -872,20 +865,20 @@ function bindEvent() {
 			openedWindow.focus(); 
 		}
 	});
-	
+
 	$("#expand_collapse_btn").click(function() {
 		$(this).toggleClass("collapse");
 		$("#process_thread_config_panel").toggle();
 	});
-	
+
 	$("#select_hour, #select_min, #select_sec").change(function() {
 		$("#duration_ratio").click();
 	});
-	
+
 	$("#run_count").focus(function() {
 		$("#run_count_radio").click();
 	});
-	
+
 	$('#message_div').ajaxSend(function(e, xhr, settings) {
 		var url = settings.url;
 		if ((url.indexOf("resource") > 0 || url.indexOf("script") > 0)) {
@@ -919,7 +912,7 @@ function changeAgentMaxCount(region, isValid) {
 	$agentCountObj.rules("add", {
 		max: count
 	});
-	
+
 	if (isValid) {
 		$agentCountObj.valid();
 	}
@@ -928,7 +921,7 @@ function changeAgentMaxCount(region, isValid) {
 function validateForm() {
 	var result = $("#test_config_form").valid();
 	if (!result) {
-		$("#test_config_section_tab a").tab('show');
+		$("#test_config_section_tab").find("a").tab('show');
 	}
 	return result;
 }
@@ -938,7 +931,7 @@ function buildTagString() {
 		return obj.text;
 	}).join(",");
 }
-	
+
 function updateTotalVuser() {
 	$("#total_vuser").text($("#agent_count").val() * $("#vuser_per_agent").val());
 }
@@ -972,11 +965,11 @@ function updateScript() {
 
 		bindNewScript($scriptSelection, true);
 	};
-    ajaxObj.complete = function() {
-        hideProgressBar();
-    };
+	ajaxObj.complete = function() {
+		hideProgressBar();
+	};
 
-    ajaxObj.call();
+	ajaxObj.call();
 }
 
 function updateScriptResources(first) {
@@ -992,7 +985,7 @@ function updateScriptResources(first) {
 		<@security.authorize ifAnyGranted="A, S">
 			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>
-    };
+	};
 	ajaxObj.success = function(res) {
 		var html = "";
 		var len = res.resources.length;
@@ -1083,6 +1076,7 @@ function openReportDiv(onFinishHook) {
 	);
 }
 
+//noinspection JSUnusedLocalSymbols
 function updateStatus(id, statusType, statusName, icon, deletable, stoppable, message) {
 	var $testStatusImg = $("#test_status_img");
 	if ($testStatusImg.attr("data-content") != message) {
@@ -1114,31 +1108,33 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 var finished = false;
 var testId = $('#test_id').val();
 // Wrap this function in a closure so we don't pollute the namespace
-
-
 function displayConfigOnly() {
-	$("#test_config_section_tab a").tab('show');
-	$("#running_section_tab").hide();
-	$("#report_section_tab").hide();
+    $("#test_config_section_tab").find("a").tab('show');
+    $("#running_section_tab").hide();
+    $("#report_section_tab").hide();
 }
+
 
 var samplingInterval = 1;
 
+
+var $reportSectionTab = $("#report_section_tab");
+var $runningSectionTab = $("#running_section_tab");
 function displayConfigAndRunningSection() {
-	$("#running_section_tab").show();
-	$("#running_section_tab a").tab('show');
-	$("#running_section").show();
-	$("#report_section_tab").hide();
-	openRunningDiv(function() {
+    $runningSectionTab.show();
+    $runningSectionTab.find("a").tab('show');
+    $("#running_section").show();
+    $("#report_section_tab").hide();
+    openRunningDiv(function() {
 		$("#foot_div").show();
 	});
 }
 
 function displayConfigAndReportSection() {
-	$("#foot_div").hide();
-	$("#running_section_tab").hide();
-	$("#report_section_tab").show();
-	$("#report_section_tab a").tab('show');
+    $("#foot_div").hide();
+    $("#running_section_tab").hide();
+    $reportSectionTab.show();
+	$reportSectionTab.find("a").tab('show');
 	openReportDiv(function() {
 		$("#foot_div").show();
 	});
