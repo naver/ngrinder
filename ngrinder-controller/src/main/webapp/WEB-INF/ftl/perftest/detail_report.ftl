@@ -9,10 +9,6 @@
 			padding-top: 0;
 		}
 
-		.left {
-			border-right: 1px solid #878988
-		}
-
 		div.chart {
 			border: 1px solid #878988;
 			height: 200px;

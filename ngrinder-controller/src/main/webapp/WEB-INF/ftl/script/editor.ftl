@@ -138,11 +138,11 @@
 		var changed = false;
 		var curRevision = ${curRevision!0};
 		var lastRevision = ${lastRevision!0};
-		$(window).on('beforeunload', function() {
+		$(window).on('beforeunload', function(e) {
+			e.preventDefault();
 			if (changed == true) {
 				return "<@spring.message "script.editor.message.exitwithoutsave"/>";
 			}
-			return "";
 		});
 		function saveScript() {
 			document.forms.content_form.action = "${req.getContextPath()}/script/save";

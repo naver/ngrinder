@@ -138,6 +138,7 @@
 	.monitor_state {
 		line-height:12px \0/IE8+9;
 	}
+
 	.span4-5 {
 		width: 340px;
 	}
@@ -663,14 +664,13 @@ function showScheduleModal() {
 
 
 function getBrowserTimeApplyingTimezone(time) {
-	var resultDate;
 	if (time === undefined) {
 		var date = new Date();
 		return new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000) + ${timezone_offset});
 	} else {
-		resultDate = new Date(time - ${timezone_offset});
+		var date = new Date(time - ${timezone_offset});
 		// Now it's browser time reflecting the timezone difference.
-		return new Date(Date.UTC(resultDate.getFullYear(), resultDate.getMonth(), resultDate.getDate(), resultDate.getHours(), resultDate.getMinutes())); 
+		return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes()));
 	}
 }	
 
@@ -739,7 +739,10 @@ function bindEvent() {
 		$scheduleModal.find("small").html("");
 		$("#scheduled_time").attr('name', '');
 		$("#test_status").val("READY");
-		document.test_config_form.submit();
+		showSuccessMsg("테스트를 바로 시작합니다.");
+		setTimeout(function() {
+			document.test_config_form.submit();
+		}, 2000);
 	});
 
 

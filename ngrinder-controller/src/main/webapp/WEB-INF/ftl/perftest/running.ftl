@@ -111,10 +111,10 @@
 							<th class="no-click"><@spring.message "perfTest.table.errors"/></th>
 							<th class="no-click" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.table.tps"/></th>
-							<th class="no-click"><@spring.message "perfTest.testRunning.responseBytePerSecond"/></th>
 							<th class="no-click" title='<@spring.message "perfTest.testRunning.meanTimeToFirstByte"/>'>
 								MTFB
 							</th>
+							<th class="no-click"><@spring.message "perfTest.testRunning.responseBytePerSecond"/></th>
 						</tr>
 						</thead>
 						<tbody id="last_sample_result">
@@ -182,8 +182,8 @@
 			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
-			output = output + "<td>" + formatNetwork(null, statistics[i].Response_bytes_per_second) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Mean_time_to_first_byte, 0) + "</td>";
+			output = output + "<td>" + formatNetwork(null, statistics[i].Response_bytes_per_second) + "</td>";
 			$(record).html(output);
 		}
 	}
