@@ -81,15 +81,28 @@ public class AgentPackageService {
 
 	/**
 	 * Get the agent package containing folder.
+	 * @return File  agent package dir.
 	 */
 	public File getAgentPackagesDir() {
 		return config.isClustered() ? config.getExHome().getSubFile("download") : config.getHome().getSubFile("download");
 	}
 
+	/**
+	 * Create agent package.
+	 * @return File  agent package.
+	 */
 	public synchronized File createAgentPackage() {
 		return createAgentPackage(null, null, null);
 	}
 
+	/**
+	 * Create agent package.
+	 *
+	 * @param connectionIP   host ip.
+	 * @param region         region
+	 * @param owner          owner
+	 * @return File  agent package.
+	 */
 	public synchronized File createAgentPackage(String connectionIP, String region,
 	                                            String owner) {
 		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), connectionIP, region, owner);
@@ -99,6 +112,9 @@ public class AgentPackageService {
 	 * Create agent package
 	 *
 	 * @param classLoader URLClass Loader.
+	 * @param connectionIP   host ip.
+	 * @param region         region
+	 * @param owner          owner
 	 * @return File
 	 */
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
@@ -236,6 +252,7 @@ public class AgentPackageService {
 	/**
 	 * Get the agent.config content replacing the variables with the given values.
 	 *
+	 * @param templateName template name.
 	 * @param values map of configurations.
 	 * @return generated string
 	 */

@@ -13,11 +13,11 @@
  */
 package org.ngrinder.script.handler;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.PrintStream;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Processing Result PrintStream to store the result of the execution and logs.
@@ -32,8 +32,7 @@ public class ProcessingResultPrintStream extends PrintStream {
 	/**
 	 * Constructor.
 	 * 
-	 * @param byteArrayOutputStream
-	 *            the output stream in which the logs are saved.
+	 * @param byteArrayOutputStream the output stream in which the logs are saved.
 	 */
 	public ProcessingResultPrintStream(ByteArrayOutputStream byteArrayOutputStream) {
 		super(checkNotNull(byteArrayOutputStream));

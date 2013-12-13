@@ -350,7 +350,7 @@ public class FileEntryService {
 	 * Get a SVN content into given dir.
 	 *
 	 * @param user     user
-	 * @param fromPath path in svn subpath
+	 * @param fromPath path in svn subPath
 	 * @param toDir    to directory
 	 */
 	public void writeContentTo(User user, String fromPath, File toDir) {

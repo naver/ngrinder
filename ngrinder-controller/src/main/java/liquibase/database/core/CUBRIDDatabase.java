@@ -13,11 +13,11 @@
  */
 package liquibase.database.core;
 
-import java.math.BigInteger;
-
 import liquibase.database.AbstractDatabase;
 import liquibase.database.DatabaseConnection;
 import liquibase.exception.DatabaseException;
+
+import java.math.BigInteger;
 
 /**
  * Liquibase Cubrid Database driver.
@@ -28,10 +28,6 @@ import liquibase.exception.DatabaseException;
  */
 public class CUBRIDDatabase extends AbstractDatabase {
 	public static final String PRODUCT_NAME = "cubrid";
-
-	public String getShortName() {
-		return "cubrid";
-	}
 
 	/*
 	 * (non-Javadoc)

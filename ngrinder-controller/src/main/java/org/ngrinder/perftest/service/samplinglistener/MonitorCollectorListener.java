@@ -37,6 +37,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListen
 	 *
 	 * @param monitorScheduledTask monitoring task which will be periodically run
 	 * @param scheduledTaskService scheduling service to run monitor task
+	 * @param interval  interval
 	 */
 	public MonitorCollectorListener(MonitorScheduledTask monitorScheduledTask,
 	                                ScheduledTaskService scheduledTaskService, int interval) {

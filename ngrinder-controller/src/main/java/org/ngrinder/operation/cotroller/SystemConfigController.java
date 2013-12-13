@@ -82,7 +82,6 @@ public class SystemConfigController extends BaseController {
 	/**
 	 * Save the system configuration.
 	 *
-	 * @param model   model
 	 * @param content system configuration content to be saved
 	 * @return true if succeeded
 	 */

@@ -56,20 +56,19 @@ public abstract class ScriptHandler {
 	/**
 	 * Constructor.
 	 * 
-	 * @param key
-	 *            key of the script handler
-	 * @param extension
-	 *            extension
-	 * @param title
-	 *            title of the handler
-	 * @param codemirrorKey
-	 *            code minrror key
+	 * @param key		key of the script handler
+	 * @param extension	extension
+	 *
+	 * @param title		title of the handler
+	 *
+	 * @param codeMirrorKey	code mirror key
+	 *
 	 */
-	public ScriptHandler(String key, String extension, String title, String codemirrorKey) {
+	public ScriptHandler(String key, String extension, String title, String codeMirrorKey) {
 		this.key = key;
 		this.extension = extension;
 		this.title = title;
-		this.codemirrorKey = codemirrorKey;
+		this.codemirrorKey = codeMirrorKey;
 	}
 
 	@Autowired
@@ -89,8 +88,8 @@ public abstract class ScriptHandler {
 	/**
 	 * Check if the given fileEntry can be handled by this handler.
 	 * 
-	 * @param fileEntry
-	 *            fileEntry to be checked
+	 * @param fileEntry	fileEntry to be checked
+	 *
 	 * @return true if the given fileEntry can be handled
 	 */
 	public boolean canHandle(FileEntry fileEntry) {
@@ -126,20 +125,15 @@ public abstract class ScriptHandler {
 	/**
 	 * Prepare the distribution.
 	 * 
-	 * @param testcaseId
-	 *            id of the test case. This is for the log identification.
-	 * @param user
-	 *            user who will distribute the script.
-	 * @param scriptEntry
-	 *            script to be distributed.
-	 * @param distDir
-	 *            distribution target dir
-	 * @param properties
-	 *            properties set which is used for detailed distribution control
-	 * @param processingResult
-	 *            processing result holder.
+	 * @param testCaseId	id of the test case. This is for the log identification.
+	 * @param user			user who will distribute the script.
+	 * @param scriptEntry	script to be distributed.
+	 * @param distDir		distribution target dir.
+	 * @param properties	properties set which is used for detailed distribution control.
+	 * @param processingResult	processing result holder.
+	 *
 	 */
-	public void prepareDist(Long testcaseId,
+	public void prepareDist(Long testCaseId,
 			User user, //
 			FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
 			ProcessingResultPrintStream processingResult) {
@@ -157,11 +151,11 @@ public abstract class ScriptHandler {
 			}
 			File toDir = new File(distDir, calcDistSubPath(basePath, each));
 			processingResult.printf("%s is being written.\n", each.getPath());
-			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, testcaseId });
+			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, testCaseId });
 			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
 		}
 		processingResult.setSuccess(true);
-		prepareDistMore(testcaseId, user, scriptEntry, distDir, properties, processingResult);
+		prepareDistMore(testCaseId, user, scriptEntry, distDir, properties, processingResult);
 	}
 
 	/**
@@ -171,19 +165,12 @@ public abstract class ScriptHandler {
 	 * This method is the perfect place if it's necessary to include additional
 	 * files.
 	 * 
-	 * @param user
-	 *            user
-	 * @param path
-	 *            base path
-	 * @param fileName
-	 *            fileName
-	 * @param name
-	 *            name
-	 * @param url
-	 *            url
-	 * @param createLibAndResources
-	 *            true if lib and resources should be created
-	 * 
+	 * @param user		user
+	 * @param path		base path
+	 * @param fileName	fileName
+	 * @param name		name
+	 * @param url		url
+	 * @param createLibAndResources true if lib and resources should be created
 	 * @return true if process more.
 	 */
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
@@ -195,30 +182,23 @@ public abstract class ScriptHandler {
 	 * Prepare the distribution more. This method is subject to be extended by
 	 * the subclass.
 	 * 
-	 * @param testcaseId
-	 *            testcase id. This is for the log identification.
-	 * @param user
-	 *            user
-	 * @param script
-	 *            script entry to be distributed.
-	 * @param distDir
-	 *            distribution directory
-	 * @param properties
-	 *            properties.
-	 * @param processingResult
-	 *            processing result holder
+	 * @param testCaseId 	test case id. This is for the log identification.
+	 * @param user			user
+	 * @param script		script entry to be distributed.
+	 * @param distDir		distribution directory
+	 * @param properties	properties
+	 * @param processingResult	processing result holder
+	 *
 	 */
-	protected void prepareDistMore(Long testcaseId, User user, FileEntry script, File distDir,
+	protected void prepareDistMore(Long testCaseId, User user, FileEntry script, File distDir,
 			PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 	}
 
 	/**
 	 * Get the appropriated distribution path for the given file entry.
 	 * 
-	 * @param basePath
-	 *            distribution base path
-	 * @param fileEntry
-	 *            fileEntry to be distributed
+	 * @param basePath	distribution base path
+	 * @param fileEntry	fileEntry to be distributed
 	 * @return the resolved destination path.
 	 */
 	protected String calcDistSubPath(String basePath, FileEntry fileEntry) {
@@ -231,12 +211,9 @@ public abstract class ScriptHandler {
 	 * Get all resources and lib entries belonging to the given user and
 	 * scriptEntry.
 	 * 
-	 * @param user
-	 *            user
-	 * @param scriptEntry
-	 *            script entry
-	 * @param revision
-	 *            revision of the script entry.
+	 * @param user			user
+	 * @param scriptEntry	script entry
+	 * @param revision		revision of the script entry.
 	 * @return file entry list
 	 */
 	public List<FileEntry> getLibAndResourceEntries(User user, FileEntry scriptEntry, long revision) {
@@ -275,8 +252,7 @@ public abstract class ScriptHandler {
 	/**
 	 * Get the base path of the given path.
 	 * 
-	 * @param path
-	 *            path
+	 * @param path	path
 	 * @return base path
 	 */
 	public String getBasePath(String path) {
@@ -286,8 +262,7 @@ public abstract class ScriptHandler {
 	/**
 	 * Get executable script path.
 	 * 
-	 * @param svnPath
-	 *            path in svn
+	 * @param svnPath	path in svn
 	 * @return path executable in agent.
 	 */
 	public String getScriptExecutePath(String svnPath) {
@@ -297,10 +272,8 @@ public abstract class ScriptHandler {
 	/**
 	 * Check syntax errors for the given content.
 	 * 
-	 * @param path
-	 *            path
-	 * @param content
-	 *            content
+	 * @param path		path
+	 * @param content	content
 	 * @return syntax error messages. null if none.
 	 */
 	public abstract String checkSyntaxErrors(String path, String content);
@@ -308,8 +281,7 @@ public abstract class ScriptHandler {
 	/**
 	 * Get the initial script with the given value map.
 	 * 
-	 * @param values
-	 *            map of initial script referencing values.
+	 * @param values	map of initial script referencing values.
 	 * @return generated string
 	 */
 	public String getScriptTemplate(Map<String, Object> values) {
@@ -346,8 +318,7 @@ public abstract class ScriptHandler {
 	/**
 	 * Get the default quick test file.
 	 * 
-	 * @param basePath
-	 *            base path
+	 * @param basePath	base path
 	 * @return quick test file
 	 */
 	public FileEntry getDefaultQuickTestFilePath(String basePath) {

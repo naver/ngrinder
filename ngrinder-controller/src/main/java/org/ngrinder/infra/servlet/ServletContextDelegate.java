@@ -13,6 +13,10 @@
  */
 package org.ngrinder.infra.servlet;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,11 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Set;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
  * {@link ServletContext} delegate handler which forwards a request to the passed file path.
@@ -52,8 +51,8 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public ServletContext getContext(String uripath) {
-		return servletContext.getContext(uripath);
+	public ServletContext getContext(String uriPath) {
+		return servletContext.getContext(uriPath);
 	}
 
 	@Override

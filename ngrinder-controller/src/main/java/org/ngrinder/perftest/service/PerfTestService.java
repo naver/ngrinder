@@ -458,7 +458,12 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		return getAll(null, config.getRegion(), new Status[]{Status.ABNORMAL_TESTING});
 	}
 
-
+	/**
+	 * Delete test {@link PerfTest} by user and test id.
+	 *
+	 * @param user 	user
+	 * @param id 	test id
+	 */
 	@Transactional
 	public void delete(User user, long id) {
 		PerfTest perfTest = getOne(id);
@@ -487,7 +492,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
+	 * @see org.ngrinder.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
 	public File getStatisticPath(PerfTest perfTest) {
@@ -497,7 +502,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
+	 * @see org.ngrinder.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
 	public File getDistributionPath(PerfTest perfTest) {
@@ -796,16 +801,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * To save statistics data when test is running and put into cache after that. If the console is not available, it
 	 * returns null.
 	 *
-	 * @param singleConsole
-	 *            single console.
-	 * @param perfTestId
-	 *            perfTest Id
-	 * @return statistics
-	 */
-	/**
-	 * To save statistics data when test is running and put into cache after that. If the console is not available, it
-	 * returns null.
-	 *
 	 * @param singleConsole single console.
 	 * @param perfTestId    perfTest Id
 	 */
@@ -901,7 +896,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getAllPerfTest()
+	 * @see org.ngrinder.service.IPerfTestService#getAllPerfTest()
 	 */
 	@Override
 	public List<PerfTest> getAllPerfTest() {
@@ -988,7 +983,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#stop(org.ngrinder .model.User, java.lang.Long)
+	 * @see org.ngrinder.service.IPerfTestService#stop(org.ngrinder .model.User, java.lang.Long)
 	 */
 	@Override
 	@Transactional
@@ -1024,7 +1019,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#getAllStopRequested()
+	 * @see org.ngrinder.service.IPerfTestService#getAllStopRequested()
 	 */
 	@Override
 	public List<PerfTest> getAllStopRequested() {
@@ -1041,7 +1036,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#addCommentOn(org.ngrinder .model.User, int, java.lang.String)
+	 * @see org.ngrinder.service.IPerfTestService#addCommentOn(org.ngrinder .model.User, int, java.lang.String)
 	 */
 	@Override
 	@Transactional
@@ -1321,7 +1316,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	}
 
 	/**
-	 * /**
 	 * Get interval value of the monitor data of a plugin, like jvm monitor plugin.
 	 * The usage of interval value is same as system monitor data.
 	 *

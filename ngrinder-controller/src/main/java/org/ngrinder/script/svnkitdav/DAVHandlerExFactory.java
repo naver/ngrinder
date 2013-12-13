@@ -38,17 +38,11 @@ public final class DAVHandlerExFactory {
 	/**
 	 * Create a servlet DAV handler.
 	 * 
-	 * @param manager
-	 * 			manager
-	 * @param request
-	 * 			servlet request
-	 * @param response
-	 * 			servlet response
-	 * 
+	 * @param manager	manager
+	 * @param request	servlet request
+	 * @param response	servlet response
 	 * @return handler
-	 * 
-	 * @throws SVNException
-	 * 			method is not PROPFIND
+	 * @throws SVNException	method is not PROPFIND
 	 */
 	public static ServletDAVHandler createHandler(DAVRepositoryManager manager, HttpServletRequest request,
 					HttpServletResponse response) throws SVNException {

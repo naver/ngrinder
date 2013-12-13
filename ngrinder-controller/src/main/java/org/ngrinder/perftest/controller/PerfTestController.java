@@ -120,10 +120,10 @@ public class PerfTestController extends BaseController {
 	 *
 	 * @param user        user
 	 * @param query       query string to search the perf test
-	 * @param model       modelMap
 	 * @param tag         tag
 	 * @param queryFilter "F" means get only finished, "S" means get only scheduled tests.
 	 * @param pageable    page
+	 * @param model       modelMap
 	 * @return perftest/list
 	 */
 	@RequestMapping({"/list", "/", ""})
@@ -179,8 +179,8 @@ public class PerfTestController extends BaseController {
 	 * Get the perf test detail on the given perf test id.
 	 *
 	 * @param user  user
-	 * @param model model
 	 * @param id    perf test id
+	 * @param model model
 	 * @return perftest/detail
 	 */
 	@RequestMapping("/{id}")
@@ -285,7 +285,7 @@ public class PerfTestController extends BaseController {
 	 * @param user       user
 	 * @param testName   test name
 	 * @param targetHost target host
-	 * @return PerfTest
+	 * @return test	{@link PerfTest}
 	 */
 	private PerfTest createPerfTestFromQuickStart(User user, String testName, String targetHost) {
 		PerfTest test = new PerfTest(user);
@@ -464,8 +464,7 @@ public class PerfTestController extends BaseController {
 	 * @param user     user
 	 * @param model    model
 	 * @param id       test id
-	 * @param imgWidth image width
-	 * @return perftest/basic_report
+	 * @return perftest/running
 	 */
 	@RequestMapping(value = "{id}/running_div")
 	public String getReportSection(User user, ModelMap model, @PathVariable long id) {
@@ -501,8 +500,8 @@ public class PerfTestController extends BaseController {
 	 * Download the CSV report for the given perf test id.
 	 *
 	 * @param user     user
-	 * @param response response
 	 * @param id       test id
+	 * @param response response
 	 */
 	@RequestMapping(value = "/{id}/download_csv")
 	public void downloadCSV(User user, @PathVariable("id") long id, HttpServletResponse response) {
@@ -516,8 +515,8 @@ public class PerfTestController extends BaseController {
 	 * Download logs for the perf test having the given id.
 	 *
 	 * @param user     user
-	 * @param path     path in the log folder
 	 * @param id       test id
+	 * @param path     path in the log folder
 	 * @param response response
 	 */
 	@RequestMapping(value = "/{id}/download_log/**")
@@ -566,7 +565,7 @@ public class PerfTestController extends BaseController {
 	 *
 	 * @param user user
 	 * @param id   test id
-	 * @return "perftest/sample"
+	 * @return JSON message	containing test,agent and monitor status.
 	 */
 	@RequestMapping(value = "/{id}/api/sample")
 	@RestAPI
@@ -598,7 +597,7 @@ public class PerfTestController extends BaseController {
 	 * Get the detailed perf test report.
 	 *
 	 * @param id test id
-	 * @return perftest/detail_report
+	 * @return perftest/detail_report/perf
 	 */
 	@RequestMapping("/{id}/detail_report/perf")
 	public String getDetailPerfReport(@PathVariable("id") long id) {
@@ -609,6 +608,8 @@ public class PerfTestController extends BaseController {
 	 * Get the detailed perf test monitor report.
 	 *
 	 * @param id test id
+	 * @param targetIP target ip
+	 * @param modelMap    model map
 	 * @return perftest/detail_report/monitor
 	 */
 	@RequestMapping("/{id}/detail_report/monitor")
@@ -621,13 +622,13 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the detailed perf test report.
 	 *
-	 * @param model          model
-	 * @param id             test id
-	 * @param reportCategory test report plugin category
-	 * @return perftest/detail_report/target
+	 * @param id        test id
+	 * @param plugin 	test report plugin category
+	 * @param modelMap  model map
+	 * @return perftest/detail_report/plugin
 	 */
 	@RequestMapping("/{id}/detail_report/plugin/{plugin}")
-	public String getDetailPluginReport(ModelMap model, @PathVariable("id") long id,
+	public String getDetailPluginReport(@PathVariable("id") long id,
 	                                    @PathVariable("plugin") String plugin, @RequestParam("kind") String kind, ModelMap modelMap) {
 		modelMap.addAttribute("plugin", plugin);
 		modelMap.addAttribute("kind", kind);
@@ -776,10 +777,10 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the plugin monitor data of the target.
 	 *
-	 * @param id             test Id
-	 * @param reportCategory monitor plugin category
-	 * @param targetIP       monitor target IP
-	 * @param imgWidth       image width
+	 * @param id        test Id
+	 * @param plugin 	monitor plugin category
+	 * @param kind      kind
+	 * @param imgWidth  image width
 	 * @return json message
 	 */
 	@RestAPI
@@ -802,8 +803,9 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the last perf test details in the form of json.
 	 *
-	 * @param user user
-	 * @param size size of retrieved perf test
+	 * @param user 	user
+	 * @param page 	page
+	 * @param size 	size of retrieved perf test
 	 * @return json string
 	 */
 	@RestAPI
@@ -820,7 +822,7 @@ public class PerfTestController extends BaseController {
 	 *
 	 * @param user user
 	 * @param id   perftest id
-	 * @return json success message if succeeded
+	 * @return json message containing test info.
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
@@ -834,7 +836,7 @@ public class PerfTestController extends BaseController {
 	 *
 	 * @param user     user
 	 * @param perftest perf test
-	 * @return json success message if succeeded
+	 * @return json message containing test info.
 	 */
 	@RestAPI
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
@@ -867,7 +869,7 @@ public class PerfTestController extends BaseController {
 	 * @param user     user
 	 * @param id       perf test id
 	 * @param perfTest perf test configuration changes
-	 * @return json success message if succeeded
+	 * @return json message
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.PUT)
@@ -897,7 +899,7 @@ public class PerfTestController extends BaseController {
 	 * @param user   user
 	 * @param id     perf test id
 	 * @param status Status to be moved to
-	 * @return json success message if succeeded
+	 * @return json message
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", params = "action=status", method = RequestMethod.PUT)

@@ -100,12 +100,9 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	/**
 	 * Constructor.
 	 * 
-	 * @param connector
-	 *            repository manager
-	 * @param request
-	 *            servlet request
-	 * @param response
-	 *            servlet response
+	 * @param connector repository manager
+	 * @param request	servlet request
+	 * @param response	servlet response
 	 */
 	public DAVPropfindExHandler(DAVRepositoryManager connector, // LS
 					HttpServletRequest request, HttpServletResponse response) {
@@ -115,7 +112,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	/**
 	 * Get DAV request.
 	 * 
-	 * @return profind request
+	 * @return propfind request
 	 */
 	protected DAVRequest getDAVRequest() {
 		return getPropfindRequest();
@@ -234,23 +231,14 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	/**
 	 * Handle resource.
 	 * 
-	 * @param lockInfoProvider
-	 *            lock info provider
-	 * @param response
-	 *            DAV response
-	 * @param resource
-	 *            DAV resource
-	 * @param ifHeaders
-	 *            header or not
-	 * @param flags
-	 *            flags
-	 * @param callType
-	 *            call type
-	 * @param lockScope
-	 *            lock scope
-	 * 
+	 * @param lockInfoProvider	lock info provider
+	 * @param response	DAV response
+	 * @param resource	DAV resource
+	 * @param ifHeaders	header or not
+	 * @param flags		flags
+	 * @param lockScope	lock scope
+	 * @param callType	call type
 	 * @return DAV response
-	 * 
 	 * @throws DAVException
 	 *             DAV exception
 	 */

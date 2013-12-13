@@ -13,10 +13,6 @@
  */
 package org.ngrinder.agent.repository;
 
-import java.util.List;
-
-import net.grinder.message.console.AgentControllerState;
-
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;

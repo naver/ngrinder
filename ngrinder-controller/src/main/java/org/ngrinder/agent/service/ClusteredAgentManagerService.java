@@ -400,6 +400,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		getAgentManager().updateAgent(agentIdentity, getConfig().getVersion());
 	}
 
+	/**
+	 * Update agent by id.
+	 *
+	 * @param id   agent id
+	 */
 	@Override
 	public void update(Long id) {
 		AgentInfo agent = getOne(id);

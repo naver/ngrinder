@@ -101,7 +101,7 @@ public class UserService extends AbstractUserService {
 	 * Save user.
 	 *
 	 * @param user include id, userID, fullName, role, password.
-	 * @return result
+	 * @return User
 	 */
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
@@ -115,7 +115,7 @@ public class UserService extends AbstractUserService {
 	 * Save user.
 	 *
 	 * @param user include id, userID, fullName, role, password.
-	 * @return result
+	 * @return User
 	 */
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")
@@ -229,7 +229,7 @@ public class UserService extends AbstractUserService {
 	 * Create an user avoiding ModelAspect behavior.
 	 *
 	 * @param user userID, fullName, role, password.
-	 * @return result
+	 * @return User
 	 */
 	@Transactional
 	@CachePut(value = "users", key = "#user.userId")

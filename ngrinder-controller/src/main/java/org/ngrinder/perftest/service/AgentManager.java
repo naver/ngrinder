@@ -240,7 +240,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	/**
 	 * Get all agents which are not used now.
 	 *
-	 * @return AgentIndentity set
+	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServerDaemon.getAllFreeAgents();
@@ -476,7 +476,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	 * @param fileName    file name
 	 * @param version     updating version
 	 * @param downloadUrl download URL
-	 * @return messge
+	 * @return message
 	 */
 	public String sendAgentUpdateMessage(String fileName, String version, String downloadUrl) {
 		StringBuilder progress = new StringBuilder();

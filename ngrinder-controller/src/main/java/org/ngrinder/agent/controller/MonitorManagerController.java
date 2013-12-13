@@ -47,7 +47,7 @@ public class MonitorManagerController extends BaseController {
 	 *
 	 * @param model model
 	 * @param ip    target host IP
-	 * @return agent/system_info
+	 * @return monitor/info
 	 */
 	@RequestMapping("/info")
 	public String getMonitor(ModelMap model, @RequestParam String ip) {
@@ -81,7 +81,6 @@ public class MonitorManagerController extends BaseController {
 	/**
 	 * Close the monitor JXM connection to the given target.
 	 *
-	 * @param model model
 	 * @param ip    target host IP
 	 * @return success if succeeded.
 	 */

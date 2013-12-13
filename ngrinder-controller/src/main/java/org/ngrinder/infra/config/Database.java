@@ -13,8 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
-import java.sql.Driver;
-
+import cubrid.jdbc.driver.CUBRIDDriver;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
@@ -23,7 +22,7 @@ import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cubrid.jdbc.driver.CUBRIDDriver;
+import java.sql.Driver;
 
 /**
  * Database handler for supported databases.
@@ -199,6 +198,11 @@ public enum Database {
 		return dialect;
 	}
 
+	/**
+	 * Check if it's cluster mode.
+	 *
+	 * @return true if support
+	 */
 	public boolean isClusterSupport() {
 		return clusterSupport;
 	}

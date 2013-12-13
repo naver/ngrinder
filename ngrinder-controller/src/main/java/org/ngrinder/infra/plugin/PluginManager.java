@@ -196,11 +196,11 @@ public class PluginManager implements ServletContextAware, Constants {
 	 * Collect all plugin descriptors by scanning.
 	 *
 	 * @param modules     module factory
-	 * @param packagename the package name from which scan is done.
+	 * @param packageName the package name from which scan is done.
 	 */
 	@SuppressWarnings("rawtypes")
-	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packagename) {
-		final Reflections reflections = new Reflections(packagename);
+	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packageName) {
+		final Reflections reflections = new Reflections(packageName);
 		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
 				.getSubTypesOf(AbstractModuleDescriptor.class);
 
