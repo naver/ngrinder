@@ -185,8 +185,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping("/{id}")
 	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
-		PerfTest test = null;
-
+		PerfTest test;
 		if (id != null) {
 			test = getOneWithPermissionCheck(user, id, true);
 		} else {
@@ -334,11 +333,14 @@ public class PerfTestController extends BaseController {
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
 		// Point to the head revision
 		test.setScriptRevision(-1L);
-		// NGRINDER-236 hehe
 		test.prepare(isClone);
-		perfTestService.save(user, test);
+		test = perfTestService.save(user, test);
 		model.clear();
-		return "redirect:/perftest/list";
+		if (test.getStatus() == Status.SAVED || test.getScheduledTime() != null) {
+			return "redirect:/perftest/list";
+		} else {
+			return "redirect:/perftest/" + test.getId();
+		}
 	}
 
 	/**

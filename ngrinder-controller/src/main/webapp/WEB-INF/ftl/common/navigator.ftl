@@ -97,8 +97,7 @@
 					<span style="margin-top:0; margin-bottom:0; font-size: 15px"><@spring.message "announcement.alert.title"/></span>
 
 					<a class="pointer-cursor" id="hide_announcement">
-						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right"
-						   id="announcement_icon" style="margin-top:-20px">
+						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon">
 						</i>
 					</a>
 				</span>
