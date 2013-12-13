@@ -50,7 +50,6 @@
 		.prompt {
 			text-align: center;
 			margin-top: 5px;
-			*margin-top: 2px;
 			height: 30px;
 		}
 
@@ -87,12 +86,15 @@
 						</span>
 					<input id="loginBtn" type="image"
 						   src="${req.getContextPath()}/img/login.gif" alt="Login"
-						   class="btn_lgn" width="60px" style="margin-top:0; margin-left:25px"/>
+						   class="btn_lgn" style="margin-top:0; margin-left:20px"/>
 				</div>
 
 				<div class="prompt">
-					<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remember Me :
-					<select id="native_language" name="native_language" style="margin-left:60px;">
+					<input type="checkbox" class="checkbox" style="margin-top:-4px"
+						   name='_spring_security_remember_me'>
+					<span>Remember Me</span>
+					</input>
+					<select id="native_language" name="native_language" style="margin-left:60px;width:80px">
 						<option value="en">English</option>
 						<option value="kr">한국어</option>
 						<option value="cn">中文</option>
