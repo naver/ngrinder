@@ -16,32 +16,32 @@
 			style="margin-left: 10px">
 			<fieldset>
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.tps">
-            		<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
+            		<strong>${(test.tps!0)?string(",##0.#")}</strong>
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.meantime">
-					${(test.meanTestTime)?string("0.##")}
+					${(test.meanTestTime!0)?string("0.##")}
 					<code>MS</code>
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.peakTPS">
-					${test.peakTps}
+					${test.peakTps!0}
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.totalTests">
-					${test.tests + test.errors}
+					${test.tests!0 + test.errors!0}
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.successfulTests">
-					${test.tests}
+					${test.tests!0}
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.errors">
-					${test.errors}
+					${test.errors!0}
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.runtime">
-					${test.runtimeStr}
+					${test.runtimeStr!""}
 				</@control_group>
 			</fieldset>
 		</div>
@@ -51,7 +51,7 @@
 			<legend>
 				<@spring.message "perfTest.report.tpsgraph"/>
 				<a id="detail_report_btn" class="btn btn-primary pull-right">
-					<@spring.message "perfTest.report.reportDetail"/>
+					<@spring.message "perfTest.report.detailedReport"/>
 				</a>
 			</legend>
 		</fieldSet>
@@ -75,7 +75,7 @@
 				<div style="width:100%;" class="ellipsis">
 					<a href="${req.getContextPath()}/perftest/${test.id?c}/show_log/${eachLog}" target="log"
 					   title="open the log in the new window">
-					<img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>
+						<img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>
 					<a href="${req.getContextPath()}/perftest/${test.id?c}/download_log/${eachLog}">${eachLog}</a>
 				</div>
 			</@list>
