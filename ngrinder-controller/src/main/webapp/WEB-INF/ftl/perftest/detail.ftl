@@ -1067,7 +1067,7 @@ function openRunningDiv(onFinishHook) {
 
 
 function openReportDiv(onFinishHook) {
-	$("#report_section").load("${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
+	$("#report_section").load("${req.getContextPath()}/perftest/${(test.id!0)?c}/basic_report?imgWidth=600",
 		function() {
 			if (onFinishHook !== undefined) {
 				onFinishHook();

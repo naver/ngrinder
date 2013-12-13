@@ -26,13 +26,15 @@
 <div class="chart" id="error_chart"></div>
 
 <script>
+
+	//@ sourceURL=/perftest/detail_report/perf
 	$("#tps_title").popover({trigger: 'hover', container:'body'});
 
 	function getGraphDataAndDraw(testId) {
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/perf");
 		ajaxObj.params = {
-			'dataType': 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
-			'imgWidth': 700
+			dataType : 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
+			imgWidth : $("#tps_chart").width()
 		};
 		ajaxObj.success = function (data) {
 			var interval = data.chartInterval;
@@ -42,15 +44,12 @@
 			drawOptionalChart("min_time_first_byte_chart", data.Mean_time_to_first_byte.data, interval,
 					data.Mean_time_to_first_byte.lables);
 			drawOptionalChart("user_defined_chart", data.User_defined.data, interval, data.User_defined.lables);
-			generateImg(imgBtnLabel, imgTitle);
-
+			createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");
 		};
 		ajaxObj.call();
 	}
-	function drawChart(id, data, interval, lables) {
-		var result = new Chart(id, data, null, null, interval, lables);
-		result.plot();
-
+	function drawChart(id, data, interval, labels) {
+		new Chart(id, data, interval, { labels: labels }).plot();
 	}
 	function drawOptionalChart(id, data, interval, lables) {
 		if (data !== undefined && data.length != 0) {
@@ -66,5 +65,4 @@
 	});
 	getGraphDataAndDraw(${id});
 
-	//@ sourceURL=/perftest/detail_report/perf
 </script>

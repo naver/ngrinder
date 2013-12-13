@@ -353,7 +353,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
-	public void testUpdateSatuts() {
+	public void testUpdateStatus() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		String testName2 = "test1";

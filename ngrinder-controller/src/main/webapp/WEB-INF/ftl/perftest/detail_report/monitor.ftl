@@ -22,9 +22,10 @@
 <div class="chart" id="custom_monitor_chart_5"></div>
 
 <script>
+	//@ sourceURL=/perftest/detail_report/monitor
 	function getMonitorDataAndDraw(testId, targetIP) {
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/monitor");
-		ajaxObj.params = {'targetIP': targetIP, 'imgWidth': 700};
+		ajaxObj.params = { targetIP: targetIP, imgWidth: $("#cpu_usage_chart").width()};
 		ajaxObj.success = function (data) {
 			var interval = data.chartInterval;
 			drawChart('cpu_usage_chart', [data.cpu], formatPercentage, interval);
@@ -36,6 +37,7 @@
 			drawOptionalChart("custom_monitor_chart_3", [data.customData3], formatNetwork, interval);
 			drawOptionalChart("custom_monitor_chart_4", [data.customData4], formatNetwork, interval);
 			drawOptionalChart("custom_monitor_chart_5", [data.customData5], formatNetwork, interval);
+			createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");
 		};
 		ajaxObj.call();
 	}
@@ -52,5 +54,5 @@
 	}
 	getMonitorDataAndDraw(${id}, "${targetIP}");
 
-	//@ sourceURL=/perftest/detail_report/monitor
+
 </script>

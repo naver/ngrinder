@@ -157,6 +157,8 @@
 
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
+
+	//@ sourceURL=/perftest/running
 	var curPerf;
 	var curAgentStat;
 	var curMonitorStat;
@@ -180,7 +182,7 @@
 			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
-			output = output + "<td>" + formatNetwork(statistics[i].Response_bytes_per_second) + "</td>";
+			output = output + "<td>" + formatNetwork(null, statistics[i].Response_bytes_per_second) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Mean_time_to_first_byte, 0) + "</td>";
 			$(record).html(output);
 		}
@@ -202,7 +204,7 @@
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Peak_TPS) + "</td>";
-			output = output + "<td>" + formatNetwork((statistics[i].Response_bytes_per_second) + "</td>";
+			output = output + "<td>" + formatNetwork(null, statistics[i].Response_bytes_per_second) + "</td>";
 			$(record).html(output);
 		}
 	}
@@ -212,16 +214,22 @@
 			curPerf = res.perf;
 			curAgentStat = res.agent;
 			curMonitorStat = res.monitor;
-			$runningTime.text(showRunTime(curPerf.testTime));
-			$runningProcess.text($.number(curPerf.process));
-			$runningThread.text($.number(curPerf.thread));
-			$runningCount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
-			$agentState.html(createMonitoringStatusString(curAgentStat));
-			$monitorState.html(createMonitoringStatusString(curMonitorStat));
-			showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
-			showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
-			tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
-			tpsChart.plot();
+			if (curAgentStat !== undefined) {
+				$agentState.html(createMonitoringStatusString(curAgentStat));
+			}
+			if (curMonitorStat !== undefined) {
+				$monitorState.html(createMonitoringStatusString(curMonitorStat));
+			}
+			if (curPerf !== undefined) {
+				$runningTime.text(showRunTime(curPerf.testTime));
+				$runningProcess.text($.number(curPerf.process));
+				$runningThread.text($.number(curPerf.thread));
+				$runningCount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
+				showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
+				showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
+				tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
+				tpsChart.plot();
+			}
 		} else {
 			if ($('#running_section_tab:hidden')[0]) {
 				window.clearInterval(objTimer);
@@ -307,5 +315,4 @@
 	$samplingTab.find('a:first').tab('show');
 	samplingAjax.call();
 	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
-	//@ sourceURL=/perftest/running
 </script>

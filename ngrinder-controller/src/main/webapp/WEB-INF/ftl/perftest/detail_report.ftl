@@ -203,30 +203,26 @@
 </div>
 <#include "../common/messages.ftl">
 
-
-<script src="${req.getContextPath()}/js/generate-img.js"></script>
 <script>
-	var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";
-	var imgTitle =  <@spring.message "perfTest.report.exportImg.title"/> ;
-
 	$(document).ready(function () {
 		$("li.perf").click(function () {
-			getPerfChart();
+			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/perf");
 			changActiveLink($(this));
 		});
 
 		$("li.monitor").click(function () {
-			getMonitorChart($(this).attr("ip"));
+			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/monitor?targetIP=" + $(this).attr("ip"));
 			changActiveLink($(this));
 		});
 
 		$("li.plugin").click(function () {
-			getPluginChart($(this).attr("plugin"), $(this).attr("ip"));
+			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/plugin/" + $(this).attr("plugin") +
+					"?kind=" + $(this).attr("ip"));
 			changActiveLink($(this));
 		});
 
 		$.ajaxSetup({"cache": false});
-		getPerfChart();
+		$("li.perf").click();
 	});
 
 	function changActiveLink(obj) {
@@ -234,18 +230,6 @@
 		obj.addClass("active");
 	}
 
-	function getPerfChart() {
-		$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/perf");
-	}
-
-	function getMonitorChart(ip) {
-		$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/monitor?targetIP=" + ip);
-	}
-
-	function getPluginChart(plugin, kind) {
-		$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/plugin/" + plugin +
-				"?kind=" + kind);
-	}
 </script>
 </body>
 </html>
