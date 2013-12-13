@@ -65,4 +65,6 @@
 		document.forms.download_csv_form.submit();
 	});
 	getGraphDataAndDraw(${id});
+
+	//@ sourceURL=/perftest/detail_report/perf
 </script>

@@ -208,43 +208,43 @@
 	}
 
 	samplingAjax.success = function (res) {
-        if (res.status == "TESTING") {
-            curPerf = res.perf;
-            curAgentStat = res.agent;
-            curMonitorStat = res.monitor;
-            $runningTime.text(showRunTime(curPerf.testTime));
-            $runningProcess.text($.number(curPerf.process));
-            $runningThread.text($.number(curPerf.thread));
-            $runningCount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
-            $agentState.html(createMonitoringStatusString(curAgentStat));
-            $monitorState.html(createMonitoringStatusString(curMonitorStat));
-            showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
-            showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
-            tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
-            tpsChart.plot();
-        } else {
-            if ($('#running_section_tab:hidden')[0]) {
-                window.clearInterval(objTimer);
-            }
-        }
-    };
+		if (res.status == "TESTING") {
+			curPerf = res.perf;
+			curAgentStat = res.agent;
+			curMonitorStat = res.monitor;
+			$runningTime.text(showRunTime(curPerf.testTime));
+			$runningProcess.text($.number(curPerf.process));
+			$runningThread.text($.number(curPerf.thread));
+			$runningCount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
+			$agentState.html(createMonitoringStatusString(curAgentStat));
+			$monitorState.html(createMonitoringStatusString(curMonitorStat));
+			showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
+			showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
+			tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
+			tpsChart.plot();
+		} else {
+			if ($('#running_section_tab:hidden')[0]) {
+				window.clearInterval(objTimer);
+			}
+		}
+	};
 
 	samplingAjax.error = function () {
-        if ($('#running_section_tab:hidden')[0]) {
-            window.clearInterval(objTimer);
-        }
-    };
+		if ($('#running_section_tab:hidden')[0]) {
+			window.clearInterval(objTimer);
+		}
+	};
 
-    var $runningTime = $("#running_time");
-    var $runningProcess = $("#running_process");
-    var $runningThread = $("#running_thread");
-    var $runningCount = $("#running_count");
-    var $agentState = $("#agent_state");
-    var $monitorState = $("#monitor_state");
-    var $accumulatedSampleResult = $("#accumulated_sample_result");
-    var $lastSampleResult = $("#last_sample_result");
+	var $runningTime = $("#running_time");
+	var $runningProcess = $("#running_process");
+	var $runningThread = $("#running_thread");
+	var $runningCount = $("#running_count");
+	var $agentState = $("#agent_state");
+	var $monitorState = $("#monitor_state");
+	var $accumulatedSampleResult = $("#accumulated_sample_result");
+	var $lastSampleResult = $("#last_sample_result");
 
-    function toNum(num, precision) {
+	function toNum(num, precision) {
 		if (num == undefined) {
 			return "-";
 		}
@@ -304,7 +304,8 @@
 		e.preventDefault();
 		$(this).tab('show');
 	});
-    $samplingTab.find('a:first').tab('show');
+	$samplingTab.find('a:first').tab('show');
 	samplingAjax.call();
 	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
+	//@ sourceURL=/perftest/running
 </script>

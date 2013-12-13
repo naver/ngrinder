@@ -45,9 +45,7 @@
 
 <#macro input_label name, value, message, others = "">
 	<div class="control-group">
-		<label for="${toUnderscore(name)}" class="control-label">
-			<@spring.message "${message}"/>
-		</label>
+		<label for="${toUnderscore(name)}" class="control-label"><@spring.message "${message}"/></label>
 		<div class="controls">
 			<input type="text" class="input input-mini" id="${toUnderscore(name)}" name="${name}"
 				   value="${value}" style="width:40px"/>

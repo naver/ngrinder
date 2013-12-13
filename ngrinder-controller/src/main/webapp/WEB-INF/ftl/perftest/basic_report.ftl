@@ -111,4 +111,6 @@
 	$("#detail_report_btn").click(function () {
 		window.open("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report");
 	});
+
+	//@ sourceURL=/perftest/basic_report
 </script>

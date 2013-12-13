@@ -51,4 +51,6 @@
 		}
 	}
 	getMonitorDataAndDraw(${id}, "${targetIP}");
+
+	//@ sourceURL=/perftest/detail_report/monitor
 </script>

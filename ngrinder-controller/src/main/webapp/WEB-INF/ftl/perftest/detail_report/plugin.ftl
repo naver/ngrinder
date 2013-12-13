@@ -44,4 +44,6 @@
 	}
 
 	getPluginDataAndDraw(${id}, "${plugin}", "${kind}");
+
+	//@ sourceURL=/perftest/detail_report/plugin
 </script>
