@@ -10,7 +10,7 @@
 <#if !(showPasswordByDefault??)><#assign showPasswordByDefault=false/><</#if>
 <#if !(allowUserIdChange??)><#assign allowUserIdChange=false/></#if>
 <#if !(userSecurityEnabled??)><#assign userSecurityEnabled=true/><</#if>
-<#if !(newUser??)><#assign newUser=true/></#if>
+<#if !(newUser??)><#assign newUser=false/></#if>
 <#if !(followers??)><#assign followers=[]/></#if>
 	<fieldset>
 
