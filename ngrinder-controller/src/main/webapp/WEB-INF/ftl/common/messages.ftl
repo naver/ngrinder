@@ -11,6 +11,9 @@
 	#error_msg_div {
 		z-index: 1152;
 	}
+	#message_div {
+		z-index: 1151;
+	}
 </style>
 <script type="text/javascript">
 	<#if currentUser?? && currentUser.userLanguage??>

@@ -55,6 +55,7 @@ public class UserSignUpController extends UserController {
 		super.openForm(null, model);
 		model.addAttribute("allowShareChange", false);
 		model.addAttribute("showPasswordByDefault", true);
+		model.addAttribute("newUser", true);
 		return "user/sign_up_modal";
 	}
 

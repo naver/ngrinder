@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 	<title>nGrinder Login</title>
-
 <#include "common/common.ftl">
 <#include "common/select2.ftl">
 	<script src="${req.getContextPath()}/js/detect_timezone.js?${nGrinderVersion}"></script>
@@ -68,6 +67,7 @@
 </head>
 <body>
 <div>
+<#include "common/messages.ftl"/>
 	<script language="javascript">
 		if (top.location.href.indexOf("login") == -1) {
 			top.location.href = "${req.getContextPath()}/login";

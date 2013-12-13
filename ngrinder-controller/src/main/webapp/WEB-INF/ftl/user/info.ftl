@@ -10,7 +10,7 @@
 <#if !(showPasswordByDefault??)><#assign showPasswordByDefault=false/><</#if>
 <#if !(allowUserIdChange??)><#assign allowUserIdChange=false/></#if>
 <#if !(userSecurityEnabled??)><#assign userSecurityEnabled=true/><</#if>
-
+<#if !(newUser??)><#assign newUser=true/></#if>
 <#if !(followers??)><#assign followers=[]/></#if>
 	<fieldset>
 
@@ -19,7 +19,7 @@
 			<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
 		</#assign>
 		<#assign others><#if user?? && user.userId??>readonly</#if></#assign>
-		<@input_append class="span4" name = "userId" value = "${(user.userId)!}" others=others
+		<@input_append class="span4" name="userId" value="${(user.userId)!}" others=others
 				data_content=userIdMsg data_placement='${popover_place}' message="user.info.form.userId"/>
 		<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
 	</@control_group>
@@ -89,7 +89,7 @@
 	</#if>
 		<div class="control-group">
 			<div class="controls pull-right">
-				<a class="btn btn-success" id="update_or_create_user_btn">
+				<a class="btn btn-success" id="save_user_btn">
 				<@spring.message "user.info.form.button.saveUser"/></a>
 			</div>
 		</div>                                                                                     +
@@ -224,10 +224,18 @@
 	</@list>
 		$("#user_switch_select").val(switchedUsers).select2();
 
-		$("#update_or_create_user_btn").click(function () {
+		$("#save_user_btn").click(function () {
 			document.forms.user_form.action = "${basePath}/save";
-			if ($("#user_form").valid())
-				document.forms.user_form.submit();
+			if ($("#user_form").valid()) {
+				<#if newUser>
+					showSuccessMsg("new user " + $("#user_id").val() + " is signing up.");
+					setTimeout(function() {
+						document.forms.user_form.submit();
+					}, 1000);
+				<#else>
+					document.forms.user_form.submit();
+				</#if>
+			}
 		});
 
 	});
