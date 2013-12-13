@@ -20,10 +20,8 @@ import com.sun.syndication.io.XmlReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
-import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -80,6 +78,15 @@ public class HomeService {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
 	}
 
+	/**
+	 * Get panel entries containing the entries from the given RSS
+	 * url.
+	 *
+	 * @param feedURL rss url message
+	 * @param maxSize max size
+	 * @param includeReply if including reply
+	 * @return {@link PanelEntry} list
+	 */
 	public List<PanelEntry> getPanelEntries(String feedURL, int maxSize, boolean includeReply) {
 		SyndFeedInput input = new SyndFeedInput();
 		XmlReader reader = null;

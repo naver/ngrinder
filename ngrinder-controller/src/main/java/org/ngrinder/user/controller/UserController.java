@@ -100,7 +100,7 @@ public class UserController extends BaseController {
 	 *
 	 * @param user  current user
 	 * @param model mode
-	 * @return "user/userDetail"
+	 * @return "user/detail"
 	 */
 	@RequestMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
@@ -116,7 +116,7 @@ public class UserController extends BaseController {
 	 * @param user   current user
 	 * @param model  mode
 	 * @param userId user to get
-	 * @return "user/userDetail"
+	 * @return "user/detail"
 	 */
 	@RequestMapping("/{userId}")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
@@ -134,7 +134,7 @@ public class UserController extends BaseController {
 	 * @param user         current user
 	 * @param model        model
 	 * @param updatedUser  user to be updated.
-	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
+	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
@@ -172,7 +172,7 @@ public class UserController extends BaseController {
 	 *
 	 * @param model   model
 	 * @param userIds comma separated user ids.
-	 * @return "redirect:/user/list"
+	 * @return "redirect:/user/"
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/delete")
@@ -190,7 +190,7 @@ public class UserController extends BaseController {
 	 *
 	 * @param user  current user
 	 * @param model model
-	 * @return "user/userInfo"
+	 * @return "user/info"
 	 */
 	@RequestMapping("/profile")
 	public String getOne(User user, ModelMap model) {
@@ -208,7 +208,7 @@ public class UserController extends BaseController {
 	 *
 	 * @param user  current user
 	 * @param model model
-	 * @return "user/switchOptions"
+	 * @return "user/switch_options"
 	 */
 	@RequestMapping("/switch_options")
 	public String switchOptions(User user, ModelMap model) {
@@ -228,7 +228,7 @@ public class UserController extends BaseController {
 	 * @param model    model
 	 * @param to       the user to whom a user will switch
 	 * @param response response
-	 * @return redirect:/perftest/list
+	 * @return redirect:/perftest/
 	 */
 	@RequestMapping("/switch")
 	public String switchUser(ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
@@ -283,6 +283,12 @@ public class UserController extends BaseController {
 		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
 
+	/**
+	 * Get users by user role.
+	 *
+	 * @param role  user role
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
@@ -290,6 +296,12 @@ public class UserController extends BaseController {
 		return toJsonHttpEntity(userService.getAll(role));
 	}
 
+	/**
+	 * Get users by user id.
+	 *
+	 * @param userId  user id
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.GET)
@@ -297,6 +309,12 @@ public class UserController extends BaseController {
 		return toJsonHttpEntity(userService.getOne(userId));
 	}
 
+	/**
+	 * Create user.
+	 *
+	 * @param newUser  new user
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
@@ -305,6 +323,13 @@ public class UserController extends BaseController {
 		return toJsonHttpEntity(save(newUser));
 	}
 
+	/**
+	 * Update user.
+	 *
+	 * @param userId  user id
+	 * @param update  update user
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.PUT)
@@ -314,6 +339,12 @@ public class UserController extends BaseController {
 		return toJsonHttpEntity(save(update));
 	}
 
+	/**
+	 * Delete user.
+	 *
+	 * @param userId  user id
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.DELETE)

@@ -123,8 +123,8 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the agent detail info for the given agent id.
 	 *
-	 * @param model model
 	 * @param id    agent id
+	 * @param model model
 	 * @return agent/agentDetail
 	 */
 	@RequestMapping("/{id}")
@@ -136,10 +136,10 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the current performance of the given agent.
 	 *
-	 * @param model model
 	 * @param id    agent id
 	 * @param ip    agent ip
 	 * @param name  agent name
+	 * @param model model
 	 * @return json message
 	 */
 
@@ -163,6 +163,10 @@ public class AgentManagerController extends BaseController {
 		return toJsonHttpEntity(getAgentStatus(agents));
 	}
 
+	/**
+	 * Get all agents from database.
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
@@ -170,6 +174,10 @@ public class AgentManagerController extends BaseController {
 		return toJsonHttpEntity(agentManagerService.getAllVisibleAgentInfoFromDB());
 	}
 
+	/**
+	 * Get the agent for the given agent id.
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
@@ -177,6 +185,12 @@ public class AgentManagerController extends BaseController {
 		return toJsonHttpEntity(agentManagerService.getOne(id));
 	}
 
+	/**
+	 * Approve an agent.
+	 *
+	 * @param id agent id
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", params = "action=approve", method = RequestMethod.PUT)
@@ -185,6 +199,12 @@ public class AgentManagerController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
+	/**
+	 * Disapprove an agent.
+	 *
+	 * @param id agent id
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", params = "action=disapprove", method = RequestMethod.PUT)
@@ -193,6 +213,12 @@ public class AgentManagerController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
+	/**
+	 * Stop the given agent.
+	 *
+	 * @param id agent id
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", params = "action=stop", method = RequestMethod.PUT)
@@ -205,7 +231,7 @@ public class AgentManagerController extends BaseController {
 	 * Stop the given agent.
 	 *
 	 * @param ids comma separated agent id list
-	 * @return agent/agentList
+	 * @return json message
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
@@ -218,6 +244,12 @@ public class AgentManagerController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
+	/**
+	 * Update the given agent.
+	 *
+	 * @param id agent id
+	 * @return json message
+	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", params = "action=update", method = RequestMethod.PUT)
@@ -229,6 +261,7 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Send update message to agent side
 	 *
+	 * @param ids comma separated agent id list
 	 * @return json message
 	 */
 	@RestAPI

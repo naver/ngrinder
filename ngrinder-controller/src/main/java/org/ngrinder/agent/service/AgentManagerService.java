@@ -140,7 +140,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getUserAvailableAgentCountMap
+	 * org.ngrinder.service.IAgentManagerService#getUserAvailableAgentCountMap
 	 * (org.ngrinder .model.User)
 	 */
 	@Override
@@ -180,7 +180,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getLocalAgents()
+	 * @see org.ngrinder.service.IAgentManagerService#getLocalAgents()
 	 */
 	@Override
 	@Transactional
@@ -207,7 +207,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(org.ngrinder
+	 * org.ngrinder.service.IAgentManagerService#createAgentKey(org.ngrinder
 	 * .agent.model.AgentInfo )
 	 */
 	@Override
@@ -219,7 +219,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(net.grinder
+	 * org.ngrinder.service.IAgentManagerService#createAgentKey(net.grinder
 	 * .engine.controller .AgentControllerIdentityImplementation)
 	 */
 	@Override
@@ -234,7 +234,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#
+	 * @see org.ngrinder.service.IAgentManagerService#
 	 * getLocalAgentIdentityByIpAndName(java.lang .String, java.lang.String)
 	 */
 	@Override
@@ -253,7 +253,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getLocalAgentsFromDB()
+	 * org.ngrinder.service.IAgentManagerService#getLocalAgentsFromDB()
 	 */
 	@Override
 	public List<AgentInfo> getLocalAgentsFromDB() {
@@ -264,7 +264,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getAllActiveAgentInfoFromDB
+	 * org.ngrinder.service.IAgentManagerService#getAllActiveAgentInfoFromDB
 	 * ()
 	 */
 	@Override
@@ -276,7 +276,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getAllVisibleAgentInfoFromDB
+	 * org.ngrinder.service.IAgentManagerService#getAllVisibleAgentInfoFromDB
 	 * ()
 	 */
 	@Override
@@ -310,7 +310,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getAll(long,
+	 * @see org.ngrinder.service.IAgentManagerService#getAll(long,
 	 * boolean)
 	 */
 	@Override
@@ -321,7 +321,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getAll(long,
+	 * @see org.ngrinder.service.IAgentManagerService#getAll(long,
 	 * boolean)
 	 */
 	@Override
@@ -402,7 +402,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getAgentSystemDataModel
+	 * org.ngrinder.service.IAgentManagerService#getAgentSystemDataModel
 	 * (java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -440,7 +440,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 *
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#updateAgentLib
+	 * org.ngrinder.service.IAgentManagerService#updateAgentLib
 	 * (java.lang.String)
 	 */
 	@Override
