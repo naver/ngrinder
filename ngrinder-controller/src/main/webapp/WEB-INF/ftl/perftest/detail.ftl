@@ -652,11 +652,6 @@ function bindNewScript(target, first) {
 }
 
 function showScheduleModal() {
-	if ($("#script_name").find("option:selected").attr("validated") == "0") {
-		$("small.error-color").text("<@spring.message "perfTest.detail.message.notValidatedScript"/>");
-	} else {
-		$("small.error-color").text("");
-	}
 	initScheduleTime();
 	$("#tag_string").val(buildTagString());
 	$('#schedule_modal').modal('show');
@@ -739,10 +734,10 @@ function bindEvent() {
 		$scheduleModal.find("small").html("");
 		$("#scheduled_time").attr('name', '');
 		$("#test_status").val("READY");
-		showSuccessMsg("테스트를 바로 시작합니다.");
+		showSuccessMsg("<@spring.message 'perfTest.detail.message.testStart'/>");
 		setTimeout(function() {
 			document.test_config_form.submit();
-		}, 2000);
+		}, 1000);
 	});
 
 
