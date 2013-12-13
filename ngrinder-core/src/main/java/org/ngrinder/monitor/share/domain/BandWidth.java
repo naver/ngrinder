@@ -13,9 +13,9 @@
  */
 package org.ngrinder.monitor.share.domain;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.io.Serializable;
 
 /**
  * Network Usage Calculation Class. This class get the bandwidth so far and calc RX, TX.
@@ -41,8 +41,7 @@ public class BandWidth implements Serializable {
 	/**
 	 * Constructor with the timestamp.
 	 * 
-	 * @param time
-	 *            current timestamp.
+	 * @param time	current timestamp.
 	 */
 	public BandWidth(long time) {
 		this.time = time;
@@ -57,8 +56,7 @@ public class BandWidth implements Serializable {
 	/**
 	 * Calculate the bandWith by subtracting prev bandwidth.
 	 * 
-	 * @param bandWidth
-	 *            bandWidth adjusted against.
+	 * @param bandWidth	bandWidth adjusted against.
 	 * @return adjusted bandWidth.
 	 */
 	public BandWidth adjust(BandWidth bandWidth) {

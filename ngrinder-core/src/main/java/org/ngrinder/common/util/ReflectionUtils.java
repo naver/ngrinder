@@ -13,16 +13,16 @@
  */
 package org.ngrinder.common.util;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkArgument;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Reflection Utility functions.
@@ -37,10 +37,8 @@ public abstract class ReflectionUtils {
 	/**
 	 * Get object field value, bypassing getter method.
 	 * 
-	 * @param object
-	 *            object
-	 * @param fieldName
-	 *            field Name
+	 * @param object	object
+	 * @param fieldName	field Name
 	 * @return fileValue
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {

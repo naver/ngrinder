@@ -33,28 +33,20 @@ public interface OnTestSamplingRunnable {
 	 * Callback method which will be invoked when the given {@link PerfTest} test sampling is
 	 * started.
 	 * 
-	 * @param singleConsole
-	 *            {@link ISingleConsole}
-	 * @param perfTest
-	 *            {@link PerfTest}
-	 * @param perfTestService
-	 *            {@link IPerfTestService}
+	 * @param singleConsole		{@link ISingleConsole}
+	 * @param perfTest			{@link PerfTest}
+	 * @param perfTestService	{@link IPerfTestService}
 	 */
 	public void startSampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService);
 
 	/**
 	 * Callback method which will be invoked whenever test sampling is performed.
 	 * 
-	 * @param singleConsole
-	 *            {@link ISingleConsole}
-	 * @param perfTest
-	 *            {@link PerfTest}
-	 * @param perfTestService
-	 *            {@link IPerfTestService}
-	 * @param intervalStatistics
-	 *            sampling statistics on this time
-	 * @param cumulativeStatistics
-	 *            cumulative sampling statistics.
+	 * @param singleConsole			{@link ISingleConsole}
+	 * @param perfTest				{@link PerfTest}
+	 * @param perfTestService		{@link IPerfTestService}
+	 * @param intervalStatistics	sampling statistics on this time
+	 * @param cumulativeStatistics	cumulative sampling statistics.
 	 */
 	public void sampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService,
 					ImmutableStatisticsSet intervalStatistics, ImmutableStatisticsSet cumulativeStatistics);
@@ -63,12 +55,9 @@ public interface OnTestSamplingRunnable {
 	 * Callback method which will be invoked when the given {@link PerfTest} test sampling is
 	 * finished.
 	 * 
-	 * @param singleConsole
-	 *            {@link ISingleConsole}
-	 * @param perfTest
-	 *            {@link PerfTest}
-	 * @param perfTestService
-	 *            {@link IPerfTestService}
+	 * @param singleConsole		{@link ISingleConsole}
+	 * @param perfTest			{@link PerfTest}
+	 * @param perfTestService	{@link IPerfTestService}
 	 */
 	public void endSampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService);
 

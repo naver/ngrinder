@@ -49,12 +49,9 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Constructor.
 	 * 
-	 * @param peakTPSExpression
-	 *            peakTPSExpression
-	 * @param periodIndex
-	 *            periodIndex
-	 * @param statisticsSetFactory
-	 *            statisticsSetFactory
+	 * @param peakTPSExpression		peakTPSExpression
+	 * @param periodIndex			periodIndex
+	 * @param statisticsSetFactory	statisticsSetFactory
 	 */
 	public SampleAccumulatorEx(PeakStatisticExpression peakTPSExpression, StatisticsIndexMap.LongIndex periodIndex,
 					StatisticsSetFactory statisticsSetFactory) {
@@ -71,8 +68,7 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Constructor which copies the given {@link SampleAccumulatorEx} object.
 	 * 
-	 * @param original
-	 *            {@link SampleAccumulatorEx} original object.
+	 * @param original	{@link SampleAccumulatorEx} original object.
 	 */
 	public SampleAccumulatorEx(SampleAccumulatorEx original) {
 		m_peakTPSExpression = original.m_peakTPSExpression;
@@ -88,8 +84,7 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Add sampling listener.
 	 * 
-	 * @param listener
-	 *            sample listener
+	 * @param listener	sample listener
 	 */
 	public void addSampleListener(SampleListener listener) {
 		m_listeners.add(listener);
@@ -98,8 +93,7 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Add the interval statistics.
 	 * 
-	 * @param report
-	 *            report
+	 * @param report	report
 	 */
 	public void addIntervalStatistics(StatisticsSet report) {
 		m_intervalStatistics.add(report);
@@ -108,8 +102,7 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Add the cumulative statistics.
 	 * 
-	 * @param report
-	 *            report
+	 * @param report	report
 	 */
 	public void addCumulativeStatistics(StatisticsSet report) {
 		m_cumulativeStatistics.add(report);
@@ -118,10 +111,8 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Fire sampling.
 	 * 
-	 * @param sampleInterval
-	 *            sampling interval
-	 * @param period
-	 *            period
+	 * @param sampleInterval	sampling interval
+	 * @param period			period
 	 */
 	public void fireSample(long sampleInterval, long period) {
 		m_intervalStatistics.setValue(m_periodIndex, sampleInterval);
@@ -140,10 +131,8 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Start new interval statistics.
 	 * 
-	 * @param sampleInterval
-	 *            sampleInterval
-	 * @param period
-	 *            period
+	 * @param sampleInterval	sampleInterval
+	 * @param period			period
 	 */
 	public void refreshIntervalStatistics(long sampleInterval, long period) {
 		m_intervalStatistics.setValue(m_periodIndex, sampleInterval);

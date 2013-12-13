@@ -13,30 +13,21 @@
  */
 package org.ngrinder.model;
 
-import java.util.Date;
+import com.google.gson.annotations.Expose;
+import org.hibernate.annotations.Index;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import com.google.gson.annotations.Expose;
+import java.util.Date;
 
 /**
  * Base Model which has following attribute.
- * <ul>
- * <li>created_user</li>
- * <li>created_date</li>
- * <li>lastmodified_user</li>
- * <li>lastmodified_date</li>
- * </ul>
  * 
- * @param <M>
- *            wrapped entity
+ * @param <M> wrapped entity
  * @author Liu Zhifei
  * @author JunHo Yoon
  * @since 3.0

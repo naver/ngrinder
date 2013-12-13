@@ -1,8 +1,8 @@
 package org.ngrinder.common.util;
 
-import java.util.List;
-
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+
+import java.util.List;
 
 /**
  * Exception processing utility.
@@ -16,8 +16,7 @@ public abstract class ExceptionUtils {
 	 * Check if the exception is {@link NGrinderRuntimeException}. If so, throw it. If
 	 * not, wrap the given exception and throw it.
 	 * 
-	 * @param t
-	 *            Throwable
+	 * @param t 	Throwable
 	 * @return exception
 	 */
 	public static NGrinderRuntimeException processException(Throwable t) {
@@ -32,8 +31,7 @@ public abstract class ExceptionUtils {
 	 * Check if the exception {@link NGrinderRuntimeException}. If so, throw. If
 	 * not, wrap the given exception.
 	 * 
-	 * @param message
-	 *            message
+	 * @param message	message
 	 * @return exception
 	 */
 	public static NGrinderRuntimeException processException(String message) {
@@ -44,10 +42,8 @@ public abstract class ExceptionUtils {
 	 * Check if the exception is {@link NGrinderRuntimeException}. If so, throw.
 	 * If not, wrap the given exception.
 	 * 
-	 * @param message
-	 *            message
-	 * @param t
-	 *            Throwable
+	 * @param message	message
+	 * @param t 		Throwable
 	 * @return exception
 	 */
 	public static NGrinderRuntimeException processException(String message, Throwable t) {
@@ -61,8 +57,7 @@ public abstract class ExceptionUtils {
 	/**
 	 * Filter the stacktrace elements with only interesting one.
 	 * 
-	 * @param throwable
-	 *            throwable
+	 * @param throwable	throwable
 	 * @return {@link Throwable} instance with interested stacktrace elements.
 	 */
 	public static Throwable sanitize(Throwable throwable) {
@@ -95,8 +90,7 @@ public abstract class ExceptionUtils {
 	/**
 	 * Check if the given class name is the application class or not.
 	 * 
-	 * @param className
-	 *            class name including package name
+	 * @param className	class name including package name
 	 * @return true if application class
 	 */
 	private static boolean isApplicationClass(String className) {

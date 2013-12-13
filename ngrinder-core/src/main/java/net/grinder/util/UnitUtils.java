@@ -40,8 +40,7 @@ public abstract class UnitUtils {
 	/**
 	 * Get the display of the given byte size.
 	 * 
-	 * @param size
-	 *            size
+	 * @param size	size
 	 * @return display version of the byte size
 	 */
 	public static String byteCountToDisplaySize(long size) {

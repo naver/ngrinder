@@ -14,7 +14,7 @@
 package org.ngrinder.model;
 
 /**
- * Category of {@link Status}. This class provides the characterisic of each status.
+ * Category of {@link Status}. This class provides the characteristic of each status.
  * 
  * @author JunHo Yoon
  * @since 3.0

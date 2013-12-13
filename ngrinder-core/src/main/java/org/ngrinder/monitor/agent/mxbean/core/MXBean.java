@@ -13,10 +13,10 @@
  */
 package org.ngrinder.monitor.agent.mxbean.core;
 
+import org.ngrinder.monitor.agent.collector.AgentDataCollector;
+
 import java.io.File;
 import java.io.Serializable;
-
-import org.ngrinder.monitor.agent.collector.AgentDataCollector;
 
 /**
  * 
@@ -28,13 +28,10 @@ import org.ngrinder.monitor.agent.collector.AgentDataCollector;
 public abstract class MXBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// protected MonitorInfo monitorInfo;
-
 	/**
 	 * Get {@link AgentDataCollector} which is provided by its implementation.
 	 * 
-	 * @param agentHome
-	 *            agentHome
+	 * @param agentHome	agentHome
 	 * @return AgentDataCollector of this MXBean
 	 */
 	public abstract AgentDataCollector gainAgentDataCollector(File agentHome);

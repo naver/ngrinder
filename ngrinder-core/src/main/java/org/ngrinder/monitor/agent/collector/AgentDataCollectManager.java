@@ -13,17 +13,17 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
-import java.util.Collection;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMXBeanStorage;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 
@@ -60,8 +60,7 @@ public final class AgentDataCollectManager {
 	 * Initialize the manager. Need to set the agent home directory for the
 	 * collector.
 	 * 
-	 * @param agentConfig
-	 *            agentHome
+	 * @param agentConfig	agentHome
 	 */
 	public void init(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;

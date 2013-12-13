@@ -13,11 +13,11 @@
  */
 package org.ngrinder.common.util;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
 import net.grinder.common.UncheckedInterruptedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Thread related utility.
@@ -34,8 +34,7 @@ public abstract class ThreadUtils {
 	/**
 	 * Sleep in give millis without throwing exception.
 	 * 
-	 * @param millis
-	 *            millisecond.
+	 * @param millis	millisecond.
 	 */
 	public static void sleep(long millis) {
 		try {
@@ -48,10 +47,8 @@ public abstract class ThreadUtils {
 	/**
 	 * Stop thread quietly.
 	 * 
-	 * @param thread
-	 *            thread to be stop
-	 * @param stopMessage
-	 *            message to be shown when stop thread forcely
+	 * @param thread		thread to be stop
+	 * @param stopMessage	message to be shown when stop thread forcely
 	 */
 	@SuppressWarnings("deprecation")
 	public static void stopQuietly(Thread thread, String stopMessage) {

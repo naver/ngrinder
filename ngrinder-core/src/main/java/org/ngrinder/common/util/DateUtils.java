@@ -48,8 +48,7 @@ public abstract class DateUtils {
 	/**
 	 * get the time in long format : "yyyyMMddHHmmss".
 	 * 
-	 * @param date
-	 *            date to be format
+	 * @param date	date to be format
 	 * @return time time in format of long type
 	 */
 	public static long getCollectTimeInLong(Date date) {
@@ -60,10 +59,8 @@ public abstract class DateUtils {
 	/**
 	 * convert user date to new date with server side Locale.
 	 * 
-	 * @param userTimeZone
-	 *            user TimeZone id
-	 * @param userDate
-	 *            date in user's Local
+	 * @param userTimeZone	user TimeZone id
+	 * @param userDate		date in user's Local
 	 * @return serverDate data in server's Local
 	 */
 	public static Date convertToServerDate(String userTimeZone, Date userDate) {
@@ -75,10 +72,8 @@ public abstract class DateUtils {
 	/**
 	 * convert server date to new date with user Locale.
 	 * 
-	 * @param userTimeZone
-	 *            user TimeZone id
-	 * @param serverDate
-	 *            date in server's Local
+	 * @param userTimeZone	user TimeZone id
+	 * @param serverDate	date in server's Local
 	 * @return serverDate data in user's Local
 	 */
 	public static Date convertToUserDate(String userTimeZone, Date serverDate) {
@@ -90,8 +85,7 @@ public abstract class DateUtils {
 	/**
 	 * Format date to {@value #FULL_DATE_FORMAT}.
 	 * 
-	 * @param date
-	 *            date
+	 * @param date	date
 	 * @return formatted string
 	 */
 	public static String dateToString(Date date) {
@@ -123,8 +117,7 @@ public abstract class DateUtils {
 	/**
 	 * Convert string date to Date with {@value #SIMPLE_DATE_FORMAT}.
 	 * 
-	 * @param strDate
-	 *            date string
+	 * @param strDate	date string
 	 * @return date
 	 * @throws ParseException
 	 *             thrown when the given strDate is not {@link #SIMPLE_DATE_FORMAT}
@@ -152,10 +145,8 @@ public abstract class DateUtils {
 	/**
 	 * Add days on date.
 	 * 
-	 * @param date
-	 *            base date
-	 * @param days
-	 *            days to be added.
+	 * @param date	base date
+	 * @param days	days to be added.
 	 * @return added Date
 	 */
 	public static Date addDay(Date date, int days) {
@@ -168,8 +159,7 @@ public abstract class DateUtils {
 	/**
 	 * Convert millisecond to DD:HH:MM:SS style.
 	 * 
-	 * @param ms
-	 *            Millisecond
+	 * @param ms	Millisecond
 	 * @return DD:HH:MM:SS formatted string
 	 */
 	public static String ms2Time(long ms) {
@@ -189,14 +179,10 @@ public abstract class DateUtils {
 	/**
 	 * Convert time to millisecond.
 	 * 
-	 * @param day
-	 *            day
-	 * @param hour
-	 *            hour
-	 * @param min
-	 *            min
-	 * @param sec
-	 *            sec
+	 * @param day	day
+	 * @param hour	hour
+	 * @param min	min
+	 * @param sec	sec
 	 * @return converted millisecond
 	 */
 	public static long timeToMs(int day, int hour, int min, int sec) {
@@ -206,10 +192,8 @@ public abstract class DateUtils {
 	/**
 	 * Compare two date in minute detail.
 	 * 
-	 * @param d1
-	 *            date
-	 * @param d2
-	 *            date
+	 * @param d1	date
+	 * @param d2	date
 	 * @return true if two {@link Date} are same in minute level
 	 */
 	public static boolean compareDateEndWithMinute(Date d1, Date d2) {

@@ -23,8 +23,7 @@ public abstract class ListenerHelper {
 	/**
 	 * Create a listener instance.
 	 * 
-	 * @param <T>
-	 *            listener type.
+	 * @param <T>	listener type.
 	 * @return created listener
 	 */
 	public static <T> ListenerSupport<T> create() {

@@ -33,8 +33,7 @@ public enum Role {
 		/**
 		 * Has admin permission or not.
 		 * 
-		 * @param type
-		 *            permission type
+		 * @param type	permission type
 		 * 
 		 * @return has the permission or not
 		 */
@@ -65,9 +64,7 @@ public enum Role {
 		/**
 		 * Has super permission or not.
 		 * 
-		 * @param type
-		 *            permission type
-		 * 
+		 * @param type	permission type
 		 * @return has the permission or not
 		 */
 		public boolean hasPermission(Permission type) {
@@ -99,10 +96,8 @@ public enum Role {
 	/**
 	 * Constructor.
 	 * 
-	 * @param shortName
-	 *            short name of role... usually 1 sing char
-	 * @param fullName
-	 *            full name of role
+	 * @param shortName	short name of role... usually 1 sing char
+	 * @param fullName	full name of role
 	 */
 	Role(String shortName, String fullName) {
 		this.shortName = shortName;
@@ -130,9 +125,7 @@ public enum Role {
 	/**
 	 * check this role whether has permission.
 	 * 
-	 * @param type
-	 *            permission type
-	 * 
+	 * @param type permission type
 	 * @return true if can
 	 */
 	public boolean hasPermission(Permission type) {

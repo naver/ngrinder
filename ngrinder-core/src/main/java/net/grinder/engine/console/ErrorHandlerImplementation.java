@@ -29,8 +29,7 @@ public final class ErrorHandlerImplementation implements ErrorHandler {
 	/**
 	 * Constructor.
 	 * 
-	 * @param logger
-	 *            logger
+	 * @param logger	logger
 	 */
 	public ErrorHandlerImplementation(Logger logger) {
 		m_logger = logger;

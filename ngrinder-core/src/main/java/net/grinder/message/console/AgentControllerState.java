@@ -40,8 +40,7 @@ public enum AgentControllerState {
 	/**
 	 * Constructor.
 	 *
-	 * @param category
-	 *            category of this status within.
+	 * @param category	category of this status within.
 	 */
 	AgentControllerState(AgentStatusCategory category) {
 		this.category = category;
@@ -59,7 +58,7 @@ public enum AgentControllerState {
 	/**
 	 * Get the icon name of this status.
 	 *
-	 * @return icon anme
+	 * @return icon name
 	 */
 	public String getIconName() {
 		return category.getIconName();

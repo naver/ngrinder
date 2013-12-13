@@ -13,27 +13,19 @@
  */
 package net.grinder.console.communication;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.Thread.UncaughtExceptionHandler;
-
-import net.grinder.communication.Acceptor;
-import net.grinder.communication.Address;
-import net.grinder.communication.CommunicationException;
-import net.grinder.communication.ConnectionType;
-import net.grinder.communication.FanOutServerSender;
-import net.grinder.communication.Message;
-import net.grinder.communication.MessageDispatchRegistry;
-import net.grinder.communication.MessageDispatchSender;
-import net.grinder.communication.ServerReceiver;
+import net.grinder.communication.*;
 import net.grinder.console.common.DisplayMessageConsoleException;
 import net.grinder.console.common.ErrorHandler;
 import net.grinder.console.common.Resources;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.TimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.Thread.UncaughtExceptionHandler;
+
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Handles communication for the console. This is the extension of
@@ -65,16 +57,11 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	/**
 	 * Constructor that uses a default idlePollDelay.
 	 * 
-	 * @param resources
-	 *            Resources.
-	 * @param properties
-	 *            Console properties.
-	 * @param errorHandler
-	 *            Error handler.
-	 * @param timeAuthority
-	 *            Knows the time
-	 * @throws DisplayMessageConsoleException
-	 *             If properties are invalid.
+	 * @param resources		Resources.
+	 * @param properties	Console properties.
+	 * @param errorHandler	Error handler.
+	 * @param timeAuthority	Knows the time
+	 * @throws DisplayMessageConsoleException	If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
 					ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
@@ -84,22 +71,15 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	/**
 	 * Constructor.
 	 * 
-	 * @param resources
-	 *            Resources.
-	 * @param properties
-	 *            Console properties.
-	 * @param errorHandler
-	 *            Error handler.
-	 * @param timeAuthority
-	 *            Knows the time
-	 * @param idlePollDelay
-	 *            Time in milliseconds that our ServerReceiver threads should sleep for if there's
+	 * @param resources		Resources.
+	 * @param properties	Console properties.
+	 * @param errorHandler	Error handler.
+	 * @param timeAuthority	Knows the time
+	 * @param idlePollDelay	Time in milliseconds that our ServerReceiver threads should sleep for if there's
 	 *            no incoming messages.
-	 * @param inactiveClientTimeOut
-	 *            How long before we consider a client connection that presents no data to be
+	 * @param inactiveClientTimeOut	How long before we consider a client connection that presents no data to be
 	 *            inactive.
-	 * @throws DisplayMessageConsoleException
-	 *             If properties are invalid.
+	 * @throws DisplayMessageConsoleException	If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
 					ErrorHandler errorHandler, TimeAuthority timeAuthority, long idlePollDelay,
@@ -306,8 +286,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 * Any errors that occur will be handled with the error handler.
 	 * </p>
 	 * 
-	 * @param message
-	 *            The message to send.
+	 * @param message	The message to send.
 	 */
 	public void sendToAgents(Message message) {
 		if (m_sender == null) {
@@ -328,10 +307,8 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 * Any errors that occur will be handled with the error handler.
 	 * </p>
 	 * 
-	 * @param address
-	 *            The address to which the message should be sent.
-	 * @param message
-	 *            The message to send.
+	 * @param address	The address to which the message should be sent.
+	 * @param message	The message to send.
 	 */
 	public void sendToAddressedAgents(Address address, Message message) {
 		if (m_sender == null) {

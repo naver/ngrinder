@@ -55,8 +55,7 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 	/**
 	 * Constructor.
 	 * 
-	 * @param tagValue
-	 *            tag value
+	 * @param tagValue	tag value
 	 */
 	public Tag(String tagValue) {
 		this.tagValue = StringUtils.trimToEmpty(tagValue);

@@ -122,7 +122,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 
 	/**
-	 * Use rampup or not.
+	 * Use rampUp or not.
 	 */
 	@Expose
 	@Cloneable

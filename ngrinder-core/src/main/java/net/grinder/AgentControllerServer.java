@@ -13,11 +13,6 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.util.Timer;
-
 import net.grinder.console.common.ErrorQueue;
 import net.grinder.console.common.Resources;
 import net.grinder.console.communication.AgentProcessControlImplementation;
@@ -27,10 +22,14 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
-
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.behaviors.Caching;
 import org.slf4j.Logger;
+
+import java.util.Timer;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Agent Controller which controls agent behavior. This class is subject to synchronized. So if you
@@ -48,14 +47,10 @@ public class AgentControllerServer {
 	/**
 	 * Constructor.
 	 * 
-	 * @param resources
-	 *            message resource
-	 * @param logger
-	 *            logger
-	 * @param properties
-	 *            {@link ConsoleProperties}
-	 * @param eventSyncCondition
-	 *            event synchronized condition to synchronize server stop phase.
+	 * @param resources		message resource
+	 * @param logger		logger
+	 * @param properties	{@link ConsoleProperties}
+	 * @param eventSyncCondition	event synchronized condition to synchronize server stop phase.
 	 */
 	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties,
 					Condition eventSyncCondition) {
@@ -120,10 +115,8 @@ public class AgentControllerServer {
 	/**
 	 * Get internal component.
 	 * 
-	 * @param componentType
-	 *            component type class
-	 * @param <T>
-	 *            component type
+	 * @param componentType	component type class
+	 * @param <T>	component type
 	 * @return component
 	 */
 	public <T> T getComponent(Class<T> componentType) {

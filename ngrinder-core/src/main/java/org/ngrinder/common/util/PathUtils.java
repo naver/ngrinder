@@ -29,8 +29,7 @@ public abstract class PathUtils {
 	/**
 	 * Remove prepended / from the given path.
 	 * 
-	 * @param path
-	 *            path containing /
+	 * @param path	path containing /
 	 * @return / removed path
 	 */
 	public static String removePrependedSlash(String path) {
@@ -43,10 +42,8 @@ public abstract class PathUtils {
 	/**
 	 * Join two path.
 	 * 
-	 * @param path1
-	 *            path1
-	 * @param path2
-	 *            path2
+	 * @param path1	path1
+	 * @param path2	path2
 	 * 
 	 * @return / removed path
 	 */
@@ -62,8 +59,7 @@ public abstract class PathUtils {
 	/**
 	 * Remove prepended / on the given path.
 	 * 
-	 * @param path
-	 *            path containing /
+	 * @param path	path containing /
 	 * @return / removed path
 	 */
 	public static String removeDuplicatedPrependedSlash(String path) {
@@ -76,8 +72,7 @@ public abstract class PathUtils {
 	/**
 	 * Get the shorten displayable path from the given path.
 	 * 
-	 * @param path
-	 *            path
+	 * @param path	path
 	 * 
 	 * @return shortPath
 	 */

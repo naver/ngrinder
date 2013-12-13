@@ -13,10 +13,10 @@
  */
 package org.ngrinder.common.util;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility for Url manipulation.
@@ -28,8 +28,7 @@ public abstract class UrlUtils {
 	/**
 	 * Get the host part from the given url.
 	 * 
-	 * @param url
-	 *            url
+	 * @param url	url
 	 * @return host name
 	 */
 	public static String getHost(String url) {
