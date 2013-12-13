@@ -65,9 +65,8 @@ public class Config extends AbstractConfig implements Constants {
 	private PropertiesWrapper internalProperties;
 	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
-	private String announcement;
+	private String announcement = "";
 	private Date announcementDate;
-	private String versionString = "";
 	private boolean verbose;
 	private String currentIP;
 
@@ -117,7 +116,6 @@ public class Config extends AbstractConfig implements Constants {
 			resolveLocalIp();
 			loadAnnouncement();
 			loadDatabaseProperties();
-			versionString = getVersion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
 		}
@@ -353,19 +351,21 @@ public class Config extends AbstractConfig implements Constants {
 	/**
 	 * Load the announcement content.
 	 */
-	public synchronized void loadAnnouncement() {
+	public void loadAnnouncement() {
 		checkNotNull(home);
-		File sysFile = home.getSubFile("announcement.conf");
-		try {
-			announcement = FileUtils.readFileToString(sysFile, "UTF-8");
-			if (sysFile.exists()) {
-				announcementDate = new Date(sysFile.lastModified());
-			} else {
-				announcementDate = null;
+		synchronized (announcement) {
+			File sysFile = home.getSubFile("announcement.conf");
+			try {
+				announcement = FileUtils.readFileToString(sysFile, "UTF-8");
+				if (sysFile.exists()) {
+					announcementDate = new Date(sysFile.lastModified());
+				} else {
+					announcementDate = null;
+				}
+			} catch (IOException e) {
+				CoreLogger.LOGGER.error("Error while reading announcement file.", e);
+				announcement = "";
 			}
-		} catch (IOException e) {
-			CoreLogger.LOGGER.error("Error while reading announcement file.", e);
-			announcement = "";
 		}
 	}
 

@@ -38,6 +38,7 @@ public class ConfigTest implements Constants {
 		config = new MockConfig();
 		config.init();
 	}
+
 	@Test
 	public void testDefaultHome() {
 		Home home = config.getHome();
@@ -98,11 +99,7 @@ public class ConfigTest implements Constants {
 	@Test
 	public void testVersionString() {
 		String version = config.getVersion();
-		String versionString = config.getVersion();
 		assertThat(version, not("UNKNOWN"));
-		assertThat(versionString, not("UNKNOWN"));
-		config.initLogger(true);
-		assertThat(config.isVerbose(), is(true));
 	}
 
 

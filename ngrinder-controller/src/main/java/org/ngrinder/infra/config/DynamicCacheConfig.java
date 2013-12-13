@@ -96,7 +96,6 @@ public class DynamicCacheConfig {
 			}
 			cacheManagerConfig.setName(getCacheName());
 			CacheManager mgr = CacheManager.create(cacheManagerConfig);
-			setCacheManager(mgr);
 			cacheManager.setCacheManager(mgr);
 
 		} catch (IOException e) {
@@ -107,17 +106,12 @@ public class DynamicCacheConfig {
 		return cacheManager;
 	}
 
-	void setCacheManager(CacheManager mgr) {
-		// Do nothing.
-	}
-
 	String getCacheName() {
 		return "cacheManager";
 	}
 
 	protected Pair<NetworkUtils.IPPortPair, String> createCacheProperties(List<String> replicatedCacheNames) {
 		int clusterListenerPort = getClusterListenerPort();
-		String listenerProperty = "";
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
 		NetworkUtils.IPPortPair local = null;
