@@ -324,10 +324,10 @@ public class PerfTestController extends BaseController {
 		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
 				agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"test vuser should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
+				"Test vuser should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
 		if (getConfig().isSecurityEnabled()) {
 			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
-					"test target hosts should be provided when security mode is enabled");
+					"Test target hosts should be provided when security mode is enabled");
 		}
 		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
