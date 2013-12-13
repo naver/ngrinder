@@ -58,9 +58,9 @@
 			<thead>
 				<tr>
 					<th class="no-click nothing"><input type="checkbox" class="checkbox" value=""></th>
-					<th name="userName"><@spring.message "user.option.name"/></th>
-					<th class="no-click nothing"><@spring.message "user.option.role"/></th>
-					<th name="email"><@spring.message "user.option.email"/></th>
+					<th name="userName"><@spring.message "user.info.name"/></th>
+					<th class="no-click nothing"><@spring.message "user.info.role"/></th>
+					<th name="email"><@spring.message "user.info.email"/></th>
 					<th class="no-click nothing"><@spring.message "common.label.description"/></th>
 					<th name="createdDate"><@spring.message "user.list.table.date"/></th>
 					<th class="no-click nothing"><@spring.message "user.list.table.edit"/></th>

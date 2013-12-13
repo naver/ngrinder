@@ -32,51 +32,51 @@
 <div class="container">
     <legend class="header">
 	<@spring.message "agent.info.head"/>
-        <button class="btn pull-right" onClick="window.history.back();">
-		<@spring.message "common.button.return"/>
-        </button>
+		<button class="btn pull-right" onClick="window.history.back();">
+			<@spring.message "common.button.return"/>
+		</button>
     </legend>
     <div class="row">
         <div class="span3">
             <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px;margin-top:14px">
                 <tbody>
                 <tr>
-                    <th><@spring.message "agent.table.IP"/></th>
+                    <th><@spring.message "agent.info.IP"/></th>
                 </tr>
                 <tr>
                     <td>${(agent.ip)!}</td>
                 </tr>
 
                 <tr>
-                    <th><@spring.message "agent.table.port"/></th>
+                    <th><@spring.message "agent.info.port"/></th>
                 </tr>
                 <tr>
                     <td>${(agent.port)!}</td>
                 </tr>
 
                 <tr>
-                    <th><@spring.message "agent.table.name"/></th>
+                    <th><@spring.message "agent.info.name"/></th>
                 </tr>
                 <tr>
                     <td>${(agent.hostName)!}</td>
                 </tr>
 
                 <tr>
-                    <th><@spring.message "agent.table.region"/></th>
+                    <th><@spring.message "agent.info.region"/></th>
                 </tr>
                 <tr>
                     <td>${(agent.region)!}</td>
                 </tr>
 
                 <tr>
-                    <th><@spring.message "agent.table.version"/></th>
+                    <th><@spring.message "agent.info.version"/></th>
                 </tr>
                 <tr>
                     <td>${(agent.version)!"Prev 3.3"}</td>
                 </tr>
 
                 <tr>
-                    <th><@spring.message "agent.table.state"/></th>
+                    <th><@spring.message "agent.info.state"/></th>
                 </tr>
                 <tr>
                     <td>${(agent.state)!}</td>
@@ -87,14 +87,9 @@
             <input id="refresh_interval" type="text" class="span3" placeholder="number" value="1">
         </div>
         <div class="span9">
-            <div class="page-header page-header">
-                <h4><@spring.message "agent.info.systemData"/></h4>
-            </div>
             <h6>CPU</h6>
-
             <div class="chart" id="cpu_usage_chart"></div>
             <h6 style="margin-top:20px">Memory</h6>
-
             <div class="chart" id="memory_usage_chart"></div>
         </div>
     </div>

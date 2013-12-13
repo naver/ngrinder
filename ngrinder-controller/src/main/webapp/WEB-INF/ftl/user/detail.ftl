@@ -2,7 +2,7 @@
 <html>
 <head>
 <#include "../common/common.ftl">
-	<title><@spring.message "user.detail.title"/></title>
+	<title><@spring.message "user.info.title"/></title>
 </head>
 
 <body>
@@ -10,7 +10,7 @@
 <div class="container">
 	<fieldSet>
 		<legend class="header">
-		<@spring.message "user.detail.header"/>
+		<@spring.message "user.info.header"/>
 			<button class="btn pull-right" onClick="window.history.back();">
 			<@spring.message "common.button.return"/>
 			</button>

@@ -3,32 +3,34 @@
 <head>
 <#include "../common/common.ftl"/>
 <#include "../common/datatables.ftl"/>
-	<title><@spring.message "agent.table.title"/></title>
+	<title><@spring.message "agent.title"/></title>
 </head>
 <body>
 <#include "../common/navigator.ftl">
 <div class="container">
 	<fieldSet>
-		<legend class="header"> <@spring.message "agent.management.title"/> </legend>
+		<legend class="header"> <@spring.message "agent.list.title"/> </legend>
 	</fieldSet>
 <#include "region_selector.ftl">
 	<div class="well search-bar">
 		<button class="btn btn-success" id="update_agent_button">
-			<i class="icon-thumbs-up"></i> <@spring.message "agent.management.agentUpdate"/>
+			<@spring.message "agent.list.update"/>
 		</button>
 		<button class="btn" id="stop_agent_button">
 			<i class="icon-stop"></i> <@spring.message "common.button.stop"/>
 		</button>
 
 		<div class="input-prepend pull-right">
-			<span class="add-on" style="cursor: default"><@spring.message "agent.management.agentDownload"/> </span>
-				<span class="input-xlarge uneditable-input span6" style="cursor: text">
+			<span class="add-on" style="cursor: default">
+				<@spring.message "agent.list.download"/>
+			</span>
+			<span class="input-xlarge uneditable-input span6" style="cursor: text">
 				<#if downloadLink??>
 					<a href="${downloadLink}">${downloadLink}</a>
 				<#else>
 					Please select the region in advance to download agent.
 				</#if>
-				</span>
+			</span>
 		</div>
 
 	</div>
@@ -47,13 +49,13 @@
 		<thead>
 		<tr>
 			<th class="no-click"><input type="checkbox" class="checkbox" value=""></th>
-			<th><@spring.message "agent.table.state"/></th>
-			<th><@spring.message "agent.table.IPAndDns"/></th>
-			<th class="no-click"><@spring.message "agent.table.port"/></th>
-			<th class="ellipsis"><@spring.message "agent.table.name"/></th>
-			<th><@spring.message "agent.table.version"/></th>
-			<th><@spring.message "agent.table.region"/></th>
-			<th class="no-click"><@spring.message "agent.table.approve"/></th>
+			<th><@spring.message "agent.list.state"/></th>
+			<th><@spring.message "agent.list.IPAndDns"/></th>
+			<th class="no-click"><@spring.message "agent.list.port"/></th>
+			<th class="ellipsis"><@spring.message "agent.list.name"/></th>
+			<th><@spring.message "agent.list.version"/></th>
+			<th><@spring.message "agent.list.region"/></th>
+			<th class="no-click"><@spring.message "agent.list.approve"/></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -80,12 +82,12 @@
 					<button type="button"
 							class="btn btn-mini btn-primary disapproved <#if agent.isApproved() == false>active</#if>"
 							sid="${agent.id}">
-						<@spring.message "agent.table.disapproved"/>
+						<@spring.message "agent.list.disapproved"/>
 					</button>
 					<button type="button"
 							class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>"
 							sid="${agent.id}">
-						<@spring.message "agent.table.approved"/>
+						<@spring.message "agent.list.approved"/>
 					</button>
 				</div>
 			</td>
@@ -113,8 +115,8 @@
 			"sPaginationType": "bootstrap",
 			"oLanguage": {
 				"oPaginate": {
-					"sPrevious": "<@spring.message "common.paging.previous"/>",
-					"sNext": "<@spring.message "common.paging.next"/>"
+					"sPrevious": "<@spring.message 'common.paging.previous'/>",
+					"sNext": "<@spring.message 'common.paging.next'/>"
 				}
 			}
 		});
@@ -129,7 +131,7 @@
 						"approve": "true"
 					},
 					function () {
-						showSuccessMsg("<@spring.message "agent.management.toBeApproved"/>");
+						showSuccessMsg("<@spring.message 'agent.message.approve'/>");
 					}
 			);
 		});
@@ -141,7 +143,7 @@
 						"approve": "false"
 					},
 					function () {
-						showSuccessMsg("<@spring.message "agent.management.toBeDisapproved"/>");
+						showSuccessMsg("<@spring.message 'agent.message.disapprove'/>");
 					}
 			);
 		});
@@ -150,11 +152,14 @@
 		$("#stop_agent_button").click(function () {
 			var list = $("td input:checked");
 			if (list.length == 0) {
-				bootbox.alert("<@spring.message "agent.table.message.alert.stop"/>", "<@spring.message "common.button.ok"/>");
+				bootbox.alert(
+						"<@spring.message 'agent.message.common.noagent'/>",
+						"<@spring.message 'common.button.ok'/>");
 				return;
 			}
 
-			var $confirm = bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
+			var $confirm = bootbox.confirm("<@spring.message 'agent.message.stop.confirm'/>",
+					"<@spring.message 'common.button.cancel'/>", "<@spring.message 'common.button.ok'/>", function (result) {
 				if (result) {
 					stopAgents(list.map(function () {
 						return $(this).val();
@@ -167,10 +172,12 @@
 		$("#update_agent_button").click(function () {
 			var list = $("td input:checked");
 			if (list.length == 0) {
-				bootbox.alert("<@spring.message "agent.table.message.error.noAgent"/>", "<@spring.message "common.button.ok"/>");
+				bootbox.alert("<@spring.message 'agent.message.common.noagent'/>",
+						"<@spring.message 'common.button.ok'/>");
 				return;
 			}
-			var $confirm = bootbox.confirm("<@spring.message "agent.table.message.confirm.update"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
+			var $confirm = bootbox.confirm("<@spring.message 'agent.message.update.confirm'/>",
+					"<@spring.message 'common.button.cancel'/>", "<@spring.message 'common.button.ok'/>", function (result) {
 				if (result) {
 					updateAgents(list.map(function () {
 						return $(this).val();
@@ -184,8 +191,8 @@
 	function stopAgents(ids) {
 		var ajaxObj = new AjaxPostObj("/agent/api/stop",
 				{ "ids": ids },
-				"<@spring.message "agent.table.message.success.stop"/>",
-				"<@spring.message "agent.table.message.error.stop"/>!");
+				"<@spring.message 'agent.message.stop.success'/>",
+				"<@spring.message 'agent.message.stop.error'/>");
 		ajaxObj.success = function () {
 			setTimeout(function () {
 				location.reload();
@@ -197,8 +204,8 @@
 	function updateAgents(ids) {
 		var ajaxObj = new AjaxPostObj("/agent/api/update",
 				{ "ids": ids },
-				"<@spring.message "agent.table.message.success.update"/>",
-				"<@spring.message "agent.table.message.error.update"/>");
+				"<@spring.message 'agent.message.update.success'/>",
+				"<@spring.message 'agent.message.update.error'/>");
 		ajaxObj.call();
 	}
 
@@ -207,7 +214,7 @@
 			return this.value;
 		}).get();
 
-		var ajaxObj = new AjaxObj("/agent/api/states", null, "<@spring.message "common.error.error"/>");
+		var ajaxObj = new AjaxObj("/agent/api/states", null, "<@spring.message 'common.error.error'/>");
 		ajaxObj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
 				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);

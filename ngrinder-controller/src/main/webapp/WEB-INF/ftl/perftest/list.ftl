@@ -132,7 +132,7 @@
 		<th id="script_name" name="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 		<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier.oneline"/></#if></th>
 	<#if clustered>
-		<th id="region" name="region"><@spring.message "agent.table.region"/></th>
+		<th id="region" name="region"><@spring.message "common.region"/></th>
 	</#if>
 		<th id="start_time" name="startTime"><@spring.message "perfTest.table.startTime"/></th>
 		<th class="nothing"><span class="ellipsis"><@spring.message "perfTest.table.threshold"/></th>
@@ -199,7 +199,7 @@
 			</div>
 		</td>
 		<#if clustered>
-			<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-html="true"
+			<td class="ellipsis" title="<@spring.message "common.region"/>" data-html="true"
 				data-content="<#if test.region?has_content><@spring.message "${test.region}"/></#if>"> <#if test.region?has_content><@spring.message "${test.region}"/></#if>
 			</td>
 		</#if>
