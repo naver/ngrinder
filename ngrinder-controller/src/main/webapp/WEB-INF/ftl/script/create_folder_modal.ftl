@@ -32,11 +32,11 @@
 		$("#create_folder_button").click(function() {
 			var $name = $("#folder_name");
 			if (checkEmptyByObj($name)) {
-				markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
+				markInput($name, false, "<@spring.message "common.message.validate.empty"/>");
 				return;
 			} else {
 				if (!checkSimpleNameByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.format"/>");
+					markInput($name, false, "<@spring.message "common.message.validate.format"/>");
 					return;
 				}
 				markInput($name, true);

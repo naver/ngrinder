@@ -37,7 +37,7 @@
 		$("#upload_file_button").click(function() {
 			var $file = $("#file_input");
 			if (checkEmptyByObj($file)) {
-				markInput($file, false, "<@spring.message "common.form.validate.empty"/>");
+				markInput($file, false, "<@spring.message "common.message.validate.empty"/>");
 				return;
 			}
 			document.forms.uploadForm.submit();

@@ -80,11 +80,11 @@
 		$("#create_script_btn").on('click', function() {
 			var $name = $("#file_name");
 			if (checkEmptyByObj($name)) {
-				markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
+				markInput($name, false, "<@spring.message "common.message.validate.format"/>");
 				return;
 			} else {
 				if (!checkSimpleNameByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.format"/>");
+					markInput($name, false, "<@spring.message "common.message.validate.format"/>");
 					return;
 				}
 				
