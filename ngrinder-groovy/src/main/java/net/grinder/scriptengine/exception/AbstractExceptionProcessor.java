@@ -13,10 +13,10 @@
  */
 package net.grinder.scriptengine.exception;
 
+import net.grinder.util.Sleeper;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import net.grinder.util.Sleeper;
 
 /**
  * Exception filtering processor.
@@ -29,8 +29,7 @@ public abstract class AbstractExceptionProcessor {
 	/**
 	 * Filter exception.
 	 * 
-	 * @param throwable
-	 *            throwable
+	 * @param throwable	throwable
 	 * @return filtered {@link Throwable}
 	 */
 	public Throwable filterException(Throwable throwable) {
@@ -43,8 +42,7 @@ public abstract class AbstractExceptionProcessor {
 	 * It stops finding the root cause until it meets the null root cause or
 	 * net.grinder.engine.process.ShutdownException.
 	 * 
-	 * @param throwable
-	 *            throwable
+	 * @param throwable	throwable
 	 * @return root cause of the given {@link Throwable} instance.
 	 */
 	public Throwable getRootCause(Throwable throwable) {
@@ -64,8 +62,7 @@ public abstract class AbstractExceptionProcessor {
 	 * Return true if the given {@link Throwable} is by the generic grinder
 	 * shutdown event.
 	 * 
-	 * @param cause
-	 *            cause
+	 * @param cause	cause
 	 * @return true if generic shutdown
 	 */
 	public boolean isGenericShutdown(Throwable cause) {
@@ -80,10 +77,9 @@ public abstract class AbstractExceptionProcessor {
 	}
 
 	/**
-	 * Filter the stacktrace elements with only interesting one.
+	 * Filter the stack trace elements with only interesting one.
 	 * 
-	 * @param throwable
-	 *            throwable
+	 * @param throwable throwable
 	 * @return {@link Throwable} instance with interested stacktrace elements.
 	 */
 	public Throwable sanitize(Throwable throwable) {
@@ -108,8 +104,7 @@ public abstract class AbstractExceptionProcessor {
 	/**
 	 * Check if the given class name is the application class or not.
 	 * 
-	 * @param className
-	 *            class name including package name
+	 * @param className	class name including package name
 	 * @return true if application class
 	 */
 	protected boolean isApplicationClass(String className) {

@@ -22,9 +22,6 @@
  */
 package net.grinder.scriptengine.groovy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.grinder.common.GrinderProperties;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
@@ -33,6 +30,9 @@ import net.grinder.scriptengine.DCRContext;
 import net.grinder.scriptengine.Instrumenter;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.util.FileExtensionMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class description.
@@ -51,12 +51,9 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 	/**
 	 * Constructor.
 	 * 
-	 * @param properties
-	 *            Properties.
-	 * @param dcrContext
-	 *            DCR context.
-	 * @param scriptLocation
-	 *            Script location.
+	 * @param properties		Properties.
+	 * @param dcrContext		DCR context.
+	 * @param scriptLocation	Script location.
 	 */
 	public GroovyScriptEngineService(GrinderProperties properties, //
 					DCRContext dcrContext, ScriptLocation scriptLocation) {

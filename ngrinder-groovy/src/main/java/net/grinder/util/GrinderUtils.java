@@ -13,19 +13,17 @@
  */
 package net.grinder.util;
 
+import HTTPClient.NVPair;
+import net.grinder.common.GrinderProperties;
+import net.grinder.script.Grinder;
+import net.grinder.script.InternalScriptContext;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.math.NumberUtils;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-
-import net.grinder.common.GrinderProperties;
-import net.grinder.script.Grinder;
-import net.grinder.script.InternalScriptContext;
-
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.math.NumberUtils;
-
-import HTTPClient.NVPair;
 
 /**
  * Convenient NGrinder utilities.
@@ -35,7 +33,7 @@ import HTTPClient.NVPair;
  */
 public abstract class GrinderUtils {
 	/**
-	 * Get this thread uniq id among all threads in the all agents.
+	 * Get this thread unique id among all threads in the all agents.
 	 * 
 	 * @return unique id b/w from 0 to total thread count.
 	 * @since 3.2.3
@@ -73,8 +71,7 @@ public abstract class GrinderUtils {
 	 * request1.POST("http://www.google.com", nvs(["key1":"value1", "key2":"value2"]))
 	 * </code>
 	 * 
-	 * @param nvpairMap
-	 *            map of the
+	 * @param nvpairMap	map of the
 	 * @return converted array
 	 */
 	public static NVPair[] nvs(Map<Object, Object> nvpairMap) {
@@ -97,8 +94,7 @@ public abstract class GrinderUtils {
 	 * def selected = any(values)
 	 * </code>
 	 * 
-	 * @param from
-	 *            list
+	 * @param from	list
 	 * @return any element in the list
 	 * @since 3.2.3
 	 */
@@ -109,8 +105,7 @@ public abstract class GrinderUtils {
 	/**
 	 * Get the any element from araay.
 	 * 
-	 * @param from
-	 *            list
+	 * @param from	list
 	 * @return any element in the list
 	 * @since 3.2.3
 	 */

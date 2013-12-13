@@ -13,10 +13,10 @@
  */
 package net.grinder.scriptengine.groovy.junit;
 
-import java.util.List;
-
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+
+import java.util.List;
 
 /**
  * Statement which runs just prior to thread termination.
@@ -36,14 +36,10 @@ class RunAfterThreads extends Statement {
 	/**
 	 * Constructor.
 	 * 
-	 * @param next
-	 *            next
-	 * @param afterThread
-	 *            method to be invoked in prior to thread termination.
-	 * @param factory
-	 *            test object factory.
-	 * @param lastPerThreadStatement
-	 *            last statement to be executed at the thread end.
+	 * @param next			next
+	 * @param afterThread	method to be invoked in prior to thread termination.
+	 * @param factory		test object factory.
+	 * @param lastPerThreadStatement	last statement to be executed at the thread end.
 	 */
 	public RunAfterThreads(Statement next, List<FrameworkMethod> afterThread, TestObjectFactory factory,
 					PerThreadStatement lastPerThreadStatement) {

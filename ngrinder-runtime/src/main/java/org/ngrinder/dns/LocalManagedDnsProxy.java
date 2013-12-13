@@ -33,8 +33,7 @@ public class LocalManagedDnsProxy implements NameService {
 	/**
 	 * Get host name by address.
 	 * 
-	 * @param ip
-	 *            ip
+	 * @param ip	ip
 	 * @return host name
 	 * @throws UnknownHostException
 	 *             occurs when hostname can not be found.

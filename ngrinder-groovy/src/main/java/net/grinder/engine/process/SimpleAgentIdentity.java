@@ -30,10 +30,8 @@ public class SimpleAgentIdentity implements AgentIdentity {
 	/**
 	 * Constructor.
 	 * 
-	 * @param name
-	 *            agent identity name
-	 * @param number
-	 *            agent number.
+	 * @param name		agent identity name
+	 * @param number	agent number.
 	 */
 	public SimpleAgentIdentity(String name, int number) {
 		super();

@@ -31,8 +31,7 @@ abstract class DnsUtils {
 	/**
 	 * Check the string is empty.
 	 * 
-	 * @param str
-	 *            string
+	 * @param str	string
 	 * @return true if empty
 	 */
 	public static boolean isEmpty(String str) {

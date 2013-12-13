@@ -35,16 +35,14 @@ public class RunRateStatment extends Statement {
 	/**
 	 * Constructor.
 	 * 
-	 * @param statement
-	 *            statement to be repeated
-	 * @param runRate
-	 *            the percent of run
+	 * @param statement	statement to be repeated
+	 * @param runRate	the percent of run
 	 */
-	public RunRateStatment(Statement statement, int runrate) {
+	public RunRateStatment(Statement statement, int runRate) {
 		this.statement = statement;
-		runrate = Math.max(Math.min(runrate, 100), 0);
-		this.interval = 100f / runrate;
-		this.percent = (runrate / 100f) + 0.000000012f;
+		runRate = Math.max(Math.min(runRate, 100), 0);
+		this.interval = 100f / runRate;
+		this.percent = (runRate / 100f) + 0.000000012f;
 
 	}
 

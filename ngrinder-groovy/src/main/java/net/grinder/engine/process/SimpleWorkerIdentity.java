@@ -31,10 +31,8 @@ public class SimpleWorkerIdentity implements WorkerIdentity {
 	/**
 	 * Constructor.
 	 * 
-	 * @param name
-	 *            worker name
-	 * @param number
-	 *            worker number
+	 * @param name		worker name
+	 * @param number	worker number
 	 */
 	public SimpleWorkerIdentity(String name, int number) {
 		m_number = number;

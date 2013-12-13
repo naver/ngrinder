@@ -13,10 +13,10 @@
  */
 package net.grinder.scriptengine.groovy.junit;
 
-import java.util.List;
-
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+
+import java.util.List;
 
 /**
  * Statement which runs just after thread initiation.
@@ -36,14 +36,10 @@ class RunBeforeThreads extends Statement {
 	/**
 	 * Statement.
 	 * 
-	 * @param next
-	 *            next
-	 * @param befores
-	 *            method to be invoked in prior to thread termination.
-	 * @param factory
-	 *            test object factory.
-	 * @param firstPerThreadStatement
-	 *            first statement to be executed at the thread beginning.
+	 * @param next		next
+	 * @param befores	method to be invoked in prior to thread termination.
+	 * @param factory	test object factory.
+	 * @param firstPerThreadStatement	first statement to be executed at the thread beginning.
 	 */
 	public RunBeforeThreads(Statement next, List<FrameworkMethod> befores, TestObjectFactory factory,
 					PerThreadStatement firstPerThreadStatement) {

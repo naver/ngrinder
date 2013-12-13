@@ -18,8 +18,7 @@ public class JUnitThreadContextUpdater {
 	/**
 	 * Constructor.
 	 * 
-	 * @param threadContexts
-	 *            threadContexts
+	 * @param threadContexts	threadContexts
 	 */
 	public JUnitThreadContextUpdater(ThreadContexts threadContexts) {
 		this.m_threadContexts = threadContexts;
@@ -28,8 +27,7 @@ public class JUnitThreadContextUpdater {
 	/**
 	 * Set run count in thread context.
 	 * 
-	 * @param count
-	 *            count
+	 * @param count	count
 	 */
 	public void setRunCount(int count) {
 		m_threadContexts.get().setCurrentRunNumber(count);

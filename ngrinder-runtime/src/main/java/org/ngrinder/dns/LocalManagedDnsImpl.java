@@ -13,16 +13,11 @@
  */
 package org.ngrinder.dns;
 
+import org.xbill.DNS.*;
+import sun.net.spi.nameservice.NameService;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.xbill.DNS.ARecord;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.PTRRecord;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
-import sun.net.spi.nameservice.NameService;
 
 /**
  * DNS Java DNS resolver.
@@ -36,8 +31,7 @@ public class LocalManagedDnsImpl implements NameService {
 	/**
 	 * Finds A records (ip addresses) for the host name.
 	 * 
-	 * @param name
-	 *            host name to resolve.
+	 * @param name	host name to resolve.
 	 * @return All the ip addresses found for the host name.
 	 * @throws UnknownHostException
 	 *             occurs when name is not available in DNS
@@ -65,8 +59,7 @@ public class LocalManagedDnsImpl implements NameService {
 	/**
 	 * Finds PTR records (reverse dns lookups) for the ip address.
 	 * 
-	 * @param ip
-	 *            ip address to lookup.
+	 * @param ip	ip address to lookup.
 	 * @return The host name found for the ip address.
 	 * @throws UnknownHostException
 	 *             occurs when id is not available in DNS

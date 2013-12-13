@@ -35,10 +35,8 @@ public class RepetitionStatment extends Statement {
 	/**
 	 * Constructor.
 	 * 
-	 * @param statement
-	 *            statement to be repeated
-	 * @param repetition
-	 *            the repetition count
+	 * @param statement		statement to be repeated
+	 * @param repetition	the repetition count
 	 */
 	public RepetitionStatment(Statement statement, int repetition) {
 		this.statement = statement;
@@ -48,12 +46,9 @@ public class RepetitionStatment extends Statement {
 	/**
 	 * Constructor.
 	 * 
-	 * @param statement
-	 *            statement to be repeated
-	 * @param repetition
-	 *            the repetition count
-	 * @param threadContextUpdater
-	 *            threadContextUpdater
+	 * @param statement		statement to be repeated
+	 * @param repetition	the repetition count
+	 * @param threadContextUpdater	threadContextUpdater
 	 * @since 3.2.1
 	 */
 	public RepetitionStatment(Statement statement, int repetition, JUnitThreadContextUpdater threadContextUpdater) {
