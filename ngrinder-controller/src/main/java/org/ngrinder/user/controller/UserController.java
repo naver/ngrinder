@@ -275,7 +275,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * Check the user id existence.
+	 * Check if the given user id already exists.
 	 *
 	 * @param userId userId to be checked
 	 * @return success json if true.
@@ -289,7 +289,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * Get users by user role.
+	 * Get users by the given role.
 	 *
 	 * @param role  user role
 	 * @return json message
@@ -302,7 +302,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * Get users by user id.
+	 * Get the user by the given user id.
 	 *
 	 * @param userId  user id
 	 * @return json message
@@ -315,7 +315,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * Create user.
+	 * Create an user.
 	 *
 	 * @param newUser  new user
 	 * @return json message
@@ -329,7 +329,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * Update user.
+	 * Update the user.
 	 *
 	 * @param userId  user id
 	 * @param update  update user
@@ -345,7 +345,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * Delete user.
+	 * Delete the user by the given userId.
 	 *
 	 * @param userId  user id
 	 * @return json message
