@@ -36,10 +36,8 @@ public interface AgentProcessControl {
 	/**
 	 * Signal the worker processes to start.
 	 *
-	 * @param agents
-	 *            agent list to be started.
-	 * @param properties
-	 *            Properties that override the agent's local properties.
+	 * @param agents		agent list to be started.
+	 * @param properties	Properties that override the agent's local properties.
 	 *
 	 */
 	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties);
@@ -47,8 +45,7 @@ public interface AgentProcessControl {
 	/**
 	 * Stop agent.
 	 *
-	 * @param agentIdentity
-	 *            agent to be stopped
+	 * @param agentIdentity	agent to be stopped
 	 *
 	 */
 	public void stopAgent(AgentIdentity agentIdentity);
@@ -56,17 +53,15 @@ public interface AgentProcessControl {
 	/**
 	 * Get the number of agents.
 	 *
-	 * @return avalable agent's count
+	 * @return available agent's count
 	 */
 	public int getNumberOfLiveAgents();
 
 	/**
 	 * Get the agents for given state and count.
 	 *
-	 * @param state
-	 *            current state of agent
-	 * @param count
-	 *            the count of agent to be get
+	 * @param state	current state of agent
+	 * @param count	the count of agent to be get
 	 * @return agent list
 	 */
 	public Set<AgentIdentity> getAgents(AgentControllerState state, int count);
@@ -81,8 +76,7 @@ public interface AgentProcessControl {
 	/**
 	 * Get agent version for given {@link AgentIdentity}.
 	 *
-	 * @param agentIdentity
-	 *            agent identity
+	 * @param agentIdentity	agent identity
 	 * @return agent version
 	 */
 	String getAgentVersion(AgentIdentity agentIdentity);
@@ -91,8 +85,7 @@ public interface AgentProcessControl {
 	/**
 	 * Get {@link JavaDataModel} for given {@link AgentIdentity}.
 	 *
-	 * @param agentIdentity
-	 *            agent identity
+	 * @param agentIdentity	agent identity
 	 * @return {@link JavaDataModel} instance if available. null otherwise
 	 */
 	SystemDataModel getSystemDataModel(AgentIdentity agentIdentity);
@@ -100,8 +93,7 @@ public interface AgentProcessControl {
 	/**
 	 * Get agent controller state for the given agent identity.
 	 *
-	 * @param agentIdentity
-	 *            agent identity
+	 * @param agentIdentity	agent identity
 	 * @return {@link AgentControllerState} member
 	 */
 	AgentControllerState getAgentControllerState(AgentIdentity agentIdentity);
@@ -109,8 +101,7 @@ public interface AgentProcessControl {
 	/**
 	 * Get agent connecting port for the given agent identity.
 	 *
-	 * @param agentIdentity
-	 *            agent identity
+	 * @param agentIdentity	agent identity
 	 * @return {@link AgentControllerState} member
 	 */
 	int getAgentConnectingPort(AgentIdentity agentIdentity);
@@ -118,8 +109,7 @@ public interface AgentProcessControl {
 	/**
 	 * Add agent status update listener.
 	 *
-	 * @param listener
-	 *            listener.
+	 * @param listener	listener.
 	 */
 	public void addListener(Listener listener);
 }

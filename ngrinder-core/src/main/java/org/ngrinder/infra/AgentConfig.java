@@ -223,7 +223,7 @@ public class AgentConfig {
 	}
 
 	/**
-	 * if there is testmode property in system.properties.. return true
+	 * If there is test mode property in system.properties.. return true
 	 *
 	 * @return true is test mode
 	 */

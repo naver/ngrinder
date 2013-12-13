@@ -43,10 +43,10 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 	/**
 	 * Creates a new <code>AgentProcessReportMessage</code> instance.
 	 * 
-	 * @param state
-	 *            The process state. See {@link net.grinder.common.processidentity.ProcessReport}.
+	 * @param state	The process state. See {@link net.grinder.common.processidentity.ProcessReport}.
 	 * @param systemDataModel system performance data model
-	 * @param connectingPort agent connecting console port 
+	 * @param connectingPort agent connecting console port
+	 * @param version agent version
 	 */
 	public AgentControllerProcessReportMessage(AgentControllerState state,
 					SystemDataModel systemDataModel, int connectingPort, String version) {

@@ -13,9 +13,9 @@
  */
 package net.grinder.engine.controller;
 
-import java.io.Serializable;
-
 import net.grinder.util.UniqueIdentityGenerator;
+
+import java.io.Serializable;
 
 /**
  * Custom agent controller identity implementation.
@@ -48,8 +48,7 @@ public abstract class AbstractAgentControllerIdentityImplementation implements S
 	/**
 	 * Allows the public process name to be changed.
 	 * 
-	 * @param name
-	 *            The new process name.
+	 * @param name	The new process name.
 	 */
 	public void setName(String name) {
 		m_name = name;
@@ -67,8 +66,7 @@ public abstract class AbstractAgentControllerIdentityImplementation implements S
 	/**
 	 * Implement equality semantics. We compare equal to all copies of ourself, but nothing else.
 	 * 
-	 * @param o
-	 *            Object to compare.
+	 * @param o	Object to compare.
 	 * @return <code>true</code> => its equal.
 	 */
 	public final boolean equals(Object o) {

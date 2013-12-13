@@ -69,8 +69,7 @@ public enum Status {
 	/**
 	 * Constructor.
 	 * 
-	 * @param category
-	 *            category of this status within.
+	 * @param category	category of this status within.
 	 */
 	Status(StatusCategory category) {
 		this.category = category;
@@ -106,7 +105,7 @@ public enum Status {
 	/**
 	 * Get the icon name of this status.
 	 * 
-	 * @return icon anme
+	 * @return icon name
 	 */
 	public String getIconName() {
 		return category.getIconName();
@@ -130,8 +129,7 @@ public enum Status {
 	/**
 	 * Check this status is the working status.
 	 * 
-	 * @param status
-	 *            status
+	 * @param status	status
 	 * @return true if it's in {@link StatusCategory}'s PROCESSING or TESTING.
 	 */
 	private static boolean isWorkingStatus(Status status) {

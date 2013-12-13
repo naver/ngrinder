@@ -32,12 +32,9 @@ public class LogReportGrinderMessage implements AddressAwareMessage {
 	/**
 	 * Constructor.
 	 * 
-	 * @param testId
-	 *            corresponding testid
-	 * @param logs
-	 *            compressed log byte array
-	 * @param agentAddress
-	 *            agent address
+	 * @param testId		corresponding test id
+	 * @param logs			compressed log byte array
+	 * @param agentAddress	agent address
 	 */
 	public LogReportGrinderMessage(String testId, byte[] logs, AgentAddress agentAddress) {
 		this.testId = testId;

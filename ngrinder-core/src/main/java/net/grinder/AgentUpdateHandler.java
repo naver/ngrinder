@@ -47,7 +47,8 @@ public class AgentUpdateHandler implements Closeable {
 	/**
 	 * Agent Update handler.
 	 *
-	 * @param agentConfig agentConfig
+	 * @param agentConfig 	agentConfig
+	 * @param message 		AgentUpdateGrinderMessage
 	 */
 	public AgentUpdateHandler(AgentConfig agentConfig, AgentUpdateGrinderMessage message)
 			throws FileNotFoundException {

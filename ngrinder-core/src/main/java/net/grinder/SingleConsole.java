@@ -808,7 +808,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * Build up statistics for current sampling.
 	 *
 	 * @param accumulatedStatistics intervalStatistics
-	 * @param intervalStatistics    cumulatedStatistics
+	 * @param intervalStatistics    accumulatedStatistics
 	 */
 	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
 		Map<String, Object> result = newHashMap();

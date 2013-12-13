@@ -13,18 +13,17 @@
  */
 package net.grinder.engine.agent;
 
-import java.io.OutputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionException;
-
 import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.engine.common.EngineException;
 import net.grinder.util.thread.Condition;
 import net.grinder.util.thread.ExecutorFactory;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.grinder.util.thread.InterruptibleRunnableAdapter;
-
 import org.slf4j.Logger;
+
+import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * WorkerLauncher which redirect stdout/stderr stream to user.
@@ -55,7 +54,7 @@ public class ErrorStreamRedirectWorkerLauncher {
 	/**
 	 * Constructor.
 	 *
-	 * @param numberOfWorkers numbderOfWorks
+	 * @param numberOfWorkers worker count
 	 * @param workerFactory   worker factory
 	 * @param notifyOnFinish  synchronization condition
 	 * @param logger          logger
@@ -73,7 +72,7 @@ public class ErrorStreamRedirectWorkerLauncher {
 	 * Package scope for unit tests.
 	 *
 	 * @param executor        executors
-	 * @param numberOfWorkers numbderOfWorks
+	 * @param numberOfWorkers worker count
 	 * @param workerFactory   worker factory
 	 * @param notifyOnFinish  synchronization condition
 	 * @param logger          logger

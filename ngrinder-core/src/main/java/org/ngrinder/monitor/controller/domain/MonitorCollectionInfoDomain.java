@@ -32,7 +32,6 @@ public class MonitorCollectionInfoDomain {
 	 *
 	 * @param objectName  is the object name related with JMX domain name
 	 * @param attrName    is the attribute name in this domain, used to get concrete monitor data
-	 * @param resultClass is the Class type of that monitor data with that attribute name
 	 */
 	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName) {
 		this.objectName = objectName;

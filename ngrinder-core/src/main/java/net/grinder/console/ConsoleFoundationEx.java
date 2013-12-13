@@ -13,11 +13,6 @@
  */
 package net.grinder.console;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.util.Timer;
-
 import net.grinder.common.GrinderException;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
@@ -30,11 +25,7 @@ import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.communication.server.DispatchClientCommands;
 import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.distribution.WireFileDistribution;
-import net.grinder.console.model.ConsoleProperties;
-import net.grinder.console.model.SampleModel;
-import net.grinder.console.model.SampleModelImplementationEx;
-import net.grinder.console.model.SampleModelViews;
-import net.grinder.console.model.SampleModelViewsImplementation;
+import net.grinder.console.model.*;
 import net.grinder.console.synchronisation.WireDistributedBarriers;
 import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.messages.console.RegisterExpressionViewMessage;
@@ -43,7 +34,6 @@ import net.grinder.messages.console.ReportStatisticsMessage;
 import net.grinder.statistics.StatisticsServicesImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
-
 import org.apache.commons.lang.StringUtils;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
@@ -52,6 +42,11 @@ import org.picocontainer.behaviors.Caching;
 import org.picocontainer.parameters.ComponentParameter;
 import org.picocontainer.parameters.ConstantParameter;
 import org.slf4j.Logger;
+
+import java.util.Timer;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Extension of {@link ConsoleFoundation} for nGrinder use.
@@ -70,16 +65,11 @@ public class ConsoleFoundationEx {
 	/**
 	 * Constructor. Allows properties to be specified.
 	 * 
-	 * @param resources
-	 *            Console resources
-	 * @param logger
-	 *            Logger.
-	 * @param properties
-	 *            The properties.
-	 * @param eventSyncCondition
-	 *            event synchronization condition.
-	 * @exception GrinderException
-	 *                occurs If an error occurs.
+	 * @param resources		Console resources
+	 * @param logger		Logger.
+	 * @param properties	The properties.
+	 * @param eventSyncCondition	event synchronization condition.
+	 * @exception GrinderException	occurs If an error occurs.
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
 					Condition eventSyncCondition) throws GrinderException {
@@ -118,10 +108,8 @@ public class ConsoleFoundationEx {
 	/**
 	 * Get the component of the given type.
 	 * 
-	 * @param <T>
-	 *            component type
-	 * @param componentType
-	 *            component type class
+	 * @param <T>	component type
+	 * @param componentType	component type class
 	 * @return component
 	 */
 	public <T> T getComponent(Class<T> componentType) {
@@ -198,14 +186,10 @@ public class ConsoleFoundationEx {
 		/**
 		 * Constructor.
 		 * 
-		 * @param communication
-		 *            Console communication.
-		 * @param model
-		 *            Console sample model.
-		 * @param sampleModelViews
-		 *            Console sample model views
-		 * @param dispatchClientCommands
-		 *            Client command dispatcher.
+		 * @param communication	Console communication.
+		 * @param model			Console sample model.
+		 * @param sampleModelViews	Console sample model views
+		 * @param dispatchClientCommands	Client command dispatcher.
 		 */
 		public WireMessageDispatch(ConsoleCommunication communication, final SampleModel model,
 						final SampleModelViews sampleModelViews, DispatchClientCommands dispatchClientCommands) {

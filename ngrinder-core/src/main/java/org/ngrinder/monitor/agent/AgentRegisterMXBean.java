@@ -13,19 +13,18 @@
  */
 package org.ngrinder.monitor.agent;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import java.util.Set;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.util.Set;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * 
@@ -44,8 +43,7 @@ public final class AgentRegisterMXBean {
 	/**
 	 * Add MBeanServer to AgentRegisterMXBean, add collector based on current setting.
 	 * 
-	 * @param mbeanServer
-	 *            is JMX MBean server for registration
+	 * @param mbeanServer	JMX MBean server for registration
 	 */
 	public void addDefaultMXBean(MBeanServer mbeanServer) {
 		Set<String> dataCollectors = MonitorContext.getInstance().getDataCollectors();

@@ -30,10 +30,8 @@ public abstract class AbstractLanguageHandler {
 	/**
 	 * Constructor.
 	 * 
-	 * @param extension
-	 *            file extension
-	 * @param title
-	 *            title
+	 * @param extension	file extension
+	 * @param title		title
 	 */
 	public AbstractLanguageHandler(String extension, String title) {
 		this.extension = extension;

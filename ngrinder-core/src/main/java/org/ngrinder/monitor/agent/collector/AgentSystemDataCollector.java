@@ -49,8 +49,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	/**
 	 * Set Agent Home.
 	 * 
-	 * @param agentHomeFile
-	 *            agentHomeFile
+	 * @param agentHomeFile	agentHomeFile
 	 */
 	public void setAgentHome(File agentHomeFile) {
 		if (customDataFile == null) {
@@ -116,8 +115,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	 * Get the current network usage.
 	 * 
 	 * @return BandWith
-	 * @throws SigarException
-	 *             thrown when the underlying lib is not linked
+	 * @throws SigarException	thrown when the underlying lib is not linked
 	 */
 	public BandWidth getNetworkUsage() throws SigarException {
 		BandWidth bandWidth = new BandWidth(System.currentTimeMillis());

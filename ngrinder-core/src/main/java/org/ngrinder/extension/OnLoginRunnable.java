@@ -31,8 +31,7 @@ public interface OnLoginRunnable {
 	 * {@link User} instance in this method using these info so that nGrinder save the user account into DB
 	 * automatically after {@link #validateUser(String, String, String, Object, Object)} is passed.
 	 * 
-	 * @param userId
-	 *            user id
+	 * @param userId	user id
 	 * @return User instance
 	 */
 	public User loadUser(String userId);
@@ -43,16 +42,11 @@ public interface OnLoginRunnable {
 	 * encPass / encoder / salt are only when the password is saved in the local DB. When you implement this with remote
 	 * password validation system, you may only need userId and password which is input by an user in the nGrinder login page.
 	 * 
-	 * @param userId
-	 *            user providing id
-	 * @param password
-	 *            user providing password
-	 * @param encPass
-	 *            encrypted password stored in the DB
-	 * @param encoder
-	 *            encoder which encrypts password in the DB.
-	 * @param salt
-	 *            salt of encoding
+	 * @param userId	user providing id
+	 * @param password	user providing password
+	 * @param encPass	encrypted password stored in the DB
+	 * @param encoder	encoder which encrypts password in the DB.
+	 * @param salt		salt of encoding
 	 * @return true is validated
 	 */
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt);
@@ -60,8 +54,7 @@ public interface OnLoginRunnable {
 	/**
 	 * Save the given user. Usually dummy implementation is enough
 	 * 
-	 * @param user
-	 *            user to be saved.
+	 * @param user	user to be saved.
 	 * @deprecated
 	 */
 	public void saveUser(User user);

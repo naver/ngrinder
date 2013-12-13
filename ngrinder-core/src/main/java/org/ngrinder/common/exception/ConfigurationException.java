@@ -25,10 +25,8 @@ public class ConfigurationException extends NGrinderRuntimeException {
 	/**
 	 * Constructor.
 	 * 
-	 * @param message
-	 *            message
-	 * @param t
-	 *            root cause
+	 * @param message	message
+	 * @param t     	root cause
 	 */
 	public ConfigurationException(String message, Throwable t) {
 		super(message, t);

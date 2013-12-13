@@ -27,10 +27,8 @@ public interface OnControllerLifeCycleRunnable {
 	 * Callback method which will be invoked whenever Controller is started.
 	 * 
 	 * 
-	 * @param ip
-	 *            ip
-	 * @param version
-	 *            version
+	 * @param ip		ip
+	 * @param version	version
 	 */
 	public void start(String ip, String version);
 
@@ -38,10 +36,8 @@ public interface OnControllerLifeCycleRunnable {
 	 * Callback method which will be invoked whenever Controller is stopped.
 	 * 
 	 * 
-	 * @param ip
-	 *            ip
-	 * @param version
-	 *            version
+	 * @param ip		ip
+	 * @param version	version
 	 */
 	public void finish(String ip, String version);
 }

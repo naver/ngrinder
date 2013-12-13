@@ -24,7 +24,7 @@ import org.ngrinder.common.util.PropertiesWrapper;
 public interface IConfig {
 
 	/**
-	 * Check if it's testmode.
+	 * Check if it's test mode.
 	 * 
 	 * @return true if test mode
 	 */

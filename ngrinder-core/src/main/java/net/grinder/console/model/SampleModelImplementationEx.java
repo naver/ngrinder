@@ -13,28 +13,14 @@
  */
 package net.grinder.console.model;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeSet;
-
 import net.grinder.common.GrinderException;
 import net.grinder.common.Test;
 import net.grinder.console.common.ErrorHandler;
 import net.grinder.console.common.Resources;
-import net.grinder.statistics.PeakStatisticExpression;
-import net.grinder.statistics.StatisticExpression;
-import net.grinder.statistics.StatisticExpressionFactory;
-import net.grinder.statistics.StatisticsIndexMap;
-import net.grinder.statistics.StatisticsServices;
-import net.grinder.statistics.StatisticsSet;
-import net.grinder.statistics.TestStatisticsMap;
+import net.grinder.statistics.*;
 import net.grinder.util.ListenerSupport;
+
+import java.util.*;
 
 /**
  * Collate test reports into samples and distribute to listeners.
@@ -90,19 +76,12 @@ public class SampleModelImplementationEx implements SampleModel {
 	/**
 	 * Creates a new <code>SampleModelImplementation</code> instance.
 	 * 
-	 * @param properties
-	 *            The console properties.
-	 * @param statisticsServices
-	 *            Statistics services.
-	 * @param timer
-	 *            A timer.
-	 * @param resources
-	 *            Console resources.
-	 * @param errorHandler
-	 *            Error handler
-	 * 
-	 * @exception GrinderException
-	 *                if an error occurs
+	 * @param properties			The console properties.
+	 * @param statisticsServices	Statistics services.
+	 * @param timer					A timer.
+	 * @param resources				Console resources.
+	 * @param errorHandler			Error handler.
+	 * @exception GrinderException	if an error occurs
 	 */
 	public SampleModelImplementationEx(ConsoleProperties properties, StatisticsServices statisticsServices,
 					Timer timer, Resources resources, ErrorHandler errorHandler) throws GrinderException {
@@ -157,8 +136,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	/**
 	 * Register new tests.
 	 * 
-	 * @param tests
-	 *            The new tests.
+	 * @param tests	The new tests.
 	 */
 	public void registerTests(Collection<Test> tests) {
 		// Need to copy collection, might be immutable.
@@ -216,8 +194,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	/**
 	 * Add a new model listener.
 	 * 
-	 * @param listener
-	 *            The listener.
+	 * @param listener	The listener.
 	 */
 	public void addModelListener(Listener listener) {
 		m_listeners.add(listener);
@@ -226,10 +203,8 @@ public class SampleModelImplementationEx implements SampleModel {
 	/**
 	 * Add a new sample listener for the specific test.
 	 * 
-	 * @param test
-	 *            The test to add the sample listener for.
-	 * @param listener
-	 *            The sample listener.
+	 * @param test		The test to add the sample listener for.
+	 * @param listener	The sample listener.
 	 */
 	public void addSampleListener(Test test, SampleListener listener) {
 		final SampleAccumulator sampleAccumulator = m_accumulators.get(test);
@@ -242,8 +217,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	/**
 	 * Add a new total sample listener.
 	 * 
-	 * @param listener
-	 *            The sample listener.
+	 * @param listener	The sample listener.
 	 */
 	public void addTotalSampleListener(SampleListener listener) {
 		m_totalSampleAccumulator.addSampleListener(listener);

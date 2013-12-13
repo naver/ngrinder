@@ -20,10 +20,8 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link HashMap}.
 	 * 
-	 * @param <K>
-	 *            key
-	 * @param <V>
-	 *            value
+	 * @param <K>	key
+	 * @param <V>	value
 	 * @return {@link HashMap}
 	 */
 	public static <K, V> Map<K, V> newHashMap() {
@@ -33,10 +31,8 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link LinkedHashMap}.
 	 * 
-	 * @param <K>
-	 *            key
-	 * @param <V>
-	 *            value
+	 * @param <K>	key
+	 * @param <V>	value
 	 * @return {@link LinkedHashMap}
 	 */
 	public static <K, V> Map<K, V> newLinkedHashMap() {
@@ -46,8 +42,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link HashSet}.
 	 * 
-	 * @param <K>
-	 *            key
+	 * @param <K>	key
 	 * @return {@link HashSet}
 	 */
 	public static <K> Set<K> newHashSet() {
@@ -57,8 +52,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link LinkedHashSet}.
 	 * 
-	 * @param <K>
-	 *            key
+	 * @param <K>	key
 	 * @return {@link LinkedHashSet}
 	 */
 	public static <K> Set<K> newLinkedHashSet() {
@@ -68,8 +62,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link ArrayList}.
 	 * 
-	 * @param <L>
-	 *            type
+	 * @param <L>	type
 	 * @return {@link ArrayList}
 	 */
 	public static <L> List<L> newArrayList() {
@@ -79,14 +72,10 @@ public abstract class CollectionUtils {
 	/**
 	 * Build Map with 1 pair.
 	 * 
-	 * @param <K>
-	 *            key type
-	 * @param <V>
-	 *            value type
-	 * @param key1
-	 *            key
-	 * @param value1
-	 *            value
+	 * @param <K>	 key type
+	 * @param <V>	 value type
+	 * @param key1	 key
+	 * @param value1 value
 	 * @return created map
 	 */
 	public static <K, V> Map<K, V> buildMap(K key1, V value1) {
@@ -98,18 +87,12 @@ public abstract class CollectionUtils {
 	/**
 	 * Build Map with 2 pairs.
 	 * 
-	 * @param <K>
-	 *            key type
-	 * @param <V>
-	 *            value type
-	 * @param key1
-	 *            key
-	 * @param value1
-	 *            value
-	 * @param key2
-	 *            key
-	 * @param value2
-	 *            value
+	 * @param <K>		key type
+	 * @param <V>		value type
+	 * @param key1		key
+	 * @param value1	value
+	 * @param key2		key
+	 * @param value2	value
 	 * @return create map
 	 */
 	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2) {
@@ -122,23 +105,14 @@ public abstract class CollectionUtils {
 	/**
 	 * Build Map with 3 pairs.
 	 * 
-	 * @param <K>
-	 *            key type
-	 * @param <V>
-	 *            value type
-	 * 
-	 * @param key1
-	 *            key
-	 * @param value1
-	 *            value
-	 * @param key2
-	 *            key
-	 * @param value2
-	 *            value
-	 * @param key3
-	 *            key
-	 * @param value3
-	 *            value
+	 * @param <K>		key type
+	 * @param <V>		value type
+	 * @param key1		key
+	 * @param value1	value
+	 * @param key2		key
+	 * @param value2	value
+	 * @param key3		key
+	 * @param value3	value
 	 * @return create map
 	 */
 	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2, K key3, V value3) {
@@ -152,12 +126,9 @@ public abstract class CollectionUtils {
 	/**
 	 * Select the given number of elements from the given set.
 	 * 
-	 * @param <T>
-	 *            encapsulated type
-	 * @param set
-	 *            set
-	 * @param count
-	 *            number of elements to retrieve
+	 * @param <T>	encapsulated type
+	 * @param set	set
+	 * @param count	number of elements to retrieve
 	 * @return set
 	 */
 	public static <T> Set<T> selectSome(Set<T> set, int count) {
@@ -175,12 +146,9 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link HashMap}.
 	 * 
-	 * @param size
-	 *            size of {@link HashMap}
-	 * @param <K>
-	 *            keyType
-	 * @param <V>
-	 *            valueType
+	 * @param size	size of {@link HashMap}
+	 * @param <K>	keyType
+	 * @param <V>	valueType
 	 * @return created {@link HashMap} instance
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(int size) {
@@ -190,12 +158,9 @@ public abstract class CollectionUtils {
 	/**
 	 * Create new {@link HashMap} having same size of given base collection.
 	 * 
-	 * @param base
-	 *            collection which size will be referred
-	 * @param <K>
-	 *            keyType
-	 * @param <V>
-	 *            valueType
+	 * @param base	collection which size will be referred
+	 * @param <K>	keyType
+	 * @param <V>	valueType
 	 * @return created {@link HashMap} instance
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(Collection<?> base) {
@@ -206,17 +171,11 @@ public abstract class CollectionUtils {
 	 * Get the value from the map for the given key. It the value does not exist, return the given
 	 * defaultValue.
 	 * 
-	 * @param <K>
-	 *            key type
-	 * @param <V>
-	 *            value type
-	 * 
-	 * @param map
-	 *            map
-	 * @param key
-	 *            key
-	 * @param defaultValue
-	 *            default value if the value is null.
+	 * @param <K>			key type
+	 * @param <V>			value type
+	 * @param map			map
+	 * @param key			key
+	 * @param defaultValue	default value if the value is null.
 	 * @return value
 	 */
 	public static <K, V> V getValue(Map<K, V> map, K key, V defaultValue) {
