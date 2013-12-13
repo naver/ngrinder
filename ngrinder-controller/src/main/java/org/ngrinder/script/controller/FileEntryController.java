@@ -184,7 +184,7 @@ public class FileEntryController extends BaseController {
 	 * @param createLibAndResources true if libs and resources should be created as well.
 	 * @param redirectAttributes    redirect attributes storage
 	 * @param model                 model.
-	 * @return script/scriptEditor"
+	 * @return script/editor"
 	 */
 	@RequestMapping(value = "/new/**", params = "type=script", method = RequestMethod.POST)
 	public String createForm(User user, @RemainedPath String path,
@@ -237,7 +237,7 @@ public class FileEntryController extends BaseController {
 	 * @param path     user
 	 * @param revision revision. -1 if HEAD
 	 * @param model    model
-	 * @return script/scriptEditor
+	 * @return script/editor
 	 */
 	@RequestMapping("/detail/**")
 	public String getOne(User user, @RemainedPath String path,
@@ -334,7 +334,7 @@ public class FileEntryController extends BaseController {
 	 * @param validated            validated the script or not, 1 is validated, 0 is not.
 	 * @param createLibAndResource true if lib and resources should be created as well.
 	 * @param model                model
-	 * @return script/list
+	 * @return redirect:/script/list/${basePath}
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String save(User user, FileEntry fileEntry,
@@ -363,9 +363,9 @@ public class FileEntryController extends BaseController {
 	 * @param user        current user
 	 * @param path        path
 	 * @param description description
-	 * @param file        multipart file
+	 * @param file        multi part file
 	 * @param model       model
-	 * @return script/list
+	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
 	public String upload(User user, @RemainedPath String path, @RequestParam("description") String description,
@@ -394,7 +394,7 @@ public class FileEntryController extends BaseController {
 	 * @param user        user
 	 * @param path        base path
 	 * @param filesString file list delimited by ","
-	 * @return redirect:/script/list/${path}
+	 * @return json string
 	 */
 	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
 	@ResponseBody
@@ -423,8 +423,10 @@ public class FileEntryController extends BaseController {
 	/**
 	 * Create the given file.
 	 *
-	 * @param user      user
-	 * @param fileEntry file entry
+	 * @param user        user
+	 * @param path        path
+	 * @param description description
+	 * @param file        multi part file
 	 * @return success json string
 	 */
 	@RestAPI
@@ -436,7 +438,13 @@ public class FileEntryController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
-
+	/**
+	 * Check the file by given path.
+	 *
+	 * @param user	user
+	 * @param path	path
+	 * @return json string
+	 */
 	@RestAPI
 	@RequestMapping(value = "/api/**", params = "action=view", method = RequestMethod.GET)
 	public HttpEntity<String> viewOne(User user, @RemainedPath String path) {
@@ -445,20 +453,38 @@ public class FileEntryController extends BaseController {
 				, "%s file is not viewable", path));
 	}
 
-
+	/**
+	 * Get all files which belongs to given user.
+	 *
+	 * @param user	user
+	 * @return json string
+	 */
 	@RestAPI
 	@RequestMapping(value = {"/api/**", "/api/", "/api"}, params = "action=all", method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user) {
 		return toJsonHttpEntity(fileEntryService.getAll(user));
 	}
 
+	/**
+	 * Get all files which belongs to given user and path.
+	 *
+	 * @param user	user
+	 * @param path	path
+	 * @return json string
+	 */
 	@RestAPI
 	@RequestMapping(value = {"/api/**", "/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
 		return toJsonHttpEntity(fileEntryService.getAll(user, StringUtils.trimToEmpty(path), -1L));
 	}
 
-
+	/**
+	 * Delete file by given user and path.
+	 *
+	 * @param user	user
+	 * @param path	path
+	 * @return json string
+	 */
 	@RestAPI
 	@RequestMapping(value = "/api/**", method = RequestMethod.DELETE)
 	public HttpEntity<String> deleteOne(User user, @RemainedPath String path) {

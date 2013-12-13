@@ -63,12 +63,9 @@ public enum FileType {
 	/**
 	 * Constructor.
 	 * 
-	 * @param description
-	 *            description of this file type
-	 * @param extension
-	 *            file extension.
-	 * @param fileCategory
-	 *            category of FileType.
+	 * @param description	description of this file type
+	 * @param extension		file extension.
+	 * @param fileCategory	category of FileType.
 	 * @param libDistributable true if it's distributable as lib
 	 * @param resourceDistributable true if it's distributable as resources
 	 */
@@ -84,8 +81,7 @@ public enum FileType {
 	/**
 	 * Get file type by extension of given name.
 	 * 
-	 * @param name
-	 *            name of file.
+	 * @param name	name of file.
 	 * @return FileType which matches to extension. UNKNOWN otherwise.
 	 */
 	public static FileType getFileTypeByName(String name) {
@@ -95,8 +91,7 @@ public enum FileType {
 	/**
 	 * Get file type by extension.
 	 * 
-	 * @param extension
-	 *            extension
+	 * @param extension	extension
 	 * @return FileType which matches to extension. UNKNOWN otherwise.
 	 */
 	public static FileType getFileTypeByExtension(String extension) {

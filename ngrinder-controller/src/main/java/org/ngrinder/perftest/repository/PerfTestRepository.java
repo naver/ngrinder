@@ -54,15 +54,6 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 
 	/**
 	 * Find all {@link PerfTest}s having the given {@PerfTest#status} and {@PerfTest#region
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
 	 * } ordered by scheduledTime ascending.
 	 *
 	 * @param status perf test status to search

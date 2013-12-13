@@ -40,6 +40,7 @@ public class AgentLostDetectionListener implements SamplingLifeCycleListener {
 	 * @param singleConsole   singleConsole to monitor
 	 * @param perfTest        perfTest which this sampling start
 	 * @param perfTestService service
+	 * @param scheduledTaskService scheduledTaskService
 	 */
 	public AgentLostDetectionListener(final SingleConsole singleConsole, final PerfTest perfTest,
 	                                  final PerfTestService perfTestService, ScheduledTaskService scheduledTaskService) {

@@ -31,8 +31,7 @@ public class ConsoleEntry {
 	/**
 	 * Constructor.
 	 * 
-	 * @param port
-	 *            port
+	 * @param port	port
 	 */
 	public ConsoleEntry(Integer port) {
 		this.port = port;

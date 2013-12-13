@@ -57,10 +57,8 @@ public class TagService {
 	/**
 	 * Add tags.
 	 * 
-	 * @param user
-	 *            user
-	 * @param tags
-	 *            tag string list
+	 * @param user user
+	 * @param tags tag string list
 	 * @return inserted tags
 	 */
 	@Transactional
@@ -87,10 +85,8 @@ public class TagService {
 	/**
 	 * Get all tags which belongs to given user and start with given string.
 	 * 
-	 * @param user
-	 *            user.
-	 * @param startWith
-	 *            string
+	 * @param user 		user
+	 * @param startWith	string
 	 * @return found tags
 	 */
 	public List<Tag> getAllTags(User user, String startWith) {
@@ -105,10 +101,8 @@ public class TagService {
 	/**
 	 * Get all tags which belongs to given user and start with given string.
 	 * 
-	 * @param user
-	 *            user.
-	 * @param query
-	 *            query string
+	 * @param user	user
+	 * @param query	query string
 	 * @return found tag string lists
 	 */
 	public List<String> getAllTagStrings(User user, String query) {
@@ -124,10 +118,8 @@ public class TagService {
 	 * Save Tag. Because this method can be called in {@link TagService} internally, so created user
 	 * / data should be set directly.
 	 * 
-	 * @param user
-	 *            user
-	 * @param tag
-	 *            tag
+	 * @param user 	user
+	 * @param tag	tag
 	 * @return saved {@link Tag} instance
 	 */
 	public Tag saveTag(User user, Tag tag) {
@@ -144,10 +136,8 @@ public class TagService {
 	/**
 	 * Delete a tag.
 	 * 
-	 * @param user
-	 *            user
-	 * @param tag
-	 *            tag
+	 * @param user	user
+	 * @param tag	tag
 	 */
 	@Transactional
 	public void deleteTag(User user, Tag tag) {
@@ -161,8 +151,7 @@ public class TagService {
 	/**
 	 * Delete all tags belonging to given user.
 	 * 
-	 * @param user
-	 *            user
+	 * @param user	user
 	 */
 	@Transactional
 	public void deleteTags(User user) {

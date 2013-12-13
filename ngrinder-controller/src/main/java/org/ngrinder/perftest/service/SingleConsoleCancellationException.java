@@ -36,8 +36,7 @@ public class SingleConsoleCancellationException extends NGrinderRuntimeException
 	/**
 	 * Constructor.
 	 * 
-	 * @param message
-	 *            message
+	 * @param message	message
 	 */
 	public SingleConsoleCancellationException(String message) {
 		super(message);

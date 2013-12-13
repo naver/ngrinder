@@ -13,18 +13,18 @@
  */
 package org.ngrinder.script.handler;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.CodeSource;
-
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
 import org.ngrinder.script.model.FileEntry;
 import org.springframework.stereotype.Component;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.CodeSource;
+
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Groovy {@link ScriptHandler}.
@@ -45,17 +45,14 @@ public class GroovyScriptHandler extends ScriptHandler {
 	/**
 	 * Constructor.
 	 * 
-	 * @param key
-	 *            key
-	 * @param extension
-	 *            extension
-	 * @param title
-	 *            title
-	 * @param codemirrorKey
-	 *            code mirror key
+	 * @param key 			key
+	 * @param extension     extension
+	 * @param title			title
+	 * @param codeMirrorKey	code mirror key
+	 *
 	 */
-	public GroovyScriptHandler(String key, String extension, String title, String codemirrorKey) {
-		super(key, extension, title, codemirrorKey);
+	public GroovyScriptHandler(String key, String extension, String title, String codeMirrorKey) {
+		super(key, extension, title, codeMirrorKey);
 	}
 
 	@Override
@@ -88,8 +85,7 @@ public class GroovyScriptHandler extends ScriptHandler {
 	/**
 	 * Get the default quick test file.
 	 * 
-	 * @param basePath
-	 *            base path
+	 * @param basePath	base path
 	 * @return quick test file
 	 */
 	public FileEntry getDefaultQuickTestFilePath(String basePath) {
