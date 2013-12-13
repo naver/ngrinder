@@ -185,10 +185,12 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping("/{id}")
 	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
-		PerfTest test;
+		PerfTest test = null;
 		if (id != null) {
 			test = getOneWithPermissionCheck(user, id, true);
-		} else {
+		}
+
+		if (test == null) {
 			test = new PerfTest(user);
 			test.init();
 		}
@@ -285,7 +287,7 @@ public class PerfTestController extends BaseController {
 	 * @param user       user
 	 * @param testName   test name
 	 * @param targetHost target host
-	 * @return test	{@link PerfTest}
+	 * @return test    {@link PerfTest}
 	 */
 	private PerfTest createPerfTestFromQuickStart(User user, String testName, String targetHost) {
 		PerfTest test = new PerfTest(user);
@@ -461,9 +463,9 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the running division in perftest configuration page.
 	 *
-	 * @param user     user
-	 * @param model    model
-	 * @param id       test id
+	 * @param user  user
+	 * @param model model
+	 * @param id    test id
 	 * @return perftest/running
 	 */
 	@RequestMapping(value = "{id}/running_div")
@@ -607,9 +609,9 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the detailed perf test monitor report.
 	 *
-	 * @param id test id
+	 * @param id       test id
 	 * @param targetIP target ip
-	 * @param modelMap    model map
+	 * @param modelMap model map
 	 * @return perftest/detail_report/monitor
 	 */
 	@RequestMapping("/{id}/detail_report/monitor")
@@ -622,9 +624,9 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the detailed perf test report.
 	 *
-	 * @param id        test id
-	 * @param plugin 	test report plugin category
-	 * @param modelMap  model map
+	 * @param id       test id
+	 * @param plugin   test report plugin category
+	 * @param modelMap model map
 	 * @return perftest/detail_report/plugin
 	 */
 	@RequestMapping("/{id}/detail_report/plugin/{plugin}")
@@ -777,10 +779,10 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the plugin monitor data of the target.
 	 *
-	 * @param id        test Id
-	 * @param plugin 	monitor plugin category
-	 * @param kind      kind
-	 * @param imgWidth  image width
+	 * @param id       test Id
+	 * @param plugin   monitor plugin category
+	 * @param kind     kind
+	 * @param imgWidth image width
 	 * @return json message
 	 */
 	@RestAPI
@@ -803,9 +805,9 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the last perf test details in the form of json.
 	 *
-	 * @param user 	user
-	 * @param page 	page
-	 * @param size 	size of retrieved perf test
+	 * @param user user
+	 * @param page page
+	 * @param size size of retrieved perf test
 	 * @return json string
 	 */
 	@RestAPI

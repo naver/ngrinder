@@ -80,15 +80,15 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetPerfTestDetail() {
 		ModelMap model = new ModelMap();
 		controller.getOne(getTestUser(), null, model);
-
+		assertThat(model.get(PARAM_TEST), notNullValue());
 		model.clear();
-		controller.getOne(getTestUser(), 0L, model);
 
-		assertThat(model.get(PARAM_TEST), nullValue());
+		controller.getOne(getTestUser(), 0L, model);
+		assertThat(model.get(PARAM_TEST), notNullValue());
 		model.clear();
 		long invalidId = 123123123123L;
 		controller.getOne(getTestUser(), invalidId, model);
-		assertThat(model.get(PARAM_TEST), nullValue());
+		assertThat(model.get(PARAM_TEST), notNullValue());
 
 		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
 		model.clear();
@@ -112,12 +112,6 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
 		controller.delete(getTestUser(), String.valueOf(test.getId()));
-
-		model.clear();
-		controller.getOne(getTestUser(), test.getId(), model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
-
 		model.clear();
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
@@ -126,13 +120,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		model.clear();
 		controller.getOne(getTestUser(), test1.getId(), model);
-		testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
-
+		assertThat(((PerfTest) model.get(PARAM_TEST)).getId(), nullValue());
 		model.clear();
 		controller.getOne(getTestUser(), test2.getId(), model);
-		testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
+		assertThat(((PerfTest) model.get(PARAM_TEST)).getId(), nullValue());
 	}
 
 	@Test
