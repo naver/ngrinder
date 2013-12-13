@@ -92,7 +92,7 @@
 				<a class="btn btn-success" id="save_user_btn">
 				<@spring.message "user.info.button.saveUser"/></a>
 			</div>
-		</div>                                                                                     +
+		</div>
 	</fieldset>
 </form>
 <script type="text/javascript">
