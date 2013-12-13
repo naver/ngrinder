@@ -139,16 +139,6 @@ public class BaseController implements Constants {
 	}
 
 	/**
-	 * Provide the boolean value representing that whether it's user security mode or not as a model attributes.
-	 *
-	 * @return userSecurity mark
-	 */
-	@ModelAttribute("userSecurity")
-	public boolean userSecurity() {
-		return config.isUserSecurityEnabled();
-	}
-
-	/**
 	 * Provide the boolean value representing that it's clustered or not as a model attributes.
 	 *
 	 * @return clustered mark

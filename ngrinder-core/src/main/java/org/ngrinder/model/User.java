@@ -133,6 +133,12 @@ public class User extends BaseModel<User> {
 		this.role = getSafe(this.role, Role.USER);
 	}
 
+	public static User createNew() {
+		User user = new User();
+		user.init();
+		return user;
+	}
+
 
 	/**
 	 * Constructor.

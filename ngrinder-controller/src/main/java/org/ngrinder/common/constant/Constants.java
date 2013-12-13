@@ -205,7 +205,7 @@ public interface Constants {
 	public static final String NGRINDER_PROP_DEFAULT_LANGUAGE = "ngrinder.langauge.default";
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
 	public static final String NGRINDER_PROP_USAGE_REPORT = "usage.report";
-	public static final String NGRINDER_USER_SELF_REGISTRATION = "ngrinder.user.self.registration";
+	public static final String NGRINDER_SIGN_UP_ENABLED = "ngrinder.signup.enabled";
 
 	public static final String NGRINDER_RESOURCE_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";

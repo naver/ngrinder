@@ -11,7 +11,8 @@
 	<#return camelCase?replace("[A-Z]", "_$0", 'r')?lower_case>
 </#function>
 
-<#macro input_append name, value, message, data_placement="right", class="input input-mini",
+
+	<#macro input_append name, value, message, data_placement="right", class="input input-mini",
 			type = "text", data_content="", others="", append="", append_prefix="">
 
 	<#if append!=""><div class="input-append"></#if>

@@ -58,7 +58,7 @@ public class UserController extends BaseController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private Config config;
+	protected Config config;
 
 	/**
 	 * Get user list on the given role.
@@ -94,19 +94,23 @@ public class UserController extends BaseController {
 	}
 
 
-
 	/**
 	 * Get user creation form page.
 	 *
 	 * @param user  current user
 	 * @param model mode
-	 * @return "user/userDetail"
+	 * @return "user/detail"
 	 */
 	@RequestMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
-	public String openForm(User user, final ModelMap model) {
+	public String  openForm(User user, final ModelMap model) {
+		User one = User.createNew();
+		model.addAttribute("user", one);
+		model.addAttribute("allowUserIdChange", true);
+		model.addAttribute("allowPasswordChange", true);
+		model.addAttribute("allowRoleChange", false);
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		getUserShareList(null, model);
+		attachCommonAttribute(one, model);
 		return "user/detail";
 	}
 
@@ -119,21 +123,41 @@ public class UserController extends BaseController {
 	 * @return "user/userDetail"
 	 */
 	@RequestMapping("/{userId}")
-	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
-	public String getOne(User user, final ModelMap model, @PathVariable final String userId) {
+	@PreAuthorize("hasAnyRole('A')")
+	public String getOne(@PathVariable final String userId, ModelMap model) {
+		User one = userService.getOne(userId);
+		model.addAttribute("user", one);
+		model.addAttribute("allowPasswordChange", true);
+		model.addAttribute("allowRoleChange", true);
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		User userFromDB = userService.getOne(userId);
-		model.addAttribute("user", userFromDB);
-		getUserShareList(userFromDB, model);
+		attachCommonAttribute(one, model);
 		return "user/detail";
+	}
+
+	/**
+	 * Get the current user profile.
+	 *
+	 * @param user  current user
+	 * @param model model
+	 * @return "user/info"
+	 */
+	@RequestMapping("/profile")
+	public String getOne(User user, ModelMap model) {
+		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
+		User one = userService.getOne(user.getUserId());
+		model.addAttribute("user", one);
+		model.addAttribute("allowPasswordChange", !config.isDemo());
+		model.addAttribute("allowRoleChange", false);
+		attachCommonAttribute(one, model);
+		return "user/info";
 	}
 
 	/**
 	 * Save or Update user detail info.
 	 *
-	 * @param user         current user
-	 * @param model        model
-	 * @param updatedUser  user to be updated.
+	 * @param user        current user
+	 * @param model       model
+	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
@@ -185,23 +209,6 @@ public class UserController extends BaseController {
 		return "redirect:/user/";
 	}
 
-	/**
-	 * Get the current user profile.
-	 *
-	 * @param user  current user
-	 * @param model model
-	 * @return "user/userInfo"
-	 */
-	@RequestMapping("/profile")
-	public String getOne(User user, ModelMap model) {
-		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User currentUser = userService.getOne(user.getUserId());
-		model.addAttribute("user", currentUser);
-		model.addAttribute("demo", config.isDemo());
-		getUserShareList(currentUser, model);
-		model.addAttribute("action", "profile");
-		return "user/info";
-	}
 
 	/**
 	 * Get the follower list.
@@ -250,23 +257,20 @@ public class UserController extends BaseController {
 	 * @param user  current user
 	 * @param model model
 	 */
-	private void getUserShareList(User user, ModelMap model) {
-		if (user == null) {
-			model.addAttribute("followers", Lists.newArrayList());
-			model.addAttribute("shareUsers", Lists.newArrayList());
-			return;
-		}
-
-		List<User> users = Lists.newArrayList();
+	protected void attachCommonAttribute(User user, ModelMap model) {
+		List<User> shareUsers = Lists.newArrayList();
 		String userId = user.getUserId();
 		for (User u : userService.getAll(Role.USER)) {
 			if (u.getUserId().equals(userId)) {
 				continue;
 			}
-			users.add(u.getUserBaseInfo());
+			shareUsers.add(u.getUserBaseInfo());
 		}
 		model.addAttribute("followers", user.getFollowers());
-		model.addAttribute("shareUsers", users);
+		model.addAttribute("shareUsers", shareUsers);
+		model.addAttribute("allowShareChange", true);
+		model.addAttribute("userSecurityEnabled", config.isUserSecurityEnabled());
+		model.addAttribute("showPasswordByDefault", false);
 	}
 
 	/**

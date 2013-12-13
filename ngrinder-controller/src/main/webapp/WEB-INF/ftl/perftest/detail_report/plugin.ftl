@@ -7,7 +7,6 @@
 </div>
 
 <script>
-	debugger;
 	//@ sourceURL=/perftest/detail_report/plugin
 	function getPluginDataAndDraw(testId, plugin, kind) {
 		var $container = $("#chart_container");

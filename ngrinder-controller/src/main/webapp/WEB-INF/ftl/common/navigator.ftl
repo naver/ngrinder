@@ -75,7 +75,7 @@
 						</@security.authorize>
 							<li class="divider"></li>
 							<li>
-								<a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a>
+								<a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.logout"/></a>
 							</li>
 						</ul>
 					</li>

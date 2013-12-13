@@ -30,11 +30,6 @@ import java.util.Date;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- */
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
@@ -47,7 +42,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
-	public void testGetUserList() {
+	public void testGetAll() {
 		Pageable page = new PageRequest(1, 10);
 
 		ModelMap model = new ModelMap();
@@ -68,9 +63,9 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
-	public void testGetUserDetail() {
+	public void testGetOne() {
 		ModelMap model = new ModelMap();
-		userController.getOne(getTestUser(), model, getTestUser().getUserId());
+		userController.getOne(getTestUser().getUserId(), model);
 		User user = (User) model.get("user");
 		assertThat(user.getId(), is(getTestUser().getId()));
 	}
@@ -82,13 +77,13 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
-	public void testSaveOrUpdateUserDetail() {
+	public void testSave() {
 		// test update
 		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
 		userController.save(currUser, currUser, model);
-		userController.getOne(getTestUser(), model, currUser.getUserId());
+		userController.getOne(currUser.getUserId(), model);
 		User user = (User) model.get("user");
 		assertThat(user.getUserName(), is("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
@@ -101,14 +96,14 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		model.clear();
 		currUser.setFollowersStr("temp1, temp2");
 		userController.save(currUser, currUser, model);
-		userController.getOne(getTestUser(), model, currUser.getUserId());
+		userController.getOne(currUser.getUserId(), model);
 		user = (User) model.get("user");
 		assertThat(user.getFollowers().size(), is(2));
 		assertThat(user.getFollowers().get(0).getUserId(), is("temp1"));
 	}
 
 	@Test
-	public void testUpdateCurrentUserRole() {
+	public void testUpdate() {
 		// test update the role of current user.
 		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
@@ -121,7 +116,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
 		userController.save(currUser, updatedUser, model);
 
-		userController.getOne(getTestUser(), model, currUser.getUserId());
+		userController.getOne(currUser.getUserId(), model);
 		User user = (User) model.get("user");
 		assertThat(user.getUserName(), is(currUser.getUserName()));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
@@ -147,7 +142,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDeleteUser() {
+	public void testDelete() {
 		ModelMap model = new ModelMap();
 		// save new user for test
 		saveTestUser("NewUserId1", "NewUserName1");
@@ -184,7 +179,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
-	public void testCheckDuplicatedID() {
+	public void testDuplication() {
 		BaseController ngrinderBaseController = new BaseController();
 		HttpEntity<String> rtnStr = userController.checkDuplication("not-exist");
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
@@ -194,7 +189,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testUserProfile() {
+	public void testProfile() {
 		ModelMap model = new ModelMap();
 		String viewName = userController.getOne(getTestUser(), model);
 		assertThat(viewName, is("user/info"));

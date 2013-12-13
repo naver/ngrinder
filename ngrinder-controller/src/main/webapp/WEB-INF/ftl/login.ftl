@@ -107,9 +107,9 @@
 					</select>
 				</div>
 
-			<#if selfRegistrationEnabled>
+			<#if signUpEnabled>
 				<div class="prompt">
-					<a id="user_sign_up" class="pointer-cursor" style="margin-left:200px;">Sign Up</a>
+					<a id="sign_up" class="pointer-cursor" style="margin-left:200px;">Sign Up</a>
 				</div>
 			</#if>
 
@@ -125,7 +125,7 @@
 		</div>
 	</div>
 </div>
-<div id="user_sign_up_modal_container"></div>
+<div id="sign_up_modal_container"></div>
 <script language="javascript">
 	$(document).ready(function () {
 		$('input[placeholder]').placeholder();
@@ -147,10 +147,10 @@
 		var timezone = jstz.determine();
 		$userTimeZone.select2("val", timezone.name());
 
-		$("#user_sign_up").click(function () {
-			var url = "${req.getContextPath()}/registration/sign_up";
-			$("#user_sign_up_modal_container").load(url, function () {
-				$(this).find("#user_sign_up_modal").modal('show');
+		$("#sign_up").click(function () {
+			var url = "${req.getContextPath()}/sign_up/new";
+			$("#sign_up_modal_container").load(url, function () {
+				$(this).find("#sign_up_modal").modal('show');
 			});
 		});
 	});

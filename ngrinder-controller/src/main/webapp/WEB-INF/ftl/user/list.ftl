@@ -13,9 +13,11 @@
 			<legend class="header">
 				<@spring.message "navigator.dropdown.userManagement"/>
 				<select id="roles" class="pull-right" name="roles">
-					<option value="all" <#if listPage?? && !role??>selected</#if>" ><@spring.message "user.left.all"/></option>
-					<#list roleSet as eachRole>
-						<option value="${eachRole}" <#if role?exis??ole == eachRole>selected</#if>>${eachRole.fullName}</option>
+					<option value="all" <#if listPage?? && !role??>selected</#if> >
+						<@spring.message "user.left.all"/>
+					</option>
+					<#list roleSet as each>
+						<option value="${each}" <#if role?? && role == each>selected</#if>>${each.fullName}</option>
 					</#list>
 				</select>
 			</legend> 
@@ -27,7 +29,7 @@
 					<i class="icon-search"></i> <@spring.message "common.button.search"/>
 				</a>
 				<span class="pull-right">
-					<a class="btn" href="${req.getContextPath()}/user/new" id="create_btn" data-toggle="modal">
+					<a class="btn" href="${req.getContextPath()}/user/new">
 						<i class="icon-user"></i> <@spring.message "user.list.button.create"/>
 					</a>
 					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">

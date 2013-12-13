@@ -2,65 +2,59 @@
 <#include "../common/ngrinder_macros.ftl">
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form class="form-horizontal form-horizontal-left" id="user_form" name="user_form" method="POST">
-<#if !(popover_place??)>
-	<#assign popover_place='bottom'/>
-</#if>
+<#if !(popover_place??)><#assign popover_place='bottom'/></#if>
+<#if !(basePath??)><#assign basePath>${req.contextPath}/user</#assign></#if>
+<#if !(allowRoleChange??)><#assign allowRoleChange=false/></#if>
+<#if !(allowShareChange??)><#assign allowShareChange=false/></#if>
+<#if !(allowPasswordChange??)><#assign allowPasswordChange=false/></#if>
+<#if !(showPasswordByDefault??)><#assign showPasswordByDefault=false/><</#if>
+<#if !(allowUserIdChange??)><#assign allowUserIdChange=false/></#if>
+<#if !(userSecurityEnabled??)><#assign userSecurityEnabled=true/><</#if>
+
+<#if !(followers??)><#assign followers=[]/></#if>
 	<fieldset>
 
 	<@control_group name="userId" label_message_key="user.info.form.userId">
 		<#assign userIdMsg>
 			<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
 		</#assign>
-
-		<#assign others>
-			<#if user?? && user.userId??>readonly</#if>
-		</#assign>
-
-		<@input_append name = "userId" value = "${(user.userId)!}"
-		class="span4" data_content=userIdMsg
-		data_placement='${popover_place}'
-		message="user.info.form.userId"
-		others=others />
+		<#assign others><#if user?? && user.userId??>readonly</#if></#assign>
+		<@input_append class="span4" name = "userId" value = "${(user.userId)!}" others=others
+				data_content=userIdMsg data_placement='${popover_place}' message="user.info.form.userId"/>
 		<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
 	</@control_group>
 
-
 	<@control_group name="userName" label_message_key="user.option.name">
-		<@input_append name="userName" value="${(user.userName)!}"
-		class="span4" data_placement='${popover_place}'
-		message="user.option.name"/>
+		<@input_append class="span4" name="userName" value="${(user.userName)!}"
+			data_placement='${popover_place}' message="user.option.name"/>
 	</@control_group>
 
-	<#if !(action?has_content)>
+	<#if allowRoleChange>
 		<@control_group name="role" label_message_key="user.option.role">
 			<select class="span4" name="role" id="role">
 				<#list roleSet as role>
-					<option value="${role}"
-					        <#if user?? &&    user.role==role>selected="selected"</#if>  >${role.fullName}</option>
+					<option value="${role}" <#if user?? && user.role==role>selected="selected"</#if>  >${role.fullName}</option>
 				</#list>
 			</select>
 		</@control_group>
 	</#if>
 
 	<@control_group name="email" label_message_key="user.info.form.email">
-		<@input_append name="email" value="${(user.email)!}"
-		class="span4" data_placement='${popover_place}'
-		message="user.info.form.email"/>
+		<@input_append class="span4" name="email" value="${(user.email)!}"
+			data_placement='${popover_place}' message="user.info.form.email"/>
 	</@control_group>
 
 	<@control_group name="description" label_message_key="common.label.description">
 		<textarea cols="30" id="description" name="description"
-				  rows="3" title="Description" class="tx_area span4"
-				  style="resize: none;">${(user.description)!}</textarea>
+				  rows="3" title="Description" class="tx_area span4" style="resize: none;">${(user.description)!}</textarea>
 	</@control_group>
 
 	<@control_group name="mobilePhone" label_message_key="user.info.form.phone">
-		<@input_append name="mobilePhone" value="${(user.mobilePhone)!}"
-		class="span4" data_placement='${popover_place}'
-		message="user.info.form.phone"/>
+		<@input_append class="span4" name="mobilePhone" value="${(user.mobilePhone)!}"
+			data_placement='${popover_place}' message="user.info.form.phone"/>
 	</@control_group>
 
-	<#if user??>
+	<#if allowShareChange>
 		<@control_group label_message_key="user.share.title">
 			<select id="user_switch_select" name="followersStr" style="width:300px" multiple>
 				<#include "switch_options.ftl">
@@ -68,53 +62,51 @@
 		</@control_group>
 	</#if>
 
-	<#if !(demo!false)>
+	<#if allowPasswordChange>
 		<div class="control-group">
-			<#if user?has_content>
+			<#if !showPasswordByDefault>
 				<div class="accordion-heading">
 					<a id="change_password_btn" class="pointer-cursor">
 						<@spring.message "user.info.form.button.changePwd"/>
 					</a>
 				</div>
 			</#if>
-
-			<div id="user_password_section" style='display:none'>
+			<div id="user_password_section" <#if !showPasswordByDefault>style='display:none'</#if> >
 				<div class="accordion-inner" style="padding:9px 0">
-
 					<@control_group name="password" label_message_key="user.info.form.pwd">
-						<@input_append name="password" value="${(user.psw)!}"
-						class="span4" type="password"
-						data_placement='${popover_place}'
-						message="user.info.form.pwd"/>
+						<@input_append class="span4" name="password" value="${(user.psw)!}"
+							type="password" data_placement='${popover_place}'message="user.info.form.pwd"/>
 					</@control_group>
 
 					<@control_group name="confirmPassword" label_message_key="user.info.form.cpwd">
-					<@input_append name="confirmPassword" value="${(user.psw)!}"
-					class="span4" type="password"
-					data_placement='${popover_place}'
-					message="user.info.form.cpwd"/>
-				</@control_group>
+						<@input_append class="span4" name="confirmPassword" value="${(user.psw)!}"
+							type="password" data_placement="${popover_place}" message="user.info.form.cpwd"/>
+					</@control_group>
 
 				</div>
 			</div>
 		</div>
 	</#if>
 		<div class="control-group">
-			<label class="control-label pull-right">
-				<a class="btn btn-success"
-				   id="update_or_create_user_btn"><@spring.message "user.info.form.button.saveUser"/></a>
-			</label>
-		</div>
+			<div class="controls pull-right">
+				<a class="btn btn-success" id="update_or_create_user_btn">
+				<@spring.message "user.info.form.button.saveUser"/></a>
+			</div>
+		</div>                                                                                     +
 	</fieldset>
 </form>
 <script type="text/javascript">
+	//@ sourceURL=/user/info
 	$(document).ready(function () {
 		$('#user_form').find('input[rel="popover"]').popover({ trigger: 'hover', container: '#user_form' });
-	<#if !(user?has_content)>
-
+		var allowUserIdChange = ${allowUserIdChange?string};
+		var userSecurityEnabled = ${userSecurityEnabled?string};
+		var allowPasswordChange = ${allowPasswordChange?string};
 		$.validator.addMethod("userIdFmt", function (userId, element) {
-			var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/;
-			var rule = new RegExp(patrn);
+			if (!allowUserIdChange) {
+				 return true;
+			}
+			var rule = new RegExp(/^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/);
 			if (!rule.test($.trim(userId))) {
 				removeSuccess(element);
 				return false;
@@ -123,9 +115,12 @@
 		}, "<@spring.message 'user.info.warning.userId.invalid'/>");
 
 		$.validator.addMethod("userIdExist", function (userId, element) {
+			if (!allowUserIdChange) {
+				return true;
+			}
 			if (userId != null && userId.length > 0) {
 				var result = false;
-				var url = "/<#if (selfRegistration)!false>registration<#else>user</#if>/api/" + userId + "/check_duplication";
+				var url = "${basePath}/api/" + userId + "/check_duplication";
 				var ajaxObj = new AjaxObj(url);
 				ajaxObj.async = false;
 				ajaxObj.success = function (res) {
@@ -139,12 +134,15 @@
 			}
 			return false;
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
-	</#if>
 
-		$.validator.addMethod("userPhoneNumber", function (mobilePhone, element) {
-			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/;
-			var rule = new RegExp(patrn);
-			if (!rule.test($.trim(mobilePhone))) {
+		$.validator.addMethod("userPhoneNumber", function (phoneNumber, element) {
+			phoneNumber = $.trim(phoneNumber)
+			if (phoneNumber == "") {
+				return true;
+			}
+			//noinspection JSValidateTypes
+			var rule = new RegExp(/^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/);
+			if (!rule.test(phoneNumber)) {
 				removeSuccess(element);
 				return false;
 			}
@@ -155,35 +153,29 @@
 			rules: {
 				userId: {
 					required: true,
-				<#if !(user?has_content)>
 					userIdFmt: true,
 					userIdExist: true,
-				</#if>
 					maxlength: 20
 				},
 				userName: {
 					required: true,
 					maxlength: 20
 				},
-			<#if userSecurity?? && userSecurity==true>
 				mobilePhone: {
+					required: userSecurityEnabled,
 					userPhoneNumber: true
 				},
 				email: {
-					required: true,
+					required: userSecurityEnabled,
 					email: true
 				},
-			</#if>
+
 				password: {
-				<#if !(user?has_content)>
-					required: true,
-				</#if>
+					required: allowPasswordChange,
 					rangelength: [6, 15]
 				},
 				confirmPassword: {
-				<#if !(user?has_content)>
-					required: true,
-				</#if>
+ 					required: allowPasswordChange,
 					rangelength: [6, 15]
 				}
 			},
@@ -218,12 +210,6 @@
 			}
 		});
 
-	<#if !(user?has_content)>
-		showPassword();
-	<#else>
-		hidePassword();
-	</#if>
-
 		$("#change_password_btn").click(function () {
 			if ($("#user_password_section").is(":hidden")) {
 				showPassword();
@@ -233,18 +219,13 @@
 		});
 
 		var switchedUsers = [];
-	<@list list_items = followers others = "no_message"  ; user >
+	<@list list_items = followers others = "no_message" ; user >
 		switchedUsers.push("${user.userId}");
 	</@list>
 		$("#user_switch_select").val(switchedUsers).select2();
 
 		$("#update_or_create_user_btn").click(function () {
-		<#if (selfRegistration)!false>
-			var url = "${req.getContextPath()}/registration/save";
-		<#else>
-			var url = "${req.getContextPath()}/user/save";
-		</#if>
-			document.forms.user_form.action = url;
+			document.forms.user_form.action = "${basePath}/save";
 			if ($("#user_form").valid())
 				document.forms.user_form.submit();
 		});
