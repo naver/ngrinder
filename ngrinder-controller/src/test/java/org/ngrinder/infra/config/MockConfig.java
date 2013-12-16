@@ -27,7 +27,7 @@ public class MockConfig extends Config {
 	public boolean cluster;
 	public boolean doRealOnRegion = false;
 
-	public void setSystemProperties(PropertiesWrapper wrapper) {
+	public void setControllerProperties(PropertiesWrapper wrapper) {
 		this.wrapper = wrapper;
 	}
 
@@ -39,7 +39,7 @@ public class MockConfig extends Config {
 	@Override
 	public void loadProperties() {
 		super.loadProperties();
-		setSystemProperties(super.getControllerProperties());
+		setControllerProperties(super.getControllerProperties());
 	}
 
 	@Override

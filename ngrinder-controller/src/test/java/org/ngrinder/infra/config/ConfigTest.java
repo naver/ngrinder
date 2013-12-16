@@ -57,7 +57,7 @@ public class ConfigTest implements ControllerConstants, ClusterConstants {
 	@Test
 	public void testTestMode() {
 		PropertiesWrapper wrapper = mock(PropertiesWrapper.class);
-		config.setSystemProperties(wrapper);
+		config.setControllerProperties(wrapper);
 		// When dev_mode false and pluginsupport is true, it should be true
 		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(false);
 		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT)).thenReturn(false);
