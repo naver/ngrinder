@@ -17,7 +17,6 @@ import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
@@ -33,14 +32,13 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.common.util.FileDownloadUtils;
-import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.model.SystemDataModel;
 import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +65,7 @@ import java.util.concurrent.ExecutorService;
  * @since 3.0
  */
 @Component
-public class AgentManager implements Constants, AgentDownloadRequestListener {
+public class AgentManager implements ControllerConstants, AgentDownloadRequestListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 	private static final int NUMBER_OF_THREAD = 3;
@@ -86,8 +84,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	 */
 	@PostConstruct
 	public void init() {
-		int port = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_AGENT_CONTROL_PORT,
-				AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		int port = config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_CONTROLLER_PORT);
 		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.setAgentDownloadRequestListener(this);
@@ -181,8 +178,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agent.max.size",
-				Constants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_AGENT_PER_TEST);
 	}
 
 	/**
@@ -191,7 +187,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	 * @return max vuser per agent
 	 */
 	public int getMaxVuserPerAgent() {
-		return config.getSystemProperties().getPropertyInt("agent.max.vuser", Constants.MAX_VUSER_PER_AGENT);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_VUSER_PER_AGENT);
 	}
 
 	/**
@@ -200,7 +196,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	 * @return max run count per thread
 	 */
 	public int getMaxRunCount() {
-		return config.getSystemProperties().getPropertyInt("agent.max.runcount", Constants.MAX_RUN_COUNT);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_RUN_COUNT);
 	}
 
 	/**
@@ -209,7 +205,7 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 	 * @return max run hour
 	 */
 	public int getMaxRunHour() {
-		return config.getSystemProperties().getPropertyInt("agent.max.runhour", Constants.MAX_RUN_HOUR);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_RUN_HOUR);
 	}
 
 	/**
@@ -470,23 +466,6 @@ public class AgentManager implements Constants, AgentDownloadRequestListener {
 		}
 	}
 
-	/**
-	 * Send agent update message.
-	 *
-	 * @param fileName    file name
-	 * @param version     updating version
-	 * @param downloadUrl download URL
-	 * @return message
-	 */
-	public String sendAgentUpdateMessage(String fileName, String version, String downloadUrl) {
-		StringBuilder progress = new StringBuilder();
-		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
-			;
-			ThreadUtils.sleep(1000);
-			progress.append("Update agent ").append(each).append(" to ").append(version).append("\n");
-		}
-		return progress.toString();
-	}
 
 	/**
 	 * Update the given agent.

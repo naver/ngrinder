@@ -14,8 +14,7 @@
 package org.ngrinder.perftest.service.monitor;
 
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.constant.Constants;
-import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.monitor.share.domain.MBeanClient;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
@@ -37,7 +36,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @author Mavlarn
  * @since 3.1
  */
-public class MonitorClientService implements Closeable {
+public class MonitorClientService implements Closeable, MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorClientService.class);
 
 	private MBeanClient mbeanClient;
@@ -46,8 +45,7 @@ public class MonitorClientService implements Closeable {
 
 	static {
 		try {
-			objectName = new ObjectName(MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" +
-					MonitorConstants.SYSTEM);
+			objectName = new ObjectName(DEFAULT_MONITOR_DOMAIN + ":" + SYSTEM);
 		} catch (MalformedObjectNameException e) {
 			LOGGER.error("Error while creating ObjectName", e);
 		}
@@ -78,7 +76,7 @@ public class MonitorClientService implements Closeable {
 			mbeanClient = new MBeanClient(ip, port);
 			mbeanClient.connect();
 			if (reportPath != null) {
-				bw = new BufferedWriter(new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + ".data"), false));
+				bw = new BufferedWriter(new FileWriter(new File(reportPath, MONITOR_FILE_PREFIX + ip + ".data"), false));
 				// write header info
 				bw.write(SystemInfo.HEADER);
 				bw.newLine();

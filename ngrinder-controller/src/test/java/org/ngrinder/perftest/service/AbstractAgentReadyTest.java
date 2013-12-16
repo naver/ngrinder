@@ -14,14 +14,12 @@
 package org.ngrinder.perftest.service;
 
 import net.grinder.AgentControllerDaemon;
+import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.ArchLoaderInit;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMonitorServer;
+import org.ngrinder.monitor.agent.MonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
 
 /**
  * In addition {@link AbstractPerfTestTransactionalTest}, this class provides running agent.
@@ -29,7 +27,7 @@ import java.util.Set;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransactionalTest {
+public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransactionalTest implements AgentConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractAgentReadyTest.class);
 
 	static {
@@ -42,9 +40,8 @@ public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransaction
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig);
 		agentControllerDaemon.run();
 		try {
-			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector, agentConfig);
-			AgentMonitorServer.getInstance().start();
+			MonitorServer.getInstance().init(agentConfig);
+			MonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("Error while starting Monitor", e);
 		}

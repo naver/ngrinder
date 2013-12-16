@@ -13,8 +13,6 @@
  */
 package org.ngrinder.common.util;
 
-import static org.junit.Assert.assertTrue;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -27,11 +25,12 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since
  */
 public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest {
 
@@ -59,17 +58,17 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 		String requestUrl = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		assertTrue(requestUrl.startsWith("http://"));
 
-		String httpUrl = config.getSystemProperties().getProperty("http.url", "");
+		String httpUrl = config.getControllerProperties().getProperty(PROP_CONTROLLER_URL, "");
 		if (StringUtils.isNotBlank(httpUrl)) {
-			config.getSystemProperties().addProperty("http.url", "");
+			config.getControllerProperties().addProperty(PROP_CONTROLLER_URL, "");
 		} else {
-			config.getSystemProperties().addProperty("http.url", "http://aa.com");
+			config.getControllerProperties().addProperty(PROP_CONTROLLER_URL, "http://aa.com");
 		}
 		requestUrl = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		assertTrue(requestUrl.startsWith("http://"));
 
 		// reset the system properties.
-		config.getSystemProperties().addProperty("http.url", requestUrl);
+		config.getControllerProperties().addProperty(PROP_CONTROLLER_URL, requestUrl);
 	}
 
 	/**

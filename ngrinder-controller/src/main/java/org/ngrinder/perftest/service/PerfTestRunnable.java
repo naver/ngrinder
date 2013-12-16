@@ -23,7 +23,7 @@ import net.grinder.util.ListenerSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
@@ -57,7 +57,7 @@ import static org.ngrinder.model.Status.*;
 
 /**
  * {@link PerfTest} run scheduler.
- *
+ * <p/>
  * This class is responsible to execute/finish the performance test. The job is
  * started from {@link #start()} and {@link #finish()} method. These
  * methods are scheduled by Spring Task.
@@ -67,7 +67,7 @@ import static org.ngrinder.model.Status.*;
  */
 @Profile("production")
 @Component
-public class PerfTestRunnable implements Constants {
+public class PerfTestRunnable implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
@@ -159,7 +159,7 @@ public class PerfTestRunnable implements Constants {
 
 	/**
 	 * Run the given test.
-	 *
+	 * <p/>
 	 * If fails, it marks STOP_BY_ERROR in the given {@link PerfTest} status
 	 *
 	 * @param perfTest perftest instance;
@@ -262,16 +262,14 @@ public class PerfTestRunnable implements Constants {
 
 	protected int getSafeTransmissionThreshold() {
 		// For backward compatibility
-		return config.getSystemProperties().getPropertyIntWithBackwardCompatibility
-				(NGRINDER_PROP_DIST_SAFE_THRESHOLD, NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD, 1 * 1024 * 1024);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_SAFE_DIST_THRESHOLD);
 	}
 
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
 		boolean safeDist = getSafe(perfTest.getSafeDistribution());
 		if (config.isClustered()) {
-			String distSafeRegion = config.getSystemProperties().getProperty(NGRINDER_PROP_DIST_SAFE_REGION,
-					StringUtils.EMPTY);
-			for (String each : StringUtils.split(distSafeRegion, ",")) {
+			String distSafeRegion = config.getControllerProperties().getProperty(PROP_CONTROLLER_SAFE_DIST_REGION);
+			for (String each : StringUtils.split(StringUtils.trimToEmpty(distSafeRegion), ",")) {
 				if (StringUtils.equals(perfTest.getRegion(), StringUtils.trim(each))) {
 					safeDist = true;
 					break;
@@ -346,7 +344,7 @@ public class PerfTestRunnable implements Constants {
 	}
 
 	private MonitorCollectorListener createMonitorCollectionListener(PerfTest perfTest,
-																	 SingleConsole singleConsole) {
+	                                                                 SingleConsole singleConsole) {
 		final MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
 		monitorScheduledTask.setCorrespondingPerfTestId(perfTest.getId());
 		final File reportPath = singleConsole.getReportPath();
@@ -394,9 +392,9 @@ public class PerfTestRunnable implements Constants {
 
 	/**
 	 * Finish the tests.(Scheduled by SpringTask)
-	 *
+	 * <p/>
 	 * There are three types of test finish.
-	 *
+	 * <p/>
 	 * <ul>
 	 * <li>Abnormal test finish : when TPS is too low or too many errors occur</li>
 	 * <li>User requested test finish : when user requested to finish the test</li>

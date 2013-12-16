@@ -29,7 +29,7 @@ import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
 import com.atlassian.plugin.predicate.ModuleDescriptorPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.extension.OnControllerLifeCycleRunnable;
 import org.ngrinder.infra.config.Config;
@@ -69,7 +69,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Profile("production")
 @Component
-public class PluginManager implements ServletContextAware, Constants {
+public class PluginManager implements ServletContextAware, ControllerConstants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginManager.class);
 
@@ -129,7 +129,7 @@ public class PluginManager implements ServletContextAware, Constants {
 		scannerConfig.getPackageIncludes().add("org.springframework.security.*");
 		// Determine which module descriptors, or extension points, to expose.
 		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
-		initPluginDescriptor(modules, NGRINDER_DEFAULT_PACKAGE);
+		initPluginDescriptor(modules, DEFAULT_PACKAGE_NAME);
 
 		// Determine which service objects to expose to plugins
 		HostComponentProvider host = new HostComponentProvider() {

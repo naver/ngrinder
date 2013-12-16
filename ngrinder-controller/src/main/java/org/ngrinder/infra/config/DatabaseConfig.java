@@ -13,10 +13,9 @@
  */
 package org.ngrinder.infra.config;
 
-import javax.persistence.Entity;
-
 import org.apache.commons.dbcp.BasicDataSource;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constant.DatabaseConstants;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.reflections.Reflections;
@@ -32,14 +31,16 @@ import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import javax.persistence.Entity;
+
 /**
  * Dynamic datasource bean configuration.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 @Configuration
-public class DatabaseConfig implements Constants {
+public class DatabaseConfig implements DatabaseConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
 
 	@Autowired
@@ -47,15 +48,14 @@ public class DatabaseConfig implements Constants {
 
 	/**
 	 * Create the dataSource based on the database configuration.
-	 * 
+	 *
 	 * @return dataSource
 	 */
 	@Bean(name = "dataSource", destroyMethod = "close")
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
 		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
-		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
-						"[FATAL] Database type is not specified. In default, use H2."));
+		Database database = Database.getDatabase(databaseProperties.getProperty(PROP_DATABASE_TYPE));
 		database.setup(dataSource, databaseProperties);
 		return dataSource;
 	}
@@ -65,9 +65,9 @@ public class DatabaseConfig implements Constants {
 	 * support the search for the {@link Entity} classes in the other Jar files. This method
 	 * directly searches the {@link Entity} classes with {@link Reflections} not using Hibernate
 	 * entity class search feature to overcome the limitation
-	 * 
+	 * <p/>
 	 * use annotation DependsOn to insure after databaseUpdater is
-	 * 
+	 *
 	 * @return {@link LocalContainerEntityManagerFactoryBean}
 	 */
 	@Bean(name = "emf")
@@ -79,8 +79,7 @@ public class DatabaseConfig implements Constants {
 		HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
 		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
 
-		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
-						"[FATAL] Database type is not specified. In default, use H2."));
+		Database database = Database.getDatabase(databaseProperties.getProperty(PROP_DATABASE_TYPE));
 		if (config.isClustered() && !database.isClusterSupport()) {
 			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select cubrid as database");
 		}
@@ -92,7 +91,7 @@ public class DatabaseConfig implements Constants {
 		emf.setPersistenceUnitPostProcessors(new PersistenceUnitPostProcessor() {
 			@Override
 			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
-				Reflections reflections = new Reflections(NGRINDER_DEFAULT_PACKAGE);
+				Reflections reflections = new Reflections(ControllerConstants.DEFAULT_PACKAGE_NAME);
 				for (Class<?> each : reflections.getTypesAnnotatedWith(Entity.class)) {
 					LOGGER.trace("Entity class {} is detected as the SpringData entity.", each.getName());
 					pui.addManagedClassName(each.getName());
@@ -104,7 +103,7 @@ public class DatabaseConfig implements Constants {
 
 	/**
 	 * Create the transactionManager.
-	 * 
+	 *
 	 * @return {@link JpaTransactionManager}
 	 */
 	@Bean

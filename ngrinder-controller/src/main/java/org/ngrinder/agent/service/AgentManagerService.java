@@ -26,7 +26,7 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.service.AbstractAgentManagerService;
 import org.slf4j.Logger;
@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.util.*;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
@@ -140,11 +139,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getUserAvailableAgentCountMap
+	 * org.ngrinder.service.IAgentManagerService#getAvailableAgentCountMap
 	 * (org.ngrinder .model.User)
 	 */
 	@Override
-	public Map<String, MutableInt> getUserAvailableAgentCountMap(User user) {
+	public Map<String, MutableInt> getAvailableAgentCountMap(User user) {
 		int availableShareAgents = 0;
 		int availableUserOwnAgent = 0;
 		String myAgentSuffix = "owned_" + user.getUserId();

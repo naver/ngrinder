@@ -33,10 +33,11 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.collector.SystemDataCollector;
+import org.ngrinder.monitor.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentController implements Agent {
+public class AgentController implements Agent, AgentConstants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
 	private final AgentConfig agentConfig;
@@ -71,7 +72,7 @@ public class AgentController implements Agent {
 	private final Condition m_eventSyncCondition;
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
 
-	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
+	private SystemDataCollector agentSystemDataCollector = new SystemDataCollector();
 
 	private int m_connectionPort = 0;
 
@@ -97,7 +98,7 @@ public class AgentController implements Agent {
 		// Set it with the default name
 		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getControllerIP());
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
-		this.agentSystemDataCollector = new AgentSystemDataCollector();
+		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
 		this.agentSystemDataCollector.refresh();
 	}
@@ -267,7 +268,7 @@ public class AgentController implements Agent {
 		}
 		Arrays.sort(logFiles);
 		// Take only one file... if agent.send.all.logs is not set.
-		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
+		if (!agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ALL_LOGS)) {
 			logFiles = new File[]{logFiles[0]};
 		}
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtils.compress(logFiles),

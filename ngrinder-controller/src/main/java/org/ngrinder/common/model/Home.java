@@ -13,16 +13,8 @@
  */
 package org.ngrinder.common.model;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.common.util.NoOp;
@@ -31,6 +23,14 @@ import org.ngrinder.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Properties;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 /**
  * Home class which enables the easy resource access in ${NGRINDER_HOME}
  * directory.
@@ -38,9 +38,22 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class Home implements Constants {
+public class Home {
+
+	// HOME_PATH
+	private static final String PATH_PLUGIN = "plugins";
+	private static final String PATH_SCRIPT = "script";
+	private static final String PATH_USER_REPO = "repos";
+	private static final String PATH_PERF_TEST = "perftest";
+	private static final String PATH_DOWNLOAD = "download";
+	private static final String PATH_GLOBAL_LOG = "logs";
+	private static final String PATH_LOG = "logs";
+	private static final String PATH_REPORT = "report";
+	private static final String PATH_DIST = "dist";
+	private static final String PATH_STAT = "stat";
 	private final static Logger LOGGER = LoggerFactory.getLogger(Home.class);
 	private final File directory;
+	public static final String REPORT_CSV = "output.csv";
 
 	/**
 	 * Constructor.
@@ -69,6 +82,12 @@ public class Home implements Constants {
 					null);
 		}
 		this.directory = directory;
+	}
+
+	public void init() {
+		makeSubPath(PATH_PLUGIN);
+		makeSubPath(PATH_PERF_TEST);
+		makeSubPath(PATH_DOWNLOAD);
 	}
 
 	/**
@@ -154,7 +173,7 @@ public class Home implements Constants {
 	 * @return plugin directory.
 	 */
 	public File getPluginsDirectory() {
-		return getSubFile(PLUGIN_PATH);
+		return getSubFile(PATH_PLUGIN);
 	}
 
 	/**
@@ -163,7 +182,7 @@ public class Home implements Constants {
 	 * @return repo base directory.
 	 */
 	public File getRepoDirectoryRoot() {
-		return getSubFile(USER_REPO_PATH);
+		return getSubFile(PATH_USER_REPO);
 	}
 
 	/**
@@ -192,7 +211,7 @@ public class Home implements Constants {
 	 * @return base perftest directory.
 	 */
 	public File getPerfTestDirectory() {
-		return getSubFile(PERF_TEST_PATH);
+		return getSubFile(PATH_PERF_TEST);
 	}
 
 	/**
@@ -322,12 +341,22 @@ public class Home implements Constants {
 	}
 
 	/**
+	 * Get the csv file for given {@link PerfTest}.
+	 *
+	 * @param perfTest perftest
+	 * @return {@link PerfTest} csv file
+	 */
+	public File getPerfTestCsvFile(PerfTest perfTest) {
+		return new File(getPerfTestReportDirectory(perfTest), REPORT_CSV);
+	}
+
+	/**
 	 * Get the default grinder properties file.
 	 *
 	 * @return grinder properties file
 	 */
 	public File getDefaultGrinderProperties() {
-		return getSubFile(DEFAULT_GRINDER_PROPERTIES_PATH);
+		return getSubFile(GrinderConstants.DEFAULT_GRINDER_PROPERTIES);
 	}
 
 	/**
@@ -336,7 +365,7 @@ public class Home implements Constants {
 	 * @return download directory
 	 */
 	public File getDownloadDirectory() {
-		return getSubFile(DOWNLOAD_PATH);
+		return getSubFile(PATH_DOWNLOAD);
 	}
 
 
@@ -346,7 +375,7 @@ public class Home implements Constants {
 	 * @return log file
 	 */
 	public File getGlobalLogFile() {
-		return getSubFile(GLOBAL_LOG_PATH);
+		return getSubFile(PATH_GLOBAL_LOG);
 	}
 
 	/**
@@ -374,6 +403,6 @@ public class Home implements Constants {
 	 * @return script directory for the given user.
 	 */
 	public File getScriptDirectory(User user) {
-		return new File(getSubFile(SCRIPT_PATH), user.getUserId());
+		return new File(getSubFile(PATH_SCRIPT), user.getUserId());
 	}
 }

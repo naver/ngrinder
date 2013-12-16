@@ -104,7 +104,7 @@
 		<intercept-url pattern="/perftest/**"/>
 		<intercept-url pattern="/help**"/>
 		<intercept-url pattern="/script**"/>
-		<intercept-url pattern="/monitor**"/>
+		<intercept-url pattern="/monitor-properties.map"/>
 		<intercept-url pattern="/agent/**"/>
 		<intercept-url pattern="/user/**"/>
 		<custom-filter ref="basicProcessingFilter" position="BASIC_AUTH_FILTER"/>

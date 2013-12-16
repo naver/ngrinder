@@ -22,30 +22,26 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Property Wrapper Test
- * 
+ *
  * @author Mavlarn
  */
 public class PropertiesWrapperTest {
 
-	/**
-	 * Test method for
-	 * {@link org.ngrinder.common.util.PropertiesWrapper#PropertiesWrapper(java.util.Properties)}.
-	 */
 	@Test
 	public void testPropertiesWrapper() {
 		Properties prop = new Properties();
 		prop.put("key1", "1");
 		prop.put("key2", "value2");
-		PropertiesWrapper propWrapper = new PropertiesWrapper(prop);
+		PropertiesWrapper propWrapper = new PropertiesWrapper(prop, PropertiesKeyMapper.create("agent-properties.map"));
 
 		propWrapper.addProperty("key3", "3");
 		propWrapper.addProperty("key4", "value4");
 
-		int value1 = propWrapper.getPropertyInt("key1", 0);
+		int value1 = propWrapper.getPropertyInt("key1");
 		assertThat(value1, is(1));
-		int value3 = propWrapper.getPropertyInt("key3", 0);
+		int value3 = propWrapper.getPropertyInt("key3");
 		assertThat(value3, is(3));
-		int noValue = propWrapper.getPropertyInt("NoValueKey", 0);
+		int noValue = propWrapper.getPropertyInt("NoValueKey");
 		assertThat(noValue, is(0));
 
 		String value2 = propWrapper.getProperty("key2", "null");
@@ -55,15 +51,15 @@ public class PropertiesWrapperTest {
 		String nullValueStr = propWrapper.getProperty("NoValueKey", "null");
 		assertThat(nullValueStr, is("null"));
 
-		String newValue4 = propWrapper.getProperty("key4", "No value found for:{}");
+		String newValue4 = propWrapper.getProperty("key4");
 		assertThat(newValue4, is("value4"));
-		nullValueStr = propWrapper.getProperty("NoValueKey", "null", "No value found for:{}");
+		nullValueStr = propWrapper.getProperty("NoValueKey", "null");
 		assertThat(nullValueStr, is("null"));
 
-		boolean boolVal = propWrapper.getPropertyBoolean("BoolKey", false);
+		boolean boolVal = propWrapper.getPropertyBoolean("BoolKey");
 		assertThat(boolVal, is(false));
 		prop.put("BoolKey", "true");
-		boolVal = propWrapper.getPropertyBoolean("BoolKey", false);
+		boolVal = propWrapper.getPropertyBoolean("BoolKey");
 		assertThat(boolVal, is(true));
 
 	}

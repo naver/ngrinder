@@ -24,6 +24,7 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -58,6 +59,9 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 	private Config spiedConfig;
 
+	@Autowired
+	private RegionService regionService;
+
 	private boolean initialed = false;
 
 	String curAddress;
@@ -83,12 +87,13 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		MockDynamicCacheConfig cacheConfig = new MockDynamicCacheConfig();
 		cacheConfig.setConfig(spiedConfig);
 		cacheManager = cacheConfig.dynamicCacheManager();
-		((EhCacheCacheManager) cacheManager).afterPropertiesSet(); // it will not be called if we
-		// create manually
+		((EhCacheCacheManager) cacheManager).afterPropertiesSet();
 		agentManagerService.cacheManager = cacheManager;
 		assertThat(cacheConfig.getConfig(), not(nullValue()));
-
 		agentManagerService.init();
+		regionService.setCache(cacheManager.getCache("regions"));
+		regionService.setConfig(spiedConfig);
+		regionService.checkRegionUpdate();
 		initialed = true;
 	}
 
@@ -136,10 +141,10 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	}
 
 	@Test
-	public void testGetUserAvailableAgentCount() {
-		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(getTestUser());
+	public void testAvailableAgentCount() {
+		Map<String, MutableInt> countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
 		String currRegion = spiedConfig.getRegion();
-		System.out.println(countMap.get(currRegion));
+		assertThat(countMap.get(currRegion), notNullValue());
 	}
 
 	@Test

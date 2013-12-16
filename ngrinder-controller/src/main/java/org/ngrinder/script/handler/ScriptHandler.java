@@ -13,16 +13,11 @@
  */
 package org.ngrinder.script.handler;
 
-import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import java.io.File;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
-
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 import org.apache.commons.io.FilenameUtils;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.FileUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
@@ -34,19 +29,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
+import java.io.File;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Script per language handler. This is the superclass for all sub
  * {@link ScriptHandler}s which implements the specific processing of each
  * language.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
-public abstract class ScriptHandler {
+public abstract class ScriptHandler implements ControllerConstants {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(JythonScriptHandler.class);
 	private final String codemirrorKey;
 	private final String title;
@@ -55,14 +55,11 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param key		key of the script handler
-	 * @param extension	extension
 	 *
-	 * @param title		title of the handler
-	 *
-	 * @param codeMirrorKey	code mirror key
-	 *
+	 * @param key           key of the script handler
+	 * @param extension     extension
+	 * @param title         title of the handler
+	 * @param codeMirrorKey code mirror key
 	 */
 	public ScriptHandler(String key, String extension, String title, String codeMirrorKey) {
 		this.key = key;
@@ -76,7 +73,7 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Get the display order of {@link ScriptHandler}s.
-	 * 
+	 *
 	 * @return order
 	 */
 	public abstract Integer displayOrder();
@@ -87,9 +84,8 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Check if the given fileEntry can be handled by this handler.
-	 * 
-	 * @param fileEntry	fileEntry to be checked
 	 *
+	 * @param fileEntry fileEntry to be checked
 	 * @return true if the given fileEntry can be handled
 	 */
 	public boolean canHandle(FileEntry fileEntry) {
@@ -102,9 +98,9 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Get the handler resolution order.
-	 * 
+	 * <p/>
 	 * Less is more prioritized.
-	 * 
+	 *
 	 * @return the order of handler resolution
 	 */
 	protected abstract Integer order();
@@ -115,7 +111,7 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Return if it's project handler which implements {@link ProjectHandler}.
-	 * 
+	 *
 	 * @return true if it is.
 	 */
 	public boolean isProjectHandler() {
@@ -124,19 +120,18 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Prepare the distribution.
-	 * 
-	 * @param testCaseId	id of the test case. This is for the log identification.
-	 * @param user			user who will distribute the script.
-	 * @param scriptEntry	script to be distributed.
-	 * @param distDir		distribution target dir.
-	 * @param properties	properties set which is used for detailed distribution control.
-	 * @param processingResult	processing result holder.
 	 *
+	 * @param testCaseId       id of the test case. This is for the log identification.
+	 * @param user             user who will distribute the script.
+	 * @param scriptEntry      script to be distributed.
+	 * @param distDir          distribution target dir.
+	 * @param properties       properties set which is used for detailed distribution control.
+	 * @param processingResult processing result holder.
 	 */
 	public void prepareDist(Long testCaseId,
-			User user, //
-			FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
-			ProcessingResultPrintStream processingResult) {
+	                        User user, //
+	                        FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
+	                        ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		if (scriptEntry.getRevision() != 0) {
@@ -151,7 +146,7 @@ public abstract class ScriptHandler {
 			}
 			File toDir = new File(distDir, calcDistSubPath(basePath, each));
 			processingResult.printf("%s is being written.\n", each.getPath());
-			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, testCaseId });
+			LOGGER.info("{} is being written in {} for test {}", new Object[]{each.getPath(), toDir, testCaseId});
 			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
 		}
 		processingResult.setSuccess(true);
@@ -161,44 +156,43 @@ public abstract class ScriptHandler {
 	/**
 	 * Prepare script creation. This method is subject to be extended by the
 	 * subclasses.
-	 * 
+	 * <p/>
 	 * This method is the perfect place if it's necessary to include additional
 	 * files.
-	 * 
-	 * @param user		user
-	 * @param path		base path
-	 * @param fileName	fileName
-	 * @param name		name
-	 * @param url		url
+	 *
+	 * @param user                  user
+	 * @param path                  base path
+	 * @param fileName              fileName
+	 * @param name                  name
+	 * @param url                   url
 	 * @param createLibAndResources true if lib and resources should be created
 	 * @return true if process more.
 	 */
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
-			boolean createLibAndResources) {
+	                                boolean createLibAndResources) {
 		return true;
 	}
 
 	/**
 	 * Prepare the distribution more. This method is subject to be extended by
 	 * the subclass.
-	 * 
-	 * @param testCaseId 	test case id. This is for the log identification.
-	 * @param user			user
-	 * @param script		script entry to be distributed.
-	 * @param distDir		distribution directory
-	 * @param properties	properties
-	 * @param processingResult	processing result holder
 	 *
+	 * @param testCaseId       test case id. This is for the log identification.
+	 * @param user             user
+	 * @param script           script entry to be distributed.
+	 * @param distDir          distribution directory
+	 * @param properties       properties
+	 * @param processingResult processing result holder
 	 */
 	protected void prepareDistMore(Long testCaseId, User user, FileEntry script, File distDir,
-			PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+	                               PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 	}
 
 	/**
 	 * Get the appropriated distribution path for the given file entry.
-	 * 
-	 * @param basePath	distribution base path
-	 * @param fileEntry	fileEntry to be distributed
+	 *
+	 * @param basePath  distribution base path
+	 * @param fileEntry fileEntry to be distributed
 	 * @return the resolved destination path.
 	 */
 	protected String calcDistSubPath(String basePath, FileEntry fileEntry) {
@@ -210,10 +204,10 @@ public abstract class ScriptHandler {
 	/**
 	 * Get all resources and lib entries belonging to the given user and
 	 * scriptEntry.
-	 * 
-	 * @param user			user
-	 * @param scriptEntry	script entry
-	 * @param revision		revision of the script entry.
+	 *
+	 * @param user        user
+	 * @param scriptEntry script entry
+	 * @param revision    revision of the script entry.
 	 * @return file entry list
 	 */
 	public List<FileEntry> getLibAndResourceEntries(User user, FileEntry scriptEntry, long revision) {
@@ -240,7 +234,7 @@ public abstract class ScriptHandler {
 	}
 
 	protected void prepareDefaultFile(File distDir, PropertiesWrapper properties) {
-		if (properties.getPropertyBoolean("ngrinder.dist.logback", true)) {
+		if (properties.getPropertyBoolean(PROP_CONTROLLER_DIST_LOGBACK)) {
 			FileUtils.copyResourceToFile("/logback/logback-worker.xml", new File(distDir, "logback-worker.xml"));
 		}
 	}
@@ -251,8 +245,8 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Get the base path of the given path.
-	 * 
-	 * @param path	path
+	 *
+	 * @param path path
 	 * @return base path
 	 */
 	public String getBasePath(String path) {
@@ -261,8 +255,8 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Get executable script path.
-	 * 
-	 * @param svnPath	path in svn
+	 *
+	 * @param svnPath path in svn
 	 * @return path executable in agent.
 	 */
 	public String getScriptExecutePath(String svnPath) {
@@ -271,17 +265,17 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Check syntax errors for the given content.
-	 * 
-	 * @param path		path
-	 * @param content	content
+	 *
+	 * @param path    path
+	 * @param content content
 	 * @return syntax error messages. null if none.
 	 */
 	public abstract String checkSyntaxErrors(String path, String content);
 
 	/**
 	 * Get the initial script with the given value map.
-	 * 
-	 * @param values	map of initial script referencing values.
+	 *
+	 * @param values map of initial script referencing values.
 	 * @return generated string
 	 */
 	public String getScriptTemplate(Map<String, Object> values) {
@@ -317,8 +311,8 @@ public abstract class ScriptHandler {
 
 	/**
 	 * Get the default quick test file.
-	 * 
-	 * @param basePath	base path
+	 *
+	 * @param basePath base path
 	 * @return quick test file
 	 */
 	public FileEntry getDefaultQuickTestFilePath(String basePath) {

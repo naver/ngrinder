@@ -13,9 +13,6 @@
  */
 package org.ngrinder.operation;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.util.ThreadUtils;
@@ -25,6 +22,9 @@ import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -55,7 +55,7 @@ public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTes
 
 			assertThat(model.containsAttribute("success"), is(true));
 			assertThat(service.getOne(), is(content));
-			assertThat(config.getSystemProperties().getProperty("test", ""), is("My test."));
+			assertThat(config.getControllerProperties().getProperty("test", ""), is("My test."));
 		} finally {
 			//reset system config
 			controller.save(model, oriContent);

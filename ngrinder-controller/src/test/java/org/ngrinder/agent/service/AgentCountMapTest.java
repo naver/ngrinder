@@ -13,18 +13,8 @@
  */
 package org.ngrinder.agent.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
 import net.grinder.message.console.AgentControllerState;
-
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +26,15 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
@@ -114,19 +112,19 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
 		User user = new User();
 		user.setUserId("haha");
-		Map<String, MutableInt> userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		Map<String, MutableInt> userAvailableAgentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		System.out.println(userAvailableAgentCountMap);
 		assertThat(userAvailableAgentCountMap.containsKey("kiki"), is(false));
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
 
 		user.setUserId("wow");
-		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		userAvailableAgentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(3));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
 
 		user.setUserId("my");
-		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		userAvailableAgentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(4));
 		assertThat(userAvailableAgentCountMap.get("wowo").intValue(), is(3));

@@ -19,7 +19,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
@@ -38,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_VALIDATION_TIMEOUT;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -95,7 +95,7 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 			Preconditions.checkTrue(scriptDirectory.mkdirs(), "Script directory {} creation is failed.");
 
 			ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
-			handler.prepareDist(0L, user, scriptEntry, scriptDirectory, config.getSystemProperties(), processingResult);
+			handler.prepareDist(0L, user, scriptEntry, scriptDirectory, config.getControllerProperties(), processingResult);
 			if (!processingResult.isSuccess()) {
 				return new String(processingResult.getLogByteArray());
 			}
@@ -128,8 +128,6 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 	}
 
 	protected int getTimeout() {
-		return Math.max(
-				config.getSystemProperties().getPropertyInt(Constants.NGRINDER_VALIDATION_TIMEOUT,
-						LocalScriptTestDriveService.DEFAULT_TIMEOUT), 10);
+		return Math.max(config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_VALIDATION_TIMEOUT), 10);
 	}
 }

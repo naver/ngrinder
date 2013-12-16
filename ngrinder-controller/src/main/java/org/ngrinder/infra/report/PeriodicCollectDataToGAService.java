@@ -13,16 +13,10 @@
  */
 package org.ngrinder.infra.report;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
 import net.grinder.util.NetworkUtils;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.http.MeasureProtocolRequest;
 import org.ngrinder.infra.config.Config;
@@ -32,6 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Send the ngrinder usage data to GA. It executes only once each day at midnight
@@ -57,8 +56,8 @@ public class PeriodicCollectDataToGAService {
 	public void reportUsage() {
 		if (config.isUsageReportEnabled()) {
 			doRandomDelay();
-			GoogleAnalytic googleAnalytic = new GoogleAnalytic(Constants.GOOGLEANALYTICS_APPNAME,
-							config.getVersion(), Constants.GOOGLEANALYTICS_TRACKINGID);
+			GoogleAnalytic googleAnalytic = new GoogleAnalytic(ControllerConstants.GOOGLE_ANALYTICS_APP_NAME,
+							config.getVersion(), ControllerConstants.GOOGLE_ANALYTICS_TRACKING_ID);
 			MeasureProtocolRequest measureProtocolRequest = googleAnalytic.getMeasureProtocolRequest();
 			measureProtocolRequest.setEventCategory("usage");
 			measureProtocolRequest.setEventAction("executions");

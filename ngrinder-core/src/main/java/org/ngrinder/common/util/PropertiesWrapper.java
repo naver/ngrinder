@@ -13,13 +13,16 @@
  */
 package org.ngrinder.common.util;
 
-import java.util.Properties;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Properties;
+
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Convenient class for property extraction.
@@ -29,81 +32,60 @@ import org.slf4j.LoggerFactory;
 public class PropertiesWrapper {
 	private final Properties properties;
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesWrapper.class);
-
-	private static final String DEFAULT_ERROR_MESSGAE = "The {} is not defined in conf file. Use {} instead.";
+	private PropertiesKeyMapper propertiesKeyMapper;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param properties {@link Properties} which will be used for data retrieval.
 	 */
-	public PropertiesWrapper(Properties properties) {
+	public PropertiesWrapper(Properties properties, PropertiesKeyMapper propertiesKeyMapper) {
 		this.properties = properties;
+		this.propertiesKeyMapper = propertiesKeyMapper;
+	}
+
+	public boolean exist(String key) {
+		String value = this.properties.getProperty(key);
+		if (value == null) {
+			List<String> keys = propertiesKeyMapper.getKeys(key);
+			if (keys != null && !keys.isEmpty()) {
+				for (String each : keys) {
+					value = this.properties.getProperty(each);
+					if (value != null) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
 	 * Get the property.
 	 *
-	 * @param key              property key
-	 * @param defaultValue     default value when data is not available
-	 * @param errorMsgTemplate error msg
+	 * @param key property key
 	 * @return property value
 	 */
-	public String getProperty(String key, String defaultValue, String errorMsgTemplate) {
+	public String getProperty(String key) {
 		String value = this.properties.getProperty(key);
-		if (StringUtils.isBlank(value)) {
-			LOGGER.trace(errorMsgTemplate, key, defaultValue);
-			value = defaultValue;
-		} else {
-			value = value.trim();
+		if (StringUtils.isNotBlank(value)) {
+			return value.trim();
 		}
-		return value;
+		List<String> keys = propertiesKeyMapper.getKeys(key);
+
+		for (String each : checkNotNull(keys, key + " should be exists")) {
+			value = this.properties.getProperty(each);
+			if (StringUtils.isNotBlank(value)) {
+				return value.trim();
+			}
+		}
+		return propertiesKeyMapper.getDefaultValue(key);
 	}
 
-	/**
-	 * Get the property for the given property key.
-	 *
-	 * @param key          property key
-	 * @param defaultValue default value when data is not available
-	 * @return property value
-	 */
+
 	public String getProperty(String key, String defaultValue) {
-		return StringUtils.trim(getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE));
-	}
-
-	/**
-	 * Get the property for the given property key considering with backward
-	 * compatibility.
-	 *
-	 * @param key          property key
-	 * @param oldKey       old property key.
-	 * @param defaultValue default value when data is not available
-	 * @return property value
-	 */
-	public String getPropertyWithBackwardCompatibility(String key, String oldKey, String defaultValue) {
-		String property = getProperty(key, "", DEFAULT_ERROR_MESSGAE);
-		if (StringUtils.isEmpty(property)) {
-			property = getProperty(oldKey, defaultValue, DEFAULT_ERROR_MESSGAE);
-		}
-		return StringUtils.trim(property);
-	}
-
-
-	/**
-	 * Get the property integer for the given property key considering with backward
-	 * compatibility.
-	 *
-	 * @param key          property key
-	 * @param oldKey       old property key.
-	 * @param defaultValue default value when data is not available
-	 * @return property value
-	 */
-	public Integer getPropertyIntWithBackwardCompatibility(String key, String oldKey, Integer defaultValue) {
-		int property = getPropertyInt(key, Integer.MIN_VALUE);
-		if (property == Integer.MIN_VALUE) {
-			property = getPropertyInt(oldKey, defaultValue);
-		}
-		return property;
+		String property = getProperty(key);
+		return (property == null) ? defaultValue : property;
 	}
 
 	/**
@@ -119,34 +101,21 @@ public class PropertiesWrapper {
 	/**
 	 * Get property as integer.
 	 *
-	 * @param key          property key
-	 * @param defaultValue default value when data is not available
+	 * @param key property key
 	 * @return property integer value
 	 */
-	public int getPropertyInt(String key, int defaultValue) {
-		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
-		return NumberUtils.toInt(property, defaultValue);
+	public int getPropertyInt(String key) {
+		return NumberUtils.toInt(getProperty(key));
 	}
 
 	/**
 	 * Get the property as boolean.
 	 *
-	 * @param key          property key
-	 * @param defaultValue default value when data is not available
+	 * @param key property key
 	 * @return property boolean value
 	 */
-	public boolean getPropertyBoolean(String key, boolean defaultValue) {
-		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
-		return BooleanUtils.toBoolean(property);
+	public boolean getPropertyBoolean(String key) {
+		return BooleanUtils.toBoolean(getProperty(key));
 	}
 
-	/**
-	 * Set the property.
-	 *
-	 * @param key   key
-	 * @param value value to be stored.
-	 */
-	public void setProperty(String key, String value) {
-		this.properties.setProperty(key, value);
-	}
 }

@@ -3,14 +3,13 @@ package org.ngrinder.agent.service;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import net.grinder.communication.AgentControllerCommunicationDefaults;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,9 +200,7 @@ public class AgentPackageService {
 	private Map<String, Object> getAgentConfigParam(String forServer, String region, String owner) {
 		Map<String, Object> confMap = newHashMap();
 		confMap.put("controllerIP", forServer);
-		final int port = config.getSystemProperties()
-				.getPropertyInt(Constants.NGRINDER_PROP_AGENT_CONTROL_PORT,
-						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		final int port = config.getControllerProperties().getPropertyInt(ControllerConstants.PROP_CONTROLLER_CONTROLLER_PORT);
 		confMap.put("controllerPort", String.valueOf(port));
 		if (StringUtils.isEmpty(region)) {
 			region = "NONE";

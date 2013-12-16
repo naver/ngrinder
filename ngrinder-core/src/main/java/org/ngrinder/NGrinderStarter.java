@@ -22,10 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.ArchLoaderInit;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMonitorServer;
+import org.ngrinder.monitor.agent.MonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class NGrinderStarter {
+public class NGrinderStarter implements AgentConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
 
@@ -79,7 +79,7 @@ public class NGrinderStarter {
 	}
 
 	private void configureLogging() {
-		Boolean verboseMode = agentConfig.getPropertyBoolean("verbose", false);
+		Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_VERBOSE);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
 	}
@@ -114,9 +114,8 @@ public class NGrinderStarter {
 		printLog("* Start nGrinder Monitor... ");
 		printLog("***************************************************");
 		try {
-			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
-			AgentMonitorServer.getInstance().init(monitorPort, agentConfig);
-			AgentMonitorServer.getInstance().start();
+			MonitorServer.getInstance().init(agentConfig);
+			MonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
 			printHelpAndExit("Error while starting Monitor", e);
@@ -127,7 +126,7 @@ public class NGrinderStarter {
 	 * Stop monitors.
 	 */
 	public void stopMonitor() {
-		AgentMonitorServer.getInstance().stop();
+		MonitorServer.getInstance().stop();
 	}
 
 	/**

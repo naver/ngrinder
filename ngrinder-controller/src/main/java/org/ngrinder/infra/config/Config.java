@@ -22,15 +22,15 @@ import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ClusterConstants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.FileWatchdog;
+import org.ngrinder.common.util.PropertiesKeyMapper;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.SpringContext;
-import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.service.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
+import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -56,25 +57,31 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Component
-public class Config extends AbstractConfig implements Constants {
+public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
 	private Home exHome = null;
 	private PropertiesWrapper internalProperties;
-	private PropertiesWrapper systemProperties;
+	private PropertiesWrapper controllerProperties;
 	private PropertiesWrapper databaseProperties;
+	private PropertiesWrapper clusterProperties;
 	private String announcement = "";
 	private Date announcementDate;
 	private boolean verbose;
-	private String currentIP;
 
 	public static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
 
 	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
 	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<PropertyChangeListener>();
+
+	protected PropertiesKeyMapper internalPropertiesKeyMapper = PropertiesKeyMapper.create("internal-properties.map");
+	protected PropertiesKeyMapper databasePropertiesKeyMapper = PropertiesKeyMapper.create("database-properties.map");
+	protected PropertiesKeyMapper controllerPropertiesKeyMapper = PropertiesKeyMapper.create("controller-properties.map");
+	protected PropertiesKeyMapper clusterPropertiesKeyMapper = PropertiesKeyMapper.create("cluster-properties.map");
+
 	@Autowired
 	private SpringContext context;
 
@@ -95,7 +102,7 @@ public class Config extends AbstractConfig implements Constants {
 
 	/**
 	 * Initialize the {@link Config} object.
-	 *
+	 * <p/>
 	 * This method mainly resolves ${NGRINDER_HOME} and loads system properties. In addition, the logger is initialized
 	 * and the default configuration files are copied into ${NGRINDER_HOME} if they do not exists.
 	 */
@@ -104,26 +111,21 @@ public class Config extends AbstractConfig implements Constants {
 		try {
 			CoreLogger.LOGGER.info("nGrinder is starting...");
 			home = resolveHome();
+			home.init();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
 			loadInternalProperties();
-			loadSystemProperties();
+			loadProperties();
 			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
-			cluster = getSystemProperties().getPropertyBoolean(Constants.NGRINDER_PROP_CLUSTER_MODE, false);
-			initLogger(isTestMode());
-			resolveLocalIp();
+			cluster = getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
+			initLogger(isDevMode());
 			loadAnnouncement();
 			loadDatabaseProperties();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
 		}
-	}
-
-	protected void resolveLocalIp() {
-		currentIP = getSystemProperties().getPropertyWithBackwardCompatibility("ngrinder.controller.ip",
-				"ngrinder.controller.ipaddress", "");
 	}
 
 	/**
@@ -153,8 +155,8 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return ngrinder instance IPs
 	 */
 	public String[] getClusterURIs() {
-		String clusterUri = getSystemProperties().getProperty(NGRINDER_PROP_CLUSTER_URIS, "");
-		return StringUtils.split(clusterUri, ";");
+		String clusterUri = getClusterProperties().getProperty(PROP_CLUSTER_MEMBERS);
+		return StringUtils.split(StringUtils.trimToEmpty(clusterUri), ";");
 	}
 
 	/**
@@ -163,7 +165,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return region. If it's not clustered mode, return "NONE"
 	 */
 	public String getRegion() {
-		return isClustered() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
+		return isClustered() ? getClusterProperties().getProperty(PROP_CLUSTER_REGION) : NONE_REGION;
 	}
 
 	/**
@@ -172,8 +174,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return monitor port
 	 */
 	public int getMonitorPort() {
-		return getSystemProperties().getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
-				MonitorConstants.DEFAULT_MONITOR_PORT);
+		return getControllerProperties().getPropertyInt(PROP_CONTROLLER_MONITOR_PORT);
 	}
 
 	/**
@@ -182,7 +183,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
-		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_PROP_USAGE_REPORT, true);
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_USAGE_REPORT);
 	}
 
 	/**
@@ -191,7 +192,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if enabled.
 	 */
 	public boolean isSignUpEnabled() {
-		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_SIGN_UP_ENABLED, false);
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ALLOW_SIGN_UP);
 	}
 
 	/**
@@ -200,7 +201,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @param forceToVerbose true to force verbose logging.
 	 */
 	public synchronized void initLogger(boolean forceToVerbose) {
-		setupLogger((forceToVerbose) || getSystemProperties().getPropertyBoolean("verbose", false));
+		setupLogger((forceToVerbose) || getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_VERBOSE));
 	}
 
 	/**
@@ -243,9 +244,6 @@ public class Config extends AbstractConfig implements Constants {
 	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
 		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile());
-		home.makeSubPath(PLUGIN_PATH);
-		home.makeSubPath(PERF_TEST_PATH);
-		home.makeSubPath(DOWNLOAD_PATH);
 	}
 
 	/**
@@ -314,10 +312,10 @@ public class Config extends AbstractConfig implements Constants {
 		try {
 			inputStream = new ClassPathResource("/internal.properties").getInputStream();
 			properties.load(inputStream);
-			internalProperties = new PropertiesWrapper(properties);
+			internalProperties = new PropertiesWrapper(properties, internalPropertiesKeyMapper);
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while load internal.properties", e);
-			internalProperties = new PropertiesWrapper(properties);
+			internalProperties = new PropertiesWrapper(properties, internalPropertiesKeyMapper);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
@@ -330,22 +328,22 @@ public class Config extends AbstractConfig implements Constants {
 		checkNotNull(home);
 		Properties properties = home.getProperties("database.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
-		databaseProperties = new PropertiesWrapper(properties);
+		databaseProperties = new PropertiesWrapper(properties, databasePropertiesKeyMapper);
 	}
 
 	/**
 	 * Load system related properties. (system.conf)
 	 */
-	public synchronized void loadSystemProperties() {
-		checkNotNull(home);
-		Properties properties = home.getProperties("system.conf");
+	public synchronized void loadProperties() {
+		Properties properties = checkNotNull(home).getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		// Override if exists
 		if (exHome.exists()) {
 			Properties exProperties = exHome.getProperties("system-ex.conf");
 			properties.putAll(exProperties);
 		}
-		systemProperties = new PropertiesWrapper(properties);
+		controllerProperties = new PropertiesWrapper(properties, controllerPropertiesKeyMapper);
+		clusterProperties = new PropertiesWrapper(properties, clusterPropertiesKeyMapper);
 	}
 
 	/**
@@ -393,8 +391,7 @@ public class Config extends AbstractConfig implements Constants {
 			protected void doOnChange() {
 				try {
 					CoreLogger.LOGGER.info("System configuration(system.conf) is changed.");
-					loadSystemProperties();
-					resolveLocalIp();
+					loadProperties();
 					systemConfListeners.apply(new Informer<PropertyChangeListener>() {
 						@Override
 						public void inform(PropertyChangeListener listener) {
@@ -432,8 +429,8 @@ public class Config extends AbstractConfig implements Constants {
 	 */
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
-		if (context.isUnitTestContext()) {
-			databaseProperties.addProperty("unit-test", "true");
+		if (context.isUnitTestContext() && !databaseProperties.exist(PROP_DATABASE_UNIT_TEST)) {
+			databaseProperties.addProperty(PROP_DATABASE_UNIT_TEST, "true");
 		}
 		return databaseProperties;
 	}
@@ -443,8 +440,8 @@ public class Config extends AbstractConfig implements Constants {
 	 *
 	 * @return true if test mode
 	 */
-	public boolean isTestMode() {
-		return getSystemProperties().getPropertyBoolean("testmode", false);
+	public boolean isDevMode() {
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_DEV_MODE);
 	}
 
 	/**
@@ -453,7 +450,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if user security is enabled.
 	 */
 	public boolean isUserSecurityEnabled() {
-		return getSystemProperties().getPropertyBoolean("user.security", true);
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_USER_SECURITY);
 	}
 
 	/**
@@ -462,7 +459,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if security is enabled.
 	 */
 	public boolean isSecurityEnabled() {
-		return !isTestMode() && getSystemProperties().getPropertyBoolean("security", false);
+		return !isDevMode() && getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_SECURITY);
 	}
 
 	/**
@@ -471,18 +468,18 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if demo mode is enabled.
 	 */
 	public boolean isDemo() {
-		return getSystemProperties().getPropertyBoolean("demo", false);
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_DEMO_MODE);
 	}
 
 	/**
 	 * Check if the plugin support is enabled.
-	 *
+	 * <p/>
 	 * The reason why we need this configuration is that it takes time to initialize plugin system in unit test context.
 	 *
 	 * @return true if the plugin is supported.
 	 */
 	public boolean isPluginSupported() {
-		return !isTestMode() && (getSystemProperties().getPropertyBoolean("pluginsupport", true));
+		return !isDevMode() && (getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT));
 	}
 
 	/**
@@ -509,8 +506,8 @@ public class Config extends AbstractConfig implements Constants {
 	 *
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
-	public PropertiesWrapper getSystemProperties() {
-		return checkNotNull(systemProperties);
+	public PropertiesWrapper getControllerProperties() {
+		return checkNotNull(controllerProperties);
 	}
 
 	/**
@@ -578,7 +575,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return current IP.
 	 */
 	public String getCurrentIP() {
-		return currentIP;
+		return StringUtils.trimToEmpty(getControllerProperties().getProperty(PROP_CONTROLLER_IP));
 	}
 
 
@@ -588,7 +585,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if hidden.
 	 */
 	public boolean isInvisibleRegion() {
-		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false);
+		return getClusterProperties().getPropertyBoolean(PROP_CLUSTER_HIDDEN_REGION);
 	}
 
 	/**
@@ -624,8 +621,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return help URL
 	 */
 	public String getHelpUrl() {
-		return getSystemProperties().getProperty("ngrinder.help.url",
-				"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
+		return getControllerProperties().getProperty(PROP_CONTROLLER_HELP_URL);
 	}
 
 	/**
@@ -635,5 +631,9 @@ public class Config extends AbstractConfig implements Constants {
 	 */
 	public String getCurrentPublicIP() {
 		return NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
+	}
+
+	public PropertiesWrapper getClusterProperties() {
+		return clusterProperties;
 	}
 }

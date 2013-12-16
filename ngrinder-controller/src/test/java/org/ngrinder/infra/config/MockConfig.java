@@ -22,7 +22,7 @@ import java.util.Properties;
 @Profile("unit-test")
 @Component
 public class MockConfig extends Config {
-	private PropertiesWrapper wrapper = new PropertiesWrapper(new Properties());
+	private PropertiesWrapper wrapper = new PropertiesWrapper(new Properties(), controllerPropertiesKeyMapper);
 
 	public boolean cluster;
 	public boolean doRealOnRegion = false;
@@ -32,14 +32,14 @@ public class MockConfig extends Config {
 	}
 
 	@Override
-	public PropertiesWrapper getSystemProperties() {
+	public PropertiesWrapper getControllerProperties() {
 		return wrapper;
 	}
 
 	@Override
-	public void loadSystemProperties() {
-		super.loadSystemProperties();
-		setSystemProperties(super.getSystemProperties());
+	public void loadProperties() {
+		super.loadProperties();
+		setSystemProperties(super.getControllerProperties());
 	}
 
 	@Override

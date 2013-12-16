@@ -13,30 +13,29 @@
  */
 package org.ngrinder.script.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.util.CompressionUtils;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.repository.MockFileEntityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.infra.config.Config;
-import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.repository.MockFileEntityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Class description.
@@ -66,7 +65,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
-		config.getSystemProperties().addProperty("http.url", "http://127.0.0.1:80");
+		config.getControllerProperties().addProperty("http.url", "http://127.0.0.1:80");
 	}
 
 	@SuppressWarnings("unchecked")

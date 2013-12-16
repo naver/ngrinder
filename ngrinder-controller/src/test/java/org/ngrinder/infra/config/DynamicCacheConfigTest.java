@@ -21,7 +21,7 @@ public class DynamicCacheConfigTest {
 		// When
 		DynamicCacheConfig dynamicCacheConfig = new DynamicCacheConfig() {
 			@Override
-			int getClusterListenerPort() {
+			int getClusterPort() {
 				return 10010;
 			}
 		};

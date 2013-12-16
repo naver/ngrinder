@@ -14,7 +14,7 @@
 package org.ngrinder.home.controller;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.home.model.PanelEntry;
@@ -55,7 +55,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Controller
-public class HomeController extends BaseController {
+public class HomeController extends BaseController implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
@@ -152,26 +152,26 @@ public class HomeController extends BaseController {
 		model.addAttribute("right_panel_entries", getRightPanelEntries());
 		model.addAttribute(
 				"ask_question_url",
-				getConfig().getSystemProperties().getProperty("ngrinder.ask.question.url",
-						getMessages("home.qa.question.url")));
+				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL,
+						getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS + "_new")));
 		model.addAttribute(
 				"see_more_question_url",
-				getConfig().getSystemProperties().getProperty("ngrinder.more.question.url",
-						getMessages("home.qa.rss.all")));
+				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_MORE_QNA_URL,
+						getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS + "_more")));
+
 	}
 
 	private List<PanelEntry> getRightPanelEntries() {
 		// Get nGrinder Resource RSS
-		String rightPanelRssURL = getConfig().getSystemProperties().getProperty(Constants.NGRINDER_PROP_FRONT_PAGE_RSS,
-				Constants.NGRINDER_RESOURCE_RSS_URL);
+		String rightPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS);
 		return homeService.getRightPanelEntries(rightPanelRssURL);
 	}
 
 	private List<PanelEntry> getLeftPanelEntries() {
 		// Make the i18n applied QnA panel. Depending on the user language, show the different QnA panel.
-		String leftPanelRssURLKey = getMessages(Constants.NGRINDER_QNA_RSS_URL_KEY);
+		String leftPanelRssURLKey = getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS);
 		// Make admin configure the QnA panel.
-		String leftPanelRssURL = getConfig().getSystemProperties().getProperty(Constants.NGRINDER_PROP_QNA_PAGE_RSS,
+		String leftPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS,
 				leftPanelRssURLKey);
 		return homeService.getLeftPanelEntries(leftPanelRssURL);
 	}
@@ -226,7 +226,7 @@ public class HomeController extends BaseController {
 				"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
 		String language = StringUtils.defaultIfBlank(lan,
-				getConfig().getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en"));
+				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_DEFAULT_LANG));
 		localeEditor.setAsText(language);
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}

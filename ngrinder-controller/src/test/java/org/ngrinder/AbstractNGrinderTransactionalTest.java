@@ -14,7 +14,7 @@
 package org.ngrinder;
 
 import org.junit.Before;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
@@ -42,7 +42,7 @@ import javax.sql.DataSource;
 @ActiveProfiles("unit-test")
 @ContextConfiguration({"classpath:applicationContext.xml"})
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
-		Constants {
+		ControllerConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
 
 	static {

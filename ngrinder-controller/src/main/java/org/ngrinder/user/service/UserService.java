@@ -15,7 +15,7 @@ package org.ngrinder.user.service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -239,7 +239,7 @@ public class UserService extends AbstractUserService {
 		Date createdDate = new Date();
 		user.setCreatedDate(createdDate);
 		user.setLastModifiedDate(createdDate);
-		User createdUser = getOne(Constants.NGRINDER_INITIAL_ADMIN_USERID);
+		User createdUser = getOne(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID);
 		user.setCreatedUser(createdUser);
 		user.setLastModifiedUser(createdUser);
 		return saveWithoutPasswordEncoding(user);

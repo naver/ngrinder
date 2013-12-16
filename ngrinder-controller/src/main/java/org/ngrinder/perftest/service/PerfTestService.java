@@ -34,10 +34,11 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.*;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -65,10 +66,9 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static org.ngrinder.common.constants.MonitorConstants.MONITOR_FILE_PREFIX;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.CollectionUtils.newHashSet;
+import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
@@ -78,14 +78,14 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
 
 /**
  * {@link PerfTest} Service Class.
- *
+ * <p/>
  * This class contains various method which mainly get the {@link PerfTest} matching specific conditions from DB.
  *
  * @author JunHo Yoon
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestService extends AbstractPerfTestService implements Constants {
+public class PerfTestService extends AbstractPerfTestService implements ControllerConstants, GrinderConstants {
 
 	private static final int MAX_POINT_COUNT = 100;
 
@@ -376,7 +376,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	}
 
 	/**
-	 * mark the perftest as {@link Status.START_CONSOLE_FINISHED} .
+	 * mark the perftest to "START_CONSOLE_FINISHED" status .
 	 *
 	 * @param perfTest    perftest to mark
 	 * @param consolePort port of the console, on which the test is running
@@ -461,8 +461,8 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/**
 	 * Delete test {@link PerfTest} by user and test id.
 	 *
-	 * @param user 	user
-	 * @param id 	test id
+	 * @param user user
+	 * @param id   test id
 	 */
 	@Transactional
 	public void delete(User user, long id) {
@@ -565,15 +565,15 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 			// Get all files in the script path
 			String scriptName = perfTest.getScriptName();
 			FileEntry userDefinedGrinderProperties = fileEntryService.getOne(user,
-					FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES_PATH), -1L);
+					FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES), -1L);
 			if (!config.isSecurityEnabled() && userDefinedGrinderProperties != null) {
 				// Make the property overridden by user property.
 				GrinderProperties userProperties = new GrinderProperties();
 				userProperties.load(new StringReader(userDefinedGrinderProperties.getContent()));
 				grinderProperties.putAll(userProperties);
 			}
-			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES_PATH));
-			grinderProperties.setProperty(GrinderProperties.SCRIPT, scriptHandler.getScriptExecutePath(scriptName));
+			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES));
+			grinderProperties.setProperty(GRINDER_PROP_SCRIPT, scriptHandler.getScriptExecutePath(scriptName));
 
 			grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 			grinderProperties.setInt(GRINDER_PROP_AGENTS, getSafe(perfTest.getAgentCount()));
@@ -588,7 +588,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 					grinderProperties.remove(GRINDER_PROP_DURATION);
 				}
 			}
-			grinderProperties.setProperty(NGRINDER_PROP_ETC_HOSTS,
+			grinderProperties.setProperty(GRINDER_PROP_ETC_HOSTS,
 					StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
 			grinderProperties.setBoolean(GRINDER_PROP_USE_CONSOLE, true);
 			if (BooleanUtils.isTrue(perfTest.getUseRampUp())) {
@@ -602,7 +602,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 			}
 			grinderProperties.setInt(GRINDER_PROP_REPORT_TO_CONSOLE, 500);
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
-			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
@@ -645,7 +644,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
 
 		ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
-		handler.prepareDist(perfTest.getId(), user, scriptEntry, perfTestDistDirectory, config.getSystemProperties(),
+		handler.prepareDist(perfTest.getId(), user, scriptEntry, perfTestDistDirectory, config.getControllerProperties(),
 				processingResult);
 		LOGGER.info("File write is completed in {}", perfTestDistDirectory);
 		if (!processingResult.isSuccess()) {
@@ -735,8 +734,8 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param perfTest test
 	 * @return reportFile data report file
 	 */
-	public File getReportFile(PerfTest perfTest) {
-		return new File(config.getHome().getPerfTestReportDirectory(perfTest), Constants.REPORT_CSV);
+	public File getCsvReportFile(PerfTest perfTest) {
+		return config.getHome().getPerfTestCsvFile(perfTest);
 	}
 
 	/**
@@ -967,8 +966,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @return maximum concurrent test
 	 */
 	public int getMaximumConcurrentTestCount() {
-		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-				Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_CONCURRENT_TEST);
 	}
 
 	/**
@@ -1099,19 +1097,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		return perfTestList;
 	}
 
-	/**
-	 * Remove given tag on the collection of {@link PerfTest}.
-	 *
-	 * @param perfTests perftest collection
-	 * @param tag       tag to be deleted
-	 */
-	@Transactional
-	public void deleteTag(Collection<PerfTest> perfTests, Tag tag) {
-		for (PerfTest each : perfTests) {
-			each.getTags().remove(tag);
-		}
-		perfTestRepository.save(perfTests);
-	}
 
 	public PerfTestRepository getPerfTestRepository() {
 		return perfTestRepository;
@@ -1192,7 +1177,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 */
 	public int getMonitorGraphInterval(long testId, String targetIP, int imageWidth) {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
+				MONITOR_FILE_PREFIX + targetIP + ".data");
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		FileInputStream in = null;
@@ -1230,7 +1215,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	public Map<String, String> getMonitorGraph(long testId, String targetIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Constants.MONITOR_FILE_PREFIX + targetIP + ".data");
+				MONITOR_FILE_PREFIX + targetIP + ".data");
 		BufferedReader br = null;
 		try {
 
@@ -1332,7 +1317,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	/**
 	 * Get sampling interval of plugin. It is configured by plugin, so need to get it from plugin directory.
 	 *
-	 * @param testId         test id
+	 * @param testId test id
 	 * @param plugin plugin name
 	 * @return sampling interval value
 	 */

@@ -15,6 +15,7 @@ package org.ngrinder.infra.config;
 
 import cubrid.jdbc.driver.CUBRIDDriver;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2ExDialect;
@@ -26,38 +27,42 @@ import java.sql.Driver;
 
 /**
  * Database handler for supported databases.
- * 
+ * <p/>
  * You can easily add the more database type into {@link Database} enum.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 public enum Database {
 
-	/** CUBRID. */
+	/**
+	 * CUBRID.
+	 */
 	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			dataSource.setUrl(String.format(getUrlTemplate(),
-					databaseProperties.getProperty("database_url", "localhost:33000:ngrinder", " is not defined"),
-					databaseProperties.getProperty("database_url_option", "")));
-			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
-			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
+					databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
+					databaseProperties.getProperty(StringUtils.trimToEmpty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
+			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
+			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
 	},
 
-	/** H2. */
+	/**
+	 * H2.
+	 */
 	H2(org.h2.Driver.class, H2ExDialect.class, "jdbc:h2:%s/db/h2", false) {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
 					" is not defined");
-			if (databaseProperties.getPropertyBoolean("unit-test", false)) {
+			if (databaseProperties.exist("unit-test")) {
 				format = format + ";DB_CLOSE_ON_EXIT=FALSE";
 			}
 			dataSource.setUrl(format);
-			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
-			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
+			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
+			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
 	};
 
@@ -74,15 +79,13 @@ public enum Database {
 	private final String jdbcDriverName;
 	private final String dialect;
 	private final boolean clusterSupport;
+
 	/**
 	 * Constructor with cluster mode true.
-	 * 
-	 * @param jdbcDriver
-	 *            JDBC Driver class
-	 * @param dialect
-	 *            the dialect to be used
-	 * @param urlTemplate
-	 *            database url template. This will be used to be combined with database_url property in database.conf
+	 *
+	 * @param jdbcDriver  JDBC Driver class
+	 * @param dialect     the dialect to be used
+	 * @param urlTemplate database url template. This will be used to be combined with database_url property in database.conf
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate) {
 		this(jdbcDriver, dialect, urlTemplate, true);
@@ -90,19 +93,15 @@ public enum Database {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param jdbcDriver
-	 *            JDBC Driver class
-	 * @param dialect
-	 *            the dialect to be used
-	 * @param urlTemplate
-	 *            database url template. This will be used to be combined with database_url property in database.conf
-	 * @param clusterSupport
-	 *            true if cluster mode is supported.
+	 *
+	 * @param jdbcDriver     JDBC Driver class
+	 * @param dialect        the dialect to be used
+	 * @param urlTemplate    database url template. This will be used to be combined with database_url property in database.conf
+	 * @param clusterSupport true if cluster mode is supported.
 	 * @since 3.1
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate,
-			boolean clusterSupport) {
+	         boolean clusterSupport) {
 		this.clusterSupport = clusterSupport;
 		this.dialect = dialect.getCanonicalName();
 		this.jdbcDriverName = jdbcDriver.getCanonicalName();
@@ -110,8 +109,8 @@ public enum Database {
 	}
 
 	/**
-	 * Get the JDBC driver name.
-	 * 
+	 * Get the Jdbc driver name.
+	 *
 	 * @return driver name
 	 */
 	public String getJdbcDriverName() {
@@ -120,7 +119,7 @@ public enum Database {
 
 	/**
 	 * Get the database URL template.
-	 * 
+	 *
 	 * @return database URL template
 	 */
 	public String getUrlTemplate() {
@@ -129,9 +128,8 @@ public enum Database {
 
 	/**
 	 * Get the {@link Database} enum value for the given type.
-	 * 
-	 * @param type
-	 *            db type name. For example... H2, Cubrid..
+	 *
+	 * @param type db type name. For example... H2, Cubrid..
 	 * @return found {@link Database}. {@link Database#H2} if not found.
 	 */
 	public static Database getDatabase(String type) {
@@ -140,19 +138,18 @@ public enum Database {
 				return database;
 			}
 		}
-		LOG.error("[FATAL] Database type {} is not supported. " + "Please check the ${NFORGE_HOME}/database.conf. "
-				+ "This time, Use H2 istead.", type);
+		LOG.error("[FATAL] Database type {} is not supported.\n" +
+				"Please check the ${NGRINDER_HOME}/database.conf.\n "
+				+ "Use H2 instead.", type);
 		return H2;
 	}
 
 	/**
 	 * Set up database. this method consists of two parts.<br/>
 	 * The first part is variant setup b/w databases. The second is common setup among databases.
-	 * 
-	 * @param dataSource
-	 *            datasource
-	 * @param propertiesWrapper
-	 *            {@link PropertiesWrapper} which contains db access info
+	 *
+	 * @param dataSource        dataSource
+	 * @param propertiesWrapper {@link PropertiesWrapper} which contains db access info
 	 */
 	public void setup(BasicDataSource dataSource, PropertiesWrapper propertiesWrapper) {
 		setupVariants(dataSource, propertiesWrapper);
@@ -161,19 +158,16 @@ public enum Database {
 
 	/**
 	 * Setup the database specific features. Each {@link Database} enums should inherits this method.
-	 * 
-	 * @param dataSource
-	 *            dataSource
-	 * @param databaseConf
-	 *            "database.conf" properties.
+	 *
+	 * @param dataSource   dataSource
+	 * @param databaseConf "database.conf" properties.
 	 */
 	protected abstract void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseConf);
 
 	/**
 	 * Setup the database common features.
-	 * 
-	 * @param dataSource
-	 *            datasource
+	 *
+	 * @param dataSource datasource
 	 */
 	protected void setupCommon(BasicDataSource dataSource) {
 		dataSource.setDriverClassName(getJdbcDriverName());
@@ -191,7 +185,7 @@ public enum Database {
 
 	/**
 	 * Get the current used dialect.
-	 * 
+	 *
 	 * @return dialect name
 	 */
 	public String getDialect() {

@@ -28,7 +28,7 @@ public interface IConfig {
 	 * 
 	 * @return true if test mode
 	 */
-	public abstract boolean isTestMode();
+	public abstract boolean isDevMode();
 
 	/**
 	 * Check if it's the security enabled mode.
@@ -50,6 +50,6 @@ public interface IConfig {
 	 * 
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
-	public abstract PropertiesWrapper getSystemProperties();
+	public abstract PropertiesWrapper getControllerProperties();
 
 }

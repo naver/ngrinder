@@ -22,7 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
@@ -40,7 +40,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Constants {
+public class PerfTestRunnableTest extends AbstractAgentReadyTest implements ControllerConstants {
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;

@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
@@ -200,10 +201,10 @@ public class PerfTestController extends BaseController {
 		// created by the others.
 		user = test.getCreatedUser() != null ? test.getCreatedUser() : user;
 
-		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
-		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
+		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
 		return "perftest/detail";
 	}
@@ -242,7 +243,7 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
-				getConfig().getSystemProperties().getPropertyBoolean(NGRINDER_PROP_DIST_SAFE, false));
+				getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
 		String timeZone = getCurrentUser().getTimeZone();
 		int offset;
 		if (StringUtils.isNotBlank(timeZone)) {
@@ -273,11 +274,11 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
 		model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
-		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
 		addDefaultAttributeOnModel(model);
-		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
+		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
 	}
 
@@ -319,7 +320,7 @@ public class PerfTestController extends BaseController {
 		checkArgument(test.getDuration() == null
 				|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 				"test run duration should be equal to or less than %s", agentManager.getMaxRunHour());
-		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
@@ -478,7 +479,7 @@ public class PerfTestController extends BaseController {
 
 	/**
 	 * Get the basic report content in perftest configuration page.
-	 *
+	 * <p/>
 	 * This method returns the appropriate points based on the given imgWidth.
 	 *
 	 * @param user     user
@@ -508,7 +509,7 @@ public class PerfTestController extends BaseController {
 	@RequestMapping(value = "/{id}/download_csv")
 	public void downloadCSV(User user, @PathVariable("id") long id, HttpServletResponse response) {
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
-		File targetFile = perfTestService.getReportFile(test);
+		File targetFile = perfTestService.getCsvReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
 		FileDownloadUtils.downloadFile(response, targetFile);
 	}
@@ -654,8 +655,7 @@ public class PerfTestController extends BaseController {
 		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
 		PerfTest perfTest = perfTestService.getOne(id);
-		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest
-				.getSamplingInterval() : SAMPLING_INTERVAL_DEFAULT_VALUE)));
+		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest.getSamplingInterval() : 1)));
 		return sysMonitorMap;
 	}
 
@@ -744,7 +744,7 @@ public class PerfTestController extends BaseController {
 
 	/**
 	 * Get the detailed report graph data for the given perf test id.
-	 *
+	 * <p/>
 	 * This method returns the appropriate points based on the given imgWidth.
 	 *
 	 * @param id       test id
@@ -941,7 +941,7 @@ public class PerfTestController extends BaseController {
 		if (newOne.getAgentCount() == null) {
 			newOne.setAgentCount(0);
 		}
-		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();

@@ -13,10 +13,6 @@
  */
 package org.ngrinder.infra.init;
 
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
@@ -27,6 +23,9 @@ import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import java.util.Date;
 
 /**
  * Database Initialization. 
@@ -43,7 +42,7 @@ public class DBInit {
 	private UserRepository userRepository;
 
 	/**
-	 * Initalize DB.
+	 * Initialize DB.
 	 */
 	@PostConstruct
 	@Transactional

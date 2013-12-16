@@ -15,7 +15,8 @@ package org.ngrinder.infra.config;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ClusterConstants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ConfigTest implements Constants {
+public class ConfigTest implements ControllerConstants, ClusterConstants {
 
 	private MockConfig config;
 
@@ -57,36 +58,36 @@ public class ConfigTest implements Constants {
 	public void testTestMode() {
 		PropertiesWrapper wrapper = mock(PropertiesWrapper.class);
 		config.setSystemProperties(wrapper);
-		// When testmode false and pluginsupport is true, it should be true
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
-		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(false);
+		// When dev_mode false and pluginsupport is true, it should be true
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(false);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT)).thenReturn(false);
 		assertThat(config.isPluginSupported(), is(false));
 
-		// When testmode true and pluginsupport is false, it should be false
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
-		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(false);
+		// When dev_mode true and pluginsupport is false, it should be false
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(true);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT)).thenReturn(false);
 		assertThat(config.isPluginSupported(), is(false));
 
-		// When testmode false and pluginsupport is false, it should be false
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
-		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(false);
+		// When dev_mode false and pluginsupport is false, it should be false
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(false);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT)).thenReturn(false);
 		assertThat(config.isPluginSupported(), is(false));
 
-		// When testmode true and pluginsupport is true, it should be false
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
-		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(true);
+		// When dev_mode true and pluginsupport is true, it should be false
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(true);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT)).thenReturn(true);
 		assertThat(config.isPluginSupported(), is(false));
 
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
-		when(wrapper.getPropertyBoolean("security", false)).thenReturn(true);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(true);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_SECURITY)).thenReturn(true);
 		assertThat(config.isSecurityEnabled(), is(false));
 
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
-		when(wrapper.getPropertyBoolean("security", false)).thenReturn(true);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(false);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_SECURITY)).thenReturn(true);
 		assertThat(config.isSecurityEnabled(), is(true));
 
-		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
-		when(wrapper.getPropertyBoolean("security", false)).thenReturn(false);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(false);
+		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_SECURITY)).thenReturn(false);
 		assertThat(config.isSecurityEnabled(), is(false));
 	}
 
@@ -107,14 +108,14 @@ public class ConfigTest implements Constants {
 	public void testLoadExtendProperties() {
 		config.cluster = true;
 		Properties wrapper = new Properties();
-		wrapper.put(NGRINDER_PROP_REGION, "TestNewRegion");
+		wrapper.put(PROP_CLUSTER_REGION, "TestNewRegion");
 		config.doRealOnRegion = true;
 		// set mock exHome and test
 		Home mockExHome = mock(Home.class);
 		when(mockExHome.getProperties("system-ex.conf")).thenReturn(wrapper);
 		when(mockExHome.exists()).thenReturn(true);
 		ReflectionTestUtils.setField(config, "exHome", mockExHome);
-		config.loadSystemProperties();
+		config.loadProperties();
 		assertThat(config.getRegion(), is("TestNewRegion"));
 	}
 }

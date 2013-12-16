@@ -142,7 +142,17 @@ public class RegionService {
 		return config;
 	}
 
-	void setConfig(Config config) {
+	/**
+	 * For unit test
+	 */
+	public void setConfig(Config config) {
 		this.config = config;
+	}
+
+	/**
+	 * For unit test
+	 */
+	public void setCache(Cache cache) {
+		this.cache = cache;
 	}
 }

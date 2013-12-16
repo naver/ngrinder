@@ -3,7 +3,7 @@ package org.ngrinder.perftest.service;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import org.junit.Test;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.model.SystemDataModel;
 import org.python.google.common.collect.Lists;
 
 import java.lang.reflect.Type;

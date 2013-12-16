@@ -17,9 +17,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -32,7 +32,8 @@ import java.util.Set;
 /**
  * Monitor Task Test
  */
-public class MonitorScheduledTaskTest extends AbstractAgentReadyTest {
+public class MonitorScheduledTaskTest extends AbstractAgentReadyTest implements AgentConstants {
+	public static final int DEFAULT_MONITOR_PORT = 13243;
 	private File tempReport;
 
 	@Autowired
@@ -58,7 +59,7 @@ public class MonitorScheduledTaskTest extends AbstractAgentReadyTest {
 	public void testAddMonitor() throws IOException {
 		AgentInfo monitorAgt = new AgentInfo();
 		monitorAgt.setIp("127.0.0.1");
-		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+		monitorAgt.setPort(DEFAULT_MONITOR_PORT);
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
 		MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
@@ -74,10 +75,10 @@ public class MonitorScheduledTaskTest extends AbstractAgentReadyTest {
 	public void testAddMonitorInvalid() throws IOException {
 		AgentInfo monitorAgt = new AgentInfo();
 		monitorAgt.setIp("10.10.10.10");
-		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+		monitorAgt.setPort(DEFAULT_MONITOR_PORT);
 		AgentInfo monitorAgt2 = new AgentInfo();
 		monitorAgt2.setIp("localhost");
-		monitorAgt2.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+		monitorAgt2.setPort(DEFAULT_MONITOR_PORT);
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
 		agents.add(monitorAgt2);

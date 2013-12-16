@@ -13,19 +13,7 @@
  */
 package org.ngrinder.infra.init;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkArgument;
-import static org.ngrinder.common.util.Preconditions.checkState;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-
-import javax.annotation.PostConstruct;
-
 import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.service.RegionService;
@@ -36,6 +24,16 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkState;
 
 /**
  * Verify clustering is set up well. such as check the region is not duplicated. check if they use
@@ -68,7 +66,7 @@ public class ClusterConfigurationVerifier {
 	 */
 	@PostConstruct
 	public void init() throws IOException {
-		if (config.isClustered() && !config.isTestMode()) {
+		if (config.isClustered() && !config.isDevMode()) {
 			systemConfFile = config.getHome().getSubFile("system.conf");
 			cache = cacheManager.getCache("controller_home");
 			config.addSystemConfListener(new PropertyChangeListener() {
@@ -112,7 +110,7 @@ public class ClusterConfigurationVerifier {
 	 */
 	private void checkDB() {
 		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();
-		if (!config.isTestMode()) {
+		if (!config.isDevMode()) {
 			checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and Please use CUBRID !", db);
 		}
 	}

@@ -36,6 +36,7 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ import java.util.TimerTask;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentImplementationEx implements Agent {
+public class AgentImplementationEx implements Agent, AgentConstants {
 
 	private final Logger m_logger;
 	private final boolean m_proceedWithoutConsole;
@@ -362,8 +363,8 @@ public class AgentImplementationEx implements Agent {
 	                                      GrinderProperties properties) {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
 				"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
-				NetworkUtils.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
-				m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true), m_agentConfig.getProperty("agent.javaopt", null));
+				NetworkUtils.getLocalHostName(), m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE),
+				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX), m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JAVA_OPT));
 		String jvmArguments = builder.buildJVMArgument();
 		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
 				+ File.pathSeparator

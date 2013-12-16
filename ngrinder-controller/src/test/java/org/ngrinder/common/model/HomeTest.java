@@ -14,7 +14,7 @@
 package org.ngrinder.common.model;
 
 import org.junit.Test;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
  */
 @ActiveProfiles("unit-test")
 @ContextConfiguration("classpath:applicationContext.xml")
-public class HomeTest extends AbstractJUnit4SpringContextTests implements Constants {
+public class HomeTest extends AbstractJUnit4SpringContextTests implements ControllerConstants {
 
 	@Autowired
 	private Config config;

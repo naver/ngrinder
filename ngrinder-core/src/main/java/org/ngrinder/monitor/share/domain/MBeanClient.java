@@ -66,7 +66,7 @@ public class MBeanClient {
 			connectClient();
 		} catch (Exception ex) {
 			LOGGER.info("Error while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
-			LOGGER.info("Details is ", ex.getMessage());
+			LOGGER.info("Details is ", ex);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class MBeanClient {
 
 	/**
 	 * get the monitor object of the object name and attribute name. See
-	 * {@link MonitorCollectionInfoDomain}.
+	 * {@link org.ngrinder.monitor.domain.MonitorCollectionInfoDomain}.
 	 *
 	 * @param objName  is the object name of the object in JMX MBean server.
 	 * @param attrName is the attribute name

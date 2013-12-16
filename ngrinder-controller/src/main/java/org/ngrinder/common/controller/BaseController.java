@@ -16,7 +16,7 @@ package org.ngrinder.common.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -49,7 +49,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class BaseController implements Constants {
+public class BaseController implements WebConstants {
 	private static String successJson;
 	private static String errorJson;
 	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();

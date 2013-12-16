@@ -17,7 +17,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.model.SystemDataModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +39,7 @@ public interface IAgentManagerService {
 	 * @param user current user
 	 * @return user available agent count map
 	 */
-	public abstract Map<String, MutableInt> getUserAvailableAgentCountMap(User user);
+	public abstract Map<String, MutableInt> getAvailableAgentCountMap(User user);
 
 	/**
 	 * Get all agent agents. The agent list is obtained combining the data from

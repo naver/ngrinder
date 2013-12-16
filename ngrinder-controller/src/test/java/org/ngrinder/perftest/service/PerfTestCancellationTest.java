@@ -13,22 +13,12 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import net.grinder.SingleConsole;
 import net.grinder.console.model.SampleModelImplementationEx;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -38,7 +28,16 @@ import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-public class PerfTestCancellationTest extends AbstractAgentReadyTest implements Constants {
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public class PerfTestCancellationTest extends AbstractAgentReadyTest implements ControllerConstants {
 
 	@Autowired
 	private MockPerfTestRunnableForCancellation perfTestRunnable;

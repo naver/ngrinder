@@ -13,12 +13,13 @@
  */
 package org.ngrinder.infra;
 
-import net.grinder.communication.AgentControllerCommunicationDefaults;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constants.AgentConstants;
+import org.ngrinder.common.constants.MonitorConstants;
+import org.ngrinder.common.util.PropertiesKeyMapper;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
+import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -41,28 +43,17 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentConfig {
+public class AgentConfig implements AgentConstants, MonitorConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
-
-	// Available from 3.3
-	public static final String AGENT_CONTROLLER_IP = "agent.controller.ip";
-	public static final String AGENT_CONTROLLER_PORT = "agent.controller.port";
-
-	// For backward compatibility
-	public static final String AGENT_CONSOLE_IP = "agent.console.ip";
-	public static final String AGENT_CONSOLE_PORT = "agent.console.port";
-
-	public static final String AGENT_REGION = "agent.region";
-	public static final String AGENT_HOST_ID = "agent.hostid";
-	public static final String MONITOR_LISTEN_PORT = "monitor.listen.port";
-	public static final String MONITOR_LISTEN_IP = "monitor.listen.ip";
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 
-	private AgentHome home = null;
+	protected AgentHome home = null;
 	private PropertiesWrapper agentProperties;
+	private PropertiesWrapper monitorProperties;
 	private PropertiesWrapper internalProperties;
 	private boolean silent = false;
+	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
+	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
 
 	/**
 	 * Initialize.
@@ -88,16 +79,16 @@ public class AgentConfig {
 		return init();
 	}
 
-	private void loadInternalProperties() {
+	protected void loadInternalProperties() {
 		InputStream inputStream = null;
 		Properties properties = new Properties();
 		try {
 			inputStream = AgentConfig.class.getResourceAsStream("/internal.properties");
 			properties.load(inputStream);
-			internalProperties = new PropertiesWrapper(properties);
+			internalProperties = new PropertiesWrapper(properties, agentPropertyMapper);
 		} catch (IOException e) {
 			LOGGER.error("Error while load internal.properties", e);
-			internalProperties = new PropertiesWrapper(properties);
+			internalProperties = new PropertiesWrapper(properties, agentPropertyMapper);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
@@ -118,11 +109,12 @@ public class AgentConfig {
 	}
 
 
-	private void loadAgentProperties() {
+	protected void loadAgentProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("agent.conf");
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
-		agentProperties = new PropertiesWrapper(properties);
+		agentProperties = new PropertiesWrapper(properties, agentPropertyMapper);
+		monitorProperties = new PropertiesWrapper(properties, monitorPropertyMapper);
 	}
 
 	/**
@@ -228,8 +220,8 @@ public class AgentConfig {
 	 * @return true is test mode
 	 */
 
-	public boolean isTestMode() {
-		return BooleanUtils.toBoolean(getProperty("testmode", "false"));
+	public boolean isDevMode() {
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_DEV_MODE);
 	}
 
 	public AgentHome getHome() {
@@ -242,30 +234,16 @@ public class AgentConfig {
 	 * @return agent properties
 	 */
 	public PropertiesWrapper getAgentProperties() {
-		checkNotNull(agentProperties);
-		return agentProperties;
+		return checkNotNull(agentProperties);
 	}
 
 	/**
-	 * Get the string value from property for the given key.
+	 * Get monitor properties.
 	 *
-	 * @param key          property key
-	 * @param defaultValue default value
-	 * @return string value for given key. If not available, return default value.
+	 * @return monitor properties
 	 */
-	public String getProperty(String key, String defaultValue) {
-		return getAgentProperties().getProperty(key, defaultValue);
-	}
-
-	/**
-	 * Get the int value from property for the given key.
-	 *
-	 * @param key          property key
-	 * @param defaultValue default value
-	 * @return int value for given key. If not available, return default value.
-	 */
-	public int getPropertyInt(String key, int defaultValue) {
-		return getAgentProperties().getPropertyInt(key, defaultValue);
+	public PropertiesWrapper getMonitorProperties() {
+		return checkNotNull(monitorProperties);
 	}
 
 	/**
@@ -283,40 +261,35 @@ public class AgentConfig {
 		return new File(System.getProperty("user.dir"));
 	}
 
-	/**
-	 * Get the boolean value from the properties.
-	 *
-	 * @param key          property key
-	 * @param defaultValue default value
-	 * @return boolean value for given key. If not available, return default value.
-	 */
-	public boolean getPropertyBoolean(String key, boolean defaultValue) {
-		return getAgentProperties().getPropertyBoolean(key, defaultValue);
+
+	public String getMonitorBindingIP() {
+		return getMonitorProperties().getProperty(PROP_MONITOR_BINDING_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public String getControllerIP() {
-		final String property = getProperty(AGENT_CONSOLE_IP, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
-		return getProperty(AGENT_CONTROLLER_IP, property);
+		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_IP, DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
+
 	public void setControllerIP(String ip) {
-		getAgentProperties().setProperty(AGENT_CONTROLLER_IP, ip);
+		getAgentProperties().addProperty(PROP_AGENT_CONTROLLER_IP, ip);
 	}
 
 	public int getControllerPort() {
-		return getPropertyInt(AGENT_CONTROLLER_PORT, getPropertyInt(AGENT_CONSOLE_PORT, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
+		//(AGENT_CONSOLE_PORT
+		return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
 	}
 
 	public String getRegion() {
-		return getProperty(AGENT_REGION, "");
+		return getAgentProperties().getProperty(PROP_AGENT_REGION);
 	}
 
 	public String getAgentHostID() {
-		return getProperty(AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
+		return getAgentProperties().getProperty(PROP_AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
 	}
 
 	public boolean isServerMode() {
-		return getPropertyBoolean("agent.servermode", false);
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE);
 	}
 
 	public boolean isSilentMode() {
@@ -330,14 +303,14 @@ public class AgentConfig {
 
 		public NullAgentConfig(int i) {
 			counter = i;
+			home = resolveHome();
+			loadAgentProperties();
+			loadInternalProperties();
 		}
 
 
 		public int getControllerPort() {
-			if (controllerPort == 0) {
-				return getPropertyInt(AGENT_CONTROLLER_PORT, getPropertyInt(AGENT_CONSOLE_PORT, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
-			}
-			return controllerPort;
+			return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
 		}
 
 		public void setControllerPort(int controllerPort) {

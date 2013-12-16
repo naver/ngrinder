@@ -13,19 +13,18 @@
  */
 package org.ngrinder.perftest.service.samplinglistener;
 
-import java.io.File;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.statistics.StatisticsSet;
-
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
+
+import java.io.File;
 
 /**
  * Agent crash preventer.

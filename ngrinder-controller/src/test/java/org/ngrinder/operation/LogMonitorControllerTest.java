@@ -13,10 +13,8 @@
  */
 package org.ngrinder.operation;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
@@ -27,8 +25,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest {
 	public static final Logger LOGGER = LoggerFactory.getLogger(LogMonitorControllerTest.class);
@@ -51,7 +50,7 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 		LOGGER.debug("TEST TEST");
 		sleep(1000);
 		// if logMonitorController.enableVerbose(false), it will check system setting.
-		boolean isDebug = config.getSystemProperties().getPropertyBoolean("verbose", false);
+		boolean isDebug = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_VERBOSE);
 		if (!isDebug) {
 			assertThat(getLastMessage(), not(containsString("TEST TEST")));
 		}

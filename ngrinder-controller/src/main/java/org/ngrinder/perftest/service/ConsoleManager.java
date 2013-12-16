@@ -15,7 +15,6 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
-import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
@@ -33,13 +32,13 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.ngrinder.common.constant.Constants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+import static org.ngrinder.common.constant.ControllerConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Console manager is responsible for console instance management.
- *
+ * <p/>
  * A number of consoles(specified in ngrinder.maxConcurrentTest in system.conf) are pooled. Actually console itself is
  * not pooled but the {@link ConsoleEntry} which contains console information are pooled internally. Whenever a user
  * requires a new console, it gets the one {@link ConsoleEntry} from the pool and creates new console with the
@@ -75,14 +74,13 @@ public class ConsoleManager {
 
 	/**
 	 * Get the base port number of console.
-	 *
+	 * <p/>
 	 * It can be specified at ngrinder.consolePortBase in system.conf. Each console will be created from that port.
 	 *
 	 * @return base port number
 	 */
 	protected int getConsolePortBase() {
-		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_CONSOLE_PORT_BASE,
-				Constants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_CONSOLE_PORT_BASE);
 	}
 
 	/**
@@ -91,8 +89,7 @@ public class ConsoleManager {
 	 * @return console size.
 	 */
 	protected int getConsoleSize() {
-		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-				Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_CONCURRENT_TEST);
 	}
 
 	/**
@@ -101,8 +98,7 @@ public class ConsoleManager {
 	 * @return 5000 second
 	 */
 	protected long getMaxWaitingMilliSecond() {
-		return config.getSystemProperties().getPropertyInt(NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS,
-				Constants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_CONNECTION_WAITING_MILLISECOND);
 	}
 
 	/**
@@ -167,7 +163,7 @@ public class ConsoleManager {
 
 	/**
 	 * Get an available console.
-	 *
+	 * <p/>
 	 * If there is no available console, it waits until available console is returned back. If the specific time is
 	 * elapsed, the timeout error occurs and throws {@link org.ngrinder.common.exception.NGrinderRuntimeException} . The
 	 * timeout can be adjusted by overriding {@link #getMaxWaitingMilliSecond()}.
@@ -199,7 +195,7 @@ public class ConsoleManager {
 
 	/**
 	 * Return back the given console.
-	 *
+	 * <p/>
 	 * Duplicated returns is allowed.
 	 *
 	 * @param testIdentifier test identifier
@@ -237,18 +233,18 @@ public class ConsoleManager {
 			int consolePort;
 			try {
 				consolePort = console.getConsolePort();
-			} catch (Exception e) {
-				return;
-			}
-			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
-			synchronized (this) {
-				if (!consoleQueue.contains(consoleEntry)) {
-					consoleQueue.add(consoleEntry);
-					if (!getConsoleInUse().contains(console)) {
-						LOG.error("Try to return back the not used console on {} port", consolePort);
+				ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
+				synchronized (this) {
+					if (!consoleQueue.contains(consoleEntry)) {
+						consoleQueue.add(consoleEntry);
+						if (!getConsoleInUse().contains(console)) {
+							LOG.error("Try to return back the not used console on {} port", consolePort);
+						}
+						getConsoleInUse().remove(console);
 					}
-					getConsoleInUse().remove(console);
 				}
+			} catch (Exception e) {
+				noOp();
 			}
 		}
 	}

@@ -13,24 +13,10 @@
  */
 package org.ngrinder.perftest.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.config.Config;
@@ -51,13 +37,22 @@ import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 /**
  * PerfTest Controller Test.
  *
  * @author mavlarn
- * @Since 3.0
+ * @since 3.0
  */
-public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
+public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest implements WebConstants {
 
 	@Autowired
 	private MockPerfTestController controller;

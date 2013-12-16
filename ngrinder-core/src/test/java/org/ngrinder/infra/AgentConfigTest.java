@@ -52,7 +52,7 @@ public class AgentConfigTest {
 
 		// Then
 		assertThat(monitorPid).isEqualTo("1001");
-		assertThat(config.isTestMode()).isEqualTo(false);
+		assertThat(config.isDevMode()).isEqualTo(false);
 
 		// When
 		System.setProperty("ngrinder.agent.home", "./tmp_agent_home");
