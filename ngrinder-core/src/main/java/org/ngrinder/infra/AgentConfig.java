@@ -319,7 +319,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 
 		public int getControllerPort() {
-			return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
+			return this.controllerPort;
 		}
 
 		public void setControllerPort(int controllerPort) {
