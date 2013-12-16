@@ -28,7 +28,6 @@ import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.plugin.http.HTTPPlugin;
 import net.grinder.plugininterface.GrinderPlugin;
 import net.grinder.plugininterface.PluginRegistry;
-import net.grinder.util.ThreadUtils;
 import org.codehaus.groovy.reflection.ReflectionUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
