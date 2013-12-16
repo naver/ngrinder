@@ -18,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constants.AgentConstants;
+import org.ngrinder.common.constants.CommonConstants;
 import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.common.util.PropertiesKeyMapper;
 import org.ngrinder.common.util.PropertiesWrapper;
@@ -43,17 +44,20 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentConfig implements AgentConstants, MonitorConstants {
+public class AgentConfig implements AgentConstants, MonitorConstants, CommonConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 
 	protected AgentHome home = null;
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper monitorProperties;
+	private PropertiesWrapper commonProperties;
 	private PropertiesWrapper internalProperties;
 	private boolean silent = false;
 	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
 	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
+	private PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
+
 
 	/**
 	 * Initialize.
@@ -63,7 +67,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants {
 	public AgentConfig init() {
 		home = resolveHome();
 		copyDefaultConfigurationFiles();
-		loadAgentProperties();
+		loadProperties();
 		loadInternalProperties();
 		return this;
 	}
@@ -109,12 +113,13 @@ public class AgentConfig implements AgentConstants, MonitorConstants {
 	}
 
 
-	protected void loadAgentProperties() {
+	protected void loadProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("agent.conf");
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties, agentPropertyMapper);
 		monitorProperties = new PropertiesWrapper(properties, monitorPropertyMapper);
+		commonProperties = new PropertiesWrapper(properties, commonPropertyMapper);
 	}
 
 	/**
@@ -221,7 +226,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants {
 	 */
 
 	public boolean isDevMode() {
-		return getAgentProperties().getPropertyBoolean(PROP_AGENT_DEV_MODE);
+		return getCommonProperties().getPropertyBoolean(PROP_COMMON_DEV_MODE);
 	}
 
 	public AgentHome getHome() {
@@ -296,6 +301,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants {
 		return silent;
 	}
 
+	public PropertiesWrapper getCommonProperties() {
+		return commonProperties;
+	}
+
 
 	public static class NullAgentConfig extends AgentConfig {
 		public int counter = 0;
@@ -304,7 +313,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants {
 		public NullAgentConfig(int i) {
 			counter = i;
 			home = resolveHome();
-			loadAgentProperties();
+			loadProperties();
 			loadInternalProperties();
 		}
 

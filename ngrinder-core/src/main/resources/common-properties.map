@@ -1,0 +1,3 @@
+common.start_mode,agent,start.mode
+common.verbose,false,verbose
+common.dev_mode,false,testmode

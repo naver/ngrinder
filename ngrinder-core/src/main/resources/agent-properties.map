@@ -1,4 +1,3 @@
-agent.dev_mode,false,testmode
 agent.verbose,,verbose
 agent.controller_ip,,agent.controller.ip,agent.console.ip
 agent.controller_port,16001,agent.console.port
@@ -8,3 +7,4 @@ agent.server_mode,,
 agent.all_logs,false,agent.send.all.logs
 agent.limit_xmx,true,agent.useXmxLimit
 agent.java_opt,,agent.javaopt
+start.mode

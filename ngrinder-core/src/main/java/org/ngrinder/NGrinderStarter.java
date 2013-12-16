@@ -23,6 +23,7 @@ import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.ngrinder.common.constants.AgentConstants;
+import org.ngrinder.common.constants.CommonConstants;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.monitor.agent.MonitorServer;
@@ -43,7 +44,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class NGrinderStarter implements AgentConstants {
+public class NGrinderStarter implements AgentConstants, CommonConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
 
@@ -79,7 +80,7 @@ public class NGrinderStarter implements AgentConstants {
 	}
 
 	private void configureLogging() {
-		Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_VERBOSE);
+		Boolean verboseMode = agentConfig.getCommonProperties().getPropertyBoolean(PROP_COMMON_VERBOSE);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
 	}
@@ -94,7 +95,7 @@ public class NGrinderStarter implements AgentConstants {
 	 * Get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
 	 */
 	public String getStartMode() {
-		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
+		return agentConfig.getCommonProperties().getProperty(PROP_COMMON_START_MODE);
 	}
 
 	/**
