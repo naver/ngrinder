@@ -28,7 +28,7 @@
 								<#if svnUrl?has_content>
 									<div class="input-prepend pull-right" rel="popover" 
 										title="Subversion" data-placement="bottom"
-										data-content='<@spring.message "script.list.message.svn"/>'
+										data-content='<@spring.message "script.message.svn"/>'
 										data-html="true">
 										<span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
 						        	</div>  
@@ -50,22 +50,22 @@
 									<#if !(query??)>
 										<a class="btn btn-primary" href="#create_script_modal" data-toggle="modal">
 											<i class="icon-file icon-white"></i>
-											<@spring.message "script.list.button.createScript"/>
+											<@spring.message "script.action.createScript"/>
 										</a>
 										<a class="btn" href="#create_folder_modal" data-toggle="modal">
 											<i class=" icon-folder-open"></i>
-											<@spring.message "script.list.button.createFolder"/>
+											<@spring.message "script.action.createFolder"/>
 										</a>
 										<a class="btn" href="#upload_file_modal" data-toggle="modal">
 											<i class="icon-upload"></i>
-											<@spring.message "script.list.label.upload"/>
+											<@spring.message "script.action.uploadResources"/>
 										</a>
 									</#if>
 								</td>
 								<td>
 									<a class="pointer-cursor btn btn-danger pull-right" id="delete_script_button">
 										<i class="icon-remove icon-white"></i>
-										<@spring.message "script.list.button.delete"/>
+										<@spring.message "script.action.delete"/>
 									</a>
 								</td> 
 							</tr>
@@ -91,12 +91,12 @@
 					<th><input type="checkbox" class="checkbox" value=""></th>
 					<th class="no-click"><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
 					</th>
-					<th><@spring.message "script.list.table.name"/></th>
-					<th class="no-click"><@spring.message "script.option.commit"/></th>
-					<th><@spring.message "script.list.table.lastDate"/></th>
-					<th><@spring.message "script.list.table.revision"/></th>
-					<th><@spring.message "script.list.table.size"/></th>
-					<th class="no-click"><@spring.message "script.list.table.download"/></th>
+					<th><@spring.message "script.list.name"/></th>
+					<th class="no-click"><@spring.message "script.list.commit"/></th>
+					<th><@spring.message "script.list.lastDate"/></th>
+					<th><@spring.message "script.list.revision"/></th>
+					<th><@spring.message "script.list.size"/></th>
+					<th class="no-click"><@spring.message "script.list.download"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -152,10 +152,10 @@
 			$("#delete_script_button").click(function() {
 				var list = $("td input:checked");
 				if(list.length == 0) {
-					bootbox.alert("<@spring.message "script.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");
+					bootbox.alert("<@spring.message "script.message.delete.alert"/>", "<@spring.message "common.button.ok"/>");
 					return;
 				}
-	      		bootbox.confirm("<@spring.message "script.list.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+	      		bootbox.confirm("<@spring.message "script.message.delete.conform"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 					if (result) {
 						var scriptsStr = list.map(function() {
 							return $(this).val();

@@ -1,25 +1,25 @@
 <div class="modal hide fade" id="create_script_modal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		<h4><@spring.message "script.list.button.createScript"/></h4>
+		<h4><@spring.message "script.action.createScript"/></h4>
 	</div>
 	<div class="modal-body">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/new/${currentPath}">
 			<fieldset>
 
-				<@control_group name="fileName" inline_help="true" label_message_key="script.option.name">
+				<@control_group name="fileName" inline_help="true" label_message_key="script.name">
 					<#assign name_message>
 						<@spring.message "common.form.rule.sampleName"/>
 					</#assign>
 
 					<@input_popover name="fileName" rel="create_script_modal_popover"
 						data_placement="right"
-						message="script.option.name"
+						message="script.name"
 						message_content="${name_message?js_string}"
 						extra_css="input-large" />
 				</@control_group>
 
-				<@control_group name="scriptType" inline_help="true" label_message_key="script.list.label.type">
+				<@control_group name="scriptType" inline_help="true" label_message_key="script.info.type">
 					<input type="hidden" name="type" value="script"/>
 					<select id="script_type" name="scriptType">
 						<#list handlers as handler>
@@ -28,7 +28,7 @@
 					</select>
 				</@control_group>
 
-				<@control_group name="testUrl" inline_help="true" label_message_key="script.list.label.url">
+				<@control_group name="testUrl" inline_help="true" label_message_key="script.info.url">
 					<#assign url_message>
 						<@spring.message "home.tip.url.content"/>
 					</#assign>
@@ -45,20 +45,20 @@
 					<div class="controls">
 						<label class="checkbox">
 						<#assign lib_message>
-							<@spring.message "script.tip.libAndResource"/>
+							<@spring.message "script.message.libAndResource"/>
 						</#assign>
 
 						<@input_popover name="createLibAndResource"
 							rel="create_script_modal_popover"
 							data_placement="right"
 							type="checkbox"
-							message="script.list.label.createResourceAndLib"
+							message="script.action.createResourceAndLib"
 							message_content="${lib_message}"
 							extra_css="input-medium" />
 
-							<@spring.message "script.list.label.createResourceAndLib"/>
+							<@spring.message "script.action.createResourceAndLib"/>
 						</label>
-						<span class="help-inline well"><@spring.message "script.list.label.createResourceAndLib.help"/>
+						<span class="help-inline well"><@spring.message "script.action.createResourceAndLib.help"/>
 						<a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
 						</span>
 					</div> 

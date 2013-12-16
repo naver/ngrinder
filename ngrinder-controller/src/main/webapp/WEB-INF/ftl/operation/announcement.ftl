@@ -12,7 +12,7 @@
 				<form id="announcement_form" name="announcement_form" method="POST">
 					<fieldset>
 						<legend class="header">
-							<@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
+							<@spring.message "navigator.dropDown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
 							<a id="test_btn" class="pointer-cursor btn btn-primary pull-right">
 								<@spring.message "common.button.test"/>
 							</a>

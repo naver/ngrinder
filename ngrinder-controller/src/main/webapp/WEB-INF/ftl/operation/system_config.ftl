@@ -13,7 +13,7 @@
 			<form id="sys_config_form" name="sys_config_form" method="post">
 				<fieldset>
 					<legend class="header">
-					<@spring.message "navigator.dropdown.systemConfig"/>
+					<@spring.message "navigator.dropDown.systemConfig"/>
 						<button id="save_btn" class="btn btn-success pull-right">
 						<@spring.message "common.button.save"/>
 						</button>

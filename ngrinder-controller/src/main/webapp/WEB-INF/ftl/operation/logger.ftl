@@ -12,7 +12,7 @@
 		<div class="row">
 			<div class="span12">
 				<legend class="header">
-					<@spring.message "navigator.dropdown.logMonitoring"/>
+					<@spring.message "navigator.dropDown.logMonitoring"/>
 				</legend>
 				<table id="log_container">
 				</table>

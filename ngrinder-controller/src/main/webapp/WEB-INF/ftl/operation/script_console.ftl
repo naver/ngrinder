@@ -21,7 +21,7 @@
 				<form action="${req.getContextPath()}/operation/script_console" name="script_form" method="POST">
 					<fieldset>
 						<legend class="header">
-							<@spring.message "navigator.dropdown.scriptConsole"/>
+							<@spring.message "navigator.dropDown.scriptConsole"/>
 							<button class="btn btn-success pull-right" id="run_btn">
 								<@spring.message "script.view.button.runScript"/>
 							</button>

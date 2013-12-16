@@ -5,7 +5,7 @@
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
-	<title><@spring.message "perfTest.detail.title"/></title>
+	<title><@spring.message "perfTest.title"/></title>
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
@@ -164,12 +164,12 @@
 						<div class="control-group">
 							<div class="row">
 								<div class="span4-5">
-									<@control_group name = "testName" controls_style = "margin-left: 120px;" label_message_key = "perfTest.configuration.testName">
+									<@control_group name = "testName" controls_style = "margin-left: 120px;" label_message_key = "perfTest.config.testName">
 										<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${test.testName}"/>
 									</@control_group>
 								</div>
 								<div class="span3-4">
-									<@control_group name = "tagString" label_style = "width:60px;" controls_style = "margin-left: 40px;" label_message_key = "perfTest.configuration.tags">
+									<@control_group name = "tagString" label_style = "width:60px;" controls_style = "margin-left: 40px;" label_message_key = "perfTest.config.tags">
 										<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${test.tagString}">
 									</@control_group>
 								</div>
@@ -200,13 +200,13 @@
 										</#if>
 										<button type="submit" class="btn btn-success" id="save_test_btn" style="width:55px" ${disabled!}>
 											<#if isClone>
-												<@spring.message "perfTest.detail.clone"/>
+												<@spring.message "perfTest.action.clone"/>
 											<#else>
 												<@spring.message "common.button.save"/>
 											</#if> 
 										</button>
 										<button type="button" class="btn btn-primary" style="width:116px" id="save_schedule_btn" ${disabled!}>
-											<#if isClone><@spring.message "perfTest.detail.clone"/><#else><@spring.message "common.button.save"/></#if>&nbsp;<@spring.message "perfTest.detail.andStart"/>
+											<#if isClone><@spring.message "perfTest.action.clone"/><#else><@spring.message "common.button.save"/></#if>&nbsp;<@spring.message "perfTest.action.andStart"/>
 										</button>
 									</div>
 								</div>
@@ -225,7 +225,7 @@
 			<@security.authorize ifAnyGranted="A, S">
 				<#if test.createdUser?? && currentUser.userId != test.createdUser.userId>
 					<div class="pull-right">
-						<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})		
+						<@spring.message "perfTest.list.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})
 					</div>
 				</#if>
 			</@security.authorize >
@@ -233,12 +233,12 @@
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
 					<li id="test_config_section_tab">
 						<a href="#test_config_section" data-toggle="tab">
-							<@spring.message "perfTest.configuration.testConfiguration"/>
+							<@spring.message "perfTest.config.testConfiguration"/>
 						</a>
 					</li> 
 					<li id="running_section_tab" style="display: none;">
 						<a href="#running_section" data-toggle="tab" id="running_section_btn">
-							<@spring.message "perfTest.testRunning.title"/>
+							<@spring.message "perfTest.running.title"/>
 						</a>
 					</li>
 
@@ -278,14 +278,14 @@
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">&times;</a>
 			<h3>
-				<@spring.message "perfTest.testRunning.scheduleTitle"/> <small class="error-color"></small>
+				<@spring.message "perfTest.running.scheduleTitle"/> <small class="error-color"></small>
 			</h3>
 		</div>
 		<div class="modal-body">
 			<div class="form-horizontal">
 				<fieldset>
 					<div class="control-group">
-						<label class="control-label"><@spring.message "perfTest.testRunning.schedule"/></label>
+						<label class="control-label"><@spring.message "perfTest.running.schedule"/></label>
 						<div class="controls form-inline">
 							<input type="text" class="input span2" id="scheduled_date" value="" readyonly>&nbsp; 
 							<select id="scheduled_hour" class="select-item"></select> : <select id="scheduled_min" class="select-item"></select>
@@ -296,7 +296,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="add_schedule_btn"><@spring.message "perfTest.testRunning.schedule"/></a>
+			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.running.runNow"/></a> <a class="btn btn-primary" id="add_schedule_btn"><@spring.message "perfTest.running.schedule"/></a>
 		</div>
 	</div>
 	<#include "host_modal.ftl">
@@ -379,7 +379,7 @@ function initTags() {
 	$("#tag_string").select2({	
 		tokenSeparators: [",", " "],
 		tags:[""],
-		placeholder: '<@spring.message "perfTest.configuration.tagInput"/>',
+		placeholder: '<@spring.message "perfTest.config.tagInput"/>',
 		initSelection : function (element, callback) {
 			var data = [];
 			$(element.val().split(",")).each(function () {
@@ -404,7 +404,7 @@ function initTags() {
 	}).change(formatTags);
 
 	$("#script_name").select2({
-		placeholder: '<@spring.message "perfTest.configuration.scriptInput"/>'
+		placeholder: '<@spring.message "perfTest.config.scriptInput"/>'
 	});
 }
 
@@ -551,39 +551,39 @@ function addValidation() {
 		},
 		messages: {
 			testName: {
-				required: "<@spring.message 'perfTest.warning.testName'/>"
+				required: "<@spring.message 'perfTest.message.testName'/>"
 			},
 		<#if clustered>
 			region : {
-				required: "<@spring.message 'perfTest.warning.region'/>"
+				required: "<@spring.message 'perfTest.message.region'/>"
 			},
 		</#if>
 			agentCount: {
-				required: "<@spring.message 'perfTest.warning.agentNumber'/>"
+				required: "<@spring.message 'perfTest.message.agentNumber'/>"
 			},
 			vuserPerAgent: {
-				required: "<@spring.message 'perfTest.warning.vuserPerAgent'/>"
+				required: "<@spring.message 'perfTest.message.vuserPerAgent'/>"
 			},
 			scriptName: {
-				required: "<@spring.message 'perfTest.warning.script'/>"
+				required: "<@spring.message 'perfTest.message.script'/>"
 			},
 			durationHour: {
-				max: "<@spring.message 'perfTest.warning.duration.maxHour'/>"
+				max: "<@spring.message 'perfTest.message.duration.maxHour'/>"
 			},
 			runCount: {
-				required: "<@spring.message 'perfTest.warning.runCount'/>"
+				required: "<@spring.message 'perfTest.message.runCount'/>"
 			},
 			processes: {
-				required: "<@spring.message 'perfTest.warning.processes'/>"
+				required: "<@spring.message 'perfTest.message.processes'/>"
 			},
 			threads: {
-				required: "<@spring.message 'perfTest.warning.threads'/>"
+				required: "<@spring.message 'perfTest.message.threads'/>"
 			},
 			targetHosts: {
-				required: "<@spring.message 'perfTest.warning.hostString'/>"
+				required: "<@spring.message 'perfTest.message.hostString'/>"
 			},
 			param : {
-				paramFmt: "<@spring.message 'perfTest.warning.param'/>"
+				paramFmt: "<@spring.message 'perfTest.message.param'/>"
 			}
 
 		},
@@ -734,7 +734,7 @@ function bindEvent() {
 		$scheduleModal.find("small").html("");
 		$("#scheduled_time").attr('name', '');
 		$("#test_status").val("READY");
-		showSuccessMsg("<@spring.message 'perfTest.detail.message.testStart'/>");
+		showSuccessMsg("<@spring.message 'perfTest.message.testStart'/>");
 		setTimeout(function() {
 			document.test_config_form.submit();
 		}, 1000);
@@ -745,7 +745,7 @@ function bindEvent() {
 	$("#add_schedule_btn").click(function() {
         var $scheduleModal = $("#schedule_modal");
         if (checkEmptyByID("scheduled_date")) {
-			$scheduleModal.find("small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
+			$scheduleModal.find("small").html("<@spring.message "perfTest.message.setScheduleDate.alert"/>");
 			return;
 		}
 
@@ -754,7 +754,7 @@ function bindEvent() {
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime())
         if (new Date() > scheduledTime) {
-			$scheduleModal.find("small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
+			$scheduleModal.find("small").html("<@spring.message "perfTest.message.scheduleDate.error"/>");
 			return;
 		}
 		$("#scheduled_time").val(scheduledTime);
@@ -880,7 +880,7 @@ function bindEvent() {
 	$('#message_div').ajaxSend(function(e, xhr, settings) {
 		var url = settings.url;
 		if ((url.indexOf("resource") > 0 || url.indexOf("script") > 0)) {
-			showProgressBar("<@spring.message "perfTest.detail.message.updateResource"/>");
+			showProgressBar("<@spring.message "perfTest.message.updateResource"/>");
 		}
 	});
 <#if clustered>

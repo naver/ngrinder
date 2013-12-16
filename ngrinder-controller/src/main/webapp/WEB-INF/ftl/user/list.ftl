@@ -11,7 +11,7 @@
 	<div class="container">
 		<fieldSet>
 			<legend class="header">
-				<@spring.message "navigator.dropdown.userManagement"/>
+				<@spring.message "navigator.dropDown.userManagement"/>
 				<select id="roles" class="pull-right" name="roles">
 					<option value="all" <#if listPage?? && !role??>selected</#if> >
 						<@spring.message "user.left.all"/>

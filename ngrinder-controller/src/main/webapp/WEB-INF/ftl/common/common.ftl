@@ -32,8 +32,8 @@
 		range: $.validator.format("<@spring.message "common.message.validate.range"/>"),
 		max: $.validator.format("<@spring.message "common.message.validate.max"/>"),
 		min: $.validator.format("<@spring.message "common.message.validate.min"/>"),
-		maxlength: $.validator.format("<@spring.message "common.message.validate.maxlength"/>"),
-		rangelength: $.validator.format("<@spring.message "common.message.validate.rangelength"/>")
+		maxlength: $.validator.format("<@spring.message "common.message.validate.maxLength"/>"),
+		rangelength: $.validator.format("<@spring.message "common.message.validate.rangeLength"/>")
 	});
 </script>
 <#setting number_format="computer">

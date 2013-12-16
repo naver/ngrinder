@@ -54,7 +54,7 @@
 										</colgroup>
 										<tr>
 											<td>
-												<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
+												<label class="control-label" for="testName"><@spring.message "script.name"/></label>
 											</td>
 											<td>
 												<span class="input-large uneditable-input span6" style="cursor:text">${breadcrumbPath}</span>
@@ -80,7 +80,7 @@
 									</colgroup>
 									<tr>
 										<td>
-											<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
+											<label class="control-label" for="description"><@spring.message "script.action.commit"/></label>
 										</td>
 										<td>
 											<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
@@ -141,7 +141,7 @@
 		$(window).on('beforeunload', function(e) {
 			e.preventDefault();
 			if (changed == true) {
-				return "<@spring.message "script.editor.message.exitwithoutsave"/>";
+				return "<@spring.message "script.editor.message.exitWithoutSave"/>";
 			}
 		});
 		function saveScript() {

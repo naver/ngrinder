@@ -4,20 +4,20 @@
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h4>
-			<@spring.message "perfTest.configuration.addHost"/>&nbsp;
-			<small><@spring.message	"perfTest.configuration.pleaseInputOneOptionAtLeast"/></small>
+			<@spring.message "perfTest.config.addHost"/>&nbsp;
+			<small><@spring.message	"perfTest.config.pleaseInputOneOptionAtLeast"/></small>
 		</h4>
 	</div>
 	<div class="modal-body">
 		<div class="form-horizontal form-horizontal-4">
 			<fieldset>
 				<@control_group name="domainInput" label_style="text-align: right;"
-					inline_help="true" label_message_key="perfTest.configuration.domain">
+					inline_help="true" label_message_key="perfTest.config.domain">
 					<input type="text" class="input-medium" id="domain_input"
 						rel='modal_popover'
 						data-html='true'
-						data-content='<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>'
-						title='<@spring.message "perfTest.configuration.domain"/>'
+						data-content='<@spring.message "perfTest.config.addHost.inputTargetDomain"/>'
+						title='<@spring.message "perfTest.config.domain"/>'
 						data-placement='right'
 						/>
 				</@control_group>
@@ -26,7 +26,7 @@
 					<input type="text" class="input-medium"  id="ip_input"
 						rel='modal_popover'
 						data-html='true'
-						data-content='<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>'
+						data-content='<@spring.message "perfTest.config.addHost.inputTargetIp"/>'
 						title='IP'
 						data-placement='right'
 						/>
@@ -36,7 +36,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" id="add_host_button"><@spring.message "perfTest.configuration.add"/></button>
+		<button class="btn btn-primary" id="add_host_button"><@spring.message "perfTest.config.add"/></button>
 		<button class="btn" data-dismiss="modal"><@spring.message "common.button.cancel"/></button>
 	</div>
 </div>
@@ -61,7 +61,7 @@
 				arr.push(str);
 			}
 		} 
-		markInput($domain, successDomain, '<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>');
+		markInput($domain, successDomain, '<@spring.message "perfTest.config.addHost.inputTargetDomain"/>');
 
 		var successIp = true;
 		var $ip = $("#ip_input");
@@ -72,7 +72,7 @@
 				arr.push($ip.val());
 			}
 		}
-		markInput($ip, successIp, '<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>');
+		markInput($ip, successIp, '<@spring.message "perfTest.config.addHost.inputTargetIp"/>');
 		if (ipEmpty && domainEmpty) {
 			return false;
 		}

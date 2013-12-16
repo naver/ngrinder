@@ -170,24 +170,24 @@
 					<col>
 				</colgroup>
 				<tr>
-					<th><@spring.message "perfTest.table.startTime"/></th>
+					<th><@spring.message "perfTest.list.startTime"/></th>
 					<td>${(test.startTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
-					<th><@spring.message "perfTest.table.finishTime"/></th>
+					<th><@spring.message "perfTest.list.finishTime"/></th>
 					<td>${(test.finishTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
 				</tr>
 				<#if test.threshold == "D">
 				<tr>
-					<th><@spring.message "perfTest.configuration.duration"/></th>
+					<th><@spring.message "perfTest.config.duration"/></th>
 					<td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
 				<#else>
-					<th><@spring.message "perfTest.configuration.runCount"/></th>
+					<th><@spring.message "perfTest.config.runCount"/></th>
 					<td><span>${test.runCount}</td>
 				</#if>
-					<th><@spring.message "perfTest.configuration.runtime"/></th>
+					<th><@spring.message "perfTest.config.runtime"/></th>
 					<td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
 				</tr>
 				<tr>
-					<th><@spring.message "perfTest.report.testcomment"/></th>
+					<th><@spring.message "perfTest.report.testComment"/></th>
 					<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
 				</tr>
 			</table>

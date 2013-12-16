@@ -350,8 +350,8 @@ public class FileEntryController extends BaseController {
 
 		String basePath = FilenameUtils.getPath(fileEntry.getPath());
 		if (createLibAndResource) {
-			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libfolder"));
-			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourcefolder"));
+			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
+			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
 		}
 		model.clear();
 		return "redirect:/script/list/" + basePath;

@@ -49,7 +49,7 @@
 	<div class="span8">
 		<fieldSet>
 			<legend>
-				<@spring.message "perfTest.report.tpsgraph"/>
+				<@spring.message "perfTest.report.tpsGraph"/>
 				<a id="detail_report_btn" class="btn btn-primary pull-right">
 					<@spring.message "perfTest.report.detailedReport"/>
 				</a>
@@ -84,7 +84,7 @@
 	<div class="span8">
 		<fieldSet>
 			<legend>
-				<@spring.message "perfTest.report.longtestcomment"/>
+				<@spring.message "perfTest.report.longTestComment"/>
 				<a id="leave_comment_btn" class="btn btn-primary pull-right">
 					<@spring.message "perfTest.report.leaveComment"/>
 				</a>

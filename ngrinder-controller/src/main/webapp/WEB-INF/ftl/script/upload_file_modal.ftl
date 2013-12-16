@@ -1,7 +1,7 @@
 <div class="modal hide fade" id="upload_file_modal">
 	<div class="modal-header">
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-		<h4><@spring.message "script.list.button.upload"/></h4>
+		<h4><@spring.message "script.action.upload"/></h4>
 	</div>
 	<div class="modal-body">
 		<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload/${currentPath}"
@@ -9,14 +9,14 @@
 			<fieldset>
 				<input type="hidden" id="path" name="path"/>
 
-				<@control_group name="descriptonInput" inline_help="true" label_message_key="script.option.commit">
+				<@control_group name="descriptonInput" inline_help="true" label_message_key="script.action.commit">
 					<input type="text" id="descripton_input" name="description">
 				</@control_group>
 
-				<@control_group name="fileInput" label_message_key="script.list.label.file">
+				<@control_group name="fileInput" label_message_key="script.info.file">
 					<div rel='upload_file_modal_popover' data-html='true'
-						 title='<@spring.message "script.list.popover.upload.title"/>'
-						 data-content='<@spring.message "script.list.popover.upload.content"/>'>
+						 title='<@spring.message "script.message.upload.title"/>'
+						 data-content='<@spring.message "script.message.upload.content"/>'>
 						<input type="file" class="input-file" id="file_input" name="uploadFile"/>
 						<span class="help-inline"></span>
 					</div>
@@ -26,7 +26,7 @@
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" id="upload_file_button"><@spring.message "script.list.button.upload"/></button>
+		<button class="btn btn-primary" id="upload_file_button"><@spring.message "script.action.upload"/></button>
 		<button class="btn" data-dismiss="modal"><@spring.message "common.button.cancel"/></button>
 	</div>
 </div>

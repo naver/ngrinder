@@ -39,43 +39,43 @@
 						<#else>
 							<li>
 								<a id="user_profile_menu"
-								   class="pointer-cursor"><@spring.message "navigator.dropdown.profile"/></a>
+								   class="pointer-cursor"><@spring.message "navigator.dropDown.profile"/></a>
 							</li>
 							<li>
 								<a id="switch_user_menu"
-								   class="pointer-cursor"><@spring.message "navigator.dropdown.switchUser"/></a>
+								   class="pointer-cursor"><@spring.message "navigator.dropDown.switchUser"/></a>
 							</li>
 						</#if>
 
 						<@security.authorize ifAnyGranted="A">
 							<li class="divider"></li>
 							<li>
-								<a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropdown.userManagement"/></a>
+								<a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropDown.userManagement"/></a>
 							</li>
 							<li>
-								<a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropdown.agentManagement"/></a>
+								<a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropDown.agentManagement"/></a>
 							</li>
 							<#if clustered == false>
 								<li>
-									<a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a>
+									<a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropDown.logMonitoring"/></a>
 								</li>
 							</#if>
 							<li>
-								<a href="${req.getContextPath()}/operation/script_console"><@spring.message "navigator.dropdown.scriptConsole"/></a>
+								<a href="${req.getContextPath()}/operation/script_console"><@spring.message "navigator.dropDown.scriptConsole"/></a>
 							</li>
 							<li>
-								<a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropdown.systemConfig"/></a>
+								<a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropDown.systemConfig"/></a>
 							</li>
 						</@security.authorize>
 						<@security.authorize ifAnyGranted="S, A">
 							<li class="divider"></li>
 							<li>
-								<a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropdown.announcement"/></a>
+								<a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropDown.announcement"/></a>
 							</li>
 						</@security.authorize>
 							<li class="divider"></li>
 							<li>
-								<a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.logout"/></a>
+								<a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropDown.logout"/></a>
 							</li>
 						</ul>
 					</li>
@@ -117,7 +117,7 @@
 <div class="modal hide fade" id="user_profile_modal" role="dialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		<h4><@spring.message "navigator.dropdown.profile.title"/></h4>
+		<h4><@spring.message "navigator.dropDown.profile.title"/></h4>
 	</div>
 	<div class="modal-body" id="user_profile_modal_content" style="max-height:640px; padding-left:45px">
 	</div>

@@ -1,19 +1,19 @@
 <div class="modal hide fade" id="create_folder_modal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
     	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		<h4><@spring.message "script.list.button.createFolder"/></h4>
+		<h4><@spring.message "script.action.createFolder"/></h4>
 	</div>
 	<div class="modal-body">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/new/${currentPath}">
 			<fieldset>
-				<@control_group name="folderName" inline_help="true" label_message_key="script.list.label.folderName">
+				<@control_group name="folderName" inline_help="true" label_message_key="script.info.folderName">
 					<#assign content_message>
 						<@spring.message "common.form.rule.sampleName"/>
 					</#assign>
 					<input type="hidden" name="type" value="folder"/>
 					<@input_popover name="folderName" rel="create_folder_modal_popover"
 						data_placement="right"
-						message="script.list.label.folderName"
+						message="script.info.folderName"
 						message_content="${content_message?js_string}"
 						extra_css="input-medium" />
 				</@control_group>
