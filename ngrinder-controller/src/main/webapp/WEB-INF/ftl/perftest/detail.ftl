@@ -305,7 +305,7 @@
 <script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
 <script>
 // vuser calc
-${processthread_policy_script}
+${vuserCalcScript};
 
 var objTimer;
 var durationMap = [];

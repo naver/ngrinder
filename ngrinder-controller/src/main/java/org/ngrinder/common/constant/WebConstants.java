@@ -14,7 +14,7 @@
 package org.ngrinder.common.constant;
 
 /**
- * Constants relating Web.
+ * Web related Constants.
  *
  * @author JunHo Yoon
  * @since 3.0
@@ -46,7 +46,7 @@ public interface WebConstants {
 	public static final String PARAM_REGION_AGENT_COUNT_MAP = "regionAgentCountMap";
 	public static final String PARAM_QUICK_SCRIPT = "quickScript";
 	public static final String PARAM_QUICK_SCRIPT_REVISION = "quickScriptRevision";
-	public static final String PARAM_PROCESS_THREAD_POLICY_SCRIPT = "processthread_policy_script";
+	public static final String PARAM_PROCESS_THREAD_POLICY_SCRIPT = "vuserCalcScript";
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
 	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";

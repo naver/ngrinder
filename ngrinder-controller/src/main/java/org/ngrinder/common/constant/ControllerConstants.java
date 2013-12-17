@@ -14,7 +14,7 @@
 package org.ngrinder.common.constant;
 
 /**
- * Constants relating Controller.
+ * Controller related Constants.
  *
  * @author JunHo Yoon
  * @since 3.0
