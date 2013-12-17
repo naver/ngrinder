@@ -152,12 +152,12 @@
 				<executions>
 					<execution>
 						<id>dependency_creation</id>
-						<phase>generate-resources</phase>
+						<phase>generate-sources</phase>
 						<configuration>
 							<fileSeparator>/</fileSeparator>
 							<pathSeparator>;</pathSeparator>
 							<includeScope>runtime</includeScope>
-							<outputFile>${project.basedir}/src/main/generated/dependencies.txt</outputFile>
+							<outputFile>${project.basedir}/target/classes/dependencies.txt</outputFile>
 						</configuration>
 						<goals>
 							<goal>build-classpath</goal>

@@ -10,11 +10,6 @@
 
 	<packaging>jar</packaging>
 	<build>
-		<resources>
-			<resource>
-				<directory>${project.basedir}/src/main/generated</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -25,10 +20,12 @@
 						<phase>generate-resources</phase>
 						<configuration>
 							<tasks>
+								<mkdir dir="${project.basedir}/target/classes"/>
 								<fixcrlf srcdir="${project.basedir}/src/main/shell"
-										 destdir="${project.basedir}/src/main/generated" includes="**/*.sh" eol="unix"/>
+										 destdir="${project.basedir}/target/classes" includes="**/*.sh"
+										 eol="unix"/>
 								<fixcrlf srcdir="${project.basedir}/src/main/shell"
-										 destdir="${project.basedir}/src/main/generated" includes="**/*.bat"
+										 destdir="${project.basedir}/target/classes" includes="**/*.bat"
 										 eol="dos"/>
 							</tasks>
 						</configuration>
