@@ -56,6 +56,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 	private PropertiesWrapper internalProperties;
 	private boolean silent = false;
+	private PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
 	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
 	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
 	private PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
@@ -91,10 +92,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		try {
 			inputStream = AgentConfig.class.getResourceAsStream("/internal.properties");
 			properties.load(inputStream);
-			internalProperties = new PropertiesWrapper(properties, agentPropertyMapper);
+			internalProperties = new PropertiesWrapper(properties, internalPropertyMapper);
 		} catch (IOException e) {
 			LOGGER.error("Error while load internal.properties", e);
-			internalProperties = new PropertiesWrapper(properties, agentPropertyMapper);
+			internalProperties = new PropertiesWrapper(properties, internalPropertyMapper);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
@@ -254,16 +255,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	/**
-	 * Get the nGrinder internal property for the given key.
+	 * Get internal properties.
 	 *
-	 * @param key          key
-	 * @param defaultValue default value
-	 * @return value
+	 * @return internalProperties
 	 */
-	public String getInternalProperty(String key, String defaultValue) {
-		return internalProperties.getProperty(key, defaultValue);
-	}
-
 	public PropertiesWrapper getInternalProperties() {
 		return internalProperties;
 	}

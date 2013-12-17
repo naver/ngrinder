@@ -35,6 +35,7 @@ import java.io.FilenameFilter;
 
 import static net.grinder.util.NetworkUtils.getIP;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
@@ -97,7 +98,7 @@ public class NGrinderStarter implements AgentConstants, CommonConstants {
 	 * @return version string
 	 */
 	public String getVersion() {
-		return agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
+		return agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 	}
 
 	/**

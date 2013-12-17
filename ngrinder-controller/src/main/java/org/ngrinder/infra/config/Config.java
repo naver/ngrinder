@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constants.InternalConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.FileWatchdog;
@@ -522,10 +523,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	/**
 	 * Get the nGrinder version number.
 	 *
-	 * @return nGrinder version number. If not set, return "0.0.1"
+	 * @return version number
 	 */
 	public String getVersion() {
-		return getInternalProperties().getProperty("ngrinder.version", "0.0.1");
+		return getInternalProperties().getProperty(InternalConstants.PROP_INTERNAL_NGRINDER_VERSION);
 	}
 
 	/**

@@ -34,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.common.constants.AgentConstants;
+import org.ngrinder.common.constants.InternalConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.collector.SystemDataCollector;
@@ -48,6 +49,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -93,7 +95,7 @@ public class AgentController implements Agent, AgentConstants {
 		this.m_eventSyncCondition = eventSyncCondition;
 
 		this.agentConfig = agentConfig;
-		this.version = agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
+		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		// Set it with the default name
 		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getControllerIP());

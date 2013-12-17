@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
+import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
@@ -39,7 +40,6 @@ public class AgentUpdateHandler implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentUpdateHandler.class);
 
 	private final AgentConfig agentConfig;
-	private AgentControllerServerListener messageListener;
 	private File download;
 	private int offset = 0;
 	private FileOutputStream agentOutputStream;
@@ -47,13 +47,13 @@ public class AgentUpdateHandler implements Closeable {
 	/**
 	 * Agent Update handler.
 	 *
-	 * @param agentConfig 	agentConfig
-	 * @param message 		AgentUpdateGrinderMessage
+	 * @param agentConfig agentConfig
+	 * @param message     AgentUpdateGrinderMessage
 	 */
 	public AgentUpdateHandler(AgentConfig agentConfig, AgentUpdateGrinderMessage message)
 			throws FileNotFoundException {
-		checkTrue(isNewer(message.getVersion(), agentConfig.getInternalProperty("ngrinder.version",
-				"UNKNOWN")), "Update request was sent. But the old version was sent");
+		checkTrue(isNewer(message.getVersion(), agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION)),
+				"Update request was sent. But the old version was sent");
 
 		this.agentConfig = agentConfig;
 		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
@@ -89,9 +89,10 @@ public class AgentUpdateHandler implements Closeable {
 			}
 		} else if (message.getNext() == -1) {
 			decompressDownloadPackage();
+			// Then just exist to run the agent update process.
 			System.exit(0);
 		} else {
-			throw new CommunicationException("Wrong offset received from controller !");
+			throw new CommunicationException("Received wrong offset from controller !");
 		}
 	}
 
