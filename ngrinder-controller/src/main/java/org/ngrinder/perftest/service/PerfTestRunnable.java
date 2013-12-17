@@ -20,9 +20,11 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
+import net.grinder.util.UnitUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -52,6 +54,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST_REGION;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.model.Status.*;
 
@@ -245,7 +248,7 @@ public class PerfTestRunnable implements ControllerConstants {
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
 				if (sizeOfDirectory > safeThreadHold) {
 					perfTestService.markProgress(perfTest, "The total size of distributed files is over "
-							+ safeThreadHold + "B.\n- Safe file distribution mode is enabled by force.");
+							+ UnitUtils.byteCountToDisplaySize(safeThreadHold) + "B.\n- Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;
@@ -268,7 +271,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
 		boolean safeDist = getSafe(perfTest.getSafeDistribution());
 		if (config.isClustered()) {
-			String distSafeRegion = config.getControllerProperties().getProperty(PROP_CONTROLLER_SAFE_DIST_REGION);
+			String distSafeRegion = config.getControllerProperties().getProperty(PROP_CLUSTER_SAFE_DIST_REGION);
 			for (String each : StringUtils.split(StringUtils.trimToEmpty(distSafeRegion), ",")) {
 				if (StringUtils.equals(perfTest.getRegion(), StringUtils.trim(each))) {
 					safeDist = true;

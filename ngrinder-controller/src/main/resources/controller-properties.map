@@ -22,7 +22,6 @@ controller.safe_dist,false,ngrinder.dist.safe
 controller.safe_dist_threshold,1000000,ngrinder.dist.safe.threshold,ngrinder.dist.safe.threashhold
 controller.allow_sign_up,true
 controller.max_connection_waiting_millisecond,5000,ngrinder.max.waitingmilliseconds
-controller.safe_dist_region,,ngrinder.dist.safe.region
 controller.front_page_resources_rss,http://www.cubrid.org/wiki_ngrinder/rss,ngrinder.frontpage.rss
 controller.front_page_qna_rss,,ngrinder.qna.rss
 controller.front_page_more_qna_url,,ngrinder.more.question.url

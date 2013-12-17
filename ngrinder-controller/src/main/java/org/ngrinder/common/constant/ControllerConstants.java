@@ -42,7 +42,7 @@ public interface ControllerConstants {
 	public static final String NGRINDER_INITIAL_ADMIN_USERID = "admin";
 
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
-	public static final String PROP_CLUSTER_SAFE_DIST_REGION = "cluster.safe_dist_region";
+
 	public static final String PROP_CONTROLLER_ALLOW_SIGN_UP = "controller.allow_sign_up";
 	public static final String PROP_CONTROLLER_CONSOLE_PORT_BASE = "controller.console_port_base";
 	public static final String PROP_CONTROLLER_CONTROLLER_PORT = "controller.controller_port";
@@ -65,7 +65,6 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_MONITOR_PORT = "controller.monitor_port";
 	public static final String PROP_CONTROLLER_PLUGIN_SUPPORT = "controller.plugin_support";
 	public static final String PROP_CONTROLLER_SAFE_DIST = "controller.safe_dist";
-	public static final String PROP_CONTROLLER_SAFE_DIST_REGION = "controller.safe_dist_region";
 	public static final String PROP_CONTROLLER_SAFE_DIST_THRESHOLD = "controller.safe_dist_threshold";
 	public static final String PROP_CONTROLLER_SECURITY = "controller.security";
 	public static final String PROP_CONTROLLER_URL = "controller.url";

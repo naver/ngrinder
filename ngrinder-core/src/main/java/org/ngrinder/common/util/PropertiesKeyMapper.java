@@ -19,7 +19,10 @@ public class PropertiesKeyMapper {
 		InputStream is = checkNotNull(PropertiesKeyMapper.class.getClassLoader().getResourceAsStream(propertyMapName));
 		Scanner scanner = new Scanner(is);
 		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
+			String line = StringUtils.trimToEmpty(scanner.nextLine());
+			if (line.isEmpty() || line.startsWith("#")) {
+				continue;
+			}
 			String[] split = line.split(",");
 			String key = null;
 			List<String> values = new ArrayList<String>();

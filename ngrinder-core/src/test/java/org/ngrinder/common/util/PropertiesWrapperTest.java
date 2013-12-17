@@ -19,11 +19,10 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Property Wrapper Test
- *
- * @author Mavlarn
  */
 public class PropertiesWrapperTest {
 
@@ -41,9 +40,12 @@ public class PropertiesWrapperTest {
 		assertThat(value1, is(1));
 		int value3 = propWrapper.getPropertyInt("key3");
 		assertThat(value3, is(3));
-		int noValue = propWrapper.getPropertyInt("NoValueKey");
-		assertThat(noValue, is(0));
+		try {
+			int noValue = propWrapper.getPropertyInt("NoValueKey");
+			fail("should cause IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 
+		}
 		String value2 = propWrapper.getProperty("key2", "null");
 		assertThat(value2, is("value2"));
 		String value4 = propWrapper.getProperty("key4", "null");
@@ -55,12 +57,11 @@ public class PropertiesWrapperTest {
 		assertThat(newValue4, is("value4"));
 		nullValueStr = propWrapper.getProperty("NoValueKey", "null");
 		assertThat(nullValueStr, is("null"));
-
-		boolean boolVal = propWrapper.getPropertyBoolean("BoolKey");
-		assertThat(boolVal, is(false));
 		prop.put("BoolKey", "true");
-		boolVal = propWrapper.getPropertyBoolean("BoolKey");
+		boolean boolVal = propWrapper.getPropertyBoolean("BoolKey");
 		assertThat(boolVal, is(true));
+		propWrapper.addProperty("hello_world", "wow");
+		assertThat(propWrapper.getProperty("hello_world"), is("wow"));
 
 	}
 }

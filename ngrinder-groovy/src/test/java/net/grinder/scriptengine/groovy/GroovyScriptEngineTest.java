@@ -25,16 +25,9 @@ package net.grinder.scriptengine.groovy;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.process.JUnitThreadContextInitializer;
-import net.grinder.plugin.http.HTTPPlugin;
-import net.grinder.plugininterface.GrinderPlugin;
-import net.grinder.plugininterface.PluginRegistry;
-import org.codehaus.groovy.reflection.ReflectionUtils;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

@@ -24,4 +24,5 @@ public interface ClusterConstants {
 	public static final String PROP_CLUSTER_MEMBERS = "cluster.members";
 	public static final String PROP_CLUSTER_PORT = "cluster.port";
 	public static final String PROP_CLUSTER_REGION = "cluster.region";
+	public static final String PROP_CLUSTER_SAFE_DIST_REGION = "cluster.safe_dist_region";
 }

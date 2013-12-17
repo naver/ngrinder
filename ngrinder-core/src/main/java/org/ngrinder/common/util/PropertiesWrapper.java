@@ -84,8 +84,12 @@ public class PropertiesWrapper {
 
 
 	public String getProperty(String key, String defaultValue) {
-		String property = getProperty(key);
-		return (property == null) ? defaultValue : property;
+		try {
+			String property = getProperty(key);
+			return StringUtils.isEmpty(property) ? defaultValue : property;
+		} catch (IllegalArgumentException e) {
+			return defaultValue;
+		}
 	}
 
 	/**
