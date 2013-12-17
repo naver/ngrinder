@@ -38,7 +38,7 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.*;
-import org.ngrinder.monitor.model.SystemDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;

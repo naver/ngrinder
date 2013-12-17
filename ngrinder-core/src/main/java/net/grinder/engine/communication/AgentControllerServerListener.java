@@ -181,7 +181,7 @@ public final class AgentControllerServerListener {
 
 		messageDispatcher.set(StartGrinderMessage.class, new AbstractMessageHandler<StartGrinderMessage>() {
 			public void handle(StartGrinderMessage message) {
-				m_logger.info("received a start agent message");
+				m_logger.info("Received a start agent message");
 				m_lastStartGrinderMessage = message;
 				setReceived(START);
 			}
@@ -189,14 +189,14 @@ public final class AgentControllerServerListener {
 
 		messageDispatcher.set(StopGrinderMessage.class, new AbstractMessageHandler<StopGrinderMessage>() {
 			public void handle(StopGrinderMessage message) {
-				m_logger.info("received a stop agent message");
+				m_logger.info("Received a stop agent message");
 				setReceived(STOP);
 			}
 		});
 
 		messageDispatcher.set(AgentUpdateGrinderMessage.class, new AbstractMessageHandler<AgentUpdateGrinderMessage>() {
 			public void handle(AgentUpdateGrinderMessage message) {
-				m_logger.info("received a agent update message {}", message.getNext());
+				m_logger.info("Received a agent update message {}", message.getNext());
 				m_lastAgentUpdateGrinderMessage = message;
 				setReceived(AGENT_UPDATE);
 			}

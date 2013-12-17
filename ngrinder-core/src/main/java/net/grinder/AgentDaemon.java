@@ -96,7 +96,8 @@ public class AgentDaemon implements Agent {
 	}
 
 	/**
-	 * Run agent with given consoleHost and consolePort. <br/>
+	 * Run agent with given consoleHost and consolePort.
+	 *
 	 * if consoleHost is null it will use localhost or use console host set in
 	 * {@link GrinderProperties}
 	 *

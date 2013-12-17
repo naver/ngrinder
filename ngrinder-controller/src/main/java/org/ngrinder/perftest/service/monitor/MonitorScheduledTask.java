@@ -16,7 +16,7 @@ package org.ngrinder.perftest.service.monitor;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.monitor.model.SystemDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.cache.CacheManager;

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.monitor.model;
+package org.ngrinder.monitor.controller.model;
 
 import com.google.gson.annotations.Expose;
 import org.ngrinder.model.BaseEntity;
@@ -26,7 +26,6 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
  * @since 2.0
  */
 public class SystemDataModel extends BaseEntity<SystemDataModel> {
-
 	private static final long serialVersionUID = 790334226137464982L;
 
 	private String key;

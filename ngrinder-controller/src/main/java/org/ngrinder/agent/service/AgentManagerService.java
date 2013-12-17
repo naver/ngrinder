@@ -26,7 +26,7 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.model.SystemDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.service.AbstractAgentManagerService;
 import org.slf4j.Logger;

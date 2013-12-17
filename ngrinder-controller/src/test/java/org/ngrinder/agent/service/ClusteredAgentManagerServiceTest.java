@@ -42,7 +42,6 @@ import static org.mockito.Mockito.when;
 /**
  * Agent service test.
  *
- * @author Tobi
  * @since 3.0
  */
 public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactionalTest {

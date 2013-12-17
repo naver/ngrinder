@@ -17,7 +17,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.model.SystemDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 import java.io.IOException;
 import java.util.List;

@@ -37,7 +37,7 @@ import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.collector.SystemDataCollector;
-import org.ngrinder.monitor.model.SystemDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +128,7 @@ public class AgentController implements Agent, AgentConstants {
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
 							consoleCommunication.start();
-							LOGGER.info("connected to agent controller server at {}", connector.getEndpointAsString());
+							LOGGER.info("Connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							LOGGER.error("Error while connecting to agent controller server at {}",
 									connector.getEndpointAsString());
@@ -137,14 +137,14 @@ public class AgentController implements Agent, AgentConstants {
 					}
 
 					if (consoleCommunication != null && startMessage == null) {
-						LOGGER.info("waiting for agent controller server signal");
+						LOGGER.info("Waiting for agent controller server signal");
 						m_state = AgentControllerState.READY;
 						m_agentControllerServerListener.waitForMessage();
 
 						if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 							startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 
-							LOGGER.info("agent start message is received from controller {}", startMessage);
+							LOGGER.info("Agent start message is received from controller {}", startMessage);
 							continue;
 						} else {
 							break; // Another message, check at end of outer
@@ -160,7 +160,7 @@ public class AgentController implements Agent, AgentConstants {
 				// Here the agent run code goes..
 				if (startMessage != null) {
 					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "unknown");
-					LOGGER.info("starting agent... for {}", testId);
+					LOGGER.info("Starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
 					agent.run(startMessage.getProperties());
@@ -170,7 +170,7 @@ public class AgentController implements Agent, AgentConstants {
 					agent.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
-							LOGGER.info("send log for {}", testId);
+							LOGGER.info("Send log for {}", testId);
 							sendLog(conCom, testId);
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
@@ -182,7 +182,7 @@ public class AgentController implements Agent, AgentConstants {
 
 				if (!m_agentControllerServerListener.received(AgentControllerServerListener.ANY)) {
 					// We've got here naturally, without a console signal.
-					LOGGER.info("agent is started. waiting for agent controller signal");
+					LOGGER.info("Agent is started. Waiting for agent controller signal");
 					m_agentControllerServerListener.waitForMessage();
 				}
 

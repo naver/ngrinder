@@ -18,7 +18,7 @@ import net.grinder.communication.Address;
 import net.grinder.communication.AddressAwareMessage;
 import net.grinder.communication.CommunicationException;
 import net.grinder.messages.console.AgentAddress;
-import org.ngrinder.monitor.model.SystemDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
  * Message for informing the console of agent process status.

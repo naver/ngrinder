@@ -105,6 +105,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
  * 
  * @author Paco Gomez
  * @author Philip Aston
+ * @author JunHo Yoon (modifed for nGrinder)
  * @see GrinderThread
  */
 final class GrinderProcess {
@@ -339,7 +340,7 @@ final class GrinderProcess {
 
 			m_testRegistryImplementation.setInstrumenter(instrumenter);
 
-			m_logger.info("instrumentation agents: {}", instrumenter.getDescription());
+			m_logger.info("Instrumentation agents: {}", instrumenter.getDescription());
 
 			// Force initialisation of the script engine before we start the
 			// message
@@ -356,7 +357,8 @@ final class GrinderProcess {
 			final ScriptEngine scriptEngine = scriptEngineContainer
 							.getScriptEngine(m_initialisationMessage.getScript());
 
-			m_logger.info("running \"{}\" using {}", m_initialisationMessage.getScript(), scriptEngine.getDescription());
+			m_logger.info("Running \"{}\" using {}", m_initialisationMessage.getScript(),
+					scriptEngine.getDescription());
 
 			m_messagePump.start();
 
@@ -379,7 +381,7 @@ final class GrinderProcess {
 
 			final ThreadSynchronisation threadSynchronisation = new ThreadSynchronisation(m_eventSynchronisation);
 
-			m_terminalLogger.info("starting threads");
+			m_terminalLogger.info("Starting threads");
 
 			synchronized (m_eventSynchronisation) {
 				m_threadStarter = new ThreadStarterImplementation(threadSynchronisation, scriptEngine);
@@ -393,7 +395,7 @@ final class GrinderProcess {
 
 			m_times.setExecutionStartTime();
 
-			m_logger.info("start time is {} ms since Epoch", m_times.getExecutionStartTime());
+			m_logger.info("Start time is {} ms since Epoch", m_times.getExecutionStartTime());
 
 			final TimerTask reportTimerTask = new ReportToConsoleTimerTask(threadSynchronisation);
 			final TimerTask shutdownTimerTask = new ShutdownTimerTask();
@@ -412,7 +414,7 @@ final class GrinderProcess {
 
 			try {
 				if (duration > 0) {
-					m_terminalLogger.info("will shut down after {} ms", duration);
+					m_terminalLogger.info("This test will shut down after {} ms", duration);
 
 					timer.schedule(shutdownTimerTask, duration);
 				}
@@ -426,7 +428,7 @@ final class GrinderProcess {
 						}
 
 						if (m_shutdownTriggered) {
-							m_terminalLogger.info("specified duration exceeded, shutting down");
+							m_terminalLogger.info("Specified duration exceeded, Test is shut down");
 							break;
 						}
 
@@ -437,7 +439,7 @@ final class GrinderProcess {
 				synchronized (m_eventSynchronisation) {
 					if (!threadSynchronisation.isFinished()) {
 
-						m_terminalLogger.info("waiting for threads to terminate");
+						m_terminalLogger.info("Waiting for threads to terminate");
 
 						m_threadStarter = m_invalidThreadStarter;
 						m_threadContexts.shutdownAll();
@@ -450,7 +452,7 @@ final class GrinderProcess {
 
 						while (!threadSynchronisation.isFinished()) {
 							if (System.currentTimeMillis() - time > maximumShutdownTime) {
-								m_terminalLogger.info("ignoring unresponsive threads");
+								m_terminalLogger.info("Ignoring unresponsive threads");
 								break;
 							}
 
@@ -490,13 +492,13 @@ final class GrinderProcess {
 
 			timer.cancel();
 
-			m_terminalLogger.info("finished");
+			m_terminalLogger.info("Finished");
 
 		} catch (final ScriptExecutionException e) {
-			m_logger.error("aborting process - {}", e.getShortMessage(), e);
+			m_logger.error("Aborting process - {}", e.getShortMessage(), e);
 			m_terminalLogger.error("aborting process - {}", e.getShortMessage(), e);
 		} catch (EngineException e) {
-			m_logger.error("script error - {}", e.getMessage(), e);
+			m_logger.error("Script error - {}", e.getMessage(), e);
 			throw e;
 		}
 	}

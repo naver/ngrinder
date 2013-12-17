@@ -242,7 +242,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 							workerFactory, m_eventSynchronisation, m_logger);
 					m_workerLauncherForShutdown = workerLauncher;
 					final int increment = properties.getInt("grinder.processIncrement", 0);
-					m_logger.debug("Rampup mode by {}.", increment);
+					m_logger.debug("'Ramp Up' mode by {}.", increment);
 					if (increment > 0) {
 						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties.getInt(
 								"grinder.initialProcesses", increment));
@@ -291,7 +291,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				}
 
 				if (consoleCommunication == null) {
-					m_logger.debug("console communication death");
+					m_logger.debug("Console communication death");
 					break;
 				} else {
 					// Ignore any pending start messages.
@@ -335,7 +335,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				m_fanOutStreamSender = null;
 			}
 			m_consoleListener.shutdown();
-			m_logger.info("finished");
+			m_logger.info("Test shut down.");
 		}
 	}
 

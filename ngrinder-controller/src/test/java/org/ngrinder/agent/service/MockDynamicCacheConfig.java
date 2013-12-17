@@ -63,7 +63,8 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 
 			FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 			peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-			String peerListenerProperty = String.format("hostName=%s, port=%d, socketTimeoutMillis=200", currentListener.getIP(), currentListener.getPort());
+			String peerListenerProperty = String.format("hostName=%s, port=%d, socketTimeoutMillis=1000",
+					currentListener.getIP(), currentListener.getPort());
 			peerListenerConfig.setProperties(peerListenerProperty);
 			cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
 			CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperty);
