@@ -8,7 +8,7 @@
 			<fieldset>
 				<@control_group name="folderName" inline_help="true" label_message_key="script.info.folderName">
 					<#assign content_message>
-						<@spring.message "common.form.rule.sampleName"/>
+						<@spring.message "script.info.folderName.help"/>
 					</#assign>
 					<input type="hidden" name="type" value="folder"/>
 					<@input_popover name="folderName" rel="create_folder_modal_popover"

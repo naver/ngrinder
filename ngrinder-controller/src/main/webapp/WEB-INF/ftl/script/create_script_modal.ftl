@@ -7,14 +7,14 @@
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/new/${currentPath}">
 			<fieldset>
 
-				<@control_group name="fileName" inline_help="true" label_message_key="script.name">
+				<@control_group name="fileName" inline_help="true" label_message_key="script.info.name">
 					<#assign name_message>
-						<@spring.message "common.form.rule.sampleName"/>
+						<@spring.message "script.info.name.help"/>
 					</#assign>
 
 					<@input_popover name="fileName" rel="create_script_modal_popover"
 						data_placement="right"
-						message="script.name"
+						message="script.info.name"
 						message_content="${name_message?js_string}"
 						extra_css="input-large" />
 				</@control_group>
@@ -55,7 +55,6 @@
 							message="script.action.createResourceAndLib"
 							message_content="${lib_message}"
 							extra_css="input-medium" />
-
 							<@spring.message "script.action.createResourceAndLib"/>
 						</label>
 						<span class="help-inline well"><@spring.message "script.action.createResourceAndLib.help"/>

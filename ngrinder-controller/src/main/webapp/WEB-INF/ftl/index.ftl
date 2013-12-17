@@ -77,7 +77,7 @@
 			</div>
 			<div class="span6">
 				<div class="page-header">
-	 				 <h4><@spring.message "home.developerResources.title"/></h4> 
+	 				 <h4><@spring.message "home.resources.title"/></h4>
 				</div>
 
 		   		<div class="well">

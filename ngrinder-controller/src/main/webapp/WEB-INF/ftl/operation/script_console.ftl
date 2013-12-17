@@ -3,7 +3,7 @@
 <head>
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
-<title><@spring.message "script.view.title"/></title>
+<title><@spring.message "operation.script.title"/></title>
 <style>
 	.CodeMirror-scroll {
 		height: 400px;
@@ -23,7 +23,7 @@
 						<legend class="header">
 							<@spring.message "navigator.dropDown.scriptConsole"/>
 							<button class="btn btn-success pull-right" id="run_btn">
-								<@spring.message "script.view.button.runScript"/>
+								<@spring.message "operation.script.runScript"/>
 							</button>
 						</legend> 
 						<textarea class="span12" id="script_editor" style="resize: none">${(script)!}</textarea>

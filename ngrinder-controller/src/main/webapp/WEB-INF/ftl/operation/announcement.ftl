@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><#include "../common/common.ftl">
-<title><@spring.message "announcement.view.title"/></title>
+<title><@spring.message "operation.announcement.title"/></title>
 </head>
 
 <body>
@@ -12,7 +12,10 @@
 				<form id="announcement_form" name="announcement_form" method="POST">
 					<fieldset>
 						<legend class="header">
-							<@spring.message "navigator.dropDown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
+							<@spring.message "navigator.dropDown.announcement"/>&nbsp;&nbsp;
+							<small>
+								<@spring.message "operation.announcement.help"/>
+							</small>
 							<a id="test_btn" class="pointer-cursor btn btn-primary pull-right">
 								<@spring.message "common.button.test"/>
 							</a>

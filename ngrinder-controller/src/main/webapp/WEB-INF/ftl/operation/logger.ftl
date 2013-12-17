@@ -3,7 +3,7 @@
 <head>
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
-<title><@spring.message "log.view.title"/></title>
+<title><@spring.message "operation.log.title"/></title>
 </head>
 
 <body>

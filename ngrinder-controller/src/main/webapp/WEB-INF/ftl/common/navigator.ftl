@@ -97,7 +97,9 @@
 				<#if announcement_new?? && announcement_new==true>
 					<span class="label label-important">new</span>
 				</#if>
-					<span style="margin-top:0; margin-bottom:0; font-size: 15px"><@spring.message "announcement.alert.title"/></span>
+					<span style="margin-top:0; margin-bottom:0; font-size: 15px">
+						<@spring.message "announcement.title"/>
+					</span>
 
 					<a class="pointer-cursor" id="hide_announcement">
 						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right"

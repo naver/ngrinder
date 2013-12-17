@@ -2,7 +2,7 @@
 <html>
 <head>
 <#include "../common/common.ftl">
-	<title><@spring.message "config.view.title"/></title>
+	<title><@spring.message "operation.config.title"/></title>
 </head>
 
 <body>

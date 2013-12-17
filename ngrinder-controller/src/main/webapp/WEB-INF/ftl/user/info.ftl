@@ -15,12 +15,9 @@
 	<fieldset>
 
 	<@control_group name="userId" label_message_key="user.info.userId">
-		<#assign userIdMsg>
-			<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
-		</#assign>
 		<#assign others><#if user?? && user.userId??>readonly</#if></#assign>
 		<@input_append class="span4" name="userId" value="${(user.userId)!}" others=others
-				data_content=userIdMsg data_placement='${popover_place}' message="user.info.userId"/>
+				data_placement='${popover_place}' message="user.info.userId"/>
 		<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
 	</@control_group>
 

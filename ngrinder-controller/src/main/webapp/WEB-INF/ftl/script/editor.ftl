@@ -54,7 +54,9 @@
 										</colgroup>
 										<tr>
 											<td>
-												<label class="control-label" for="testName"><@spring.message "script.name"/></label>
+												<label class="control-label" for="testName">
+													<@spring.message "script.info.name"/>
+												</label>
 											</td>
 											<td>
 												<span class="input-large uneditable-input span6" style="cursor:text">${breadcrumbPath}</span>
