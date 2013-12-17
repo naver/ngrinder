@@ -130,7 +130,7 @@
 				return result;
 			}
 			return false;
-		}, "<@spring.message 'user.info.warning.userId.exist'/>");
+		}, "<@spring.message 'user.info.userId.exist'/>");
 
 		$.validator.addMethod("userPhoneNumber", function (phoneNumber, element) {
 			phoneNumber = $.trim(phoneNumber)
@@ -144,7 +144,7 @@
 				return false;
 			}
 			return true;
-		}, "<@spring.message 'user.info.warning.phone.intro'/>");
+		}, "<@spring.message 'user.info.phone.help'/>");
 
 		$("#user_form").validate({
 			rules: {
@@ -185,13 +185,13 @@
 				},
 				email: {
 					required: "<@spring.message "user.info.email.help"/>",
-					email: "<@spring.message "user.info.warning.email.rule"/>"
+					email: "<@spring.message "user.info.email.help"/>"
 				},
 				password: {
-					required: "<@spring.message "user.info.warning.pwd.required"/>"
+					required: "<@spring.message "user.info.pwd.required"/>"
 				},
 				confirmPassword: {
-					required: "<@spring.message "user.info.warning.cpwd.required"/>",
+					required: "<@spring.message "user.info.cpwd.required"/>",
 					equalTo: "<@spring.message "user.info.cpwd.help"/>"
 				}
 			},
