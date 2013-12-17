@@ -45,6 +45,9 @@
 								<a id="switch_user_menu"
 								   class="pointer-cursor"><@spring.message "navigator.dropDown.switchUser"/></a>
 							</li>
+							<li>
+								<a href="${req.getContextPath()}/monitor/download"><@spring.message "navigator.dropDown.downloadMonitor"/></a>
+							</li>
 						</#if>
 
 						<@security.authorize ifAnyGranted="A">
@@ -97,7 +100,8 @@
 					<span style="margin-top:0; margin-bottom:0; font-size: 15px"><@spring.message "announcement.alert.title"/></span>
 
 					<a class="pointer-cursor" id="hide_announcement">
-						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon">
+						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right"
+						   id="announcement_icon">
 						</i>
 					</a>
 				</span>

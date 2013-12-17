@@ -16,7 +16,6 @@ package org.ngrinder.agent.controller;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
-import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Monitor Download Controller.
@@ -40,15 +37,13 @@ public class MonitorDownloadController extends BaseController {
 	@Autowired
 	private AgentPackageService agentPackageService;
 
-	@Autowired
-	private RegionService regionService;
 
 	/**
 	 * Download monitor.
 	 *
 	 * @param response response.
 	 */
-	@RequestMapping(value = "/download/last")
+	@RequestMapping(value = "/download")
 	public void download(HttpServletResponse response) {
 		try {
 			FileDownloadUtils.downloadFile(response, agentPackageService.createMonitorPackage());
