@@ -3,9 +3,9 @@
 <configuration>
 	<appender name="log-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_DIRECTORY}/ngrinder${SUFFIX}.log</file>
- 
+
 		<encoder>
-			<pattern>%d %-5level %F:%L %marker:  %message%n</pattern>
+			<pattern>%d %-5level %F:%L %marker: %message%n</pattern>
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
@@ -13,32 +13,36 @@
 			<minIndex>1</minIndex>
 			<maxIndex>10</maxIndex>
 		</rollingPolicy>
-		
-		<triggeringPolicy class="net.grinder.util.logback.RollOnStartUp" />
+
+		<triggeringPolicy class="net.grinder.util.logback.RollOnStartUp"/>
 		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
 			<maxFileSize>200MB</maxFileSize>
 		</triggeringPolicy>
 
 	</appender>
 
+	<logger name="org.springframework.aop.framework.Cglib2AopProxy" level="ERROR" additivity="false">
+		<appender-ref ref="log-file"/>
+	</logger>
+
 	<logger name="net.grinder" level="${LOG_LEVEL}" additivity="false">
-	  <appender-ref ref="log-file" />
-	</logger> 
-	
+		<appender-ref ref="log-file"/>
+	</logger>
+
 	<logger name="org.ngrinder" level="${LOG_LEVEL}" additivity="false">
-	  <appender-ref ref="log-file" />
-    </logger>
+		<appender-ref ref="log-file"/>
+	</logger>
 
 	<logger name="org.ngrinder.infra.logger.CoreLogger" level="INFO" additivity="false">
-	  <appender-ref ref="log-file" />
-    </logger>
-    
+		<appender-ref ref="log-file"/>
+	</logger>
+
 	<logger name="org.twdata.pkgscanner" level="ERROR" additivity="false">
-	  <appender-ref ref="log-file" />
-    </logger>
-    
+		<appender-ref ref="log-file"/>
+	</logger>
+
 	<root>
-		<level value="WARN" />
-		<appender-ref ref="log-file" />
+		<level value="WARN"/>
+		<appender-ref ref="log-file"/>
 	</root>
 </configuration>

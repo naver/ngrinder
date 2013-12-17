@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration>
+<configuration debug="false">
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d %-5level %F:%L %marker: %message%n</pattern>
 		</encoder>
 	</appender>
 
-	<logger name="org.ngrinder.infra.logger.CoreLogger" level="DEBUG" additivity="false">
-	  <appender-ref ref="log-file" />
-    </logger>
+
+	<logger name="org.ngrinder.infra.logger.CoreLogger" level="INFO" additivity="false">
+		<appender-ref ref="console"/>
+	</logger>
 
 	<root>
-		<level value="INFO" />
-		<appender-ref ref="console" />
+		<level value="INFO"/>
+		<appender-ref ref="console"/>
 	</root>
 </configuration>

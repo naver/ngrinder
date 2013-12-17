@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,14 +44,6 @@ public class HomeService {
 	private static final int PANEL_ENTRY_SIZE = 6;
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
-
-	/**
-	 * Initialize.
-	 */
-	@PostConstruct
-	public void init() {
-	}
-
 
 	/**
 	 * Get the let panel entries from the given feed RUL.
@@ -82,8 +73,8 @@ public class HomeService {
 	 * Get panel entries containing the entries from the given RSS
 	 * url.
 	 *
-	 * @param feedURL rss url message
-	 * @param maxSize max size
+	 * @param feedURL      rss url message
+	 * @param maxSize      max size
 	 * @param includeReply if including reply
 	 * @return {@link PanelEntry} list
 	 */
@@ -119,7 +110,7 @@ public class HomeService {
 			Collections.sort(panelEntries);
 			return panelEntries;
 		} catch (Exception e) {
-			LOG.error("Error while patching the feed entries for {}.", feedURL, e);
+			LOG.error("Error while patching the feed entries for {} : {}", feedURL, e.getMessage());
 		} finally {
 			if (feedConnection != null) {
 				feedConnection.disconnect();

@@ -36,6 +36,8 @@ import liquibase.statement.core.SelectFromDatabaseChangeLogLockStatement;
 import liquibase.statement.core.UnlockDatabaseChangeLogStatement;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extended {@link LockService} to use 'T' or 'F' for the lock table's boolean
@@ -45,7 +47,7 @@ import org.apache.commons.lang.StringUtils;
  * @since 3.0
  */
 public final class LockServiceEx {
-
+	private final Logger LOGGER = LoggerFactory.getLogger(LockServiceEx.class);
 	private Database database;
 
 	private boolean hasChangeLogLock = false;
@@ -104,7 +106,7 @@ public final class LockServiceEx {
 		while (!locked && new Date().getTime() < timeToGiveUp) {
 			locked = acquireLock();
 			if (!locked) {
-				LogFactory.getLogger().info("Waiting for changelog lock....");
+				LOGGER.info("Waiting for changelog lock....");
 				try {
 					Thread.sleep(changeLogLocRecheckTime);
 				} catch (InterruptedException e) {
@@ -164,7 +166,7 @@ public final class LockServiceEx {
 					return false;
 				}
 				database.commit();
-				LogFactory.getLogger().info("Successfully acquired change log lock");
+				LOGGER.info("Successfully acquired change log lock");
 
 				hasChangeLogLock = true;
 
@@ -243,7 +245,7 @@ public final class LockServiceEx {
 
 				database.setCanCacheLiquibaseTableInfo(false);
 
-				LogFactory.getLogger().info("Successfully released change log lock");
+				LOGGER.info("Successfully released change log lock");
 			}
 		} catch (Exception e) {
 			throw new LockException(e);
