@@ -22,9 +22,7 @@ import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.UnitUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -54,7 +52,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST_REGION;
+import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.model.Status.*;
 
@@ -271,13 +269,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
 		boolean safeDist = getSafe(perfTest.getSafeDistribution());
 		if (config.isClustered()) {
-			String distSafeRegion = config.getControllerProperties().getProperty(PROP_CLUSTER_SAFE_DIST_REGION);
-			for (String each : StringUtils.split(StringUtils.trimToEmpty(distSafeRegion), ",")) {
-				if (StringUtils.equals(perfTest.getRegion(), StringUtils.trim(each))) {
-					safeDist = true;
-					break;
-				}
-			}
+			safeDist = config.getControllerProperties().getPropertyBoolean(PROP_CLUSTER_SAFE_DIST);
 		}
 		return safeDist;
 	}

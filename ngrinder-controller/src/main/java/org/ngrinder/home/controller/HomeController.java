@@ -162,18 +162,24 @@ public class HomeController extends BaseController implements ControllerConstant
 	}
 
 	private List<PanelEntry> getRightPanelEntries() {
-		// Get nGrinder Resource RSS
-		String rightPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS);
-		return homeService.getRightPanelEntries(rightPanelRssURL);
+		if (getConfig().getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_FRONT_PAGE_ENABLED)) {
+			// Get nGrinder Resource RSS
+			String rightPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS);
+			return homeService.getRightPanelEntries(rightPanelRssURL);
+		}
+		return Collections.emptyList();
 	}
 
 	private List<PanelEntry> getLeftPanelEntries() {
-		// Make the i18n applied QnA panel. Depending on the user language, show the different QnA panel.
-		String leftPanelRssURLKey = getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS);
-		// Make admin configure the QnA panel.
-		String leftPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS,
-				leftPanelRssURLKey);
-		return homeService.getLeftPanelEntries(leftPanelRssURL);
+		if (getConfig().getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_FRONT_PAGE_ENABLED)) {
+			// Make the i18n applied QnA panel. Depending on the user language, show the different QnA panel.
+			String leftPanelRssURLKey = getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS);
+			// Make admin configure the QnA panel.
+			String leftPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS,
+					leftPanelRssURLKey);
+			return homeService.getLeftPanelEntries(leftPanelRssURL);
+		}
+		return Collections.emptyList();
 	}
 
 	private void recordReferrer(String region) {

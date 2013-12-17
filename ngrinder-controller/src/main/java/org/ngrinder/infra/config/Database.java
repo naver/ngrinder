@@ -43,7 +43,7 @@ public enum Database {
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			dataSource.setUrl(String.format(getUrlTemplate(),
 					databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
-					databaseProperties.getProperty(StringUtils.trimToEmpty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
+					StringUtils.trimToEmpty(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
 			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
@@ -85,7 +85,8 @@ public enum Database {
 	 *
 	 * @param jdbcDriver  JDBC Driver class
 	 * @param dialect     the dialect to be used
-	 * @param urlTemplate database url template. This will be used to be combined with database_url property in database.conf
+	 * @param urlTemplate database url template. This will be used to be combined with database_url property in
+	 *                    database.conf
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate) {
 		this(jdbcDriver, dialect, urlTemplate, true);
@@ -96,7 +97,8 @@ public enum Database {
 	 *
 	 * @param jdbcDriver     JDBC Driver class
 	 * @param dialect        the dialect to be used
-	 * @param urlTemplate    database url template. This will be used to be combined with database_url property in database.conf
+	 * @param urlTemplate    database url template. This will be used to be combined with database_url property in
+	 *                       database.conf
 	 * @param clusterSupport true if cluster mode is supported.
 	 * @since 3.1
 	 */

@@ -50,6 +50,7 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_DEMO_MODE = "controller.demo_mode";
 	public static final String PROP_CONTROLLER_DEV_MODE = "controller.dev_mode";
 	public static final String PROP_CONTROLLER_DIST_LOGBACK = "controller.dist_logback";
+	public static final String PROP_CONTROLLER_FRONT_PAGE_ENABLED = "controller.font_page_enabled";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL = "controller.front_page_ask_question_url";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS = "controller.front_page_resources_rss";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_MORE_QNA_URL = "controller.front_page_more_qna_url";
