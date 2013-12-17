@@ -55,7 +55,7 @@
 			<th class="ellipsis"><@spring.message "agent.list.name"/></th>
 			<th><@spring.message "agent.list.version"/></th>
 			<th><@spring.message "agent.list.region"/></th>
-			<th class="no-click"><@spring.message "agent.list.approve"/></th>
+			<th class="no-click"><@spring.message "agent.list.approved"/></th>
 		</tr>
 		</thead>
 		<tbody>
