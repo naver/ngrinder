@@ -103,11 +103,16 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String loadResource(String name) throws IOException {
-		InputStream inputStream = AgentConfig.class.getResourceAsStream(name);
-		if (inputStream != null) {
-			return IOUtils.toString(inputStream);
-		} else {
-			return "";
+		InputStream inputStream = null;
+		try {
+			inputStream = AgentConfig.class.getResourceAsStream(name);
+			if (inputStream != null) {
+				return IOUtils.toString(inputStream);
+			} else {
+				return "";
+			}
+		} finally {
+			IOUtils.closeQuietly(inputStream);
 		}
 	}
 
