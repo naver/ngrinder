@@ -5,3 +5,4 @@
 testdrive
 /.grinder
 /grinder_logs
+**/generated/
