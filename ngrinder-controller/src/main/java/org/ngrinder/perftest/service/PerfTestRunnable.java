@@ -422,7 +422,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		for (PerfTest each : perfTestService.getAllTesting()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
-				doNormal(each, consoleUsingPort);
+				doNormalFinish(each, consoleUsingPort);
 				cleanUp(each);
 				notifyFinish(each, StopReason.NORMAL);
 			}
@@ -517,7 +517,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
 	 *                           {@link PerfTest}
 	 */
-	public void doNormal(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doNormalFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 				singleConsoleInUse.getCurrentRunningTime());

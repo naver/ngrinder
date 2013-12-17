@@ -20,7 +20,6 @@ import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -201,7 +200,6 @@ public class ConsoleManager {
 	 * @param testIdentifier test identifier
 	 * @param console        console which will be returned back.
 	 */
-	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
 		if (console == null || console instanceof NullSingleConsole) {
 			LOG.error("Attempt to return back null console for {}.", testIdentifier);
