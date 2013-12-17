@@ -39,7 +39,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder config which is stored
- * ${NGRINDER_HOME}.
+ * ${NGRINDER_AGENT_HOME}.
  *
  * @author JunHo Yoon
  * @since 3.0
@@ -90,7 +90,8 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		InputStream inputStream = null;
 		Properties properties = new Properties();
 		try {
-			inputStream = AgentConfig.class.getResourceAsStream("/internal.properties");
+			final InputStream resourceAsStream = AgentConfig.class.getResourceAsStream("/internal.properties");
+			inputStream = resourceAsStream;
 			properties.load(inputStream);
 			internalProperties = new PropertiesWrapper(properties, internalPropertyMapper);
 		} catch (IOException e) {
@@ -98,6 +99,15 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 			internalProperties = new PropertiesWrapper(properties, internalPropertyMapper);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
+		}
+	}
+
+	public String loadResource(String name) throws IOException {
+		InputStream inputStream = AgentConfig.class.getResourceAsStream(name);
+		if (inputStream != null) {
+			return IOUtils.toString(inputStream);
+		} else {
+			return "";
 		}
 	}
 
@@ -111,7 +121,13 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		if (newAgentConfig.exists()) {
 			home.copyFileTo(newAgentConfig, "agent.conf");
 		} else {
-			home.writeFileTo("", "agent.conf");
+			String agentConfString = "";
+			try {
+				agentConfString = loadResource("/agent.conf");
+				home.writeFileTo(agentConfString, "agent.conf");
+			} catch (IOException e) {
+				throw processException(e);
+			}
 		}
 	}
 

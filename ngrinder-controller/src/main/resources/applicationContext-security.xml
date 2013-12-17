@@ -84,6 +84,7 @@
 	<!-- accessible from no authorized users -->
 	<http pattern="/check/**" security="none"/>
 	<http pattern="/agent/download/**" security="none"/>
+	<http pattern="/monitor/download/**" security="none"/>
 	<http pattern="/jnlp/**" security="none"/>
 	<http pattern="/sign_up/**" security="none"/>
 
@@ -114,7 +115,6 @@
 		<logout logout-success-url="/" logout-url="/logout" delete-cookies="JSESSIONID,switchUser"
 				invalidate-session="true"/>
 		<session-management invalid-session-url="/login" session-fixation-protection="newSession"/>
-
 		<remember-me key="ngrinder" user-service-ref="ngrinderUserDetailsService"/>
 	</http>
 

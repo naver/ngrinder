@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CompressionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -80,14 +81,16 @@ public class AgentPackageService {
 
 	/**
 	 * Get the agent package containing folder.
+	 *
 	 * @return File  agent package dir.
 	 */
-	public File getAgentPackagesDir() {
+	public File getPackagesDir() {
 		return config.isClustered() ? config.getExHome().getSubFile("download") : config.getHome().getSubFile("download");
 	}
 
 	/**
 	 * Create agent package.
+	 *
 	 * @return File  agent package.
 	 */
 	public synchronized File createAgentPackage() {
@@ -97,9 +100,9 @@ public class AgentPackageService {
 	/**
 	 * Create agent package.
 	 *
-	 * @param connectionIP   host ip.
-	 * @param region         region
-	 * @param owner          owner
+	 * @param connectionIP host ip.
+	 * @param region       region
+	 * @param owner        owner
 	 * @return File  agent package.
 	 */
 	public synchronized File createAgentPackage(String connectionIP, String region,
@@ -107,18 +110,69 @@ public class AgentPackageService {
 		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), connectionIP, region, owner);
 	}
 
+	public File createMonitorPackage() {
+		File monitorPackagesDir = getPackagesDir();
+		if (monitorPackagesDir.mkdirs()) {
+			LOGGER.info("{} is created", monitorPackagesDir.getPath());
+		}
+		final String packageName = getDistributionPackageName("ngrinder-monitor", "", "", "", false);
+		File monitorPackage = new File(monitorPackagesDir, packageName);
+		if (monitorPackage.exists()) {
+			return monitorPackage;
+		}
+		FileUtils.deleteQuietly(monitorPackage);
+		final String basePath = "ngrinder-monitor/";
+		final String libPath = basePath + "lib/";
+		TarArchiveOutputStream tarOutputStream = null;
+		try {
+			tarOutputStream = createTarArchiveStream(monitorPackage);
+			addFolderToTar(tarOutputStream, basePath);
+			addFolderToTar(tarOutputStream, libPath);
+			final URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
+			Set<String> libs = getDependentLibs(classLoader);
+
+			for (URL eachUrl : classLoader.getURLs()) {
+				File eachClassPath = new File(eachUrl.getFile());
+				if (!isJar(eachClassPath)) {
+					continue;
+				}
+				if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
+					processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
+						@Override
+						public boolean evaluate(Object object) {
+							ZipEntry zipEntry = (ZipEntry) object;
+							final String name = zipEntry.getName();
+							return name.contains("monitor") && (zipEntry.getName().endsWith("sh") ||
+									zipEntry.getName().endsWith("bat"));
+						}
+					}, basePath, EXEC));
+				} else if (isAgentDependentLib(eachClassPath, libs)) {
+					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
+				}
+			}
+			addMonitorConfToTar(tarOutputStream, basePath, config.getControllerProperties().getPropertyInt
+					(ControllerConstants.PROP_CONTROLLER_MONITOR_PORT));
+
+		} catch (IOException e) {
+			LOGGER.error("Error while generating an monitor package" + e.getMessage());
+		} finally {
+			IOUtils.closeQuietly(tarOutputStream);
+		}
+		return monitorPackage;
+	}
+
 	/**
 	 * Create agent package
 	 *
-	 * @param classLoader URLClass Loader.
-	 * @param connectionIP   host ip.
-	 * @param region         region
-	 * @param owner          owner
+	 * @param classLoader  URLClass Loader.
+	 * @param connectionIP host ip.
+	 * @param region       region
+	 * @param owner        owner
 	 * @return File
 	 */
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
 	                                     String owner) {
-		File agentPackagesDir = getAgentPackagesDir();
+		File agentPackagesDir = getPackagesDir();
 		if (agentPackagesDir.mkdirs()) {
 			LOGGER.info("{} is created", agentPackagesDir.getPath());
 		}
@@ -147,7 +201,9 @@ public class AgentPackageService {
 						@Override
 						public boolean evaluate(Object object) {
 							ZipEntry zipEntry = (ZipEntry) object;
-							return zipEntry.getName().endsWith("sh") || zipEntry.getName().endsWith("bat");
+							final String name = zipEntry.getName();
+							return name.contains("agent") && (zipEntry.getName().endsWith("sh") ||
+									zipEntry.getName().endsWith("bat"));
 						}
 					}, basePath, EXEC));
 				} else if (isAgentDependentLib(eachClassPath, libs)) {
@@ -166,6 +222,16 @@ public class AgentPackageService {
 	private TarArchiveOutputStream createTarArchiveStream(File agentTar) throws IOException {
 		FileOutputStream fos = new FileOutputStream(agentTar);
 		return new TarArchiveOutputStream(new BufferedOutputStream(fos));
+	}
+
+
+	private void addMonitorConfToTar(TarArchiveOutputStream tarOutputStream, String basePath,
+	                                 Integer monitorPort) throws IOException {
+		final String config = getAgentConfigContent("agent_monitor.conf", buildMap("monitorPort",
+				(Object) String.valueOf(monitorPort)));
+		final byte[] bytes = config.getBytes();
+		addInputStreamToTar(tarOutputStream, new ByteArrayInputStream(bytes), basePath + "__agent.conf",
+				bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
 	}
 
 	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath, String connectingIP,
@@ -250,7 +316,7 @@ public class AgentPackageService {
 	 * Get the agent.config content replacing the variables with the given values.
 	 *
 	 * @param templateName template name.
-	 * @param values map of configurations.
+	 * @param values       map of configurations.
 	 * @return generated string
 	 */
 
