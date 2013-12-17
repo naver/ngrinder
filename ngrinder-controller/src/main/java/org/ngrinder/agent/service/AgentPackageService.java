@@ -110,7 +110,7 @@ public class AgentPackageService {
 		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), connectionIP, region, owner);
 	}
 
-	public File createMonitorPackage() {
+	public synchronized File createMonitorPackage() {
 		File monitorPackagesDir = getPackagesDir();
 		if (monitorPackagesDir.mkdirs()) {
 			LOGGER.info("{} is created", monitorPackagesDir.getPath());
