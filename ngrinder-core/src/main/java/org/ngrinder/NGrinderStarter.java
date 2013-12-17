@@ -62,7 +62,6 @@ public class NGrinderStarter implements AgentConstants, CommonConstants {
 
 	protected void init() {
 		// Check agent start mode
-		checkRunningDirectory();
 		this.agentConfig = createAgentConfig();
 		try {
 			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
@@ -83,12 +82,6 @@ public class NGrinderStarter implements AgentConstants, CommonConstants {
 		Boolean verboseMode = agentConfig.getCommonProperties().getPropertyBoolean(PROP_COMMON_VERBOSE);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
-	}
-
-	protected void checkRunningDirectory() {
-		if (!isValidCurrentDirectory()) {
-			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
-		}
 	}
 
 	/*

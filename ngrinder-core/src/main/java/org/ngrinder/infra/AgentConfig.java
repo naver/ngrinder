@@ -52,6 +52,8 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper monitorProperties;
 	private PropertiesWrapper commonProperties;
+
+
 	private PropertiesWrapper internalProperties;
 	private boolean silent = false;
 	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
@@ -262,6 +264,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return internalProperties.getProperty(key, defaultValue);
 	}
 
+	public PropertiesWrapper getInternalProperties() {
+		return internalProperties;
+	}
+
 	public File getCurrentDirectory() {
 		return new File(System.getProperty("user.dir"));
 	}
@@ -281,7 +287,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public int getControllerPort() {
-		//(AGENT_CONSOLE_PORT
 		return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
 	}
 
@@ -319,7 +324,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 
 		public int getControllerPort() {
-			return this.controllerPort;
+			return (this.controllerPort == 0) ? super.getControllerPort() : this.controllerPort;
 		}
 
 		public void setControllerPort(int controllerPort) {

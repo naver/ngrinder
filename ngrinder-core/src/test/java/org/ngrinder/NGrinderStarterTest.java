@@ -65,11 +65,6 @@ public class NGrinderStarterTest {
 class MockNGrinderStarter extends NGrinderStarter {
 
 	@Override
-	protected void checkRunningDirectory() {
-
-	}
-
-	@Override
 	protected AgentConfig createAgentConfig() {
 		return new AgentConfig.NullAgentConfig(1).init();
 	}

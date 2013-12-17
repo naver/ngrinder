@@ -64,6 +64,8 @@ public class MBeanClient {
 	public void connect() {
 		try {
 			connectClient();
+		} catch (TimeoutException e) {
+			LOGGER.info("Timeout while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
 		} catch (Exception ex) {
 			LOGGER.info("Error while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
 			LOGGER.info("Details is ", ex);
@@ -94,7 +96,7 @@ public class MBeanClient {
 		return server.getAttribute(objName, attrName);
 	}
 
-	private void connectClient() throws IOException {
+	private void connectClient() throws IOException, TimeoutException {
 		if (jmxUrl == null || ("localhost".equals(jmxUrl.getHost()) && jmxUrl.getPort() == 0)) {
 			server = ManagementFactory.getPlatformMBeanServer();
 		} else {
@@ -104,7 +106,7 @@ public class MBeanClient {
 		this.connected = true;
 	}
 
-	private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws NGrinderRuntimeException {
+	private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws NGrinderRuntimeException, TimeoutException {
 		try {
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			Future<JMXConnector> future = executor.submit(new Callable<JMXConnector>() {
@@ -114,6 +116,8 @@ public class MBeanClient {
 			});
 
 			return future.get(timeout, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException e) {
+			throw e;
 		} catch (Exception e) {
 			throw processException(e);
 		}
