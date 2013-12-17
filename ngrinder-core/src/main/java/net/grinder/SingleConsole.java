@@ -472,7 +472,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				return;
 			}
 		}
-		throw processException("Connection is not completed for 10 sec");
+		throw processException("Connection is not completed for 20 sec");
 	}
 
 	/**
