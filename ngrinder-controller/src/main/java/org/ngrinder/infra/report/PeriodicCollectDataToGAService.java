@@ -34,9 +34,8 @@ import java.util.Random;
 
 /**
  * Send the ngrinder usage data to GA. It executes only once each day at midnight
- * 
- * @author maoyb
- * @since3.2
+ *
+ * @since 3.2
  */
 @Service
 public class PeriodicCollectDataToGAService {
@@ -49,7 +48,6 @@ public class PeriodicCollectDataToGAService {
 
 	/**
 	 * Send the number of executed test.
-	 * 
 	 */
 	@Scheduled(cron = "0 1 1 * * ?")
 	@Transactional
@@ -57,7 +55,7 @@ public class PeriodicCollectDataToGAService {
 		if (config.isUsageReportEnabled()) {
 			doRandomDelay();
 			GoogleAnalytic googleAnalytic = new GoogleAnalytic(ControllerConstants.GOOGLE_ANALYTICS_APP_NAME,
-							config.getVersion(), ControllerConstants.GOOGLE_ANALYTICS_TRACKING_ID);
+					config.getVersion(), ControllerConstants.GOOGLE_ANALYTICS_TRACKING_ID);
 			MeasureProtocolRequest measureProtocolRequest = googleAnalytic.getMeasureProtocolRequest();
 			measureProtocolRequest.setEventCategory("usage");
 			measureProtocolRequest.setEventAction("executions");
@@ -77,17 +75,19 @@ public class PeriodicCollectDataToGAService {
 	}
 
 	protected int getUsage(Date start, Date end) {
-		List<PerfTest> list = config.isClustered() ? //
-		perfTestService.getAll(start, end, config.getRegion())
-						: perfTestService.getAll(start, end);
-		return list.size();
+		final List<PerfTest> perfTests;
+		if (config.isClustered()) {
+			perfTests = perfTestService.getAll(start, end, config.getRegion());
+		} else {
+			perfTests = perfTestService.getAll(start, end);
+		}
+		return perfTests.size();
 	}
 
 	/**
 	 * For unit test.
-	 * 
-	 * @param config
-	 *            config
+	 *
+	 * @param config config
 	 */
 	void setConfig(Config config) {
 		this.config = config;
