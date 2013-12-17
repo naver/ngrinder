@@ -335,7 +335,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				m_fanOutStreamSender = null;
 			}
 			m_consoleListener.shutdown();
-			m_logger.info("Test shut down.");
+			m_logger.info("Test shuts down.");
 		}
 	}
 

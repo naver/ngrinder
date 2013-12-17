@@ -339,16 +339,16 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 	/**
-	 * Save agent.
+	 * Save the agent.
 	 *
 	 * @param agent saved agent
 	 */
 	public void saveAgent(AgentInfo agent) {
-		agentManagerRepository.save(agent);
+		agentManagerRepository.saveAndFlush(agent);
 	}
 
 	/**
-	 * Delete agent.
+	 * Delete the agent.
 	 *
 	 * @param id agent id to be deleted
 	 */

@@ -131,9 +131,9 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	private AgentInfo saveAgent(String key) {
 		AgentInfo agent = new AgentInfo();
 		agent.setIp("1.1.1.1");
-		agent.setName("testAppName" + key);
+		agent.setName("TestRegion" + key);
 		agent.setPort(8080);
-		agent.setRegion("testRegion" + key);
+		agent.setRegion("TestRegion" + key);
 		agent.setState(AgentControllerState.BUSY);
 		agentManagerService.saveAgent(agent);
 		return agent;

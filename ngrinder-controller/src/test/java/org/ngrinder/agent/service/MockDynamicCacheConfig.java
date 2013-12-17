@@ -51,7 +51,6 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 			CoreLogger.LOGGER.info("In cluster mode.");
 			inputStream = new ClassPathResource("ehcache-dist.xml").getInputStream();
 			cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
-
 			FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 			peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 			List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);

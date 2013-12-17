@@ -310,7 +310,7 @@ public class AgentController implements Agent, AgentConstants {
 			m_fanOutStreamSender.shutdown();
 		}
 		m_agentControllerServerListener.shutdown();
-		LOGGER.info("finished");
+		LOGGER.info("Agent controller shuts down");
 	}
 
 	/**
