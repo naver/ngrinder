@@ -252,7 +252,7 @@ public class AgentPackageService {
 			dependencyStream = cl.getResourceAsStream("dependencies.txt");
 			final String dependencies = IOUtils.toString(dependencyStream);
 			for (String each : StringUtils.split(dependencies, ";")) {
-				libs.add(each.trim().replace(".jar", "").replace("-SNAPSHOT", ""));
+				libs.add(FilenameUtils.getBaseName(each.trim()).replace("-SNAPSHOT", ""));
 			}
 			libs.add(getPackageName("ngrinder-core").replace("-SNAPSHOT", ""));
 		} catch (Exception e) {
