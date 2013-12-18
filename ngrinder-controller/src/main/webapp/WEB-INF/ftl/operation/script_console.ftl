@@ -30,8 +30,7 @@
 						<input type="hidden" id="script" name="script" value=""/>
 					</fieldset>
 				</form>
-				<pre class="prettyprint pre-scrollable validation">
-					<#if result??>${result}<#else>
+				<pre class="prettyprint pre-scrollable validation"><#if result??>${result}<#else>
 You can write groovy code to monitor the ngrinder internal state.
 
 Following variables are available.
