@@ -173,6 +173,7 @@
 				},
 				confirmPassword: {
  					required: allowPasswordChange,
+					equalTo: "#password",
 					rangelength: [6, 15]
 				}
 			},
@@ -239,22 +240,12 @@
 
 	function showPassword() {
 		$("#user_password_section").show("slow");
-		$("#password").addClass("required");
-		var $confirmPassword = $("#confirm_password");
-		$confirmPassword.addClass("required");
-		$confirmPassword.attr("equalTo", "#password");
 	}
 
 	function hidePassword() {
 		$("#user_password_section").slideUp();
-		var $password = $("#password");
-		var $confirmPassword = $("#confirm_password");
-
-		$password.removeClass("required");
-		$confirmPassword.removeClass("required");
-		$confirmPassword.attr("equalTo", "");
-		$password.val("");
-		$confirmPassword.val("");
+		$("#password").val("");
+		$("#confirm_password").val("");
 	}
 	function removeSuccess(elem) {
 		var $elem = $(elem).parents(".control-group");
