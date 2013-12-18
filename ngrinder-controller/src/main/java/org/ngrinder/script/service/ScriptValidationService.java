@@ -34,10 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_VALIDATION_SYNTAX_CHECK;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_VALIDATION_TIMEOUT;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -51,7 +52,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 @Component
 public class ScriptValidationService extends AbstractScriptValidationService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptValidationService.class);
 
 	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
@@ -86,9 +87,12 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 			// String result = checkSyntaxErrors(scriptEntry.getContent());
 
 			ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
-			String result = handler.checkSyntaxErrors(scriptEntry.getPath(), scriptEntry.getContent());
-			if (result != null) {
-				return result;
+			if (config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_VALIDATION_SYNTAX_CHECK)) {
+				String result = handler.checkSyntaxErrors(scriptEntry.getPath(), scriptEntry.getContent());
+				LOGGER.info("Perform Syntax Check by {} for {}", user.getUserId(), scriptEntry.getPath());
+				if (result != null) {
+					return result;
+				}
 			}
 			File scriptDirectory = config.getHome().getScriptDirectory(user);
 			FileUtils.deleteDirectory(scriptDirectory);
@@ -119,12 +123,9 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 				}
 			}
 			return output.toString();
-		} catch (IOException e) {
-			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
-			LOG.error("Error details ", e);
+		} catch (Exception e) {
+			throw processException(e);
 		}
-
-		return StringUtils.EMPTY;
 	}
 
 	protected int getTimeout() {
