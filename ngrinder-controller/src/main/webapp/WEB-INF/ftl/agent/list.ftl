@@ -71,7 +71,10 @@
 					<img class="status" src="${req.getContextPath()}/img/ball/${agent.state.iconName}"/>
 				</div>
 			</td>
-			<td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+			<td>
+				<div class="ellipsis" title="${agent.ip}">
+					<a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+				</div>
 			</td>
 			<td id="port_${agent.id}">${(agent.port)!}</td>
 			<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
