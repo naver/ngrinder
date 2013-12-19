@@ -11,11 +11,15 @@
 	.validation {
 		height:150px; margin-top:5px;
 	}
+    .wrap-bottom {
+        margin-bottom:50px;
+    }
 </style>
 </head>
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
-	<div class="container">
+	<div class="container wrap-bottom">
 		<div class="row">
 			<div class="span12">
 				<form action="${req.getContextPath()}/operation/script_console" name="script_form" method="POST">
@@ -56,12 +60,14 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 				</#if></pre>
 			</div>
 		</div>
-		<#include "../common/copyright.ftl">
 	</div>
 	<#include "../common/codemirror.ftl">
+</div>
+<#include "../common/copyright.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/groovy.js"></script>
 	<script>
 		$(document).ready(function() {
+
 			var editor = CodeMirror.fromTextArea(document.getElementById("script_editor"), {
 				mode: "groovy",
 				theme: "eclipse",

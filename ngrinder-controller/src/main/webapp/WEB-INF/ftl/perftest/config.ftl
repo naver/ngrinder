@@ -18,7 +18,6 @@
         margin-bottom: 2px;
     }
 
-
 </style>
 <!--suppress ALL -->
 <div class="row">

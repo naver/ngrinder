@@ -4,12 +4,22 @@
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">
 		<title><@spring.message "script.list.title"/></title>
+            <style>
+                .script-img-unit {
+                    background-image: url('${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}');
+                    height: 110px;
+                    padding: 0;
+                    margin-top: 40px;
+                }
+
+            </style>
 	</head>
 
 	<body>
+    <div id="wrap">
     <#include "../common/navigator.ftl">
 	<div class="container">
-		<img src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}"/>
+		<div class="script-img-unit "></div>
 		<div class="well form-inline search-bar" style="margin-top:0" >
 			<table style="width:100%">
 				<tr>
@@ -138,14 +148,14 @@
 				</@list>
 			</tbody>
 		</table>
-	<#include "../common/copyright.ftl">
 	</div>
 	<#if !(query??)>
 	<#include "create_script_modal.ftl">
 	<#include "create_folder_modal.ftl">
 	<#include "upload_file_modal.ftl">
 	</#if>
-	
+    </div>
+	<#include "../common/copyright.ftl">
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#nav_script").addClass("active");

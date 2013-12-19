@@ -9,6 +9,10 @@
 			padding-top: 0;
 		}
 
+        #wrap {
+            height: 1530px;
+        }
+
 		div.chart {
 			border: 1px solid #878988;
 			height: 200px;
@@ -77,6 +81,7 @@
 
 <#setting number_format="number">
 <body>
+<div id="wrap">
 <div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
 	<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
 </div>
@@ -195,8 +200,10 @@
 			</div>
 		</div>
 	</div>
-<#include "../common/copyright.ftl">
 </div>
+</div>
+<#include "../common/copyright.ftl">
+
 <#include "../common/messages.ftl">
 
 <script>

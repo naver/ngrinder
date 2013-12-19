@@ -1,11 +1,32 @@
 @charset "utf-8";
-body {
-	padding-top: 40px;
-	font-family: Arial, sansserif
+
+html,body {
+	height: 100%;
+    font-family: Arial, sansserif;
 }
 
 body > .container {
 	margin-top: 0
+}
+
+.container .credit {
+    margin: 10px 350px 0;
+}
+
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -40px;
+}
+#foot_div {
+    background-color: #f5f4f2;
+    height: 40px;
+}
+#foot_div.container:before, .container:after {
+    display: table;
+    line-height: 0;
+    content: "";
 }
 
 .navbar .brand {
@@ -14,7 +35,7 @@ body > .container {
 
 .table thead th, .table tbody td {
 	vertical-align: middle !important
-	
+
 }
 
 h1, h2, h3, h4  {
@@ -118,7 +139,8 @@ table.ellipsis td.ellipsis {
 }
 
 .container .well {
-	padding:10px
+	padding:10px;
+	margin-top: 40px
 }
 
 .container .search-bar {
@@ -135,10 +157,9 @@ table.ellipsis td.ellipsis {
 }
 
 .page-header {
-	margin: 10px 0 20px; 
+	margin: 10px 0 20px;
 	padding-bottom: 5px
 }
-
 
 *:first-child+html .page-header {margin-top:0;}
 *:first-child+html .table TH {padding-left:2px;padding-right:2px}
@@ -180,7 +201,7 @@ table th.center {
 }
 
 img.status {
-	width: 23px; 
+	width: 23px;
 	height: 23px
 }
 
@@ -218,7 +239,8 @@ legend {
 	font-size: 13px;
 	font-weight: 700;
 	margin-top: 15px;
-	padding-top: 10px;
+	padding-top: 50px;
+	line-height: 40px;
 }
 
 legend.header {

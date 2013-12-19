@@ -15,14 +15,14 @@
 		}
 
 		.content {
-			height: 635px;
+			height: 470px;
 			margin-top: 30px;
 			padding-top: 30px;
 			background-color: #f5f4f2
 		}
 
 		.logo {
-			margin-top: 150px;
+			padding-top: 150px;
 			text-align: center
 		}
 
@@ -61,8 +61,9 @@
 	</style>
 </head>
 <body>
-<div>
-<#include "common/messages.ftl"/>
+
+<div id="wrap">
+	<#include "common/messages.ftl"/>
 	<script language="javascript">
 		if (top.location.href.indexOf("login") == -1) {
 			top.location.href = "${req.getContextPath()}/login";
@@ -112,22 +113,15 @@
 
 			</fieldset>
 		</form>
-		<div class="row" id="foot_div">
-			<div class="center">
-				<hr>
-				<footer>
-					<p>nGrinder ver ${nGrinderVersion}</p>
-				</footer>
-			</div>
-		</div>
 	</div>
 </div>
+<#include "common/copyright.ftl">
+
 <div id="sign_up_modal_container"></div>
 <script language="javascript">
 	$(document).ready(function () {
 		$('input[placeholder]').placeholder();
 		$.ajaxSetup({ cache: false });
-
 		var language = getCookie("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE");
 		if (language.indexOf("kr") > -1) {
 			$("#native_language").val("kr");

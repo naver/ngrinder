@@ -6,12 +6,13 @@
 	<title><@spring.message "agent.title"/></title>
 </head>
 <body>
+<div id="wrap">
 <#include "../common/navigator.ftl">
 <div class="container">
 	<fieldSet>
 		<legend class="header"> <@spring.message "agent.list.title"/> </legend>
 	</fieldSet>
-<#include "region_selector.ftl">
+	<#include "region_selector.ftl">
 	<div class="well search-bar">
 		<button class="btn btn-success" id="update_agent_button">
 			<@spring.message "agent.list.update"/>
@@ -98,9 +99,10 @@
 		</@list>
 		</tbody>
 	</table>
-<#include "../common/copyright.ftl">
 	<!--content-->
 </div>
+</div>
+<#include "../common/copyright.ftl">
 <script>
 	$(document).ready(function () {
 		var $agentTable = $("#agent_table");

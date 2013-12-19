@@ -7,6 +7,7 @@
 </head>
 
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<fieldSet>
@@ -107,8 +108,9 @@
 				}
 			</script>
 		</#if>
-		<#include "../common/copyright.ftl">
 	</div>
+</div>
+<#include "../common/copyright.ftl">
 
 	<script type="text/javascript">
 		function getList(page) {

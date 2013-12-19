@@ -35,6 +35,7 @@
 		maxlength: $.validator.format("<@spring.message "common.message.validate.maxLength"/>"),
 		rangelength: $.validator.format("<@spring.message "common.message.validate.rangeLength"/>")
 	});
+
 </script>
 <#setting number_format="computer">
 <#if currentUser?? && currentUser.timeZone??>

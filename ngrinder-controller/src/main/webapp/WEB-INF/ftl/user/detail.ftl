@@ -6,6 +6,7 @@
 </head>
 
 <body>
+<div id="wrap">
 <#include "../common/navigator.ftl">
 <div class="container">
 	<fieldSet>
@@ -18,9 +19,9 @@
 	</fieldSet>
 <#assign popover_place='right'/>
 <#include "info.ftl">
-<#include "../common/copyright.ftl">
 </div>
-
+</div>
+<#include "../common/copyright.ftl">
 <script type="text/javascript">
 	$(document).ready(function () {
 		$("#search_user").click(function () {

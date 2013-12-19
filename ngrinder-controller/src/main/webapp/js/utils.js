@@ -238,3 +238,18 @@ AjaxObj.prototype.call = function () {
 		});
 	}
 };
+
+function getDocHeight(offset) {
+
+    var height = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+    );
+
+    if (typeof(offset) != "undefined"){
+        height += offset;
+    }
+
+    return height;
+}

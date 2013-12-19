@@ -40,14 +40,24 @@
 			padding-bottom: 0;
 		}
 
+        .img-unit {
+            background-image: url('${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}');
+            height: 110px;
+            padding: 0;
+            margin-top: 40px;
+        }
+
 	</style>
 </head>
 
 <body>
-<#include "../common/navigator.ftl">
+<div id="wrap">
+	<#include "../common/navigator.ftl">
 
-<div class="container">
-	<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
+	<div class="container">
+
+		<div class="img-unit">
+		</div>
 
 	<form id="test_list_form" name="test_list_form"
 	      class="well form-inline search-bar" style="margin-top:0;height:30px;"
@@ -252,8 +262,11 @@
 	}
 </script>
 </#if>
-<#include "../common/copyright.ftl">
 </div>
+
+</div>
+<#include "../common/copyright.ftl">
+
 <script>
 $(document).ready(function () {
 	var columnCount = $('#head_tr_id').find('th').length;

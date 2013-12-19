@@ -5,6 +5,7 @@
 </head>
 
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
@@ -28,8 +29,9 @@
 				</form>
 			</div>
 		</div>
-		<#include "../common/copyright.ftl">
 	</div>
+</div>
+<#include "../common/copyright.ftl">
 	<#include "../common/codemirror.ftl"> 
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/xml.js"></script>
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/javascript.js"></script>

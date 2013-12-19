@@ -1,10 +1,6 @@
-<div class="row" id="foot_div">
-	<div class="span12 center">
-		<hr style="margin-bottom:0">
-		<footer>
-			<p><a href="http://nhnopensource.org/ngrinder" target="_blank">nGrinder v${nGrinderVersion}</a></p>
-		</footer>
+<div id="foot_div">
+	<div class="container credit">
+		<p class="muted credit"><a href="http://nhnopensource.org/ngrinder" target="_blank">nGrinder v${nGrinderVersion}</a></p>
 	</div>
 </div>
-
 
