@@ -18,28 +18,34 @@ import sun.net.spi.nameservice.NameService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DNS Java DNS resolver.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings({"restriction", "WeakerAccess"})
 public class LocalManagedDnsImpl implements NameService {
 
+	public LocalManagedDnsImpl() {
+		Cache cache = new Cache();
+		Lookup.setDefaultCache(cache, DClass.IN);
+	}
+
 	/**
 	 * Finds A records (ip addresses) for the host name.
-	 * 
-	 * @param name	host name to resolve.
+	 *
+	 * @param name host name to resolve.
 	 * @return All the ip addresses found for the host name.
-	 * @throws UnknownHostException
-	 *             occurs when name is not available in DNS
+	 * @throws UnknownHostException occurs when name is not available in DNS
 	 */
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
-
 		try {
-			Record[] records = new Lookup(name, Type.A).run();
+			final Lookup lookup = new Lookup(name, Type.A);
+			Record[] records = lookup.run();
 			if (records == null) {
 				throw new UnknownHostException(name);
 			}
@@ -49,7 +55,6 @@ public class LocalManagedDnsImpl implements NameService {
 				ARecord a = (ARecord) records[i];
 				array[i] = a.getAddress();
 			}
-
 			return array;
 		} catch (TextParseException e) {
 			throw new UnknownHostException(e.getMessage());
@@ -58,14 +63,12 @@ public class LocalManagedDnsImpl implements NameService {
 
 	/**
 	 * Finds PTR records (reverse dns lookups) for the ip address.
-	 * 
-	 * @param ip	ip address to lookup.
+	 *
+	 * @param ip ip address to lookup.
 	 * @return The host name found for the ip address.
-	 * @throws UnknownHostException
-	 *             occurs when id is not available in DNS
+	 * @throws UnknownHostException occurs when id is not available in DNS
 	 */
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
-
 		try {
 			String addr = DnsUtils.numericToTextFormat(ip);
 			Record[] records = new Lookup(addr, Type.PTR).run();

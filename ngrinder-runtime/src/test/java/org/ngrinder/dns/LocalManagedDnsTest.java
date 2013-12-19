@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Test;
@@ -37,9 +38,8 @@ public class LocalManagedDnsTest {
 	public void testCustomDNSLookup() throws UnknownHostException {
 		System.setProperty("ngrinder.etc.hosts", "www.google.com:10.10.10.10,www.google.com:10.10.10.11");
 		NameStore.getInstance().reset();
-		assertThat(localDNS.lookupAllHostAddr("www.google.com").length, is(2));
-
-
+		InetAddress[] inetAddresses = localDNS.lookupAllHostAddr("www.google.com");
+		assertThat(inetAddresses.length, is(2));
 		System.setProperty("ngrinder.etc.hosts", "www.google.com:10.10.10.10,www.google.com:10.10.10.10");
 		NameStore.getInstance().reset();
 		assertThat(localDNS.lookupAllHostAddr("www.google.com").length, is(1));
