@@ -255,6 +255,8 @@ public class AgentPackageService {
 				libs.add(FilenameUtils.getBaseName(each.trim()).replace("-SNAPSHOT", ""));
 			}
 			libs.add(getPackageName("ngrinder-core").replace("-SNAPSHOT", ""));
+			libs.add(getPackageName("ngrinder-runtime").replace("-SNAPSHOT", ""));
+			libs.add(getPackageName("ngrinder-groovy").replace("-SNAPSHOT", ""));
 		} catch (Exception e) {
 			IOUtils.closeQuietly(dependencyStream);
 			LOGGER.error("Error while loading dependencies.txt", e);
