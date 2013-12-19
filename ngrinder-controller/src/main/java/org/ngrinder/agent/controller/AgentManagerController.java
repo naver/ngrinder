@@ -238,7 +238,7 @@ public class AgentManagerController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/stop", method = RequestMethod.POST)
+	@RequestMapping(value = "/api", params = "action=stop", method = RequestMethod.PUT)
 	public HttpEntity<String> stop(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
@@ -269,7 +269,7 @@ public class AgentManagerController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/update", method = RequestMethod.POST)
+	@RequestMapping(value = "/api", params = "action=update", method = RequestMethod.PUT)
 	public HttpEntity<String> update(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {

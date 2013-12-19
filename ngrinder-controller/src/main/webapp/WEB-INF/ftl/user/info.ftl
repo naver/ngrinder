@@ -71,12 +71,12 @@
 			<div id="user_password_section" <#if !showPasswordByDefault>style='display:none'</#if> >
 				<div class="accordion-inner" style="padding:9px 0">
 					<@control_group name="password" label_message_key="user.info.pwd">
-						<@input_append class="span4" name="password" value="${(user.psw)!}"
+						<@input_append class="span4" name="password" value=""
 							type="password" data_placement='${popover_place}'message="user.info.pwd"/>
 					</@control_group>
 
 					<@control_group name="confirmPassword" label_message_key="user.info.cpwd">
-						<@input_append class="span4" name="confirmPassword" value="${(user.psw)!}"
+						<@input_append class="span4" name="confirmPassword" value=""
 							type="password" data_placement="${popover_place}" message="user.info.cpwd"/>
 					</@control_group>
 

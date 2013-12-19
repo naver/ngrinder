@@ -150,6 +150,13 @@ function AjaxPostObj(url, params, successMessage, errorMessage) {
 	return ajaxObj;
 }
 
+function AjaxPutObj(url, params, successMessage, errorMessage) {
+    var ajaxObj = new AjaxObj(url, successMessage, errorMessage);
+    ajaxObj.type = "PUT";
+    ajaxObj.params = params;
+    return ajaxObj;
+}
+
 function AjaxObj(url, successMessage, errorMessage) {
 	this.url = url;
 	this.type = "GET";
@@ -171,6 +178,7 @@ AjaxObj.prototype.call = function () {
 	var that = this;
 	var path = ajaxCallContextPath + this.url;
 	var filteredParam = {};
+
 	$.each(this.params, function (key, value) {
 		var variable = "{" + key + "}";
 		if (path.indexOf(variable) != -1) {

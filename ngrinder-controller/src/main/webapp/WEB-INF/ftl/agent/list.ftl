@@ -130,15 +130,15 @@
 		enableChkboxSelectAll("agent_table");
 
 		$agentTable.on("click", ".approved", function () {
-			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
-					{	"approve": "true" },
+			new AjaxPutObj("/agent/api/" + $(this).attr("sid") + "?action=approve",
+					{},
 					"<@spring.message 'agent.message.approve'/>"
 			).call();
 		});
 
 		$agentTable.on("click", ".disapproved", function () {
-			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
-					{	"approve": "false" },
+			new AjaxPutObj("/agent/api/" + $(this).attr("sid") + "?action=disapprove",
+					{},
 					"<@spring.message 'agent.message.disapprove'/>"
 			).call();
 		});
@@ -184,7 +184,7 @@
 	});
 
 	function stopAgents(ids) {
-		var ajaxObj = new AjaxPostObj("/agent/api/stop",
+		var ajaxObj = new AjaxPostObj("/agent/api?action=stop",
 				{ "ids": ids },
 				"<@spring.message 'agent.message.stop.success'/>",
 				"<@spring.message 'agent.message.stop.error'/>");
@@ -197,7 +197,7 @@
 	}
 
 	function updateAgents(ids) {
-		var ajaxObj = new AjaxPostObj("/agent/api/update",
+		var ajaxObj = new AjaxPostObj("/agent/api?action=update",
 				{ "ids": ids },
 				"<@spring.message 'agent.message.update.success'/>",
 				"<@spring.message 'agent.message.update.error'/>");
