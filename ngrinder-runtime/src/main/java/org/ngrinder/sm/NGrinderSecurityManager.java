@@ -149,7 +149,13 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 		// add controller host
 		allowedHost.add(consoleIP);
+		try {
+			java.security.Security.setProperty("networkaddress.cache.ttl", "0");
+		} catch (Exception e) {
+			// Fall through
+		}
 	}
+
 
 	@Override
 	public void checkPermission(Permission permission) {
@@ -447,12 +453,12 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	/**
 	 * Returns the length of the filename prefix, such as <code>C:/</code> or <code>~/</code>.
-	 * <p>
+	 * <p/>
 	 * This method will handle a file in either Unix or Windows format.
-	 * <p>
+	 * <p/>
 	 * The prefix length includes the first slash in the full filename if applicable. Thus, it is possible that the
 	 * length returned is greater than the length of the input string.
-	 *
+	 * <p/>
 	 * <pre>
 	 * Windows:
 	 * a\b\c.txt           --> ""          --> relative
@@ -469,7 +475,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * ~user/a/b/c.txt     --> "~user/"    --> named user
 	 * ~user               --> "~user/"    --> named user (slash added)
 	 * </pre>
-	 * <p>
+	 * <p/>
 	 * The output will be the same irrespective of the machine that the code is running on. ie. both Unix and Windows
 	 * prefixes are matched regardless.
 	 *

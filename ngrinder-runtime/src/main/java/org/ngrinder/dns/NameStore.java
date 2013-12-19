@@ -15,7 +15,9 @@ package org.ngrinder.dns;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -61,7 +63,11 @@ public class NameStore {
 		if (singleton == null) {
 			singleton = new NameStore();
 			singleton.initFromSystemProperty();
-			java.security.Security.setProperty("networkaddress.cache.ttl", "0");
+			try {
+				java.security.Security.setProperty("networkaddress.cache.ttl", "0");
+			} catch (Exception e) {
+				noOp();
+			}
 		}
 		return singleton;
 	}
@@ -74,7 +80,7 @@ public class NameStore {
 		initFromSystemProperty();
 	}
 
-	private void noOp() {
+	private static void noOp() {
 	}
 
 	/**
@@ -126,7 +132,6 @@ public class NameStore {
 	 * @return resolved host name. Null if not found.
 	 */
 	public String getReveredHost(InetAddress ip) {
-
 		for (String hostName : globalNames.keySet()) {
 			if (globalNames.get(hostName).contains(ip)) {
 				return hostName;
@@ -134,5 +139,4 @@ public class NameStore {
 		}
 		return null;
 	}
-
 }

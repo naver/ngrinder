@@ -13,34 +13,33 @@
  */
 package org.ngrinder.dns;
 
+import sun.net.spi.nameservice.NameService;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Set;
 
-import sun.net.spi.nameservice.NameService;
-
 /**
  * Locally managed DNS.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings({"restriction", "WeakerAccess"})
 public class LocalManagedDnsProxy implements NameService {
-
 	private final NameService defaultDnsImpl = new LocalManagedDnsImpl();
+	private final NameStore instance = NameStore.getInstance();
 
 	/**
 	 * Get host name by address.
-	 * 
-	 * @param ip	ip
+	 *
+	 * @param ip ip
 	 * @return host name
-	 * @throws UnknownHostException
-	 *             occurs when hostname can not be found.
+	 * @throws UnknownHostException occurs when hostname can not be found.
 	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
-		String hostName = NameStore.getInstance().getReveredHost(InetAddress.getByAddress(ip));
+		String hostName = instance.getReveredHost(InetAddress.getByAddress(ip));
 		if (hostName == null) {
 			return defaultDnsImpl.getHostByAddr(ip);
 		} else {
@@ -50,16 +49,14 @@ public class LocalManagedDnsProxy implements NameService {
 
 	/**
 	 * Get InetAddresses by hostname.
-	 * 
-	 * @param name
-	 *            hostname
+	 *
+	 * @param name hostname
 	 * @return ip addresses
-	 * @throws UnknownHostException
-	 *             occurs when hostname can not be found.
+	 * @throws UnknownHostException occurs when hostname can not be found.
 	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
-		Set<InetAddress> ipAddresses = NameStore.getInstance().get(name);
+		Set<InetAddress> ipAddresses = instance.get(name);
 		if (ipAddresses != null) {
 			return DnsUtils.shuffle(ipAddresses.toArray(new InetAddress[ipAddresses.size()]));
 		} else {
