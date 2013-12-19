@@ -145,6 +145,7 @@
 			if (changed == true) {
 				return "<@spring.message "script.editor.message.exitWithoutSave"/>";
 			}
+			return undefined;
 		});
 		function saveScript() {
 			document.forms.content_form.action = "${req.getContextPath()}/script/save";

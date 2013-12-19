@@ -211,6 +211,7 @@
 
 	samplingAjax.success = function (res) {
 		if (res.status == "TESTING") {
+			/** @namespace res.perf */
 			curPerf = res.perf;
 			curAgentStat = res.agent;
 			curMonitorStat = res.monitor;

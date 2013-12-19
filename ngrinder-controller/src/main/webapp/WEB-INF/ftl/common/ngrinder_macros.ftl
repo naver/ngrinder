@@ -52,7 +52,7 @@
 				   value="${value}" style="width:40px"/>
 			<#if others!="">${others}</#if>
 		</div>
-		<div id="err_${toUnderscore(name)}" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>
+		<div id="err_${toUnderscore(name)}" style="margin-bottom: 0;height: 15px;line-height:15px"></div>
 	</div>
 </#macro>
 

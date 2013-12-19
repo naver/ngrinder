@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
 <html lang="en">
 <head>
 	<title>nGrinder Login</title>
@@ -57,11 +58,6 @@
 			width: 75px
 		}
 
-		.prompt .chk {
-			vertical-align: middle;
-			margin-right: 5px;
-			*margin-right: 2px
-		}
 	</style>
 </head>
 <body>
@@ -91,9 +87,8 @@
 
 				<div class="prompt">
 					<input type="checkbox" class="checkbox" style="margin-top:-4px"
-						   name='_spring_security_remember_me'>
+						   name='_spring_security_remember_me'/>
 					<span>Remember Me</span>
-					</input>
 					<select id="native_language" name="native_language" style="margin-left:60px;width:80px">
 						<option value="en">English</option>
 						<option value="kr">한국어</option>

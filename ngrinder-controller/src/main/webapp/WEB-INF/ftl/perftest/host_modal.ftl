@@ -88,27 +88,29 @@
 			if (!validateHost(content)) {
 				return;
 			}
+			var $addHostModal = $("#add_host_modal");
 			if (content.length == 0) {
-				$("#add_host_modal small").addClass("error-color");
+				$addHostModal.find("small").addClass("error-color");
 				return;
 			}
 
 			var contentHTML = hostItem(content.join(":"));
-			$(".div-host").html($(".div-host").html() + contentHTML);
+			var $hostDiv = $(".div-host");
+			$hostDiv.html($hostDiv.html() + contentHTML);
 			updateHostHiddenValue();
 
-			$("#add_host_modal").modal("hide");
-			$("#add_host_modal small").removeClass("error-color");
+			$addHostModal.modal("hide");
+			$addHostModal.find("small").removeClass("error-color");
 			$("#target_hosts").nextAll("span.help-inline").empty();
-			return false;
 		});
 
-		$(".div-host").on("click", ".icon-remove-circle", function() {
+		var $hostDiv = $(".div-host");
+		$hostDiv.on("click", ".icon-remove-circle", function() {
 			deleteHost($(this));
 		});
 
 
-		$(".div-host").on("click", "p a[id='hostID']", function() {
+		$hostDiv.on("click", "p a[id='hostID']", function() {
 			var url = "${req.getContextPath()}/monitor/info?ip=" + $.trim($(this).text());
 			$("#target_info_modal_container").load(url, function() {
 				$('#target_info_modal').modal('show').css({"margin-top":"-80px"});
@@ -134,29 +136,33 @@
 	}
 
 	function hostItem(content) {
-		return "<p class='host'><a id='hostID' href='#target_info_modal' data-toggle='modal'> "
-				+ content
-				+ " </a> <a class='pointer-cursor'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
+		<!--suppress HtmlUnknownTarget -->
+		return "<p class='host'>" +
+				"<a id='hostID' href='#target_info_modal' data-toggle='modal'>" + content + "</a>" +
+				"<a class='pointer-cursor'><i class='icon-remove-circle'></i></a>" +
+				"</p>" +
+				"<br style='line-height:0px'/>"
 	}
 
 	function initHosts(newHosts) {
+		var $targetHosts = $("#target_hosts");
+		var $hostDiv = $(".div-host");
 		if (newHosts != undefined) {
 			newHosts = $.trim(newHosts);
-			$("#target_hosts").val(newHosts);
+			$targetHosts.val(newHosts);
 			if (!newHosts) {
-				$(".div-host").html("");
+				$hostDiv.html("");
 				return;
 			}
 		} else if (checkEmptyByID("target_hosts")) {
 			return;
 		}
-
-		var hosts = $("#target_hosts").val().split(",");
-		$(".div-host").html($.map(hosts, function(val) {
+		$hostDiv.html($.map($targetHosts.val().split(","), function(val) {
 			val = $.trim(val);
 			if (val) {
 				return hostItem(val);
 			}
+			return undefined;
 		}).join("\n"));
 	}
 

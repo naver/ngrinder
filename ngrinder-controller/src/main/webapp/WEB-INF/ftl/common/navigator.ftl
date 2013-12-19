@@ -1,6 +1,7 @@
 <#import "spring.ftl" as spring/>
 <#include "ngrinder_macros.ftl">
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
+<!--suppress ALL -->
 <input type="hidden" id="contextPath" value="${req.getContextPath()}"/>
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner" style="filter:none">

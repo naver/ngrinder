@@ -10,7 +10,7 @@
 				<input type="hidden" id="path" name="path"/>
 
 				<@control_group name="descriptonInput" inline_help="true" label_message_key="script.action.commit">
-					<input type="text" id="descripton_input" name="description">
+					<input type="text" id="description_input" name="description">
 				</@control_group>
 
 				<@control_group name="fileInput" label_message_key="script.info.file">

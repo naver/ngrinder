@@ -201,24 +201,27 @@
 
 <script>
 	$(document).ready(function () {
-		$("li.perf").click(function () {
+		var $perfMenu = $("li.perf");
+		var $monitorMenu = $("li.monitor");
+		var $pluginMenu = $("li.plugin");
+
+		$perfMenu.click(function () {
 			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/perf");
 			changActiveLink($(this));
 		});
 
-		$("li.monitor").click(function () {
+		$monitorMenu.click(function () {
 			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/monitor?targetIP=" + $(this).attr("ip"));
 			changActiveLink($(this));
 		});
-
-		$("li.plugin").click(function () {
+		$pluginMenu.click(function () {
 			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/plugin/" + $(this).attr("plugin") +
 					"?kind=" + $(this).attr("ip"));
 			changActiveLink($(this));
 		});
 
 		$.ajaxSetup({"cache": false});
-		$("li.perf").click();
+		$perfMenu.click();
 	});
 
 	function changActiveLink(obj) {

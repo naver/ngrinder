@@ -91,7 +91,7 @@
 			}
 			
 			var name = $name.val();
-			var $selectedElement = $("#script_type option:selected");
+			var $selectedElement = $("#script_type").find("option:selected");
 			var extension = $selectedElement.attr("extension").toLowerCase();
 			var projectHandler = $selectedElement.attr("project_handler");
 			if (projectHandler != "true") {
@@ -100,16 +100,16 @@
 				if (idx == -1) {
 					$name.val(name + extension);
 				}
-				var urlValue = $("#test_url");
-				if (urlValue.val() == "Type URL...") {
-					$("#test_url").val("");
+				var $testUrl = $("#test_url");
+				if ($testUrl.val() == "Type URL...") {
+					$testUrl.val("");
 				}
-				if (!checkEmptyByObj(urlValue)) {
-					if (!urlValue.valid()) {
-						markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
+				if (!checkEmptyByObj($testUrl)) {
+					if (!$testUrl.valid()) {
+						markInput($testUrl, false, "<@spring.message "common.form.validate.format"/>");
 						return;
 					}
-					markInput(urlValue, true);
+					markInput($testUrl, true);
 				}
 			}
 			document.forms.createForm.submit();

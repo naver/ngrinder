@@ -5,7 +5,7 @@ body {
 }
 
 body > .container {
-	margin-top: 0px
+	margin-top: 0
 }
 
 .navbar .brand {
@@ -140,7 +140,7 @@ table.ellipsis td.ellipsis {
 }
 
 
-*:first-child+html .page-header {margin-top:0px;} 
+*:first-child+html .page-header {margin-top:0;}
 *:first-child+html .table TH {padding-left:2px;padding-right:2px}
 
 .message-div {

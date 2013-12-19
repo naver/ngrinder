@@ -128,27 +128,17 @@
 		enableChkboxSelectAll("agent_table");
 
 		$agentTable.on("click", ".approved", function () {
-			var sid = $(this).attr("sid");
-			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
-					{
-						"approve": "true"
-					},
-					function () {
-						showSuccessMsg("<@spring.message 'agent.message.approve'/>");
-					}
-			);
+			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
+					{	"approve": "true" },
+					"<@spring.message 'agent.message.approve'/>"
+			).call();
 		});
 
 		$agentTable.on("click", ".disapproved", function () {
-			var sid = $(this).attr("sid");
-			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
-					{
-						"approve": "false"
-					},
-					function () {
-						showSuccessMsg("<@spring.message 'agent.message.disapprove'/>");
-					}
-			);
+			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
+					{	"approve": "false" },
+					"<@spring.message 'agent.message.disapprove'/>"
+			).call();
 		});
 	</#if>
 

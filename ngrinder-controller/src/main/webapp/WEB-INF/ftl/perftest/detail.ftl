@@ -135,10 +135,6 @@
 		margin-left:-40px;
 	}
 
-	.monitor_state {
-		line-height:12px \0/IE8+9;
-	}
-
 	.span4-5 {
 		width: 340px;
 	}
@@ -480,7 +476,7 @@ function initDuration() {
 
 var validationOptions = {};
 function addValidation() {
-	$.validator.addMethod("paramFmt", function(param, element) {
+	$.validator.addMethod("paramFmt", function (param) {
 		var rule = /^[a-zA-Z0-9_,\|]{0,30}$/;
 		return rule.test($.trim(param));
 	});
@@ -659,11 +655,11 @@ function showScheduleModal() {
 
 
 function getBrowserTimeApplyingTimezone(time) {
+	var date = new Date();
 	if (time === undefined) {
-		var date = new Date();
 		return new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000) + ${timezone_offset});
 	} else {
-		var date = new Date(time - ${timezone_offset});
+		date = new Date(time - ${timezone_offset});
 		// Now it's browser time reflecting the timezone difference.
 		return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes()));
 	}
@@ -675,7 +671,7 @@ function bindEvent() {
 		bindNewScript($(this), false);
 	});
 
-	$("#hidden_duration_input").bind("slide", function(e) {
+	$("#hidden_duration_input").bind("slide", function() {
 		var maxIndex = durationMap.length - 1;
 		var $duration = $("#duration");
 		if (maxIndex == this.value) {
@@ -752,7 +748,7 @@ function bindEvent() {
 		var timeStr = $("#scheduled_date").val() + " " + $("#scheduled_hour").val() + ":" + $("#scheduled_min").val() + ":0";
 		// User input date time.
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
-		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime())
+		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime());
         if (new Date() > scheduledTime) {
 			$scheduleModal.find("small").html("<@spring.message "perfTest.message.scheduleDate.error"/>");
 			return;
@@ -773,9 +769,8 @@ function bindEvent() {
 			$runCount.valid();
 
 			var $durationHour = $("#duration_hour");
-			if (!$durationHour.valid()) { //noinspection BadExpressionStatementJS
-                //noinspection UnterminatedStatementJS
-                var maxVal = ${maxRunHour} * 3600000;
+			if (!$durationHour.valid()) {
+                var maxVal = 3600000 * ${maxRunHour};
                 $("#duration").val(maxVal);
                 setDuration();
                 //noinspection JSUnusedAssignment

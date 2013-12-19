@@ -67,7 +67,7 @@
 					rel="popover"
 					data-html="true" 
 					data-content='<@spring.message "perfTest.report.logs.help"/>' 
-					title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign pointer-cursor"></i></span>
+					title='<@spring.message "perfTest.report.logs"/>' id="log_comment"><i class="icon-question-sign pointer-cursor"></i></span>
 			</legend>
 		</fieldSet>
 		<div style="mgin-left: 10px">
@@ -99,13 +99,11 @@
 	$("#leave_comment_btn").click(function(){
 		var comment = $("#test_comment").val();
 		var tagString = buildTagString();
-		$.post(
-			"${req.getContextPath()}/perftest/${(test.id)?c}/leave_comment",
-			{"testComment": comment, "tagString":tagString},
-			function() {
-				showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
-			}
+		var ajaxObj = new AjaxPostObj("${req.getContextPath()}/perftest/${(test.id)?c}/leave_comment",
+				{ "testComment": comment, "tagString":tagString },
+				"<@spring.message "perfTest.report.message.leaveComment"/>"
 		);
+		ajaxObj.call();
 	});
 
 	$("#detail_report_btn").click(function () {

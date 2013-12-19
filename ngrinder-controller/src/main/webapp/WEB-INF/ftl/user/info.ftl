@@ -133,7 +133,7 @@
 		}, "<@spring.message 'user.info.userId.exist'/>");
 
 		$.validator.addMethod("userPhoneNumber", function (phoneNumber, element) {
-			phoneNumber = $.trim(phoneNumber)
+			phoneNumber = $.trim(phoneNumber);
 			if (phoneNumber == "") {
 				return true;
 			}
@@ -146,6 +146,7 @@
 			return true;
 		}, "<@spring.message 'user.info.phone.help'/>");
 
+		//noinspection JSUnusedAssignment
 		$("#user_form").validate({
 			rules: {
 				userId: {

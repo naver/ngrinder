@@ -86,7 +86,8 @@
 			</@control_group>
 
 			<@control_group group_id="script_control" name="scriptName" label_message_key="perfTest.config.script">
-				<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
+				<select id="script_name" class="required" name="scriptName" style="width: 275px"
+				        old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" ></select>
 				<input type="hidden" id="script_revision"
 					name="scriptRevision"
 					value="${(test.scriptRevision)!-1}"
