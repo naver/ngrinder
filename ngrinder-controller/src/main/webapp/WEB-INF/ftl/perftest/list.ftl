@@ -230,7 +230,7 @@
 			<div>
 		</td>
 		<td class="center">
-			<a class="pointer-cursor" style="<#if test.status != 'FINISHED'>display: none;</#if>">
+			<a class="pointer-cursor" style="<#if test.status == 'SAVED'>display: none;</#if>">
 				<i class="icon-download test-display" sid="${test.id}"></i>
 			</a>
 			<a class="pointer-cursor" style="<#if deletable>display: none;</#if>">
@@ -344,7 +344,6 @@ $(document).ready(function () {
 			ajaxObj.call();
 			testInfoTr.show("slow");
 		} else {
-			$("#" + perftestChartTrId).next('tr').remove();
 			$("#" + perftestChartTrId).remove();
 		}
 
