@@ -39,12 +39,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-/**
- * Class description.
- * 
- * @author Mavlarn
- * @since 3.0
- */
 public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired

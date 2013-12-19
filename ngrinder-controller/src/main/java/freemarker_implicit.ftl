@@ -1,5 +1,6 @@
 [#ftl]
 [#-- @implicitly included --]
+[#-- @ftlvariable name="user" type="org.ngrinder.model.User" --]
 [#-- @ftlvariable name="breadcrumbPath" type="java.lang.String" file="../webapp/WEB-INF/ftl/script/editor.ftl" --]
 [#-- @ftlvariable name="scriptHandler" type="org.ngrinder.script.handler.ScriptHandler" file="../webapp/WEB-INF/ftl/script/editor.ftl" --]
 [#-- @ftlvariable name="file" type="org.ngrinder.script.model.FileEntry" file="../webapp/WEB-INF/ftl/script/editor.ftl" --]
