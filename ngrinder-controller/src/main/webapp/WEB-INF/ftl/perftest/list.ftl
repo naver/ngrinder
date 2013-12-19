@@ -70,8 +70,8 @@
 				   name="query" id="query" value="${query!}">
 
 			<button type="submit" class="btn" id="search_btn">
-				<iclass
-				="icon-search"></i> <@spring.message "common.button.search"/></button>
+				<i class="icon-search"></i> <@spring.message "common.button.search"/>
+			</button>
 			<label class="checkbox" style="position:relative; margin-left:5px">
 				<input type="checkbox" id="running_only_checkbox" name="queryFilter"
 					   <#if queryFilter?? && queryFilter == 'R'>checked</#if>
@@ -305,9 +305,16 @@ $(document).ready(function () {
 		var meanTimeChartId = "mean_time_chart" + id;
 		var errorChartId = "error_chart" + id;
 		if (!$(this).closest('tr').next('#' + perftestChartTrId).length) {
-			var testInfoTr = $("<tr id='" + perftestChartTrId + "' style='display:none'><td colspan='" +
-					columnCount + "' class='no-padding'><table style='width:100%'><tr><td><div " +
-					"class='smallChart' id=" + tpsId + "></div></td> <td><div class='smallChart' id=" + meanTimeChartId + "></div></td> <td><div class='smallChart' id=" + errorChartId + "></div></td></tr></table></td></tr><tr></tr>");
+			var testInfoTr = $("<tr id='" + perftestChartTrId + "' style='display:none'>" +
+					"<td colspan='" + columnCount + "' class='no-padding'>" +
+					"<table style='width:100%'>" +
+					"<tr>" +
+					"<td><div class='smallChart' id=" + tpsId + "></div></td>" +
+					"<td><div class='smallChart' id=" + meanTimeChartId + "></div></td> " +
+					"<td><div class='smallChart' id=" + errorChartId + "></div></td>" +
+					"</tr>" +
+					"</table>" +
+					"</td></tr>");
 			$(this).closest('tr').after(testInfoTr);
 			var gridPadding = { top: 15, right: 10, bottom: 30, left: 40 };
 			var ajaxObj = new AjaxObj("/perftest/api/" + id + "/graph");
