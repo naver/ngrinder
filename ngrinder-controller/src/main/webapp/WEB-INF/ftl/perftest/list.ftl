@@ -226,8 +226,9 @@
 			<div>
 		</td>
 		<td class="center">
-			<a class="pointer-cursor" style="<#if test.status == 'SAVED'>display: none;</#if>">
-				<i class="icon-download test-display" sid="${test.id}"></i>
+			<a class="pointer-cursor" style="<#if !test.status.isReportable()>display: none;</#if>">
+				<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}" class="icon-download
+				test-display"  sid="${test.id}"></i>
 			</a>
 			<a class="pointer-cursor" style="<#if deletable>display: none;</#if>">
 				<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i>
@@ -432,7 +433,7 @@ function getList(page) {
 	document.forms.test_list_form.submit();
 }
 
-function updateStatus(id, status, icon, stoppable, deletable, message) {
+function updateStatus(id, status, statusId, icon, stoppable, deletable, reportable, message) {
 	var $ballImg = $("#ball_" + id + " img");
 	if ($ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		$ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
@@ -448,11 +449,16 @@ function updateStatus(id, status, icon, stoppable, deletable, message) {
 	} else {
 		$("#stop_" + id).parent().hide();
 	}
+
 	if (deletable == true) {
 		$("#delete_" + id).parent().show();
 	} else {
 		$("#check_" + id).attr("disabled", true);
 		$("#delete_" + id).parent().hide();
+	}
+
+	if (reportable == true) {
+		$("#show_" + id).parent().show();
 	}
 }
 // Wrap this function in a closure so we don't pollute the namespace
@@ -477,15 +483,17 @@ function updateStatus(id, status, icon, stoppable, deletable, message) {
 		for (var i = 0; i < status.length; i++) {
 			var each = status[i];
 			/** @namespace each.status_id */
-			var statusId = each.status_id;
-			$("#check_" + each.id).attr("status", statusId);
 
-			if (statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED") {
+			var statusId = each.status_type;
+			$("#check_" + each.id).attr("status", statusId);
+			if (each.reportable) {
 				location.reload();
 			}
 			/** @namespace each.deletable */
+			/** @namespace each.reportable */
 			/** @namespace each.stoppable */
-			updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
+			updateStatus(each.id, each.name, each.status_type, each.icon, each.stoppable, each.deletable,
+					each.reportable, each.message);
 		}
 		if (ids.length == 0) {
 			return true;

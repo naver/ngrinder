@@ -153,6 +153,7 @@ public class AgentManagerController extends BaseController {
 
 	/**
 	 * Get the current all agents state.
+	 *
 	 * @return json message
 	 */
 	@RestAPI
@@ -165,6 +166,7 @@ public class AgentManagerController extends BaseController {
 
 	/**
 	 * Get all agents from database.
+	 *
 	 * @return json message
 	 */
 	@RestAPI
@@ -176,6 +178,7 @@ public class AgentManagerController extends BaseController {
 
 	/**
 	 * Get the agent for the given agent id.
+	 *
 	 * @return json message
 	 */
 	@RestAPI
@@ -275,15 +278,14 @@ public class AgentManagerController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
-	private List<Map<String, Object>> getAgentStatus(List<AgentInfo> agentInfos) {
-		List<Map<String, Object>> statuses = newArrayList();
-		for (AgentInfo each : agentInfos) {
+	private List<Map<String, Object>> getAgentStatus(List<AgentInfo> agents) {
+		List<Map<String, Object>> statuses = newArrayList(agents.size());
+		for (AgentInfo each : agents) {
 			Map<String, Object> result = newHashMap();
-			result.put(PARAM_STATUS_UPDATE_ID, each.getId());
-			result.put(PARAM_STATUS_AGENT_PORT, each.getPort());
-			result.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getState().getCategory().getIconName());
-			result.put(PARAM_STATUS_UPDATE_STATUS_NAME, each.getState());
-
+			result.put("id", each.getId());
+			result.put("port", each.getPort());
+			result.put("icon", each.getState().getCategory().getIconName());
+			result.put("state", each.getState());
 			statuses.add(result);
 		}
 		return statuses;

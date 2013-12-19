@@ -378,18 +378,17 @@ public class PerfTestController extends BaseController {
 		List<Map<String, Object>> statuses = newArrayList();
 		for (PerfTest each : perfTests) {
 			Map<String, Object> result = newHashMap();
-			result.put(PARAM_STATUS_UPDATE_ID, each.getId());
-			result.put(PARAM_STATUS_UPDATE_STATUS_ID, each.getStatus());
-			result.put(PARAM_STATUS_UPDATE_STATUS_TYPE, each.getStatus());
-			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
-			result.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
-			result.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
-			result.put(
-					PARAM_STATUS_UPDATE_STATUS_MESSAGE,
+			result.put("id", each.getId());
+			result.put("status_id", each.getStatus());
+			result.put("status_type", each.getStatus());
+			result.put("name", getMessages(each.getStatus().getSpringMessageKey()));
+			result.put("icon", each.getStatus().getIconName());
+			result.put("message",
 					StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage() + "</b>\n"
 							+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
-			result.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
-			result.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
+			result.put("deletable", each.getStatus().isDeletable());
+			result.put("stoppable", each.getStatus().isStoppable());
+			result.put("reportable", each.getStatus().isReportable());
 			statuses.add(result);
 		}
 		return statuses;

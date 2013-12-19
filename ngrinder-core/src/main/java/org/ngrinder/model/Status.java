@@ -19,57 +19,89 @@ import java.util.List;
 /**
  * Performance Test Status. This enum describes all necessary step and status which {@link PerfTest}
  * can be in.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 public enum Status {
-	/** Just Saved.. not ready to run */
+	/**
+	 * Just Saved.. not ready to run
+	 */
 	SAVED(StatusCategory.PREPARE),
-	/** test ready. */
+	/**
+	 * test ready.
+	 */
 	READY(StatusCategory.PREPARE),
-	/** Just before starting console. */
+	/**
+	 * Just before starting console.
+	 */
 	START_CONSOLE(StatusCategory.PROGRESSING),
-	/** Just after staring console. */
+	/**
+	 * Just after staring console.
+	 */
 	START_CONSOLE_FINISHED(StatusCategory.PROGRESSING),
-	/** Just before starting agents. */
+	/**
+	 * Just before starting agents.
+	 */
 	START_AGENTS(StatusCategory.PROGRESSING),
-	/** Just after starting agents. */
+	/**
+	 * Just after starting agents.
+	 */
 	START_AGENTS_FINISHED(StatusCategory.PROGRESSING),
-	/** Just before distributing files. */
+	/**
+	 * Just before distributing files.
+	 */
 	DISTRIBUTE_FILES(StatusCategory.PROGRESSING),
-	/** Just after distributing files. */
+	/**
+	 * Just after distributing files.
+	 */
 	DISTRIBUTE_FILES_FINISHED(StatusCategory.PROGRESSING),
-	/** Just before staring testing. */
+	/**
+	 * Just before staring testing.
+	 */
 	START_TESTING(StatusCategory.TESTING),
-	/** Just after staring testing. */
+	/**
+	 * Just after staring testing.
+	 */
 	TESTING(StatusCategory.TESTING),
-	/** Waiting for test is finishing. */
+	/**
+	 * Waiting for test is finishing.
+	 */
 	TESTING_FINISHED(StatusCategory.TESTING),
-	/** Detected Abnormal testing. */
+	/**
+	 * Detected Abnormal testing.
+	 */
 	ABNORMAL_TESTING(StatusCategory.TESTING),
-	/** Test finished. */
+	/**
+	 * Test finished.
+	 */
 	FINISHED(StatusCategory.FINISHED),
 
-	/** Test finished. but contains lots of error */
+	/**
+	 * Test finished. but contains lots of error
+	 */
 	STOP_BY_ERROR(StatusCategory.ERROR),
 	/**
 	 * Test finished. but contains lots of error.
-	 * 
+	 *
 	 * @deprecated deprecated by typo error. use {@link #STOP_BY_ERROR}.
 	 */
 	STOP_ON_ERROR(StatusCategory.ERROR),
-	/** Test cancel. */
+	/**
+	 * Test cancel.
+	 */
 	CANCELED(StatusCategory.STOP),
-	/** Nothing. */
+	/**
+	 * Nothing.
+	 */
 	UNKNOWN(StatusCategory.STOP);
 
 	private final StatusCategory category;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param category	category of this status within.
+	 *
+	 * @param category category of this status within.
 	 */
 	Status(StatusCategory category) {
 		this.category = category;
@@ -77,7 +109,7 @@ public enum Status {
 
 	/**
 	 * Get the category of each status.
-	 * 
+	 *
 	 * @return category.
 	 */
 	public StatusCategory getCategory() {
@@ -86,16 +118,26 @@ public enum Status {
 
 	/**
 	 * Check if the {@link PerfTest} in this status can be stopped.
-	 * 
+	 *
 	 * @return true if stoppable.
 	 */
 	public boolean isStoppable() {
 		return category.isStoppable();
 	}
 
+
+	/**
+	 * Check if the {@link PerfTest} contains report.
+	 *
+	 * @return true if reportable.
+	 */
+	public boolean isReportable() {
+		return category.isReportable();
+	}
+
 	/**
 	 * Check if the {@link PerfTest} in this status can be deleted.
-	 * 
+	 *
 	 * @return true if deletable.
 	 */
 	public boolean isDeletable() {
@@ -104,7 +146,7 @@ public enum Status {
 
 	/**
 	 * Get the icon name of this status.
-	 * 
+	 *
 	 * @return icon name
 	 */
 	public String getIconName() {
@@ -113,7 +155,7 @@ public enum Status {
 
 	/**
 	 * Return all status which is processing or testing {@link StatusCategory}s.
-	 * 
+	 *
 	 * @return status array.
 	 */
 	public static Status[] getProcessingOrTestingTestStatus() {
@@ -123,13 +165,13 @@ public enum Status {
 				status.add(each);
 			}
 		}
-		return status.toArray(new Status[0]);
+		return status.toArray(new Status[status.size()]);
 	}
 
 	/**
 	 * Check this status is the working status.
-	 * 
-	 * @param status	status
+	 *
+	 * @param status status
 	 * @return true if it's in {@link StatusCategory}'s PROCESSING or TESTING.
 	 */
 	private static boolean isWorkingStatus(Status status) {
@@ -138,7 +180,7 @@ public enum Status {
 
 	/**
 	 * Get all statuses in TESTING {@link StatusCategory}.
-	 * 
+	 *
 	 * @return status list
 	 */
 	public static Status[] getTestingTestStates() {
@@ -148,12 +190,12 @@ public enum Status {
 				status.add(each);
 			}
 		}
-		return status.toArray(new Status[0]);
+		return status.toArray(new Status[status.size()]);
 	}
 
 	/**
 	 * Get the message key of {@link Status}.
-	 * 
+	 *
 	 * @return message key
 	 */
 	public String getSpringMessageKey() {

@@ -210,7 +210,7 @@
 		var ajaxObj = new AjaxObj("/agent/api/states", null, "<@spring.message 'common.error.error'/>");
 		ajaxObj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
-				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
+				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].state);
 			}
 			if (ids.length == 0) {
 				return;
