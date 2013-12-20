@@ -15,14 +15,14 @@
 		}
 
 		.content {
-			height: 470px;
+			height: 380px;
 			margin-top: 30px;
 			padding-top: 30px;
 			background-color: #f5f4f2
 		}
 
 		.logo {
-			padding-top: 150px;
+			padding-top: 250px;
 			text-align: center
 		}
 
