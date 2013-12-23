@@ -4,6 +4,11 @@
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
 <title><@spring.message "operation.log.title"/></title>
+<style>
+	div.row {
+		margin-bottom: 50px;
+	}
+</style>
 </head>
 
 <body>

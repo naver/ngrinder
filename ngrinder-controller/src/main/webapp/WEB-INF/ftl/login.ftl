@@ -15,14 +15,14 @@
 		}
 
 		.content {
-			height: 380px;
-			margin-top: 30px;
+			height: 635px;
+            margin-top: 30px;
 			padding-top: 30px;
 			background-color: #f5f4f2
 		}
 
 		.logo {
-			padding-top: 250px;
+            margin-top: 150px;
 			text-align: center
 		}
 
@@ -61,8 +61,6 @@
 	</style>
 </head>
 <body>
-
-<div id="wrap">
 	<#include "common/messages.ftl"/>
 	<script language="javascript">
 		if (top.location.href.indexOf("login") == -1) {
@@ -113,9 +111,8 @@
 
 			</fieldset>
 		</form>
+		<#include "common/copyright.ftl">
 	</div>
-</div>
-<#include "common/copyright.ftl">
 
 <div id="sign_up_modal_container"></div>
 <script language="javascript">

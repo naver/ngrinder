@@ -26,8 +26,8 @@
         }
     </style>
 </head>
-
 <body>
+<div id="wrap">
 <#include "../common/navigator.ftl">
 <div class="container">
     <legend class="header">
@@ -93,9 +93,9 @@
             <div class="chart" id="memory_usage_chart"></div>
         </div>
     </div>
-<#include "../common/copyright.ftl">
     <!--content-->
 </div>
+<#include "../common/copyright.ftl">
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
     var interval = 1;
