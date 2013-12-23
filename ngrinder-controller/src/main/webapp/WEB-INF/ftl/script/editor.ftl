@@ -38,6 +38,7 @@
 	</head>
 
 	<body>
+	<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
@@ -130,9 +131,9 @@
 			</pre>
 			<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
 		</div>
-		<#include "../common/copyright.ftl">
 	</div>
-
+	</div>
+	<#include "../common/copyright.ftl">
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
 	<#include "../perftest/host_modal.ftl">

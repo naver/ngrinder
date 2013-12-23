@@ -9,9 +9,9 @@
 			padding-top: 0;
 		}
 
-        #wrap {
-            height: 1530px;
-        }
+		div.row {
+			margin-bottom: 50px;
+		}
 
 		div.chart {
 			border: 1px solid #878988;
