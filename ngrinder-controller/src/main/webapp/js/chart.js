@@ -87,7 +87,7 @@ Chart.prototype.calcYmax = function () {
 };
 
 Chart.prototype.isEmpty = function () {
-	if (this.values[0].length == 0) {
+	if (this.values.length == 0 || this.values[0].length == 0) {
 		return true;
 	}
 	for (var i = 0; i < this.values.length; i++) {
