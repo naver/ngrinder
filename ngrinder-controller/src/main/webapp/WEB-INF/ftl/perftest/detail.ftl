@@ -876,7 +876,7 @@ function bindEvent() {
 		$("#run_count_radio").click();
 	});
 
-	$('#message_div').ajaxSend(function(e, xhr, settings) {
+	$(document).ajaxSend(function(e, xhr, settings) {
 		var url = settings.url;
 		if ((url.indexOf("resource") > 0 || url.indexOf("script") > 0)) {
 			showProgressBar("<@spring.message "perfTest.message.updateResource"/>");
