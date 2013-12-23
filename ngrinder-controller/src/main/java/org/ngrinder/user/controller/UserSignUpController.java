@@ -15,6 +15,7 @@ package org.ngrinder.user.controller;
 
 
 import org.ngrinder.common.controller.RestAPI;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -25,6 +26,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
  * User sign up controller.
@@ -39,6 +42,9 @@ public class UserSignUpController extends UserController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private Config config;
+
 	/**
 	 * New user sign up form login page.
 	 *
@@ -47,6 +53,7 @@ public class UserSignUpController extends UserController {
 	 */
 	@RequestMapping("/new")
 	public String openForm(ModelMap model) {
+		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		super.openForm(null, model);
 		model.addAttribute("allowShareChange", false);
 		model.addAttribute("showPasswordByDefault", true);
@@ -84,6 +91,7 @@ public class UserSignUpController extends UserController {
 	 */
 	@RequestMapping("/save")
 	public String save(@ModelAttribute("user") User newUser, ModelMap model) {
+		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		newUser.setRole(Role.USER);
 		userService.createUser(newUser);
 		model.clear();
@@ -126,6 +134,7 @@ public class UserSignUpController extends UserController {
 	@RestAPI
 	@RequestMapping("/api/{userId}/check_duplication")
 	public HttpEntity<String> checkDuplicationForRegistration(@PathVariable String userId) {
+		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		User user = userService.getOne(userId);
 		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
