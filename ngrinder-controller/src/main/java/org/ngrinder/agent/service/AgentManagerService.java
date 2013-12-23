@@ -154,19 +154,16 @@ public class AgentManagerService extends AbstractAgentManagerService {
 				continue;
 			}
 			String fullRegion = agentInfo.getRegion();
-
 			// It's this controller's agent
-			if (fullRegion.endsWith(myAgentSuffix)) {
+			if (StringUtils.endsWithIgnoreCase(fullRegion, myAgentSuffix)) {
 				availableUserOwnAgent++;
-			} else if (!fullRegion.contains("owned_")) {
+			} else if (!StringUtils.containsIgnoreCase(fullRegion, "owned_")) {
 				availableShareAgents++;
 			}
 		}
 
 		int maxAgentSizePerConsole = getMaxAgentSizePerConsole();
-
 		availableShareAgents = (Math.min(availableShareAgents, maxAgentSizePerConsole));
-
 		Map<String, MutableInt> result = new HashMap<String, MutableInt>(1);
 		result.put(Config.NONE_REGION, new MutableInt(availableShareAgents + availableUserOwnAgent));
 		return result;

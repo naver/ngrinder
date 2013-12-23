@@ -91,6 +91,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	public void init() {
 		this.approved = getSafe(this.approved, false);
 		this.version = getSafe(this.version, "");
+		this.region = getSafe(this.region, "");
 	}
 
 	public String getIp() {
