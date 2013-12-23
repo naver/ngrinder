@@ -14,7 +14,11 @@
 package org.ngrinder.user.controller;
 
 import com.google.common.collect.Lists;
+import com.google.gson.annotations.Expose;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
@@ -41,6 +45,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
@@ -57,8 +62,10 @@ public class UserController extends BaseController {
 
 	@Autowired
 	private UserService userService;
+
 	@Autowired
 	protected Config config;
+
 
 	/**
 	 * Get user list on the given role.
@@ -94,7 +101,6 @@ public class UserController extends BaseController {
 	}
 
 
-
 	/**
 	 * Get user creation form page.
 	 *
@@ -104,7 +110,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
-	public String  openForm(User user, final ModelMap model) {
+	public String openForm(User user, final ModelMap model) {
 		User one = User.createNew();
 		model.addAttribute("user", one);
 		model.addAttribute("allowUserIdChange", true);
@@ -119,7 +125,6 @@ public class UserController extends BaseController {
 	/**
 	 * Get user detail page.
 	 *
-	 * @param user   current user
 	 * @param model  mode
 	 * @param userId user to get
 	 * @return "user/detail"
@@ -157,9 +162,9 @@ public class UserController extends BaseController {
 	/**
 	 * Save or Update user detail info.
 	 *
-	 * @param user         current user
-	 * @param model        model
-	 * @param updatedUser  user to be updated.
+	 * @param user        current user
+	 * @param model       model
+	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
@@ -216,19 +221,31 @@ public class UserController extends BaseController {
 	 * Get the follower list.
 	 *
 	 * @param user  current user
-	 * @param model model
-	 * @return "user/switch_options"
+	 * @param keywords search keyword.
+	 * @return json message
 	 */
 	@RequestMapping("/switch_options")
-	public String switchOptions(User user, ModelMap model) {
+	public HttpEntity<String> switchOptions(User user, @RequestParam(required = true) final String keywords) {
+		List<UserSearchResult> result = newArrayList();
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			List<User> allUserByRole = userService.getAll(Role.USER);
-			model.addAttribute("shareUsers", allUserByRole);
+			CollectionUtils.filter(allUserByRole, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					User each = (User) object;
+					return each.getUserId().startsWith(keywords);
+				}
+			});
+			for (User each : allUserByRole) {
+				result.add(new UserSearchResult(each));
+			}
 		} else {
 			User currUser = userService.getOne(user.getUserId());
-			model.addAttribute("shareUsers", currUser.getOwners());
+			for (User each : currUser.getOwners()) {
+				result.add(new UserSearchResult(each));
+			}
 		}
-		return "user/switch_options";
+		return toJsonHttpEntity(result);
 	}
 
 	/**
@@ -292,7 +309,7 @@ public class UserController extends BaseController {
 	/**
 	 * Get users by the given role.
 	 *
-	 * @param role  user role
+	 * @param role user role
 	 * @return json message
 	 */
 	@RestAPI
@@ -305,7 +322,7 @@ public class UserController extends BaseController {
 	/**
 	 * Get the user by the given user id.
 	 *
-	 * @param userId  user id
+	 * @param userId user id
 	 * @return json message
 	 */
 	@RestAPI
@@ -318,7 +335,7 @@ public class UserController extends BaseController {
 	/**
 	 * Create an user.
 	 *
-	 * @param newUser  new user
+	 * @param newUser new user
 	 * @return json message
 	 */
 	@RestAPI
@@ -332,8 +349,8 @@ public class UserController extends BaseController {
 	/**
 	 * Update the user.
 	 *
-	 * @param userId  user id
-	 * @param update  update user
+	 * @param userId user id
+	 * @param update update user
 	 * @return json message
 	 */
 	@RestAPI
@@ -348,7 +365,7 @@ public class UserController extends BaseController {
 	/**
 	 * Delete the user by the given userId.
 	 *
-	 * @param userId  user id
+	 * @param userId user id
 	 * @return json message
 	 */
 	@RestAPI
@@ -357,6 +374,59 @@ public class UserController extends BaseController {
 	public HttpEntity<String> delete(@PathVariable("userId") String userId) {
 		userService.delete(userId);
 		return successJsonHttpEntity();
+	}
+
+	/**
+	 * Search user list on the given keyword.
+	 *
+	 * @param pageable page info
+	 * @param keywords search keyword.
+	 * @return json message
+	 */
+	@RestAPI
+	@RequestMapping(value = "/api/search", method = RequestMethod.GET)
+	public HttpEntity<String> search(User user, @PageableDefaults Pageable pageable,
+	                                 @RequestParam(required = true) String keywords) {
+		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+				defaultIfNull(pageable.getSort(),
+						new Sort(Direction.ASC, "userName")));
+		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
+		List<UserSearchResult> result = newArrayList();
+		for (User each : pagedUser) {
+				result.add(new UserSearchResult(each));
+		}
+
+		final String currentUserId = user.getUserId();
+		CollectionUtils.filter(result, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				UserSearchResult each = (UserSearchResult)object;
+				return !(each.getId().equals(currentUserId) || each.getId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
+			}
+		});
+
+		return toJsonHttpEntity(result);
+	}
+
+	public static class UserSearchResult {
+		@Expose
+		private String id;
+
+		@Expose
+		private String text;
+
+		public UserSearchResult(User user) {
+			id = user.getUserId();
+			text = StringUtils.abbreviate(user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId(), 50);
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public String getId() {
+			return id;
+		}
 	}
 
 }

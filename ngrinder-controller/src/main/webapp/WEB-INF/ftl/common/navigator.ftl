@@ -99,7 +99,7 @@
 					<span class="label label-important">new</span>
 				</#if>
 					<span style="margin-top:0; margin-bottom:0; font-size: 15px">
-						<@spring.message "announcement.title"/>
+					<@spring.message "announcement.title"/>
 					</span>
 
 					<a class="pointer-cursor" id="hide_announcement">
@@ -138,8 +138,8 @@
 		<div class="form-horizontal" style="margin-left:20px;overflow-y:hidden">
 			<fieldset>
 			<@control_group label_style="width:100px" controls_style = "margin-left:140px" label_message_key = "user.switch.title">
-				<select id="switch_user_select" style="width:310px">
-				</select>
+				<div id="switch_user_select" style="width:310px">
+				</div>
 			</@control_group>
 			</fieldset>
 		</div>
@@ -180,17 +180,34 @@
 	}
 
 	function switchUser() {
+
 		$("#switch_user_select").change(function () {
 			document.location.href = "${req.getContextPath()}/user/switch?to=" + $(this).val();
 		});
-		var url = "${req.getContextPath()}/user/switch_options";
 		$("#switch_user_menu").click(function () {
-			$("#switch_user_select").load(url, function () {
-				$(this).prepend($("<option value=''></option>"));
-				$(this).val("");
-				$("#switch_user_select").select2();
-				$('#user_switch_modal').modal('show');
+			$("#switch_user_select").select2({
+				minimumInputLength: 3,
+				ajax: {
+					url: "/user/switch_options",
+					dataType: "json",
+					data: function (term) {
+						return {
+							keywords: term
+						}
+					},
+					results: function (data) {
+						return {results: data};
+					}
+				},
+				formatSelection: function (data) {
+					return data.text;
+				},
+				formatResult: function(data) {
+					return data.text
+				}
 			});
+
+			$('#user_switch_modal').modal('show');
 		});
 	}
 
