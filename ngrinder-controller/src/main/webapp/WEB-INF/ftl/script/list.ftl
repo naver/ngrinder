@@ -185,8 +185,8 @@
 			$("#search_btn").on('click', function() {
 				searchScriptList();
 			});
-			
-			enableChkboxSelectAll("script_list_table");
+
+			enableCheckboxSelectAll("script_list_table");
 			
 			$("i.script-download").on('click', function() {
 				window.location  = "${req.getContextPath()}/script/download/" + $(this).attr("spath");

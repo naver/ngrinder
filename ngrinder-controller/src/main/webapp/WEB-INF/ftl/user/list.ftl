@@ -132,7 +132,7 @@
 				window.location.href=destUrl;
 			});
 			removeClick();
-			enableChkboxSelectAll("user_table");
+			enableCheckboxSelectAll("user_table");
 			$("th").each(function() {
 				var $this = $(this);
 				if (!$this.hasClass("nothing")) {

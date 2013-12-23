@@ -280,7 +280,7 @@ $(document).ready(function () {
 
 	$("#nav_test").addClass("active");
 
-	enableChkboxSelectAll("test_table");
+	enableCheckboxSelectAll("test_table");
 
 	$("#delete_btn").click(function () {
 		var list = $("td input:checked");

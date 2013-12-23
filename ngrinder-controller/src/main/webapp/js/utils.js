@@ -82,27 +82,25 @@ function getCookie(objName) {//get cookie value
 	return "";
 }
 
-function enableChkboxSelectAll(containerId) {
+function enableCheckboxSelectAll(containerId) {
 	var idStr = "#" + containerId + " ";
 	$(idStr + "td > input[disabled!='disabled']").click(function (event) {
 		if ($(idStr + "td > input[disabled!='disabled']").size() == $(idStr + "td > input:checked").size()) {
-			$(idStr + "th > input").attr("checked", "checked");
+			$(idStr + "th > input").attr("checked", true);
 		} else {
-			$(idStr + "th > input").removeAttr("checked");
+			$(idStr + "th > input").attr("checked", false);
 		}
-
-		event.stopImmediatePropagation();
+        event.stopImmediatePropagation();
 	});
 
 	$(idStr + "th > input").click(function (event) {
 		if ($(this)[0].checked) {
-			$(idStr + "td > input[disabled!='disabled']").each(function () {
-				if ($(this))
-					$(this).attr("checked", "checked");
+			$(idStr + "td > input[disabled!='disabled',type='checkbox']").each(function () {
+				this.checked = true
 			});
 		} else {
-			$("td > input").each(function () {
-				$(this).removeAttr("checked");
+			$("td > input[type='checkbox']").each(function () {
+                this.checked = false
 			});
 		}
 

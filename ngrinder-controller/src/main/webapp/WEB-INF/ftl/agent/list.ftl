@@ -127,7 +127,7 @@
 		});
 
 		removeClick();
-		enableChkboxSelectAll("agent_table");
+		enableCheckboxSelectAll("agent_table");
 
 		$agentTable.on("click", ".approved", function () {
 			new AjaxPutObj("/agent/api/" + $(this).attr("sid") + "?action=approve",
