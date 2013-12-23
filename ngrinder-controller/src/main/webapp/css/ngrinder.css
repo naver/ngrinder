@@ -10,7 +10,8 @@ body > .container {
 }
 
 .container .credit {
-    margin: 10px 350px 0;
+	margin: 10px 0;
+	text-align: center;
 }
 
 #wrap {
