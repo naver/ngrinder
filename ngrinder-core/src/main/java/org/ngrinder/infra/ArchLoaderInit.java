@@ -75,7 +75,7 @@ public class ArchLoaderInit {
 		final ClassLoader classLoader = ArchLoaderInit.class.getClassLoader();
 		for (URL each : ((URLClassLoader) classLoader).getURLs()) {
 			if (each.getFile().contains("sigar-native-")) {
-				return URLDecoder.decode(each.getFile(), Charset.defaultCharset().name());
+				return URLDecoder.decode(each.getFile(), "UTF-8");
 			}
 		}
 
@@ -84,7 +84,7 @@ public class ArchLoaderInit {
 		if (parent != null) {
 			for (URL each : ((URLClassLoader) parent).getURLs()) {
 				if (each.getFile().contains("sigar-native-")) {
-					return URLDecoder.decode(each.getFile(), Charset.defaultCharset().name());
+					return URLDecoder.decode(each.getFile(), "UTF-8");
 				}
 			}
 		}
