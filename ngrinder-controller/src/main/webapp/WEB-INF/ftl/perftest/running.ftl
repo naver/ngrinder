@@ -267,12 +267,14 @@
 			monitorStatusString = monitorStatusString +
 					"<li class='monitor_state'><div style='width:100%;' class='ellipsis'>";
 			monitorStatusString = monitorStatusString +
-					"<span title='" + name + "'><b>" + name + "</b></span>" +
+					"<span title='" + name + "' class='ellipsis' style='width:100px'><b>" + name + "</b></span>" +
 					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
 					" MEM-" + formatPercentage(null, value.totalMemory / value.freeMemory);
 			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {
-				monitorStatusString = monitorStatusString + "/ RX-" + formatNetwork(null, value.receivedPerSec) +
-						" TX-" + formatNetwork(null, value.sentPerSec) + "</dv></li>";
+				monitorStatusString = monitorStatusString + "/" +
+						" RX-" + formatNetwork(null, value.receivedPerSec) +
+						" TX-" + formatNetwork(null, value.sentPerSec) +
+						"</dv></li>";
 			}
 		});
 		monitorStatusString += "</ul>";

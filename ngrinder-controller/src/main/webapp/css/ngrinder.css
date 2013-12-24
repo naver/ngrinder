@@ -236,6 +236,12 @@ div.ellipsis {
     text-overflow: ellipsis;
 }
 
+span.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 legend {
 	font-size: 13px;
 	font-weight: 700;
