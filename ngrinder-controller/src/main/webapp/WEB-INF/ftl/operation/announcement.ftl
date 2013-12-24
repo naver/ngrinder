@@ -79,6 +79,11 @@
 					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;');
 				}
 				$announcementContent.html(content);
+				var $announcementContainer = $("#announcement_container");
+				if (!$announcementContainer.is(":visible")) {
+					$announcementContainer.show()
+				};
+
 				$announcementContent.slideDown();
 				return true;
 			});
