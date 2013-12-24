@@ -7,7 +7,7 @@
 <#include "common/select2.ftl">
 	<script src="${req.getContextPath()}/js/detect_timezone.js?${nGrinderVersion}"></script>
 	<script type="text/javascript"
-			src="${req.getContextPath()}/js/jquery.placeholder.min.js?${nGrinderVersion}"></script>
+			src="${req.getContextPath()}/js/jquery.placeholder.js?${nGrinderVersion}"></script>
 	<style>
 		body {
 			overflow-y: hidden;
