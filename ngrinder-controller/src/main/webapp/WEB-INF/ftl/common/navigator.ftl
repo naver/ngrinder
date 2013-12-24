@@ -187,7 +187,7 @@
 			$("#switch_user_select").select2({
 				minimumInputLength: 3,
 				ajax: {
-					url: "/user/switch_options",
+					url: "${req.getContextPath()}/user/switch_options",
 					dataType: "json",
 					data: function (term) {
 						return {

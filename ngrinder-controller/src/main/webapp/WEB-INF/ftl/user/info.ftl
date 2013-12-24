@@ -222,7 +222,7 @@
 			multiple: true,
 			minimumInputLength: 3,
 			ajax: {
-				url: "/user/api/search",
+				url: "${req.getContextPath()}/user/api/search",
 				dataType: "json",
 				data: function (term, page) {
 					return {
