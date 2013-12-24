@@ -46,6 +46,9 @@ public class AcceptorResolver {
 			return "";
 		}
 		final Socket socket = (Socket) ReflectionUtils.getFieldValue(value, "m_socket");
+		if (socket == null) {
+			return "";
+		}
 		return socket.getLocalAddress().getHostAddress();
 	}
 }
