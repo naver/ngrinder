@@ -101,12 +101,11 @@
 					<span style="margin-top:0; margin-bottom:0; font-size: 15px">
 					<@spring.message "announcement.title"/>
 					</span>
-
-					<a class="pointer-cursor" id="hide_announcement">
-						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right"
+					<span class="pointer-cursor pull-right" id="hide_announcement">
+						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if>"
 						   id="announcement_icon">
 						</i>
-					</a>
+					</span>
 				</span>
 		</div>
 		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>"

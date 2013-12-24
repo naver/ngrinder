@@ -18,21 +18,19 @@
 <div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			<div class="span12">
-				<form action="${req.getContextPath()}/operation/script_console" name="script_form" method="POST">
-					<fieldset>
-						<legend class="header">
-							<@spring.message "navigator.dropDown.scriptConsole"/>
-							<button class="btn btn-success pull-right" id="run_btn">
-								<@spring.message "operation.script.runScript"/>
-							</button>
-						</legend> 
-						<textarea class="span12" id="script_editor" style="resize: none">${(script)!}</textarea>
-						<input type="hidden" id="script" name="script" value=""/>
-					</fieldset>
-				</form>
-				<pre class="prettyprint pre-scrollable validation"><#if result??>${result}<#else>
+		<form action="${req.getContextPath()}/operation/script_console" name="script_form" method="POST">
+			<fieldset>
+				<legend class="header">
+					<@spring.message "navigator.dropDown.scriptConsole"/>
+					<button class="btn btn-success pull-right" id="run_btn">
+						<@spring.message "operation.script.runScript"/>
+					</button>
+				</legend>
+			</fieldset>
+			<textarea class="span12" id="script_editor" style="resize: none">${(script)!}</textarea>
+			<input type="hidden" id="script" name="script" value=""/>
+		</form>
+		<pre class="prettyprint pre-scrollable validation"><#if result??>${result}<#else>
 You can write groovy code to monitor the ngrinder internal state.
 
 Following variables are available.
@@ -55,9 +53,7 @@ Please type following and click the Submit button as a example
 print agentManager.getAllAttachedAgents()
 
 please refer nGrinder javadoc to find out more APIs on the given variables.
-				</#if></pre>
-			</div>
-		</div>
+		</#if></pre>
 	</div>
 </div>
 <#include "../common/copyright.ftl">

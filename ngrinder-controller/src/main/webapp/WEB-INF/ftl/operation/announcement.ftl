@@ -8,27 +8,23 @@
 <div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			<div class="span12">
-				<form id="announcement_form" name="announcement_form" method="POST">
-					<fieldset>
-						<legend class="header">
-							<@spring.message "navigator.dropDown.announcement"/>&nbsp;&nbsp;
-							<small>
-								<@spring.message "operation.announcement.help"/>
-							</small>
-							<a id="test_btn" class="pointer-cursor btn btn-primary pull-right">
-								<@spring.message "common.button.test"/>
-							</a>
-							<button id="save_btn" class="btn btn-success pull-right" style="margin-right:5px">
-								<@spring.message "common.button.save"/>
-							</button>
-						</legend>
-						<textarea id="announcement_editor" name="content">${content!}</textarea>
-					</fieldset>
-				</form>
-			</div>
-		</div>
+		<form id="announcement_form" name="announcement_form" method="POST">
+			<fieldset>
+				<legend class="header">
+					<@spring.message "navigator.dropDown.announcement"/>&nbsp;&nbsp;
+					<small>
+						<@spring.message "operation.announcement.help"/>
+					</small>
+					<a id="test_btn" class="pointer-cursor btn btn-primary pull-right">
+						<@spring.message "common.button.test"/>
+					</a>
+					<button id="save_btn" class="btn btn-success pull-right" style="margin-right:5px">
+						<@spring.message "common.button.save"/>
+					</button>
+				</legend>
+			</fieldset>
+			<textarea id="announcement_editor" name="content">${content!}</textarea>
+		</form>
 	</div>
 </div>
 <#include "../common/copyright.ftl">
@@ -73,17 +69,17 @@
 			
 			$("#test_btn").click(function() {
 				var content = editor.getValue();
-				var $announcementContainer = $("#announcement_container");
+				var $announcementContent = $("#announcement_content");
 				if (!content) {
-					$announcementContainer.slideUp();
+					$announcementContent.slideUp();
 					return false;
 				}
 				if (content.indexOf("</") < 0 && content.indexOf("<br>") < 0) {
 					content = content.replaceAll("\n", "<br>");
 					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;');
 				}
-				$("#announcement_content").html(content);
-				$announcementContainer.slideDown();
+				$announcementContent.html(content);
+				$announcementContent.slideDown();
 				return true;
 			});
 			String.prototype.replaceAll = function (s1, s2) {
