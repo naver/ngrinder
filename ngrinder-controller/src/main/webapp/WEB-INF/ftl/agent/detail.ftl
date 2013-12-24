@@ -95,6 +95,7 @@
     </div>
     <!--content-->
 </div>
+</div>
 <#include "../common/copyright.ftl">
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<#include "../common/codemirror.ftl">
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
 <title><@spring.message "operation.script.title"/></title>
@@ -11,15 +12,12 @@
 	.validation {
 		height:150px; margin-top:5px;
 	}
-    .wrap-bottom {
-        margin-bottom:50px;
-    }
 </style>
 </head>
 <body>
 <div id="wrap">
 	<#include "../common/navigator.ftl">
-	<div class="container wrap-bottom">
+	<div class="container">
 		<div class="row">
 			<div class="span12">
 				<form action="${req.getContextPath()}/operation/script_console" name="script_form" method="POST">
@@ -61,7 +59,6 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 			</div>
 		</div>
 	</div>
-	<#include "../common/codemirror.ftl">
 </div>
 <#include "../common/copyright.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/groovy.js"></script>
