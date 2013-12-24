@@ -290,7 +290,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 
 	public String getMonitorBindingIP() {
-		return getMonitorProperties().getProperty(PROP_MONITOR_BINDING_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+		return getMonitorProperties().getProperty(PROP_MONITOR_BINDING_IP);
 	}
 
 	public String getControllerIP() {
