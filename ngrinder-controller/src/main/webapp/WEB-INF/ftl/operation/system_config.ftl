@@ -9,8 +9,6 @@
 <div id="wrap">
 <#include "../common/navigator.ftl">
 <div class="container">
-	<div class="row">
-		<div class="span12">
 			<form id="sys_config_form" name="sys_config_form" method="post">
 				<fieldset>
 					<legend class="header">
@@ -22,8 +20,6 @@
 					<textarea id="sys_config_editor" name="content">${content!}</textarea>
 				</fieldset>
 			</form>
-		</div>
-	</div>
 </div>
 </div>
 <#include "../common/copyright.ftl">

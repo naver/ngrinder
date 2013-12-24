@@ -15,15 +15,11 @@
 <div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			<div class="span12">
-				<legend class="header">
-					<@spring.message "navigator.dropDown.logMonitoring"/>
-				</legend>
-				<table id="log_container">
-				</table>
-			</div>
-		</div>
+		<legend class="header">
+			<@spring.message "navigator.dropDown.logMonitoring"/>
+		</legend>
+		<table id="log_container">
+		</table>
 	</div>
 </div>
 <#include "../common/copyright.ftl">
