@@ -265,7 +265,7 @@
 			monitorStatusString = monitorStatusString +
 					"<li class='monitor_state'><div style='width:100%;' class='ellipsis'>";
 			monitorStatusString = monitorStatusString +
-					"<span title='" + name + "' class='ellipsis' style='width:100px'><b>" + name + "</b></span>" +
+                    "<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
 					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
 					" MEM-" + formatPercentage(null, value.totalMemory / value.freeMemory);
 			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {

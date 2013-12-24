@@ -259,3 +259,17 @@ function getDocHeight(offset) {
 
     return height;
 }
+
+function getShortenString(str, start, end) {
+	if (typeof(start) == "undefined"){
+    	start = 0;
+	}
+	if (typeof(end) == "undefined"){
+    	end = 15;
+	}
+	if (str.length >= end) {
+    	str = str.substr(start, end - 1);
+    	str +="...";
+	}
+	return str;
+}
