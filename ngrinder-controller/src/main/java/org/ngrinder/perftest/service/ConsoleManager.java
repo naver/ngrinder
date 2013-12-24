@@ -14,8 +14,6 @@
 package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
-import net.grinder.communication.CommunicationException;
-import net.grinder.console.common.DisplayMessageConsoleException;
 import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
