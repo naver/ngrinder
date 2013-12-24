@@ -20,6 +20,8 @@ import net.grinder.console.common.Resources;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.TimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
+import org.ngrinder.common.util.ReflectionUtils;
+import sun.reflect.Reflection;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -30,7 +32,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 /**
  * Handles communication for the console. This is the extension of
  * {@link ConsoleCommunicationImplementation}.
- * 
+ *
  * @author JunHo Yoon
  * @see ConsoleCommunicationImplementation
  * @since 3.0
@@ -53,37 +55,38 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	private ServerReceiver m_receiver = null;
 	private FanOutServerSender m_sender = null;
 	private Thread m_acceptorProblemListener = null;
+	private AcceptorResolver acceptorResolver = null;
 
 	/**
 	 * Constructor that uses a default idlePollDelay.
-	 * 
-	 * @param resources		Resources.
-	 * @param properties	Console properties.
-	 * @param errorHandler	Error handler.
-	 * @param timeAuthority	Knows the time
-	 * @throws DisplayMessageConsoleException	If properties are invalid.
+	 *
+	 * @param resources     Resources.
+	 * @param properties    Console properties.
+	 * @param errorHandler  Error handler.
+	 * @param timeAuthority Knows the time
+	 * @throws DisplayMessageConsoleException If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-					ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
+	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
 		this(resources, properties, errorHandler, timeAuthority, 500, 30000);
 	}
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param resources		Resources.
-	 * @param properties	Console properties.
-	 * @param errorHandler	Error handler.
-	 * @param timeAuthority	Knows the time
-	 * @param idlePollDelay	Time in milliseconds that our ServerReceiver threads should sleep for if there's
-	 *            no incoming messages.
-	 * @param inactiveClientTimeOut	How long before we consider a client connection that presents no data to be
-	 *            inactive.
-	 * @throws DisplayMessageConsoleException	If properties are invalid.
+	 *
+	 * @param resources             Resources.
+	 * @param properties            Console properties.
+	 * @param errorHandler          Error handler.
+	 * @param timeAuthority         Knows the time
+	 * @param idlePollDelay         Time in milliseconds that our ServerReceiver threads should sleep for if there's
+	 *                              no incoming messages.
+	 * @param inactiveClientTimeOut How long before we consider a client connection that presents no data to be
+	 *                              inactive.
+	 * @throws DisplayMessageConsoleException If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-					ErrorHandler errorHandler, TimeAuthority timeAuthority, long idlePollDelay,
-					long inactiveClientTimeOut) throws DisplayMessageConsoleException {
+	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority, long idlePollDelay,
+	                                            long inactiveClientTimeOut) throws DisplayMessageConsoleException {
 
 		m_resources = resources;
 		m_properties = properties;
@@ -97,7 +100,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 				final String property = event.getPropertyName();
 
 				if (property.equals(ConsoleProperties.CONSOLE_HOST_PROPERTY)
-								|| property.equals(ConsoleProperties.CONSOLE_PORT_PROPERTY)) {
+						|| property.equals(ConsoleProperties.CONSOLE_PORT_PROPERTY)) {
 					reset();
 				}
 			}
@@ -143,6 +146,8 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 
 		try {
 			m_acceptor = new Acceptor(m_properties.getConsoleHost(), m_properties.getConsolePort(), 1, m_timeAuthority);
+			acceptorResolver = new AcceptorResolver();
+			acceptorResolver.addSocketListener(m_acceptor);
 		} catch (CommunicationException e) {
 			m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "localBindError.text", e));
 
@@ -187,9 +192,9 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		m_receiver = new ServerReceiver();
 
 		try {
-			m_receiver.receiveFrom(m_acceptor, new ConnectionType[] { ConnectionType.AGENT,
-					ConnectionType.CONSOLE_CLIENT, ConnectionType.WORKER, }, 5, m_idlePollDelay,
-							m_inactiveClientTimeOut);
+			m_receiver.receiveFrom(m_acceptor, new ConnectionType[]{ConnectionType.AGENT,
+					ConnectionType.CONSOLE_CLIENT, ConnectionType.WORKER,}, 5, m_idlePollDelay,
+					m_inactiveClientTimeOut);
 		} catch (CommunicationException e) {
 			throw new AssertionError(e);
 		}
@@ -219,7 +224,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 
 	/**
 	 * Returns the message dispatch registry which callers can use to register new message handlers.
-	 * 
+	 *
 	 * @return The registry.
 	 */
 	public MessageDispatchRegistry getMessageDispatchRegistry() {
@@ -237,7 +242,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 
 	/**
 	 * Wait to receive a message, then process it.
-	 * 
+	 *
 	 * @return <code>true</code> if we processed a message successfully; <code>false</code> if we've
 	 *         been shut down.
 	 * @see #shutdown()
@@ -269,10 +274,14 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		}
 	}
 
+	public String getLocalConnectingAddress(Address agentAddress) {
+		return acceptorResolver.getServerAddress(agentAddress);
+	}
+
 	/**
 	 * The number of connections that have been accepted and are still active. Used by the unit
 	 * tests.
-	 * 
+	 *
 	 * @return The number of accepted connections.
 	 */
 	public int getNumberOfConnections() {
@@ -281,12 +290,12 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 
 	/**
 	 * Send the given message to the agent processes (which may pass it on to their workers).
-	 * 
+	 *
 	 * <p>
 	 * Any errors that occur will be handled with the error handler.
 	 * </p>
-	 * 
-	 * @param message	The message to send.
+	 *
+	 * @param message The message to send.
 	 */
 	public void sendToAgents(Message message) {
 		if (m_sender == null) {
@@ -302,13 +311,13 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 
 	/**
 	 * Send the given message to the given agent processes (which may pass it on to its workers).
-	 * 
+	 *
 	 * <p>
 	 * Any errors that occur will be handled with the error handler.
 	 * </p>
-	 * 
-	 * @param address	The address to which the message should be sent.
-	 * @param message	The message to send.
+	 *
+	 * @param address The address to which the message should be sent.
+	 * @param message The message to send.
 	 */
 	public void sendToAddressedAgents(Address address, Message message) {
 		if (m_sender == null) {

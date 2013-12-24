@@ -18,11 +18,8 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
-import net.grinder.console.communication.AgentDownloadRequestListener;
-import net.grinder.console.communication.AgentProcessControlImplementation;
+import net.grinder.console.communication.*;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
-import net.grinder.console.communication.ConsoleCommunication;
-import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -261,8 +258,13 @@ public class AgentControllerServerDaemon {
 	 */
 	public void startAgent(GrinderProperties grinderProperties, AgentIdentity agentIdentity) {
 		LOGGER.info("{} agent is started.", agentIdentity);
-		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-				new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
+		final ConsoleCommunicationImplementationEx component = getComponent(ConsoleCommunicationImplementationEx.class);
+		final AgentAddress address = new AgentAddress(agentIdentity);
+		final String localConnectingAddress = component.getLocalConnectingAddress(address);
+		final GrinderProperties prop = (GrinderProperties) grinderProperties.clone();
+		prop.setProperty(GrinderProperties.CONSOLE_HOST, localConnectingAddress);
+		component.sendToAddressedAgents(address,
+				new StartGrinderMessage(prop, agentIdentity.getNumber()));
 	}
 
 	/**
