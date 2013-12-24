@@ -13,6 +13,7 @@
  */
 package org.ngrinder.user.controller;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.controller.BaseController;
@@ -29,6 +30,7 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -37,8 +39,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#getUserList(org.springframework.ui.ModelMap, java.lang.String,
-	 * java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#getAll(org.springframework.ui.ModelMap, org.ngrinder.model.Role,
+	 * org.springframework.data.domain.Pageable, java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -59,7 +61,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	/**
 	 * Test method for
 	 * {@link org.ngrinder.user.controller.UserController#getOne(org.ngrinder.model.User,
-	 * org.springframework.ui.ModelMap, java.lang.String)}
+	 * org.springframework.ui.ModelMap)}
 	 * .
 	 */
 	@Test
@@ -72,8 +74,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#saveOrUpdateUserDetail(org.ngrinder.model.User,
-	 * org.springframework.ui.ModelMap, org.ngrinder.model.User)}
+	 * {@link org.ngrinder.user.controller.UserController#save(org.ngrinder.model.User,
+	 * org.ngrinder.model.User, org.springframework.ui.ModelMap)}
 	 * .
 	 */
 	@Test
@@ -198,7 +200,14 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSwitchOptions() {
 		ModelMap model = new ModelMap();
-		userController.switchOptions(getTestUser(), "");
-		assertThat(model.containsAttribute("shareUsers"), is(true));
+		User currUser = getTestUser();
+		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
+		User admin = getAdminUser();
+		userController.save(admin, temp, model);
+		currUser.setOwners(Lists.newArrayList(temp));
+		currUser.setOwnerUser(temp);
+		userController.save(currUser, currUser, model);
+		HttpEntity<String> shareUsersStr = userController.switchOptions(currUser, "");
+		assertTrue(shareUsersStr.getBody().contains("id"));
 	}
 }
