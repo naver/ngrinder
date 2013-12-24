@@ -265,10 +265,10 @@ function getShortenString(str, start, end) {
     	start = 0;
 	}
 	if (typeof(end) == "undefined"){
-    	end = 15;
+    	end = 20;
 	}
 	if (str.length >= end) {
-    	str = str.substr(start, end - 1);
+    	str = str.substr(start, end - 4);
     	str +="...";
 	}
 	return str;
