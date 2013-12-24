@@ -55,12 +55,10 @@
 	<#include "../common/navigator.ftl">
 
 	<div class="container">
-
-		<div class="img-unit">
-		</div>
-
+		<div class="img-unit"></div>
+		<div class="pull-right" style="margin-top:-20px"><code id="current_running_status" style="width:300px"></code></div>
 	<form id="test_list_form" name="test_list_form"
-	      class="well form-inline search-bar" style="margin-top:0;height:30px;"
+	      class="well form-inline search-bar" style="margin-top:0;margin-bottom:0;height:30px;"
 		  action="${req.getContextPath()}/perftest/list" method="POST">
 		<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 		<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
@@ -106,9 +104,7 @@
 		<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
 		<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 	</form>
-	<div class="pull-right" style="margin-top:-20px">
-		<code id="current_running_status" style="width:300px"></code>
-	</div>
+
 <@security.authorize ifAnyGranted="A, S">
 	<#assign isAdmin = true />
 </@security.authorize>

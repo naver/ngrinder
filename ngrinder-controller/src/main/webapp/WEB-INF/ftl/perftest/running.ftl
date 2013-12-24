@@ -72,9 +72,7 @@
 		<fieldSet>
 			<legend>
 			<@spring.message "perfTest.running.tpsStatistics"/>
-				<span class="badge badge-success" style="vertical-align:middle;">
-					<span id="running_time"></span>
-				</span>
+				<span id="running_time" class="badge badge-success">&nbsp;</span>
 				<a id="stop_test_btn" class="btn btn-danger pull-right">
 					<@spring.message "common.button.stop"/>
 				</a>
@@ -228,7 +226,7 @@
 				$runningCount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
 				showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
 				showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
-				tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
+				tpsQueue.enQueue(curPerf.tpsChartData);
 				tpsChart.plot();
 			}
 		} else {

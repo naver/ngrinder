@@ -20,7 +20,7 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="script-img-unit "></div>
-		<div class="well form-inline search-bar" style="margin-top:0" >
+		<div class="well form-inline search-bar" style="margin-top:0;margin-bottom:0" >
 			<table style="width:100%">
 				<tr>
 					<td>
