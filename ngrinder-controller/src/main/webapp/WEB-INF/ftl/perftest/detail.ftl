@@ -482,7 +482,14 @@ function addValidation() {
 		var rule = /^[a-zA-Z0-9_,\|]{0,30}$/;
 		return rule.test($.trim(param));
 	});
-
+	var $runCountRadio = $("#run_count_radio");
+	$.validator.addMethod("runCount", function(value, element) {
+		if ($runCountRadio.is(":checked")) {
+			return value > 0;
+		} else {
+			return true;
+		}
+	});
     //noinspection JSUnusedLocalSymbols,JSUnusedLocalSymbols
     validationOptions = {
 		rules: {
@@ -540,7 +547,8 @@ function addValidation() {
 			},				
 			runCount: {
 				digits: true,
-				max: ${maxRunCount}
+				max: ${maxRunCount},
+				runCount: true
 			},
 			param : {
 				required:false,
@@ -569,7 +577,8 @@ function addValidation() {
 				max: "<@spring.message 'perfTest.message.duration.maxHour'/>"
 			},
 			runCount: {
-				required: "<@spring.message 'perfTest.message.runCount'/>"
+				required: "<@spring.message 'perfTest.message.runCount'/>",
+				runCount: "<@spring.message 'perfTest.message.runCount'/>"
 			},
 			processes: {
 				required: "<@spring.message 'perfTest.message.processes'/>"
