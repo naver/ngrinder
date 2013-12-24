@@ -222,7 +222,9 @@
 		<td>
 			<div class="ellipsis" rel="popover" data-html="true" data-placement="top"
 				 data-content="<@spring.message "perfTest.list.totalTests"/> : ${((test.tests + test.errors)?string(",##0"))!""}<br/><@spring.message "perfTest.list.successfulTests"/> : ${(test.tests?string(",##0"))!""}<br/><@spring.message "perfTest.list.errors"/> : ${(test.errors?string(",##0"))!""}<br/>">
-				<#if test.tests?? && test.tests != 0>${(test.errors/(test.tests + test.errors) * 100)?string("0.##")}%</#if>
+				<#if test.tests?? && test.errors?? && (test.tests + test.errors) != 0>
+					${(test.errors/(test.tests +test.errors) * 100)?string("0.##")}%
+				</#if>
 			</div>
 		</td>
 		<td>
