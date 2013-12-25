@@ -175,20 +175,20 @@
 					<col>
 				</colgroup>
 				<tr>
-					<th><@spring.message "perfTest.list.startTime"/></th>
+					<th><@spring.message "perfTest.report.startTime"/></th>
 					<td>${(test.startTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
-					<th><@spring.message "perfTest.list.finishTime"/></th>
+					<th><@spring.message "perfTest.report.finishTime"/></th>
 					<td>${(test.finishTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
 				</tr>
 				<#if test.threshold == "D">
 				<tr>
-					<th><@spring.message "perfTest.config.duration"/></th>
+					<th><@spring.message "perfTest.report.duration"/></th>
 					<td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
 				<#else>
-					<th><@spring.message "perfTest.config.runCount"/></th>
+					<th><@spring.message "perfTest.report.runCount"/></th>
 					<td><span>${test.runCount}</td>
 				</#if>
-					<th><@spring.message "perfTest.config.runtime"/></th>
+					<th><@spring.message "perfTest.report.runtime"/></th>
 					<td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
 				</tr>
 				<tr>

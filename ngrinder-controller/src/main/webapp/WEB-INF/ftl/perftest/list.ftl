@@ -210,10 +210,10 @@
 		</td>
 		<td
 			<#if test.isThresholdDuration()>
-					title="<@spring.message "perfTest.config.duration"/>">
+					title="<@spring.message "perfTest.list.duration"/>">
 			${test.durationStr}
 			<#else>
-				title="<@spring.message "perfTest.config.runCount"/>" >
+				title="<@spring.message "perfTest.list.runCount"/>" >
 			${test.runCount}
 			</#if>
 		</td>
@@ -229,7 +229,7 @@
 		</td>
 		<td>
 			<div class="ellipsis" rel="popover" data-html="true" data-placement="left"
-				 data-content="<@spring.message "perfTest.report.agent"/> : ${test.agentCount!"0"}<br/><@spring.message "perfTest.report.process"/>  : ${test.processes!"0"}<br/><@spring.message "perfTest.report.thread"/> : ${test.threads!"0"}">
+				 data-content="<@spring.message "perfTest.list.agent"/> : ${test.agentCount!"0"}<br/><@spring.message "perfTest.list.process"/>  : ${test.processes!"0"}<br/><@spring.message "perfTest.list.thread"/> : ${test.threads!"0"}">
 				${totalVuser}
 			<div>
 		</td>
@@ -488,7 +488,7 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 		var status = data.status;
 		/** @namespace data.perfTestInfo */
 		var perfTest = data.perfTestInfo;
-		var springMessage = perfTest.length + " <@spring.message "perfTest.running.summary"/>";
+		var springMessage = perfTest.length + " <@spring.message "perfTest.list.runningSummary"/>";
 		$("#current_running_status").text(springMessage);
 		for (var i = 0; i < status.length; i++) {
 			var each = status[i];
@@ -512,7 +512,7 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 		return true;
 	};
 	ajaxObj.error = function () {
-		var springMessage = "0 <@spring.message "perfTest.running.summary"/>";
+		var springMessage = "0 <@spring.message "perfTest.list.runningSummary"/>";
 		$("#current_running_status").text(springMessage);
 		return true;
 	};
