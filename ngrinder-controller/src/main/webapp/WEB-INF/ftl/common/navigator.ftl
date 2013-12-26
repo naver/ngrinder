@@ -90,7 +90,7 @@
 		</div>
 	</div>
 </div>
-<div class="container" style="margin-top: 40px;">
+<div class="container" style="padding-top: 40px;">
 	<div class="<#if announcement?has_content><#else>hidden</#if>" id="announcement_container">
 		<div class="alert alert-block"
 			style="padding:5px 20px; margin-bottom:0;">
