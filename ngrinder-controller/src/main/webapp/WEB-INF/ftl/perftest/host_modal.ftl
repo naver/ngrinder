@@ -139,7 +139,7 @@
 		<!--suppress HtmlUnknownTarget -->
 		return "<p class='host'>" +
 				"<a id='hostID' href='#target_info_modal' data-toggle='modal'>" + content + "</a>" +
-				"<a class='pointer-cursor'><i class='icon-remove-circle'></i></a>" +
+				" <a class='pointer-cursor'><i class='icon-remove-circle'></i></a>" +
 				"</p>" +
 				"<br style='line-height:0px'/>"
 	}
