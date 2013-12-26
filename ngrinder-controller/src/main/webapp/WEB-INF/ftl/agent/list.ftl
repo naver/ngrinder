@@ -80,7 +80,7 @@
 			<td id="port_${agent.id}">${(agent.port)!}</td>
 			<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
 			<td class="ellipsis">${(agent.version)!"Prev 3.3"}</td>
-			<td>${(agent.region)!}</td>
+			<td class="ellipsis">${(agent.region)!}</td>
 			<td>
 				<div class="btn-group" data-toggle="buttons-radio">
 					<button type="button"
