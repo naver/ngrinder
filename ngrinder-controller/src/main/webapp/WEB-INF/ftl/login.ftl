@@ -14,6 +14,10 @@
 			background-color: white
 		}
 
+		.container{
+			width: auto;
+		}
+
 		.content {
 			height: 635px;
             margin-top: 30px;
