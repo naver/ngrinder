@@ -47,6 +47,11 @@
             margin-top: 0px;
         }
 
+		th.small-border {
+			padding-left:3px;
+			padding-right:3px;
+		}
+
 	</style>
 </head>
 
@@ -123,7 +128,7 @@
 		<col width="65">
 		<col width="65">
 		<col width="70">
-		<col width="60">
+		<col width="65">
 		<col width="60">
 	</colgroup>
 	<thead>
@@ -141,7 +146,7 @@
 		<th id="tps" name="tps"><@spring.message "perfTest.list.tps"/></th>
 		<th id="mean_test_time" name="meanTestTime" title='<@spring.message "perfTest.list.meantime"/>'>MTT</th>
 		<th id="errors" class="ellipsis" name="errors"><@spring.message "perfTest.list.errorRate"/></th>
-		<th class="nothing"><@spring.message "perfTest.list.vusers"/></th>
+		<th class="nothing small-border"><@spring.message "perfTest.list.vusers"/></th>
 		<th class="nothing"><@spring.message "common.label.actions"/></th>
 	</tr>
 	</thead>
