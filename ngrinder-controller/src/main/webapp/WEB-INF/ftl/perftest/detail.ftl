@@ -453,13 +453,24 @@ function initDuration() {
 	var durationVal = $("#duration").val();
     var $hiddenDurationInput = $("#hidden_duration_input");
     $hiddenDurationInput.attr("data-slider", "#duration_slider");
-	$hiddenDurationInput.slider({min:1, max:sliderMax});
 	for (i = 0; i <= sliderMax; i++) {
-		if (durationMap[i] * 60000 == durationVal) {
-			$hiddenDurationInput.val(i);
+		if (durationMap[i] * 60000 >= durationVal) {
+			$hiddenDurationInput.attr("value", i);
 			break;
 		}
+		if (i == sliderMax) {
+			$hiddenDurationInput.attr("value", sliderMax);
+		}
 	}
+	$hiddenDurationInput.slider(
+			{
+				max:sliderMax,
+				min:1,
+				template:
+					"<div class='input-slider' style='width:255px'>" +
+					"<div class='input-slider-knob js-slider-knob'></div>" +
+					"</div>"
+			});
 
 	var durationHour = parseInt(durationVal / 3600000) + 1;
 	var durationMaxHour = durationHour > ${maxRunHour} ? durationHour : ${maxRunHour};
