@@ -53,9 +53,10 @@ public class AgentDownloadController extends BaseController {
 	 * @param fileName file path of agent
 	 * @param response response.
 	 */
-	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
+	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
-		File ngrinderFile = new File(getConfig().getHome().getDownloadDirectory(), fileName);
+		File home = isClustered() ? getConfig().getExHome().getDownloadDirectory() : getConfig().getHome().getDownloadDirectory();
+		File ngrinderFile = new File(home, fileName);
 		FileDownloadUtils.downloadFile(response, ngrinderFile);
 	}
 
