@@ -37,6 +37,7 @@ import org.springframework.data.web.PageableDefaults;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -221,23 +222,37 @@ public class UserController extends BaseController {
 	/**
 	 * Get the follower list.
 	 *
-	 * @param user  current user
+	 * @param user     current user
 	 * @param keywords search keyword.
 	 * @return json message
 	 */
+	@RestAPI
+	@RequestMapping("/api/switch_options")
+	public HttpEntity<String> switchOptions(User user,
+	                                        @RequestParam(required = true) final String keywords) {
+		return toJsonHttpEntity(getSwitchableUsers(user, keywords));
+	}
+
+	/**
+	 * Get the follower list.
+	 *
+	 * @param user     current user
+	 * @param keywords search keyword.
+	 * @param modelMap model
+	 * @return json message
+	 */
 	@RequestMapping("/switch_options")
-	public HttpEntity<String> switchOptions(User user, @RequestParam(required = true) final String keywords) {
+	public String switchOptions(User user,
+	                            ModelMap model) {
+		model.addAttribute("switchableUsers", getSwitchableUsers(user, ""));
+		return "user/switch_options";
+	}
+
+
+	private List<UserSearchResult> getSwitchableUsers(User user, String keywords) {
 		List<UserSearchResult> result = newArrayList();
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
-			List<User> allUserByRole = userService.getAll(Role.USER);
-			CollectionUtils.filter(allUserByRole, new Predicate() {
-				@Override
-				public boolean evaluate(Object object) {
-					User each = (User) object;
-					return each.getUserId().startsWith(keywords);
-				}
-			});
-			for (User each : allUserByRole) {
+			for (User each : userService.getPagedAll(keywords, new PageRequest(0, 10))) {
 				result.add(new UserSearchResult(each));
 			}
 		} else {
@@ -246,8 +261,9 @@ public class UserController extends BaseController {
 				result.add(new UserSearchResult(each));
 			}
 		}
-		return toJsonHttpEntity(result);
+		return result;
 	}
+
 
 	/**
 	 * Switch user identity.
@@ -399,14 +415,14 @@ public class UserController extends BaseController {
 		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
 		List<UserSearchResult> result = newArrayList();
 		for (User each : pagedUser) {
-				result.add(new UserSearchResult(each));
+			result.add(new UserSearchResult(each));
 		}
 
 		final String currentUserId = user.getUserId();
 		CollectionUtils.filter(result, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				UserSearchResult each = (UserSearchResult)object;
+				UserSearchResult each = (UserSearchResult) object;
 				return !(each.getId().equals(currentUserId) || each.getId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
 			}
 		});

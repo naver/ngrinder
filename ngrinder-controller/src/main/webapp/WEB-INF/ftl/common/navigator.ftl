@@ -137,8 +137,14 @@
 		<div class="form-horizontal" style="margin-left:20px;overflow-y:hidden">
 			<fieldset>
 			<@control_group label_style="width:100px" controls_style = "margin-left:140px" label_message_key = "user.switch.title">
-				<div id="switch_user_select" style="width:310px">
-				</div>
+				<@security.authorize ifNotGranted="A">
+					<select id="switch_user_select" style="width:310px">
+					</select>
+				</@security.authorize>
+				<@security.authorize ifAnyGranted="A">
+					<div id="switch_user_select" style="width:310px">
+					</div>
+				</@security.authorize>
 			</@control_group>
 			</fieldset>
 		</div>
@@ -179,15 +185,21 @@
 	}
 
 	function switchUser() {
-
 		$("#switch_user_select").change(function () {
 			document.location.href = "${req.getContextPath()}/user/switch?to=" + $(this).val();
 		});
 		$("#switch_user_menu").click(function () {
+			<@security.authorize ifNotGranted="A">
+			$("#switch_user_select").load("${req.getContextPath()}/user/switch_options", function () {
+				$(this).val("");
+				$("#switch_user_select").select2();
+			});
+			</@security.authorize>
+			<@security.authorize ifAnyGranted="A">
 			$("#switch_user_select").select2({
 				minimumInputLength: 3,
 				ajax: {
-					url: "${req.getContextPath()}/user/switch_options",
+					url: "${req.getContextPath()}/user/api/switch_options",
 					dataType: "json",
 					data: function (term) {
 						return {
@@ -205,7 +217,7 @@
 					return data.text
 				}
 			});
-
+			</@security.authorize>
 			$('#user_switch_modal').modal('show');
 		});
 	}

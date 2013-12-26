@@ -70,7 +70,7 @@
 		<#if value!="">value="${value}"</#if> />
 </#macro>
 
-<#macro list list_items others = "table_list" ,colspan = "8", message = "" >
+<#macro list list_items others="table_list", colspan = "8", message = "" >
 	<#if list_items?has_content>
 		<#list list_items as each>
 			<#nested each each_index>
