@@ -13,6 +13,7 @@
  */
 package org.ngrinder.user.controller;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.collections.CollectionUtils;
@@ -285,7 +286,12 @@ public class UserController extends BaseController {
 			}
 			shareUsers.add(u.getUserBaseInfo());
 		}
-		model.addAttribute("followers", user.getFollowers());
+		List list = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
+		model.addAttribute("followers", Lists.transform(list, new Function<User, UserSearchResult>() {
+			public UserSearchResult apply(User user) {
+				return new UserSearchResult(user);
+			}
+		}));
 		model.addAttribute("shareUsers", shareUsers);
 		model.addAttribute("allowShareChange", true);
 		model.addAttribute("userSecurityEnabled", config.isUserSecurityEnabled());
