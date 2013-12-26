@@ -277,7 +277,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
-		CoreLogger.LOGGER.info("nGrinder home directory:{}.", userHome);
+		CoreLogger.LOGGER.info("nGrinder home directory:{}.", homeDirectory.getPath());
 
 		return new Home(homeDirectory);
 	}

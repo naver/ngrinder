@@ -13,6 +13,7 @@
  */
 package org.ngrinder.home.controller;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
@@ -247,8 +248,8 @@ public class HomeController extends BaseController implements ControllerConstant
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
 		model.addAttribute("signUpEnabled", getConfig().isSignUpEnabled());
-		model.addAttribute("defaultLang",
-				getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG));
+		final String defaultLang = getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG);
+		model.addAttribute("defaultLang", defaultLang);
 		try {
 			getCurrentUser();
 		} catch (Exception e) {
