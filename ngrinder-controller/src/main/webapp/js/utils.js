@@ -50,7 +50,7 @@ function isIPByObj(obj) {
 	return success;
 }
 
-function isIP(str) {
+function isIPv4(str) {
 	var check = function (v) {
 		try {
 			var num = parseInt(v);
@@ -67,6 +67,65 @@ function isIP(str) {
 	var re = $.trim(str).split(".");
 
 	return (re.length == 4) ? (check(re[0]) && check(re[1]) && check(re[2]) && check(re[3])) : false;
+}
+
+function isIP(str) {
+    return isIPv4(str) || isIPv6(str);
+}
+
+function isIPv6(str) {
+    var idx = str.indexOf("::");
+    if (idx == -1) {
+        var items = str.split(":");
+        if (items.length != 8) {
+            return false;
+        } else {
+            for (i in items) {
+                if (!isHex(items[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    } else {
+        if (idx != str.lastIndexOf("::")) {
+            return false;
+        } else {
+            var items = str.split("::");
+            var items0 = items[0].split(":");
+            var items1 = items[1].split(":");
+            if ((items0.length + items1.length) > 7) {
+                return false;
+            } else {
+                for (i in items0) {
+                    if (!isHex(items0[i])) {
+                        return false;
+                    }
+                }
+                for (i in items1) {
+                    if (!isHex(items1[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+    }
+}
+
+function isHex(str) {
+    if(str.length == 0 || str.length > 4) {
+        return false;
+    }
+    str = str.toLowerCase();
+    var ch;
+    for(var i=0; i< str.length; i++) {
+        ch = str.charAt(i);
+        if(!(ch >= '0' && ch <= '9') && !(ch >= 'a' && ch <= 'f')) {
+            return false;
+        }
+    }
+    return true;
 }
 
 

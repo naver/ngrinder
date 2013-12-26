@@ -941,7 +941,7 @@ function updateTotalVuser() {
 }
 
 function updateScript() {
-	var ajaxObj = new AjaxObj("/perftest/api/script", null, "<@spring.message "common.error.error"/>");
+	var ajaxObj = new AjaxObj("/api/script", null, "<@spring.message "common.error.error"/>");
 	ajaxObj.params = {
 		<@security.authorize ifAnyGranted="A, S">
 				<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
