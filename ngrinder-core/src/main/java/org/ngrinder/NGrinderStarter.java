@@ -143,8 +143,7 @@ public class NGrinderStarter implements AgentConstants, CommonConstants {
 
 		boolean serverMode = agentConfig.isServerMode();
 		if (!serverMode) {
-			printLog("JVM server mode is disabled. If you turn on agent.servermode in agent.conf."
-					+ " It will provide the better agent performance.");
+			printLog("JVM server mode is disabled.");
 		}
 
 		String controllerIP = getIP(defaultIfBlank(directControllerIP, agentConfig.getControllerIP()));
@@ -219,7 +218,6 @@ public class NGrinderStarter implements AgentConstants, CommonConstants {
 		NGrinderStarter starter = new NGrinderStarter();
 		checkJavaVersion();
 		String startMode = System.getProperty("start.mode");
-		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
 		if ("stopagent".equalsIgnoreCase(startMode)) {
 			starter.stopProcess("agent");
