@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	<changeSet author="ngrinder.3.3" id="23" dbms="h2">
+		<dropForeignKeyConstraint baseTableName="TAG" constraintName="FK1437ABAFCD683"/>
+		<dropForeignKeyConstraint baseTableName="TAG" constraintName="FK1437A1B90BD59"/>
+		<dropForeignKeyConstraint baseTableName="PERF_TEST" constraintName="FKC3A7F428BAFCD683"/>
+		<dropForeignKeyConstraint baseTableName="PERF_TEST" constraintName="FKC3A7F4281B90BD59"/>
+		<dropForeignKeyConstraint baseTableName="PERF_TEST_TAG" constraintName="FK8EE12E3AD3184A3"/>
+		<dropForeignKeyConstraint baseTableName="PERF_TEST_TAG" constraintName="FK8EE12E317FA08C4"/>
+		<dropForeignKeyConstraint baseTableName="NUSER" constraintName="FK4730D19BAFCD683"/>
+		<dropForeignKeyConstraint baseTableName="NUSER" constraintName="FK4730D191B90BD59"/>
+	</changeSet>
+</databaseChangeLog>
