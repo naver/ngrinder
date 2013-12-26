@@ -35,7 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.common.constants.AgentConstants;
-import org.ngrinder.common.constants.InternalConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.collector.SystemDataCollector;
@@ -46,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -100,9 +98,7 @@ public class AgentController implements Agent, AgentConstants {
 		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		// Set it with the default name
-		final InetAddress addressWithSocket = NetworkUtils.getAddressWithSocket(agentConfig.getControllerIP(), agentConfig.getControllerPort());
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(),
-				addressWithSocket == null ? NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS : addressWithSocket.getHostAddress());
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
