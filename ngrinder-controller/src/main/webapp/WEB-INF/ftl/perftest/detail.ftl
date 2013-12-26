@@ -323,17 +323,15 @@ $(document).ready(function () {
 	updateScript();
 	updateTotalVuser();
 	updateRampupChart();
-
-
-	<#assign category = test.status.category>
-	<#if category == "TESTING">
-		displayConfigAndRunningSection();
-	<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR">
-		finished = true;
-		displayConfigAndReportSection();
-	<#else>
-		displayConfigOnly();
-	</#if>
+<#assign category = test.status.category>
+<#if category == "TESTING">
+	displayConfigAndRunningSection();
+<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR">
+	finished = true;
+	displayConfigAndReportSection();
+<#else>
+	displayConfigOnly();
+</#if>
 
 	(function refreshContent() {
 		if (!testId || finished == true) {
