@@ -136,7 +136,7 @@ function cookie(name, value, expiredays) {
 	today.setDate(today.getDate() + expiredays);
 	document.cookie = name + "=" + escape(value) + "; path=/; expires=" + today.toGMTString() + ";";
 }
-var ajaxCallContextPath = "/";
+var ajaxCallContextPath = "";
 function setAjaxContextPath(contextPath) {
 	ajaxCallContextPath = contextPath;
 }
@@ -178,7 +178,7 @@ function AjaxObj(url, successMessage, errorMessage) {
 
 AjaxObj.prototype.call = function () {
 	var that = this;
-	var path = ajaxCallContextPath + this.url;
+	var path = ajaxCallContextPath + "/" + this.url;
 	var filteredParam = {};
 
 	$.each(this.params, function (key, value) {
