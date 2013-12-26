@@ -3,7 +3,7 @@
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form class="form-horizontal form-horizontal-left" id="user_form" name="user_form" method="POST">
 <#if !(popover_place??)><#assign popover_place='bottom'/></#if>
-<#if !(basePath??)><#assign basePath>/user</#assign></#if>
+<#if !(basePath??)><#assign basePath>user</#assign></#if>
 <#if !(allowRoleChange??)><#assign allowRoleChange=false/></#if>
 <#if !(allowShareChange??)><#assign allowShareChange=false/></#if>
 <#if !(allowPasswordChange??)><#assign allowPasswordChange=false/></#if>

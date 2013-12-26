@@ -11,7 +11,7 @@
     </div>
 
     <div class="modal-body" id="create_form_div" style="max-height:740px;padding-left:30px">
-		<#assign basePath>/sign_up</#assign>
+		<#assign basePath>sign_up</#assign>
 		<#include "info.ftl">
     </div>
 </div>
