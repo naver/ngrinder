@@ -247,6 +247,8 @@ public class HomeController extends BaseController implements ControllerConstant
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
 		model.addAttribute("signUpEnabled", getConfig().isSignUpEnabled());
+		model.addAttribute("defaultLang",
+				getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG));
 		try {
 			getCurrentUser();
 		} catch (Exception e) {

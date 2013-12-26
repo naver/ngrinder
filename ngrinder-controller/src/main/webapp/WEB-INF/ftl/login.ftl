@@ -14,9 +14,6 @@
 			background-color: white
 		}
 
-		.container{
-			width: auto;
-		}
 
 		.content {
 			height: 635px;
@@ -128,8 +125,10 @@
 			$("#native_language").val("kr");
 		} else if (language.indexOf("cn") > -1) {
 			$("#native_language").val("cn");
-		} else {
+		} else if (language.indexOf("cn") > -1) {
 			$("#native_language").val("en");
+		} else {
+			$("#native_language").val("${defaultLang}");
 		}
 
 		var $userTimeZone = $("#user_timezone");
