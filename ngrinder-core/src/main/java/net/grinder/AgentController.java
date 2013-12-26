@@ -29,6 +29,7 @@ import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtils;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -98,7 +100,8 @@ public class AgentController implements Agent, AgentConstants {
 		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		// Set it with the default name
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getControllerIP());
+		final InetAddress addressWithSocket = NetworkUtils.getAddressWithSocket(agentConfig.getControllerIP(), agentConfig.getControllerPort());
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), addressWithSocket.getHostAddress());
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
