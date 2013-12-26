@@ -215,6 +215,7 @@
 									<@security.authorize ifAnyGranted="A, S"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
 									'hostString': hostString
 								},
+								null,
 								"<@spring.message 'script.editor.error.validate'/>");
 				ajaxObj.success = function(res) {
 					validating = false;
