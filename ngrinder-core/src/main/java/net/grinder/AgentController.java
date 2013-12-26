@@ -101,7 +101,8 @@ public class AgentController implements Agent, AgentConstants {
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		// Set it with the default name
 		final InetAddress addressWithSocket = NetworkUtils.getAddressWithSocket(agentConfig.getControllerIP(), agentConfig.getControllerPort());
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), addressWithSocket.getHostAddress());
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(),
+				addressWithSocket == null ? NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS : addressWithSocket.getHostAddress());
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());

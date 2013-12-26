@@ -44,7 +44,7 @@ public class NGrinderStarterTest {
 	public void testStartAgent() {
 		starter.startAgent("127.0.0.1"); // there is no agent properties, it can
 		// be started with default setting
-		ThreadUtils.sleep(2000);
+		ThreadUtils.sleep(5000);
 		starter.stopAgent();
 	}
 
