@@ -37,7 +37,6 @@ import org.springframework.data.web.PageableDefaults;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -439,8 +438,8 @@ public class UserController extends BaseController {
 
 		public UserSearchResult(User user) {
 			id = user.getUserId();
-			final String text = user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId() + ")";
-			this.text = StringUtils.abbreviate(text, 50);
+			final String text = user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId();
+			this.text = StringUtils.abbreviate(text, 40) + ")";
 		}
 
 		public String getText() {
