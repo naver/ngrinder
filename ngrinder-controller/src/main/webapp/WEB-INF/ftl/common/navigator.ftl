@@ -92,7 +92,7 @@
 </div>
 <div class="container <#if announcement?has_content><#else>hidden</#if>" id="announcement_container">
 	<div class="alert alert-block"
-		style="padding:5px 20px; margin-top: 40px; margin-bottom: -40px;"">
+		style="padding:5px 20px; margin-top: 40px; margin-bottom:0;"">
 		<div class="page-header" style="margin:0; padding-bottom:2px">
 			<span>
 				<#if announcement_new?? && announcement_new==true>

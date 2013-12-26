@@ -9,7 +9,7 @@
                     background-image: url('${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}');
                     height: 110px;
                     padding: 0;
-                    margin-top: 40px;
+                    margin-top: 0px;
                 }
 
             </style>

@@ -153,8 +153,8 @@
 <div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/new" method="POST">
-			<div class="well" style="margin-bottom: 5px">
+		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/new"  method="POST">
+			<div class="well" style="margin-bottom: 5px;margin-top:0">
 				<input type="hidden" id="test_id" name="id" value="${(test.id)!}">
 				<div class="form-horizontal" id="query_div">
 					<fieldset>

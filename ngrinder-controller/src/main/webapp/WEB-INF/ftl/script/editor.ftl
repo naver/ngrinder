@@ -41,91 +41,89 @@
 	<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			<div class="span12">
-				<form id="content_form" name="content_form" class="well" method="post" target="_self" style="margin-bottom:10px;">
-					<div class="form-horizontal">
-						<fieldset>
-							<div class="control-group">
-									<table style="width:100%">
-										<colgroup>
-											<col width="150px"/>
-											<col width="*"/>
-											<col width="300px"/>
-										</colgroup>
-										<tr>
-											<td>
-												<label class="control-label" for="testName">
-													<@spring.message "script.info.name"/>
-												</label>
-											</td>
-											<td>
-												<span class="input-large uneditable-input span6" style="cursor:text">${breadcrumbPath}</span>
-												<input type="hidden" id="script_name" class="span6" name="path" value="${(file.path)!}" readonly/>
-											</td>
-											<td>
-											<#if scriptHandler.isValidatable()>
-												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
-												<a class="pointer-cursor btn btn-primary" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
-											<#else>
-												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
-											</#if>
-											</td>
-										</tr>
-									</table>
-							</div>
-							<div style="margin-bottom: 0" class="control-group">
-								<table style="width:100%">
-									<colgroup>
-										<col width="150px"/>
-										<col width="*"/>
-										<col width="300px"/>
-									</colgroup>
-									<tr>
-										<td>
-											<label class="control-label" for="description"><@spring.message "script.action.commit"/></label>
-										</td>
-										<td>
-											<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
-										</td>
-										<td>
-											<#if file?? && file.properties.targetHosts??>
-												<#assign targetHosts = file.properties.targetHosts/>
-											</#if>
-											<#include "../perftest/host.ftl"/>
-										</td>
-									</tr>
-								</table>
-							</div>
-						</fieldset>
+		<form id="content_form" name="content_form" class="well" method="post" target="_self"
+			  style="margin-bottom:10px; margin-top:0">
+			<div class="form-horizontal">
+				<fieldset>
+					<div class="control-group">
+						<table style="width:100%">
+							<colgroup>
+								<col width="150px"/>
+								<col width="*"/>
+								<col width="300px"/>
+							</colgroup>
+							<tr>
+								<td>
+									<label class="control-label" for="testName">
+										<@spring.message "script.info.name"/>
+									</label>
+								</td>
+								<td>
+									<span class="input-large uneditable-input span6" style="cursor:text">${breadcrumbPath}</span>
+									<input type="hidden" id="script_name" class="span6" name="path" value="${(file.path)!}" readonly/>
+								</td>
+								<td>
+								<#if scriptHandler.isValidatable()>
+									<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
+									<a class="pointer-cursor btn btn-primary" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+								<#else>
+									<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
+								</#if>
+								</td>
+							</tr>
+						</table>
 					</div>
-					<input type="hidden" id="create_lib_and_resource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
-					<input type="hidden" id="validated" name="validated" value="${(file.properties.validated)!"0"}">
-					<input type="hidden" id="contentHd" name="content">
-					<@security.authorize ifAnyGranted="A, S">
-						<#if ownerId??>
-							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
-						</#if>
-					</@security.authorize>
-				</form>
-
-
-				<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
-				<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
-				<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
-					title="Tip" data-html="ture"
-					data-placement="left"
-					data-content="
-						Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/>
-						Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
-						Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
-						Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
-						Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
-						F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
-						ESC : <@spring.message 'script.editor.tip.back'/>
-						"><code>Tip</code></div>
+					<div style="margin-bottom: 0" class="control-group">
+						<table style="width:100%">
+							<colgroup>
+								<col width="150px"/>
+								<col width="*"/>
+								<col width="300px"/>
+							</colgroup>
+							<tr>
+								<td>
+									<label class="control-label" for="description"><@spring.message "script.action.commit"/></label>
+								</td>
+								<td>
+									<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
+								</td>
+								<td>
+									<#if file?? && file.properties.targetHosts??>
+										<#assign targetHosts = file.properties.targetHosts/>
+									</#if>
+									<#include "../perftest/host.ftl"/>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</fieldset>
 			</div>
-		</div>
+			<input type="hidden" id="create_lib_and_resource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
+			<input type="hidden" id="validated" name="validated" value="${(file.properties.validated)!"0"}">
+			<input type="hidden" id="contentHd" name="content">
+			<@security.authorize ifAnyGranted="A, S">
+				<#if ownerId??>
+					<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
+				</#if>
+			</@security.authorize>
+		</form>
+
+
+		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
+		<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
+		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
+			title="Tip" data-html="ture"
+			data-placement="left"
+			data-content="
+				Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/>
+				Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
+				Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
+				Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
+				Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
+				F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
+				ESC : <@spring.message 'script.editor.tip.back'/>
+				"><code>Tip</code></div>
+
 		<div id="validation_result_panel" style="display:none;">
 			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
 			</pre>

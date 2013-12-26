@@ -12,7 +12,7 @@
 				margin-bottom: 10px;
 				height: 160px;
 				padding: 0;
-				margin-top: 40px;
+				margin-top: 0;
 			}    
 			.quick-start {
 				padding-left: 160px;
