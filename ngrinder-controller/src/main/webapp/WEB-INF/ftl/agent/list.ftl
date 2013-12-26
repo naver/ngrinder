@@ -184,8 +184,8 @@
 	});
 
 	function stopAgents(ids) {
-		var ajaxObj = new AjaxPutObj("/agent/api?action=stop&ids=" + ids,
-				{},
+		var ajaxObj = new AjaxPutObj("/agent/api?action=stop",
+				{ ids : ids },
 				"<@spring.message 'agent.message.stop.success'/>",
 				"<@spring.message 'agent.message.stop.error'/>");
 		ajaxObj.success = function () {
@@ -197,8 +197,8 @@
 	}
 
 	function updateAgents(ids) {
-		var ajaxObj = new AjaxPutObj("/agent/api?action=update&ids=" + ids,
-				{},
+		var ajaxObj = new AjaxPutObj("/agent/api?action=update",
+				{ ids : ids },
 				"<@spring.message 'agent.message.update.success'/>",
 				"<@spring.message 'agent.message.update.error'/>");
 		ajaxObj.call();
