@@ -90,33 +90,35 @@
 		</div>
 	</div>
 </div>
-<div class="container <#if announcement?has_content><#else>hidden</#if>" id="announcement_container">
-	<div class="alert alert-block"
-		style="padding:5px 20px; margin-top: 40px; margin-bottom:0;"">
-		<div class="page-header" style="margin:0; padding-bottom:2px">
-			<span>
-				<#if announcement_new?? && announcement_new==true>
-					<span class="label label-important">new</span>
-				</#if>
-					<span style="margin-top:0; margin-bottom:0; font-size: 15px">
-					<@spring.message "announcement.title"/>
+<div class="container" style="margin-top: 40px;">
+	<div class="<#if announcement?has_content><#else>hidden</#if>" id="announcement_container">
+		<div class="alert alert-block"
+			style="padding:5px 20px; margin-bottom:0;">
+			<div class="page-header" style="margin:0; padding-bottom:2px">
+				<span>
+					<#if announcement_new?? && announcement_new==true>
+						<span class="label label-important">new</span>
+					</#if>
+						<span style="margin-top:0; margin-bottom:0; font-size: 15px">
+						<@spring.message "announcement.title"/>
+						</span>
+						<span class="pointer-cursor pull-right" id="hide_announcement">
+							<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if>"
+							   id="announcement_icon">
+							</i>
+						</span>
 					</span>
-					<span class="pointer-cursor pull-right" id="hide_announcement">
-						<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if>"
-						   id="announcement_icon">
-						</i>
-					</span>
-				</span>
-		</div>
-		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>"
-			 id="announcement_content">
-		<#if announcement?has_content>
-				<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0>
-		${announcement}
-		<#else>
-		${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
-		</#if>
+			</div>
+			<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>"
+				 id="announcement_content">
+			<#if announcement?has_content>
+					<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0>
+			${announcement}
+			<#else>
+			${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
 			</#if>
+				</#if>
+			</div>
 		</div>
 	</div>
 </div>
