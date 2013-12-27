@@ -93,7 +93,7 @@ public class ClusterConfigurationVerifier {
 				ValueWrapper valueWrapper = cache.get(eachKey);
 				if (valueWrapper != null && valueWrapper.get() != null) {
 					checkState(systemConfFingerPrint.equals(valueWrapper.get()),
-							"Thie controller's ${NGRINDER_HOME} conflicts with other controller(" + eachKey
+							"The controller's ${NGRINDER_HOME} conflicts with other controller(" + eachKey
 									+ "), Please check if each controller"
 									+ " shares same ngrinder home folder.");
 				}

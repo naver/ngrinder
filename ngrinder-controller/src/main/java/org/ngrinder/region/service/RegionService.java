@@ -16,16 +16,23 @@ package org.ngrinder.region.service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.event.CacheEventListener;
+import net.sf.ehcache.event.CacheEventListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.region.model.RegionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +51,8 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 @Service
 public class RegionService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
+
 	@Autowired
 	private Config config;
 
@@ -54,6 +63,7 @@ public class RegionService {
 	private CacheManager cacheManager;
 	private Cache cache;
 
+
 	/**
 	 * Set current region into cache, using the IP as key and region name as value.
 	 */
@@ -61,6 +71,19 @@ public class RegionService {
 	public void initRegion() {
 		if (config.isClustered()) {
 			cache = cacheManager.getCache("regions");
+			if (config.isDevMode()) {
+				((EhCacheCache) cache).getNativeCache().getCacheEventNotificationService().registerListener(new CacheEventListenerAdapter() {
+					@Override
+					public void notifyElementPut(Ehcache cache, Element element) throws CacheException {
+						LOGGER.info("Element {} is put. ", element.getKey());
+					}
+
+					@Override
+					public void notifyElementUpdated(Ehcache cache, Element element) throws CacheException {
+						LOGGER.info("Element {} is updated. ", element.getKey());
+					}
+				});
+			}
 			verifyDuplicatedRegion();
 			scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
 				@Override
