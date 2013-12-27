@@ -269,7 +269,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
 		boolean safeDist = getSafe(perfTest.getSafeDistribution());
 		if (config.isClustered()) {
-			safeDist = config.getControllerProperties().getPropertyBoolean(PROP_CLUSTER_SAFE_DIST);
+			safeDist = config.getClusterProperties().getPropertyBoolean(PROP_CLUSTER_SAFE_DIST);
 		}
 		return safeDist;
 	}
