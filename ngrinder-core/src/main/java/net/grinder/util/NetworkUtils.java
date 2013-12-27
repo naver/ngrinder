@@ -50,7 +50,6 @@ public abstract class NetworkUtils {
 	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
 	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
 	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
-	public static List<InetAddress> DEFAULT_LOCAL_IP4_ADDRESSES = getAllLocalNonLoopbackAddresses(true);
 
 	/**
 	 * Get the local host address, try to get actual IP.
@@ -200,12 +199,20 @@ public abstract class NetworkUtils {
 	}
 
 	public static class IPPortPair {
-		private final String ip;
+		private InetAddress ip;
 		private final int port;
 
 		public IPPortPair(String ip, int port) {
-			this.ip = ip;
+			try {
+				this.ip = InetAddress.getByName(ip);
+			} catch (UnknownHostException e) {
+				LOGGER.error("{} is not accessible ip");
+			}
 			this.port = port;
+		}
+
+		public boolean isValid() {
+			return ip != null;
 		}
 
 		public int getPort() {
@@ -213,12 +220,16 @@ public abstract class NetworkUtils {
 		}
 
 		public String getIP() {
-			return ip;
+			return ip.getHostAddress();
 		}
 
 		@Override
 		public String toString() {
-			return this.ip + " " + this.port;
+			if (isIP6()) {
+				return "[" + getIP() + "]:" + this.port;
+			} else {
+				return getIP() + ":" + this.port;
+			}
 		}
 
 		@Override
@@ -229,7 +240,6 @@ public abstract class NetworkUtils {
 			}
 
 			IPPortPair that = (IPPortPair) o;
-
 			return port == that.port && !(ip != null ? !ip.equals(that.ip) : that.ip != null);
 
 		}
@@ -241,21 +251,19 @@ public abstract class NetworkUtils {
 			return result;
 		}
 
-		public boolean isIP4AndLocalHost() {
-			for (InetAddress localAddress : NetworkUtils.DEFAULT_LOCAL_IP4_ADDRESSES) {
-				String hostAddress = localAddress.getHostAddress();
-				if (localAddress instanceof Inet6Address && ((Inet6Address) localAddress).getScopeId() != 0) {
-					hostAddress = hostAddress.substring(0, hostAddress.lastIndexOf("%"));
-				}
-				if (ip.equals(hostAddress)) {
-					return true;
-				}
+		public boolean isLocalHost() {
+			if (ip.isAnyLocalAddress() || ip.isLoopbackAddress()) {
+				return true;
 			}
-			return false;
+			try {
+				return NetworkInterface.getByInetAddress(ip) != null;
+			} catch (SocketException e) {
+				return false;
+			}
 		}
 
 		public boolean isIP6() {
-			return IPUtils.isValidIP6Address(ip);
+			return ip instanceof Inet6Address;
 		}
 	}
 

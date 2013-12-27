@@ -1,10 +1,15 @@
 package org.ngrinder.infra.config;
 
 
+import com.google.common.collect.Lists;
 import net.grinder.util.NetworkUtils;
 import net.grinder.util.Pair;
 import org.junit.Assume;
 import org.junit.Test;
+import org.ngrinder.common.util.PropertiesWrapper;
+
+import java.net.Inet6Address;
+import java.net.InetAddress;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static net.grinder.util.NetworkUtils.*;
@@ -27,7 +32,7 @@ public class DynamicCacheConfigTest {
 		};
 		// If
 		Config config = mock(Config.class);
-		String address1 = removeScopedMarkerFromIP(DEFAULT_LOCAL_IP4_ADDRESSES.get(0).getHostAddress());
+		String address1 = removeScopedMarkerFromIP(DEFAULT_LOCAL_ADDRESSES.get(0).getHostAddress());
 		when(config.getClusterURIs()).thenReturn(new String[]{address1, "210.10.10.1"});
 		when(config.isClustered()).thenReturn(true);
 		dynamicCacheConfig.setConfig(config);
@@ -40,5 +45,64 @@ public class DynamicCacheConfigTest {
 		assertThat(cacheProperties.getSecond()).contains("world");
 
 		assertThat(dynamicCacheConfig.dynamicCacheManager()).isNotNull();
+	}
+
+	@Test
+	public void testPeerProperties() {
+		// When
+		DynamicCacheConfig dynamicCacheConfig = new DynamicCacheConfig() {
+			@Override
+			int getClusterPort() {
+				return 10010;
+			}
+
+			@Override
+			protected String[] getClusterURIs() {
+				return new String[]{"10.10.10.10:20010", NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS, "10.10.10.20"};
+			}
+		};
+		final Pair<IPPortPair, String> hello = dynamicCacheConfig.createCacheProperties(Lists.newArrayList("hello"));
+		assertThat(hello.getSecond()).isEqualTo("peerDiscovery=manual,rmiUrls=//10.10.10.10:20010/hello|//10.10.10.20:10010/hello");
+		assertThat(hello.getFirst().toString()).isEqualTo(NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS + ":10010");
+	}
+
+	@Test
+	public void testLocalHost() {
+		IPPortPair pair = new IPPortPair(NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS, 10);
+		assertThat(pair.isLocalHost()).isTrue();
+
+		pair = new IPPortPair("10.10.10.10", 10);
+		assertThat(pair.isLocalHost()).isFalse();
+
+		for (InetAddress each : NetworkUtils.DEFAULT_LOCAL_ADDRESSES) {
+			if (each instanceof Inet6Address) {
+				final String hostAddress = each.getHostAddress();
+				assertThat(new IPPortPair("[" + hostAddress + "]", 10).isLocalHost()).isTrue();
+			}
+		}
+	}
+
+
+	@Test
+	public void testIPPair() {
+		IPPortPair pair = new IPPortPair("[fe80::ecc6:7ab8:d4ac:c77a%10]", 10);
+		assertThat(pair.getIP()).isEqualTo("fe80:0:0:0:ecc6:7ab8:d4ac:c77a%10");
+		assertThat(pair.toString()).isEqualTo("[fe80:0:0:0:ecc6:7ab8:d4ac:c77a%10]:10");
+	}
+
+	@Test
+	public void testClusterConfig() {
+		Config config = new Config() {
+			@Override
+			public PropertiesWrapper getClusterProperties() {
+				PropertiesWrapper mock = mock(PropertiesWrapper.class);
+				when(mock.getProperty(PROP_CLUSTER_MEMBERS)).thenReturn("10.10.10.10;10.10.10.20,10.10.10.30");
+				return mock;
+			}
+		};
+		final String[] clusterURIs = config.getClusterURIs();
+		assertThat(clusterURIs[0]).isEqualTo("10.10.10.10");
+		assertThat(clusterURIs[1]).isEqualTo("10.10.10.20");
+		assertThat(clusterURIs[2]).isEqualTo("10.10.10.30");
 	}
 }

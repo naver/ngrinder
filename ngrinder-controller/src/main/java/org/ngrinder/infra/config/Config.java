@@ -157,7 +157,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	public String[] getClusterURIs() {
 		String clusterUri = getClusterProperties().getProperty(PROP_CLUSTER_MEMBERS);
-		return StringUtils.split(StringUtils.trimToEmpty(clusterUri), ";");
+		return StringUtils.split(StringUtils.trimToEmpty(clusterUri), ",;");
 	}
 
 	/**
