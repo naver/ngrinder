@@ -118,6 +118,16 @@
 	</filter-mapping>
 
 	<filter>
+		<filter-name>httpPutFormContentFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>httpPutFormContentFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
 		<filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
 		<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
 	</filter>
