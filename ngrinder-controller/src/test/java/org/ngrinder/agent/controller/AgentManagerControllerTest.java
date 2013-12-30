@@ -143,7 +143,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	@Test
 	public void testGetCurrentMonitorData() {
 		ModelMap model = new ModelMap();
-		HttpEntity<String> rtnStr = agentController.getState(0L, "127.0.0.1", "127.0.0.1", model);
+		HttpEntity<String> rtnStr = agentController.getState(0L, "127.0.0.1", "127.0.0.1");
 		assertTrue(rtnStr.getBody().contains("freeMemory"));
 	}
 

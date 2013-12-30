@@ -83,10 +83,8 @@ public class AgentManagerController extends BaseController {
 				if (StringUtils.equals(region, "all") || StringUtils.isEmpty(region)) {
 					return true;
 				}
-				if (agentInfo.getRegion().startsWith(region)) {
-					return true;
-				}
-				return false;
+				final String eachAgentRegion = agentInfo.getRegion();
+				return eachAgentRegion.startsWith(region + "_owned") || region.equals(eachAgentRegion);
 			}
 		}));
 		model.addAttribute("region", region);
@@ -136,17 +134,16 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the current performance of the given agent.
 	 *
+	 *
 	 * @param id    agent id
 	 * @param ip    agent ip
 	 * @param name  agent name
-	 * @param model model
 	 * @return json message
 	 */
 
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/api/{id}/state")
-	public HttpEntity<String> getState(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
-	                                   ModelMap model) {
+	public HttpEntity<String> getState(@PathVariable Long id, @RequestParam String ip, @RequestParam String name) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
 		return toJsonHttpEntity(agentManagerService.getAgentSystemDataModel(ip, name));
 	}
