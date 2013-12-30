@@ -44,7 +44,7 @@ public class MBeanClient {
 
 	private volatile boolean connected = false;
 
-	private MBeanServerConnection server = null;
+	private MBeanServerConnection mbeanServerConnection = null;
 	private JMXConnector jmxConnector = null;
 
 	/**
@@ -72,13 +72,18 @@ public class MBeanClient {
 		}
 	}
 
+
+	public MBeanServerConnection getMBeanServerConnection() {
+		return this.mbeanServerConnection;
+	}
+
 	/**
 	 * disconnect the MBeanClient. If it is remote JMX server, disconnect the connection. If it is
 	 * local, disconnect the binding.
 	 */
 	public void disconnect() {
 		IOUtils.closeQuietly(jmxConnector);
-		server = null;
+		mbeanServerConnection = null;
 		connected = false;
 	}
 
@@ -93,15 +98,15 @@ public class MBeanClient {
 	 * @throws Exception wraps all JMX related exception
 	 */
 	public Object getAttribute(ObjectName objName, String attrName) throws Exception {
-		return server.getAttribute(objName, attrName);
+		return mbeanServerConnection.getAttribute(objName, attrName);
 	}
 
 	private void connectClient() throws IOException, TimeoutException {
 		if (jmxUrl == null || ("localhost".equals(jmxUrl.getHost()) && jmxUrl.getPort() == 0)) {
-			server = ManagementFactory.getPlatformMBeanServer();
+			mbeanServerConnection = ManagementFactory.getPlatformMBeanServer();
 		} else {
 			jmxConnector = connectWithTimeout(jmxUrl, 1000);
-			server = jmxConnector.getMBeanServerConnection();
+			mbeanServerConnection = jmxConnector.getMBeanServerConnection();
 		}
 		this.connected = true;
 	}
