@@ -16,6 +16,7 @@ package org.ngrinder.infra.init;
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,15 +50,6 @@ public class ClusterConfigurationVerifier {
 	@Autowired
 	private Config config;
 
-	@Autowired
-	private EhCacheCacheManager cacheManager;
-
-	@Autowired
-	private RegionService regionService;
-
-	private Cache cache;
-
-	private File systemConfFile;
 
 	/**
 	 * Check cluster configurations.
@@ -67,42 +59,8 @@ public class ClusterConfigurationVerifier {
 	@PostConstruct
 	public void init() throws IOException {
 		if (config.isClustered() && !config.isDevMode()) {
-			systemConfFile = config.getHome().getSubFile("system.conf");
-			cache = cacheManager.getCache("controller_home");
-			config.addSystemConfListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					updateSystemConfFingerPrintToCache(systemConfFile);
-				}
-			});
-			checkHome();
 			checkDB();
 		}
-	}
-
-	/**
-	 * check if they use same home.
-	 *
-	 * @throws IOException exception
-	 */
-	private void checkHome() throws IOException {
-		checkArgument(systemConfFile.exists(), "File does not exist: %s", systemConfFile);
-		String systemConfFingerPrint = String.valueOf(FileUtils.checksumCRC32(systemConfFile));
-		for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
-			try {
-				ValueWrapper valueWrapper = cache.get(eachKey);
-				if (valueWrapper != null && valueWrapper.get() != null) {
-					checkState(systemConfFingerPrint.equals(valueWrapper.get()),
-							"The controller's ${NGRINDER_HOME} conflicts with other controller(" + eachKey
-									+ "), Please check if each controller"
-									+ " shares same ngrinder home folder.");
-				}
-			} catch (Exception e) {
-				noOp();
-			}
-
-		}
-		updateSystemConfFingerPrintToCache(systemConfFile);
 	}
 
 	/**
@@ -115,12 +73,4 @@ public class ClusterConfigurationVerifier {
 		}
 	}
 
-	private void updateSystemConfFingerPrintToCache(File systemConfFile) {
-		try {
-			String systemConfFingerPrint = String.valueOf(FileUtils.checksumCRC32(systemConfFile));
-			cache.put(regionService.getCurrent(), systemConfFingerPrint);
-		} catch (IOException e) {
-			LOGGER.error("Error while updating system.conf fingerprint into cache.", e);
-		}
-	}
 }

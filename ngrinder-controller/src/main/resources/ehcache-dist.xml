@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+		 xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
 
 	<defaultCache eternal="false" maxElementsInMemory="100"
-		overflowToDisk="false" timeToLiveSeconds="1800" />
+				  overflowToDisk="false" timeToLiveSeconds="1800"/>
 
 	<!-- these setting will be created in program in dynamic cache manager. 
 		Because we need to get cluster URL from configuration and set. <cacheManagerPeerProviderFactory 
@@ -17,67 +17,47 @@
 
 
 	<cache name="users" maxElementsInMemory="100" eternal="false"
-		overflowToDisk="false" timeToIdleSeconds="30" timeToLiveSeconds="30">
+		   overflowToDisk="false" timeToIdleSeconds="30" timeToLiveSeconds="30">
 		<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true" />
+				class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+				properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true"/>
 	</cache>
 
 	<cache name="file_entry_search_cache" maxElementsInMemory="100"
-		eternal="false" overflowToDisk="false" timeToIdleSeconds="1200"
-		timeToLiveSeconds="1200">
+		   eternal="false" overflowToDisk="false" timeToIdleSeconds="1200"
+		   timeToLiveSeconds="1200">
 		<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
+				class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+				properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true"/>
 	</cache>
 
-	<cache name="agent_monitoring" maxElementsInMemory="1000"
-		overflowToDisk="false" timeToLiveSeconds="5">
+	<cache name="regions" maxElementsInMemory="100" overflowToDisk="false" eternal="false" timeToLiveSeconds="30">
 		<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
+				class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+				properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=false"/>
 	</cache>
 
-	<cache name="regions" maxElementsInMemory="100" overflowToDisk="false"
-		timeToLiveSeconds="30">
-		<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
-	</cache>
-
-	<cache name="controller_home" maxElementsInMemory="100"
-		overflowToDisk="false" timeToLiveSeconds="0">
-		<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
-		<bootstrapCacheLoaderFactory
-			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
-			properties="bootstrapAsynchronously=false" />
-	</cache>
 
 	<cache name="agent_request" maxElementsInMemory="100"
-		overflowToDisk="false" timeToLiveSeconds="10">
+		   overflowToDisk="false" timeToLiveSeconds="10">
 		<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
+				class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+				properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true"/>
 	</cache>
-
-	<cache name="running_statistics" maxElementsInMemory="1000"
-		overflowToDisk="false" timeToLiveSeconds="3" />
 
 	<!-- distributed caches end -->
 
 	<cache name="agent_monitoring_targets" maxElementsInMemory="1000"
-		overflowToDisk="false" timeToLiveSeconds="5" />
+		   overflowToDisk="false" timeToLiveSeconds="5"/>
 	<cache name="monitor_data" maxElementsInMemory="1000"
-		overflowToDisk="false" timeToLiveSeconds="3" />
+		   overflowToDisk="false" timeToLiveSeconds="3"/>
 
 	<cache name="right_panel_entries" maxElementsInMemory="2"
-		eternal="false" overflowToDisk="false" timeToLiveSeconds="100000" />
+		   eternal="false" overflowToDisk="false" timeToLiveSeconds="100000"/>
 	<cache name="left_panel_entries" maxElementsInMemory="2" eternal="false"
-		overflowToDisk="false" timeToLiveSeconds="100000" />
+		   overflowToDisk="false" timeToLiveSeconds="100000"/>
 	<cache name="current_perftest_statistics" maxElementsInMemory="1"
-		eternal="false" overflowToDisk="false" timeToIdleSeconds="5"
-		timeToLiveSeconds="5" />
+		   eternal="false" overflowToDisk="false" timeToIdleSeconds="5"
+		   timeToLiveSeconds="5"/>
 
 </ehcache>
