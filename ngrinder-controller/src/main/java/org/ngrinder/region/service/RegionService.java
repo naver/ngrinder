@@ -19,7 +19,6 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.event.CacheEventListener;
 import net.sf.ehcache.event.CacheEventListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
@@ -71,19 +70,6 @@ public class RegionService {
 	public void initRegion() {
 		if (config.isClustered()) {
 			cache = cacheManager.getCache("regions");
-			if (config.isDevMode()) {
-				((EhCacheCache) cache).getNativeCache().getCacheEventNotificationService().registerListener(new CacheEventListenerAdapter() {
-					@Override
-					public void notifyElementPut(Ehcache cache, Element element) throws CacheException {
-						LOGGER.info("Element {} is put. ", element.getKey());
-					}
-
-					@Override
-					public void notifyElementUpdated(Ehcache cache, Element element) throws CacheException {
-						LOGGER.info("Element {} is updated. ", element.getKey());
-					}
-				});
-			}
 			verifyDuplicatedRegion();
 			scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
 				@Override
@@ -103,7 +89,7 @@ public class RegionService {
 		Map<String, RegionInfo> regions = getAll();
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
-		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentPublicIP())) {
+		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentHostName())) {
 			throw processException("The region name, " + localRegion
 					+ ", is already used by other controller " + regionInfo.getIp()
 					+ ". Please set the different region name in this controller.");
@@ -119,7 +105,7 @@ public class RegionService {
 	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
 			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
-			cache.put(getCurrent(), new RegionInfo(config.getCurrentPublicIP(), newHashSet));
+			cache.put(getCurrent(), new RegionInfo(config.getCurrentHostName(), newHashSet));
 		}
 	}
 
@@ -151,7 +137,7 @@ public class RegionService {
 	public Map<String, RegionInfo> getAll() {
 		Map<String, RegionInfo> regions = Maps.newHashMap();
 		if (config.isClustered()) {
-			for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
+			for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeysWithExpiryCheck()) {
 				ValueWrapper valueWrapper = cache.get(eachKey);
 				if (valueWrapper != null && valueWrapper.get() != null) {
 					regions.put((String) eachKey, (RegionInfo) valueWrapper.get());

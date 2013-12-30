@@ -121,7 +121,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
 			cluster = getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
-			initLogger(isDevMode());
+			if (!isDevMode()) {
+				initLogger(false);
+			}
 			loadAnnouncement();
 			loadDatabaseProperties();
 		} catch (IOException e) {
@@ -626,12 +628,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	}
 
 	/**
-	 * Get the current controller public IP.
+	 * Get the current host name.
 	 *
-	 * @return public IP.
+	 * @return host name
 	 */
-	public String getCurrentPublicIP() {
-		return NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
+	public String getCurrentHostName() {
+		return NetworkUtils.DEFAULT_LOCAL_HOST_NAME;
 	}
 
 	public PropertiesWrapper getClusterProperties() {
