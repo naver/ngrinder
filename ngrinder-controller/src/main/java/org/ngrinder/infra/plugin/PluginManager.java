@@ -34,12 +34,10 @@ import org.ngrinder.common.model.Home;
 import org.ngrinder.extension.OnControllerLifeCycleRunnable;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.service.IAgentManagerService;
-import org.ngrinder.service.IConfig;
-import org.ngrinder.service.IPerfTestService;
-import org.ngrinder.service.IUserService;
+import org.ngrinder.service.*;
 import org.ngrinder.user.service.UserService;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -92,6 +90,9 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 	private FileEntryService fileEntryService;
 
 	@Autowired
+	private ScheduledTaskService scheduledTaskService;
+
+	@Autowired
 	private UserService userService;
 
 	@Autowired
@@ -140,6 +141,7 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 				reg.register(IPerfTestService.class).forInstance(perfTestService);
 				reg.register(IConfig.class).forInstance(config);
 				reg.register(CacheManager.class).forInstance(cacheManager);
+				reg.register(IScheduledTaskService.class).forInstance(scheduledTaskService);
 			}
 		};
 		Home home = config.getHome();
@@ -233,7 +235,7 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 
 	/**
 	 * Get plugins by module class.
-	 *
+	 * <p/>
 	 * This method puts the given default plugin at a head of returned plugin list.
 	 *
 	 * @param <M>           module type

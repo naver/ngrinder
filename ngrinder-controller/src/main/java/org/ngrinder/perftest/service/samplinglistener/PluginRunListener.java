@@ -13,18 +13,17 @@
  */
 package org.ngrinder.perftest.service.samplinglistener;
 
-import java.io.File;
-import java.util.List;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
-
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Sampling LifeCycle listener to run the pluings implementing {@link OnTestSamplingRunnable}.
@@ -63,7 +62,7 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 				each.startSampling(singleConsole, perfTest, perfTestService);
 			} catch (Exception e) {
 				LOGGER.error("While running plugins, the error occurred : {}", e.getMessage());
-				LOGGER.info("Details : ", e);
+				LOGGER.debug("Details : ", e);
 			}
 		}
 	}
@@ -75,7 +74,7 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 				each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics, cumulativeStatistics);
 			} catch (Exception e) {
 				LOGGER.error("While running plugin the following error occurred : {}", e.getMessage());
-				LOGGER.info("Details : ", e);
+				LOGGER.debug("Details : ", e);
 			}
 		}
 
@@ -88,7 +87,7 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 				each.endSampling(singleConsole, perfTest, perfTestService);
 			} catch (Exception e) {
 				LOGGER.error("While running plugin the following error occurs : {}", e.getMessage());
-				LOGGER.info("Details : ", e);
+				LOGGER.debug("Details : ", e);
 			}
 		}
 

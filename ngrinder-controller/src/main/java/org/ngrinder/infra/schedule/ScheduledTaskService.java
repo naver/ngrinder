@@ -13,12 +13,12 @@
  */
 package org.ngrinder.infra.schedule;
 
+import org.ngrinder.service.IScheduledTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -30,20 +30,21 @@ import java.util.concurrent.ScheduledFuture;
  * @since 3.1
  */
 @Service
-public class ScheduledTaskService {
+public class ScheduledTaskService implements IScheduledTaskService {
 	@Autowired
 	private TaskScheduler taskScheduler;
 
 	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
 
 
+	@Override
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);
 		scheduledRunnable.put(runnable, scheduledFuture);
-
 	}
 
 
+	@Override
 	public void removeScheduledJob(Runnable runnable) {
 		final ScheduledFuture scheduledTaskInfo = scheduledRunnable.remove(runnable);
 		if (scheduledTaskInfo != null) {
@@ -51,11 +52,7 @@ public class ScheduledTaskService {
 		}
 	}
 
-	/**
-	 * Run async job.
-	 *
-	 * @param runnable job to run
-	 */
+	@Override
 	@Async
 	public void runAsync(Runnable runnable) {
 		runnable.run();
