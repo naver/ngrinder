@@ -98,7 +98,7 @@ public class AgentManagerController extends BaseController {
 			agentPackage = agentPackageService.createAgentPackage("", "", null);
 		}
 		if (agentPackage != null) {
-			model.addAttribute("downloadLink", contextPath + "/agent/download/" + agentPackage.getName());
+			model.addAttribute("downloadLink", "/agent/download/" + agentPackage.getName());
 		}
 		return "agent/list";
 	}

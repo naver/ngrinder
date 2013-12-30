@@ -27,7 +27,7 @@
 			</span>
 			<span class="input-xlarge uneditable-input span6" style="cursor: text">
 				<#if downloadLink??>
-					<a href="${downloadLink}">${downloadLink}</a>
+					<a href="${req.getContextPath()}${downloadLink}">${downloadLink}</a>
 				<#else>
 					Please select the region in advance to download agent.
 				</#if>
