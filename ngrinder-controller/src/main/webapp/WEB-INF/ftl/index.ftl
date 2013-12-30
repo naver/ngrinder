@@ -106,7 +106,8 @@
 						<#if right_panel_entries?has_content>
 						<tr>
 							<td></td>
-							<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
+							<td><a href="${see_more_resources_url}"	target="_blank">
+								<i	class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
 						</tr>
 						</#if>
 					</table>

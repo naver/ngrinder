@@ -55,6 +55,8 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS = "controller.front_page_resources_rss";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_MORE_QNA_URL = "controller.front_page_more_qna_url";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_QNA_RSS = "controller.front_page_qna_rss";
+	public static final String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL = "controller" +
+			".front_page_resources_more_url";
 
 	public static final String PROP_CONTROLLER_HELP_URL = "controller.help_url";
 	public static final String PROP_CONTROLLER_IP = "controller.ip";
