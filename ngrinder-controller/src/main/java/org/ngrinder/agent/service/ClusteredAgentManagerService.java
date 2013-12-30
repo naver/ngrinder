@@ -40,7 +40,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,7 +119,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 
 	public void checkAgentState() {
-		List<AgentInfo> changeAgents =  newArrayList();
+		List<AgentInfo> changeAgents = newArrayList();
 		String curRegion = getConfig().getRegion();
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
@@ -207,7 +206,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		if (keysWithExpiryCheck.isEmpty()) {
 			return;
 		}
-		List<AgentInfo> agentInfos = new ArrayList<AgentInfo>();
+		List<AgentInfo> agents = newArrayList();
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonitoringTargetsCache.get(each);
 			AgentControllerIdentityImplementation agentIdentity = cast(value.get());
@@ -216,11 +215,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 						agentIdentity.getName());
 				if (found != null) {
 					found.setSystemStat(gson.toJson(getSystemDataModel(agentIdentity)));
-					agentInfos.add(found);
+					agents.add(found);
 				}
 			}
 		}
-		agentManagerRepository.save(agentInfos);
+		agentManagerRepository.save(agents);
 	}
 
 	private SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
