@@ -92,6 +92,23 @@ public class PropertiesWrapper {
 		}
 	}
 
+
+	public int getPropertyInt(String key, int defaultValue) {
+		try {
+			return getPropertyInt(key);
+		} catch (IllegalArgumentException e) {
+			return defaultValue;
+		}
+	}
+
+	public boolean getPropertyBoolean(String key, boolean defaultValue) {
+		try {
+			return getPropertyBoolean(key);
+		} catch (IllegalArgumentException e) {
+			return defaultValue;
+		}
+	}
+
 	/**
 	 * Add the property.
 	 *
