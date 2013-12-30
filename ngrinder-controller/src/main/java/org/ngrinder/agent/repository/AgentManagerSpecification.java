@@ -26,7 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Agent Manager JPA Specification.
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 3.1
@@ -35,9 +35,8 @@ public abstract class AgentManagerSpecification {
 
 	/**
 	 * Query specification to query the agent existing in the specified region.
-	 * 
-	 * @param region
-	 *            region to query
+	 *
+	 * @param region region to query
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> startWithRegion(final String region) {
@@ -45,14 +44,14 @@ public abstract class AgentManagerSpecification {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Expression<String> regionField = root.get("region").as(String.class);
-				return cb.or(cb.like(regionField, region + "_%"), cb.equal(regionField, region));
+				return cb.or(cb.like(regionField, region + "/_%", cb.literal('/')), cb.equal(regionField, region));
 			}
 		};
 	}
 
 	/**
 	 * Query specification to query the active agents.
-	 * 
+	 *
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> active() {
@@ -70,7 +69,7 @@ public abstract class AgentManagerSpecification {
 	/**
 	 * Query specification to query the visible agents. "visible" means.. it's
 	 * visible by the agent monitor.
-	 * 
+	 *
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> visible() {
