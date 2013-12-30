@@ -20,7 +20,6 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +54,6 @@ public class AgentManagerController extends BaseController {
 	private AgentManagerService agentManagerService;
 
 	@Autowired
-	private HttpContainerContext httpContainerContext;
-
-	@Autowired
 	private RegionService regionService;
 
 	@Autowired
@@ -87,7 +83,6 @@ public class AgentManagerController extends BaseController {
 		}));
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getAll().keySet());
-		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		File agentPackage = null;
 		if (isClustered()) {
 			if (StringUtils.isNotBlank(region)) {
