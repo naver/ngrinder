@@ -13,7 +13,8 @@
  */
 package org.ngrinder.home.controller;
 
-import org.apache.commons.lang.LocaleUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
@@ -76,6 +77,8 @@ public class HomeController extends BaseController implements ControllerConstant
 
 	@Autowired
 	private ScheduledTaskService scheduledTaskService;
+
+	private static Gson rawObjectJsonSerializer = new GsonBuilder().setPrettyPrinting().create();
 
 	/**
 	 * Initialize {@link HomeController}.
@@ -209,7 +212,7 @@ public class HomeController extends BaseController implements ControllerConstant
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("current", regionService.getCurrent());
 		map.put("regions", regionService.getAll());
-		return toJsonHttpEntity(map);
+		return toJsonHttpEntity(map, rawObjectJsonSerializer);
 	}
 
 	/**
