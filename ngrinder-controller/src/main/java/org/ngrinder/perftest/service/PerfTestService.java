@@ -1405,8 +1405,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param interval interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
-	public Map<String, String> getReportPluginGraph(long testId, String plugin, String kind, int interval) {
-		Map<String, String> returnMap = Maps.newHashMap();
+	public Map<String, Object> getReportPluginGraph(long testId, String plugin, String kind, int interval) {
+		Map<String, Object> returnMap = Maps.newHashMap();
 		File pluginDataFile = getReportPluginDataFile(testId, plugin, kind);
 		BufferedReader br = null;
 		try {

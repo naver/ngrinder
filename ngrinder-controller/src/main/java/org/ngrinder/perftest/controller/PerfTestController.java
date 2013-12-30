@@ -792,11 +792,15 @@ public class PerfTestController extends BaseController {
 		return toJsonHttpEntity(getReportPluginGraphData(id, plugin, kind, imgWidth));
 	}
 
-	private Map<String, String> getReportPluginGraphData(long id, String plugin, String kind, int imgWidth) {
+	private Map<String, Object> getReportPluginGraphData(long id, String plugin, String kind, int imgWidth) {
 		int interval = perfTestService.getReportPluginGraphInterval(id, plugin, kind, imgWidth);
-		Map<String, String> pluginMonitorData = perfTestService.getReportPluginGraph(id, plugin, kind, interval);
-		pluginMonitorData.put("interval",
-				String.valueOf(interval * perfTestService.getReportPluginGraphSamplingInterval(id, plugin)));
+		Map<String, Object> pluginMonitorData = perfTestService.getReportPluginGraph(id, plugin, kind, interval);
+		final PerfTest perfTest = perfTestService.getOne(id);
+		int samplingInterval = 3;
+		if (perfTest != null) {
+			samplingInterval = perfTest.getSamplingInterval();
+		}
+		pluginMonitorData.put("interval", interval * samplingInterval);
 		return pluginMonitorData;
 	}
 
