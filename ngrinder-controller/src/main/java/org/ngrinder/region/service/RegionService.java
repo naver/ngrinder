@@ -16,11 +16,13 @@ package org.ngrinder.region.service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.util.NetworkUtils;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.event.CacheEventListenerAdapter;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
@@ -89,7 +91,8 @@ public class RegionService {
 		Map<String, RegionInfo> regions = getAll();
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
-		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentHostName())) {
+		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getClusterProperties().getProperty
+				(ClusterConstants.PROP_CLUSTER_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
 			throw processException("The region name, " + localRegion
 					+ ", is already used by other controller " + regionInfo.getIp()
 					+ ". Please set the different region name in this controller.");
@@ -105,7 +108,8 @@ public class RegionService {
 	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
 			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
-			cache.put(getCurrent(), new RegionInfo(config.getCurrentHostName(), newHashSet));
+			cache.put(getCurrent(), new RegionInfo(config.getClusterProperties().getProperty(ClusterConstants
+					.PROP_CLUSTER_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS), newHashSet));
 		}
 	}
 

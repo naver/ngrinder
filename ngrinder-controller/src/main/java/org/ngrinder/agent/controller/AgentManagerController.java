@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -74,8 +73,7 @@ public class AgentManagerController extends BaseController {
 	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
-	public String getAll(@RequestParam(value = "region", required = false) final String region,
-	                     HttpServletRequest request, ModelMap model) {
+	public String getAll(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
 		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
 			@Override
@@ -90,10 +88,16 @@ public class AgentManagerController extends BaseController {
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getAll().keySet());
 		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-
-		if (!isClustered() || StringUtils.isNotBlank(region)) {
-			File agentPackage = agentPackageService.createAgentPackage(
-					request == null ? "" : request.getServerName(), region, null);
+		File agentPackage = null;
+		if (isClustered()) {
+			if (StringUtils.isNotBlank(region)) {
+				final String ip = regionService.getOne(region).getIp();
+				agentPackage = agentPackageService.createAgentPackage(ip, region, null);
+			}
+		} else {
+			agentPackage = agentPackageService.createAgentPackage("", "", null);
+		}
+		if (agentPackage != null) {
 			model.addAttribute("downloadLink", contextPath + "/agent/download/" + agentPackage.getName());
 		}
 		return "agent/list";
@@ -134,10 +138,9 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the current performance of the given agent.
 	 *
-	 *
-	 * @param id    agent id
-	 * @param ip    agent ip
-	 * @param name  agent name
+	 * @param id   agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 * @return json message
 	 */
 

@@ -627,15 +627,6 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		return getControllerProperties().getProperty(PROP_CONTROLLER_HELP_URL);
 	}
 
-	/**
-	 * Get the current host name.
-	 *
-	 * @return host name
-	 */
-	public String getCurrentHostName() {
-		return NetworkUtils.DEFAULT_LOCAL_HOST_NAME;
-	}
-
 	public PropertiesWrapper getClusterProperties() {
 		return clusterProperties;
 	}

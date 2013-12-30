@@ -85,7 +85,7 @@ public class AgentPackageService {
 	 * @return File  agent package dir.
 	 */
 	public File getPackagesDir() {
-		return config.isClustered() ? config.getExHome().getSubFile("download") : config.getHome().getSubFile("download");
+		return config.getHome().getSubFile("download");
 	}
 
 	/**

@@ -13,16 +13,7 @@
  */
 package org.ngrinder.agent.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-
 import net.grinder.message.console.AgentControllerState;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -38,6 +29,14 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -68,7 +67,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 
 		ModelMap model = new ModelMap();
-		agentController.getAll("", null, model);
+		agentController.getAll("", model);
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -89,7 +88,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 
 		model.clear();
-		agentController.getAll("", null, model);
+		agentController.getAll("", model);
 		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
 		if (!agents.isEmpty()) {
 			AgentInfo testAgt = agents.iterator().next();
@@ -142,7 +141,6 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Test
 	public void testGetCurrentMonitorData() {
-		ModelMap model = new ModelMap();
 		HttpEntity<String> rtnStr = agentController.getState(0L, "127.0.0.1", "127.0.0.1");
 		assertTrue(rtnStr.getBody().contains("freeMemory"));
 	}
