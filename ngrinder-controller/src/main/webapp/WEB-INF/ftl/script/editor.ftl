@@ -54,7 +54,7 @@
 							</colgroup>
 							<tr>
 								<td>
-									<label class="control-label" for="testName">
+									<label class="control-label" for="script_name">
 										<@spring.message "script.info.name"/>
 									</label>
 								</td>
@@ -85,7 +85,7 @@
 									<label class="control-label" for="description"><@spring.message "script.action.commit"/></label>
 								</td>
 								<td>
-									<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
+									<textarea class="span6" id="description" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
 								</td>
 								<td>
 									<#if file?? && file.properties.targetHosts??>

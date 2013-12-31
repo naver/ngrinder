@@ -20,7 +20,10 @@
 			}
 			.table {
 				margin-bottom: 5px
-			} 
+			}
+			.container .well {
+				margin-top:0px;
+			}
 		</style> 
 	</head>
 	<body>
