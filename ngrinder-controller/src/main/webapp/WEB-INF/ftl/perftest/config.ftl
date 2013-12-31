@@ -30,7 +30,7 @@
 			<div class="control-group">
 				<div class="row">
 					<div class="span4">
-						<@control_group name="agentCount" label_message_key="perfTest.config.agent" err_style="margin-left:120px;">
+						<@control_group name="agentCount" label_message_key="perfTest.config.agent">
 							<@input_append name="agentCount"
 								value="${test.agentCount}"
 								message="perfTest.config.agent"
@@ -40,24 +40,18 @@
 
 					<div class="span2">
 						<#if clustered == true>
-							<label for="region" class="control-label" style="margin-left:-50px;width:80px">
-								<@spring.message "perfTest.config.region"/>
-								<span rel="popover" data-html="true"
-									data-content='<@spring.message "perfTest.config.region.help"/>'
-									data-placement='top' title='<@spring.message "perfTest.config.region"/>' >
-									<i class="icon-question-sign" style="vertical-align: middle;"></i>
-								</span>
-							</label>
-							<select id="region" name="region" class="pull-right required" style="width: 110px">
-								<option value=""></option>
-								<#list regions as each>
-									<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
-										<@spring.message "${each}"/>
-									</option>
-								</#list>
-							</select>
-							<div id="err_region">
-							</div>
+							<@control_group name="region" label_message_key="perfTest.config.region"
+								label_help_message_key="perfTest.config.region"
+								label_style="margin-left:-50px;width:80px">
+								<select id="region" name="region" class="pull-right required" style="width: 110px">
+									<option value=""></option>
+									<#list regions as each>
+										<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
+											<@spring.message "${each}"/>
+										</option>
+									</#list>
+								</select>
+							</@control_group>
 						</#if>
 					</div>
 				</div>
@@ -76,7 +70,7 @@
 						<span id="total_vuser"></span>
 					</span>
 				</div>
-				<div id="process_thread_config_panel" style="display: none;">
+				<div id="process_thread_config_panel" style="display: none;margin-top:5px">
 					<@input_prepend name="processes" value="${test.processes}" message="perfTest.config.process"
 						extra_css="control-group" />
 					<@input_prepend name="threads" value="${test.threads}" message="perfTest.config.thread"
@@ -102,12 +96,11 @@
 				</button>
 			</@control_group>
 
-			<@control_group name="scriptResources" label_message_key="perfTest.config.scriptResources">
+			<@control_group label_message_key="perfTest.config.scriptResources">
             	<div class="div-resources" id="script_resources"></div>
 			</@control_group>
 
 			<#assign targetHosts = test.targetHosts>
-
 			<@control_group label_message_key="perfTest.config.targetHost">
 				<#include "host.ftl">
 			</@control_group>
@@ -115,9 +108,8 @@
 
 			<#assign duration_checked><#if test.threshold == "D">checked</#if></#assign>
 
-			<@control_group label_message_key="perfTest.config.duration" controls_extra_class="docs-input-sizes"
+			<@control_group_with_radio label_message_key="perfTest.config.duration" controls_extra_class="docs-input-sizes"
 				input_id="duration_ratio" input_name="threshold" input_value="D" radio_checked="${duration_checked}" >
-
 				<select class="select-item" id="select_hour"></select> :
 				<select class="select-item" id="select_min"></select> :
 				<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
@@ -126,19 +118,18 @@
 				<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
 				<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
 				<input id="hidden_duration_input" class="hide" data-step="1"/>
-
-			</@control_group>
+			</@control_group_with_radio>
 
 			<#assign count_checked><#if test.threshold == "R">checked</#if></#assign>
 
-			<@control_group label_message_key="perfTest.config.runCount"
+			<@control_group_with_radio label_message_key="perfTest.config.runCount"
 				input_id="run_count_radio" input_name="threshold" input_value="R" radio_checked="${count_checked}" >
 					<@input_append  name="runCount"
 						value="${test.runCount}"
 						message="perfTest.config.runCount"
 						others='number_limit="${maxRunCount}"'
 						append_prefix="perfTest.config.max" append="${maxRunCount}" />
-			</@control_group>
+			</@control_group_with_radio>
 
 			<div class="control-group">
 				<div class="row">
@@ -164,7 +155,8 @@
 					<div class="span3">
 						<@control_group name="ignoreSampleCount" label_message_key="perfTest.config.ignoreSampleCount"
 							label_style="width:150px;margin-left:-20px"
-							err_style="margin-left:100px">
+							err_style="margin-left:-130px"
+							>
 							<@input_popover name="ignoreSampleCount"
 								value="${test.ignoreSampleCount}"
 								message="perfTest.config.ignoreSampleCount"
@@ -176,22 +168,16 @@
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
-						<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution">
-							<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
+						<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution"
+							label_help_message_key="perfTest.config.safeDistribution">
+							<input type="checkbox" id="safe_distribution" name="safeDistribution"
 							<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
-							<span style="margin-top: 10px; margin-left: 10px"
-								rel='popover' data-html='true'
-								data-content='<@spring.message "perfTest.config.safeDistribution.help"/>'
-								title='<@spring.message "perfTest.config.safeDistribution"/>'
-								id="dist_comment">
-								<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
-							</span>
 						</@control_group>
 					</div>
 					<div class="span3">
 						<@control_group name="param" label_message_key="perfTest.config.param"
 							label_style="width:70px;margin-left:-20px"
-							err_style="margin-left:-25px"
+							err_style="margin-left:-80px"
 							controls_style="margin-left:70px">
 							<@input_popover name="param"
 								value="${(test.param?html)}"

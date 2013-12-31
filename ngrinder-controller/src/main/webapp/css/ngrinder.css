@@ -71,16 +71,17 @@ h1, h2, h3, h4  {
 }
 
 .form-horizontal-1 .controls {
-	margin-left: 150px
+	margin-left: 150px;
 }
 
 .form-horizontal-2 .control-label {
 	width: 110px;
-	text-align: left
+	text-align: left;
+    padding-top:0;
 }
 
 .form-horizontal-2 .controls {
-	margin-left: 120px
+	margin-left: 120px;
 }
 
 .form-horizontal-3 {

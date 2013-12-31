@@ -881,7 +881,12 @@ function bindEvent() {
 
 	$("#expand_collapse_btn").click(function() {
 		$(this).toggleClass("collapse");
-		$("#process_thread_config_panel").toggle();
+		var $panel = $("#process_thread_config_panel");
+		if ($panel.is(":hidden")) {
+			$panel.show("slow");
+		} else {
+			$panel.slideUp();
+		}
 	});
 
 	$("#select_hour, #select_min, #select_sec").change(function() {

@@ -12,25 +12,25 @@
 </#function>
 
 
-	<#macro input_append name, value, message, data_placement="right", class="input input-mini",
-			type = "text", data_content="", others="", append="", append_prefix="">
+<#macro input_append name, value, message, data_placement="right", class="input input-mini",
+		type = "text", data_content="", others="", append="", append_prefix="">
 
 	<#if append!=""><div class="input-append"></#if>
 
-		<input type="${type}" class="${class}"
-			   rel="popover" id ="${toUnderscore(name)}" name="${name}"
-			   value="${value}" data-html="true"
-               data-placement='${data_placement}'
-			   data-content=<#if data_content =="">"<@spring.message "${message}.help"/>"<#else>"${data_content}"</#if>
-			   title='<@spring.message "${message}"/>'
-			   <#if others!="">${others}</#if> />
+	<input type="${type}" class="${class}"
+				 rel="popover" id ="${toUnderscore(name)}" name="${name}"
+				 value="${value}" data-html="true"
+				 data-placement='${data_placement}'
+		data-content=<#if data_content =="">"<@spring.message "${message}.help"/>"<#else>"${data_content}"</#if>
+	title='<@spring.message "${message}"/>'
+	<#if others!="">${others}</#if> />
 
-		<#if append!="">
-			<span class="add-on">
-				<@spring.message "${append_prefix}"/>
-				${append}
-			</span>
-		</#if>
+	<#if append!="">
+		<span class="add-on">
+			<@spring.message "${append_prefix}"/>
+			${append}
+		</span>
+	</#if>
 
 	<#if append!=""></div></#if>
 </#macro>
@@ -51,8 +51,9 @@
 			<input type="text" class="input input-mini" id="${toUnderscore(name)}" name="${name}"
 				   value="${value}" style="width:40px"/>
 			<#if others!="">${others}</#if>
+			<div id="err_${toUnderscore(name)}" style="margin-bottom: 0;height: 15px;line-height:15px"></div>
 		</div>
-		<div id="err_${toUnderscore(name)}" style="margin-bottom: 0;height: 15px;line-height:15px"></div>
+
 	</div>
 </#macro>
 
@@ -85,27 +86,60 @@
 </#macro>
 
 <#macro control_group name = "", group_id = "", label_message_key = "", lable_extra_class = ""
-	controls_style = "", label_style = "", err_style = "", inline_help = "false" controls_extra_class = ""
-	input_id = "", input_name = "", input_value = "" radio_checked = "">
+	controls_style = "", label_style = "", err_style = "", inline_help="false" controls_extra_class = ""
+	label_help_message_key="">
 
-	<div class="control-group" id="${group_id}">
-
-		<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}">
-			<#if input_name!=""><input type="radio" id="${input_id}" name="${input_name}" value="${input_value}" ${radio_checked}/></#if>
-			<@spring.message "${label_message_key}"/>
-		</label>
-
-		<div class="controls ${controls_extra_class}" style="${controls_style}">
-			<#nested>
-			<#if inline_help="true">
-				<span class="help-inline"></span>
+<div class="control-group" id="${group_id}">
+	<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}">
+		<@spring.message "${label_message_key}"/>
+		<#if label_help_message_key != "">
+			<span rel="popover" data-html="true"
+				  data-content='<@spring.message "${label_help_message_key}.help"/>'
+				  data-placement='top' title='<@spring.message "${label_help_message_key}"/>'
+				>
+				<i class="icon-question-sign" style="vertical-align: middle;"></i>
+			</span>
+		</#if>
+	</label>
+	<div class="controls ${controls_extra_class}" style="${controls_style}">
+		<#nested>
+		<#if name != "">
+			<#if inline_help=="true">
+				<span id="err_${toUnderscore(name)}" class="help-inline" style="${err_style}">
+				</span>
+			<#else>
+				<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
+				</div>
 			</#if>
-		</div>
-
-		<#if err_style!="">
-			<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
-			</div>
 		</#if>
 	</div>
 
+</div>
+</#macro>
+
+
+
+
+<#macro control_group_with_radio name="", group_id="", label_message_key="", lable_extra_class=""
+	controls_style="", label_style="", err_style="", inline_help="false" controls_extra_class=""
+	input_id="", input_name="", input_value="" radio_checked="">
+<div class="control-group" id="${group_id}">
+	<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}">
+		<input type="radio" id="${input_id}" name="${input_name}" value="${input_value}" ${radio_checked}/>
+		<@spring.message "${label_message_key}"/>
+	</label>
+	<div class="controls ${controls_extra_class}" style="${controls_style}">
+		<#nested>
+		<#if name != "">
+			<#if inline_help=="true">
+				<span id="err_${toUnderscore(name)}" class="help-inline" style="${err_style}">
+				</span>
+			<#else>
+				<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
+				</div>
+			</#if>
+		</#if>
+	</div>
+
+</div>
 </#macro>
