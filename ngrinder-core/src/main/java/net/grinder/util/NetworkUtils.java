@@ -252,6 +252,9 @@ public abstract class NetworkUtils {
 		}
 
 		public boolean isLocalHost() {
+			if (ip == null) {
+				return false;
+			}
 			if (ip.isAnyLocalAddress() || ip.isLoopbackAddress()) {
 				return true;
 			}
