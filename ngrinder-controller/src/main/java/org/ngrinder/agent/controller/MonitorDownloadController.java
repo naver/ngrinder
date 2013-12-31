@@ -18,9 +18,13 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.File;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
@@ -41,12 +45,28 @@ public class MonitorDownloadController extends BaseController {
 	/**
 	 * Download monitor.
 	 *
+	 * @param fileName monitor file name.
+	 * @param response response.
+	 */
+
+	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-_]+}")
+	public void download(@PathVariable String fileName, HttpServletResponse response) {
+		File home = getConfig().getHome().getDownloadDirectory();
+		File monitorFile = new File(home, fileName);
+		FileDownloadUtils.downloadFile(response, monitorFile);
+	}
+
+	/**
+	 * Download monitor.
+	 *
 	 * @param response response.
 	 */
 	@RequestMapping(value = "/download")
-	public void download(HttpServletResponse response) {
+	public String download(ModelMap model) {
 		try {
-			FileDownloadUtils.downloadFile(response, agentPackageService.createMonitorPackage());
+			final File monitorPackage = agentPackageService.createMonitorPackage();
+			model.clear();
+			return "redirect:/monitor/download/" + monitorPackage.getName();
 		} catch (Exception e) {
 			throw processException(e);
 		}

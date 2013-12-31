@@ -19,6 +19,7 @@ import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,23 +64,25 @@ public class AgentDownloadController extends BaseController {
 	/**
 	 * Download the latest agent.
 	 *
-	 * @param owner agent owner
-	 * @param region agent region
+	 * @param owner   agent owner
+	 * @param region  agent region
 	 * @param request request.
-	 * @param response response.
 	 */
 	@RequestMapping(value = "/download")
-	public void downloadLatest(@RequestParam(value = "owner", required = false) String owner,
-	                           @RequestParam(value = "region", required = false) String region, HttpServletRequest request,
-	                           HttpServletResponse response) {
+	public String download(@RequestParam(value = "owner", required = false) String owner,
+	                       @RequestParam(value = "region", required = false) String region,
+	                       ModelMap modelMap,
+	                       HttpServletRequest request) {
 		String connectingIP = request.getServerName();
 		try {
 			if (isClustered()) {
-				checkNotEmpty(region, "region should be provided to download agent.");
+				checkNotEmpty(region, "region should be provided to download agent in cluster mode.");
 				connectingIP = checkNotNull(regionService.getOne(region), "selecting region '" + region + "' is not " +
 						"available").getIp();
 			}
-			FileDownloadUtils.downloadFile(response, agentPackageService.createAgentPackage(connectingIP, region, owner));
+			final File agentPackage = agentPackageService.createAgentPackage(connectingIP, region, owner);
+			modelMap.clear();
+			return "redirect:/agent/download/" + agentPackage.getName();
 		} catch (Exception e) {
 			throw processException(e);
 		}
