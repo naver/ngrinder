@@ -43,7 +43,7 @@
 							<@control_group name="region" label_message_key="perfTest.config.region"
 								label_help_message_key="perfTest.config.region"
 								label_style="margin-left:-50px;width:80px"
-								err_style="margin-left: -175px;width: 200px;">
+								err_style="margin-left: -150px;width: 180px;">
 								<select id="region" name="region" class="pull-right required" style="width: 110px">
 									<option value=""></option>
 									<#list regions as each>
@@ -206,13 +206,13 @@
 					<div class="span3">
 						<@input_label name="initProcesses"
 							value="${test.initProcesses}" message="perfTest.config.initialProcesses"
-							err_style="margin-left:-130px; width:250px; height:10px"/>
+							err_style="margin-left:-130px; width:230px; height:10px"/>
 					</div>
 
 					<div class="span3">
 						<@input_label name="processIncrement"
 							value="${test.processIncrement}" message="perfTest.config.rampUp"
-							err_style="margin-left:-130px; width:250px; height:10px"/>
+							err_style="margin-left:-130px; width:230px; height:10px"/>
 					</div>
 				</div>
 				<div class="row">
@@ -220,13 +220,13 @@
 						<@input_label name="initSleepTime"
 							value="${test.initSleepTime}"
 							message="perfTest.config.initialSleepTime" others="<code>MS</code>"
-							err_style="margin-left:-130px; width:250px; height:10px"/>
+							err_style="margin-left:-130px; width:230px; height:10px"/>
 					</div>
 					<div class="span3">
 						<@input_label name="processIncrementInterval"
 							value="${test.processIncrementInterval}"
 							message="perfTest.config.processesEvery" others="<code>MS</code>"
-							err_style="margin-left:-130px; width:250px; height:10px"/>
+							err_style="margin-left:-130px; width:230px; height:10px"/>
 					</div>
 				</div>
 			</div>

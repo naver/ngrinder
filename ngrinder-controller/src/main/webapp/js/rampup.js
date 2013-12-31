@@ -66,7 +66,7 @@ function updateRampupChart() {
 	if (isNaN(initialSleepTime)) {
 		return;
 	}
-	var maxY = parseInt((processes / 5) + 1) * 5;
+
 	var seriesArray = [];
 
 	if ($("#use_ramp_up")[0].checked) {
@@ -92,7 +92,10 @@ function updateRampupChart() {
 		}
 
 		$("#rampup_chart").empty();
-		drawRampup(seriesArray, internalTime, maxY);
+
+        var maxX = seriesArray[seriesArray.length-1][0];
+        var maxY = seriesArray[seriesArray.length-1][1];
+		drawRampup(seriesArray, internalTime, maxX, maxY);
 	} else {
 		disableRampup();
 
@@ -107,12 +110,15 @@ function updateRampupChart() {
 			plotObj.series[0].data = seriesArray;
 			plotObj.replot();
 		} else {
-			drawRampup(seriesArray, internalTime, maxY);
+            var maxX = seriesArray[seriesArray.length-1][0];
+            var maxY = seriesArray[seriesArray.length-1][1];
+			drawRampup(seriesArray, internalTime, maxX, maxY);
 		}
 	}
 }
 
-function drawRampup(data, internalTime, maxY) {
+function drawRampup(data, internalTime, maxX, maxY, snapX) {
+    var numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
 	plotObj = $.jqplot("rampup_chart", [data], {
 		axesDefaults: {
 			tickRenderer: $.jqplot.AxisTickRenderer,
@@ -128,16 +134,14 @@ function drawRampup(data, internalTime, maxY) {
 		axes: {
 			xaxis: {
 				min: 1,
+                max: maxX,
 				pad: 0,
+                numberTicks: numTicks,
 				tickOptions: {
 					show: true,
 					formatter: function (format, value) {
 						value = value || 0;
-						if (internalTime < 1000) {
-							return (value / 1000).toFixed(1);
-						} else {
-							return (value / 1000).toFixed(0);
-						}
+						return (value / 1000).toFixed(1);
 					}
 				}
 			},
@@ -145,6 +149,7 @@ function drawRampup(data, internalTime, maxY) {
 				min: 0,
 				pad: 10,
 				max: maxY,
+                numberTicks: numTicks - 1,
 				tickOptions: {
 					show: true,
 					formatter: function (format, value) {

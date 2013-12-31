@@ -52,8 +52,8 @@
 	} 
 
 	.rampup-chart {
-		width: 430px;
-		height: 355px
+		width: 400px;
+		height: 300px
 	}
 
 	div.div-host {
