@@ -123,12 +123,12 @@
 					<td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
 				</tr>
 				<tr>
-					<th><@spring.message "perfTest.report.meantime"/></th>
-					<td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
-				</tr>
-				<tr>
 					<th><@spring.message "perfTest.report.peakTPS"/></th>
 					<td><strong>${test.peakTps!""}</strong></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.meantime"/></th>
+					<td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
 				</tr>
 				<tr>
 					<th><@spring.message "perfTest.report.totalTests"/></th>

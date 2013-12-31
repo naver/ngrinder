@@ -19,13 +19,14 @@
             		<strong>${(test.tps!0)?string(",##0.#")}</strong>
 				</@control_group>
 
-				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.meantime">
-					${(test.meanTestTime!0)?string("0.##")}
-					<code>MS</code>
-				</@control_group>
-
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.peakTPS">
 					${test.peakTps!0}
+				</@control_group>
+
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.meantime">
+				${(test.meanTestTime!0)?string("0.##")}
+					<code>MS</code>
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.totalTests">
