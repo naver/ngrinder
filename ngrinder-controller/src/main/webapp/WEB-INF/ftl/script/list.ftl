@@ -99,7 +99,10 @@
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" value=""></th>
-					<th class="no-click"><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
+					<th class="no-click">
+						<a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self">
+							<img src="${req.getContextPath()}/img/up_folder.png?${nGrinderVersion}"/>
+						</a>
 					</th>
 					<th><@spring.message "script.list.name"/></th>
 					<th class="no-click"><@spring.message "script.list.commit"/></th>

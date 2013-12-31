@@ -13,6 +13,10 @@ body > .container {
 	text-align: center;
 }
 
+thead tr th {
+    background-color: #eeeeee !important;
+}
+
 #wrap {
     min-height: 100%;
     height: auto !important;
