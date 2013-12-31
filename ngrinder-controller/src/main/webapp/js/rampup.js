@@ -117,8 +117,12 @@ function updateRampupChart() {
 	}
 }
 
-function drawRampup(data, internalTime, maxX, maxY, snapX) {
+function drawRampup(data, intervalTime, maxX, maxY, snapX) {
     var numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
+    var pointCutter = 1;
+    if (parseInt(intervalTime / 1000) == (intervalTime / 1000)){
+        pointCutter = 0;
+    }
 	plotObj = $.jqplot("rampup_chart", [data], {
 		axesDefaults: {
 			tickRenderer: $.jqplot.AxisTickRenderer,
@@ -140,9 +144,9 @@ function drawRampup(data, internalTime, maxX, maxY, snapX) {
 				tickOptions: {
 					show: true,
 					formatter: function (format, value) {
-						value = value || 0;
-						return (value / 1000).toFixed(1);
-					}
+                        value = value || 0;
+                        return (value / 1000).toFixed(pointCutter);
+                    }
 				}
 			},
 			yaxis: {
