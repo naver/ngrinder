@@ -59,6 +59,9 @@ public class PerfTestTest {
 		ipList = test.getTargetHostIP();
 		assertThat(ipList.get(1), is("1.1.1.2"));
 
+		test.setTargetHosts("www.test.com:0:0:0:0:0:ffff:3d87:a969,www.test.com:0:0:0:0:0:ffff:a22:4024");
+		ipList = test.getTargetHostIP();
+		assertThat(ipList.get(1), is("0:0:0:0:0:ffff:a22:4024"));
 	}
 
 	@Test

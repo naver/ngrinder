@@ -434,6 +434,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
 	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
+	 * if www.test.com:0:0:0:0:0:ffff:3d87:a969 add ip: '0:0:0:0:0:ffff:3d87:a969'
 	 *
 	 * @return host ip list
 	 */
@@ -442,10 +443,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		String[] hostsList = StringUtils.split(StringUtils.trimToEmpty(targetHosts), ",");
 		for (String hosts : hostsList) {
 			String[] addresses = StringUtils.split(hosts, ":");
-			if (addresses.length > 0) {
+			if (addresses.length <= 2) {
 				targetIPList.add(addresses[addresses.length - 1]);
 			} else {
-				targetIPList.add(hosts);
+				targetIPList.add(hosts.substring(hosts.indexOf(":") + 1, hosts.length()));
 			}
 		}
 		return targetIPList;
