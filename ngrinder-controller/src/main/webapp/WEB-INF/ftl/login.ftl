@@ -15,16 +15,15 @@
 			background-color: white
 		}
 
-
 		.content {
 			height: 635px;
-            margin-top: 30px;
+			margin-top: 30px;
 			padding-top: 30px;
 			background-color: #f5f4f2
 		}
 
 		.logo {
-            margin-top: 150px;
+			margin-top: 150px;
 			text-align: center
 		}
 
@@ -60,6 +59,12 @@
 			width: 75px
 		}
 
+		.select2-result-label {
+			text-overflow: ellipsis;
+			display:block;
+			white-space:nowrap;
+			overflow:hidden;
+		}
 	</style>
 </head>
 <body>
@@ -114,7 +119,7 @@
 
 		</fieldset>
 	</form>
-	<#include "common/copyright.ftl">
+<#include "common/copyright.ftl">
 </div>
 
 <div id="sign_up_modal_container"></div>
