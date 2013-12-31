@@ -11,7 +11,7 @@
 	function getPluginDataAndDraw(testId, plugin, kind) {
 		var $container = $("#chart_container");
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/plugin/" + plugin);
-		ajaxObj.params = { kind : kind, imgWidth: chart_container.width() };
+		ajaxObj.params = { kind : kind, imgWidth: $container.width() };
 		ajaxObj.success = function (data) {
 			var headers = eval(data.header);
 			for (var i = 0; i < headers.length; i++) {

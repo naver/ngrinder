@@ -482,7 +482,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 * @return true if the plugin is supported.
 	 */
 	public boolean isPluginSupported() {
-		return !isDevMode() && (getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT));
+		return (getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT));
 	}
 
 	/**

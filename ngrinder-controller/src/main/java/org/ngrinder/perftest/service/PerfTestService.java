@@ -1315,24 +1315,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	/**
-	 * Get sampling interval of plugin. It is configured by plugin, so need to get it from plugin directory.
-	 *
-	 * @param testId test id
-	 * @param plugin plugin name
-	 * @return sampling interval value
-	 */
-	public int getReportPluginGraphSamplingInterval(Long testId, String plugin) {
-		File reportDir = getReportFileDirectory(testId);
-		File pluginIntervalFile = new File(new File(reportDir, plugin), "interval");
-		try {
-			String intervalStr = FileUtils.readFileToString(pluginIntervalFile);
-			return Integer.valueOf(intervalStr);
-		} catch (IOException e) {
-			return 3; // default value 3.
-		}
-	}
-
-	/**
 	 * Get available report plugins list for the given test.
 	 *
 	 * @param testId test id
