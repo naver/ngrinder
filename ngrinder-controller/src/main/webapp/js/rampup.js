@@ -93,8 +93,8 @@ function updateRampupChart() {
 
 		$("#rampup_chart").empty();
 
-        var maxX = seriesArray[seriesArray.length-1][0];
-        var maxY = seriesArray[seriesArray.length-1][1];
+		var maxX = seriesArray[seriesArray.length-1][0];
+		var maxY = seriesArray[seriesArray.length-1][1];
 		drawRampup(seriesArray, internalTime, maxX, maxY);
 	} else {
 		disableRampup();
@@ -110,19 +110,19 @@ function updateRampupChart() {
 			plotObj.series[0].data = seriesArray;
 			plotObj.replot();
 		} else {
-            var maxX = seriesArray[seriesArray.length-1][0];
-            var maxY = seriesArray[seriesArray.length-1][1];
+			var maxX = seriesArray[seriesArray.length-1][0];
+			var maxY = seriesArray[seriesArray.length-1][1];
 			drawRampup(seriesArray, internalTime, maxX, maxY);
 		}
 	}
 }
 
 function drawRampup(data, intervalTime, maxX, maxY, snapX) {
-    var numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
-    var pointCutter = 1;
-    if (parseInt(intervalTime / 1000) == (intervalTime / 1000)){
-        pointCutter = 0;
-    }
+	var numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
+	var pointCutter = 1;
+	if (parseInt(intervalTime / 1000) == (intervalTime / 1000)){
+		pointCutter = 0;
+	}
 	plotObj = $.jqplot("rampup_chart", [data], {
 		axesDefaults: {
 			tickRenderer: $.jqplot.AxisTickRenderer,
@@ -138,22 +138,22 @@ function drawRampup(data, intervalTime, maxX, maxY, snapX) {
 		axes: {
 			xaxis: {
 				min: 1,
-                max: maxX,
+				max: maxX,
 				pad: 0,
-                numberTicks: numTicks,
+				numberTicks: numTicks,
 				tickOptions: {
 					show: true,
 					formatter: function (format, value) {
-                        value = value || 0;
-                        return (value / 1000).toFixed(pointCutter);
-                    }
+						value = value || 0;
+						return (value / 1000).toFixed(pointCutter);
+					}
 				}
 			},
 			yaxis: {
 				min: 0,
 				pad: 10,
 				max: maxY,
-                numberTicks: numTicks - 1,
+				numberTicks: numTicks - 1,
 				tickOptions: {
 					show: true,
 					formatter: function (format, value) {
