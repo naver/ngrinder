@@ -76,7 +76,7 @@ public class ConfigTest implements ControllerConstants, ClusterConstants {
 		// When dev_mode true and pluginsupport is true, it should be false
 		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(true);
 		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_PLUGIN_SUPPORT)).thenReturn(true);
-		assertThat(config.isPluginSupported(), is(false));
+		assertThat(config.isPluginSupported(), is(true));
 
 		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_DEV_MODE)).thenReturn(true);
 		when(wrapper.getPropertyBoolean(PROP_CONTROLLER_SECURITY)).thenReturn(true);
