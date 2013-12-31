@@ -160,7 +160,7 @@
 				<li  class="nav-header"><@spring.message "perfTest.report.plugins"/></li>
 					<@list list_items=plugins others="no_message" ; each >
 						<li class="plugin pointer-cursor" plugin="${each.first}" ip="${each.second}">
-							<a class="pointer-cursor">${each.first} - ${each.second}</a>
+							<a class="pointer-cursor">${each.first?replace("_", " ")} - ${each.second}</a>
 						</li>
 					</@list>
 				</ul>

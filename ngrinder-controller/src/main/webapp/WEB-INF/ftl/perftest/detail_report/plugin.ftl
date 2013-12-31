@@ -1,6 +1,6 @@
 <#import "../../common/spring.ftl" as spring/>
 <div class="page-header">
-	<h4>${plugin} - ${kind}</h4>
+	<h4>${plugin?replace("_", " ")} - ${kind}</h4>
 </div>
 
 <div id="chart_container">
@@ -25,9 +25,9 @@
 				var currentData = data[currentHead];
 				var dataFormat;
 				var currentHeadLow = currentHead.toLowerCase();
-				if (currentHeadLow.lastIndexOf("cpu") >= 0) {
+				if (currentHeadLow.lastIndexOf("usage") >= 0) {
 					dataFormat = formatPercentage;
-				} else if (currentHeadLow.lastIndexOf("memory") >= 0 || currentHeadLow.lastIndexOf("heap") >= 0) {
+				} else if (currentHeadLow.lastIndexOf("size") >= 0) {
 					dataFormat = formatMemoryInByte;
 				} else {
 					dataFormat = null;
