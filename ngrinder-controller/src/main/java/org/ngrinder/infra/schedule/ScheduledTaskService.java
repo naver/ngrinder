@@ -16,7 +16,6 @@ package org.ngrinder.infra.schedule;
 import org.ngrinder.service.IScheduledTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -27,24 +26,26 @@ import java.util.concurrent.ScheduledFuture;
  * Convenient class which makes scheduled task.
  *
  * @author JunHo Yoon
- * @since 3.1
+ * @since 3.3
  */
 @Service
 public class ScheduledTaskService implements IScheduledTaskService {
+
 	@Autowired
 	private TaskScheduler taskScheduler;
+
+	@Autowired
+	private InternalAsyncTaskService internalAsyncTaskService;
 
 	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
 
 
-	@Override
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);
 		scheduledRunnable.put(runnable, scheduledFuture);
 	}
 
 
-	@Override
 	public void removeScheduledJob(Runnable runnable) {
 		final ScheduledFuture scheduledTaskInfo = scheduledRunnable.remove(runnable);
 		if (scheduledTaskInfo != null) {
@@ -52,10 +53,8 @@ public class ScheduledTaskService implements IScheduledTaskService {
 		}
 	}
 
-	@Override
-	@Async
 	public void runAsync(Runnable runnable) {
-		runnable.run();
+		internalAsyncTaskService.runAsync(runnable);
 	}
 
 }

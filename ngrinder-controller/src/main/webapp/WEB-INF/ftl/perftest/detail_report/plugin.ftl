@@ -16,8 +16,12 @@
 			var headers = eval(data.header);
 			for (var i = 0; i < headers.length; i++) {
 				var currentHead = headers[i];
-				$container.append("<h6>" + currentHead.replace(/_/g, " ") + "</h6>" +
-						"<div id='" + currentHead + "' class='chart'></div>");
+				$container.append(
+						"<h6>" +
+						currentHead.replace(/_/g, " ") +
+						"</h6>" +
+						"<div id='" + currentHead + "' class='chart'></div>"
+				);
 				var currentData = data[currentHead];
 				var dataFormat;
 				var currentHeadLow = currentHead.toLowerCase();
