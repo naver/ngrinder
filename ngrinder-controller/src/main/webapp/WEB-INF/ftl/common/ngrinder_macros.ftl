@@ -44,14 +44,14 @@
 	</div>
 </#macro>
 
-<#macro input_label name, value, message, others = "">
+<#macro input_label name, value, message,  err_style="", others="">
 	<div class="control-group">
 		<label for="${toUnderscore(name)}" class="control-label"><@spring.message "${message}"/></label>
 		<div class="controls">
 			<input type="text" class="input input-mini" id="${toUnderscore(name)}" name="${name}"
 				   value="${value}" style="width:40px"/>
 			<#if others!="">${others}</#if>
-			<div id="err_${toUnderscore(name)}" style="margin-bottom: 0;height: 15px;line-height:15px"></div>
+			<div id="err_${toUnderscore(name)}" style="${err_style}"></div>
 		</div>
 
 	</div>
