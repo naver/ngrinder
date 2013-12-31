@@ -488,7 +488,7 @@ function initDuration() {
 var validationOptions = {};
 function addValidation() {
 	$.validator.addMethod("paramFmt", function (param) {
-		var rule = /^[a-zA-Z0-9_,\|]{0,30}$/;
+		var rule = /^[a-zA-Z0-9_\.,\|]{0,50}$/;
 		return rule.test($.trim(param));
 	});
 	var $runCountRadio = $("#run_count_radio");

@@ -8,7 +8,7 @@
 <div class="chart" id="mem_usage_chart"></div>
 <h6 id="received_byte_per_sec_chart_header">Received Byte Per Second</h6>
 <div class="chart" id="received_byte_per_sec_chart"></div>
-<h6 id="sent_byte_per_sec_chart_header">Sent Per Second</h6>
+<h6 id="sent_byte_per_sec_chart_header">Sent Byte Per Second</h6>
 <div class="chart" id="sent_byte_per_sec_chart"></div>
 <h6 id="custom_monitor_chart_1_header">Custom Monitor Chart 1</h6>
 <div class="chart" id="custom_monitor_chart_1"></div>

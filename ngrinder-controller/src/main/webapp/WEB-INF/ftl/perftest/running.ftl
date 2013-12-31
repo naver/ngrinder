@@ -99,7 +99,7 @@
 							<col width="60px">
 							<col width="65px">
 							<col width="65px">
-							<col width="55px">
+							<col width="60px">
 						</colgroup>
 						<thead>
 						<tr>
@@ -129,7 +129,7 @@
 							<col width="60px">
 							<col width="65px">
 							<col width="65px">
-							<col width="55px">
+							<col width="60px">
 						</colgroup>
 						<thead>
 						<tr>
