@@ -30,12 +30,14 @@
 <div id="wrap">
 <#include "../common/navigator.ftl">
 <div class="container">
-    <legend class="header">
-	<@spring.message "agent.info.head"/>
-		<button class="btn pull-right" onClick="window.history.back();">
-			<@spring.message "common.button.return"/>
-		</button>
-    </legend>
+	<fieldset>
+		<legend class="header">
+		<@spring.message "agent.info.head"/>
+			<button class="btn pull-right" onClick="window.history.back();">
+				<@spring.message "common.button.return"/>
+			</button>
+		</legend>
+	</fieldset>
     <div class="row">
         <div class="span3">
             <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px;margin-top:14px">
