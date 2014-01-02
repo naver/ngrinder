@@ -13,6 +13,8 @@
  */
 package org.ngrinder.infra.init;
 
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
@@ -28,11 +30,11 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 
 /**
- * Database Initialization. 
+ * Database Initialization.
  * When the first boot-up, some data(ex: user account) should be inserted into DB.
- * 
+ *
  * And... It's the perfect place to upgrade DB.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -41,6 +43,9 @@ public class DBInit {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private Config config;
+
 	/**
 	 * Initialize DB.
 	 */
@@ -48,6 +53,25 @@ public class DBInit {
 	@Transactional
 	public void init() {
 		createDefaultUserIfNecessary();
+		resetAdminPasswordIfNecessary();
+
+
+	}
+
+	private void resetAdminPasswordIfNecessary() {
+		if (config.getControllerProperties().getPropertyBoolean(ControllerConstants
+				.PROP_CONTROLLER_ADMIN_PASSWORD_RESET)) {
+			final User admin = userRepository.findOneByUserId("admin");
+			if (admin != null) {
+				createUser("admin", "admin", Role.ADMIN, "admin", "admin@nhn.com");
+			} else {
+				SecuredUser securedUser = new SecuredUser(admin, null);
+				Object salt = saltSource.getSalt(securedUser);
+				admin.setRole(Role.ADMIN);
+				admin.setPassword(passwordEncoder.encodePassword("admin", salt));
+				userRepository.saveAndFlush(admin);
+			}
+		}
 	}
 
 	@Autowired
@@ -58,20 +82,15 @@ public class DBInit {
 
 	@Autowired
 	private FileEntryService fileEntryService;
-	
+
 	/**
 	 * Create users.
-	 * 
-	 * @param userId
-	 *            userId
-	 * @param password
-	 *            raw user password
-	 * @param role
-	 *            role
-	 * @param userName
-	 *            user name
-	 * @param email
-	 *            email
+	 *
+	 * @param userId   userId
+	 * @param password raw user password
+	 * @param role     role
+	 * @param userName user name
+	 * @param email    email
 	 */
 	private void createUser(String userId, String password, Role role, String userName, String email) {
 		if (userRepository.findOneByUserId(userId) == null) {
