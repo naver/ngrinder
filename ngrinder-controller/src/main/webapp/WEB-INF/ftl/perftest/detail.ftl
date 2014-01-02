@@ -653,18 +653,21 @@ function addValidation() {
 }
 
 function bindNewScript(target, first) {
-		var $showScript = $("#show_script_btn");
-		var $scriptRevision = $("#script_revision");
-		var oldRevision = $scriptRevision.attr("old_revision");
-		if (target.val() == target.attr("old_script") && oldRevision != -1) {
-			$showScript.text("R " + oldRevision);
-			$scriptRevision.val(oldRevision);
-		} else {
-			$showScript.text("R HEAD");
-			$scriptRevision.val(-1);
-		}
-		$showScript.show();
-		updateScriptResources(first);
+	var $showScript = $("#show_script_btn");
+	var $scriptRevision = $("#script_revision");
+	var oldRevision = $scriptRevision.attr("old_revision");
+	if (target.val() == target.attr("old_script") && oldRevision != -1) {
+		$showScript.text("R " + oldRevision);
+		$scriptRevision.val(oldRevision);
+	} else {
+		$showScript.text("R HEAD");
+		$scriptRevision.val(-1);
+	}
+	$showScript.show();
+	updateScriptResources(first);
+	if (target.val() != "") {
+		target.valid();
+	}
 }
 
 function showScheduleModal() {

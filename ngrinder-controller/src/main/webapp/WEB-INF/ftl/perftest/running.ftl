@@ -175,7 +175,8 @@
 				record = container.find("tr").get(i);
 			}
 			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
-			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>";
+			var testDescription = statistics[i].testDescription;
+			output = output + "<td class='ellipsis' title='" + testDescription + "'>" + testDescription + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Tests) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
@@ -196,7 +197,8 @@
 				record = container.find("tr").get(i);
 			}
 			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
-			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>";
+			var testDescription = statistics[i].testDescription;
+			output = output + "<td class='ellipsis' title='" + testDescription + "'>" + testDescription + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Tests) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
