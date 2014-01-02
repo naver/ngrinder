@@ -81,7 +81,7 @@ function updateRampupChart() {
 		curX = curX + internalTime;
 		seriesArray.push([curX, curY]);
 
-		for (var step = 1; step <= steps; step++) {
+		for (var step = 1; step <= Math.ceil(steps); step++) {
 			curY = curY + processInc;
 			if (curY > processes) {
 				curY = processes;
