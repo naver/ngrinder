@@ -438,8 +438,7 @@ public class UserController extends BaseController {
 
 		public UserSearchResult(User user) {
 			id = user.getUserId();
-			final String text = user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId();
-			this.text = StringUtils.abbreviate(text, 37) + ")";
+			this.text = user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId() + ")";
 		}
 
 		public String getText() {

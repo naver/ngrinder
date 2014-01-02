@@ -12,7 +12,7 @@ Special Thanks to Karel Piwko and Egoing.
 - New feature and changes
   * Basic web API is supported. A user can call the APIs to clone and start the test using HTTP client such as curl. This is protected by HTTP Basic Auth.
     http://www.cubrid.org/wiki_ngrinder/entry/controller-api
-  * Parameterized test is supported. Each test can get a parameter in the test configuration page and scripts can refer it to control its actions. 
+  * Parameterized test is supported. Each test can get a parameter in the test configuration page and scripts can refer it to control its actions.
     http://www.cubrid.org/wiki_ngrinder/entry/how-to-pass-a-parameter-to-the-script
   * Per-Test statistics are enabled for mean test time and errors as well.
   * Console port is now configurable so that you can use the opened ports if the network firewall doesn't block them.  

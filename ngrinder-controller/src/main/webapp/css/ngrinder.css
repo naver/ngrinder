@@ -212,6 +212,19 @@ img.status {
 .select2-choices {
 	-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;
 }
+
+.select2-search-choice div {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.select2-result-label {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .header-control-label {
 	width: 100px !important;
 }
