@@ -152,7 +152,8 @@
 	</thead>
 	<tbody>
 	<#assign testList = testListPage.content/>
-	<@list list_items=testList colspan="12"; test, test_index>
+	<#if clustered><#assign column=13/><#else><#assign column=12/></#if>
+	<@list list_items=testList colspan="${column}"; test, test_index>
 	<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
 	<#assign deletable = !(test.status.deletable) />
 	<#assign stoppable = !(test.status.stoppable) />
