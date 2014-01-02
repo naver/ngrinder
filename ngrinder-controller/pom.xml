@@ -5,11 +5,10 @@
 	<parent>
 		<groupId>org.ngrinder</groupId>
 		<artifactId>ngrinder</artifactId>
-		<version>3.3-SNAPSHOT</version>
+		<version>3.3</version>
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
-	<version>3.3-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
 		<webappdir>${basedir}/src/main/webapp</webappdir>
