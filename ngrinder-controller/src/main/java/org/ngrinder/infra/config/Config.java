@@ -578,7 +578,11 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 * @return current IP.
 	 */
 	public String getCurrentIP() {
-		return StringUtils.trimToEmpty(getControllerProperties().getProperty(PROP_CONTROLLER_IP));
+		if (cluster) {
+			return StringUtils.trimToEmpty(getClusterProperties().getProperty(PROP_CLUSTER_IP));
+		} else {
+			return StringUtils.trimToEmpty(getControllerProperties().getProperty(PROP_CONTROLLER_IP));
+		}
 	}
 
 
