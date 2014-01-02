@@ -13,14 +13,14 @@
  */
 package org.ngrinder.common.util;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility class for path manipulation.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
- * 
  */
 public abstract class PathUtils {
 
@@ -28,8 +28,8 @@ public abstract class PathUtils {
 
 	/**
 	 * Remove prepended / from the given path.
-	 * 
-	 * @param path	path containing /
+	 *
+	 * @param path path containing /
 	 * @return / removed path
 	 */
 	public static String removePrependedSlash(String path) {
@@ -40,26 +40,36 @@ public abstract class PathUtils {
 	}
 
 	/**
-	 * Join two path.
-	 * 
-	 * @param path1	path1
-	 * @param path2	path2
-	 * 
-	 * @return / removed path
+	 * Join two path without appending '/'.
+	 *
+	 * @param path1 path1
+	 * @param path2 path2
+	 * @return joined path
 	 */
 	public static String join(String path1, String path2) {
-		String path = (path1 + "/" + path2);
-		if (path.startsWith("/")) {
-			return path.substring(1);
-		} else {
-			return path;
+		path1 = trimSeparator(path1);
+		path2 = trimSeparator(path2);
+		return FilenameUtils.normalizeNoEndSeparator(path1 + "/" + path2, true);
+	}
+
+	public static String trimSeparator(String str) {
+		int len = str.length();
+		int st = 0;
+		int off = 0;
+		char[] val = str.toCharArray();
+		while ((st < len) && (val[off + st] == '/')) {
+			st++;
 		}
+		while ((st < len) && (val[off + len - 1] == '/')) {
+			len--;
+		}
+		return ((st > 0) || (len < str.length())) ? str.substring(st, len) : str;
 	}
 
 	/**
 	 * Remove prepended / on the given path.
-	 * 
-	 * @param path	path containing /
+	 *
+	 * @param path path containing /
 	 * @return / removed path
 	 */
 	public static String removeDuplicatedPrependedSlash(String path) {
@@ -71,9 +81,8 @@ public abstract class PathUtils {
 
 	/**
 	 * Get the shorten displayable path from the given path.
-	 * 
-	 * @param path	path
-	 * 
+	 *
+	 * @param path path
 	 * @return shortPath
 	 */
 	public static String getShortPath(String path) {

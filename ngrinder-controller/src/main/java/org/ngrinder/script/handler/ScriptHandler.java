@@ -19,6 +19,7 @@ import freemarker.template.Template;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.FileUtils;
+import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -317,7 +318,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	public FileEntry getDefaultQuickTestFilePath(String basePath) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(basePath + "/script." + getExtension());
+		fileEntry.setPath(PathUtils.join(basePath, "TestRunner." + getExtension()));
 		return fileEntry;
 	}
 }

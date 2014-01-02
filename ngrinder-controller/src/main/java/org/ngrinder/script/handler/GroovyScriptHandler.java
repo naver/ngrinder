@@ -17,6 +17,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
+import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.script.model.FileEntry;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +29,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Groovy {@link ScriptHandler}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -44,12 +45,11 @@ public class GroovyScriptHandler extends ScriptHandler {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param key 			key
-	 * @param extension     extension
-	 * @param title			title
-	 * @param codeMirrorKey	code mirror key
 	 *
+	 * @param key           key
+	 * @param extension     extension
+	 * @param title         title
+	 * @param codeMirrorKey code mirror key
 	 */
 	public GroovyScriptHandler(String key, String extension, String title, String codeMirrorKey) {
 		super(key, extension, title, codeMirrorKey);
@@ -66,7 +66,7 @@ public class GroovyScriptHandler extends ScriptHandler {
 		try {
 			url = new URL("file", "", path);
 			final CompilationUnit unit = new CompilationUnit(CompilerConfiguration.DEFAULT, new CodeSource(url,
-							(java.security.cert.Certificate[]) null), null);
+					(java.security.cert.Certificate[]) null), null);
 			unit.addSource(path, script);
 			unit.compile(Phases.CONVERSION);
 		} catch (MalformedURLException e) {
@@ -81,16 +81,16 @@ public class GroovyScriptHandler extends ScriptHandler {
 	public Integer displayOrder() {
 		return 200;
 	}
-	
+
 	/**
 	 * Get the default quick test file.
-	 * 
-	 * @param basePath	base path
+	 *
+	 * @param basePath base path
 	 * @return quick test file
 	 */
 	public FileEntry getDefaultQuickTestFilePath(String basePath) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(basePath + "/TestRunner." + getExtension());
+		fileEntry.setPath(PathUtils.join(basePath, "TestRunner." + getExtension()));
 		return fileEntry;
 	}
 }
