@@ -62,7 +62,7 @@ public class DBInit {
 		if (config.getControllerProperties().getPropertyBoolean(ControllerConstants
 				.PROP_CONTROLLER_ADMIN_PASSWORD_RESET)) {
 			final User admin = userRepository.findOneByUserId("admin");
-			if (admin != null) {
+			if (admin == null) {
 				createUser("admin", "admin", Role.ADMIN, "admin", "admin@nhn.com");
 			} else {
 				SecuredUser securedUser = new SecuredUser(admin, null);
