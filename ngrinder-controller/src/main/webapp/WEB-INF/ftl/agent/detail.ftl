@@ -32,7 +32,7 @@
 <div class="container">
 	<fieldset>
 		<legend class="header">
-		<@spring.message "agent.info.head"/>
+			<@spring.message "agent.info.head"/>
 			<button class="btn pull-right" onClick="window.history.back();">
 				<@spring.message "common.button.return"/>
 			</button>
@@ -89,10 +89,10 @@
             <input id="refresh_interval" type="text" class="span3" placeholder="number" value="1">
         </div>
         <div class="span9">
-            <h6>CPU</h6>
-            <div class="chart" id="cpu_usage_chart"></div>
-            <h6 style="margin-top:20px">Memory</h6>
-            <div class="chart" id="memory_usage_chart"></div>
+			<h5><@spring.message "agent.info.cpu"/></h5>
+			<div class="chart" id="cpu_usage_chart"></div>
+			<h5><@spring.message "agent.info.memory"/></h5>
+			<div class="chart" id="memory_usage_chart"></div>
         </div>
     </div>
     <!--content-->

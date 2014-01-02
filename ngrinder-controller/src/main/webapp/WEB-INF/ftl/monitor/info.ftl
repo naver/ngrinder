@@ -1,14 +1,12 @@
 <#import "../common/spring.ftl" as spring/>
 <div id="system_chart">
 	<div class="page-header page-header">
-		<h4><@spring.message "agent.info.systemData"/></h4>
+		<h4><@spring.message "monitor.info.header"/></h4>
 		<input type="hidden" id="target_ip" value="${(targetIP)!}">
 	</div>
-	<h6>CPU</h6>
-
+	<h5><@spring.message "monitor.info.cpu"/></h5>
 	<div class="chart" id="cpu_usage_chart"></div>
-	<h6 style="margin-top: 20px">Memory</h6>
-
+	<h5><@spring.message "monitor.info.memory"/></h5>
 	<div class="chart" id="memory_usage_chart"></div>
 </div>
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>

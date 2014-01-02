@@ -61,5 +61,11 @@ public class LocalManagedDnsTest {
 		localDNS.lookupAllHostAddr("www.wowwowwowow11.com");
 	}
 
+	@Test
+	public void testCache() throws UnknownHostException {
+		System.setProperty("ngrinder.etc.hosts", "www.google.com:10.10.10.10,www.google.com:10.10.10.11");
+		NameStore.getInstance().reset();
+		assertThat(localDNS.lookupAllHostAddr("www.naver.com").length, greaterThan(1));
+	}
 
 }

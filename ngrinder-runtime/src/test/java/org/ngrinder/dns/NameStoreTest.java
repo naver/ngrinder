@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * NameStore test class
- * 
+ *
  * @author mavlarn
  * @since 3.0
  */
@@ -64,7 +64,6 @@ public class NameStoreTest {
 		NameStore.getInstance().reset();
 		Set<InetAddress> ips = NameStore.getInstance().get("bbb.com");
 		assertThat(ips, nullValue());
-
 	}
 
 }
