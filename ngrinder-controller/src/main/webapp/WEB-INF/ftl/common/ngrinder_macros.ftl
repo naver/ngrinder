@@ -105,10 +105,10 @@
 		<#nested>
 		<#if name != "">
 			<#if inline_help=="true">
-				<span id="err_${toUnderscore(name)}" class="help-inline" style="${err_style}">
+				<span id="err_${toUnderscore(name)}" class="small-error-box" style="${err_style}">
 				</span>
 			<#else>
-				<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
+				<div id="err_${toUnderscore(name)}" class="small-error-box" style="${err_style}">
 				</div>
 			</#if>
 		</#if>
@@ -135,7 +135,7 @@
 				<span id="err_${toUnderscore(name)}" class="help-inline" style="${err_style}">
 				</span>
 			<#else>
-				<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
+				<div id="err_${toUnderscore(name)}" class="small-error-box" style="${err_style}">
 				</div>
 			</#if>
 		</#if>

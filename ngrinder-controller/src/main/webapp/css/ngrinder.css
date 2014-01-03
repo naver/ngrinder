@@ -295,10 +295,16 @@ legend a {
 	cursor:pointer;
 }
 
-.small_error_box {
+.small-error-box {
 	height: 15px;
-	line-height: 15px;
+	line-height: 12px;
 	margin-bottom:-10px;
-	width:300px
+	width:330px;
+    padding-left: 0px;
+    margin-top: 2px;
 }
 
+.small-error-box span.help-inline {
+    height: 15px;
+    padding-left:0px;
+}

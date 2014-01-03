@@ -27,10 +27,10 @@
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
 
-			<div class="control-group">
-				<div class="row">
+			<div class="row">
 					<div class="span4">
-						<@control_group name="agentCount" label_message_key="perfTest.config.agent">
+						<@control_group name="agentCount" label_message_key="perfTest.config.agent"
+							inline_help="${clustered?string}" err_style="height:20px">
 							<@input_append name="agentCount"
 								value="${test.agentCount}"
 								message="perfTest.config.agent"
@@ -43,7 +43,8 @@
 							<@control_group name="region" label_message_key="perfTest.config.region"
 								label_help_message_key="perfTest.config.region"
 								label_style="margin-left:-50px;width:80px"
-								err_style="margin-left: -150px;width: 180px;">
+								err_style="margin-left: -140px;width: 170px;display:inline-block;margin-top:6px;
+								height:20px">
 								<select id="region" name="region" class="pull-right required" style="width: 110px">
 									<option value=""></option>
 									<#list regions as each>
@@ -56,7 +57,6 @@
 						</#if>
 					</div>
 				</div>
-			</div>
 
 			<@control_group  name="vuserPerAgent" label_message_key="perfTest.config.vuserPerAgent">
 				<@input_append name="vuserPerAgent"
@@ -124,7 +124,8 @@
 			<#assign count_checked><#if test.threshold == "R">checked</#if></#assign>
 
 			<@control_group_with_radio label_message_key="perfTest.config.runCount"
-				input_id="run_count_radio" input_name="threshold" input_value="R" radio_checked="${count_checked}" >
+				input_id="run_count_radio" input_name="threshold" input_value="R" radio_checked="${count_checked}"
+				name="runCount">
 					<@input_append  name="runCount"
 						value="${test.runCount}"
 						message="perfTest.config.runCount"
@@ -132,60 +133,58 @@
 						append_prefix="perfTest.config.max" append="${maxRunCount}" />
 			</@control_group_with_radio>
 
-			<div class="control-group">
-				<div class="row">
-					<div class="span3">
-						<@control_group name="samplingInterval" label_message_key="perfTest.config.samplingInterval">
-							<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
-							<select class="select-item" id="sampling_interval" name="samplingInterval">
-								<#list samplingIntervalArray as eachInterval>
-									<option value="${eachInterval}"
-										<#if test.samplingInterval != 0>
-											<#if eachInterval == test.samplingInterval> selected="selected" </#if>
-										<#else>
-											<#if eachInterval == 2>
-											selected="selected"
-											</#if>
-										</#if> >
-									${eachInterval}
-									</option>
-								</#list>
-							</select>
-						</@control_group>
-					</div>
-					<div class="span3">
-						<@control_group name="ignoreSampleCount" label_message_key="perfTest.config.ignoreSampleCount"
-							label_style="width:150px;margin-left:-20px"
-							err_style="margin-left:-130px"
-							>
-							<@input_popover name="ignoreSampleCount"
-								value="${test.ignoreSampleCount}"
-								message="perfTest.config.ignoreSampleCount"
-								extra_css="input-mini" />
-						</@control_group>
-					</div>
+
+			<div class="row">
+				<div class="span3">
+					<@control_group name="samplingInterval" label_message_key="perfTest.config.samplingInterval">
+						<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
+						<select class="select-item" id="sampling_interval" name="samplingInterval">
+							<#list samplingIntervalArray as eachInterval>
+								<option value="${eachInterval}"
+									<#if test.samplingInterval != 0>
+										<#if eachInterval == test.samplingInterval> selected="selected" </#if>
+									<#else>
+										<#if eachInterval == 2>
+										selected="selected"
+										</#if>
+									</#if> >
+								${eachInterval}
+								</option>
+							</#list>
+						</select>
+					</@control_group>
+				</div>
+				<div class="span3">
+					<@control_group name="ignoreSampleCount" label_message_key="perfTest.config.ignoreSampleCount"
+						label_style="width:150px;margin-left:-20px"
+						err_style="margin-left:-140px"
+						>
+						<@input_popover name="ignoreSampleCount"
+							value="${test.ignoreSampleCount}"
+							message="perfTest.config.ignoreSampleCount"
+							extra_css="input-mini" />
+					</@control_group>
 				</div>
 			</div>
-			<div class="control-group">
-				<div class="row">
-					<div class="span3">
-						<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution"
-							label_help_message_key="perfTest.config.safeDistribution">
-							<input type="checkbox" id="safe_distribution" name="safeDistribution"
-							<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
-						</@control_group>
-					</div>
-					<div class="span3">
-						<@control_group name="param" label_message_key="perfTest.config.param"
-							label_style="width:70px;margin-left:-20px"
-							err_style="margin-left:-80px"
-							controls_style="margin-left:70px">
-							<@input_popover name="param"
-								value="${(test.param?html)}"
-								message="perfTest.config.param"
-								others='style="width:120px"'/>
-						</@control_group>
-					</div>
+
+			<div class="row">
+				<div class="span3">
+					<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution"
+						label_help_message_key="perfTest.config.safeDistribution">
+						<input type="checkbox" id="safe_distribution" name="safeDistribution"
+						<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
+					</@control_group>
+				</div>
+				<div class="span3">
+					<@control_group name="param" label_message_key="perfTest.config.param"
+						label_style="width:70px;margin-left:-20px"
+						err_style="margin-left:-90px"
+						controls_style="margin-left:70px">
+						<@input_popover name="param"
+							value="${(test.param?html)}"
+							message="perfTest.config.param"
+							others='style="width:120px"'/>
+					</@control_group>
 				</div>
 			</div>
 		</div>
@@ -206,13 +205,13 @@
 					<div class="span3">
 						<@input_label name="initProcesses"
 							value="${test.initProcesses}" message="perfTest.config.initialProcesses"
-							err_style="margin-left:-130px; width:230px; height:10px"/>
+							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 
 					<div class="span3">
 						<@input_label name="processIncrement"
 							value="${test.processIncrement}" message="perfTest.config.rampUp"
-							err_style="margin-left:-130px; width:230px; height:10px"/>
+							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 				</div>
 				<div class="row">
@@ -220,13 +219,13 @@
 						<@input_label name="initSleepTime"
 							value="${test.initSleepTime}"
 							message="perfTest.config.initialSleepTime" others="<code>MS</code>"
-							err_style="margin-left:-130px; width:230px; height:10px"/>
+							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 					<div class="span3">
 						<@input_label name="processIncrementInterval"
 							value="${test.processIncrementInterval}"
 							message="perfTest.config.processesEvery" others="<code>MS</code>"
-							err_style="margin-left:-130px; width:230px; height:10px"/>
+							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 				</div>
 			</div>

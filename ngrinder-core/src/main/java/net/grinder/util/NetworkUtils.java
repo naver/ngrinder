@@ -24,6 +24,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -120,17 +121,25 @@ public abstract class NetworkUtils {
 
 
 	public static InetAddress getAddressWithSocket(String byConnecting, int port) {
-		Socket s = null;
-		try {
-			s = new Socket();
-			SocketAddress addr = new InetSocketAddress(byConnecting, port);
-			s.connect(addr, 2000); // 2 seconds timeout
+		Socket s = new Socket();
+		if (tryConnection(byConnecting, port, s)) {
 			return s.getLocalAddress();
-		} catch (Exception e) {
-			return null;
-		} finally {
-			IOUtils.closeQuietly(s);
 		}
+		return null;
+	}
+
+	public static boolean tryConnection(String byConnecting, int port, Socket socket) {
+		if (socket == null) {
+			socket = new Socket();
+		}
+		try {
+			socket.connect(new InetSocketAddress(byConnecting, port), 2000); // 2 seconds timeout
+		} catch (Exception e) {
+			return false;
+		} finally {
+			IOUtils.closeQuietly(socket);
+		}
+		return true;
 	}
 
 	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
