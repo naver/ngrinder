@@ -94,12 +94,6 @@ public class LocalManagedDnsTest {
 		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
 		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
 		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
-		count = 0;
-		try {
-			impl.lookupAllHostAddr("www.google1.com");
-		} catch (Exception e) {
-
-		}
 	}
 
 }
