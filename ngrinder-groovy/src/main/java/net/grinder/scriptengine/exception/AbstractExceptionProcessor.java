@@ -107,7 +107,7 @@ public abstract class AbstractExceptionProcessor {
 	 * @param className	class name including package name
 	 * @return true if application class
 	 */
-	protected boolean isApplicationClass(String className) {
+	public boolean isApplicationClass(String className) {
 		for (String groovyPackage : getUninterestingPackages()) {
 			if (className.startsWith(groovyPackage)) {
 				return false;

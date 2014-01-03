@@ -80,7 +80,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		try {
 			return new GroovyWorkerRunnable(new GrinderContextExecutor(m_groovyClass));
 		} catch (InitializationError e) {
-			throw new EngineException("Exception occurred during initializing runner", e);
+			throw new EngineException("Exception occurred during initializing runner", exceptionProcessor.sanitize(e));
 		}
 	}
 
@@ -92,7 +92,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		try {
 			return new GroovyWorkerRunnable(new GrinderContextExecutor(m_groovyClass, testRunner));
 		} catch (InitializationError e) {
-			throw new EngineException("Exception occurred during initializing runner", e);
+			throw new EngineException("Exception occurred during initializing runner", exceptionProcessor.sanitize(e));
 		}
 	}
 
