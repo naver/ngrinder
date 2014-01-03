@@ -13,14 +13,17 @@
  */
 package org.ngrinder.dns;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.xbill.DNS.Cache;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.RRset;
+import org.xbill.DNS.SetResponse;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * To test the custom DNS, should to add vm arguments as below:
@@ -61,11 +64,42 @@ public class LocalManagedDnsTest {
 		localDNS.lookupAllHostAddr("www.wowwowwowow11.com");
 	}
 
+	public RRset[] result = null;
+	int count = 0;
+
 	@Test
 	public void testCache() throws UnknownHostException {
-		System.setProperty("ngrinder.etc.hosts", "www.google.com:10.10.10.10,www.google.com:10.10.10.11");
-		NameStore.getInstance().reset();
-		assertThat(localDNS.lookupAllHostAddr("www.naver.com").length, greaterThan(1));
+
+		final Cache cache = new Cache() {
+			@Override
+			public SetResponse lookupRecords(Name name, int type, int minCred) {
+				final SetResponse setResponse = super.lookupRecords(name, type, minCred);
+				if (count++ == 0) {
+					assertThat(setResponse.isUnknown(), is(true));
+				} else {
+					assertThat(setResponse.isUnknown(), is(false));
+				}
+				return setResponse;    //To change body of overridden methods use File | Settings | File Templates.
+			}
+
+		};
+		LocalManagedDnsImpl impl = new LocalManagedDnsImpl() {
+			@Override
+			protected Cache createCache() {
+				return cache;
+			}
+		};
+		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
+		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
+		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
+		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
+		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
+		count = 0;
+		try {
+			impl.lookupAllHostAddr("www.google1.com");
+		} catch (Exception e) {
+
+		}
 	}
 
 }

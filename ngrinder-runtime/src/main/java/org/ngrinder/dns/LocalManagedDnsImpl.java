@@ -31,8 +31,12 @@ import java.util.Map;
 public class LocalManagedDnsImpl implements NameService {
 
 	public LocalManagedDnsImpl() {
-		Cache cache = new Cache();
+		Cache cache = createCache();
 		Lookup.setDefaultCache(cache, DClass.IN);
+	}
+
+	protected Cache createCache() {
+		return new Cache();
 	}
 
 	/**
@@ -44,6 +48,7 @@ public class LocalManagedDnsImpl implements NameService {
 	 */
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
 		try {
+
 			final Lookup lookup = new Lookup(name, Type.A);
 			Record[] records = lookup.run();
 			if (records == null) {
