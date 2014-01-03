@@ -14,15 +14,18 @@
 package org.ngrinder.infra.config;
 
 import cubrid.jdbc.driver.CUBRIDDriver;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2ExDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.common.util.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.sql.Driver;
 
 /**
@@ -55,8 +58,12 @@ public enum Database {
 	H2(org.h2.Driver.class, H2ExDialect.class, "jdbc:h2:%s/db/h2", false) {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
-					" is not defined");
+			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."));
+
+			final String databaseURL = databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL);
+			if (databaseURL.startsWith("tcp://")) {
+				format = "jdbc:h2:" + databaseURL;
+			}
 			if (databaseProperties.exist("unit-test")) {
 				format = format + ";DB_CLOSE_ON_EXIT=FALSE";
 			}
