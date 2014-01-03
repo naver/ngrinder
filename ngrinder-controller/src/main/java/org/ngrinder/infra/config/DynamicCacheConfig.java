@@ -117,7 +117,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		NetworkUtils.IPPortPair local = null;
 		for (String ip : getClusterURIs()) {
 			NetworkUtils.IPPortPair ipAndPortPair = NetworkUtils.convertIPAndPortPair(ip, clusterListenerPort);
-			if (ipAndPortPair.isLocalHost()) {
+			if (ipAndPortPair.isLocalHost() && ipAndPortPair.getPort() == clusterListenerPort) {
 				local = ipAndPortPair;
 				continue;
 			}
