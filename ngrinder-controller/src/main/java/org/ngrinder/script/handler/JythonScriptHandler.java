@@ -64,6 +64,6 @@ public class JythonScriptHandler extends ScriptHandler {
 
 	@Override
 	public Integer displayOrder() {
-		return 100;
+		return 300;
 	}
 }
