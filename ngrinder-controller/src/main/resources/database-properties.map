@@ -1,5 +1,5 @@
 database.type,H2,database
 database.url,localhost:33000:ngrinder,database_url
-database.url_option,,database_utl_option
+database.url_option,,database_url_option
 database.username,admin,database_username
 database.password,admin,database_password
