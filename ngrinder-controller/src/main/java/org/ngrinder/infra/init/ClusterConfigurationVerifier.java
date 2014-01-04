@@ -15,6 +15,7 @@ package org.ngrinder.infra.init;
 
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.io.FileUtils;
+import org.ngrinder.common.constant.DatabaseConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
@@ -67,9 +68,11 @@ public class ClusterConfigurationVerifier {
 	 * check if they use CUBRID in cluster mode.
 	 */
 	private void checkDB() {
-		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();
-		if (!config.isDevMode()) {
-			checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and Please use CUBRID !", db);
+		String db = config.getDatabaseProperties().getProperty(DatabaseConstants.PROP_DATABASE_TYPE).toLowerCase();
+		if (!db.equals("cubrid")) {
+			final String dbURL = config.getDatabaseProperties().getProperty(DatabaseConstants.PROP_DATABASE_URL, "");
+			checkState(!dbURL.startsWith("tcp://"), "When cluster mode is enabled, " +
+					"embedded H2 db can not be used. Use cubrid or Use H2 TCP server");
 		}
 	}
 
