@@ -74,7 +74,7 @@
                     <th><@spring.message "agent.info.version"/></th>
                 </tr>
                 <tr>
-                    <td>${(agent.version)!"Prev 3.3"}</td>
+                    <td><#if agent.version?has_content>${agent.version}<#else>Prior to 3.3</#if></td>
                 </tr>
 
                 <tr>

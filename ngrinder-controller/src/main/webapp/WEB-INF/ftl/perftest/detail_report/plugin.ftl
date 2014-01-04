@@ -1,3 +1,4 @@
+<#setting number_format="computer">
 <#import "../../common/spring.ftl" as spring/>
 <div class="page-header">
 	<h4>${plugin?replace("_", " ")} - ${kind}</h4>

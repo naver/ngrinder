@@ -511,16 +511,11 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 			updateStatus(each.id, each.name, each.status_type, each.icon, each.stoppable, each.deletable,
 					each.reportable, each.message);
 		}
-		if (ids.length == 0) {
-			return true;
-		}
 		setTimeout(updateStatuses, 2000);
-		return true;
 	};
 	ajaxObj.error = function () {
 		var springMessage = "0 <@spring.message "perfTest.list.runningSummary"/>";
 		$("#current_running_status").text(springMessage);
-		return true;
 	};
 	ajaxObj.call();
 })();

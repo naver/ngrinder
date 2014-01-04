@@ -1,3 +1,4 @@
+<#setting number_format="computer">
 <#import "../common/spring.ftl" as spring/>
 <div id="system_chart">
 	<div class="page-header page-header">

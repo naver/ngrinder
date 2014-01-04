@@ -1078,11 +1078,11 @@ function getOption(cnt) {
 
 function openRunningDiv(onFinishHook) {
 	$("#running_section").load("${req.getContextPath()}/perftest/${(test.id!0)?c}/running_div",
-			function() {
-				if (onFinishHook !== undefined) {
-					onFinishHook();
-				}
+		function() {
+			if (onFinishHook !== undefined) {
+				onFinishHook();
 			}
+		}
 	);
 }
 

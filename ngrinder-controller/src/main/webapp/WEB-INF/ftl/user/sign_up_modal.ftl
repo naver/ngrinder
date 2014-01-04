@@ -1,3 +1,4 @@
+<#setting number_format="computer">
 <style>
     .modal.fade.in {
         top: 2%;

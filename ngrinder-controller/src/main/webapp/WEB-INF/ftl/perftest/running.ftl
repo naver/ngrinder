@@ -1,3 +1,4 @@
+<#setting number_format="computer">
 <#import "../common/spring.ftl" as spring>
 <#include "../common/ngrinder_macros.ftl">
 <div class="row">
@@ -164,7 +165,7 @@
 	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval});
 
 	var samplingAjax = new AjaxObj("/perftest/{testId}/api/sample");
-	samplingAjax.params = { testId : ${test.id!""} };
+	samplingAjax.params = { testId : ${(test.id!0)?c} };
 
 	function showLastPerTestResult(container, statistics) {
 		var existing = container.find("tr");
@@ -305,7 +306,7 @@
 	$("#stop_test_btn").click(function () {
 		bootbox.confirm("<@spring.message "perfTest.message.stop.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
 			if (result) {
-				stopTests("${test.id!""}");
+				stopTests("${(test.id!0)?c}");
 			}
 		});
 	});

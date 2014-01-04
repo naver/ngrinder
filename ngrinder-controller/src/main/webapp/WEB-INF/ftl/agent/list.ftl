@@ -79,7 +79,7 @@
 			</td>
 			<td id="port_${agent.id}">${(agent.port)!}</td>
 			<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
-			<td class="ellipsis">${(agent.version)!"Prev 3.3"}</td>
+			<td class="ellipsis"><#if agent.version?has_content>${agent.version}<#else>Prior to 3.3</#if></td>
 			<td class="ellipsis" <#if (agent.region)??>title="${(agent.region)!}"</#if> >${(agent.region)!}</td>
 			<td>
 				<div class="btn-group" data-toggle="buttons-radio">
