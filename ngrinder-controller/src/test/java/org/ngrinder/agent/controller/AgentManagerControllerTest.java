@@ -121,14 +121,14 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		// test approve agent
 		model.clear();
-		agentController.approve(agentInDB.getId(), true, "", model);
+		agentController.approve(agentInDB.getId());
 		agentController.getOne(agent.getId(), model);
 		agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.isApproved(), is(true));
 
 		// test un-approve
 		model.clear();
-		agentController.approve(agentInDB.getId(), false, "", model);
+		agentController.disapprove(agentInDB.getId());
 		agentController.getOne(agent.getId(), model);
 		agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.isApproved(), is(false));

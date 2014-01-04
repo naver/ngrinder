@@ -46,11 +46,57 @@
 								<a id="switch_user_menu"
 								   class="pointer-cursor"><@spring.message "navigator.dropDown.switchUser"/></a>
 							</li>
-							<li>
-								<a href="${req.getContextPath()}/monitor/download"><@spring.message "navigator.dropDown.downloadMonitor"/></a>
-							</li>
 						</#if>
 
+						<li class="divider"></li>
+						<@security.authorize ifAnyGranted="A">
+							<#if clustered==true>
+								<li class="dropdown-submenu">
+									<a class="pointer-cursor"><@spring.message "navigator.dropDown.downloadAgent"/></a>
+									<ul class="dropdown-menu">
+										<@list list_items=visibleRegions; region>
+											<li>
+												<a href="${req.getContextPath()}/agent/download?region=${region}"/>
+												<@spring.message code="${region}"/>
+												</a>
+											</li>
+										</@list>
+									</ul>
+								</li>
+							<#else>
+								<li>
+									<a href="${req.getContextPath()}/agent/download">
+										<@spring.message "navigator.dropDown.downloadAgent"/>
+									</a>
+								</li>
+							</#if>
+						</@security.authorize>
+
+						<@security.authorize ifNotGranted="A">
+							<#if clustered==true>
+								<li class="dropdown-submenu">
+									<a class="pointer-cursor"><@spring.message "navigator.dropDown.downloadPrivateAgent"/></a>
+									<ul class="dropdown-menu">
+										<@list list_items=visibleRegions; region>
+											<li>
+												<a href="${req.getContextPath()}/agent/download?region=${region}&owner=${currentUser.userId}"/>
+												<@spring.message code="${region}"/>
+												</a>
+											</li>
+										</@list>
+									</ul>
+								</li>
+							<#else>
+								<li>
+									<a href="${req.getContextPath()}/agent/download?owner=${currentUser.userId}"/>
+									<@spring.message "navigator.dropDown.downloadPrivateAgent"/>
+									</a>
+								</li>
+							</#if>
+						</@security.authorize>
+						<li>
+							<a href="${req.getContextPath()}/monitor/download"><@spring.message "navigator.dropDown.downloadMonitor"/></a>
+						</li>
 						<@security.authorize ifAnyGranted="A">
 							<li class="divider"></li>
 							<li>

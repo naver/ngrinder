@@ -23,6 +23,7 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.event.CacheEventListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ClusterConstants;
+import org.ngrinder.common.util.TypeConvertUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
@@ -37,6 +38,8 @@ import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -148,6 +151,23 @@ public class RegionService {
 				}
 			}
 		}
+		return regions;
+	}
+
+	public ArrayList<String> getAllVisibleRegionNames() {
+		final ArrayList<String> regions = new ArrayList<String>();
+		if (config.isClustered()) {
+			for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeysWithExpiryCheck()) {
+				ValueWrapper valueWrapper = cache.get(eachKey);
+				if (valueWrapper != null && valueWrapper.get() != null) {
+					final RegionInfo region = TypeConvertUtils.cast(valueWrapper.get());
+					if (region.isVisible()) {
+						regions.add((String) eachKey);
+					}
+				}
+			}
+		}
+		Collections.sort(regions);
 		return regions;
 	}
 

@@ -21,6 +21,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
+import org.ngrinder.region.service.RegionService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +75,9 @@ public class BaseController implements WebConstants {
 
 	@Autowired
 	private AnnouncementService announcementService;
+
+	@Autowired
+	private RegionService regionService;
 
 	@PostConstruct
 	void initJSON() {
@@ -156,6 +161,12 @@ public class BaseController implements WebConstants {
 	@ModelAttribute("helpUrl")
 	public String helpUrl() {
 		return config.getHelpUrl();
+	}
+
+
+	@ModelAttribute("visibleRegions")
+	public ArrayList<String> availRegions() {
+		return regionService.getAllVisibleRegionNames();
 	}
 
 	/**

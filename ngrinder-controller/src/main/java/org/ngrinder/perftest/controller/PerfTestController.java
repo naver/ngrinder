@@ -40,6 +40,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
@@ -103,6 +104,9 @@ public class PerfTestController extends BaseController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private RegionService regionService;
 
 	private Gson fileEntryGson;
 
@@ -203,7 +207,7 @@ public class PerfTestController extends BaseController {
 
 		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
+		model.addAttribute(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
 		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
 		return "perftest/detail";
