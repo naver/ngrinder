@@ -82,7 +82,7 @@ public class AgentManagerController extends BaseController {
 			}
 		}));
 		model.addAttribute("region", region);
-		model.addAttribute("regions", regionService.getAll().keySet());
+		model.addAttribute("regions", regionService.getAllVisibleRegionNames());
 		File agentPackage = null;
 		if (isClustered()) {
 			if (StringUtils.isNotBlank(region)) {
@@ -98,24 +98,6 @@ public class AgentManagerController extends BaseController {
 		return "agent/list";
 	}
 
-	/**
-	 * Approve or disapprove an agent, so that it can be assigned.
-	 *
-	 * @param id      agent id to be processed
-	 * @param approve approve or not
-	 * @param region  current region
-	 * @param model   model
-	 * @return agent/agentList
-	 */
-	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
-	public String approve(@PathVariable("id") Long id,
-	                      @RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
-	                      @RequestParam(value = "region", required = false) final String region, ModelMap model) {
-		agentManagerService.approve(id, approve);
-		model.addAttribute("region", region);
-		model.addAttribute("regions", regionService.getAll().keySet());
-		return "agent/list";
-	}
 
 	/**
 	 * Get the agent detail info for the given agent id.
