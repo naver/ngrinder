@@ -64,7 +64,6 @@ public class AgentManagerController extends BaseController {
 	 *
 	 * @param region  the region to search. If null, it returns all the attached
 	 *                agents.
-	 * @param request servlet request
 	 * @param model   model
 	 * @return agent/list
 	 */
