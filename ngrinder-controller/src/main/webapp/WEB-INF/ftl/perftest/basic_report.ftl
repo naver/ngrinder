@@ -85,7 +85,7 @@
 	<div class="span8">
 		<fieldSet>
 			<legend>
-				<@spring.message "perfTest.report.longTestComment"/>
+				<@spring.message "perfTest.report.testComment"/>
 				<a id="leave_comment_btn" class="btn btn-primary pull-right">
 					<@spring.message "perfTest.report.leaveComment"/>
 				</a>

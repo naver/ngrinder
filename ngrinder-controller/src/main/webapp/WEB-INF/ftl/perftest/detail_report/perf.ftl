@@ -19,7 +19,7 @@
 <div class="bigchart" id="tps_chart"></div>
 <h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
 <div class="chart" id="mean_time_chart"></div>
-<h6 id="min_time_first_byte_chart_header"><@spring.message "perfTest.report.header.meantimeToFirstbyte"/>&nbsp;(ms)</h6>
+<h6 id="min_time_first_byte_chart_header"><@spring.message "perfTest.report.header.meantimeToFirstByte"/>&nbsp;(ms)</h6>
 <div class="chart" id="min_time_first_byte_chart"></div>
 <h6 id="user_defined_chart_header"><@spring.message "perfTest.report.header.userDefinedChart"/></h6>
 <div class="chart" id="user_defined_chart"></div>

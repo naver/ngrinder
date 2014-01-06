@@ -175,7 +175,8 @@
 			<div class="ellipsis"
 				 rel="popover"
 				 data-html="true"
-				 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime??><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate??>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"
+				 data-content=
+						 "${((test.description!"")?html)?replace("\n","<br/>")} <p>${test.testComment?html?replace("\n", "<br/>")}</p><#if test.scheduledTime??><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate??>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"
 				 data-title="${test.testName!""}">
 				<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName!""}</a>
 			</div>

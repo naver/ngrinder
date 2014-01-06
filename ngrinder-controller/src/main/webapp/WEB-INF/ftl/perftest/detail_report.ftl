@@ -191,10 +191,18 @@
 					<th><@spring.message "perfTest.report.runtime"/></th>
 					<td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
 				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.testComment"/></th>
-					<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
-				</tr>
+				<#if test.description?has_content>
+					<tr>
+						<th><@spring.message "common.label.description"/></th>
+						<td colspan="3">${(test.description)!?html?replace('\n', '<br>')}</td>
+					</tr>
+				</#if>
+				<#if test.testComment?has_content>
+					<tr>
+						<th><@spring.message "perfTest.report.testComment"/></th>
+						<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
+					</tr>
+				</#if>
 			</table>
 			<div id="detail_panel">
 			</div>
