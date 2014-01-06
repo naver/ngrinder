@@ -293,21 +293,12 @@ public class UserController extends BaseController {
 	 * @param model model
 	 */
 	protected void attachCommonAttribute(User user, ModelMap model) {
-		List<User> shareUsers = Lists.newArrayList();
-		String userId = user.getUserId();
-		for (User u : userService.getAll(Role.USER)) {
-			if (u.getUserId().equals(userId)) {
-				continue;
-			}
-			shareUsers.add(u.getUserBaseInfo());
-		}
 		List list = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
 		model.addAttribute("followers", Lists.transform(list, new Function<User, UserSearchResult>() {
 			public UserSearchResult apply(User user) {
 				return new UserSearchResult(user);
 			}
 		}));
-		model.addAttribute("shareUsers", shareUsers);
 		model.addAttribute("allowShareChange", true);
 		model.addAttribute("userSecurityEnabled", config.isUserSecurityEnabled());
 		model.addAttribute("showPasswordByDefault", false);
