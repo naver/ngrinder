@@ -53,10 +53,11 @@ public class MonitorClientServiceTest extends AbstractAgentReadyTest {
 		MonitorClientService client = new MonitorClientService("127.0.0.1", 13243);
 		client.init();
 		final SystemInfo monitorData = client.getSystemInfo();
-		assertThat(monitorData.isParsed(), is(true));
+		assertThat(monitorData.isParsed(), is(false));
 		sleep(3000);
 		client.update();
 		SystemInfo monitorData2 = client.getSystemInfo();
+		assertThat(monitorData2.isParsed(), is(true));
 		assertThat(monitorData2, Matchers.notNullValue());
 		assertThat(monitorData, not(monitorData2));
 

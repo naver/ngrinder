@@ -58,6 +58,7 @@ public class MonitorInfoStore implements Runnable {
 			monitorClient.init();
 			IOUtils.closeQuietly(monitorClientMap.put(ip, monitorClient));
 		}
+		monitorClient.update();
 		monitorClient.setLastAccessedTime(System.currentTimeMillis());
 		return monitorClient.getSystemInfo();
 	}

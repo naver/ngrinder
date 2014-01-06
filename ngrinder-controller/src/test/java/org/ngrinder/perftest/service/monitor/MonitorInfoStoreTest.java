@@ -17,6 +17,7 @@ package org.ngrinder.perftest.service.monitor;
 import org.junit.Test;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.AbstractAgentReadyTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -25,13 +26,15 @@ import static org.junit.Assert.assertThat;
 
 public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
 
+	@Autowired
+	MonitorInfoStore monitorInfoStore;
+
 	@Test
 	public void testMonitorInfoRetrieval() {
 		String ip = "127.0.0.1";
-		MonitorInfoStore monitorStore = applicationContext.getBean(MonitorInfoStore.class);
-		SystemInfo systemInfo = monitorStore.getSystemInfo(ip, 13243);
+		SystemInfo systemInfo = monitorInfoStore.getSystemInfo(ip, 13243);
 		assertThat(systemInfo, not(nullValue()));
 		assertThat(systemInfo.getFreeMemory(), not(0L));
-		monitorStore.close(ip);
+		monitorInfoStore.close(ip);
 	}
 }
