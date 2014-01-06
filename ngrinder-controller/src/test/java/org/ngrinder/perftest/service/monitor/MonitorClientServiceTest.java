@@ -24,6 +24,7 @@ import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -49,12 +50,13 @@ public class MonitorClientServiceTest extends AbstractAgentReadyTest {
 
 	@Test
 	public void testMonitorClient() throws IOException {
-		MonitorClientService client = new MonitorClientService();
-		client.init("127.0.0.1", 13243, tempReport, null);
-		final SystemInfo monitorData = client.getMonitorData();
-		assertThat(monitorData, Matchers.notNullValue());
+		MonitorClientService client = new MonitorClientService("127.0.0.1", 13243);
+		client.init();
+		final SystemInfo monitorData = client.getSystemInfo();
+		assertThat(monitorData.isParsed(), is(true));
 		sleep(3000);
-		SystemInfo monitorData2 = client.getMonitorData();
+		client.update();
+		SystemInfo monitorData2 = client.getSystemInfo();
 		assertThat(monitorData2, Matchers.notNullValue());
 		assertThat(monitorData, not(monitorData2));
 

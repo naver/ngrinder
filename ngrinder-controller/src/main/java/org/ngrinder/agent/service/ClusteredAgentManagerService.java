@@ -137,7 +137,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			String keyOfAgentInDB = createAgentKey(eachAgentInDB);
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
-
 			if (agentIdentity != null) {
 				// if the agent attached to current controller
 				if (!hasSamePortAndState(eachAgentInDB, agentIdentity)) {
@@ -148,10 +147,12 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					eachAgentInDB.setState(WRONG_REGION);
 					eachAgentInDB.setApproved(false);
 					changeAgents.add(eachAgentInDB);
+				} else if (!StringUtils.equals(eachAgentInDB.getVersion(), getAgentManager().getAgentVersion
+						(agentIdentity))) {
+					fillUp(eachAgentInDB, agentIdentity);
+					changeAgents.add(eachAgentInDB);
 				}
-
 			} else { // the agent in DB is not attached to current controller
-
 				if (eachAgentInDB.getState() != INACTIVE) {
 					eachAgentInDB.setState(INACTIVE);
 					changeAgents.add(eachAgentInDB);

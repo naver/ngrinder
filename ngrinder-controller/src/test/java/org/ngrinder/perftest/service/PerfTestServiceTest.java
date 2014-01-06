@@ -203,14 +203,14 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
 		tempRepo.mkdir();
 		tempRepo.deleteOnExit();
-		MonitorClientService client = new MonitorClientService();
-		client.init("127.0.0.1", 13243, tempRepo, null);
-
+		MonitorClientService client = new MonitorClientService("127.0.0.1", 13243);
+		client.init();
 		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
 
 		Random random = new Random();
 		for (int i = 0; i < 80; i++) {
-			SystemInfo info = client.getMonitorData();
+			client.update();
+			SystemInfo info = client.getSystemInfo();
 			if (info == null) {
 				return;
 			}
