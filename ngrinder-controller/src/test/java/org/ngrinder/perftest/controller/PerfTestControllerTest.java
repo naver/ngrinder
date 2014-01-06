@@ -169,8 +169,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		newTest.setIgnoreSampleCount(test.getIgnoreSampleCount());
 		newTest.setTargetHosts(test.getTargetHosts());
 		newTest.setScriptName(test.getScriptName());
-		newTest.setProcesses(1);
-		newTest.setThreads(1);
+		newTest.setProcesses(2);
+		newTest.setThreads(2);
+		newTest.setVuserPerAgent(newTest.getProcesses() * newTest.getThreads());
 		newTest.setRegion(config.getRegion());
 		newTest.setAgentCount(1);
 

@@ -147,10 +147,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					eachAgentInDB.setState(WRONG_REGION);
 					eachAgentInDB.setApproved(false);
 					changeAgents.add(eachAgentInDB);
-				} else if (!StringUtils.equals(eachAgentInDB.getVersion(), getAgentManager().getAgentVersion
-						(agentIdentity))) {
-					fillUp(eachAgentInDB, agentIdentity);
-					changeAgents.add(eachAgentInDB);
 				}
 			} else { // the agent in DB is not attached to current controller
 				if (eachAgentInDB.getState() != INACTIVE) {
