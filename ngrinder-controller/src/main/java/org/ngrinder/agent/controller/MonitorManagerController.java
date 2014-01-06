@@ -38,7 +38,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 @Controller
 @RequestMapping("/monitor")
 public class MonitorManagerController extends BaseController {
-
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
@@ -50,6 +49,7 @@ public class MonitorManagerController extends BaseController {
 	 * @return monitor/info
 	 */
 	@RequestMapping("/info")
+
 	public String getMonitor(ModelMap model, @RequestParam String ip) {
 		String[] addresses = StringUtils.split(ip, ":");
 		if (addresses.length > 0) {
@@ -81,7 +81,7 @@ public class MonitorManagerController extends BaseController {
 	/**
 	 * Close the monitor JXM connection to the given target.
 	 *
-	 * @param ip    target host IP
+	 * @param ip target host IP
 	 * @return success if succeeded.
 	 */
 	@RequestMapping("/close")

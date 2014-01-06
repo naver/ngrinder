@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 /**
  * Monitor Task Test
  */
-public class MonitorScheduledTaskTest extends AbstractAgentReadyTest implements AgentConstants {
+public class MonitorCollectorPluginTest extends AbstractAgentReadyTest implements AgentConstants {
 	public static final int DEFAULT_MONITOR_PORT = 13243;
 	private File tempReport;
 

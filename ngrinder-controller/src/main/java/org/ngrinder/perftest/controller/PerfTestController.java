@@ -312,42 +312,60 @@ public class PerfTestController extends BaseController {
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping(value = "/new", method = RequestMethod.POST)
-	public String saveOne(User user, ModelMap model, PerfTest test,
+	public String saveOne(User user, ModelMap model, PerfTest perfTest,
 	                      @RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
 
-		test.setTestName(StringUtils.trimToEmpty(test.getTestName()));
-		checkNotEmpty(test.getTestName(), "test name should be provided");
-		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
-				"save test only support for SAVE or READY status");
-		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
-				"test run count should be equal to or less than %s", agentManager.getMaxRunCount());
-		checkArgument(test.getDuration() == null
-				|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
-				"test run duration should be equal to or less than %s", agentManager.getMaxRunHour());
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
-		checkNotNull(agentCountObj, "test region should be within current region list");
-		int agentMaxCount = agentCountObj.intValue();
-		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
-				agentMaxCount);
-		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"Test vuser should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
-		if (getConfig().isSecurityEnabled()) {
-			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
-					"Test target hosts should be provided when security mode is enabled");
-		}
-		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
-		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
+		validate(user, null, perfTest);
 		// Point to the head revision
-		test.setScriptRevision(-1L);
-		test.prepare(isClone);
-		test = perfTestService.save(user, test);
+		perfTest.setTestName(StringUtils.trimToEmpty(perfTest.getTestName()));
+		perfTest.setScriptRevision(-1L);
+		perfTest.prepare(isClone);
+		perfTest = perfTestService.save(user, perfTest);
 		model.clear();
-		if (test.getStatus() == Status.SAVED || test.getScheduledTime() != null) {
+		if (perfTest.getStatus() == Status.SAVED || perfTest.getScheduledTime() != null) {
 			return "redirect:/perftest/list";
 		} else {
-			return "redirect:/perftest/" + test.getId();
+			return "redirect:/perftest/" + perfTest.getId();
 		}
+	}
+
+	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
+		if (oldOne == null) {
+			oldOne = new PerfTest();
+			oldOne.init();
+		}
+		newOne = oldOne.merge(newOne);
+		checkNotEmpty(newOne.getTestName(), "testName should be provided");
+		checkArgument(newOne.getStatus().equals(Status.READY) || newOne.getStatus().equals(Status.SAVED),
+				"SAVE or READY status is required.");
+		if (newOne.isThresholdRunCount()) {
+			final Integer runCount = newOne.getRunCount();
+			checkArgument(runCount > 0 && runCount <= agentManager
+					.getMaxRunCount(),
+					"runCount should be equal to or less than %s", agentManager.getMaxRunCount());
+		} else {
+			final Long duration = newOne.getDuration();
+			checkArgument(duration > 0 && duration <= (((long) agentManager.getMaxRunHour()) *
+					3600000L),
+					"duration should be equal to or less than %s", agentManager.getMaxRunHour());
+		}
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		MutableInt agentCountObj = agentCountMap.get(isClustered() ? newOne.getRegion() : Config.NONE_REGION);
+		checkNotNull(agentCountObj, "region should be within current region list");
+		int agentMaxCount = agentCountObj.intValue();
+		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
+				agentMaxCount);
+		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+				"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
+		if (getConfig().isSecurityEnabled()) {
+			checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
+					"targetHosts should be provided when security mode is enabled");
+		}
+		if (newOne.getStatus() != Status.SAVED) {
+			checkArgument(StringUtils.isNotBlank(newOne.getScriptName()), "scriptName should be provided.");
+		}
+		checkArgument(newOne.getVuserPerAgent() == newOne.getProcesses() * newOne.getThreads(),
+				"vsuerPerAgent should be equal to (processes * threads)");
 	}
 
 	/**
@@ -648,7 +666,7 @@ public class PerfTestController extends BaseController {
 			return perfTest;
 		}
 		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
-			throw processException("User " + user.getUserId() + " has no right on PerfTest ");
+			throw processException("User " + user.getUserId() + " has no right on PerfTest " + id);
 		}
 		return perfTest;
 	}
@@ -673,7 +691,10 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/status")
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
+		List<PerfTest> perfTests = newArrayList();
+		if (StringUtils.isNotBlank(ids)) {
+			perfTestService.getAll(user, convertString2Long(ids));
+		}
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getStatus(perfTests)));
 	}
@@ -849,9 +870,10 @@ public class PerfTestController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
-	public HttpEntity<String> create(User user, PerfTest perftest) {
-		checkNull(perftest.getId(), "id should be null");
-		PerfTest savePerfTest = perfTestService.save(user, perftest);
+	public HttpEntity<String> create(User user, PerfTest perfTest) {
+		checkNull(perfTest.getId(), "id should be null");
+		validate(user, null, perfTest);
+		PerfTest savePerfTest = perfTestService.save(user, perfTest);
 		return toJsonHttpEntity(savePerfTest);
 	}
 
@@ -883,7 +905,9 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.PUT)
 	public HttpEntity<String> update(User user, @PathVariable("id") Long id, PerfTest perfTest) {
+		PerfTest existingPerfTest = getOneWithPermissionCheck(user, id, false);
 		perfTest.setId(id);
+		validate(user, existingPerfTest, perfTest);
 		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
 

@@ -29,18 +29,14 @@ import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
-import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
-import org.ngrinder.perftest.service.monitor.MonitorScheduledTask;
 import org.ngrinder.perftest.service.samplinglistener.*;
 import org.ngrinder.script.handler.ScriptHandler;
-import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -49,7 +45,6 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
@@ -77,9 +72,6 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	@Autowired
 	private ScheduledTaskService scheduledTaskService;
-
-	@Autowired
-	private CacheManager cacheManager;
 
 	@Autowired
 	private ConsoleManager consoleManager;
@@ -325,52 +317,20 @@ public class PerfTestRunnable implements ControllerConstants {
 	}
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
-		singleConsole.addSamplingLifeCycleFollowUpCycleListener(createMonitorCollectionListener(perfTest, singleConsole));
 		// Add SamplingLifeCycleListener
 		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
 				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
 				perfTestService, scheduledTaskService));
-		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
+		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
+				(OnTestSamplingRunnable.class, new MonitorCollectorPlugin(config, scheduledTaskService,
+						perfTestService, perfTest.getId()));
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
 				agentManager, scheduledTaskService));
 	}
 
-	private MonitorCollectorListener createMonitorCollectionListener(PerfTest perfTest,
-	                                                                 SingleConsole singleConsole) {
-		final MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
-		monitorScheduledTask.setCorrespondingPerfTestId(perfTest.getId());
-		final File reportPath = singleConsole.getReportPath();
-		for (final AgentInfo each : createMonitorTargets(perfTest)) {
-			// To speed up, make the monitor connection in the async way.
-			scheduledTaskService.runAsync(new Runnable() {
-				@Override
-				public void run() {
-					monitorScheduledTask.add(each, reportPath);
-				}
-			});
-		}
-		return new MonitorCollectorListener(monitorScheduledTask, scheduledTaskService, perfTest.getSamplingInterval());
-	}
-
-	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {
-		final Set<AgentInfo> agents = Sets.newHashSet();
-		Set<String> ipSet = Sets.newHashSet();
-		List<String> targetIPList = perfTest.getTargetHostIP();
-		for (String targetIP : targetIPList) {
-			if (ipSet.contains(targetIP)) {
-				continue;
-			}
-			AgentInfo targetServer = new AgentInfo();
-			targetServer.setIp(targetIP);
-			targetServer.setPort(config.getMonitorPort());
-			agents.add(targetServer);
-			ipSet.add(targetIP);
-		}
-		return agents;
-	}
 
 	/**
 	 * Notify test finish to plugins.
