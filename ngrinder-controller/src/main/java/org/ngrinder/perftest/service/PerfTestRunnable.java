@@ -297,8 +297,6 @@ public class PerfTestRunnable implements ControllerConstants {
 			run.start(perfTest, perfTestService, config.getVersion());
 		}
 
-		addSamplingListeners(perfTest, singleConsole);
-
 		// Run test
 		perfTestService.markStatusAndProgress(perfTest, START_TESTING, "The test is ready to start.");
 		// Add listener to detect abnormal condition and mark the perfTest
@@ -311,6 +309,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		});
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
+		addSamplingListeners(perfTest, singleConsole);
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
 		singleConsole.startSampling();
 

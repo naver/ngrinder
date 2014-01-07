@@ -16,6 +16,7 @@ package org.ngrinder.service;
 import java.io.File;
 import java.util.List;
 
+import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.statistics.StatisticsIndexMap;
 
@@ -93,4 +94,12 @@ public interface ISingleConsole {
 	 * @return console port
 	 */
 	public abstract int getConsolePort();
+
+
+	/**
+	 * Get the associated grinder properties.
+	 *
+	 * @return grinder properties. null if the test is not started.
+	 */
+	public abstract GrinderProperties getGrinderProperties();
 }

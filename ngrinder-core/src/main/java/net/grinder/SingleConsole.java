@@ -100,6 +100,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private Map<String, Object> statisticData;
 
 	private boolean headerAdded = false;
+	private GrinderProperties properties;
 
 	private Map<String, BufferedWriter> fileWriterMap = newHashMap();
 	/**
@@ -284,6 +285,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	public long startTest(GrinderProperties properties) {
 		properties.setInt(GrinderProperties.CONSOLE_PORT, getConsolePort());
 		getConsoleComponent(ProcessControl.class).startWorkerProcesses(properties);
+		this.properties = properties;
 		this.startTime = System.currentTimeMillis();
 		return this.startTime;
 	}
@@ -1231,6 +1233,15 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				}
 			}
 		});
+	}
+
+	/**
+	 * Get the associated grinder properties to run this console.
+	 *
+	 * @return properties. null if the test is not started.
+	 */
+	public GrinderProperties getGrinderProperties() {
+		return properties;
 	}
 
 	/**
