@@ -23,6 +23,7 @@ import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
@@ -329,6 +330,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 	protected AgentInfo fillUp(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
+		if (agentInfo.getApproved() == null) {
+			final boolean approved = config.getControllerProperties().getPropertyBoolean(ControllerConstants
+					.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+			agentInfo.setApproved(approved);
+		}
 		if (agentIdentity != null) {
 			agentInfo.setAgentIdentity(agentIdentity);
 			agentInfo.setName(agentIdentity.getName());
@@ -338,6 +344,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 			agentInfo.setState(agentManager.getAgentState(agentIdentity));
 			agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
+
 		}
 		return agentInfo;
 	}

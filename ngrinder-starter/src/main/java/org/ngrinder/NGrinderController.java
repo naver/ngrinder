@@ -38,10 +38,8 @@ public class NGrinderController {
 	}
 
 	private void run() {
-
 		Server server = new Server();
 		SocketConnector connector = new SocketConnector();
-
 		// Set some timeout options to make debugging easier.
 		connector.setMaxIdleTime(1000 * 60 * 60);
 		connector.setSoLingerTime(-1);
@@ -62,12 +60,12 @@ public class NGrinderController {
 		server.setHandler(context);
 		try {
 			server.start();
-			System.in.read();
+			while (System.in.read() != 'q') ;
 			server.stop();
 			server.join();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(100);
+			System.exit(-1);
 		}
 	}
 

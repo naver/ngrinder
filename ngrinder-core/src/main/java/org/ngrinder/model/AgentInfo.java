@@ -26,7 +26,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * Agent model.
- * 
+ *
  * @author Tobi
  * @author JunHo Yoon
  * @since 3.0
@@ -40,7 +40,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 */
 	private static final long serialVersionUID = 677610999461391813L;
 
-	/** Agent IP. */
+	/**
+	 * Agent IP.
+	 */
 	@Expose
 	private String ip;
 
@@ -159,9 +161,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	/**
 	 * Get host name.
-	 * 
-	 * @deprecated use {@link #getName()} instead.
+	 *
 	 * @return host name
+	 * @deprecated use {@link #getName()} instead.
 	 */
 	public String getHostName() {
 		return hostName;
@@ -169,9 +171,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	/**
 	 * Set host name.
-	 * 
-	 * @param hostName
-	 *            host name
+	 *
+	 * @param hostName host name
 	 * @deprecated use {@link #setName(String)} instead
 	 */
 	public void setHostName(String hostName) {
@@ -184,9 +185,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	/**
 	 * Set name.
-	 * 
-	 * @param name
-	 *            name
+	 *
+	 * @param name name
 	 */
 	public void setName(String name) {
 		setHostName(name);
@@ -201,16 +201,20 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	public boolean isApproved() {
+		return approved == null ? false : approved;
+	}
+
+	public Boolean getApproved() {
 		return approved;
 	}
 
-	public void setApproved(boolean approved) {
+	public void setApproved(Boolean approved) {
 		this.approved = approved;
 	}
 
 	/**
-	 * @deprecated unused now.
 	 * @return the number
+	 * @deprecated unused now.
 	 */
 	public Integer getNumber() {
 		return number;
