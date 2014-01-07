@@ -1,3 +1,4 @@
+<#setting number_format="computer">
 <#import "../common/spring.ftl" as spring/>
 <#include "../common/ngrinder_macros.ftl">
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
