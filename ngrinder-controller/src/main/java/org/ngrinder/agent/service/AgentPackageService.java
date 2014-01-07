@@ -11,12 +11,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -45,12 +48,43 @@ public class AgentPackageService {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private ScheduledTaskService scheduledTaskService;
+
+	@PostConstruct
+	public void init() {
+		// clean up package directories not to occupy too much spaces.
+		cleanUpPackageDir(true);
+		scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				cleanUpPackageDir(false);
+			}
+		}, 1000 * 60 * 60 * 24);
+	}
+
+	private void cleanUpPackageDir(boolean all) {
+		synchronized (this) {
+			final File packagesDir = getPackagesDir();
+			for (File each : packagesDir.listFiles()) {
+
+				if (!each.isDirectory()) {
+					if (all || (each.lastModified() + (1000 * 60 * 60 * 24 * 2) < System
+							.currentTimeMillis())) {
+						FileUtils.deleteQuietly(each);
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Get package name
 	 *
 	 * @param moduleName nGrinder module name.
 	 * @return String module full name.
 	 */
+
 	public String getPackageName(String moduleName) {
 		return moduleName + "-" + config.getVersion();
 	}
@@ -110,55 +144,57 @@ public class AgentPackageService {
 		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), connectionIP, region, owner);
 	}
 
-	public synchronized File createMonitorPackage() {
-		File monitorPackagesDir = getPackagesDir();
-		if (monitorPackagesDir.mkdirs()) {
-			LOGGER.info("{} is created", monitorPackagesDir.getPath());
-		}
-		final String packageName = getDistributionPackageName("ngrinder-monitor", "", "", "", false);
-		File monitorPackage = new File(monitorPackagesDir, packageName);
-		if (monitorPackage.exists()) {
+	public File createMonitorPackage() {
+		synchronized (AgentPackageService.this) {
+			File monitorPackagesDir = getPackagesDir();
+			if (monitorPackagesDir.mkdirs()) {
+				LOGGER.info("{} is created", monitorPackagesDir.getPath());
+			}
+			final String packageName = getDistributionPackageName("ngrinder-monitor", "", "", "", false);
+			File monitorPackage = new File(monitorPackagesDir, packageName);
+			if (monitorPackage.exists()) {
+				return monitorPackage;
+			}
+			FileUtils.deleteQuietly(monitorPackage);
+			final String basePath = "ngrinder-monitor/";
+			final String libPath = basePath + "lib/";
+			TarArchiveOutputStream tarOutputStream = null;
+			try {
+				tarOutputStream = createTarArchiveStream(monitorPackage);
+				addFolderToTar(tarOutputStream, basePath);
+				addFolderToTar(tarOutputStream, libPath);
+				final URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
+				Set<String> libs = getDependentLibs(classLoader);
+
+				for (URL eachUrl : classLoader.getURLs()) {
+					File eachClassPath = new File(eachUrl.getFile());
+					if (!isJar(eachClassPath)) {
+						continue;
+					}
+					if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
+						processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
+							@Override
+							public boolean evaluate(Object object) {
+								ZipEntry zipEntry = (ZipEntry) object;
+								final String name = zipEntry.getName();
+								return name.contains("monitor") && (zipEntry.getName().endsWith("sh") ||
+										zipEntry.getName().endsWith("bat"));
+							}
+						}, basePath, EXEC));
+					} else if (isAgentDependentLib(eachClassPath, libs)) {
+						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
+					}
+				}
+				addMonitorConfToTar(tarOutputStream, basePath, config.getControllerProperties().getPropertyInt
+						(ControllerConstants.PROP_CONTROLLER_MONITOR_PORT));
+
+			} catch (IOException e) {
+				LOGGER.error("Error while generating an monitor package" + e.getMessage());
+			} finally {
+				IOUtils.closeQuietly(tarOutputStream);
+			}
 			return monitorPackage;
 		}
-		FileUtils.deleteQuietly(monitorPackage);
-		final String basePath = "ngrinder-monitor/";
-		final String libPath = basePath + "lib/";
-		TarArchiveOutputStream tarOutputStream = null;
-		try {
-			tarOutputStream = createTarArchiveStream(monitorPackage);
-			addFolderToTar(tarOutputStream, basePath);
-			addFolderToTar(tarOutputStream, libPath);
-			final URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
-			Set<String> libs = getDependentLibs(classLoader);
-
-			for (URL eachUrl : classLoader.getURLs()) {
-				File eachClassPath = new File(eachUrl.getFile());
-				if (!isJar(eachClassPath)) {
-					continue;
-				}
-				if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
-					processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
-						@Override
-						public boolean evaluate(Object object) {
-							ZipEntry zipEntry = (ZipEntry) object;
-							final String name = zipEntry.getName();
-							return name.contains("monitor") && (zipEntry.getName().endsWith("sh") ||
-									zipEntry.getName().endsWith("bat"));
-						}
-					}, basePath, EXEC));
-				} else if (isAgentDependentLib(eachClassPath, libs)) {
-					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
-				}
-			}
-			addMonitorConfToTar(tarOutputStream, basePath, config.getControllerProperties().getPropertyInt
-					(ControllerConstants.PROP_CONTROLLER_MONITOR_PORT));
-
-		} catch (IOException e) {
-			LOGGER.error("Error while generating an monitor package" + e.getMessage());
-		} finally {
-			IOUtils.closeQuietly(tarOutputStream);
-		}
-		return monitorPackage;
 	}
 
 	/**
@@ -172,51 +208,54 @@ public class AgentPackageService {
 	 */
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
 	                                     String owner) {
-		File agentPackagesDir = getPackagesDir();
-		if (agentPackagesDir.mkdirs()) {
-			LOGGER.info("{} is created", agentPackagesDir.getPath());
-		}
-		final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
-		File agentTar = new File(agentPackagesDir, packageName);
-		if (agentTar.exists()) {
+
+		synchronized (AgentPackageService.this) {
+			File agentPackagesDir = getPackagesDir();
+			if (agentPackagesDir.mkdirs()) {
+				LOGGER.info("{} is created", agentPackagesDir.getPath());
+			}
+			final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
+			File agentTar = new File(agentPackagesDir, packageName);
+			if (agentTar.exists()) {
+				return agentTar;
+			}
+			FileUtils.deleteQuietly(agentTar);
+			final String basePath = "ngrinder-agent/";
+			final String libPath = basePath + "lib/";
+			TarArchiveOutputStream tarOutputStream = null;
+			try {
+				tarOutputStream = createTarArchiveStream(agentTar);
+				addFolderToTar(tarOutputStream, basePath);
+				addFolderToTar(tarOutputStream, libPath);
+				Set<String> libs = getDependentLibs(classLoader);
+
+				for (URL eachUrl : classLoader.getURLs()) {
+					File eachClassPath = new File(eachUrl.getFile());
+					if (!isJar(eachClassPath)) {
+						continue;
+					}
+					if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
+						processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
+							@Override
+							public boolean evaluate(Object object) {
+								ZipEntry zipEntry = (ZipEntry) object;
+								final String name = zipEntry.getName();
+								return name.contains("agent") && (zipEntry.getName().endsWith("sh") ||
+										zipEntry.getName().endsWith("bat"));
+							}
+						}, basePath, EXEC));
+					} else if (isAgentDependentLib(eachClassPath, libs)) {
+						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
+					}
+				}
+				addAgentConfToTar(tarOutputStream, basePath, connectionIP, region, owner);
+			} catch (IOException e) {
+				LOGGER.error("Error while generating an agent package" + e.getMessage());
+			} finally {
+				IOUtils.closeQuietly(tarOutputStream);
+			}
 			return agentTar;
 		}
-		FileUtils.deleteQuietly(agentTar);
-		final String basePath = "ngrinder-agent/";
-		final String libPath = basePath + "lib/";
-		TarArchiveOutputStream tarOutputStream = null;
-		try {
-			tarOutputStream = createTarArchiveStream(agentTar);
-			addFolderToTar(tarOutputStream, basePath);
-			addFolderToTar(tarOutputStream, libPath);
-			Set<String> libs = getDependentLibs(classLoader);
-
-			for (URL eachUrl : classLoader.getURLs()) {
-				File eachClassPath = new File(eachUrl.getFile());
-				if (!isJar(eachClassPath)) {
-					continue;
-				}
-				if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
-					processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
-						@Override
-						public boolean evaluate(Object object) {
-							ZipEntry zipEntry = (ZipEntry) object;
-							final String name = zipEntry.getName();
-							return name.contains("agent") && (zipEntry.getName().endsWith("sh") ||
-									zipEntry.getName().endsWith("bat"));
-						}
-					}, basePath, EXEC));
-				} else if (isAgentDependentLib(eachClassPath, libs)) {
-					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
-				}
-			}
-			addAgentConfToTar(tarOutputStream, basePath, connectionIP, region, owner);
-		} catch (IOException e) {
-			LOGGER.error("Error while generating an agent package" + e.getMessage());
-		} finally {
-			IOUtils.closeQuietly(tarOutputStream);
-		}
-		return agentTar;
 	}
 
 	private TarArchiveOutputStream createTarArchiveStream(File agentTar) throws IOException {
