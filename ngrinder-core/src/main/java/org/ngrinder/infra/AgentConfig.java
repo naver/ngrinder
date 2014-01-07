@@ -90,8 +90,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		InputStream inputStream = null;
 		Properties properties = new Properties();
 		try {
-			final InputStream resourceAsStream = AgentConfig.class.getResourceAsStream("/internal.properties");
-			inputStream = resourceAsStream;
+			inputStream = AgentConfig.class.getResourceAsStream("/internal.properties");
 			properties.load(inputStream);
 			internalProperties = new PropertiesWrapper(properties, internalPropertyMapper);
 		} catch (IOException e) {
@@ -119,17 +118,20 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
 		final File agentConfig = home.getFile("agent.conf");
+		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
 		if (agentConfig.exists()) {
+			if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig.lastModified()) {
+				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
+				LOGGER.warn("If you want to use the recent agent configuration provided from the controller.");
+				LOGGER.warn("Please delete the existing file and run the agent again");
+			}
 			return;
 		}
-		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
 		if (newAgentConfig.exists()) {
 			home.copyFileTo(newAgentConfig, "agent.conf");
 		} else {
-			String agentConfString = "";
 			try {
-				agentConfString = loadResource("/agent.conf");
-				home.writeFileTo(agentConfString, "agent.conf");
+				home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
 			} catch (IOException e) {
 				throw processException(e);
 			}
@@ -227,7 +229,9 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		printLog("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
 		File homeDirectory = new File(userHome);
 		try {
-			homeDirectory.mkdirs();
+			if (homeDirectory.mkdirs()) {
+				noOp();
+			}
 			if (!homeDirectory.canWrite()) {
 				throw processException("home directory " + userHome + " is not writable.");
 			}
