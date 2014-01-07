@@ -195,8 +195,12 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			if (agentIdentity != null) {
 				// Is Same Region
 				if (isCurrentRegion(agentIdentity)) {
-					((ClusteredAgentManagerService) (AopContext.currentProxy())).updateSystemStat
-							(agentIdentity);
+					try {
+						((ClusteredAgentManagerService) (AopContext.currentProxy())).updateSystemStat
+								(agentIdentity);
+					} catch (IllegalStateException e) {
+						LOGGER.error("error while update system stat.");
+					}
 				}
 			}
 		}
