@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -66,12 +65,15 @@ public class AgentPackageService {
 	private void cleanUpPackageDir(boolean all) {
 		synchronized (this) {
 			final File packagesDir = getPackagesDir();
-			for (File each : packagesDir.listFiles()) {
+			final File[] files = packagesDir.listFiles();
+			if (files != null) {
+				for (File each : files) {
 
-				if (!each.isDirectory()) {
-					if (all || (each.lastModified() + (1000 * 60 * 60 * 24 * 2) < System
-							.currentTimeMillis())) {
-						FileUtils.deleteQuietly(each);
+					if (!each.isDirectory()) {
+						if (all || (each.lastModified() + (1000 * 60 * 60 * 24 * 2) < System
+								.currentTimeMillis())) {
+							FileUtils.deleteQuietly(each);
+						}
 					}
 				}
 			}
