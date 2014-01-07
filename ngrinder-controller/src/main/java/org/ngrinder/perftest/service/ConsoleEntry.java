@@ -13,27 +13,38 @@
  */
 package org.ngrinder.perftest.service;
 
+import net.grinder.util.NetworkUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+
+import static org.ngrinder.common.util.NoOp.noOp;
+
 /**
  * Console information which containing console attributes.<br/>
  * {@link #port} is the most important attribute of this class.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
- * 
  */
 public class ConsoleEntry {
 
+	private String ip;
 	/**
 	 * Console port number.
 	 */
 	private Integer port;
+	private ServerSocket socket;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param port	port
+	 *
+	 * @param port port
 	 */
-	public ConsoleEntry(Integer port) {
+	public ConsoleEntry(String ip, Integer port) {
+		this.ip = ip;
 		this.port = port;
 	}
 
@@ -45,16 +56,6 @@ public class ConsoleEntry {
 		this.port = port;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
-		return result;
-	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -79,5 +80,41 @@ public class ConsoleEntry {
 			return false;
 		}
 		return true;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = ip != null ? ip.hashCode() : 0;
+		result = 31 * result + (port != null ? port.hashCode() : 0);
+		return result;
+	}
+
+	public void occupySocket() throws IOException {
+		InetAddress address = null;
+		try {
+			address = InetAddress.getByName(ip);
+
+		} catch (Exception e) {
+			noOp();
+		}
+		if (address != null) {
+			socket = new ServerSocket(port, 50, address);
+		} else {
+			socket = new ServerSocket(port);
+		}
+	}
+
+	public void releaseSocket() {
+		if (socket != null) {
+			try {
+				socket.close();
+			} catch (Exception e) {
+				noOp();
+			}
+		}
 	}
 }

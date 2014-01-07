@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
+import org.h2.util.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +69,14 @@ public class ConsoleManager {
 		int consoleSize = getConsoleSize();
 		consoleQueue = new ArrayBlockingQueue<ConsoleEntry>(consoleSize);
 		for (int each : getAvailablePorts(consoleSize, getConsolePortBase())) {
-			consoleQueue.add(new ConsoleEntry(each));
+			final ConsoleEntry e = new ConsoleEntry(config.getCurrentIP(), each);
+			try {
+				e.occupySocket();
+				consoleQueue.add(e);
+			} catch (Exception ex) {
+				LOG.error("socket binding to {}:{} is failed", config.getCurrentIP(), each);
+			}
+
 		}
 	}
 
@@ -110,8 +119,14 @@ public class ConsoleManager {
 	List<Integer> getAvailablePorts(int size, int from) {
 		List<Integer> ports = new ArrayList<Integer>();
 		int freeSocket;
+		InetAddress inetAddress = null;
+		try {
+			inetAddress = InetAddress.getByName(config.getCurrentIP());
+		} catch (Exception e) {
+			noOp();
+		}
 		for (int i = 0; i < size; i++) {
-			freeSocket = checkPortAvailability(from);
+			freeSocket = checkPortAvailability(inetAddress, from);
 			ports.add(freeSocket);
 			from = freeSocket + 1;
 		}
@@ -124,9 +139,9 @@ public class ConsoleManager {
 	 * @param scanStartPort port scan from
 	 * @return min port available from scanStartPort
 	 */
-	private int checkPortAvailability(int scanStartPort) {
+	private int checkPortAvailability(InetAddress inetAddress, int scanStartPort) {
 		while (true) {
-			if (checkExactPortAvailability(scanStartPort)) {
+			if (checkExactPortAvailability(inetAddress, scanStartPort)) {
 				return scanStartPort;
 			}
 			if (scanStartPort++ > MAX_PORT_NUMBER) {
@@ -138,13 +153,18 @@ public class ConsoleManager {
 	/**
 	 * Check if the given port is available.
 	 *
+	 * @param addr address to be bound
 	 * @param port port to be checked
 	 * @return true if available
 	 */
-	private boolean checkExactPortAvailability(int port) {
+	private boolean checkExactPortAvailability(InetAddress inetAddress, int port) {
 		ServerSocket socket = null;
 		try {
-			socket = new ServerSocket(port);
+			if (inetAddress == null) {
+				socket = new ServerSocket(port);
+			} else {
+				socket = new ServerSocket(port, 1, inetAddress);
+			}
 			return true;
 		} catch (IOException e) {
 			return false;
@@ -178,6 +198,7 @@ public class ConsoleManager {
 				throw processException("no console entry available");
 			}
 			synchronized (this) {
+				consoleEntry.releaseSocket();
 				// FIXME : It might fail here
 				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
 						baseConsoleProperties);
@@ -229,11 +250,14 @@ public class ConsoleManager {
 						testIdentifier, e);
 			}
 			int consolePort;
+			String consoleIP;
 			try {
 				consolePort = console.getConsolePort();
-				ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
+				consoleIP = console.getConsoleIP();
+				ConsoleEntry consoleEntry = new ConsoleEntry(consoleIP, consolePort);
 				synchronized (this) {
 					if (!consoleQueue.contains(consoleEntry)) {
+						consoleEntry.occupySocket();
 						consoleQueue.add(consoleEntry);
 						if (!getConsoleInUse().contains(console)) {
 							LOG.error("Try to return back the not used console on {} port", consolePort);
@@ -272,12 +296,13 @@ public class ConsoleManager {
 	 * @return {@link SingleConsole} instance if found. Otherwise, {@link NullSingleConsole} instance.
 	 */
 	public SingleConsole getConsoleUsingPort(Integer port) {
+		String currentIP = config.getCurrentIP();
 		for (SingleConsole each : consoleInUse) {
 			// Avoid to Klocwork error.
 			if (each instanceof NullSingleConsole) {
 				continue;
 			}
-			if (each.getConsolePort() == port) {
+			if (StringUtils.equals(each.getConsoleIP(), currentIP) && each.getConsolePort() == port) {
 				return each;
 			}
 		}

@@ -331,6 +331,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		distributeFiles(listener, safe);
 	}
 
+	public String getConsoleIP() {
+		return this.getConsoleProperties().getConsoleHost();
+	}
+
 	/**
 	 * File distribution event listener.
 	 *
