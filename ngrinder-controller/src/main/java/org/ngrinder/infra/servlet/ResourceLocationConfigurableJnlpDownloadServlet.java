@@ -145,13 +145,8 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 
 	private Map<String, String> initParam = Maps.newHashMap();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.GenericServlet#getInitParameterNames()
-	 */
 	@Override
-	public Enumeration<?> getInitParameterNames() {
+	public Enumeration<String> getInitParameterNames() {
 		return new IteratorEnumeration(initParam.keySet().iterator());
 	}
 }

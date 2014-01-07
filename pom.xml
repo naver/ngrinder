@@ -8,6 +8,7 @@
 	<name>ngrinder</name>
 	<modules>
 		<module>ngrinder-controller</module>
+		<module>ngrinder-starter</module>
 		<module>ngrinder-core</module>
 		<module>ngrinder-runtime</module>
 		<module>ngrinder-groovy</module>

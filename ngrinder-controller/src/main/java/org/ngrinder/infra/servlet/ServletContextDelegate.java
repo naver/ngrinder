@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * {@link ServletContext} delegate handler which forwards a request to the passed file path.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -39,15 +39,18 @@ public class ServletContextDelegate implements ServletContext {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param servletContext
-	 *            servlet context
-	 * @param base
-	 *            the base directory to which the request is forwarded.
+	 *
+	 * @param servletContext servlet context
+	 * @param base           the base directory to which the request is forwarded.
 	 */
 	public ServletContextDelegate(ServletContext servletContext, File base) {
 		this.servletContext = servletContext;
 		this.base = base;
+	}
+
+	@Override
+	public String getContextPath() {
+		return "/";  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
@@ -112,7 +115,7 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<?> getInitParameterNames() {
+	public Enumeration<String> getInitParameterNames() {
 		return servletContext.getInitParameterNames();
 	}
 
@@ -122,12 +125,12 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<?> getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		return servletContext.getAttributeNames();
 	}
 
 	@Override
-	public Set<?> getResourcePaths(String arg0) {
+	public Set<String> getResourcePaths(String arg0) {
 		return servletContext.getResourcePaths(arg0);
 	}
 
@@ -137,7 +140,7 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<?> getServlets() {
+	public Enumeration<String> getServlets() {
 		return servletContext.getServlets();
 	}
 
@@ -167,7 +170,7 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<?> getServletNames() {
+	public Enumeration<String> getServletNames() {
 		return servletContext.getServletNames();
 	}
 
