@@ -110,9 +110,11 @@
 									<a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropDown.logMonitoring"/></a>
 								</li>
 							</#if>
+							<#if enableScriptConsole == true>
 							<li>
 								<a href="${req.getContextPath()}/operation/script_console"><@spring.message "navigator.dropDown.scriptConsole"/></a>
 							</li>
+							</#if>
 							<li>
 								<a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropDown.systemConfig"/></a>
 							</li>

@@ -16,6 +16,7 @@ package org.ngrinder.common.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -131,6 +132,12 @@ public class BaseController implements WebConstants {
 	@ModelAttribute("announcement")
 	public String announcement() {
 		return announcementService.getOne();
+	}
+
+	@ModelAttribute("enableScriptConsole")
+	public boolean isEnableScriptConsole() {
+		return config.getControllerProperties().getPropertyBoolean(ControllerConstants
+				.PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE);
 	}
 
 	/**

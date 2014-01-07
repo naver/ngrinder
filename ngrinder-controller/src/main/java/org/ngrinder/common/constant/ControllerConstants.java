@@ -79,4 +79,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_VERBOSE = "controller.verbose";
 	public static final String PROP_CONTROLLER_MAX_CONNECTION_WAITING_MILLISECOND = "controller.max_connection_waiting_millisecond";
 	public static final String PROP_CONTROLLER_ADMIN_PASSWORD_RESET = "controller.admin_password_reset";
+	public static final String PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE = "controller.enable_script_console";
 }
