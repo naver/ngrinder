@@ -90,10 +90,10 @@ public class NGrinderControllerStarter {
 	}
 
 	public static void main(String[] args) throws Exception {
-
 		if (getMaxPermGen() < (1024 * 1024 * 200)) {
-			System.out.println("nGrinder needs quite big perm-gen memory." +
-					" Please run with java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName());
+			System.out.println("nGrinder needs quite big perm-gen memory.\n" +
+					"Please run ngrinder with the following command.\n" +
+					"java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName());
 			System.exit(-1);
 		}
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
