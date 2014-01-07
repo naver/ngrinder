@@ -337,7 +337,7 @@ public class PerfTestController extends BaseController {
 		newOne = oldOne.merge(newOne);
 		checkNotEmpty(newOne.getTestName(), "testName should be provided");
 		checkArgument(newOne.getStatus().equals(Status.READY) || newOne.getStatus().equals(Status.SAVED),
-				"SAVE or READY status is required.");
+				"status only allows SAVE or READY");
 		if (newOne.isThresholdRunCount()) {
 			final Integer runCount = newOne.getRunCount();
 			checkArgument(runCount > 0 && runCount <= agentManager
@@ -365,7 +365,7 @@ public class PerfTestController extends BaseController {
 			checkArgument(StringUtils.isNotBlank(newOne.getScriptName()), "scriptName should be provided.");
 		}
 		checkArgument(newOne.getVuserPerAgent() == newOne.getProcesses() * newOne.getThreads(),
-				"vsuerPerAgent should be equal to (processes * threads)");
+				"vuserPerAgent should be equal to (processes * threads)");
 	}
 
 	/**
@@ -939,6 +939,7 @@ public class PerfTestController extends BaseController {
 	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id, Status status) {
 		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id).setStatus(status);
+		validate(user, null, perfTest);
 		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
 

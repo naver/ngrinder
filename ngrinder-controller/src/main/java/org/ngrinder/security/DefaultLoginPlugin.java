@@ -13,6 +13,7 @@
  */
 package org.ngrinder.security;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -27,11 +28,10 @@ import org.springframework.stereotype.Service;
 
 /**
  * The default login plugin.
- * 
+ *
  * This retrieves the user
- * 
+ *
  * @author JunHo Yoon
- * 
  */
 @Service
 public class DefaultLoginPlugin implements OnLoginRunnable {
@@ -51,7 +51,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
-		if (!((PasswordEncoder) encoder).isPasswordValid(encPass, password, salt)) {
+		if (StringUtils.isEmpty(password) || !((PasswordEncoder) encoder).isPasswordValid(encPass, password, salt)) {
 			LOG.debug("Authentication failed: password does not match stored value");
 
 			throw new BadCredentialsException(messages.getMessage(
@@ -60,7 +60,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 		return true;
 	}
 
-    @Deprecated
+	@Deprecated
 	@Override
 	public void saveUser(User user) {
 		// Do nothing for default plugin

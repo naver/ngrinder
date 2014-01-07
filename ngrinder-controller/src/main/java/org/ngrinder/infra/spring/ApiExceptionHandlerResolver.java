@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.controller.RestAPI;
+import org.ngrinder.common.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -82,8 +83,9 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		object.addProperty(JSON_SUCCESS, false);
 		object.addProperty(JSON_CAUSE, ex.getMessage());
 		StringWriter out = new StringWriter();
+		Throwable throwable = ExceptionUtils.sanitize(ex);
 		PrintWriter printWriter = new PrintWriter(out);
-		ex.printStackTrace(printWriter);
+		throwable.printStackTrace(printWriter);
 		object.addProperty(JSON_STACKTRACE, out.toString());
 		IOUtils.closeQuietly(printWriter);
 		String jsonMessage = gson.toJson(object);
