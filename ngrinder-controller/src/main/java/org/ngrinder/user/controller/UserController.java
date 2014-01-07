@@ -116,6 +116,7 @@ public class UserController extends BaseController {
 		model.addAttribute("user", one);
 		model.addAttribute("allowUserIdChange", true);
 		model.addAttribute("allowPasswordChange", true);
+		model.addAttribute("showPasswordByDefault", true);
 		model.addAttribute("allowRoleChange", false);
 		model.addAttribute("newUser", true);
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
