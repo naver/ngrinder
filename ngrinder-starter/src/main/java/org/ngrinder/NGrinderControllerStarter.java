@@ -8,9 +8,11 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
 import java.security.ProtectionDomain;
 
-public class NGrinderController {
+public class NGrinderControllerStarter {
 
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_app";
 	@Parameter(names = "-port", description = "HTTP port of the server")
@@ -32,12 +34,14 @@ public class NGrinderController {
 		String userHomeFromEnv = System.getenv("NGRINDER_APP");
 		String userHomeFromProperty = System.getProperty("ngrinder.app");
 		String userHome = defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (!isEmpty(userHome)) ? new File(userHome) : new File(
+		return (!isEmpty(userHome)) ? new File(userHome) : new File(
 				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
-		return homeDirectory;
 	}
 
+
 	private void run() {
+
+
 		Server server = new Server();
 		SocketConnector connector = new SocketConnector();
 		// Set some timeout options to make debugging easier.
@@ -54,13 +58,15 @@ public class NGrinderController {
 		}
 		context.setContextPath(contextPath);
 
-		ProtectionDomain protectionDomain = NGrinderController.class.getProtectionDomain();
-		String war = protectionDomain.getCodeSource().getLocation().toExternalForm();
+		String war = getWarName();
 		context.setWar(war);
 		server.setHandler(context);
 		try {
 			server.start();
-			while (System.in.read() != 'q') ;
+			//noinspection StatementWithEmptyBody
+			while (System.in.read() != 'q') {
+				// Fall through
+			}
 			server.stop();
 			server.join();
 		} catch (Exception ex) {
@@ -69,8 +75,28 @@ public class NGrinderController {
 		}
 	}
 
+	private static String getWarName() {
+		ProtectionDomain protectionDomain = NGrinderControllerStarter.class.getProtectionDomain();
+		return protectionDomain.getCodeSource().getLocation().toExternalForm();
+	}
+
+	private static long getMaxPermGen() {
+		for (MemoryPoolMXBean each : ManagementFactory.getMemoryPoolMXBeans()) {
+			if (each.getName().endsWith("Perm Gen")) {
+				return each.getUsage().getMax();
+			}
+		}
+		return Long.MAX_VALUE;
+	}
+
 	public static void main(String[] args) throws Exception {
-		NGrinderController server = new NGrinderController();
+
+		if (getMaxPermGen() < (1024 * 1024 * 200)) {
+			System.out.println("nGrinder needs quite big perm-gen memory." +
+					" Please run with java -jar -XX:MaxPermSize=200m " + new File(getWarName()).getName());
+			System.exit(-1);
+		}
+		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server, args);
 		if (server.help) {
 			commander.usage();

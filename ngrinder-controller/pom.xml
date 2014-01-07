@@ -306,11 +306,6 @@
 			<version>8.4.1.2032</version>
 		</dependency>
 		<dependency>
-			<groupId>grinder</groupId>
-			<artifactId>grinder-patch</artifactId>
-			<version>3.9.1-patch</version>
-		</dependency>
-		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>universal-analytics-java</artifactId>
 			<version>1.0</version>
@@ -418,7 +413,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.ngrinder.NGrinderController</mainClass>
+							<mainClass>org.ngrinder.NGrinderControllerStarter</mainClass>
 						</manifest>
 					</archive>
 					<packagingExcludes>WEB-INF/lib/jetty-*.jar,WEB-INF/lib/ngrinder-starter*.jar</packagingExcludes>
