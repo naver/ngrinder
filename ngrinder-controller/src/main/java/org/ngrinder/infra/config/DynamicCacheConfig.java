@@ -80,7 +80,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 				List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
 				Pair<NetworkUtils.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
 				NetworkUtils.IPPortPair currentListener = properties.getFirst();
-				System.setProperty("java.rmi.server.hostname", currentListener.getIP());
+				System.setProperty("java.rmi.server.hostname", currentListener.getFormattedIP());
 
 				String peers = properties.getSecond();
 				peerProviderConfig.setProperties(peers);
@@ -90,7 +90,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 				FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 				peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
 				peerListenerConfig.setProperties(String.format("hostName=%s, port=%d, socketTimeoutMillis=1000",
-						currentListener.getIP(), currentListener.getPort()));
+						currentListener.getFormattedIP(), currentListener.getPort()));
 				CoreLogger.LOGGER.info("peer listener is set as {}", currentListener.toString());
 				cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
 			}

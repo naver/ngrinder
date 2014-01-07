@@ -28,13 +28,11 @@ import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.web.filter.HttpPutFormContentFilter;
 
 import java.util.List;
 import java.util.Map;
 
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_ADDRESSES;
-import static net.grinder.util.NetworkUtils.removeScopedMarkerFromIP;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -75,7 +73,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		when(spiedConfig.isClustered()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
 
-		curAddress = removeScopedMarkerFromIP(DEFAULT_LOCAL_ADDRESSES.get(0).getHostAddress());
+		curAddress = DEFAULT_LOCAL_ADDRESSES.get(0).getHostAddress();
 		when(spiedConfig.getClusterURIs()).thenReturn(new String[]{curAddress, "210.10.10.1"});
 		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig();
 		serviceConfig.config = spiedConfig;
@@ -119,7 +117,6 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		Assert.assertNotNull(agent2);
 
 		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
-		agentListDB = agentManagerService.getLocalAgentsFromDB();
 		Assert.assertNotNull(agentListDB);
 
 		agentManagerService.approve(agent.getId(), true);

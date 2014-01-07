@@ -24,7 +24,6 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -232,13 +231,17 @@ public abstract class NetworkUtils {
 			return ip.getHostAddress();
 		}
 
+		public String getFormattedIP() {
+			if (isIP6()) {
+				return "[" + ip.getHostAddress() + "]";
+			} else {
+				return ip.getHostAddress();
+			}
+		}
+
 		@Override
 		public String toString() {
-			if (isIP6()) {
-				return "[" + getIP() + "]:" + this.port;
-			} else {
-				return getIP() + ":" + this.port;
-			}
+			return getFormattedIP() + ":" + this.port;
 		}
 
 		@Override
@@ -264,7 +267,7 @@ public abstract class NetworkUtils {
 			if (ip == null) {
 				return false;
 			}
-			if (ip.isAnyLocalAddress() || ip.isLoopbackAddress()) {
+			if (ip.isAnyLocalAddress() || ip.isLoopbackAddress() || ip.isLinkLocalAddress()) {
 				return true;
 			}
 			try {
