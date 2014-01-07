@@ -80,8 +80,7 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 			mBeanClient.connect();
 			LOGGER.debug("Connection finished, isConnected :{}", mBeanClient.isConnected());
 		} catch (IOException e) {
-			LOGGER.info("Monitor Connection Error due to {}, {}", ip, port);
-			LOGGER.error("Monitor Connection Error", e);
+			LOGGER.info("Monitor Connection Error to {} by {}", ip + ":" + port, e.getMessage());
 		}
 
 
