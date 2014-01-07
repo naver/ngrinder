@@ -7,10 +7,10 @@
     	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
 
-	<jpa:repositories base-package="org.ngrinder" />
+	<jpa:repositories base-package="org.ngrinder"  />
 
 	<tx:annotation-driven proxy-target-class="true" />
 
-	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<aop:aspectj-autoproxy proxy-target-class="true" expose-proxy="true"/>
 
 </beans>

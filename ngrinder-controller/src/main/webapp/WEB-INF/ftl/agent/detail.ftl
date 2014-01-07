@@ -117,15 +117,15 @@
             var number = $(this).val();
             $(this).val(number.replace(/[\D]/g, ""))
         }).blur(function () {
-                    if (timer) {
-                        window.clearInterval(timer);
-                    }
-                    interval = $(this).val();
-                    if (interval == 0) {
-                        interval = 1;
-                    }
-                    timer = window.setInterval("getState()", interval * 1000);
-                }).blur();
+			if (timer) {
+				window.clearInterval(timer);
+			}
+			interval = $(this).val();
+			if (interval == 0) {
+				interval = 1;
+			}
+			timer = window.setInterval("getState()", interval * 1000);
+		}).blur();
     });
 
     function getState() {
@@ -138,6 +138,9 @@
             memoryChart.plot();
             return true;
         };
+		ajaxObj.error = function() {
+			window.clearInterval(timer)
+		}
         ajaxObj.call();
     }
 

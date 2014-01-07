@@ -60,6 +60,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Autowired
 	private Config config;
 
+
+	protected List<AgentInfo> localAgents;
+
+
 	/**
 	 * Run a scheduled task to check the agent status periodically.
 	 *
@@ -84,12 +88,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 
 		// If region is not specified retrieved all
-		List<AgentInfo> agentsInDB = agentManagerRepository.findAll();
-
 		Multimap<String, AgentInfo> agentInDBMap = ArrayListMultimap.create();
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
-		for (AgentInfo each : agentsInDB) {
+		for (AgentInfo each : getLocalAgentsFromDB()) {
 			agentInDBMap.put(createAgentKey(each), each);
 		}
 
@@ -115,10 +117,13 @@ public class AgentManagerService extends AbstractAgentManagerService {
 				// this agent is not attached to controller
 				interestingAgentInfo.setState(AgentControllerState.INACTIVE);
 			} else {
-				interestingAgentInfo.setState(getAgentManager().getAgentState(agentIdentity));
+				if (hasSameInfo(interestingAgentInfo, agentIdentity)) {
+					continue;
+				}
+				interestingAgentInfo.setState(agentManager.getAgentState(agentIdentity));
 				interestingAgentInfo.setRegion(agentIdentity.getRegion());
-				interestingAgentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
-				interestingAgentInfo.setVersion(getAgentManager().getAgentVersion(agentIdentity));
+				interestingAgentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
+				interestingAgentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 			}
 			changeAgents.add(interestingAgentInfo);
 		}
@@ -128,12 +133,41 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
 			changeAgents.add(fillUp(new AgentInfo(), agentIdentity));
 		}
-
+		boolean expireCache = false;
 		// step3. update into DB
-		agentManagerRepository.save(changeAgents);
-		agentManagerRepository.delete(agentsToBeDeleted);
+		if (!changeAgents.isEmpty()) {
+			agentManagerRepository.save(changeAgents);
+			expireCache = true;
+		}
+		if (!agentsToBeDeleted.isEmpty()) {
+			agentManagerRepository.delete(agentsToBeDeleted);
+			expireCache = true;
+		}
 
+		if (expireCache) {
+			localAgents = null;
+		}
 	}
+
+
+	public String extractRegionFromAgentRegion(String agentRegion) {
+		if (agentRegion != null && agentRegion.contains("_owned_")) {
+			return agentRegion.substring(0, agentRegion.indexOf("_owned_"));
+		}
+		if (StringUtils.isEmpty(agentRegion)) {
+			return Config.NONE_REGION;
+		}
+		return agentRegion;
+	}
+
+	protected boolean hasSameInfo(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
+		return agentInfo != null &&
+				agentInfo.getPort() == agentManager.getAgentConnectingPort(agentIdentity) &&
+				agentInfo.getState() == agentManager.getAgentState(agentIdentity) &&
+				StringUtils.equals(StringUtils.trimToNull(agentInfo.getVersion()),
+						StringUtils.trimToNull(agentManager.getAgentVersion(agentIdentity)));
+	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -146,7 +180,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public Map<String, MutableInt> getAvailableAgentCountMap(User user) {
 		int availableShareAgents = 0;
 		int availableUserOwnAgent = 0;
-		String myAgentSuffix = "owned_" + user.getUserId();
+		String myAgentSuffix = "_owned_" + user.getUserId();
 		for (AgentInfo agentInfo : getAllActiveAgentInfoFromDB()) {
 			// Skip all agents which are disapproved, inactive or
 			// have no region prefix.
@@ -157,7 +191,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			// It's this controller's agent
 			if (StringUtils.endsWithIgnoreCase(fullRegion, myAgentSuffix)) {
 				availableUserOwnAgent++;
-			} else if (!StringUtils.containsIgnoreCase(fullRegion, "owned_")) {
+			} else if (!StringUtils.containsIgnoreCase(fullRegion, "_owned_")) {
 				availableShareAgents++;
 			}
 		}
@@ -253,7 +287,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	@Override
 	public List<AgentInfo> getLocalAgentsFromDB() {
-		return agentManagerRepository.findAll();
+		List<AgentInfo> result = localAgents;
+		if (result == null) {
+			result = agentManagerRepository.findAll();
+			localAgents = result;
+		}
+		return result;
 	}
 
 	/*
@@ -342,6 +381,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	public void saveAgent(AgentInfo agent) {
 		agentManagerRepository.saveAndFlush(agent);
+		localAgents = null;
 	}
 
 	/**
@@ -351,6 +391,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	public void deleteAgent(long id) {
 		agentManagerRepository.delete(id);
+		localAgents = null;
 	}
 
 	/**
@@ -365,7 +406,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		if (found != null) {
 			found.setApproved(approve);
 			agentManagerRepository.save(found);
-			agentManagerRepository.findOne(found.getId());
+			localAgents = null;
 		}
 
 	}
@@ -446,5 +487,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			return;
 		}
 		agentManager.updateAgent(agent.getAgentIdentity(), config.getVersion());
+		localAgents = null;
 	}
 }
