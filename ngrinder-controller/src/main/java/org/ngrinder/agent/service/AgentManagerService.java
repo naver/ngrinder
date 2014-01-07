@@ -330,11 +330,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 	protected AgentInfo fillUp(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
-		if (agentInfo.getApproved() == null) {
-			final boolean approved = config.getControllerProperties().getPropertyBoolean(ControllerConstants
-					.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
-			agentInfo.setApproved(approved);
-		}
+		fillUpApproval(agentInfo);
 		if (agentIdentity != null) {
 			agentInfo.setAgentIdentity(agentIdentity);
 			agentInfo.setName(agentIdentity.getName());
@@ -345,6 +341,15 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			agentInfo.setState(agentManager.getAgentState(agentIdentity));
 			agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 
+		}
+		return agentInfo;
+	}
+
+	protected AgentInfo fillUpApproval(AgentInfo agentInfo) {
+		if (agentInfo.getApproved() == null) {
+			final boolean approved = config.getControllerProperties().getPropertyBoolean(ControllerConstants
+					.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+			agentInfo.setApproved(approved);
 		}
 		return agentInfo;
 	}
@@ -461,11 +466,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	void setAgentManager(AgentManager agentManager) {
 		this.agentManager = agentManager;
-	}
-
-	// For unit test
-	public AgentManagerRepository getAgentManagerRepository() {
-		return this.agentManagerRepository;
 	}
 
 	public void setAgentManagerRepository(AgentManagerRepository agentManagerRepository) {

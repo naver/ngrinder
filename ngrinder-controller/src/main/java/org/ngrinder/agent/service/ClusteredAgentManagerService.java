@@ -111,6 +111,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 	}
 
+
 	/**
 	 * Run a scheduled task to check the agent statuses.
 	 *
@@ -143,6 +144,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					eachAgentInDB.setState(WRONG_REGION);
 					eachAgentInDB.setApproved(false);
 					changeAgents.add(eachAgentInDB);
+				} else if (eachAgentInDB.getApproved() == null) {
+					changeAgents.add(fillUpApproval(eachAgentInDB));
 				}
 			} else { // the agent in DB is not attached to current controller
 				if (eachAgentInDB.getState() != INACTIVE) {
