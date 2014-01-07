@@ -168,7 +168,7 @@
 					bootbox.alert("<@spring.message "script.message.delete.alert"/>", "<@spring.message "common.button.ok"/>");
 					return;
 				}
-	      		bootbox.confirm("<@spring.message "script.message.delete.conform"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+	      		bootbox.confirm("<@spring.message "script.message.delete.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 					if (result) {
 						var scriptsStr = list.map(function() {
 							return $(this).val();
