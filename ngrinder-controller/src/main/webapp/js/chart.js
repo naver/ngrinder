@@ -5,6 +5,10 @@ function Chart(containerId, data, interval, opts) {
 				data[i] = eval(data[i]);
 			}
 		}
+
+        if (data[0] === undefined) {
+            return [];
+        }
 		return data;
 	}
 
