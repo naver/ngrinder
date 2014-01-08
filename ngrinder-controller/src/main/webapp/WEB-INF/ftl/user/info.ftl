@@ -13,6 +13,7 @@
 <#if !(userSecurityEnabled??)><#assign userSecurityEnabled=true/><</#if>
 <#if !(newUser??)><#assign newUser=false/></#if>
 <#if !(followers??)><#assign followers=[]/></#if>
+	${showPasswordByDefault?string}
 	<fieldset>
 
 	<@control_group name="userId" label_message_key="user.info.userId">
@@ -57,7 +58,7 @@
 			<input type="hidden" id="user_switch_select" name="followersStr" style="width:300px" >
 		</@control_group>
 	</#if>
-
+		${showPasswordByDefault?string}
 	<#if allowPasswordChange>
 		<div class="control-group">
 			<#if !showPasswordByDefault>

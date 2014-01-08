@@ -182,7 +182,8 @@
 										/>
 									</#if>
 								</div>
-								<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
+								<#if test.status != "SAVED" ||
+									(test.createdUser?? && test.createdUser.userId !=	currentUser.factualUser.userId)>
 									<#assign isClone = true/>
 								<#else>
 									<#assign isClone = false/>
@@ -192,7 +193,7 @@
 									<div class="control-group">
 										<input type="hidden" name="isClone" value="${isClone?string}"/>
 										<#--  Save/Clone is available only when the test owner is current user.   -->
-										<#if test.createdUser.userId != currentUser.factualUser.userId>
+										<#if !(test.createdUser??) || test.createdUser.userId != currentUser.factualUser.userId>
 											<#assign disabled = "disabled">
 										</#if>
 										<button type="submit" class="btn btn-success" id="save_test_btn" style="width:55px" ${disabled!}>
@@ -873,7 +874,7 @@ function bindEvent() {
             var ownerId = "";
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test.id??>
-					ownerId = "&ownerId=${test.createdUser.userId}";
+					ownerId = "&ownerId=${(test.createdUser.userId)!}";
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#script_revision").val();
@@ -961,7 +962,7 @@ function updateScript() {
 	var ajaxObj = new AjaxObj("/perftest/api/script", null, "<@spring.message "common.error.error"/>");
 	ajaxObj.params = {
 		<@security.authorize ifAnyGranted="A, S">
-				<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
+				<#if test.id?? && test.createdUser??>'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>
 	};
 	ajaxObj.success = function(res) {

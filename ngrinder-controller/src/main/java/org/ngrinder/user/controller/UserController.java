@@ -116,10 +116,10 @@ public class UserController extends BaseController {
 		model.addAttribute("user", one);
 		model.addAttribute("allowUserIdChange", true);
 		model.addAttribute("allowPasswordChange", true);
-		model.addAttribute("showPasswordByDefault", true);
 		model.addAttribute("allowRoleChange", false);
 		model.addAttribute("newUser", true);
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
+		model.addAttribute("showPasswordByDefault", true);
 		attachCommonAttribute(one, model);
 		return "user/detail";
 	}
@@ -139,6 +139,7 @@ public class UserController extends BaseController {
 		model.addAttribute("allowPasswordChange", true);
 		model.addAttribute("allowRoleChange", true);
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
+		model.addAttribute("showPasswordByDefault", false);
 		attachCommonAttribute(one, model);
 		return "user/detail";
 	}
@@ -157,6 +158,7 @@ public class UserController extends BaseController {
 		model.addAttribute("user", one);
 		model.addAttribute("allowPasswordChange", !config.isDemo());
 		model.addAttribute("allowRoleChange", false);
+		model.addAttribute("showPasswordByDefault", false);
 		attachCommonAttribute(one, model);
 		return "user/info";
 	}
@@ -302,7 +304,6 @@ public class UserController extends BaseController {
 		}));
 		model.addAttribute("allowShareChange", true);
 		model.addAttribute("userSecurityEnabled", config.isUserSecurityEnabled());
-		model.addAttribute("showPasswordByDefault", false);
 	}
 
 	/**

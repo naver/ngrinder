@@ -1011,7 +1011,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return true if it has
 	 */
 	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {
-		return perfTest != null && (perfTest.getCreatedUser().equals(user) || user.getRole().hasPermission(type));
+		return perfTest != null && (user.getRole().hasPermission(type) || user.equals(perfTest.getCreatedUser()));
 	}
 
 	/*
