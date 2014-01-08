@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
@@ -49,7 +50,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentManagerService extends AbstractAgentManagerService {
+public class AgentManagerService extends AbstractAgentManagerService implements AgentManager.LocalAgentsGetter {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
 	@Autowired
@@ -64,6 +65,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	protected List<AgentInfo> localAgents;
 
+
+	@PostConstruct
+	public void init() {
+		agentManager.setLocalAgentsGetter(this);
+	}
 
 	/**
 	 * Run a scheduled task to check the agent status periodically.
@@ -495,5 +501,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		}
 		agentManager.updateAgent(agent.getAgentIdentity(), config.getVersion());
 		localAgents = null;
+	}
+
+	@Override
+	public List<AgentInfo> getLocalAgent() {
+		return getLocalAgentsFromDB();
 	}
 }

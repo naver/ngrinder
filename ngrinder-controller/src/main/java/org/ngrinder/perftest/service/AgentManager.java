@@ -30,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
@@ -50,10 +49,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -74,10 +70,9 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	private Config config;
 
 	@Autowired
-	private AgentManagerRepository agentManagerRepository;
-
-	@Autowired
 	private AgentPackageService agentPackageService;
+
+	private LocalAgentsGetter localAgentsGetter;
 
 	/**
 	 * Initialize agent manager.
@@ -249,6 +244,9 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgentsForUser(User user) {
+		if (user == null) {
+			return Collections.emptySet();
+		}
 		return filterUserAgents(getAllFreeApprovedAgents(), user.getUserId());
 	}
 
@@ -269,6 +267,9 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return AgentIdentity set
 	 */
 	public Set<AgentIdentity> getAllApprovedAgents(User user) {
+		if (user == null) {
+			return Collections.emptySet();
+		}
 		return filterUserAgents(getAllApprovedAgents(), user.getUserId());
 	}
 
@@ -301,9 +302,14 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		if (agents.size() == 0) {
 			return agents;
 		}
-		List<AgentInfo> findAll = agentManagerRepository.findAll();
+
+
 		Set<String> ips = new HashSet<String>();
-		for (AgentInfo each : findAll) {
+		if (localAgentsGetter == null) {
+			return agents;
+		}
+
+		for (AgentInfo each : localAgentsGetter.getLocalAgent()) {
 			if (each.isApproved()) {
 				ips.add(each.getIp() + each.getName());
 			}
@@ -315,6 +321,11 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			}
 		}
 		return approvedAgent;
+	}
+
+
+	public void setLocalAgentsGetter(LocalAgentsGetter localAgentsGetter) {
+		this.localAgentsGetter = localAgentsGetter;
 	}
 
 	/**
@@ -348,7 +359,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
 		for (AgentIdentity each : agents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-			if (StringUtils.endsWith(region, "owned_" + userId) || !StringUtils.contains(region, "owned_")) {
+			if (StringUtils.endsWith(region, "_owned_" + userId) || !StringUtils.contains(region, "_owned_")) {
 				userAgent.add(each);
 			}
 		}
@@ -519,5 +530,10 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 	}
 
-
+	/**
+	 * Get the locally available agents information getter.
+	 */
+	public static interface LocalAgentsGetter {
+		List<AgentInfo> getLocalAgent();
+	}
 }
