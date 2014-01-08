@@ -211,10 +211,12 @@ public class UserController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/delete")
-	public String delete(ModelMap model, @RequestParam String userIds) {
+	public String delete(User user, @RequestParam String userIds, ModelMap model) {
 		String[] ids = userIds.split(",");
 		for (String eachId : Arrays.asList(ids)) {
-			userService.delete(eachId);
+			if (!user.getUserId().equals(eachId)) {
+				userService.delete(eachId);
+			}
 		}
 		model.clear();
 		return "redirect:/user/";
@@ -276,8 +278,8 @@ public class UserController extends BaseController {
 	 * @return redirect:/perftest/
 	 */
 	@RequestMapping("/switch")
-	public String switchUser(ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
-	                         HttpServletResponse response) {
+	public String switchUser(@RequestParam(required = false, defaultValue = "") String to,
+	                         HttpServletResponse response, ModelMap model) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
@@ -385,8 +387,10 @@ public class UserController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(@PathVariable("userId") String userId) {
-		userService.delete(userId);
+	public HttpEntity<String> delete(User user, @PathVariable("userId") String userId) {
+		if (!user.getUserId().equals(userId)) {
+			userService.delete(userId);
+		}
 		return successJsonHttpEntity();
 	}
 

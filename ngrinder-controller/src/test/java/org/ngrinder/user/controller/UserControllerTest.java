@@ -160,7 +160,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 		// test to delete one
 		model.clear();
-		userController.delete(model, "NewUserId1");
+		userController.delete(testUser, "NewUserId1", model);
 		model.clear();
 		userController.getAll(model, Role.USER, page, "NewUserName");
 		userList = (PageImpl<User>) model.get("users");
@@ -168,7 +168,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 		// test to delete more
 		model.clear();
-		userController.delete(model, "NewUserId2,NewUserId3");
+		userController.delete(testUser, "NewUserId2,NewUserId3", model);
 		model.clear();
 		userController.getAll(model, Role.USER, page, "NewUserName");
 		userList = (PageImpl<User>) model.get("users");
