@@ -53,8 +53,6 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 						+ " should not be empty");
 				checkNotEmpty(user.getUserName(), "User info's userName provided by " + each.getClass().getName()
 						+ " should not be empty");
-				checkNotEmpty(user.getEmail(), "User info's email provided by " + each.getClass().getName()
-						+ " should not be empty");
 				return new SecuredUser(user, user.getAuthProviderClass());
 			}
 		}
