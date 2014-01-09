@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.util.ConsolePropertiesFactory;
+import net.grinder.util.NetworkUtils;
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtils;
@@ -105,7 +106,7 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 			int localPort = serverSocket.getLocalPort();
 
 			// It should be excluded in available ports
-			List<Integer> availablePorts = manager.getAvailablePorts(20, 10110);
+			List<Integer> availablePorts = NetworkUtils.getAvailablePorts("", 20, 10110, 10000);
 			assertThat(availablePorts.contains(localPort), not(true));
 			assertThat(availablePorts.size(), is(20));
 		} finally {

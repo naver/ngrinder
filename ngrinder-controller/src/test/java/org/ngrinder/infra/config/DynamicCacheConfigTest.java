@@ -7,6 +7,9 @@ import net.grinder.util.Pair;
 import org.junit.Assume;
 import org.junit.Test;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.logger.CoreLogger;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -36,7 +39,7 @@ public class DynamicCacheConfigTest {
 		when(config.getClusterURIs()).thenReturn(new String[]{address1, "210.10.10.1"});
 		when(config.isClustered()).thenReturn(true);
 		dynamicCacheConfig.setConfig(config);
-		Pair<NetworkUtils.IPPortPair, String> cacheProperties = dynamicCacheConfig.createCacheProperties(newArrayList("hello", "world"));
+		Pair<NetworkUtils.IPPortPair, String> cacheProperties = dynamicCacheConfig.createManualDiscoveryCacheProperties(newArrayList("hello", "world"));
 		NetworkUtils.IPPortPair first = cacheProperties.getFirst();
 		// Then
 		assertThat(first.getIP()).isEqualTo(address1);
@@ -61,7 +64,7 @@ public class DynamicCacheConfigTest {
 				return new String[]{"10.10.10.10:20010", NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS, "10.10.10.20"};
 			}
 		};
-		final Pair<IPPortPair, String> hello = dynamicCacheConfig.createCacheProperties(Lists.newArrayList("hello"));
+		final Pair<IPPortPair, String> hello = dynamicCacheConfig.createManualDiscoveryCacheProperties(Lists.newArrayList("hello"));
 		assertThat(hello.getSecond()).isEqualTo("peerDiscovery=manual,rmiUrls=//10.10.10.10:20010/hello|//10.10.10.20:10010/hello");
 		assertThat(hello.getFirst().toString()).isEqualTo(NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS + ":10010");
 	}
@@ -105,4 +108,46 @@ public class DynamicCacheConfigTest {
 		assertThat(clusterURIs[1]).isEqualTo("10.10.10.20");
 		assertThat(clusterURIs[2]).isEqualTo("10.10.10.30");
 	}
+
+
+	@Test
+	public void testEasyCluster() {
+		// When
+		DynamicCacheConfig dynamicCacheConfig = new DynamicCacheConfig() {
+			@Override
+			int getClusterPort() {
+
+				int port = 10010;
+				try {
+					final InetAddress byName = InetAddress.getByName(getClusterHostName());
+					port = NetworkUtils.checkPortAvailability(byName, port, 30);
+				} catch (Exception e) {
+					CoreLogger.LOGGER.error("The cluster port {} is failed to bind. Please check network configuration.", port);
+				}
+				return port;
+			}
+
+			@Override
+			protected String getClusterMode() {
+				return "easy";
+			}
+
+			@Override
+			public String getClusterHostName() {
+				return "localhost";
+			}
+
+			@Override
+			protected boolean isClustered() {
+				return true;
+			}
+		};
+		final Pair<IPPortPair, String> autoDiscoveryCacheProperties = dynamicCacheConfig.createAutoDiscoveryCacheProperties();
+		assertThat(autoDiscoveryCacheProperties.getSecond()).isEqualTo("peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,multicastGroupPort=4446, timeToLive=32");
+		assertThat(autoDiscoveryCacheProperties.getFirst().toString()).isEqualTo("127.0.0.1" + ":10010");
+		dynamicCacheConfig.dynamicCacheManager();
+		dynamicCacheConfig.dynamicCacheManager();
+
+	}
+
 }

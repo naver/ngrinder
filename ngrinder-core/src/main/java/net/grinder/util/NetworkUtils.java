@@ -24,6 +24,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -31,6 +32,8 @@ import java.util.Hashtable;
 import java.util.List;
 
 import static java.net.NetworkInterface.getNetworkInterfaces;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Common network utility. This contains very careful implementation to detect current machine's ip.
@@ -202,6 +205,77 @@ public abstract class NetworkUtils {
 		} catch (UnknownHostException e) {
 			LOGGER.error("Error while get localhost name for {}", host, e);
 			return new InetAddress[]{};
+		}
+	}
+
+	/**
+	 * Get the available ports.
+	 *
+	 * @param size port size
+	 * @param from port number starting from
+	 * @return port list
+	 */
+	public static List<Integer> getAvailablePorts(String ip, int size, int from, int limit) {
+		List<Integer> ports = new ArrayList<Integer>();
+		int freeSocket;
+		InetAddress inetAddress = null;
+		try {
+			inetAddress = InetAddress.getByName(ip);
+		} catch (Exception e) {
+			noOp();
+		}
+		for (int i = 0; i < size; i++) {
+			freeSocket = checkPortAvailability(inetAddress, from, limit);
+			ports.add(freeSocket);
+			from = freeSocket + 1;
+		}
+		return ports;
+	}
+
+	/**
+	 * Get a available port greater than the given port.
+	 *
+	 * @param scanStartPort port scan from
+	 * @return min port available from scanStartPort
+	 */
+	public static int checkPortAvailability(InetAddress inetAddress, int scanStartPort, int limit) {
+		while (true) {
+			if (checkExactPortAvailability(inetAddress, scanStartPort)) {
+				return scanStartPort;
+			}
+			if (scanStartPort++ > limit) {
+				throw processException("no port is available");
+			}
+		}
+	}
+
+	/**
+	 * Check if the given port is available.
+	 *
+	 * @param addr address to be bound
+	 * @param port port to be checked
+	 * @return true if available
+	 */
+	private static boolean checkExactPortAvailability(InetAddress inetAddress, int port) {
+		ServerSocket socket = null;
+		try {
+			if (inetAddress == null) {
+				socket = new ServerSocket(port);
+			} else {
+				socket = new ServerSocket(port, 1, inetAddress);
+			}
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					// FALL THROUGH
+					noOp();
+				}
+			}
 		}
 	}
 

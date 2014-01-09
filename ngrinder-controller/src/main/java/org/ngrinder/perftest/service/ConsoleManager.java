@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.util.NetworkUtils;
 import org.h2.util.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static net.grinder.util.NetworkUtils.getAvailablePorts;
 import static org.ngrinder.common.constant.ControllerConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -68,7 +70,8 @@ public class ConsoleManager {
 	public void init() {
 		int consoleSize = getConsoleSize();
 		consoleQueue = new ArrayBlockingQueue<ConsoleEntry>(consoleSize);
-		for (int each : getAvailablePorts(consoleSize, getConsolePortBase())) {
+		final String currentIP = config.getCurrentIP();
+		for (int each : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
 			final ConsoleEntry e = new ConsoleEntry(config.getCurrentIP(), each);
 			try {
 				e.occupySocket();
@@ -109,76 +112,6 @@ public class ConsoleManager {
 		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_CONNECTION_WAITING_MILLISECOND);
 	}
 
-	/**
-	 * Get the available ports.
-	 *
-	 * @param size port size
-	 * @param from port number starting from
-	 * @return port list
-	 */
-	List<Integer> getAvailablePorts(int size, int from) {
-		List<Integer> ports = new ArrayList<Integer>();
-		int freeSocket;
-		InetAddress inetAddress = null;
-		try {
-			inetAddress = InetAddress.getByName(config.getCurrentIP());
-		} catch (Exception e) {
-			noOp();
-		}
-		for (int i = 0; i < size; i++) {
-			freeSocket = checkPortAvailability(inetAddress, from);
-			ports.add(freeSocket);
-			from = freeSocket + 1;
-		}
-		return ports;
-	}
-
-	/**
-	 * Get a available port greater than the given port.
-	 *
-	 * @param scanStartPort port scan from
-	 * @return min port available from scanStartPort
-	 */
-	private int checkPortAvailability(InetAddress inetAddress, int scanStartPort) {
-		while (true) {
-			if (checkExactPortAvailability(inetAddress, scanStartPort)) {
-				return scanStartPort;
-			}
-			if (scanStartPort++ > MAX_PORT_NUMBER) {
-				throw processException("no port for console is available");
-			}
-		}
-	}
-
-	/**
-	 * Check if the given port is available.
-	 *
-	 * @param addr address to be bound
-	 * @param port port to be checked
-	 * @return true if available
-	 */
-	private boolean checkExactPortAvailability(InetAddress inetAddress, int port) {
-		ServerSocket socket = null;
-		try {
-			if (inetAddress == null) {
-				socket = new ServerSocket(port);
-			} else {
-				socket = new ServerSocket(port, 1, inetAddress);
-			}
-			return true;
-		} catch (IOException e) {
-			return false;
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					// FALL THROUGH
-					noOp();
-				}
-			}
-		}
-	}
 
 	/**
 	 * Get an available console.

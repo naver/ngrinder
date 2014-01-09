@@ -54,7 +54,7 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 			FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 			peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 			List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
-			Pair<NetworkUtils.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
+			Pair<NetworkUtils.IPPortPair, String> properties = createManualDiscoveryCacheProperties(replicatedCacheNames);
 			NetworkUtils.IPPortPair currentListener = properties.getFirst();
 			String peerProperty = properties.getSecond();
 			peerProviderConfig.setProperties(peerProperty);

@@ -120,7 +120,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
-			cluster = getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
+			cluster = resolveClusterMode();
 			if (!isDevMode()) {
 				initLogger(false);
 			}
@@ -129,6 +129,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
 		}
+	}
+
+	private boolean resolveClusterMode() {
+		return getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
 	}
 
 	/**
@@ -331,6 +335,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		checkNotNull(home);
 		Properties properties = home.getProperties("database.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
+		properties.putAll(System.getProperties());
 		databaseProperties = new PropertiesWrapper(properties, databasePropertiesKeyMapper);
 	}
 
@@ -340,6 +345,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public synchronized void loadProperties() {
 		Properties properties = checkNotNull(home).getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
+		properties.putAll(System.getProperties());
 		// Override if exists
 		if (exHome.exists()) {
 			Properties exProperties = exHome.getProperties("system-ex.conf");
