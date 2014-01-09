@@ -167,7 +167,7 @@ public abstract class PerfTestSpecification {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.equal(root.get("createdUser"), user);
+				return cb.or(cb.equal(root.get("createdUser"), user));
 			}
 		};
 	}

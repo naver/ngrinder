@@ -7,7 +7,7 @@
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="30"
 		   timeToLiveSeconds="30"/>
 
-	<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false" overflowToDisk="false"
+	<cache name="file_entries" maxElementsInMemory="100" eternal="false" overflowToDisk="false"
 		   timeToIdleSeconds="1200" timeToLiveSeconds="1200"/>
 	<cache name="right_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
 		   timeToIdleSeconds="100000" timeToLiveSeconds="100000"/>
@@ -21,5 +21,6 @@
 		   timeToLiveSeconds="3"/>
 	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false"
 		   timeToLiveSeconds="5"/>
-
+	<cache name="local_agents" maxElementsInMemory="1" overflowToDisk="false"
+		   timeToLiveSeconds="100"/>
 </ehcache>

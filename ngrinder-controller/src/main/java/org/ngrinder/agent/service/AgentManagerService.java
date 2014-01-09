@@ -20,6 +20,7 @@ import com.google.common.collect.Multimap;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
+import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
@@ -33,6 +34,11 @@ import org.ngrinder.service.AbstractAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +47,7 @@ import java.util.*;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
+import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
@@ -62,8 +69,8 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 	@Autowired
 	private Config config;
 
-
-	protected List<AgentInfo> localAgents;
+	@Autowired
+	private CacheManager cacheManager;
 
 
 	@PostConstruct
@@ -85,7 +92,7 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 	}
 
 	public void checkAgentState() {
-		List<AgentInfo> changeAgents = Lists.newArrayList();
+		List<AgentInfo> changedAgents = Lists.newArrayList();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
@@ -132,28 +139,25 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 				interestingAgentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 				interestingAgentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 			}
-			changeAgents.add(interestingAgentInfo);
+			changedAgents.add(interestingAgentInfo);
 		}
 
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			changeAgents.add(fillUp(new AgentInfo(), agentIdentity));
+			changedAgents.add(fillUp(new AgentInfo(), agentIdentity));
 		}
-		boolean expireCache = false;
-		// step3. update into DB
-		if (!changeAgents.isEmpty()) {
-			agentManagerRepository.save(changeAgents);
-			expireCache = true;
+		if (!changedAgents.isEmpty() || !agentsToBeDeleted.isEmpty()) {
+			proxy(this).updateAgentStatus(changedAgents, agentsToBeDeleted);
 		}
-		if (!agentsToBeDeleted.isEmpty()) {
-			agentManagerRepository.delete(agentsToBeDeleted);
-			expireCache = true;
-		}
+	}
 
-		if (expireCache) {
-			localAgents = null;
-		}
+	@Transactional
+	@CacheEvict(value = "local_agents", allEntries = true)
+	public void updateAgentStatus(List<AgentInfo> updatedAgents, List<AgentInfo> agentsToBeDeleted) {
+		agentManagerRepository.save(updatedAgents);
+		agentManagerRepository.delete(agentsToBeDeleted);
+		agentManagerRepository.flush();
 	}
 
 
@@ -216,12 +220,12 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.service.IAgentManagerService#getLocalAgents()
+	 *
+	 * @see org.ngrinder.service.IAgentManagerService#getLocalAgentsWithFullInfo()
 	 */
 	@Override
 	@Transactional
-	public List<AgentInfo> getLocalAgents() {
+	public List<AgentInfo> getLocalAgentsWithFullInfo() {
 		Map<String, AgentInfo> agentInfoMap = createLocalAgentMapFromDB();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
@@ -234,7 +238,7 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 
 	private Map<String, AgentInfo> createLocalAgentMapFromDB() {
 		Map<String, AgentInfo> agentInfoMap = Maps.newHashMap();
-		for (AgentInfo each : getLocalAgentsFromDB()) {
+		for (AgentInfo each : proxy(this).getLocalAgentsFromCache()) {
 			agentInfoMap.put(createAgentKey(each), each);
 		}
 		return agentInfoMap;
@@ -294,12 +298,7 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 	 */
 	@Override
 	public List<AgentInfo> getLocalAgentsFromDB() {
-		List<AgentInfo> result = localAgents;
-		if (result == null) {
-			result = agentManagerRepository.findAll();
-			localAgents = result;
-		}
-		return result;
+		return agentManagerRepository.findAll();
 	}
 
 	/*
@@ -393,40 +392,19 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 	}
 
 	/**
-	 * Save the agent.
-	 *
-	 * @param agent saved agent
-	 */
-	public void saveAgent(AgentInfo agent) {
-		agentManagerRepository.saveAndFlush(agent);
-		localAgents = null;
-	}
-
-	/**
-	 * Delete the agent.
-	 *
-	 * @param id agent id to be deleted
-	 */
-	public void deleteAgent(long id) {
-		agentManagerRepository.delete(id);
-		localAgents = null;
-	}
-
-	/**
 	 * Approve/disapprove the agent on given id.
 	 *
 	 * @param id      id
 	 * @param approve true/false
 	 */
 	@Transactional
+	@CacheEvict("local_agents")
 	public void approve(Long id, boolean approve) {
 		AgentInfo found = agentManagerRepository.findOne(id);
 		if (found != null) {
 			found.setApproved(approve);
 			agentManagerRepository.save(found);
-			localAgents = null;
 		}
-
 	}
 
 	/**
@@ -500,11 +478,27 @@ public class AgentManagerService extends AbstractAgentManagerService implements 
 			return;
 		}
 		agentManager.updateAgent(agent.getAgentIdentity(), config.getVersion());
-		localAgents = null;
 	}
 
 	@Override
-	public List<AgentInfo> getLocalAgent() {
+	@Cacheable("local_agents")
+	public List<AgentInfo> getLocalAgentsFromCache() {
+		// Because this will be called out of proxy context. it needs to check the cache by itself.
+		final AgentManagerService proxy = proxy(this);
+		if (proxy == this) {
+			final Cache localAgentCache = cacheManager.getCache("local_agents");
+			for (Object each : ((Ehcache) localAgentCache.getNativeCache()).getKeys()) {
+				LOGGER.info("www - {}", each);
+			}
+			final Cache.ValueWrapper value = localAgentCache.get(0);
+			if (value != null) {
+				return cast(value.get());
+			}
+			final List<AgentInfo> localAgentsFromDB = getLocalAgentsFromDB();
+			localAgentCache.put(0, localAgentsFromDB);
+			return localAgentsFromDB;
+
+		}
 		return getLocalAgentsFromDB();
 	}
 }

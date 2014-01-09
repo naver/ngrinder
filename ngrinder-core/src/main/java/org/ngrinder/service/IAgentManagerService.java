@@ -49,7 +49,7 @@ public interface IAgentManagerService {
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getLocalAgents();
+	public abstract List<AgentInfo> getLocalAgentsWithFullInfo();
 
 	/**
 	 * Create the agent key from the given agent info.

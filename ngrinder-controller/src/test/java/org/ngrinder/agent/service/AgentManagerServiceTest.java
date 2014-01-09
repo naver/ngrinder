@@ -68,7 +68,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 		agentManagerService.approve(agent.getId(), true);
 
-		agentManagerService.deleteAgent(agent.getId());
+		agentRepository.delete(agent.getId());
 		agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNull(agent2);
 	}
@@ -80,7 +80,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
 		agent.setState(AgentControllerState.BUSY);
-		agentManagerService.saveAgent(agent);
+		agentRepository.save(agent);
 		return agent;
 	}
 
@@ -97,7 +97,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setPort(1);
 		agentInfo.setState(AgentControllerState.READY);
 		agentInfo.setApproved(true);
-		agentManagerService.saveAgent(agentInfo);
+		agentRepository.save(agentInfo);
 		countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
 
 		int newCount = countMap.get(config.getRegion()).intValue();
@@ -112,7 +112,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
 		agentInfo.setState(AgentControllerState.READY);
-		agentManagerService.saveAgent(agentInfo);
+		agentRepository.save(agentInfo);
 		agentManagerService.checkAgentState();
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
@@ -136,12 +136,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testOther() {
-		agentManagerService.getLocalAgents();
-		agentManagerService.getLocalAgentIdentityByIpAndName("127.0.0.1", "127.0.0.1");
-		agentManagerService.stopAgent(0L);
-		agentManagerService.requestShareAgentSystemDataModel(0L);
-		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
-		agentManagerService.setAgentManager(agentManagerService.getAgentManager());
 	}
 
 }

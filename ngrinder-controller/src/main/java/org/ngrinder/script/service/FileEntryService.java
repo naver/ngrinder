@@ -109,7 +109,7 @@ public class FileEntryService {
 	 * @param userId userId.
 	 */
 	public void invalidateCache(String userId) {
-		cacheManager.getCache("file_entry_search_cache").evict(userId);
+		cacheManager.getCache("file_entries").evict(userId);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class FileEntryService {
 	 * @param user user
 	 * @return cached {@link FileEntry} list
 	 */
-	@Cacheable(value = "file_entry_search_cache", key = "#user.userId")
+	@Cacheable(value = "file_entries", key = "#user.userId")
 	public List<FileEntry> getAll(User user) {
 		return fileEntityRepository.findAll(user);
 	}

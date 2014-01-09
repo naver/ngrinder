@@ -121,7 +121,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 		agentManagerService.approve(agent.getId(), true);
 
-		agentManagerService.deleteAgent(agent.getId());
+		agentRepository.delete(agent.getId());
 		agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNull(agent2);
 	}
@@ -133,7 +133,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agent.setPort(8080);
 		agent.setRegion("TestRegion" + key);
 		agent.setState(AgentControllerState.BUSY);
-		agentManagerService.saveAgent(agent);
+		agentRepository.save(agent);
 		return agent;
 	}
 
@@ -152,7 +152,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
 		agentInfo.setState(AgentControllerState.READY);
-		agentManagerService.saveAgent(agentInfo);
+		agentRepository.save(agentInfo);
 		agentManagerService.checkAgentState();
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));

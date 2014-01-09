@@ -15,11 +15,14 @@ package org.ngrinder.script.controller;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
+import org.ngrinder.common.util.CollectionUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -47,6 +50,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
@@ -87,8 +91,14 @@ public class FileEntryController extends BaseController {
 	 * @return script/list
 	 */
 	@RequestMapping({"/list/**", ""})
-	public String getAll(User user, @RemainedPath String path, ModelMap model) { // "fileName"
-		List<FileEntry> files = fileEntryService.getAll(user, path, null);
+	public String getAll(User user, final @RemainedPath String path, ModelMap model) { // "fileName"
+		List<FileEntry> files = Lists.newArrayList(Iterables.filter(fileEntryService.getAll(user),
+				new Predicate<FileEntry>() {
+					@Override
+					public boolean apply(@Nullable FileEntry input) {
+						return PathUtils.trimSeparator(FilenameUtils.getPath(input.getPath())).equals(path);
+					}
+				}));
 		Collections.sort(files, new Comparator<FileEntry>() {
 			@Override
 			public int compare(FileEntry o1, FileEntry o2) {
@@ -441,8 +451,8 @@ public class FileEntryController extends BaseController {
 	/**
 	 * Check the file by given path.
 	 *
-	 * @param user	user
-	 * @param path	path
+	 * @param user user
+	 * @param path path
 	 * @return json string
 	 */
 	@RestAPI
@@ -456,7 +466,7 @@ public class FileEntryController extends BaseController {
 	/**
 	 * Get all files which belongs to given user.
 	 *
-	 * @param user	user
+	 * @param user user
 	 * @return json string
 	 */
 	@RestAPI
@@ -468,8 +478,8 @@ public class FileEntryController extends BaseController {
 	/**
 	 * Get all files which belongs to given user and path.
 	 *
-	 * @param user	user
-	 * @param path	path
+	 * @param user user
+	 * @param path path
 	 * @return json string
 	 */
 	@RestAPI
@@ -481,8 +491,8 @@ public class FileEntryController extends BaseController {
 	/**
 	 * Delete file by given user and path.
 	 *
-	 * @param user	user
-	 * @param path	path
+	 * @param user user
+	 * @param path path
 	 * @return json string
 	 */
 	@RestAPI

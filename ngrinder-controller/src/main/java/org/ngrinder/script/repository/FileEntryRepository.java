@@ -191,9 +191,6 @@ public class FileEntryRepository {
 				@Override
 				public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
 					FileEntry script = new FileEntry();
-					if (dirEntry.getKind() == SVNNodeKind.DIR) {
-						return;
-					}
 					String relativePath = dirEntry.getRelativePath();
 					if (StringUtils.isBlank(relativePath)) {
 						return;

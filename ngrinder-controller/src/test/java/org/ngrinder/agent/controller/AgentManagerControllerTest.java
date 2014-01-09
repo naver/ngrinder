@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
@@ -42,6 +43,9 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Autowired
 	AgentManagerController agentController;
+
+	@Autowired
+	AgentManagerRepository agentManagerRepository;
 
 	@Autowired
 	AgentManagerService agentService;
@@ -109,7 +113,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		agent.setName("Test-Host");
 		agent.setIp("127.0.0.1");
 		agent.setState(AgentControllerState.READY);
-		agentService.saveAgent(agent);
+		agentManagerRepository.save(agent);
 
 		ModelMap model = new ModelMap();
 		// test get agent

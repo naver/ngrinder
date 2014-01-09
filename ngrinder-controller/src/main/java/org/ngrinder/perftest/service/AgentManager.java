@@ -309,7 +309,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			return agents;
 		}
 
-		for (AgentInfo each : localAgentsGetter.getLocalAgent()) {
+		for (AgentInfo each : localAgentsGetter.getLocalAgentsFromCache()) {
 			if (each.isApproved()) {
 				ips.add(each.getIp() + each.getName());
 			}
@@ -534,6 +534,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * Get the locally available agents information getter.
 	 */
 	public static interface LocalAgentsGetter {
-		List<AgentInfo> getLocalAgent();
+		List<AgentInfo> getLocalAgentsFromCache();
 	}
 }
