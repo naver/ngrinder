@@ -13,6 +13,10 @@
  */
 package org.ngrinder.service;
 
+import org.ngrinder.model.AgentInfo;
+
+import java.util.List;
+
 /**
  * Abstract Agent manager service class which is used to retrieve the agent info
  * attaching the current controller.
@@ -21,5 +25,9 @@ package org.ngrinder.service;
  * @since 3.3
  */
 public abstract class AbstractAgentManagerService implements IAgentManagerService {
+
+	public List<AgentInfo> getLocalAgents() {
+		return getLocalAgentsFromDB();
+	}
 
 }

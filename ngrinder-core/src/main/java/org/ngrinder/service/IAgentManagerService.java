@@ -44,8 +44,14 @@ public interface IAgentManagerService {
 	/**
 	 * Get all agent agents. The agent list is obtained combining the data from
 	 * DB and {@link AgentManager}
-	 * <p/>
-	 * This includes not-yet-saved agents as well.
+	 *
+	 * @return agent list
+	 */
+	public abstract List<AgentInfo> getLocalAgents();
+
+	/**
+	 * Get all agent agents. The agent list is obtained combining the data from
+	 * DB and {@link AgentManager}
 	 *
 	 * @return agent list
 	 */
