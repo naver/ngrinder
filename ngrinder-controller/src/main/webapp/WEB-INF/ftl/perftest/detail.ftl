@@ -1005,7 +1005,7 @@ function updateScriptResources(first) {
 		'scriptPath' : scriptName,
 		'r' : $("#script_revision").val()
 		<@security.authorize ifAnyGranted="A, S">
-			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
+			<#if test.id??>,'ownerId' : '${(test.createdUser.userId)!}'</#if>
 		</@security.authorize>
 	};
 	ajaxObj.success = function(res) {
