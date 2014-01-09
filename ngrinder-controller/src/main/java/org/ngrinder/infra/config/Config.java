@@ -18,7 +18,6 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +47,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
+import static net.grinder.util.NoOp.noOp;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -132,6 +132,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	}
 
 	private boolean resolveClusterMode() {
+		String mode = getClusterProperties().getProperty(PROP_CLUSTER_MODE, "none");
+		if (!"none".equals(mode)) {
+			return true;
+		}
 		return getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
 	}
 
@@ -297,7 +301,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
 		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
 		if (!StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
-			CoreLogger.LOGGER.warn("The path to ngrinder-exhome is ambiguous:");
+			CoreLogger.LOGGER.warn("The path to ngrinder ex home is ambiguous:");
 			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
 			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.exhome=" + exHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
@@ -306,7 +310,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 				System.getProperty("user.home"), NGRINDER_EX_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
-
+		try {
+			exHomeDirectory.mkdirs();
+		} catch (Exception e) {
+			// If it's not possible.. do it... without real directory.
+			noOp();
+		}
 		return new Home(exHomeDirectory, false);
 	}
 
@@ -345,12 +354,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public synchronized void loadProperties() {
 		Properties properties = checkNotNull(home).getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
-		properties.putAll(System.getProperties());
-		// Override if exists
 		if (exHome.exists()) {
 			Properties exProperties = exHome.getProperties("system-ex.conf");
 			properties.putAll(exProperties);
 		}
+		properties.putAll(System.getProperties());
+		// Override if exists
 		controllerProperties = new PropertiesWrapper(properties, controllerPropertiesKeyMapper);
 		clusterProperties = new PropertiesWrapper(properties, clusterPropertiesKeyMapper);
 	}

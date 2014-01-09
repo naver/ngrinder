@@ -12,15 +12,91 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.security.ProtectionDomain;
+import java.util.List;
 
 @Parameters(separators = "=")
 public class NGrinderControllerStarter {
 
+	@Parameters(separators = "=")
+	enum ClusterMode {
+		none {
+			@Parameter(names = "-controller-port", description = "agent connection port")
+			public Integer controllerPort = null;
+
+			public void process() {
+				if (controllerPort != null) {
+					System.setProperty("controller.controller_port", controllerPort.toString());
+				}
+			}
+		},
+		easy {
+			@Parameter(names = "-cluster-port", required = false,
+					description = "This cluster member's cluster communication port")
+			private Integer clusterPort = null;
+
+			@Parameter(names = "-controller-port", required = true,
+					description = "This cluster member's agent connection port")
+			private Integer controllerPort = null;
+
+			@Parameter(names = "-region", required = true,
+					description = "This cluster member's region name")
+			private String region = null;
+
+
+			@Parameter(names = "-h2-ip", required = false,
+					description = "The H2 database host. The default value is localhost")
+			private String databaseIP = "localhost";
+
+			@Parameter(names = "-h2-port", required = false,
+					description = "The H2 database Port. The default value is 9092")
+			private Integer databasePort = 9092;
+
+
+			public void process() {
+				System.setProperty("cluster.mode", "easy");
+				System.setProperty("cluster.port", clusterPort.toString());
+				System.setProperty("cluster.region", region);
+				System.setProperty("controller.controller_port", controllerPort.toString());
+				System.setProperty("database.type", "h2");
+				System.setProperty("database.url",
+						"tcp://" + databaseIP + ":" + databasePort + "/db/ngrinder");
+			}
+		},
+		advanced {
+			public void process() {
+				System.setProperty("cluster.mode", "advanced");
+			}
+		};
+
+		public void parseArgs(String[] args) {
+			JCommander commander = new JCommander(ClusterMode.this);
+			commander.setProgramName(getRunningCommand() + " -cluster-mode=" + name());
+			try {
+				commander.parse(args);
+				process();
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+				commander.usage();
+				System.exit(-1);
+			}
+		}
+
+		abstract void process();
+	}
+
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
-	@Parameter(names = "-port", description = "HTTP port of the server")
+	@Parameter(names = "-port", description = "HTTP port of the server, The default is 8080")
 	private Integer port = 8080;
-	@Parameter(names = "-context-path", description = "context path of the embedded web application")
+
+	@Parameter(names = "-context-path", description = "context path of the embedded web application. The default is /")
 	private String contextPath = "/";
+
+	@Parameter(names = "-cluster-mode", description = "nGrinder cluster-mode can be easy or advanced  ")
+	private String clusterMode = "none";
+
+	@Parameter(names = "-home", description = "nGrinder home")
+	private String home = null;
+
 	@Parameter(names = {"-help", "-?"}, description = "prints this message", hidden = true)
 	private Boolean help = false;
 
@@ -79,7 +155,11 @@ public class NGrinderControllerStarter {
 
 	private static String getWarName() {
 		ProtectionDomain protectionDomain = NGrinderControllerStarter.class.getProtectionDomain();
-		return protectionDomain.getCodeSource().getLocation().toExternalForm();
+		String warName = protectionDomain.getCodeSource().getLocation().toExternalForm();
+		if (warName.endsWith("/classes/")) {
+			warName = "ngrinder-controller-X.X.war";
+		}
+		return warName;
 	}
 
 	private static long getMaxPermGen() {
@@ -92,21 +172,34 @@ public class NGrinderControllerStarter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (getMaxPermGen() < (1024 * 1024 * 200)) {
+		if (System.getProperty("unit-test") == null && getMaxPermGen() < (1024 * 1024 * 200)) {
 			System.out.println(
 					"nGrinder needs quite big perm-gen memory.\n" +
 							"Please run nGrinder with the following command.\n" +
-							"java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName());
+							getRunningCommand());
 			System.exit(-1);
 		}
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
-		JCommander commander = new JCommander(server, args);
+		JCommander commander = new JCommander(server);
+		commander.setAcceptUnknownOptions(true);
 		commander.setProgramName("ngrinder");
+		commander.parse(args);
+
 		if (server.help) {
 			commander.usage();
-		} else {
-			server.run();
 		}
+
+		if (server.home != null) {
+			System.setProperty("ngrinder.home", server.home);
+		}
+		final List<String> unknownOptions = commander.getUnknownOptions();
+		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
+		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
+		server.run();
+	}
+
+	private static String getRunningCommand() {
+		return "java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName();
 	}
 
 }

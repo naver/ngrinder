@@ -71,8 +71,8 @@ public class ClusterConfigurationVerifier {
 		String db = config.getDatabaseProperties().getProperty(DatabaseConstants.PROP_DATABASE_TYPE).toLowerCase();
 		if (!db.equals("cubrid")) {
 			final String dbURL = config.getDatabaseProperties().getProperty(DatabaseConstants.PROP_DATABASE_URL, "");
-			checkState(!dbURL.startsWith("tcp://"), "When cluster mode is enabled, " +
-					"embedded H2 db can not be used. Use cubrid or Use H2 TCP server");
+			checkState(dbURL.startsWith("tcp://"), "Wrong database.url configuration " + dbURL + "\n" +
+					"When cluster mode is enabled, embedded H2 db can not be used. Use cubrid or Use H2 TCP server");
 		}
 	}
 
