@@ -2,6 +2,7 @@ package org.ngrinder;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
@@ -12,9 +13,10 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.security.ProtectionDomain;
 
+@Parameters(separators = "=")
 public class NGrinderControllerStarter {
 
-	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_app";
+	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	@Parameter(names = "-port", description = "HTTP port of the server")
 	private Integer port = 8080;
 	@Parameter(names = "-context-path", description = "context path of the embedded web application")
@@ -31,8 +33,8 @@ public class NGrinderControllerStarter {
 	}
 
 	public File resolveHome() {
-		String userHomeFromEnv = System.getenv("NGRINDER_APP");
-		String userHomeFromProperty = System.getProperty("ngrinder.app");
+		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
+		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		String userHome = defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		return (!isEmpty(userHome)) ? new File(userHome) : new File(
 				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
@@ -40,8 +42,6 @@ public class NGrinderControllerStarter {
 
 
 	private void run() {
-
-
 		Server server = new Server();
 		SocketConnector connector = new SocketConnector();
 		// Set some timeout options to make debugging easier.
@@ -51,7 +51,9 @@ public class NGrinderControllerStarter {
 		server.setConnectors(new Connector[]{connector});
 
 		WebAppContext context = new WebAppContext();
-		context.setTempDirectory(resolveHome());
+		final File home = resolveHome();
+		home.mkdirs();
+		context.setTempDirectory(home);
 		context.setServer(server);
 		if (!contextPath.startsWith("/")) {
 			contextPath = "/" + contextPath;
@@ -91,13 +93,15 @@ public class NGrinderControllerStarter {
 
 	public static void main(String[] args) throws Exception {
 		if (getMaxPermGen() < (1024 * 1024 * 200)) {
-			System.out.println("nGrinder needs quite big perm-gen memory.\n" +
-					"Please run ngrinder with the following command.\n" +
-					"java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName());
+			System.out.println(
+					"nGrinder needs quite big perm-gen memory.\n" +
+							"Please run nGrinder with the following command.\n" +
+							"java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName());
 			System.exit(-1);
 		}
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server, args);
+		commander.setProgramName("ngrinder");
 		if (server.help) {
 			commander.usage();
 		} else {
