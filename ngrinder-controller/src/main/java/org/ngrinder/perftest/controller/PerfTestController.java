@@ -693,7 +693,7 @@ public class PerfTestController extends BaseController {
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		List<PerfTest> perfTests = newArrayList();
 		if (StringUtils.isNotBlank(ids)) {
-			perfTestService.getAll(user, convertString2Long(ids));
+			perfTests = perfTestService.getAll(user, convertString2Long(ids));
 		}
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getStatus(perfTests)));
