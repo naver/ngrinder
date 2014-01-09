@@ -46,24 +46,31 @@ public class NGrinderControllerStarter {
 			private String region = null;
 
 
-			@Parameter(names = "-h2-ip", required = false,
-					description = "The H2 database host. The default value is localhost")
-			private String databaseIP = "localhost";
+			@Parameter(names = "-database-host", required = false,
+					description = "The database host. The default value is localhost")
+			private String databaseHost = "localhost";
 
-			@Parameter(names = "-h2-port", required = false,
+			@Parameter(names = "-database-port", required = false,
 					description = "The H2 database Port. The default value is 9092")
 			private Integer databasePort = 9092;
 
+			@Parameter(names = "-database-type", required = false,
+					description = "The database type. The default value is h2", hidden = true)
+			private String databaseType = "h2";
 
 			public void process() {
 				System.setProperty("cluster.mode", "easy");
 				System.setProperty("cluster.port", clusterPort.toString());
 				System.setProperty("cluster.region", region);
 				System.setProperty("controller.controller_port", controllerPort.toString());
-				System.setProperty("database.type", "h2");
-				System.setProperty("database.url",
-						"tcp://" + databaseIP + ":" + databasePort + "/db/ngrinder");
+				System.setProperty("database-type", databaseType);
+				if ("h2".equals(databaseType)) {
+					System.setProperty("database.url", "tcp://" + databaseHost + ":" + databasePort + "/db/ngrinder");
+				} else {
+					System.setProperty("database.url", "localhost:33000");
+				}
 			}
+
 		},
 		advanced {
 			public void process() {
