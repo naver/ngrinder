@@ -79,7 +79,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 */
 	@PostConstruct
 	public void init() {
-		int port = config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_CONTROLLER_PORT);
+		int port = config.getControllerPort();
 		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.setAgentDownloadRequestListener(this);

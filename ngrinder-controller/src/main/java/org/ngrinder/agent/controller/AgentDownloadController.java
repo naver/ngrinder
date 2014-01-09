@@ -14,8 +14,10 @@
 package org.ngrinder.agent.controller;
 
 import org.ngrinder.agent.service.AgentPackageService;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
+import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -74,13 +76,16 @@ public class AgentDownloadController extends BaseController {
 	                       ModelMap modelMap,
 	                       HttpServletRequest request) {
 		String connectingIP = request.getServerName();
+		int port = getConfig().getControllerPort();
 		try {
 			if (isClustered()) {
 				checkNotEmpty(region, "region should be provided to download agent in cluster mode.");
-				connectingIP = checkNotNull(regionService.getOne(region), "selecting region '" + region + "' is not " +
-						"available").getIp();
+				RegionInfo regionInfo = checkNotNull(regionService.getOne(region), "selecting region '" + region + "'" +
+						" is not valid");
+				port = regionInfo.getControllerPort();
+				connectingIP = regionInfo.getIp();
 			}
-			final File agentPackage = agentPackageService.createAgentPackage(connectingIP, region, owner);
+			final File agentPackage = agentPackageService.createAgentPackage(region, connectingIP, port, owner);
 			modelMap.clear();
 			return "redirect:/agent/download/" + agentPackage.getName();
 		} catch (Exception e) {

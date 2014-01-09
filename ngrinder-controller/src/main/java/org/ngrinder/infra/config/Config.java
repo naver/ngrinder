@@ -72,7 +72,6 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	private Date announcementDate;
 	private boolean verbose;
 
-	public static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
 
 	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
@@ -158,6 +157,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	public boolean isClustered() {
 		return cluster;
+	}
+
+	public int getControllerPort() {
+		return getControllerProperties().getPropertyInt(ControllerConstants.PROP_CONTROLLER_CONTROLLER_PORT);
 	}
 
 	/**

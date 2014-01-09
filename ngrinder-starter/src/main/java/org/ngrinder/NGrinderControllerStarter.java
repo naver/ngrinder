@@ -1,5 +1,6 @@
 package org.ngrinder;
 
+import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -12,7 +13,9 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Parameters(separators = "=")
 public class NGrinderControllerStarter {
@@ -99,6 +102,10 @@ public class NGrinderControllerStarter {
 
 	@Parameter(names = {"-help", "-?"}, description = "prints this message", hidden = true)
 	private Boolean help = false;
+
+	@DynamicParameter(names = "-D", description = "Dynamic parameters")
+	private Map<String, String> params = new HashMap<String, String>();
+
 
 	public static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
@@ -195,6 +202,7 @@ public class NGrinderControllerStarter {
 		final List<String> unknownOptions = commander.getUnknownOptions();
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
 		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
+		System.getProperties().putAll(server.params);
 		server.run();
 	}
 

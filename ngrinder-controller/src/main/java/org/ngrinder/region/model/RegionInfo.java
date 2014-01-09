@@ -20,7 +20,7 @@ import net.grinder.common.processidentity.AgentIdentity;
 
 /**
  * Region info to be shared b/w controllers.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1
  */
@@ -28,33 +28,53 @@ public class RegionInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String ip;
+	private Integer controllerPort;
 	private boolean visible = true;
 	private Set<AgentIdentity> agentIdentities;
 
 	/**
 	 * Constructor with true visibility.
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param agentIdentities
-	 *            agentIdentity Set
+	 *
+	 * @param ip              ip
+	 * @param agentIdentities agentIdentity Set
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities) {
-		this(ip, agentIdentities, true);
+		this(ip, null, agentIdentities, true);
+	}
+
+	/**
+	 * Constructor with true visibility.
+	 *
+	 * @param ip              ip
+	 * @param controllerPort  controllerPort
+	 * @param agentIdentities agentIdentity Set
+	 */
+	public RegionInfo(String ip, int port, Set<AgentIdentity> agentIdentities) {
+		this(ip, port, agentIdentities, true);
 	}
 
 	/**
 	 * Constructor.
-	 * @param ip
-	 *            ip
-	 * @param agentIdentities
-	 *            agentIdentity Set
-	 * @param visible
-	 *            true if visible
+	 *
+	 * @param ip              ip
+	 * @param agentIdentities agentIdentity Set
+	 * @param visible         true if visible
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities, boolean visible) {
-		super();
+		this(ip, null, agentIdentities, visible);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ip              ip
+	 * @param agentIdentities agentIdentity Set
+	 * @param controllerPort  controllerPort
+	 * @param visible         true if visible
+	 */
+	public RegionInfo(String ip, Integer controllerPort, Set<AgentIdentity> agentIdentities, boolean visible) {
 		this.ip = ip;
+		this.controllerPort = controllerPort;
 		this.visible = visible;
 		this.agentIdentities = agentIdentities;
 	}
@@ -66,7 +86,6 @@ public class RegionInfo implements Serializable {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-
 
 
 	public boolean isVisible() {
@@ -85,4 +104,7 @@ public class RegionInfo implements Serializable {
 		this.agentIdentities = agentIdentities;
 	}
 
+	public Integer getControllerPort() {
+		return controllerPort;
+	}
 }

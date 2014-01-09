@@ -21,6 +21,7 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -62,9 +63,9 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the agents.
 	 *
-	 * @param region  the region to search. If null, it returns all the attached
-	 *                agents.
-	 * @param model   model
+	 * @param region the region to search. If null, it returns all the attached
+	 *               agents.
+	 * @param model  model
 	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
@@ -85,11 +86,11 @@ public class AgentManagerController extends BaseController {
 		File agentPackage = null;
 		if (isClustered()) {
 			if (StringUtils.isNotBlank(region)) {
-				final String ip = regionService.getOne(region).getIp();
-				agentPackage = agentPackageService.createAgentPackage(ip, region, null);
+				final RegionInfo regionInfo = regionService.getOne(region);
+				agentPackage = agentPackageService.createAgentPackage(region, regionInfo.getIp(), regionInfo.getControllerPort(), null);
 			}
 		} else {
-			agentPackage = agentPackageService.createAgentPackage("", "", null);
+			agentPackage = agentPackageService.createAgentPackage("", "", getConfig().getControllerPort(), null);
 		}
 		if (agentPackage != null) {
 			model.addAttribute("downloadLink", "/agent/download/" + agentPackage.getName());

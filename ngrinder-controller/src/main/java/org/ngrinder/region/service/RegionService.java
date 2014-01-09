@@ -17,10 +17,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.NetworkUtils;
-import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.event.CacheEventListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.util.TypeConvertUtils;
@@ -34,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -111,8 +107,8 @@ public class RegionService {
 	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
 			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
-			cache.put(getCurrent(), new RegionInfo(config.getClusterProperties().getProperty(ClusterConstants
-					.PROP_CLUSTER_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS), newHashSet));
+			final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+			cache.put(getCurrent(), new RegionInfo(regionIP, config.getControllerPort(), newHashSet));
 		}
 	}
 

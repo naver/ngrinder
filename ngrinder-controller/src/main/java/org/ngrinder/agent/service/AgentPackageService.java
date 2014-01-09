@@ -95,15 +95,16 @@ public class AgentPackageService {
 	 * Get distributable package name with appropriate extension.
 	 *
 	 * @param moduleName   nGrinder sub  module name.
+	 * @param regionName   region   namee
 	 * @param connectionIP where it will connect to
-	 * @param region       region
 	 * @param ownerName    owner name
 	 * @param forWindow    if true, then package type is zip,if false, package type is tar.
 	 * @return String  module full name.
 	 */
-	public String getDistributionPackageName(String moduleName, String connectionIP, String region, String ownerName,
+	public String getDistributionPackageName(String moduleName, String regionName, String connectionIP,
+	                                         String ownerName,
 	                                         boolean forWindow) {
-		return getPackageName(moduleName) + getFilenameComponent(connectionIP) + getFilenameComponent(region) +
+		return getPackageName(moduleName) + getFilenameComponent(regionName) + getFilenameComponent(connectionIP) +
 				getFilenameComponent(ownerName) + (forWindow ? ".zip" : ".tar");
 	}
 
@@ -130,7 +131,7 @@ public class AgentPackageService {
 	 * @return File  agent package.
 	 */
 	public synchronized File createAgentPackage() {
-		return createAgentPackage(null, null, null);
+		return createAgentPackage(null, null, config.getControllerPort(), null);
 	}
 
 	/**
@@ -141,9 +142,8 @@ public class AgentPackageService {
 	 * @param owner        owner
 	 * @return File  agent package.
 	 */
-	public synchronized File createAgentPackage(String connectionIP, String region,
-	                                            String owner) {
-		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), connectionIP, region, owner);
+	public synchronized File createAgentPackage(String region, String connectionIP, int port, String owner) {
+		return createAgentPackage((URLClassLoader) getClass().getClassLoader(), region, connectionIP, port, owner);
 	}
 
 	public File createMonitorPackage() {
@@ -152,7 +152,7 @@ public class AgentPackageService {
 			if (monitorPackagesDir.mkdirs()) {
 				LOGGER.info("{} is created", monitorPackagesDir.getPath());
 			}
-			final String packageName = getDistributionPackageName("ngrinder-monitor", "", "", "", false);
+			final String packageName = getDistributionPackageName("ngrinder-monitor", "", null, "", false);
 			File monitorPackage = new File(monitorPackagesDir, packageName);
 			if (monitorPackage.exists()) {
 				return monitorPackage;
@@ -187,8 +187,7 @@ public class AgentPackageService {
 						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 					}
 				}
-				addMonitorConfToTar(tarOutputStream, basePath, config.getControllerProperties().getPropertyInt
-						(ControllerConstants.PROP_CONTROLLER_MONITOR_PORT));
+				addMonitorConfToTar(tarOutputStream, basePath, config.getMonitorPort());
 
 			} catch (IOException e) {
 				LOGGER.error("Error while generating an monitor package" + e.getMessage());
@@ -208,15 +207,15 @@ public class AgentPackageService {
 	 * @param owner        owner
 	 * @return File
 	 */
-	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
-	                                     String owner) {
+	synchronized File createAgentPackage(URLClassLoader classLoader, String regionName, String connectionIP,
+	                                     int port, String owner) {
 
 		synchronized (AgentPackageService.this) {
 			File agentPackagesDir = getPackagesDir();
 			if (agentPackagesDir.mkdirs()) {
 				LOGGER.info("{} is created", agentPackagesDir.getPath());
 			}
-			final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
+			final String packageName = getDistributionPackageName("ngrinder-core", regionName, connectionIP, owner, false);
 			File agentTar = new File(agentPackagesDir, packageName);
 			if (agentTar.exists()) {
 				return agentTar;
@@ -250,7 +249,7 @@ public class AgentPackageService {
 						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 					}
 				}
-				addAgentConfToTar(tarOutputStream, basePath, connectionIP, region, owner);
+				addAgentConfToTar(tarOutputStream, basePath, regionName, connectionIP, port, owner);
 			} catch (IOException e) {
 				LOGGER.error("Error while generating an agent package" + e.getMessage());
 			} finally {
@@ -275,11 +274,12 @@ public class AgentPackageService {
 				bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
 	}
 
-	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath, String connectingIP,
-	                               String region, String owner) throws IOException {
+	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath,
+	                               String regionName, String connectingIP,
+	                               int port, String owner) throws IOException {
 		if (StringUtils.isNotEmpty(connectingIP)) {
-			final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam(connectingIP, region,
-					owner));
+			final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam(regionName,
+					connectingIP, port, owner));
 			final byte[] bytes = config.getBytes();
 			addInputStreamToTar(tarOutputStream, new ByteArrayInputStream(bytes), basePath + "__agent.conf",
 					bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
@@ -306,18 +306,17 @@ public class AgentPackageService {
 		return libs;
 	}
 
-	private Map<String, Object> getAgentConfigParam(String forServer, String region, String owner) {
+	private Map<String, Object> getAgentConfigParam(String regionName, String controllerIP, int port, String owner) {
 		Map<String, Object> confMap = newHashMap();
-		confMap.put("controllerIP", forServer);
-		final int port = config.getControllerProperties().getPropertyInt(ControllerConstants.PROP_CONTROLLER_CONTROLLER_PORT);
+		confMap.put("controllerIP", controllerIP);
 		confMap.put("controllerPort", String.valueOf(port));
-		if (StringUtils.isEmpty(region)) {
-			region = "NONE";
+		if (StringUtils.isEmpty(regionName)) {
+			regionName = "NONE";
 		}
 		if (StringUtils.isNotBlank(owner)) {
-			region = region + "_owned_" + owner;
+			regionName = regionName + "_owned_" + owner;
 		}
-		confMap.put("controllerRegion", region);
+		confMap.put("controllerRegion", regionName);
 		return confMap;
 	}
 
