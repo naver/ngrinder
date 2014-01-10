@@ -832,6 +832,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void prepare(boolean isClone) {
 		if (isClone) {
 			this.setId(null);
+			this.setTestComment("");
 		}
 	}
 }
