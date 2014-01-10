@@ -18,7 +18,6 @@ public class NGrinderControllerStarterTest {
 	@Test
 	public void testEasyClusterConfiguration() {
 		NGrinderControllerStarter.ClusterMode.easy.parseArgs(new String[]{
-
 				"-cluster-port=2022"
 		});
 	}

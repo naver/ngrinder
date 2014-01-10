@@ -102,11 +102,11 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 		ServerSocket serverSocket = null;
 		try {
 			// When port is already used
-			serverSocket = new ServerSocket(10111);
+			serverSocket = new ServerSocket(20111);
 			int localPort = serverSocket.getLocalPort();
 
 			// It should be excluded in available ports
-			List<Integer> availablePorts = NetworkUtils.getAvailablePorts("", 20, 10110, 10000);
+			List<Integer> availablePorts = NetworkUtils.getAvailablePorts("", 20, 20111, 40000);
 			assertThat(availablePorts.contains(localPort), not(true));
 			assertThat(availablePorts.size(), is(20));
 		} finally {
