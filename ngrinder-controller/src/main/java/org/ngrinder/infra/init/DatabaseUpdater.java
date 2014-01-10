@@ -13,11 +13,6 @@
  */
 package org.ngrinder.infra.init;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.core.H2ExTypeConverter;
@@ -28,12 +23,17 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.sqlgenerator.core.ModifyDataTypeGenerator;
 import liquibase.sqlgenerator.core.RenameColumnGenerator;
-
+import org.apache.commons.dbcp.BasicDataSource;
+import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * DB Data Updater. This class is used to update DB automatically when System restarted through log
@@ -48,8 +48,10 @@ import org.springframework.stereotype.Service;
 public class DatabaseUpdater implements ResourceLoaderAware {
 
 	@Autowired
-	private DataSource dataSource;
+	private BasicDataSource dataSource;
 
+	@Autowired
+	private Config config;
 
 	private ResourceLoader resourceLoader;
 
@@ -58,7 +60,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 			return DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
 					new JdbcConnection(dataSource.getConnection()));
 		} catch (Exception e) {
-			throw processException("Error getting database", e);
+			throw processException("Error getting database from " + dataSource.getUrl(), e);
 		}
 	}
 

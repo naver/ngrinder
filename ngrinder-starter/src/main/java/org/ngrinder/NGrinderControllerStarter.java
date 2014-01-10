@@ -1,17 +1,32 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.ngrinder;
 
-import com.beust.jcommander.DynamicParameter;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+import com.beust.jcommander.*;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +38,8 @@ public class NGrinderControllerStarter {
 	@Parameters(separators = "=")
 	enum ClusterMode {
 		none {
-			@Parameter(names = "-controller-port", description = "agent connection port")
+			@Parameter(names = "-controller-port", description = "agent connection port",
+					validateValueWith = PortAvailabilityValidator.class)
 			public Integer controllerPort = null;
 
 			public void process() {
@@ -33,12 +49,21 @@ public class NGrinderControllerStarter {
 			}
 		},
 		easy {
+			@Parameter(names = "-cluster-host", required = false,
+					description = "This cluster member's cluster communication host. The default value is the " +
+							"first non-localhost address. if it's localhost, " +
+							"it can only communicate with the other cluster members in the same machine.")
+			private String clusterHost = null;
+
 			@Parameter(names = "-cluster-port", required = false,
-					description = "This cluster member's cluster communication port")
+					description = "This cluster member's cluster communication port. Each cluster should have the " +
+							"unique port.",
+					validateValueWith = PortAvailabilityValidator.class)
 			private Integer clusterPort = null;
 
 			@Parameter(names = "-controller-port", required = true,
-					description = "This cluster member's agent connection port")
+					description = "This cluster member's agent connection port",
+					validateValueWith = PortAvailabilityValidator.class)
 			private Integer controllerPort = null;
 
 			@Parameter(names = "-region", required = true,
@@ -51,7 +76,8 @@ public class NGrinderControllerStarter {
 			private String databaseHost = "localhost";
 
 			@Parameter(names = "-database-port", required = false,
-					description = "The H2 database Port. The default value is 9092")
+					description = "The H2 database port. The default value is 9092"
+			)
 			private Integer databasePort = 9092;
 
 			@Parameter(names = "-database-type", required = false,
@@ -60,14 +86,25 @@ public class NGrinderControllerStarter {
 
 			public void process() {
 				System.setProperty("cluster.mode", "easy");
+				if (clusterHost != null) {
+					System.setProperty("cluster.ip", clusterHost);
+				}
 				System.setProperty("cluster.port", clusterPort.toString());
 				System.setProperty("cluster.region", region);
 				System.setProperty("controller.controller_port", controllerPort.toString());
-				System.setProperty("database-type", databaseType);
+				System.setProperty("database.type", databaseType);
 				if ("h2".equals(databaseType)) {
-					System.setProperty("database.url", "tcp://" + databaseHost + ":" + databasePort + "/db/ngrinder");
+					if (tryConnection(databaseHost, databasePort)) {
+						throw new ParameterException("Failed to connect h2 db. Please run the h2 TcpServer in " +
+								"advance\nor set the correct -database-host and -database-port parameters");
+					}
+					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
 				} else {
-					System.setProperty("database.url", "localhost:33000");
+					if (tryConnection(databaseHost, databasePort)) {
+						throw new ParameterException("Failed to connect cubrid db. Please run the cubrid db " +
+								"in advance\nor set the correct -database-host and -database-port parameters");
+					}
+					System.setProperty("database.url", this.databaseHost + ":" + this.databasePort);
 				}
 			}
 
@@ -80,7 +117,11 @@ public class NGrinderControllerStarter {
 
 		public void parseArgs(String[] args) {
 			JCommander commander = new JCommander(ClusterMode.this);
-			commander.setProgramName(getRunningCommand() + " -cluster-mode=" + name());
+			String clusterModeOption = "";
+			if (this != ClusterMode.none) {
+				clusterModeOption = " -cluster-mode=" + name();
+			}
+			commander.setProgramName(getRunningCommand() + clusterModeOption);
 			try {
 				commander.parse(args);
 				process();
@@ -92,6 +133,93 @@ public class NGrinderControllerStarter {
 		}
 
 		abstract void process();
+	}
+
+	public static boolean tryConnection(String byConnecting, int port) {
+		Socket socket = null;
+		try {
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(byConnecting, port), 2000); // 2 seconds timeout
+		} catch (Exception e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (Exception e) {
+					//
+				}
+			}
+		}
+		return true;
+	}
+
+	class PortRangeValidator implements IValueValidator<Integer> {
+		@Override
+		public void validate(String name, Integer value) throws ParameterException {
+			if (value > Character.MAX_VALUE && value < 0) {
+				throw new ParameterException(name + "=" + value + " port is used. The port should be within 0 and " +
+						Character.MAX_VALUE);
+			}
+			InetAddress localHost = null;
+			try {
+				localHost = InetAddress.getLocalHost();
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to get the localhost");
+			}
+			if (!checkExactPortAvailability(localHost, value)) {
+				throw new ParameterException(name + "=" + value + " port is already occupied by the other system " +
+						"or failed to bind. Please use the other port");
+			}
+		}
+	}
+
+
+	class PortAvailabilityValidator extends PortRangeValidator {
+		@Override
+		public void validate(String name, Integer value) throws ParameterException {
+			super.validate(name, value);
+			InetAddress localHost = null;
+			try {
+				localHost = InetAddress.getLocalHost();
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to get the localhost");
+			}
+			if (!checkExactPortAvailability(localHost, value)) {
+				throw new ParameterException(name + "=" + value + " port is already occupied by the other system " +
+						"or failed to bind. Please use the other port");
+			}
+		}
+	}
+
+
+	/**
+	 * Check if the given port is available.
+	 *
+	 * @param addr address to be bound
+	 * @param port port to be checked
+	 * @return true if available
+	 */
+	public static boolean checkExactPortAvailability(InetAddress inetAddress, int port) {
+		ServerSocket socket = null;
+		try {
+			if (inetAddress == null) {
+				socket = new ServerSocket(port);
+			} else {
+				socket = new ServerSocket(port, 1, inetAddress);
+			}
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+					// FALL THROUGH
+				}
+			}
+		}
 	}
 
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
