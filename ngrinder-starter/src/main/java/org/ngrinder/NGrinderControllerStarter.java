@@ -329,6 +329,7 @@ public class NGrinderControllerStarter {
 
 		if (server.help) {
 			commander.usage();
+			System.exit(0);
 		}
 
 		if (server.home != null) {
