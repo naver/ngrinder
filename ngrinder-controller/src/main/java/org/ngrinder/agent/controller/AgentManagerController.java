@@ -137,7 +137,7 @@ public class AgentManagerController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/states/", "/api/states"}, method = RequestMethod.GET)
 	public HttpEntity<String> getStates() {
-		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
+		List<AgentInfo> agents = agentManagerService.getAllVisibleAgents();
 		return toJsonHttpEntity(getAgentStatus(agents));
 	}
 
@@ -150,7 +150,7 @@ public class AgentManagerController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll() {
-		return toJsonHttpEntity(agentManagerService.getAllVisibleAgentInfoFromDB());
+		return toJsonHttpEntity(agentManagerService.getAllVisibleAgents());
 	}
 
 	/**

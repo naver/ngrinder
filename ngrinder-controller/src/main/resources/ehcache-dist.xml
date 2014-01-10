@@ -61,6 +61,6 @@
 		   timeToLiveSeconds="5"/>
 
 	<cache name="local_agents" maxElementsInMemory="1" overflowToDisk="false"
-		   timeToLiveSeconds="100"/>
+		   timeToLiveSeconds="3600"/>
 
 </ehcache>

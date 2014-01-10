@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  * Agent control request b/w controllers in the clustered nGrinder installation.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1
  */
@@ -38,56 +38,62 @@ public class ClusteredAgentRequest implements Serializable {
 
 	/**
 	 * Request Type.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 */
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
 			public void process(ClusteredAgentManagerService agentManagerService,
-							AgentControllerIdentityImplementation agentIdentity) {
+			                    AgentControllerIdentityImplementation agentIdentity) {
 				agentManagerService.stopAgent(agentIdentity);
 			}
 		},
-		UPDATE_AGENT {
+		EXPIRE_LOCAL_CACHE {
 			@Override
 			public void process(ClusteredAgentManagerService agentManagerService,
 			                    AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.updateAgent(agentIdentity);
 			}
+
 		},
-		SHARE_AGENT_SYSTEM_DATA_MODEL {
-			@Override
-			public void process(ClusteredAgentManagerService agentManagerService,
-							AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.addAgentMonitoringTarget(agentIdentity);
-			}
-		};
+		UPDATE_AGENT
+
+				{
+					@Override
+					public void process(ClusteredAgentManagerService agentManagerService,
+					                    AgentControllerIdentityImplementation agentIdentity) {
+						agentManagerService.updateAgent(agentIdentity);
+					}
+				},
+		SHARE_AGENT_SYSTEM_DATA_MODEL
+
+				{
+					@Override
+					public void process(ClusteredAgentManagerService agentManagerService,
+					                    AgentControllerIdentityImplementation agentIdentity) {
+						agentManagerService.addAgentMonitoringTarget(agentIdentity);
+					}
+				};
 
 		RequestType() {
 		}
 
 		/**
 		 * Process the request.
-		 * 
-		 * @param agentManagerService
-		 *            agentManagerService
-		 * @param agentIdentity
-		 *            agentIdentity
+		 *
+		 * @param agentManagerService agentManagerService
+		 * @param agentIdentity       agentIdentity
 		 */
 		public abstract void process(ClusteredAgentManagerService agentManagerService,
-						AgentControllerIdentityImplementation agentIdentity);
+		                             AgentControllerIdentityImplementation agentIdentity);
 	}
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param agentIp
-	 *            agent ip
-	 * @param agentName
-	 *            agent name
-	 * @param requestType
-	 *            request type
+	 *
+	 * @param agentIp     agent ip
+	 * @param agentName   agent name
+	 * @param requestType request type
 	 */
 	public ClusteredAgentRequest(String agentIp, String agentName, RequestType requestType) {
 		this.agentIp = agentIp;

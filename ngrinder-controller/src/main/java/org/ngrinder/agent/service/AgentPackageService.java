@@ -314,7 +314,11 @@ public class AgentPackageService {
 			regionName = "NONE";
 		}
 		if (StringUtils.isNotBlank(owner)) {
-			regionName = regionName + "_owned_" + owner;
+			if (StringUtils.isEmpty(regionName)) {
+				regionName = "owned_" + owner;
+			} else {
+				regionName = regionName + "_owned_" + owner;
+			}
 		}
 		confMap.put("controllerRegion", regionName);
 		return confMap;

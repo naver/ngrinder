@@ -22,5 +22,5 @@
 	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false"
 		   timeToLiveSeconds="5"/>
 	<cache name="local_agents" maxElementsInMemory="1" overflowToDisk="false"
-		   timeToLiveSeconds="100"/>
+		   timeToLiveSeconds="3600"/>
 </ehcache>

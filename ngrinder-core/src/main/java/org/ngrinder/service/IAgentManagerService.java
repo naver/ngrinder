@@ -83,16 +83,6 @@ public interface IAgentManagerService {
 	public abstract AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name);
 
 	/**
-	 * Get all agents attached to the current controller's region from DB.
-	 * <p/>
-	 * This method is cluster aware. If it's cluster mode it return all agents
-	 * attached.
-	 *
-	 * @return agent list
-	 */
-	public abstract List<AgentInfo> getLocalAgentsFromDB();
-
-	/**
 	 * Get all active agents from DB.
 	 *
 	 * @return agent list

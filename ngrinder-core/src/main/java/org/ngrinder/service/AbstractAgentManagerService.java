@@ -26,8 +26,5 @@ import java.util.List;
  */
 public abstract class AbstractAgentManagerService implements IAgentManagerService {
 
-	public List<AgentInfo> getLocalAgents() {
-		return getLocalAgentsFromDB();
-	}
 
 }

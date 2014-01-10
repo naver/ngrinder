@@ -63,7 +63,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNotNull(agent2);
 
-		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
+		List<AgentInfo> agentListDB = agentManagerService.getLocalAgents();
 		Assert.assertNotNull(agentListDB);
 
 		agentManagerService.approve(agent.getId(), true);

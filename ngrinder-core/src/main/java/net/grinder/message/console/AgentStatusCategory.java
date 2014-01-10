@@ -12,27 +12,33 @@ public enum AgentStatusCategory {
 	/**
 	 * Processing.
 	 */
-	PROGRESSING("green_anime.gif"),
+	PROGRESSING("green_anime.gif", true),
 	/**
 	 * Ready.
 	 */
-	READY("green.png"),
+	READY("green.png", true),
 
 	/**
 	 * Unknown state.
 	 */
-	UNKNOWN("grey.png"),
+	INACTIVE("grey.png", false),
 	/**
 	 * Stopped by error .
 	 */
-	ERROR("red.png");
+	ERROR("red.png", false);
 	private final String iconName;
+	private boolean active;
 
-	AgentStatusCategory(String iconName) {
+	AgentStatusCategory(String iconName, boolean active) {
 		this.iconName = iconName;
+		this.active = active;
 	}
 
 	public String getIconName() {
 		return iconName;
+	}
+
+	public boolean isActive() {
+		return active;
 	}
 }

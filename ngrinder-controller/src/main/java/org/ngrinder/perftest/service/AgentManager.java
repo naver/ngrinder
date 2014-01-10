@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentPackageService;
+import org.ngrinder.agent.service.LocalAgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.common.util.FileDownloadUtils;
@@ -72,7 +73,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	@Autowired
 	private AgentPackageService agentPackageService;
 
-	private LocalAgentsGetter localAgentsGetter;
+	@Autowired
+	private LocalAgentService cachedLocalAgentService;
 
 	/**
 	 * Initialize agent manager.
@@ -305,11 +307,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 
 		Set<String> ips = new HashSet<String>();
-		if (localAgentsGetter == null) {
-			return agents;
-		}
 
-		for (AgentInfo each : localAgentsGetter.getLocalAgentsFromCache()) {
+		for (AgentInfo each : cachedLocalAgentService.getLocalAgents()) {
 			if (each.isApproved()) {
 				ips.add(each.getIp() + each.getName());
 			}
@@ -321,11 +320,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			}
 		}
 		return approvedAgent;
-	}
-
-
-	public void setLocalAgentsGetter(LocalAgentsGetter localAgentsGetter) {
-		this.localAgentsGetter = localAgentsGetter;
 	}
 
 	/**
@@ -359,7 +353,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
 		for (AgentIdentity each : agents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-			if (StringUtils.endsWith(region, "_owned_" + userId) || !StringUtils.contains(region, "_owned_")) {
+			if (StringUtils.endsWith(region, "owned_" + userId) || !StringUtils.contains(region, "owned_")) {
 				userAgent.add(each);
 			}
 		}
@@ -528,12 +522,5 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			IOUtils.closeQuietly(agentPackageReader);
 		}
 		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
-	}
-
-	/**
-	 * Get the locally available agents information getter.
-	 */
-	public static interface LocalAgentsGetter {
-		List<AgentInfo> getLocalAgentsFromCache();
 	}
 }
