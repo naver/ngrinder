@@ -166,7 +166,7 @@ public class AgentPackageService {
 				addFolderToTar(tarOutputStream, basePath);
 				addFolderToTar(tarOutputStream, libPath);
 				final URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
-				Set<String> libs = getDependentLibs(classLoader);
+				Set<String> libs = getMonitorDependentLibs(classLoader);
 
 				for (URL eachUrl : classLoader.getURLs()) {
 					File eachClassPath = new File(eachUrl.getFile());
@@ -183,7 +183,7 @@ public class AgentPackageService {
 										zipEntry.getName().endsWith("bat"));
 							}
 						}, basePath, EXEC));
-					} else if (isAgentDependentLib(eachClassPath, libs)) {
+					} else if (isMonitorDependentLib(eachClassPath, libs)) {
 						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 					}
 				}
@@ -215,7 +215,8 @@ public class AgentPackageService {
 			if (agentPackagesDir.mkdirs()) {
 				LOGGER.info("{} is created", agentPackagesDir.getPath());
 			}
-			final String packageName = getDistributionPackageName("ngrinder-core", regionName, connectionIP, owner, false);
+			final String packageName = getDistributionPackageName("ngrinder-agent",
+					regionName, connectionIP, owner, false);
 			File agentTar = new File(agentPackagesDir, packageName);
 			if (agentTar.exists()) {
 				return agentTar;
@@ -286,6 +287,24 @@ public class AgentPackageService {
 		}
 	}
 
+
+	private Set<String> getMonitorDependentLibs(URLClassLoader cl) throws IOException {
+		Set<String> libs = new HashSet<String>();
+		InputStream dependencyStream = null;
+		try {
+			dependencyStream = cl.getResourceAsStream("monitor-dependencies.txt");
+			final String dependencies = IOUtils.toString(dependencyStream);
+			for (String each : StringUtils.split(dependencies, ";")) {
+				libs.add(FilenameUtils.getBaseName(each.trim()).replace("-SNAPSHOT", ""));
+			}
+		} catch (Exception e) {
+			IOUtils.closeQuietly(dependencyStream);
+			LOGGER.error("Error while loading monitor-dependencies.txt", e);
+		}
+
+		return libs;
+	}
+
 	private Set<String> getDependentLibs(URLClassLoader cl) throws IOException {
 		Set<String> libs = new HashSet<String>();
 		InputStream dependencyStream = null;
@@ -343,6 +362,24 @@ public class AgentPackageService {
 	 */
 	public boolean isAgentDependentLib(File libFile, String libName) {
 		return StringUtils.startsWith(libFile.getName(), libName);
+	}
+
+	/**
+	 * Check if this given lib file in the given lib set.
+	 *
+	 * @param libFile lib file
+	 * @param libs    lib set
+	 * @return true if dependent lib
+	 */
+	public boolean isMonitorDependentLib(File libFile, Set<String> libs) {
+		String name = libFile.getName();
+		name = name.replace(".jar", "").replace("-SNAPSHOT", "");
+		for (String each : libs) {
+			if (name.contains(each)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
