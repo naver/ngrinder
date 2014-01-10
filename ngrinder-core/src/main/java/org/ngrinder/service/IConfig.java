@@ -17,7 +17,7 @@ import org.ngrinder.common.util.PropertiesWrapper;
 
 /**
  * Config access interface.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -25,14 +25,14 @@ public interface IConfig {
 
 	/**
 	 * Check if it's test mode.
-	 * 
+	 *
 	 * @return true if test mode
 	 */
 	public abstract boolean isDevMode();
 
 	/**
 	 * Check if it's the security enabled mode.
-	 * 
+	 *
 	 * @return true if security is enabled.
 	 */
 	public abstract boolean isSecurityEnabled();
@@ -40,16 +40,23 @@ public interface IConfig {
 	/**
 	 * Check if plugin support is enabled. The reason why we need this configuration is that it
 	 * takes time to initialize plugin system in unit test context.
-	 * 
+	 *
 	 * @return true if plugin is supported.
 	 */
 	public abstract boolean isPluginSupported();
 
 	/**
-	 * Get the system properties.
-	 * 
+	 * Get the controller properties.
+	 *
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
 	public abstract PropertiesWrapper getControllerProperties();
+
+	/**
+	 * Get the cluster properties.
+	 *
+	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
+	 */
+	public abstract PropertiesWrapper getClusterProperties();
 
 }

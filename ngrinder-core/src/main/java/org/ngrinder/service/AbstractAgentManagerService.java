@@ -21,10 +21,20 @@ import java.util.List;
  * Abstract Agent manager service class which is used to retrieve the agent info
  * attaching the current controller.
  *
+ * This class is created to guarantee the backward compatibility for IAgentManagerService.
+ *
  * @author JunHo Yoon
  * @since 3.3
  */
 public abstract class AbstractAgentManagerService implements IAgentManagerService {
 
-
+	/**
+	 * Get local agents. This is only for backward compatibility.
+	 *
+	 * @return local agents
+	 * @deprecated Use IAgentManagerService#getAllLocal
+	 */
+	List<AgentInfo> getLocalAgents() {
+		return getAllLocal();
+	}
 }

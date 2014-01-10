@@ -70,7 +70,7 @@ public class AgentManagerController extends BaseController {
 	 */
 	@RequestMapping({"", "/", "/list"})
 	public String getAll(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
-		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
+		List<AgentInfo> agents = agentManagerService.getAllVisible();
 		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
 			@Override
 			public boolean apply(AgentInfo agentInfo) {
@@ -125,7 +125,7 @@ public class AgentManagerController extends BaseController {
 	@RequestMapping("/api/{id}/state")
 	public HttpEntity<String> getState(@PathVariable Long id, @RequestParam String ip, @RequestParam String name) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		return toJsonHttpEntity(agentManagerService.getAgentSystemDataModel(ip, name));
+		return toJsonHttpEntity(agentManagerService.getSystemDataModel(ip, name));
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class AgentManagerController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/states/", "/api/states"}, method = RequestMethod.GET)
 	public HttpEntity<String> getStates() {
-		List<AgentInfo> agents = agentManagerService.getAllVisibleAgents();
+		List<AgentInfo> agents = agentManagerService.getAllVisible();
 		return toJsonHttpEntity(getAgentStatus(agents));
 	}
 
@@ -150,7 +150,7 @@ public class AgentManagerController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll() {
-		return toJsonHttpEntity(agentManagerService.getAllVisibleAgents());
+		return toJsonHttpEntity(agentManagerService.getAllVisible());
 	}
 
 	/**

@@ -36,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -86,15 +84,15 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = cast(agentIdentity);
-			attachedAgentMap.put(createAgentKey(agentControllerIdentity), agentControllerIdentity);
+			attachedAgentMap.put(createKey(agentControllerIdentity), agentControllerIdentity);
 		}
 
 		// If region is not specified retrieved all
 		Map<String, AgentInfo> agentInDBMap = newHashMap();
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
-		for (AgentInfo each : getLocalAgents()) {
-			final String agentKey = createAgentKey(each);
+		for (AgentInfo each : getAllLocal()) {
+			final String agentKey = createKey(each);
 			if (!agentInDBMap.containsKey(agentKey)) {
 				agentInDBMap.put(agentKey, each);
 			} else {
@@ -166,7 +164,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		int availableShareAgents = 0;
 		int availableUserOwnAgent = 0;
 		String myAgentSuffix = "owned_" + user.getUserId();
-		for (AgentInfo agentInfo : getAllActiveAgents()) {
+		for (AgentInfo agentInfo : getAllActive()) {
 			// Skip all agents which are disapproved, inactive or
 			// have no region prefix.
 			if (!agentInfo.isApproved()) {
@@ -195,12 +193,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.ngrinder.service.IAgentManagerService#getLocalAgentsWithFullInfo()
+	 * @see org.ngrinder.service.IAgentManagerService#getAllLocalWithFullInfo()
 	 */
 	@Override
 	@Transactional
-	public List<AgentInfo> getLocalAgentsWithFullInfo() {
-		Map<String, AgentInfo> agentInfoMap = createLocalAgentMapFromDB();
+	public List<AgentInfo> getAllLocalWithFullInfo() {
+		Map<String, AgentInfo> agentInfoMap = createLocalAgentMap();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
@@ -210,10 +208,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return agentList;
 	}
 
-	private Map<String, AgentInfo> createLocalAgentMapFromDB() {
+	private Map<String, AgentInfo> createLocalAgentMap() {
 		Map<String, AgentInfo> agentInfoMap = Maps.newHashMap();
-		for (AgentInfo each : getLocalAgents()) {
-			agentInfoMap.put(createAgentKey(each), each);
+		for (AgentInfo each : getAllLocal()) {
+			agentInfoMap.put(createKey(each), each);
 		}
 		return agentInfoMap;
 	}
@@ -222,11 +220,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.service.IAgentManagerService#createAgentKey(org.ngrinder
+	 * org.ngrinder.service.IAgentManagerService#createKey(org.ngrinder
 	 * .agent.model.AgentInfo )
 	 */
 	@Override
-	public String createAgentKey(AgentInfo agentInfo) {
+	public String createKey(AgentInfo agentInfo) {
 		return createAgentKey(agentInfo.getIp(), agentInfo.getName());
 	}
 
@@ -234,11 +232,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.service.IAgentManagerService#createAgentKey(net.grinder
+	 * org.ngrinder.service.IAgentManagerService#createKey(net.grinder
 	 * .engine.controller .AgentControllerIdentityImplementation)
 	 */
 	@Override
-	public String createAgentKey(AgentControllerIdentityImplementation agentIdentity) {
+	public String createKey(AgentControllerIdentityImplementation agentIdentity) {
 		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
 	}
 
@@ -250,10 +248,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.ngrinder.service.IAgentManagerService#
-	 * getLocalAgentIdentityByIpAndName(java.lang .String, java.lang.String)
+	 * getAgentIdentityByIpAndName(java.lang .String, java.lang.String)
 	 */
 	@Override
-	public AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name) {
+	public AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name) {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentIdentity = cast(eachAgentIdentity);
@@ -265,37 +263,22 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 
-	public List<AgentInfo> getLocalAgents() {
+	public List<AgentInfo> getAllLocal() {
 		return Collections.unmodifiableList(cachedLocalAgentService.getLocalAgents());
-	}
-
-	public List<AgentInfo> getAllActiveAgents() {
-		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getLocalAgents()) {
-			final AgentControllerState state = agentInfo.getState();
-			if (state != null && state.isActive()) {
-				agents.add(agentInfo);
-			}
-		}
-		return agents;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getAllActiveAgentInfoFromDB
+	 * org.ngrinder.service.IAgentManagerService#getAllActive
 	 * ()
 	 *
 	 */
 	@Override
-	public List<AgentInfo> getAllActiveAgentInfoFromDB() {
-		return agentManagerRepository.findAll(active());
-	}
-
-	public List<AgentInfo> getAllVisibleAgents() {
+	public List<AgentInfo> getAllActive() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getLocalAgents()) {
+		for (AgentInfo agentInfo : getAllLocal()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
@@ -308,17 +291,24 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getAllVisibleAgentInfoFromDB
+	 * org.ngrinder.service.IAgentManagerService#getAllVisible
 	 * ()
 	 */
 	@Override
-	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
-		return agentManagerRepository.findAll(visible());
+	public List<AgentInfo> getAllVisible() {
+		List<AgentInfo> agents = Lists.newArrayList();
+		for (AgentInfo agentInfo : getAllLocal()) {
+			final AgentControllerState state = agentInfo.getState();
+			if (state != null && state.isActive()) {
+				agents.add(agentInfo);
+			}
+		}
+		return agents;
 	}
 
 	private AgentInfo createAgentInfo(AgentControllerIdentityImplementation agentIdentity,
 	                                  Map<String, AgentInfo> agentInfoMap) {
-		AgentInfo agentInfo = agentInfoMap.get(createAgentKey(agentIdentity));
+		AgentInfo agentInfo = agentInfoMap.get(createKey(agentIdentity));
 		if (agentInfo == null) {
 			agentInfo = new AgentInfo();
 		}
@@ -373,7 +363,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			return null;
 		}
 		if (includeAgentIdentity) {
-			AgentControllerIdentityImplementation agentIdentityByIp = getLocalAgentIdentityByIpAndName(findOne.getIp(),
+			AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIpAndName(findOne.getIp(),
 					findOne.getName());
 			return fillUp(findOne, agentIdentityByIp);
 		} else {
@@ -426,12 +416,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getAgentSystemDataModel
+	 * org.ngrinder.service.IAgentManagerService#getSystemDataModel
 	 * (java.lang.String, java.lang.String)
 	 */
 	@Override
-	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(ip, name);
+	public SystemDataModel getSystemDataModel(String ip, String name) {
+		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(ip, name);
 		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();
 	}
 

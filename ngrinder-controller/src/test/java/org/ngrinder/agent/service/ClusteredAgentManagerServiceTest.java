@@ -97,11 +97,11 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 	@Test
 	public void testOther() {
-		agentManagerService.getAllVisibleAgentInfoFromDB();
-		agentManagerService.getAllActiveAgentInfoFromDB();
+		agentManagerService.getAllVisible();
+		agentManagerService.getAllActive();
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
-		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
+		agentManagerService.getSystemDataModel("127.0.0.1", "127.0.0.1");
 		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(NetworkUtils.DEFAULT_LOCAL_HOST_NAME,
 				"127.0.0.1");
 		monitor.setRegion(spiedConfig.getRegion());
@@ -116,7 +116,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNotNull(agent2);
 
-		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
+		List<AgentInfo> agentListDB = agentManagerService.getAllLocal();
 		Assert.assertNotNull(agentListDB);
 
 		agentManagerService.approve(agent.getId(), true);

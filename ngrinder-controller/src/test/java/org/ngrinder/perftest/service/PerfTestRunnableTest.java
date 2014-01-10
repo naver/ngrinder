@@ -88,7 +88,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 			sleep(1000);
 		}
 		agentService.checkAgentState();
-		List<AgentInfo> agentList = agentService.getLocalAgents();
+		List<AgentInfo> agentList = agentService.getAllLocal();
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}

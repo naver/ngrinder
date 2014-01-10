@@ -65,7 +65,7 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 		agentManagerService = new ClusteredAgentManagerService() {
 			@SuppressWarnings("serial")
 			@Override
-			public List<AgentInfo> getAllActiveAgentInfoFromDB() {
+			public List<AgentInfo> getAllActive() {
 				return new ArrayList<AgentInfo>() {
 					{
 						add(createAgentInfo("hello", true, AgentControllerState.READY));

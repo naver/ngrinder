@@ -44,7 +44,8 @@ import java.util.Set;
 import static net.grinder.message.console.AgentControllerState.INACTIVE;
 import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -94,7 +95,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 											ClusteredAgentRequest.RequestType.EXPIRE_LOCAL_CACHE) {
 										expireLocalCache();
 									} else {
-										AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
+										AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(
 												agentRequest.getAgentIp(), agentRequest.getAgentName());
 										if (agentIdentity != null) {
 											agentRequest.getRequestType().process(ClusteredAgentManagerService.this,
@@ -128,13 +129,13 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation existingAgent = cast(agentIdentity);
-			attachedAgentMap.put(createAgentKey(existingAgent), existingAgent);
+			attachedAgentMap.put(createKey(existingAgent), existingAgent);
 		}
 		Map<String, AgentInfo> agentsInDBMap = Maps.newHashMap();
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
-		for (AgentInfo eachAgentInDB : getLocalAgents()) {
-			String keyOfAgentInDB = createAgentKey(eachAgentInDB);
+		for (AgentInfo eachAgentInDB : getAllLocal()) {
+			String keyOfAgentInDB = createKey(eachAgentInDB);
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
 			if (agentIdentity != null) {
@@ -225,20 +226,14 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		return getAgentManager().getSystemDataModel(agentIdentity);
 	}
 
-	/**
-	 * Get all visible agents from DB.
-	 *
-	 * @return agent list
-	 */
-	@Override
-	public List<AgentInfo> getAllVisibleAgents() {
-		return getAllActiveAgentInfoFromDB();
+	public List<AgentInfo> getAllActive() {
+		return agentManagerRepository.findAll(active());
 	}
 
-	@Override
-	public List<AgentInfo> getAllActiveAgents() {
-		return getAllActiveAgentInfoFromDB();
+	public List<AgentInfo> getAllVisible() {
+		return agentManagerRepository.findAll(visible());
 	}
+
 
 	/**
 	 * Get the available agent count map in all regions of the user, including
@@ -258,7 +253,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 		String myAgentSuffix = "owned_" + user.getUserId();
 
-		for (AgentInfo agentInfo : getAllActiveAgents()) {
+		for (AgentInfo agentInfo : getAllActive()) {
 			// Skip all agents which are disapproved, inactive or
 			// have no region prefix.
 			if (!agentInfo.isApproved()) {
@@ -306,29 +301,15 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 	}
 
-
-	/**
-	 * Get all agents attached of this region from DB.
-	 * <p/>
-	 * This method is cluster aware. If it's cluster mode it return all agents
-	 * attached in this region.
-	 *
-	 * @return agent list
-	 */
-	public List<AgentInfo> getLocalAgentsFromDB() {
-		return agentManagerRepository.findAll(startWithRegion(getConfig().getRegion()));
-	}
-
 	@Override
 	public AgentInfo approve(Long id, boolean approve) {
 		AgentInfo agent = super.approve(id, approve);
 		if (agent != null) {
-			agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
+			agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
 					new ClusteredAgentRequest(agent.getIp(), agent.getName(), EXPIRE_LOCAL_CACHE));
 		}
 		return agent;
 	}
-
 
 	/**
 	 * Stop agent. In cluster mode, it queues the agent stop request to
@@ -342,7 +323,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
+		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
 				new ClusteredAgentRequest(agent.getIp(), agent.getName(), STOP_AGENT));
 	}
 
@@ -357,7 +338,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
+		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
 				new ClusteredAgentRequest(agent.getIp(), agent.getName(), SHARE_AGENT_SYSTEM_DATA_MODEL));
 	}
 
@@ -370,7 +351,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * @return {@link SystemDataModel} instance.
 	 */
 	@Override
-	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
+	public SystemDataModel getSystemDataModel(String ip, String name) {
 		AgentInfo found = agentManagerRepository.findByIpAndHostName(ip, name);
 		String systemStat = (found == null) ? null : found.getSystemStat();
 		return (StringUtils.isEmpty(systemStat)) ? new SystemDataModel() : gson.fromJson(systemStat,
@@ -384,7 +365,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * @param agentIdentity agent identity
 	 */
 	public void addAgentMonitoringTarget(AgentControllerIdentityImplementation agentIdentity) {
-		agentMonitoringTargetsCache.put(createAgentKey(agentIdentity), agentIdentity);
+		agentMonitoringTargetsCache.put(createKey(agentIdentity), agentIdentity);
 	}
 
 	/**
@@ -416,7 +397,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
+		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
 				new ClusteredAgentRequest(agent.getIp(), agent.getName(), UPDATE_AGENT));
 	}
 

@@ -42,20 +42,19 @@ public interface IAgentManagerService {
 	public abstract Map<String, MutableInt> getAvailableAgentCountMap(User user);
 
 	/**
-	 * Get all agent agents. The agent list is obtained combining the data from
-	 * DB and {@link AgentManager}
+	 * Get all local agents. The agent list is obtained from db and cached.
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getLocalAgents();
+	public abstract List<AgentInfo> getAllLocal();
 
 	/**
-	 * Get all agent agents. The agent list is obtained combining the data from
+	 * Get all local agent agents. The agent list is obtained by combining the data from
 	 * DB and {@link AgentManager}
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getLocalAgentsWithFullInfo();
+	public abstract List<AgentInfo> getAllLocalWithFullInfo();
 
 	/**
 	 * Create the agent key from the given agent info.
@@ -63,7 +62,7 @@ public interface IAgentManagerService {
 	 * @param agentInfo agent information
 	 * @return agent key
 	 */
-	public abstract String createAgentKey(AgentInfo agentInfo);
+	public abstract String createKey(AgentInfo agentInfo);
 
 	/**
 	 * Create the agent key from the given agent identity.
@@ -71,7 +70,7 @@ public interface IAgentManagerService {
 	 * @param agentIdentity agent identity
 	 * @return agent key
 	 */
-	public abstract String createAgentKey(AgentControllerIdentityImplementation agentIdentity);
+	public abstract String createKey(AgentControllerIdentityImplementation agentIdentity);
 
 	/**
 	 * Get the agent identity by IP and host name.
@@ -80,21 +79,21 @@ public interface IAgentManagerService {
 	 * @param name host name
 	 * @return {@link AgentControllerIdentityImplementation} instance.
 	 */
-	public abstract AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name);
+	public abstract AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name);
 
 	/**
 	 * Get all active agents from DB.
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getAllActiveAgentInfoFromDB();
+	public abstract List<AgentInfo> getAllActive();
 
 	/**
 	 * Get all visible agents from DB.
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getAllVisibleAgentInfoFromDB();
+	public abstract List<AgentInfo> getAllVisible();
 
 	/**
 	 * Get the agent for the given id without agent identity info. If it's called from the other controller, only
@@ -123,7 +122,7 @@ public interface IAgentManagerService {
 	 * @param name agent name
 	 * @return {@link SystemDataModel} instance.
 	 */
-	public abstract SystemDataModel getAgentSystemDataModel(String ip, String name);
+	public abstract SystemDataModel getSystemDataModel(String ip, String name);
 
 
 	/**
