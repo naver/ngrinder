@@ -48,7 +48,7 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Locate dumped user1 repo into tempdir
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Before
@@ -81,10 +81,10 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setPath("www/aa.py");
 		fileEntry.setFileType(FileType.PYTHON_SCRIPT);
 		repo.save(getTestUser(), fileEntry, "UTF-8");
-		assertThat(repo.findAll(getTestUser()).size(), is(size + 2));
+		assertThat(repo.findAll(getTestUser()).size(), is(size + 3));
 
 		repo.delete(getTestUser(), Lists.newArrayList("helloworld.txt"));
-		assertThat(repo.findAll(getTestUser()).size(), is(size + 1));
+		assertThat(repo.findAll(getTestUser()).size(), is(size + 2));
 
 		// Attempt to create duplicated path
 		fileEntry.setPath("www");
