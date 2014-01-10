@@ -219,10 +219,13 @@ public abstract class NetworkUtils {
 		List<Integer> ports = new ArrayList<Integer>();
 		int freeSocket;
 		InetAddress inetAddress = null;
-		try {
-			inetAddress = InetAddress.getByName(ip);
-		} catch (Exception e) {
-			noOp();
+		if (StringUtils.isNotBlank(ip)) {
+			try {
+
+				inetAddress = InetAddress.getByName(ip);
+			} catch (Exception e) {
+				noOp();
+			}
 		}
 		for (int i = 0; i < size; i++) {
 			freeSocket = checkPortAvailability(inetAddress, from, limit);

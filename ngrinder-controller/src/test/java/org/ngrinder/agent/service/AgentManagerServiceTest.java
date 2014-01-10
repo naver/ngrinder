@@ -55,6 +55,9 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	private AgentManagerRepository agentRepository;
 
 	@Autowired
+	private LocalAgentService localAgentService;
+
+	@Autowired
 	private Config config;
 
 	@Test
@@ -98,6 +101,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setState(AgentControllerState.READY);
 		agentInfo.setApproved(true);
 		agentRepository.save(agentInfo);
+		localAgentService.expireCache();
 		countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
 
 		int newCount = countMap.get(config.getRegion()).intValue();
@@ -113,6 +117,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setPort(1);
 		agentInfo.setState(AgentControllerState.READY);
 		agentRepository.save(agentInfo);
+		localAgentService.expireCache();
 		agentManagerService.checkAgentState();
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
