@@ -326,7 +326,9 @@ public class FileEntryController extends BaseController {
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(FileEntry input) {
-						return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimmedQuery);
+						return input.getFileType() != FileType.DIR &&
+								StringUtils.containsIgnoreCase(new File(input.getPath()).getName(),
+										trimmedQuery);
 					}
 				});
 		model.addAttribute("query", query);
