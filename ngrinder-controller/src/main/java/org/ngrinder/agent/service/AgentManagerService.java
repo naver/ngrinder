@@ -93,7 +93,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		Map<String, AgentInfo> agentInDBMap = newHashMap();
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
-		for (AgentInfo each : cachedLocalAgentService.getLocalAgents()) {
+		for (AgentInfo each : getLocalAgents()) {
 			final String agentKey = createAgentKey(each);
 			if (!agentInDBMap.containsKey(agentKey)) {
 				agentInDBMap.put(agentKey, each);
@@ -212,7 +212,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	private Map<String, AgentInfo> createLocalAgentMapFromDB() {
 		Map<String, AgentInfo> agentInfoMap = Maps.newHashMap();
-		for (AgentInfo each : cachedLocalAgentService.getLocalAgents()) {
+		for (AgentInfo each : getLocalAgents()) {
 			agentInfoMap.put(createAgentKey(each), each);
 		}
 		return agentInfoMap;
@@ -266,13 +266,14 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 
 	public List<AgentInfo> getLocalAgents() {
-		return cachedLocalAgentService.getLocalAgents();
+		return Collections.unmodifiableList(cachedLocalAgentService.getLocalAgents());
 	}
 
 	public List<AgentInfo> getAllActiveAgents() {
 		List<AgentInfo> agents = Lists.newArrayList();
 		for (AgentInfo agentInfo : getLocalAgents()) {
-			if (agentInfo.getState().isActive()) {
+			final AgentControllerState state = agentInfo.getState();
+			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
 			}
 		}
@@ -295,7 +296,8 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public List<AgentInfo> getAllVisibleAgents() {
 		List<AgentInfo> agents = Lists.newArrayList();
 		for (AgentInfo agentInfo : getLocalAgents()) {
-			if (agentInfo.getState().isVisible()) {
+			final AgentControllerState state = agentInfo.getState();
+			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
 			}
 		}
