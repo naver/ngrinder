@@ -270,7 +270,8 @@
 			monitorStatusString = monitorStatusString +
                     "<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
 					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
-					" MEM-" + formatPercentage(null, value.totalMemory / value.freeMemory);
+					" MEM-" + formatPercentage(null, ((value.totalMemory - value.freeMemory) / value.totalMemory)
+					* 100);
 			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {
 				monitorStatusString = monitorStatusString + "/" +
 						" RX-" + formatNetwork(null, value.receivedPerSec) +
