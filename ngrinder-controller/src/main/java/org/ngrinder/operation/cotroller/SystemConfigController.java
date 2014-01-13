@@ -21,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,7 +49,7 @@ public class SystemConfigController extends BaseController {
 	 * @return operation/system_config
 	 */
 	@RequestMapping("")
-	public String getOne(Model model) {
+	public String getOne(ModelMap model) {
 		model.addAttribute("content", systemConfigService.getOne());
 		return "operation/system_config";
 	}
@@ -57,14 +58,15 @@ public class SystemConfigController extends BaseController {
 	/**
 	 * Save the system configuration.
 	 *
-	 * @param model   model
 	 * @param content system configuration content to be saved
+	 * @param model   model
 	 * @return operation/system_config
 	 */
 	@RequestMapping("/save")
-	public String save(Model model, @RequestParam final String content) {
-		model.addAttribute("success", systemConfigService.save(content));
-		return getOne(model);
+	public String save(@RequestParam final String content, ModelMap model) {
+		systemConfigService.save(content);
+		model.clear();
+		return "redirect:/operation/system_config";
 	}
 
 
