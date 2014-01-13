@@ -269,7 +269,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		String startMode = (param.mode == null) ? starter.getStartMode() : param.mode;
 		if ("stop".equalsIgnoreCase(param.command)) {
 			starter.stopProcess(startMode);
-			staticPrintHelpAndExit("Stop the " + param.mode);
+			System.out.println("Stop the " + startMode);
 			return;
 		}
 		starter.checkDuplicatedRun(startMode);
