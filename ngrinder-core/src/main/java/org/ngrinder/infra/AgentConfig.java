@@ -218,9 +218,9 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	 */
 	protected AgentHome resolveHome() {
 		String userHomeFromEnv = trimToEmpty(System.getenv("NGRINDER_AGENT_HOME"));
-		printLog("    System Environment:  NGRINDER_AGENT_HOME={}", userHomeFromEnv);
+		//printLog("    System Environment:  NGRINDER_AGENT_HOME={}", userHomeFromEnv);
 		String userHomeFromProperty = trimToEmpty(System.getProperty("ngrinder.agent.home"));
-		printLog("    Java System Property:  ngrinder.agent.home={}", userHomeFromEnv);
+		//printLog("    Java System Property:  ngrinder.agent.home={}", userHomeFromEnv);
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			printLog("The path to ngrinder agent home is ambiguous:");
 			printLog("    '{}' is accepted.", userHomeFromProperty);
@@ -230,7 +230,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		if (StringUtils.isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		}
-		printLog("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
+		printLog("NGRINDER_AGENT_HOME=", userHome);
 		File homeDirectory = new File(userHome);
 		try {
 			if (homeDirectory.mkdirs()) {
