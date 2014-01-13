@@ -31,10 +31,11 @@ public class StarterParam {
 	@Parameter(names = "-mode", required = false, description = "run mode. The agent/monitor modes are available.")
 	public String mode = null;
 
-	@Parameter(names = "-command", required = false, description = "run mode. stop/start operations are available.")
+	@Parameter(names = "-command", required = false, description = "run mode. The stop/start command are available.")
 	public String command = "start";
 
-	@Parameter(names = {"-overwrite-config", "-o"}, required = false, description = "true if the local __agent.conf file should overwrite the .ngrinder_agent/agent.conf")
+	@Parameter(names = {"-overwrite-config", "-o"}, required = false,
+			description = "Overwrite overwrite the existing .ngrinder_agent/agent.conf with the local __agent.conf")
 	public boolean overwriteConfig = false;
 
 	@Parameter(names = "-agent-home", required = false,
