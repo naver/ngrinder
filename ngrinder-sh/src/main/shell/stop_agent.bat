@@ -1,4 +1,4 @@
 @ECHO OFF
 SET basedir=%~dp0
 CD %basedir%
-java -Dstart.mode=stopagent -server -cp "lib/*" org.ngrinder.NGrinderAgentStarter
+java -server -cp "lib/*" org.ngrinder.NGrinderAgentStarter -mode=agent -command=stop %*

@@ -1,4 +1,4 @@
 #!/bin/sh
 curpath=`dirname $0`
 cd ${curpath}
-java -Dstart.mode=stopagent -server -cp "lib/*" org.ngrinder.NGrinderAgentStarter
+java -server -cp "lib/*" org.ngrinder.NGrinderAgentStarter  -mode=agent -command=stop %@
