@@ -120,12 +120,15 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		final File agentConfig = home.getFile("agent.conf");
 		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
 		if (agentConfig.exists()) {
-			if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig.lastModified()) {
+			if (System.getProperty("ngrinder.overwrite.config") != null) {
+				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
+			} else if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig
+					.lastModified()) {
 				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
 				LOGGER.warn("If you want to use the recent agent configuration provided from the controller.");
-				LOGGER.warn("Please delete the existing file and run the agent again");
+				LOGGER.warn("Please run agent with -o option");
+				return;
 			}
-			return;
 		}
 		if (newAgentConfig.exists()) {
 			home.copyFileTo(newAgentConfig, "agent.conf");
@@ -143,6 +146,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		checkNotNull(home);
 		Properties properties = home.getProperties("agent.conf");
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
+		properties.putAll(System.getProperties());
 		agentProperties = new PropertiesWrapper(properties, agentPropertyMapper);
 		monitorProperties = new PropertiesWrapper(properties, monitorPropertyMapper);
 		commonProperties = new PropertiesWrapper(properties, commonPropertyMapper);

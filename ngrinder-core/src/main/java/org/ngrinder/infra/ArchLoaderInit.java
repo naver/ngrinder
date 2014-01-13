@@ -65,7 +65,6 @@ public class ArchLoaderInit {
 		if (!existingPath.contains(nativeDirectory.getAbsolutePath())) {
 			System.setProperty("java.library.path", nativeDirectory.getAbsolutePath() + File
 					.pathSeparator + existingPath);
-			LOGGER.debug("java.library.path : {} ", System.getProperty("java.library.path"));
 		}
 	}
 

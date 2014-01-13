@@ -11,7 +11,7 @@ do
 		cp -rf ./update_package/* .
 		rm -rf ./update_package
 	fi
-	./run_agent_internal.sh $1
+	./run_agent_internal.sh $@
 	if [ ! -d ./update_package/lib ]
 	then
 		break

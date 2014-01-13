@@ -13,7 +13,7 @@ IF EXIST  .\update_package\lib (
 	RMDIR /S /Q .\update_package
 )
 
-CALL .\run_agent_internal.bat %1
+CALL .\run_agent_internal.bat %*
 
 IF NOT EXIST  .\update_package\lib (
 	GOTO END
