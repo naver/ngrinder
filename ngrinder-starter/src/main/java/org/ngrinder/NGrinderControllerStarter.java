@@ -82,6 +82,7 @@ public class NGrinderControllerStarter {
 					description = "The database type. The default value is h2", hidden = true)
 			private String databaseType = "h2";
 
+			@SuppressWarnings("SpellCheckingInspection")
 			public void process() {
 				System.setProperty("cluster.mode", "easy");
 				if (clusterHost != null) {
@@ -181,7 +182,7 @@ public class NGrinderControllerStarter {
 	@Parameter(names = "-exhome", description = "extended home")
 	private String exHome = null;
 
-	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message", hidden = true)
+	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
 	private Boolean help = false;
 
 	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
