@@ -55,6 +55,7 @@ public class UserService extends AbstractUserService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private PerfTestService perfTestService;
 
@@ -156,6 +157,7 @@ public class UserService extends AbstractUserService {
 	 *
 	 * @param userId the user id string list
 	 */
+	@SuppressWarnings("SpringElInspection")
 	@Transactional
 	@CacheEvict(value = "users", key = "#userId")
 	public void delete(String userId) {

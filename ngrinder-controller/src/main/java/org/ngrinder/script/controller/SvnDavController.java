@@ -169,6 +169,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 	}
 
+	@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 	private void logRequest(HttpServletRequest request) {
 		StringBuilder logBuffer = new StringBuilder();
 		logBuffer.append('\n');

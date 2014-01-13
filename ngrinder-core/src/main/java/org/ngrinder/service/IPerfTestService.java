@@ -186,6 +186,7 @@ public interface IPerfTestService {
 	 * @param perfTest	perftest
 	 * @return statistic path
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public abstract File getStatisticPath(PerfTest perfTest);
 
 }

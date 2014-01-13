@@ -41,7 +41,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * Groovy Maven project {@link ScriptHandler}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -68,8 +68,9 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		String path = fileEntry.getPath();
 		if (!FilenameUtils.isExtension(path, "groovy")) {
 			return false;
-			
+
 		}
+		//noinspection SimplifiableIfStatement
 		if (!path.contains(JAVA) && !path.contains(GROOVY)) {
 			return false;
 		}
@@ -106,7 +107,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				fileList.add(eachFileEntry);
 			}
 		}
-		
+
 		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + GROOVY, revision, true)) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isLibDistributable() && !eachFileEntry.getPath().equals(scriptEntry.getPath())) {
@@ -139,18 +140,18 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 
 	@Override
 	protected void prepareDistMore(Long testId, User user, FileEntry script, File distDir,
-			PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+	                               PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 		String pomPathInSVN = PathUtils.join(getBasePath(script), "pom.xml");
 		MavenCli cli = new MavenCli();
 		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
 				+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
 
-		int result = cli.doMain(new String[] { // goal specification
+		int result = cli.doMain(new String[]{ // goal specification
 				"dependency:copy-dependencies", // run dependency goal
-						"-DoutputDirectory=./lib", // to the lib folder
-						"-DexcludeScope=provided" // but exclude the provided
-													// library
-				}, distDir.getAbsolutePath(), processingResult, processingResult);
+				"-DoutputDirectory=./lib", // to the lib folder
+				"-DexcludeScope=provided" // but exclude the provided
+				// library
+		}, distDir.getAbsolutePath(), processingResult, processingResult);
 		boolean success = (result == 0);
 		if (success) {
 			processingResult.printf("\nDependencies in %s was copied.\n", pomPathInSVN);
@@ -166,7 +167,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 
 	@Override
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, // LF
-			String url, boolean createLib) {
+	                                String url, boolean createLib) {
 		path = PathUtils.join(path, fileName);
 		try {
 			// Create Dir entry

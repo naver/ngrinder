@@ -557,6 +557,7 @@ public class SampleModelImplementationEx implements SampleModel {
 		}
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public ModelTestIndex getModelTestIndex() {
 		return modelTestIndex;
 	}

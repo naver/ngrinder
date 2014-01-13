@@ -18,8 +18,6 @@ import sun.net.spi.nameservice.NameService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * DNS Java DNS resolver.

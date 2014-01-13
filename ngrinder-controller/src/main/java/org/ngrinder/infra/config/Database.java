@@ -14,18 +14,15 @@
 package org.ngrinder.infra.config;
 
 import cubrid.jdbc.driver.CUBRIDDriver;
-import net.grinder.util.NetworkUtils;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2ExDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.common.util.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.sql.Driver;
 
 /**

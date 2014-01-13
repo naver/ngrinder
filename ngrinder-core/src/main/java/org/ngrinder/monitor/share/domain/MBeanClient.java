@@ -73,6 +73,7 @@ public class MBeanClient {
 	}
 
 
+	@SuppressWarnings("UnusedDeclaration")
 	public MBeanServerConnection getMBeanServerConnection() {
 		return this.mbeanServerConnection;
 	}

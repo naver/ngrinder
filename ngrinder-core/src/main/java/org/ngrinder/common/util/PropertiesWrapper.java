@@ -31,6 +31,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 public class PropertiesWrapper {
 	private final Properties properties;
+	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesWrapper.class);
 	private PropertiesKeyMapper propertiesKeyMapper;
 

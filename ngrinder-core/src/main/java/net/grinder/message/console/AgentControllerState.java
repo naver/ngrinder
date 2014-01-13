@@ -78,6 +78,7 @@ public enum AgentControllerState {
 	 *
 	 * @return icon name
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public String getIconName() {
 		return category.getIconName();
 	}

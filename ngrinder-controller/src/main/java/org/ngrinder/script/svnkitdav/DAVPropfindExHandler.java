@@ -13,62 +13,26 @@
  */
 package org.ngrinder.script.svnkitdav;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
-import org.tmatesoft.svn.core.SVNErrorCode;
-import org.tmatesoft.svn.core.SVNErrorMessage;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNProperties;
-import org.tmatesoft.svn.core.SVNProperty;
-import org.tmatesoft.svn.core.SVNPropertyValue;
+import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.internal.io.dav.DAVElement;
 import org.tmatesoft.svn.core.internal.io.fs.FSRevisionRoot;
-import org.tmatesoft.svn.core.internal.server.dav.DAVConfig;
-import org.tmatesoft.svn.core.internal.server.dav.DAVDepth;
-import org.tmatesoft.svn.core.internal.server.dav.DAVException;
-import org.tmatesoft.svn.core.internal.server.dav.DAVLock;
-import org.tmatesoft.svn.core.internal.server.dav.DAVLockScope;
-import org.tmatesoft.svn.core.internal.server.dav.DAVPathUtil;
-import org.tmatesoft.svn.core.internal.server.dav.DAVRepositoryManager;
-import org.tmatesoft.svn.core.internal.server.dav.DAVResource;
-import org.tmatesoft.svn.core.internal.server.dav.DAVResourceKind;
-import org.tmatesoft.svn.core.internal.server.dav.DAVResourceState;
-import org.tmatesoft.svn.core.internal.server.dav.DAVResourceType;
-import org.tmatesoft.svn.core.internal.server.dav.DAVResourceURI;
-import org.tmatesoft.svn.core.internal.server.dav.DAVServlet;
-import org.tmatesoft.svn.core.internal.server.dav.DAVServletUtil;
-import org.tmatesoft.svn.core.internal.server.dav.DAVXMLUtil;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVElementProperty;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVLockInfoProvider;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropertiesProvider;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropfindRequest;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropsResult;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVRequest;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVResourceWalker;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVResponse;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.IDAVResourceWalkHandler;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.LivePropertySpecification;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.ServletDAVHandler;
+import org.tmatesoft.svn.core.internal.server.dav.*;
+import org.tmatesoft.svn.core.internal.server.dav.handlers.*;
 import org.tmatesoft.svn.core.internal.util.SVNDate;
 import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
 import org.tmatesoft.svn.core.internal.util.SVNXMLUtil;
 import org.tmatesoft.svn.core.internal.wc.SVNErrorManager;
 import org.tmatesoft.svn.core.internal.wc.SVNPropertiesManager;
 import org.tmatesoft.svn.util.SVNLogType;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
+import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * nGrinder customized version of {@link DAVPropfindHandler}. This returns error by set up status
@@ -78,7 +42,7 @@ import org.tmatesoft.svn.util.SVNLogType;
  * @since 3.0.4
  * @see DAVPropfindHandler
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked", "UnusedAssignment", "ForLoopReplaceableByForEach", "UnusedDeclaration"})
 public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResourceWalkHandler {
 	public static final List<String> NAMESPACES = new LinkedList<String>();
 	static {

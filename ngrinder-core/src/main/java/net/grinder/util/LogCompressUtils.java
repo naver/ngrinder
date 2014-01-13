@@ -13,25 +13,18 @@
  */
 package net.grinder.util;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Log compress utility. This class mainly provide the compress a single log file.
@@ -63,7 +56,7 @@ public abstract class LogCompressUtils {
 					zipEntry.setTime(each.lastModified());
 					zos.putNextEntry(zipEntry);
 					byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
-					int count = 0;
+					int count;
 					while ((count = fio.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
 						zos.write(buffer, 0, count);
 					}

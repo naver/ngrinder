@@ -25,10 +25,11 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Tag class for categorization of {@link PerfTest}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(name = "TAG")
 public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<Tag> {
@@ -54,8 +55,8 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param tagValue	tag value
+	 *
+	 * @param tagValue tag value
 	 */
 	public Tag(String tagValue) {
 		this.tagValue = StringUtils.trimToEmpty(tagValue);
@@ -85,12 +86,9 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Tag)) {
-			return false;
-		}
-		return StringUtils.equalsIgnoreCase(this.getTagValue(), ((Tag) obj).getTagValue());
+		return obj instanceof Tag && StringUtils.equalsIgnoreCase(this.getTagValue(), ((Tag) obj).getTagValue());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return StringUtils.trimToEmpty(this.getTagValue()).hashCode();

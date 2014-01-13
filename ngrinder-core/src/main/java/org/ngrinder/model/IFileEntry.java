@@ -51,6 +51,7 @@ public interface IFileEntry {
 	 * @return user
 	 * @since 3.2
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public abstract User getCreatedUser();
 
 	/**

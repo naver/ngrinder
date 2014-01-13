@@ -65,6 +65,7 @@ public class AgentController implements Agent, AgentConstants {
 	private final AgentConfig agentConfig;
 
 	private Timer m_timer;
+	@SuppressWarnings("FieldCanBeLocal")
 	private final Condition m_eventSynchronisation = new Condition();
 	private final AgentControllerIdentityImplementation m_agentIdentity;
 	private final AgentControllerServerListener m_agentControllerServerListener;
@@ -111,6 +112,7 @@ public class AgentController implements Agent, AgentConstants {
 	 *
 	 * @throws GrinderException occurs when the test execution is failed.
 	 */
+	@SuppressWarnings("ConstantConditions")
 	public void run() throws GrinderException {
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
@@ -196,7 +198,6 @@ public class AgentController implements Agent, AgentConstants {
 					m_connectionPort = 0;
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.STOP);
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.SHUTDOWN)) {
-					startMessage = null;
 					m_connectionPort = 0;
 					break;
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.AGENT_UPDATE)) {
@@ -283,6 +284,7 @@ public class AgentController implements Agent, AgentConstants {
 		sendCurrentState(consoleCommunication);
 		if (consoleCommunication != null) {
 			consoleCommunication.shutdown();
+			//noinspection UnusedAssignment
 			consoleCommunication = null;
 		}
 		m_agentControllerServerListener.discardMessages(AgentControllerServerListener.ANY);

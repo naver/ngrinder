@@ -61,6 +61,7 @@ import java.util.concurrent.ExecutorService;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("UnusedDeclaration")
 @Component
 public class AgentManager implements ControllerConstants, AgentDownloadRequestListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);

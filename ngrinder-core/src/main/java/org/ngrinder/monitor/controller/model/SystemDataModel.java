@@ -25,6 +25,7 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
  * @author JunHo Yoon
  * @since 2.0
  */
+@SuppressWarnings("UnusedDeclaration")
 public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	private static final long serialVersionUID = 790334226137464982L;
 

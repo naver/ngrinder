@@ -56,6 +56,7 @@ public class NullScriptHandler extends ScriptHandler {
 
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@Override
 	public boolean isValidatable() {
 		return false;
@@ -67,6 +68,7 @@ public class NullScriptHandler extends ScriptHandler {
 	 * @param fileType file type
 	 * @return appropriate code mirror key. if nothing, return shell
 	 */
+	@SuppressWarnings({"UnusedDeclaration", "SpellCheckingInspection"})
 	public String getCodemirrorKey(FileType fileType) {
 		return getValue(codeMirrorKey, fileType, "shell");
 	}

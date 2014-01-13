@@ -26,7 +26,6 @@ import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ClusterConstants;
-import org.ngrinder.common.util.NoOp;
 import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -105,7 +103,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 		peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 
-		Pair<NetworkUtils.IPPortPair, String> properties = null;
+		Pair<NetworkUtils.IPPortPair, String> properties;
 		if (StringUtils.equals(getClusterMode(), "advanced")) {
 			CoreLogger.LOGGER.info("In cluster - advanced mode.");
 			properties = createManualDiscoveryCacheProperties(getReplicatedCacheNames(cacheManagerConfig));
@@ -142,7 +140,6 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 	public Pair<NetworkUtils.IPPortPair, String> createAutoDiscoveryCacheProperties() {
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
-		List<String> uris = new ArrayList<String>();
 		NetworkUtils.IPPortPair local = new NetworkUtils.IPPortPair(getClusterHostName(), getClusterPort());
 		String peerProperty = "peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,multicastGroupPort=4446, timeToLive=32";
 		return Pair.of(Preconditions.checkNotNull(local, "localhost ip does not exists in the cluster uris"),
@@ -178,6 +175,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 	public String getClusterHostName() {
 		String hostName = config.getClusterProperties().getProperty(PROP_CLUSTER_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 		try {
+			//noinspection ResultOfMethodCallIgnored
 			InetAddress.getByName(hostName);
 		} catch (Exception e) {
 			CoreLogger.LOGGER.error("The cluster host name {} is not available. Use localhost instead", hostName);

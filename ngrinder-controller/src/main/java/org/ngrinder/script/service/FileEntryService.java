@@ -79,6 +79,7 @@ public class FileEntryService {
 	@Qualifier("cacheManager")
 	private CacheManager cacheManager;
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private FileEntryRepository fileEntityRepository;
 

@@ -89,6 +89,7 @@ public class ConsoleFoundationEx {
 		m_timer = new Timer(true);
 		m_container.addComponent(m_timer);
 
+		//noinspection RedundantArrayCreation
 		m_container.addComponent(FileDistributionImplementation.class, FileDistributionImplementation.class,
 						new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
 								new ComponentParameter(ProcessControlImplementation.class),

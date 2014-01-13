@@ -27,7 +27,7 @@ import org.ngrinder.perftest.service.PerfTestService;
 import java.io.File;
 
 /**
- * Agent crash preventer.
+ * Agent crash detector.
  *
  * @author JunHo Yoon
  * @since 3.1.2

@@ -80,6 +80,7 @@ import static org.ngrinder.common.util.Preconditions.*;
  * @author Mavlarn
  * @author JunHo Yoon
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 @Controller
 @RequestMapping("/perftest")
 public class PerfTestController extends BaseController {
@@ -610,6 +611,7 @@ public class PerfTestController extends BaseController {
 	 * @param id    test id
 	 * @return perftest/detail_report
 	 */
+	@SuppressWarnings("MVCPathVariableInspection")
 	@RequestMapping(value = {"/{id}/detail_report", /** for backward compatibility */"/{id}/report"})
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getOne(id));
@@ -623,6 +625,7 @@ public class PerfTestController extends BaseController {
 	 * @param id test id
 	 * @return perftest/detail_report/perf
 	 */
+	@SuppressWarnings({"MVCPathVariableInspection", "UnusedParameters"})
 	@RequestMapping("/{id}/detail_report/perf")
 	public String getDetailPerfReport(@PathVariable("id") long id) {
 		return "perftest/detail_report/perf";
@@ -636,6 +639,7 @@ public class PerfTestController extends BaseController {
 	 * @param modelMap model map
 	 * @return perftest/detail_report/monitor
 	 */
+	@SuppressWarnings("UnusedParameters")
 	@RequestMapping("/{id}/detail_report/monitor")
 	public String getDetailMonitorReport(@PathVariable("id") long id, @RequestParam("targetIP") String targetIP,
 	                                     ModelMap modelMap) {
@@ -651,6 +655,7 @@ public class PerfTestController extends BaseController {
 	 * @param modelMap model map
 	 * @return perftest/detail_report/plugin
 	 */
+	@SuppressWarnings("UnusedParameters")
 	@RequestMapping("/{id}/detail_report/plugin/{plugin}")
 	public String getDetailPluginReport(@PathVariable("id") long id,
 	                                    @PathVariable("plugin") String plugin, @RequestParam("kind") String kind, ModelMap modelMap) {
@@ -776,6 +781,7 @@ public class PerfTestController extends BaseController {
 	 * @param imgWidth imageWidth
 	 * @return json string.
 	 */
+	@SuppressWarnings("MVCPathVariableInspection")
 	@RestAPI
 	@RequestMapping({"/api/{id}/perf", "/api/{id}/graph"})
 	public HttpEntity<String> getPerfGraph(@PathVariable("id") long id,
@@ -951,6 +957,7 @@ public class PerfTestController extends BaseController {
 	 * @param perftest option to override while cloning.
 	 * @return json string
 	 */
+	@SuppressWarnings("MVCPathVariableInspection")
 	@RestAPI
 	@RequestMapping(value = {"/api/{id}/clone_and_start", /* for backward compatibility */ "/api/{id}/cloneAndStart"})
 	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {

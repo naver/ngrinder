@@ -13,8 +13,6 @@
  */
 package org.ngrinder.agent.service;
 
-import com.google.gson.Gson;
-import net.sf.ehcache.Cache;
 import org.apache.commons.collections.CollectionUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
@@ -38,8 +36,8 @@ public class LocalAgentService {
 	@Autowired
 	private AgentManagerRepository agentManagerRepository;
 
-	@Autowired
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalAgentService.class);
+
 	@Autowired
 	private Config config;
 
@@ -51,8 +49,6 @@ public class LocalAgentService {
 		clustered = config.isClustered();
 		region = config.getRegion();
 	}
-
-	Cache each;
 
 	@Cacheable("local_agents")
 	public List<AgentInfo> getLocalAgents() {
@@ -80,8 +76,6 @@ public class LocalAgentService {
 		}
 		agentManagerRepository.flush();
 	}
-
-	private Gson gson = new Gson();
 
 	@Transactional
 	public void doSthInTransaction(Runnable runnable) {

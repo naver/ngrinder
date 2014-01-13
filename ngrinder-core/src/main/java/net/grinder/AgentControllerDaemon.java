@@ -39,6 +39,7 @@ public class AgentControllerDaemon implements Agent {
 	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
 	private boolean forceShutdown = false;
 	// event synchronization for
+	@SuppressWarnings("FieldCanBeLocal")
 	private Condition m_eventSyncCondition = new Condition();
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");

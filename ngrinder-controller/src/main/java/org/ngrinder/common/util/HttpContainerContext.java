@@ -61,8 +61,7 @@ public class HttpContainerContext {
 		// However, if ngrinder is provided in HTTPS.. it can be a problem.
 		// FIXME : Later fix above.
 		String portString = (serverPort == DEFAULT_WEB_PORT) ? StringUtils.EMPTY : ":" + serverPort;
-		return new StringBuilder(httpUrl).append(request.getScheme()).append("://").append(request.getServerName())
-				.append(portString).append(request.getContextPath()).toString();
+		return httpUrl + request.getScheme() + "://" + request.getServerName() + portString + request.getContextPath();
 	}
 
 	/**

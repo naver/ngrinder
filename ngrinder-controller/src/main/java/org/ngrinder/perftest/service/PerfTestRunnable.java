@@ -67,6 +67,7 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private PerfTestService perfTestService;
 

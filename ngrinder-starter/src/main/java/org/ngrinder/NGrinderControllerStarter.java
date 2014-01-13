@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("FieldCanBeLocal")
 @Parameters(separators = "=")
 public class NGrinderControllerStarter {
 
@@ -161,7 +162,7 @@ public class NGrinderControllerStarter {
 				throw new ParameterException(name + "=" + value + " port is used. The port should be within 0 and " +
 						Character.MAX_VALUE);
 			}
-			InetAddress localHost = null;
+			InetAddress localHost;
 			try {
 				localHost = InetAddress.getLocalHost();
 			} catch (Exception e) {
@@ -179,7 +180,7 @@ public class NGrinderControllerStarter {
 		@Override
 		public void validate(String name, Integer value) throws ParameterException {
 			super.validate(name, value);
-			InetAddress localHost = null;
+			InetAddress localHost;
 			try {
 				localHost = InetAddress.getLocalHost();
 			} catch (Exception e) {
@@ -270,6 +271,7 @@ public class NGrinderControllerStarter {
 
 		WebAppContext context = new WebAppContext();
 		final File home = resolveHome();
+		//noinspection ResultOfMethodCallIgnored
 		home.mkdirs();
 		context.setTempDirectory(home);
 		context.setServer(server);

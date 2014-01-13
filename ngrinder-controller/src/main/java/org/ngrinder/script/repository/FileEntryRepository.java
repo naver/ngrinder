@@ -425,6 +425,7 @@ public class FileEntryRepository {
 		}
 		try {
 			// recursively close
+			//noinspection InfiniteLoopStatement
 			while (true) {
 				editor.closeDir();
 			}
@@ -535,6 +536,7 @@ public class FileEntryRepository {
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
 				throw processException("It's not possible to write directory. nodeKind is " + nodeKind);
 			}
+			//noinspection ResultOfMethodCallIgnored
 			toPathDir.mkdirs();
 			File destFile = new File(toPathDir, FilenameUtils.getName(path));
 			// Prepare parent folders

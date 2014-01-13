@@ -128,10 +128,12 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return cpuUsedPercentage;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public long getIdlecpu() {
 		return idleCpuValue;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public long getTotalCpuValue() {
 		return totalCpuValue;
 	}

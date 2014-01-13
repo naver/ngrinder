@@ -19,7 +19,7 @@ import org.ngrinder.common.util.DateUtils;
 
 /**
  * Panel entry which will be shown in main page.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -38,6 +38,7 @@ public class PanelEntry implements Comparable<PanelEntry> {
 		this.title = title;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public Date getLastUpdatedDate() {
 		return lastUpdatedDate;
 	}

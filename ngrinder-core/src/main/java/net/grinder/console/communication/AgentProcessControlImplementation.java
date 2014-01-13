@@ -45,6 +45,7 @@ import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
  *
  * @author JunHo Yoon
  */
+@SuppressWarnings("SynchronizeOnNonFinalField")
 public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private final ConsoleCommunication m_consoleCommunication;

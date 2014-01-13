@@ -54,6 +54,7 @@ public interface IAgentManagerService {
 	 *
 	 * @return agent list
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public abstract List<AgentInfo> getAllLocalWithFullInfo();
 
 	/**

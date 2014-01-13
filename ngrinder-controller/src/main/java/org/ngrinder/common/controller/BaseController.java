@@ -338,6 +338,7 @@ public class BaseController implements WebConstants {
 	 */
 	@ExceptionHandler({NGrinderRuntimeException.class})
 	public ModelAndView handleException(NGrinderRuntimeException e) {
+		//noinspection SpringMVCViewInspection
 		ModelAndView modelAndView = new ModelAndView("forward:/");
 		modelAndView.addObject("exception", e.getMessage());
 		return modelAndView;

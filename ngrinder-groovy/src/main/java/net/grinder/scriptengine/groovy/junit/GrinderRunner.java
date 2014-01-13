@@ -156,8 +156,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	@Override
 	protected List<FrameworkMethod> getChildren() {
-		List<FrameworkMethod> children = super.getChildren();
-		return children;
+		return super.getChildren();
 	}
 
 	@Override
@@ -219,7 +218,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 				repetition = ((Repeat) each).value();
 			}
 		}
-		return new RepetitionStatment(statement, repetition, threadContextUpdater);
+		return new RepetitionStatement(statement, repetition, threadContextUpdater);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -242,9 +241,9 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 		return statement;
 	}
 
-	protected Statement withRunRate(FrameworkMethod method, Object target, Statement statement) {
+	protected Statement withRunRate(FrameworkMethod method, @SuppressWarnings("UnusedParameters") Object target, Statement statement) {
 		RunRate runRate = method.getAnnotation(RunRate.class);
-		return runRate == null ? statement : new RunRateStatment(statement, runRate.value());
+		return runRate == null ? statement : new RunRateStatement(statement, runRate.value());
 	}
 
 	private Statement withRules(FrameworkMethod method, Object target, Statement statement) {

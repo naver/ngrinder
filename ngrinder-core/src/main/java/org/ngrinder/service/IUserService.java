@@ -13,7 +13,6 @@
  */
 package org.ngrinder.service;
 
-import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 
 /**

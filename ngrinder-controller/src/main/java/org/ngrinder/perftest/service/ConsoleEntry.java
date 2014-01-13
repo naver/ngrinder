@@ -13,9 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import net.grinder.util.NetworkUtils;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;

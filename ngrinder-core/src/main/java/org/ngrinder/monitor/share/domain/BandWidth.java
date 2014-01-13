@@ -35,6 +35,7 @@ public class BandWidth implements Serializable {
 	/**
 	 * Default constructor.
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public BandWidth() {
 	}
 

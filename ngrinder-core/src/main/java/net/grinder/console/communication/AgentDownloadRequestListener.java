@@ -15,6 +15,11 @@ package net.grinder.console.communication;
 
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 
+/**
+ * Listener for AgentDownloadGrinderMessage.
+ *
+ * @since 3.3
+ */
 public interface AgentDownloadRequestListener {
 	public AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset);
 }

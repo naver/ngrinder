@@ -31,6 +31,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings({"deprecation", "UnusedDeclaration", "JpaDataSourceORMInspection"})
 @Entity
 @Table(name = "AGENT")
 public class AgentInfo extends BaseEntity<AgentInfo> {

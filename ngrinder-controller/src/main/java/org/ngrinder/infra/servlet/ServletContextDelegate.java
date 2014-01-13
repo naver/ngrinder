@@ -114,6 +114,7 @@ public class ServletContextDelegate implements ServletContext {
 		return servletContext.getInitParameter(name);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Enumeration<String> getInitParameterNames() {
 		return servletContext.getInitParameterNames();
@@ -124,11 +125,13 @@ public class ServletContextDelegate implements ServletContext {
 		return servletContext.getAttribute(name);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Enumeration<String> getAttributeNames() {
 		return servletContext.getAttributeNames();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Set<String> getResourcePaths(String arg0) {
 		return servletContext.getResourcePaths(arg0);
@@ -139,6 +142,7 @@ public class ServletContextDelegate implements ServletContext {
 		return servletContext.getServlet(name);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Enumeration<String> getServlets() {
 		return servletContext.getServlets();
@@ -169,6 +173,7 @@ public class ServletContextDelegate implements ServletContext {
 		return servletContext.getServletContextName();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Enumeration<String> getServletNames() {
 		return servletContext.getServletNames();

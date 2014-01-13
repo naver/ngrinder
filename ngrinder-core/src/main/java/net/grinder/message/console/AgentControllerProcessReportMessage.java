@@ -74,6 +74,7 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 	 * 
 	 * @return The process identity.
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public AgentAddress getProcessAddress() {
 		return m_processAddress;
 	}

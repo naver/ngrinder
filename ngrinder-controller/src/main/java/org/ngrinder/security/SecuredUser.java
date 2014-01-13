@@ -13,16 +13,15 @@
  */
 package org.ngrinder.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.util.AccessUtils;
 import org.ngrinder.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
@@ -114,6 +113,7 @@ public class SecuredUser implements UserDetails {
 	 *
 	 * @return auth provider class
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public String getAuthProviderClass() {
 		if (StringUtils.isNotEmpty(getUser().getAuthProviderClass())) {
 			return getUser().getAuthProviderClass();

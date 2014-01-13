@@ -29,6 +29,7 @@ class RunBeforeThreads extends Statement {
 
 	private final TestObjectFactory fFactory;
 
+	@SuppressWarnings("SpellCheckingInspection")
 	private final List<FrameworkMethod> fBefores;
 
 	private final PerThreadStatement fFirstPerThreadStatement;
@@ -41,7 +42,7 @@ class RunBeforeThreads extends Statement {
 	 * @param factory	test object factory.
 	 * @param firstPerThreadStatement	first statement to be executed at the thread beginning.
 	 */
-	public RunBeforeThreads(Statement next, List<FrameworkMethod> befores, TestObjectFactory factory,
+	public RunBeforeThreads(Statement next, @SuppressWarnings("SpellCheckingInspection") List<FrameworkMethod> befores, TestObjectFactory factory,
 					PerThreadStatement firstPerThreadStatement) {
 		fNext = next;
 		fBefores = befores;

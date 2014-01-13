@@ -22,6 +22,7 @@ import org.ngrinder.model.User;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("UnusedDeclaration")
 public class PerfTestStatistics {
 	private User user;
 	private int agentCount;

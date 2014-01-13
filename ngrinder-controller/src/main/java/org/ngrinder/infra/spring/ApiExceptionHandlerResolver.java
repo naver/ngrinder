@@ -36,7 +36,7 @@ import com.google.gson.JsonObject;
 
 /**
  * Api exception handler which emits the exception message in the form of json.
- * 
+ *
  * @author junoyoon
  * @since 3.2.3
  */
@@ -70,7 +70,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	 */
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-			Exception ex) {
+	                                     Exception ex) {
 		if (!(handler instanceof HandlerMethod)) {
 			return null;
 		}
@@ -83,6 +83,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		object.addProperty(JSON_SUCCESS, false);
 		object.addProperty(JSON_CAUSE, ex.getMessage());
 		StringWriter out = new StringWriter();
+		//noinspection ThrowableResultOfMethodCallIgnored
 		Throwable throwable = ExceptionUtils.sanitize(ex);
 		PrintWriter printWriter = new PrintWriter(out);
 		throwable.printStackTrace(printWriter);

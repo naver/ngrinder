@@ -50,9 +50,6 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@Autowired
 	private BasicDataSource dataSource;
 
-	@Autowired
-	private Config config;
-
 	private ResourceLoader resourceLoader;
 
 	private Database getDatabase() {

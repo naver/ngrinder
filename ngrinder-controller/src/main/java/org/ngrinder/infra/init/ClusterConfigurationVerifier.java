@@ -13,28 +13,16 @@
  */
 package org.ngrinder.infra.init;
 
-import net.sf.ehcache.Ehcache;
-import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.DatabaseConstants;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.region.model.RegionInfo;
-import org.ngrinder.region.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkState;
 
 /**
@@ -46,6 +34,7 @@ import static org.ngrinder.common.util.Preconditions.checkState;
 @Component
 public class ClusterConfigurationVerifier {
 
+	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterConfigurationVerifier.class);
 
 	@Autowired

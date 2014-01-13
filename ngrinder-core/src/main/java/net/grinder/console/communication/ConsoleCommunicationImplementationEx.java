@@ -66,6 +66,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 * @param timeAuthority Knows the time
 	 * @throws DisplayMessageConsoleException If properties are invalid.
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
 	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
 		this(resources, properties, errorHandler, timeAuthority, 500, 30000);
@@ -284,6 +285,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 *
 	 * @return The number of accepted connections.
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public int getNumberOfConnections() {
 		return m_acceptor == null ? 0 : m_acceptor.getNumberOfConnections();
 	}

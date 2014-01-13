@@ -22,7 +22,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.common.util.CollectionUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -96,7 +95,10 @@ public class FileEntryController extends BaseController {
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(@Nullable FileEntry input) {
-						return PathUtils.trimSeparator(FilenameUtils.getPath(input.getPath())).equals(path);
+						if (input != null) {
+							return PathUtils.trimSeparator(FilenameUtils.getPath(input.getPath())).equals(path);
+						}
+						return false;
 					}
 				}));
 		Collections.sort(files, new Comparator<FileEntry>() {

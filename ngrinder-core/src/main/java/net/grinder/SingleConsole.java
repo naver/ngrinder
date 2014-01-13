@@ -1333,6 +1333,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param listener listener to be registered
 	 * @since 3.1.3
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public void addSamplingLifeCycleFollowUpCycleListener(SamplingLifeCycleFollowUpListener listener) {
 		samplingLifeCycleFollowupListener.add(listener);
 	}

@@ -36,7 +36,6 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.*;
 import org.ngrinder.user.service.UserService;
 import org.reflections.Reflections;
@@ -80,14 +79,13 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 	@Autowired(required = false)
 	private AuthenticationManager authenticationManager;
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private AgentManagerService agentManagerService;
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private PerfTestService perfTestService;
-
-	@Autowired
-	private FileEntryService fileEntryService;
 
 	@Autowired
 	private ScheduledTaskService scheduledTaskService;

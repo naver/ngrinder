@@ -27,7 +27,6 @@ import org.ngrinder.model.IFileEntry;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
@@ -47,12 +46,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	@Expose
 	private long fileSize;
 
-	/**
-	 * Test url. This File entity works on.. This field is only for the HTML
-	 * form.
-	 */
-	private String testURL;
-
 	@Expose
 	private String content;
 
@@ -61,12 +54,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	 */
 	@Expose
 	private Map<String, String> properties = new HashMap<String, String>();
-
-	/**
-	 * Revisions on this entity. This fields are sometimes empty depending on
-	 * the {@link FileEntryRepository}.
-	 */
-	private List<Long> revisions;
 
 	/**
 	 * This is mapped to commit comment.
@@ -158,8 +145,9 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.description = description;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public boolean isEditable() {
-		return fileType.getFileCategory().isEditable();
+		return getFileType().getFileCategory().isEditable();
 	}
 
 	/**

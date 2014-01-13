@@ -23,7 +23,7 @@ import org.hibernate.type.StandardBasicTypes;
 
 /**
  * Hibernate CUBRID Dialect.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -40,7 +40,6 @@ public class CUBRIDExDialect extends Dialect {
 
 	private static final int VAR_CHAR_SIZE = 4000;
 	private static final int VARING_BIT = 2000;
-	private static final int GET_LIMIT_BUFFER = 2000;
 
 	/**
 	 * Constructor.
@@ -162,8 +161,7 @@ public class CUBRIDExDialect extends Dialect {
 	@Override
 	public String getLimitString(final String sql, final boolean hasOffset) {
 		// CUBRID 8.3.0 support limit
-		return new StringBuffer(sql.length() + GET_LIMIT_BUFFER).append(sql)
-				.append(hasOffset ? " limit ?, ?" : " limit ?").toString();
+		return sql + (hasOffset ? " limit ?, ?" : " limit ?");
 	}
 
 	@Override

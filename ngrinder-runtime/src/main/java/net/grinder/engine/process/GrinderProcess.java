@@ -252,6 +252,7 @@ final class GrinderProcess {
 			// J2SE 1.4.1_03-b02 on W2K. Do not ask me why, I've stopped
 			// caring.
 			try {
+				//noinspection ResultOfMethodCallIgnored
 				java.net.InetAddress.getLocalHost();
 			} catch (final UnknownHostException e) { /* Ignore */
 			}

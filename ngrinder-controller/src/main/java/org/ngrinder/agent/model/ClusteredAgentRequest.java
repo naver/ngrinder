@@ -105,6 +105,7 @@ public class ClusteredAgentRequest implements Serializable {
 		return requestType;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setRequestType(RequestType requestType) {
 		this.requestType = requestType;
 	}

@@ -106,6 +106,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	protected abstract Integer order();
 
+	@SuppressWarnings("SpellCheckingInspection")
 	public boolean isValidatable() {
 		return true;
 	}
@@ -115,6 +116,8 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 *
 	 * @return true if it is.
 	 */
+
+	@SuppressWarnings("UnusedDeclaration")
 	public boolean isProjectHandler() {
 		return (this instanceof ProjectHandler);
 	}

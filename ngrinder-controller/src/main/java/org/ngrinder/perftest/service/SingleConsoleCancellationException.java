@@ -17,26 +17,21 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 /**
  * Exception which occurs when on-going PerfTest cancellation is detected.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
 public class SingleConsoleCancellationException extends NGrinderRuntimeException {
 
-	/** UUID. */
+	/**
+	 * UUID.
+	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.
-	 */
-	public SingleConsoleCancellationException() {
-		super("");
-	}
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param message	message
+	 *
+	 * @param message message
 	 */
 	public SingleConsoleCancellationException(String message) {
 		super(message);

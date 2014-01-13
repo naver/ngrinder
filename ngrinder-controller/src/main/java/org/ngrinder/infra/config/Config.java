@@ -82,6 +82,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	protected PropertiesKeyMapper controllerPropertiesKeyMapper = PropertiesKeyMapper.create("controller-properties.map");
 	protected PropertiesKeyMapper clusterPropertiesKeyMapper = PropertiesKeyMapper.create("cluster-properties.map");
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private SpringContext context;
 
@@ -96,6 +97,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 *
 	 * @param listener listener
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public void addSystemConfListener(PropertyChangeListener listener) {
 		systemConfListeners.add(listener);
 	}
@@ -132,10 +134,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 
 	private boolean resolveClusterMode() {
 		String mode = getClusterProperties().getProperty(PROP_CLUSTER_MODE, "none");
-		if (!"none".equals(mode)) {
-			return true;
-		}
-		return getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
+		return !"none".equals(mode) || getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
 	}
 
 	/**
@@ -314,6 +313,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 				System.getProperty("user.home"), NGRINDER_EX_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
 		try {
+			//noinspection ResultOfMethodCallIgnored
 			exHomeDirectory.mkdirs();
 		} catch (Exception e) {
 			// If it's not possible.. do it... without real directory.
@@ -370,6 +370,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	/**
 	 * Load the announcement content.
 	 */
+	@SuppressWarnings("SynchronizeOnNonFinalField")
 	public void loadAnnouncement() {
 		checkNotNull(home);
 		synchronized (announcement) {

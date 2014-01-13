@@ -102,6 +102,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
 		private final GrinderContextExecutor m_groovyThreadRunner;
 		private RunNotifier notifier = new RunNotifier() {
+			@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 			public void fireTestFailure(Failure failure) {
 				if (exceptionProcessor.isGenericShutdown(failure.getException())) {
 					if (failure.getException() instanceof RuntimeException) {
@@ -195,6 +196,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		 *
 		 * @param message the message for the exception
 		 */
+		@SuppressWarnings("UnusedDeclaration")
 		public GroovyScriptExecutionException(String message) {
 			super(message);
 		}

@@ -30,6 +30,7 @@ public abstract class AbstractConfig implements IConfig {
 	 * @return controller properties.
 	 * @deprecated use #getControllerProperties()
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public PropertiesWrapper getSystemProperties() {
 		return getControllerProperties();
 	}

@@ -51,6 +51,7 @@ import java.io.StringWriter;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 @Profile("production")
 @Controller
 @RequestMapping("/operation/script_console")
@@ -61,6 +62,7 @@ public class ScriptConsoleController extends BaseController implements Applicati
 
 	@Autowired
 	private AgentManager agentManager;
+
 
 	@Autowired
 	private AgentManagerService agentManagerService;

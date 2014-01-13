@@ -50,6 +50,7 @@ import org.springframework.util.Assert;
  * @since 3.0
  * 
  */
+@SuppressWarnings("UnusedDeclaration")
 @Service("ngrinderAuthenticationProvider")
 public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 

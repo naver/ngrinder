@@ -52,7 +52,7 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 	private String ip;
 
 	private int port;
-	private SystemInfo systemInfo = new SystemInfo.NullSystemInfo();
+	private SystemInfo systemInfo = SystemInfo.NullSystemInfo.getNullSystemInfo();
 	private long lastAccessedTime;
 
 	public MonitorClientService(String ip, int port) {

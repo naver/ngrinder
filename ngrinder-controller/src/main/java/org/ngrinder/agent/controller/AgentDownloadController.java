@@ -14,7 +14,6 @@
 package org.ngrinder.agent.controller;
 
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.region.model.RegionInfo;

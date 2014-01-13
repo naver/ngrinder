@@ -13,12 +13,9 @@
  */
 package org.ngrinder.common.service;
 
-import java.util.Date;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.User;
@@ -26,6 +23,8 @@ import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Aspect to inject the created/modified user and date to the model.

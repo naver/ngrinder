@@ -121,6 +121,7 @@ public abstract class AbstractExceptionProcessor {
 	 * 
 	 * @return interesting packages
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	protected abstract String[] getInterestingPackages();
 
 	/**

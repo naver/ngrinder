@@ -34,6 +34,7 @@ public abstract class AbstractAgentManagerService implements IAgentManagerServic
 	 * @return local agents
 	 * @deprecated Use IAgentManagerService#getAllLocal
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	List<AgentInfo> getLocalAgents() {
 		return getAllLocal();
 	}

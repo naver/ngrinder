@@ -24,6 +24,7 @@ import net.grinder.common.processidentity.AgentIdentity;
  * @author JunHo Yoon
  * @since 3.1
  */
+@SuppressWarnings("UnusedDeclaration")
 public class RegionInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -32,15 +33,6 @@ public class RegionInfo implements Serializable {
 	private boolean visible = true;
 	private Set<AgentIdentity> agentIdentities;
 
-	/**
-	 * Constructor with true visibility.
-	 *
-	 * @param ip              ip
-	 * @param agentIdentities agentIdentity Set
-	 */
-	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities) {
-		this(ip, null, agentIdentities, true);
-	}
 
 	/**
 	 * Constructor with true visibility.
@@ -95,6 +87,7 @@ public class RegionInfo implements Serializable {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
+
 
 	public Set<AgentIdentity> getAgentIdentities() {
 		return agentIdentities;

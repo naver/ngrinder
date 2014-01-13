@@ -21,6 +21,7 @@ import net.grinder.util.weave.WeavingException;
  * @author Philip Aston
  * @author JunHo Yoon (modified by)
  */
+@SuppressWarnings("UnusedDeclaration")
 public final class JythonScriptEngineService implements ScriptEngineService {
 
 	private final FileExtensionMatcher m_pyFileMatcher = new FileExtensionMatcher(".py");

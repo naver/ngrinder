@@ -54,6 +54,7 @@ import org.picocontainer.annotations.Nullable;
  * @author JunHo Yoon (modify some.. add string related)
  * @since 2 (imported from Google Collections Library)
  */
+@SuppressWarnings("UnusedDeclaration")
 public final class Preconditions {
 	private static final int DEFAULT_16 = 16;
 

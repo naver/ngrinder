@@ -36,6 +36,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * Performance Test Entity.
  */
 
+@SuppressWarnings({"JpaDataSourceORMInspection", "UnusedDeclaration", "JpaAttributeTypeInspection"})
 @Entity
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {

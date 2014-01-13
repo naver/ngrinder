@@ -46,6 +46,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 				this.digits[i++] = 1000;
 			} else if (StringUtils.startsWithIgnoreCase(token, "snapshot")) {
 				this.digits[i - 1]--;
+				//noinspection UnusedAssignment
 				this.digits[i++] = 1000;
 				break;
 			} else {

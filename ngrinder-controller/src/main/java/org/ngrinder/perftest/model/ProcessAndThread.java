@@ -21,6 +21,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("UnusedDeclaration")
 public class ProcessAndThread {
 	/**
 	 * Constructor.

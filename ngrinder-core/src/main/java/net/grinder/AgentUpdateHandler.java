@@ -36,11 +36,13 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
  * @author JunHo Yoon
  * @since 3.1
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class AgentUpdateHandler implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentUpdateHandler.class);
 
 	private final AgentConfig agentConfig;
 	private File download;
+	@SuppressWarnings("FieldCanBeLocal")
 	private int offset = 0;
 	private FileOutputStream agentOutputStream;
 

@@ -51,6 +51,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 @Service
 public class RegionService {
 
+	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
 
 	@Autowired

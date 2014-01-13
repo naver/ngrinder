@@ -150,6 +150,7 @@ public class SampleAccumulatorEx implements Cloneable {
 		m_cumulativeStatistics.reset();
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public StatisticsSet getLastSampleStatistics() {
 		return m_lastSampleStatistics;
 	}

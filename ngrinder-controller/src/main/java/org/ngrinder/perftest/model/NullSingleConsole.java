@@ -16,7 +16,6 @@ package org.ngrinder.perftest.model;
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
