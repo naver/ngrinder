@@ -74,7 +74,7 @@ public class NGrinderControllerStarter {
 			private String databaseHost = "localhost";
 
 			@Parameter(names = "-database-port", required = false,
-					description = "The H2 database port. The default value is 9092"
+					description = "The database port. The default value is 9092"
 			)
 			private Integer databasePort = null;
 
@@ -102,6 +102,9 @@ public class NGrinderControllerStarter {
 					}
 					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
 				} else {
+					if (databasePort == null) {
+						databasePort = 33000;
+					}
 					if (!tryConnection(databaseHost, databasePort)) {
 						throw new ParameterException("Failed to connect cubrid db. Please run the cubrid db " +
 								databaseHost + ":" + databasePort +
