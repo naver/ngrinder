@@ -97,8 +97,8 @@ public class NGrinderControllerStarter {
 					}
 					if (!tryConnection(databaseHost, databasePort)) {
 						throw new ParameterException("Failed to connect h2 db " + databaseHost + ":" + databasePort
-								+ ". Please run the h2 TcpServer in" +
-								"advance\nor set the correct -database-host and -database-port parameters");
+								+ ".\nPlease run the h2 TcpServer in advance\n"
+								+ "or set the correct -database-host and -database-port parameters");
 					}
 					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
 				} else {
@@ -106,9 +106,9 @@ public class NGrinderControllerStarter {
 						databasePort = 33000;
 					}
 					if (!tryConnection(databaseHost, databasePort)) {
-						throw new ParameterException("Failed to connect cubrid db. Please run the cubrid db " +
-								databaseHost + ":" + databasePort +
-								"in advance\nor set the correct -database-host and -database-port parameters");
+						throw new ParameterException("Failed to connect cubrid db.\n" +
+								"Please run the cubrid db " + databaseHost + ":" + databasePort + "in advance\n" +
+								"or set the correct -database-host and -database-port parameters");
 					}
 					System.setProperty("database.url", this.databaseHost + ":" + this.databasePort);
 				}
@@ -132,6 +132,7 @@ public class NGrinderControllerStarter {
 				commander.parse(args);
 				process();
 			} catch (Exception e) {
+				System.err.println("[Configuration Error]");
 				System.err.println(e.getMessage());
 				commander.usage();
 				System.exit(-1);
@@ -170,13 +171,17 @@ public class NGrinderControllerStarter {
 	@Parameter(names = "-context-path", description = "context path of the embedded web application.")
 	private String contextPath = "/";
 
-	@Parameter(names = "-cluster-mode", description = "nGrinder cluster-mode can be easy or advanced  ")
+	@Parameter(names = "-cluster-mode", description = "cluster-mode can be easy or advanced  ")
 	private String clusterMode = "none";
 
-	@Parameter(names = "-home", description = "nGrinder home")
+	@Parameter(names = "-home", description = "home directory")
 	private String home = null;
 
-	@Parameter(names = {"-help", "-?"}, description = "prints this message", hidden = true)
+	@SuppressWarnings("SpellCheckingInspection")
+	@Parameter(names = "-exhome", description = "extended home")
+	private String exHome = null;
+
+	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message", hidden = true)
 	private Boolean help = false;
 
 	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
@@ -275,6 +280,7 @@ public class NGrinderControllerStarter {
 			}
 			validator.validate("-port", server.port);
 		} catch (Exception e) {
+			System.err.println("[Configuration Error]");
 			System.err.println(e.getMessage());
 			commander.usage();
 			System.exit(0);
@@ -288,6 +294,9 @@ public class NGrinderControllerStarter {
 
 		if (server.home != null) {
 			System.setProperty("ngrinder.home", server.home);
+		}
+		if (server.exHome != null) {
+			System.setProperty("ngrinder.exhome", server.exHome);
 		}
 		final List<String> unknownOptions = commander.getUnknownOptions();
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
