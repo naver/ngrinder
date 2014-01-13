@@ -51,6 +51,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AgentManagerController extends BaseController {
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private AgentManagerService agentManagerService;
 
