@@ -89,6 +89,16 @@ public interface IAgentManagerService {
 	 */
 	public abstract List<AgentInfo> getAllActive();
 
+
+	/**
+	 * Get local agents. This is only for backward compatibility.
+	 *
+	 * @return local agents
+	 * @deprecated Use IAgentManagerService#getAllLocal
+	 */
+	@SuppressWarnings("UnusedDeclaration")
+	public abstract List<AgentInfo> getLocalAgents();
+
 	/**
 	 * Get all visible agents from DB.
 	 *

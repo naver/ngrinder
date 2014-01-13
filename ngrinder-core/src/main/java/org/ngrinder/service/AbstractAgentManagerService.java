@@ -28,14 +28,9 @@ import java.util.List;
  */
 public abstract class AbstractAgentManagerService implements IAgentManagerService {
 
-	/**
-	 * Get local agents. This is only for backward compatibility.
-	 *
-	 * @return local agents
-	 * @deprecated Use IAgentManagerService#getAllLocal
-	 */
+
 	@SuppressWarnings("UnusedDeclaration")
-	List<AgentInfo> getLocalAgents() {
+	public List<AgentInfo> getLocalAgents() {
 		return getAllLocal();
 	}
 }
