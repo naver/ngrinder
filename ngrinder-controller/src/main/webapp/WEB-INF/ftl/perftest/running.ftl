@@ -43,9 +43,10 @@
 					</@control_group>
 				<#else>
 					<@control_group label_message_key="perfTest.config.runCount">
-					${test.runCount}
-						<span class="badge badge-success pull-right"> <span
-								id="running_count"></span>  <@spring.message "perfTest.running.runCount"/></span>
+						${test.runCount}
+						<span class="badge badge-success pull-right">
+							<@spring.message "perfTest.running.runCount"/><span id="running_count"></span>
+						</span>
 					</@control_group>
 				</#if>
 				</div>
