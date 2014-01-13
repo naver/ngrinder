@@ -51,6 +51,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @author JunHo Yoon
  * @since 3.1
  */
+@SuppressWarnings("SpellCheckingInspection")
 @Component
 public class DynamicCacheConfig implements ClusterConstants {
 

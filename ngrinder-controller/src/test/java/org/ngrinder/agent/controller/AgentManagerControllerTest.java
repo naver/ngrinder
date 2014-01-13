@@ -94,16 +94,6 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		model.clear();
 		agentController.getAll("", model);
 		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
-		if (!agents.isEmpty()) {
-			AgentInfo testAgt = agents.iterator().next();
-			model.clear();
-			agentController.getOne(testAgt.getId(), model);
-			AgentInfo agentInDB = (AgentInfo) model.get("agent");
-			assertThat(agentInDB.getId(), is(testAgt.getId()));
-			assertThat(agentInDB.getIp(), is(testAgt.getIp()));
-			assertThat(agentInDB.getPort(), is(testAgt.getPort()));
-
-		}
 	}
 
 	@Test
