@@ -28,7 +28,8 @@ import java.util.Map;
 @Parameters(separators = "=")
 public class StarterParam {
 
-	@Parameter(names = "-mode", required = false, description = "run mode. The agent/monitor modes are available.")
+	@Parameter(names = "-mode", required = false,
+			description = "run mode. The agent/monitor modes are available.", hidden = true)
 	public String mode = null;
 
 	@Parameter(names = "-command", required = false, description = "run mode. The stop/start command are available.")
