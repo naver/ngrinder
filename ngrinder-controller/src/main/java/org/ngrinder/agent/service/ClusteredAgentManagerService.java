@@ -122,8 +122,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 
 	public void checkAgentState() {
-		List<AgentInfo> updatedAgents = newArrayList();
-		List<AgentInfo> newAgents = newArrayList();
+		List<AgentInfo> newAgents = newArrayList(0);
+		List<AgentInfo> updatedAgents = newArrayList(0);
+		List<AgentInfo> stateUpdatedAgents = newArrayList(0);
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
@@ -150,13 +151,16 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				} else if (!hasSameInfo(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
 					updatedAgents.add(eachAgentInDB);
-				} else if (eachAgentInDB.getApproved()) {
+				} else if (!hasSameState(eachAgentInDB, agentIdentity)) {
+					eachAgentInDB.setState(getAgentManager().getAgentState(agentIdentity));
+					stateUpdatedAgents.add(eachAgentInDB);
+				} else if (eachAgentInDB.getApproved() == null) {
 					updatedAgents.add(fillUpApproval(eachAgentInDB));
 				}
 			} else { // the agent in DB is not attached to current controller
 				if (eachAgentInDB.getState() != INACTIVE) {
 					eachAgentInDB.setState(INACTIVE);
-					updatedAgents.add(eachAgentInDB);
+					stateUpdatedAgents.add(eachAgentInDB);
 				}
 			}
 		}
@@ -179,7 +183,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			}
 		}
 
-		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, null);
+		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, stateUpdatedAgents, null);
 		if (!newAgents.isEmpty()) {
 			expireLocalCache();
 		}

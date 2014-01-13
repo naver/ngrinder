@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -64,7 +65,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	/**
 	 * Run a scheduled task to check the agent status periodically.
-	 *
+	 * <p/>
 	 * This method updates the agent statuses in DB.
 	 *
 	 * @since 3.1
@@ -76,9 +77,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 	public void checkAgentState() {
-		List<AgentInfo> newAgents = Lists.newArrayList();
-		List<AgentInfo> updatedAgents = Lists.newArrayList();
-		List<AgentInfo> removedAgents = Lists.newArrayList();
+		List<AgentInfo> newAgents = newArrayList(0);
+		List<AgentInfo> updatedAgents = newArrayList(0);
+		List<AgentInfo> stateUpdatedAgents = newArrayList(0);
+		List<AgentInfo> removedAgents = newArrayList(0);
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
@@ -107,13 +109,15 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			if (agentIdentity == null) {
 				// this agent is not attached to controller
 				agentInfo.setState(AgentControllerState.INACTIVE);
-				updatedAgents.add(agentInfo);
+				stateUpdatedAgents.add(agentInfo);
 			} else if (!hasSameInfo(agentInfo, agentIdentity)) {
-				agentInfo.setState(agentManager.getAgentState(agentIdentity));
 				agentInfo.setRegion(agentIdentity.getRegion());
 				agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 				agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 				updatedAgents.add(agentInfo);
+			} else if (!hasSameState(agentInfo, agentIdentity)) {
+				agentInfo.setState(agentManager.getAgentState(agentIdentity));
+				stateUpdatedAgents.add(agentInfo);
 			}
 		}
 
@@ -123,7 +127,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			final AgentInfo agentInfo = fillUp(new AgentInfo(), agentIdentity);
 			newAgents.add(agentInfo);
 		}
-		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, removedAgents);
+		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, stateUpdatedAgents, removedAgents);
 		if (!newAgents.isEmpty() || !removedAgents.isEmpty()) {
 			expireLocalCache();
 		}
@@ -145,12 +149,15 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	protected boolean hasSameInfo(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
 		return agentInfo != null &&
 				agentInfo.getPort() == agentManager.getAgentConnectingPort(agentIdentity) &&
-				agentInfo.getState() == agentManager.getAgentState(agentIdentity) &&
 				StringUtils.equals(agentInfo.getRegion(), agentIdentity.getRegion()) &&
 				StringUtils.equals(StringUtils.trimToNull(agentInfo.getVersion()),
 						StringUtils.trimToNull(agentManager.getAgentVersion(agentIdentity)));
 	}
 
+	protected boolean hasSameState(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
+		return agentInfo != null &&
+				agentInfo.getState() == agentManager.getAgentState(agentIdentity);
+	}
 
 	/*
 	 * (non-Javadoc)
