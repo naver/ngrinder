@@ -16,10 +16,7 @@ package org.ngrinder;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
-import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.lang.StringUtils;
@@ -36,8 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.HashMap;
-import java.util.Map;
 
 import static net.grinder.util.NetworkUtils.getIP;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
@@ -50,7 +45,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Parameters(separators = "=")
 public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NGrinderAgentStarter.class);
@@ -214,38 +208,6 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		staticPrintHelpAndExit(message, e);
 	}
 
-	@Parameter(names = "-mode", required = false, description = "run mode. The agent/monitor modes are available.")
-	public String mode = null;
-
-	@Parameter(names = "-command", required = false, description = "run mode. stop/start operations are available.")
-	public String command = "start";
-
-	@Parameter(names = {"-overwrite-config", "-o"}, required = false, description = "true if the local __agent.conf file should overwrite the .ngrinder_agent/agent.conf")
-	public boolean overwriteConfig = false;
-
-	@Parameter(names = "-agent-home", required = false,
-			description = "the agent home path. The default is ~/.ngrinder_agent")
-	public String agentHome = null;
-
-	@Parameter(names = "-controller-ip", required = false, description = "the controller ip.")
-	public String controllerIP = null;
-
-	@Parameter(names = "-controller-port", required = false, description = "the controller ip.")
-	public Integer controllerPort = null;
-
-	@Parameter(names = "-region", required = false, description = "the controller ip.")
-	public String region = null;
-
-
-	@Parameter(names = "-host-id", required = false, description = "the agent host id.")
-	public String hostId = null;
-
-	@SuppressWarnings("FieldCanBeLocal")
-	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
-	private Boolean help = false;
-
-	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
-	private Map<String, String> params = new HashMap<String, String>();
 
 	public static JCommander commander;
 
@@ -256,9 +218,10 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 	 */
 	public static void main(String[] args) {
 		NGrinderAgentStarter starter = new NGrinderAgentStarter();
-
+		final StarterParam param = new StarterParam();
 		checkJavaVersion();
-		commander = new JCommander(starter);
+		commander = new JCommander(param);
+		commander.setProgramName("ngrinder-agent");
 		try {
 			commander.parse(args);
 		} catch (Exception e) {
@@ -268,43 +231,47 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			return;
 		}
 
-		if (starter.help) {
+		if (param.help) {
 			commander.usage();
 			return;
 		}
-		if ("stop".equalsIgnoreCase(starter.command)) {
-			starter.stopProcess(starter.mode);
-			return;
+
+		if (param.controllerIP != null) {
+			System.setProperty(PROP_AGENT_CONTROLLER_IP, param.controllerIP);
 		}
 
-		if (starter.controllerIP != null) {
-			System.setProperty(PROP_AGENT_CONTROLLER_IP, starter.controllerIP);
-		}
-
-		if (starter.controllerPort != null) {
+		if (param.controllerPort != null) {
 			System.setProperty(PROP_AGENT_CONTROLLER_PORT,
-					starter.controllerPort.toString());
+					param.controllerPort.toString());
 		}
 
-		if (starter.hostId != null) {
-			System.setProperty(PROP_AGENT_HOST_ID, starter.controllerPort.toString());
-		}
-		if (starter.region != null) {
-			System.setProperty(PROP_AGENT_REGION, starter.region);
+		if (param.hostId != null) {
+			System.setProperty(PROP_AGENT_HOST_ID, param.hostId.toString());
 		}
 
-		if (starter.agentHome != null) {
-			System.setProperty("ngrinder.agent.home", starter.agentHome);
+		if (param.region != null) {
+			System.setProperty(PROP_AGENT_REGION, param.region);
 		}
 
-		if (starter.overwriteConfig) {
+		if (param.agentHome != null) {
+			System.setProperty("ngrinder.agent.home", param.agentHome);
+		}
+
+		if (param.overwriteConfig) {
 			System.setProperty("ngrinder.overwrite.config", "true");
 		}
 
-		System.getProperties().putAll(starter.params);
+		System.getProperties().putAll(param.params);
 		starter.init();
+
+
 		System.out.println("nGrinder v" + starter.getVersion());
-		String startMode = (starter.mode == null) ? starter.getStartMode() : starter.mode;
+		String startMode = (param.mode == null) ? starter.getStartMode() : param.mode;
+		if ("stop".equalsIgnoreCase(param.command)) {
+			starter.stopProcess(startMode);
+			staticPrintHelpAndExit("Stop the " + param.mode);
+			return;
+		}
 		starter.checkDuplicatedRun(startMode);
 		if (startMode.equalsIgnoreCase("agent")) {
 			starter.startAgent();
