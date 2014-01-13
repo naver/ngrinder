@@ -20,12 +20,9 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
@@ -41,7 +38,7 @@ public class NGrinderControllerStarter {
 		none {
 			@Parameter(names = "-controller-port", description = "agent connection port",
 					validateValueWith = PortAvailabilityValidator.class)
-			public Integer controllerPort = null;
+			public Integer controllerPort = 16001;
 
 			public void process() {
 				if (controllerPort != null) {
@@ -56,7 +53,7 @@ public class NGrinderControllerStarter {
 							"it can only communicate with the other cluster members in the same machine.")
 			private String clusterHost = null;
 
-			@Parameter(names = "-cluster-port", required = false,
+			@Parameter(names = "-cluster-port", required = true,
 					description = "This cluster member's cluster communication port. Each cluster should have the " +
 							"unique port.",
 					validateValueWith = PortAvailabilityValidator.class)
@@ -79,7 +76,7 @@ public class NGrinderControllerStarter {
 			@Parameter(names = "-database-port", required = false,
 					description = "The H2 database port. The default value is 9092"
 			)
-			private Integer databasePort = 9092;
+			private Integer databasePort = null;
 
 			@Parameter(names = "-database-type", required = false,
 					description = "The database type. The default value is h2", hidden = true)
@@ -95,14 +92,19 @@ public class NGrinderControllerStarter {
 				System.setProperty("controller.controller_port", controllerPort.toString());
 				System.setProperty("database.type", databaseType);
 				if ("h2".equals(databaseType)) {
-					if (tryConnection(databaseHost, databasePort)) {
-						throw new ParameterException("Failed to connect h2 db. Please run the h2 TcpServer in " +
+					if (databasePort == null) {
+						databasePort = 9092;
+					}
+					if (!tryConnection(databaseHost, databasePort)) {
+						throw new ParameterException("Failed to connect h2 db " + databaseHost + ":" + databasePort
+								+ ". Please run the h2 TcpServer in" +
 								"advance\nor set the correct -database-host and -database-port parameters");
 					}
 					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
 				} else {
-					if (tryConnection(databaseHost, databasePort)) {
+					if (!tryConnection(databaseHost, databasePort)) {
 						throw new ParameterException("Failed to connect cubrid db. Please run the cubrid db " +
+								databaseHost + ":" + databasePort +
 								"in advance\nor set the correct -database-host and -database-port parameters");
 					}
 					System.setProperty("database.url", this.databaseHost + ":" + this.databasePort);
@@ -137,6 +139,7 @@ public class NGrinderControllerStarter {
 	}
 
 	public static boolean tryConnection(String byConnecting, int port) {
+
 		Socket socket = null;
 		try {
 			socket = new Socket();
@@ -155,79 +158,13 @@ public class NGrinderControllerStarter {
 		return true;
 	}
 
-	class PortRangeValidator implements IValueValidator<Integer> {
-		@Override
-		public void validate(String name, Integer value) throws ParameterException {
-			if (value > Character.MAX_VALUE && value < 0) {
-				throw new ParameterException(name + "=" + value + " port is used. The port should be within 0 and " +
-						Character.MAX_VALUE);
-			}
-			InetAddress localHost;
-			try {
-				localHost = InetAddress.getLocalHost();
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to get the localhost");
-			}
-			if (!checkExactPortAvailability(localHost, value)) {
-				throw new ParameterException(name + "=" + value + " port is already occupied by the other system " +
-						"or failed to bind. Please use the other port");
-			}
-		}
-	}
-
-
-	class PortAvailabilityValidator extends PortRangeValidator {
-		@Override
-		public void validate(String name, Integer value) throws ParameterException {
-			super.validate(name, value);
-			InetAddress localHost;
-			try {
-				localHost = InetAddress.getLocalHost();
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to get the localhost");
-			}
-			if (!checkExactPortAvailability(localHost, value)) {
-				throw new ParameterException(name + "=" + value + " port is already occupied by the other system " +
-						"or failed to bind. Please use the other port");
-			}
-		}
-	}
-
-
-	/**
-	 * Check if the given port is available.
-	 *
-	 * @param addr address to be bound
-	 * @param port port to be checked
-	 * @return true if available
-	 */
-	public static boolean checkExactPortAvailability(InetAddress inetAddress, int port) {
-		ServerSocket socket = null;
-		try {
-			if (inetAddress == null) {
-				socket = new ServerSocket(port);
-			} else {
-				socket = new ServerSocket(port, 1, inetAddress);
-			}
-			return true;
-		} catch (IOException e) {
-			return false;
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					// FALL THROUGH
-				}
-			}
-		}
-	}
 
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
-	@Parameter(names = "-port", description = "HTTP port of the server, The default is 8080")
-	private Integer port = 8080;
+	@Parameter(names = "-port", description = "HTTP port of the server, The default is 8080",
+			validateValueWith = PortAvailabilityValidator.class)
+	private Integer port = null;
 
-	@Parameter(names = "-context-path", description = "context path of the embedded web application. The default is /")
+	@Parameter(names = "-context-path", description = "context path of the embedded web application.")
 	private String contextPath = "/";
 
 	@Parameter(names = "-cluster-mode", description = "nGrinder cluster-mode can be easy or advanced  ")
@@ -239,7 +176,7 @@ public class NGrinderControllerStarter {
 	@Parameter(names = {"-help", "-?"}, description = "prints this message", hidden = true)
 	private Boolean help = false;
 
-	@DynamicParameter(names = "-D", description = "Dynamic parameters")
+	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
 	private Map<String, String> params = new HashMap<String, String>();
 
 
@@ -327,7 +264,19 @@ public class NGrinderControllerStarter {
 		JCommander commander = new JCommander(server);
 		commander.setAcceptUnknownOptions(true);
 		commander.setProgramName("ngrinder");
-		commander.parse(args);
+		PortAvailabilityValidator validator = new PortAvailabilityValidator();
+		try {
+			commander.parse(args);
+			if (server.port == null) {
+				server.port = 8080;
+			}
+			validator.validate("-port", server.port);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			commander.usage();
+			System.exit(0);
+		}
+
 
 		if (server.help) {
 			commander.usage();
