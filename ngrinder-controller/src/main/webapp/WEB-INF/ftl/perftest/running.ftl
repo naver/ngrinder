@@ -75,7 +75,7 @@
 			<@spring.message "perfTest.running.tpsStatistics"/>
 				<span id="running_time" class="badge badge-success">&nbsp;</span>
 				<a id="stop_test_btn" class="btn btn-danger pull-right">
-					<@spring.message "common.button.stop"/>
+				<@spring.message "common.button.stop"/>
 				</a>
 			</legend>
 		</fieldSet>
@@ -165,7 +165,7 @@
 	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval});
 
 	var samplingAjax = new AjaxObj("/perftest/{testId}/api/sample");
-	samplingAjax.params = { testId : ${(test.id!0)?c} };
+	samplingAjax.params = { testId: ${(test.id!0)?c} };
 
 	function showLastPerTestResult(container, statistics) {
 		var existing = container.find("tr");
@@ -268,10 +268,9 @@
 			monitorStatusString = monitorStatusString +
 					"<li class='monitor_state'><div style='width:100%;' class='ellipsis'>";
 			monitorStatusString = monitorStatusString +
-                    "<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
+					"<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
 					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
-					" MEM-" + formatPercentage(null, ((value.totalMemory - value.freeMemory) / value.totalMemory)
-					* 100);
+					" MEM-" + formatPercentage(null, ((value.totalMemory - value.freeMemory) / value.totalMemory) * 100);
 			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {
 				monitorStatusString = monitorStatusString + "/" +
 						" RX-" + formatNetwork(null, value.receivedPerSec) +

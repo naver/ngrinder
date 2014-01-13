@@ -86,8 +86,8 @@ public class HomeService {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
-			feedConnection.setConnectTimeout(2000);
-			feedConnection.setReadTimeout(2000);
+			feedConnection.setConnectTimeout(4000);
+			feedConnection.setReadTimeout(4000);
 			reader = new XmlReader(feedConnection);
 			SyndFeed feed = input.build(reader);
 			int count = 0;
