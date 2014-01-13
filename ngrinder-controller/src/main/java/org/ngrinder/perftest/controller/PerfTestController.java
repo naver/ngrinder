@@ -356,6 +356,10 @@ public class PerfTestController extends BaseController {
 		int agentMaxCount = agentCountObj.intValue();
 		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
 				agentMaxCount);
+		if (newOne.getStatus().equals(Status.READY)) {
+			checkArgument(newOne.getAgentCount() >= 1, "agentCount should be more than 1 when it's READY status.");
+		}
+
 		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 				"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
 		if (getConfig().isSecurityEnabled()) {
