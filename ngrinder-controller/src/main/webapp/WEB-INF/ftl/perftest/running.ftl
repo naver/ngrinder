@@ -8,24 +8,16 @@
 		</fieldSet>
 		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
-			<@control_group label_message_key="perfTest.running.vusers">
-				<strong>${test.vuserPerAgent}</strong>
-			</@control_group>
-
-			<@control_group label_message_key="perfTest.running.agents">
-				<span>${test.agentCount}</span>
-			</@control_group>
-			<@control_group label_message_key="perfTest.running.processes">
-			${test.processes}
-				<span class="badge badge-info pull-right">
-					<@spring.message "perfTest.running.running"/> <span id="running_process"></span>
-				</span>
-			</@control_group>
-
-			<@control_group label_message_key="perfTest.running.threads">
-			${test.threads}
+			<@control_group label_message_key="perfTest.running.totalVusers">
+				<strong>${test.vuserPerAgent * test.agentCount}</strong>
 				<span class="badge badge-info pull-right">
 					<@spring.message "perfTest.running.running"/> <span id="running_thread"></span>
+				</span>
+			</@control_group>
+			<@control_group label_message_key="perfTest.running.totalProcesses">
+				${test.processes * test.agentCount}
+				<span class="badge badge-info pull-right">
+					<@spring.message "perfTest.running.running"/> <span id="running_process"></span>
 				</span>
 			</@control_group>
 				<hr>
@@ -45,7 +37,7 @@
 					<@control_group label_message_key="perfTest.config.runCount">
 						${test.runCount}
 						<span class="badge badge-success pull-right">
-							<@spring.message "perfTest.running.runCount"/><span id="running_count"></span>
+							<@spring.message "perfTest.running.runCount"/> <span id="running_count"></span>
 						</span>
 					</@control_group>
 				</#if>
@@ -107,14 +99,16 @@
 						<tr>
 							<th class="no-click"><@spring.message "perfTest.running.testID"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.testName"/></th>
-							<th class="no-click"><@spring.message "perfTest.running.successfulTest"/></th>
+							<th class="no-click"><@spring.message "perfTest.running.success"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.errors"/></th>
 							<th class="no-click" title="<@spring.message "perfTest.running.meantime"/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.running.tps"/></th>
 							<th class="no-click" title='<@spring.message "perfTest.running.meanTimeToFirstByte"/>'>
 								MTFB
 							</th>
-							<th class="no-click"><@spring.message "perfTest.running.responseBytePerSecond"/></th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.responseBytePerSecond.full'/>">
+								<@spring.message "perfTest.running.responseBytePerSecond"/>
+							</th>
 						</tr>
 						</thead>
 						<tbody id="last_sample_result">
@@ -137,12 +131,18 @@
 						<tr>
 							<th class="no-click"><@spring.message "perfTest.running.testID"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.testName"/></th>
-							<th class="no-click"><@spring.message "perfTest.running.successfulTest"/></th>
+							<th class="no-click"><@spring.message "perfTest.running.success"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.errors"/></th>
 							<th class="no-click" title="<@spring.message "perfTest.running.meantime"/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.running.tps"/></th>
-							<th class="no-click"><@spring.message "perfTest.running.peakTPS"/></th>
-							<th class="no-click"><@spring.message "perfTest.running.responseBytePerSecond"/></th>
+							<th class="no-click"
+								title="<@spring.message 'perfTest.running.peakTPS.full'/>">
+									<@spring.message "perfTest.running.peakTPS"/>
+							</th>
+							<th class="no-click"
+								title="<@spring.message 'perfTest.running.responseBytePerSecond.full'/>">
+									<@spring.message "perfTest.running.responseBytePerSecond"/>
+							</th>
 						</tr>
 						</thead>
 						<tbody id="accumulated_sample_result">
