@@ -25,7 +25,7 @@ import org.ngrinder.common.util.PropertiesWrapper;
  */
 public abstract class AbstractConfig implements IConfig {
 	/**
-	 * This is only for backward compatibility.
+	 * This is only for backward compatibility.                   R
 	 *
 	 * @return controller properties.
 	 * @deprecated use #getControllerProperties()
