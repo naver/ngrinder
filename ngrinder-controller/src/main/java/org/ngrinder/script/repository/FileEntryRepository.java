@@ -42,6 +42,7 @@ import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.user.repository.UserRepository;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,7 +158,6 @@ public class FileEntryRepository {
 					script.setLastModifiedDate(dirEntry.getDate());
 					script.setDescription(dirEntry.getCommitMessage());
 					script.setRevision(dirEntry.getRevision());
-					script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
 					if (dirEntry.getKind() == SVNNodeKind.DIR) {
 						script.setFileType(FileType.DIR);
 					} else {
@@ -183,7 +183,7 @@ public class FileEntryRepository {
 	 * @return found {@link FileEntry}s
 	 */
 	public List<FileEntry> findAll(final User user) {
-		final List<FileEntry> scripts = new ArrayList<FileEntry>();
+		final List<FileEntry> scripts = newArrayList();
 		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
@@ -474,6 +474,9 @@ public class FileEntryRepository {
 		}
 	}
 
+	@Autowired
+	UserContext userContext;
+
 	/**
 	 * Get svn client manager with the designated subversionHome.
 	 *
@@ -481,8 +484,18 @@ public class FileEntryRepository {
 	 */
 	public SVNClientManager getSVNClientManager() {
 		DefaultSVNOptions options = SVNWCUtil.createDefaultOptions(subversionHome, true);
-		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(subversionHome);
+		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(subversionHome,
+				getCurrentUserId(), null, false);
 		return SVNClientManager.newInstance(options, authManager);
+	}
+
+	protected String getCurrentUserId() {
+		try {
+			return userContext.getCurrentUser().getUserId();
+		} catch (Exception e) {
+			return "default";
+		}
+
 	}
 
 	private void closeSVNClientManagerQuietly(SVNClientManager svnClientManager) {
