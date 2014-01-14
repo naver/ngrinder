@@ -59,4 +59,12 @@ public interface IConfig {
 	 */
 	public abstract PropertiesWrapper getClusterProperties();
 
+	/**
+	 * Get the system properties.
+	 * This is only for backward compatibility. use #getControllerProperties().
+	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
+	 * @deprecated use #getControllerProperties() instead
+	 */
+	public abstract PropertiesWrapper getSystemProperties();
+
 }
