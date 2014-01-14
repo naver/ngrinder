@@ -230,7 +230,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		if (StringUtils.isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		}
-		printLog("NGRINDER_AGENT_HOME=", userHome);
+		printLog("NGRINDER_AGENT_HOME : {}", userHome);
 		File homeDirectory = new File(userHome);
 		try {
 			if (homeDirectory.mkdirs()) {
