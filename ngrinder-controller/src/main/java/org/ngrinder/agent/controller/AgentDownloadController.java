@@ -62,6 +62,23 @@ public class AgentDownloadController extends BaseController {
 		FileDownloadUtils.downloadFile(response, ngrinderFile);
 	}
 
+
+	/**
+	 * Download the latest agent.
+	 *
+	 * @param owner   agent owner
+	 * @param region  agent region
+	 * @param request request.
+	 */
+	@RequestMapping(value = "/download/{region}/{owner}")
+	public String downloadDirect(@PathVariable(value = "owner") String owner,
+	                             @PathVariable(value = "region") String region,
+	                             ModelMap modelMap,
+	                             HttpServletRequest request) {
+		return downloadFile(owner, region, modelMap, request);
+	}
+
+
 	/**
 	 * Download the latest agent.
 	 *
@@ -74,6 +91,10 @@ public class AgentDownloadController extends BaseController {
 	                       @RequestParam(value = "region", required = false) String region,
 	                       ModelMap modelMap,
 	                       HttpServletRequest request) {
+		return downloadFile(owner, region, modelMap, request);
+	}
+
+	private String downloadFile(String owner, String region, ModelMap modelMap, HttpServletRequest request) {
 		String connectingIP = request.getServerName();
 		int port = getConfig().getControllerPort();
 		try {
@@ -91,5 +112,4 @@ public class AgentDownloadController extends BaseController {
 			throw processException(e);
 		}
 	}
-
 }

@@ -79,7 +79,7 @@
 									<ul class="dropdown-menu">
 										<@list list_items=visibleRegions; region>
 											<li>
-												<a href="${req.getContextPath()}/agent/download?region=${region}&owner=${currentUser.userId}"/>
+												<a href="${req.getContextPath()}/agent/download/${region}/${currentUser.userId}"/>
 												<@spring.message code="${region}"/>
 												</a>
 											</li>
