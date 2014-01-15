@@ -15,8 +15,11 @@
 	<#include "region_selector.ftl">
 	<div class="well search-bar">
 		<button class="btn btn-success" id="update_agent_button">
-			<@spring.message "agent.list.update"/>
+			<i class="icon-arrow-up"></i> <@spring.message "agent.list.update"/>
 		</button>
+			<button class="btn" id="cleanup_agent_button">
+				<i class="icon-trash"></i> <@spring.message "common.button.cleanup"/>
+			</button>
 		<button class="btn" id="stop_agent_button">
 			<i class="icon-stop"></i> <@spring.message "common.button.stop"/>
 		</button>
@@ -164,6 +167,14 @@
 			$confirm.children(".modal-body").addClass("error-color");
 		});
 
+		$("#cleanup_agent_button").click(function() {
+			var $confirm = bootbox.confirm("<@spring.message 'agent.message.cleanup.confirm'/>",
+				"<@spring.message 'common.button.cancel'/>", "<@spring.message 'common.button.ok'/>", function (result) {
+					if (result) {
+						cleanup();
+					}
+				});
+		});
 		$("#update_agent_button").click(function () {
 			var list = $("td input:checked");
 			if (list.length == 0) {
@@ -183,6 +194,18 @@
 		});
 	});
 
+	function cleanup() {
+		var ajaxObj = new AjaxPostObj("/agent/api?action=cleanup",
+				{},
+				"<@spring.message 'agent.message.cleanup.success'/>",
+				"<@spring.message 'agent.message.cleanup.error'/>");
+		ajaxObj.success = function () {
+			setTimeout(function () {
+				location.reload();
+			}, 2000);
+		};
+		ajaxObj.call();
+	}
 	function stopAgents(ids) {
 		var ajaxObj = new AjaxPutObj("/agent/api?action=stop",
 				{ ids : ids },

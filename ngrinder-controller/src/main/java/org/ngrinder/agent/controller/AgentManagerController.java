@@ -116,10 +116,13 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Clean up the agents in the inactive region
 	 */
-	@RequestMapping("/cleanup")
-	public String cleanUpAgentsInInactiveRegion() {
-		agentManagerService.cleanUpAgentsInInactiveRegion();
-		return "agent/list";
+
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping(value = "/api", params = "action=cleanup", method = RequestMethod.POST)
+	public String cleanUpAgentsInInactiveRegion(ModelMap model) {
+		agentManagerService.cleanup();
+		model.clear();
+		return "redirect:/agent/list";
 	}
 
 	/**

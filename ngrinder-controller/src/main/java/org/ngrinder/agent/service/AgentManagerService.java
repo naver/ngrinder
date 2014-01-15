@@ -477,7 +477,13 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * Clean up the agents from db which belongs to the inactive regions.
 	 * Do nothing in not cluster mode.
 	 */
-	public void cleanUpAgentsInInactiveRegion() {
+	@Transactional
+	public void cleanup() {
+		for (AgentInfo each : agentManagerRepository.findAll()) {
+			if (!each.getState().isActive()) {
+				agentManagerRepository.delete(each);
+			}
+		}
 		return;
 	}
 }

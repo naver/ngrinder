@@ -203,14 +203,14 @@ function setAjaxContextPath(contextPath) {
 function AjaxPostObj(url, params, successMessage, errorMessage) {
 	var ajaxObj = new AjaxObj(url, successMessage, errorMessage);
 	ajaxObj.type = "POST";
-	ajaxObj.params = params;
+	ajaxObj.params = params || {};
 	return ajaxObj;
 }
 
 function AjaxPutObj(url, params, successMessage, errorMessage) {
     var ajaxObj = new AjaxObj(url, successMessage, errorMessage);
     ajaxObj.type = "PUT";
-    ajaxObj.params = params;
+    ajaxObj.params = params || {};
     return ajaxObj;
 }
 
