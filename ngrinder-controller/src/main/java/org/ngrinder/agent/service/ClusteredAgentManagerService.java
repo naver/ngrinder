@@ -405,4 +405,18 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				new ClusteredAgentRequest(agent.getIp(), agent.getName(), UPDATE_AGENT));
 	}
 
+	/**
+	 * Clean up the agents from db which belongs to the inactive regions.
+	 */
+	@Transactional
+	public void cleanUpAgentsInInactiveRegion() {
+		final Set<String> regions = getRegions();
+		for (AgentInfo each : agentManagerRepository.findAll()) {
+			if (regions.contains(extractRegionFromAgentRegion(each.getRegion()))) {
+				agentManagerRepository.delete(each);
+			}
+		}
+		return;
+	}
+
 }

@@ -472,4 +472,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public void expireLocalCache() {
 		cachedLocalAgentService.expireCache();
 	}
+
+	/**
+	 * Clean up the agents from db which belongs to the inactive regions.
+	 * Do nothing in not cluster mode.
+	 */
+	public void cleanUpAgentsInInactiveRegion() {
+		return;
+	}
 }

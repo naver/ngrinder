@@ -114,6 +114,15 @@ public class AgentManagerController extends BaseController {
 	}
 
 	/**
+	 * Clean up the agents in the inactive region
+	 */
+	@RequestMapping("/cleanup")
+	public String cleanUpAgentsInInactiveRegion() {
+		agentManagerService.cleanUpAgentsInInactiveRegion();
+		return "agent/list";
+	}
+
+	/**
 	 * Get the current performance of the given agent.
 	 *
 	 * @param id   agent id
