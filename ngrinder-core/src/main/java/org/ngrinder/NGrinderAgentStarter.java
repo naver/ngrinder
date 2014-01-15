@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FilenameFilter;
 
 import static net.grinder.util.NetworkUtils.getIP;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
@@ -118,8 +117,9 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 	/**
 	 * Stop monitors.
+	 * Only for unit-test.
 	 */
-	public void stopMonitor() {
+	void stopMonitor() {
 		MonitorServer.getInstance().stop();
 	}
 
@@ -168,9 +168,9 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 	/**
 	 * Stop the ngrinder agent.
+	 * Only for unit-test.
 	 */
-
-	public void stopAgent() {
+	void stopAgent() {
 		LOG.info("Stop nGrinder agent!");
 		agentController.shutdown();
 	}
@@ -218,7 +218,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 	 */
 	public static void main(String[] args) {
 		NGrinderAgentStarter starter = new NGrinderAgentStarter();
-		final StarterParam param = new StarterParam();
+		final NGrinderAgentStarterParam param = new NGrinderAgentStarterParam();
 		checkJavaVersion();
 		commander = new JCommander(param);
 		commander.setProgramName("ngrinder-agent");
@@ -246,7 +246,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		}
 
 		if (param.hostId != null) {
-			System.setProperty(PROP_AGENT_HOST_ID, param.hostId.toString());
+			System.setProperty(PROP_AGENT_HOST_ID, param.hostId);
 		}
 
 		if (param.region != null) {
@@ -334,24 +334,6 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			}
 		}
 		this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
-	}
-
-	/**
-	 * Check the current directory is valid or not.
-	 * <p/>
-	 * ngrinder agent should run in the folder agent exists.
-	 *
-	 * @return true if it's valid
-	 */
-	boolean isValidCurrentDirectory() {
-		File currentFolder = new File(System.getProperty("user.dir"));
-		String[] list = currentFolder.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return (name.startsWith("run_agent") && (name.endsWith(".sh") || name.endsWith(".bat")));
-			}
-		});
-		return (list != null && list.length != 0);
 	}
 
 	private static void staticPrintHelpAndExit(String message) {

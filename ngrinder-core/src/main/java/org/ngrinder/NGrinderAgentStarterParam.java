@@ -26,7 +26,7 @@ import java.util.Map;
  * @since 3.3
  */
 @Parameters(separators = "=")
-public class StarterParam {
+public class NGrinderAgentStarterParam {
 
 	@Parameter(names = "-mode", required = false,
 			description = "run mode. The agent/monitor modes are available.", hidden = true)

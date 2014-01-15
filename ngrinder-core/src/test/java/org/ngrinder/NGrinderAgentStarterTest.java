@@ -19,7 +19,6 @@ import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -62,10 +61,6 @@ public class NGrinderAgentStarterTest {
 		starter.stopMonitor();
 	}
 
-	@Test
-	public void testIsValidCurrentDirectory() {
-		assertThat(starter.isValidCurrentDirectory(), is(false));
-	}
 }
 
 class MockNGrinderStarter extends NGrinderAgentStarter {
