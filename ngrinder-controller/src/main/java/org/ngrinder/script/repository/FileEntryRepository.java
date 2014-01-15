@@ -177,7 +177,7 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
-					SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
+					SVNRevision.HEAD, false, true, new ISVNDirEntryHandler() {
 				@Override
 				public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
 					FileEntry script = new FileEntry();
