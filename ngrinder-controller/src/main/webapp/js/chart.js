@@ -56,7 +56,7 @@ function Chart(containerId, data, interval, opts) {
 			show: true,
 			placement: "insideGrid",
 			labels: opts.labels,
-			location: "ne",
+			location: opts.legend_location || "ne",
 			rowSpacing: "2px",
 			marginTop: opts.legend_margin || null,
 			marginRight: opts.legend_margin || null,

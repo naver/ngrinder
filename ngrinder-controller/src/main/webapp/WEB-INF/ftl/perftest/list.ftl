@@ -340,22 +340,40 @@ $(document).ready(function () {
 				/** @namespace res.chartInterval */
 				var chartInterval = res.chartInterval;
 				/** @namespace res.TPS */
+				if (res.TPS.lables.length >= 1) {
+					res.TPS.lables[0] = "TPS";
+				}
 				new Chart(tpsId, res.TPS.data, chartInterval,
 						{
-							labels: ["TPS"], gridPadding: gridPadding,
-							numXTicks: 7, legend_margin: 3
+							labels: res.TPS.lables,
+							gridPadding: gridPadding,
+							numXTicks: 7,
+							legend_margin: 1,
+							legend_location : "nw"
 						}).plot();
 				/** @namespace res.Mean_Test_Time_ms */
+				if (res.Mean_Test_Time_ms.lables.length >= 1) {
+					res.Mean_Test_Time_ms.lables[0] = "MTT";
+				}
 				new Chart(meanTimeChartId, res.Mean_Test_Time_ms.data, chartInterval,
 						{
-							labels: ["Mean Test Time"], gridPadding: gridPadding, numXTicks: 7,
-							legend_margin: 3
+							labels: res.Mean_Test_Time_ms.lables,
+							gridPadding: gridPadding,
+							numXTicks: 7,
+							legend_margin: 1,
+							legend_location : "nw"
 						}).plot();
 				/** @namespace res.Errors */
+				if (res.Errors.lables.length >= 1) {
+					res.Errors.lables[0] = "ERR";
+				}
 				new Chart(errorChartId, res.Errors.data, chartInterval,
 						{
-							labels: ["Errors"],
-							gridPadding: gridPadding, numXTicks: 7, legend_margin: 3
+							labels: res.Errors.lables,
+							gridPadding: gridPadding,
+							numXTicks: 7,
+							legend_margin: 1,
+							legend_location : "nw"
 						}).plot();
 				return true;
 			};
