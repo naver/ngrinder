@@ -36,6 +36,11 @@
 			padding: 0;
 		}
 
+		table.jqplot-table-legend {
+			left: 32px !important;
+			top: 7px  !important;
+		}
+
 		td.jqplot-table-legend {
 			padding-bottom: 0;
 		}
