@@ -570,6 +570,7 @@ public class PerfTestController extends BaseController {
 		File targetFile = perfTestService.getLogFile(id, path);
 		response.reset();
 		response.setContentType("text/plain");
+		response.setCharacterEncoding("UTF-8");
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(targetFile);
