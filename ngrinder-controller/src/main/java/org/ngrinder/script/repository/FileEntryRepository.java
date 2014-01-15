@@ -185,6 +185,8 @@ public class FileEntryRepository {
 					if (StringUtils.isBlank(relativePath)) {
 						return;
 					}
+					script.setCreatedDate(dirEntry.getDate());
+					script.setLastModifiedDate(dirEntry.getDate());
 					script.setPath(relativePath);
 					script.setDescription(dirEntry.getCommitMessage());
 					long reversion = dirEntry.getRevision();
