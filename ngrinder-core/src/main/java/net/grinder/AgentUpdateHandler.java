@@ -20,6 +20,7 @@ import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -54,13 +55,14 @@ public class AgentUpdateHandler implements Closeable {
 	 */
 	public AgentUpdateHandler(AgentConfig agentConfig, AgentUpdateGrinderMessage message)
 			throws FileNotFoundException {
-		checkTrue(isNewer(message.getVersion(), agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION)),
-				"Update request was sent. But the old version was sent");
-
+		if (!agentConfig.getAgentProperties().getPropertyBoolean(AgentConstants.PROP_AGENT_UPDATE_ALWAYS)) {
+			checkTrue(isNewer(message.getVersion(), agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION)),
+					"Update request was sent. But the old version was sent");
+		}
 		this.agentConfig = agentConfig;
 		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
 		this.agentOutputStream = new FileOutputStream(download);
-		LOGGER.info("AgentUpdateHandler is initialized !");
+		LOGGER.info("AgentUpdateHandler is initialized!");
 	}
 
 	boolean isNewer(String newVersion, String installedVersion) {

@@ -231,6 +231,11 @@ public class AgentController implements Agent, AgentConstants {
 						}
 						consoleCommunication.sendMessage(agentDownloadGrinderMessage);
 
+					} catch (IllegalArgumentException ex) {
+						IOUtils.closeQuietly(agentUpdateHandler);
+						agentUpdateHandler = null;
+						retryCount = 0;
+						LOGGER.info("same or old agent version is sent for update. skip this");
 					} catch (Exception e) {
 						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);
