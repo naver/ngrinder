@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -274,10 +275,15 @@ public class AgentController implements Agent, AgentConstants {
 		if (!agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ALL_LOGS)) {
 			logFiles = new File[]{logFiles[0]};
 		}
-		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtils.compress(logFiles),
-				new AgentAddress(m_agentIdentity)));
+		final byte[] compressedLog = LogCompressUtils.compress(logFiles,
+				Charset.defaultCharset(), Charset.forName("UTF-8")
+		);
+		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, compressedLog, new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
-		FileUtils.deleteQuietly(logFolder);
+		if (!agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_KEEP_LOGS)) {
+			LOGGER.error("Clean up the perftest logs");
+			FileUtils.deleteQuietly(logFolder);
+		}
 	}
 
 	private void shutdownConsoleCommunication(ConsoleCommunication consoleCommunication) {

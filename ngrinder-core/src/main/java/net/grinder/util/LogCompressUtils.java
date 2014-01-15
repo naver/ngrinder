@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Date;
+import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -37,35 +37,50 @@ public abstract class LogCompressUtils {
 	public static final Logger LOGGER = LoggerFactory.getLogger(LogCompressUtils.class);
 
 	/**
-	 * Compress multiple Files.
+	 * Compress multiple Files with the given encoding.
 	 *
-	 * @param logFiles files to be compressed
+	 * @param logFiles     files to be compressed
+	 * @param fromEncoding log file encoding
+	 * @param toEncoding   compressed log file encoding
 	 * @return compressed file byte array
 	 */
-	public static byte[] compress(File[] logFiles) {
-		FileInputStream fio = null;
+	public static byte[] compress(File[] logFiles, Charset fromEncoding, Charset toEncoding) {
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
 		ByteArrayOutputStream out = null;
 		ZipOutputStream zos = null;
+		OutputStreamWriter osw = null;
+		if (toEncoding == null) {
+			toEncoding = Charset.defaultCharset();
+		}
+		if (fromEncoding == null) {
+			fromEncoding = Charset.defaultCharset();
+		}
 		try {
 			out = new ByteArrayOutputStream();
 			zos = new ZipOutputStream(out);
+			osw = new OutputStreamWriter(zos, toEncoding);
 			for (File each : logFiles) {
 				try {
-					fio = new FileInputStream(each);
+					fis = new FileInputStream(each);
+					isr = new InputStreamReader(fis, fromEncoding);
 					ZipEntry zipEntry = new ZipEntry(each.getName());
 					zipEntry.setTime(each.lastModified());
 					zos.putNextEntry(zipEntry);
-					byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
+					char[] buffer = new char[COMPRESS_BUFFER_SIZE];
 					int count;
-					while ((count = fio.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
-						zos.write(buffer, 0, count);
+					while ((count = isr.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
+						osw.write(buffer, 0, count);
 					}
+					osw.flush();
+					zos.flush();
 					zos.closeEntry();
 				} catch (IOException e) {
 					LOGGER.error("Error occurs while compressing {} : {}", each.getAbsolutePath(), e.getMessage());
 					LOGGER.debug("Details ", e);
 				} finally {
-					IOUtils.closeQuietly(fio);
+					IOUtils.closeQuietly(isr);
+					IOUtils.closeQuietly(fis);
 				}
 			}
 			zos.finish();
@@ -77,46 +92,29 @@ public abstract class LogCompressUtils {
 			return null;
 		} finally {
 			IOUtils.closeQuietly(zos);
-			IOUtils.closeQuietly(fio);
 			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(osw);
 		}
 	}
 
 	/**
-	 * Compress the given file.
+	 * Compress the given file with the system encoding.
+	 *
+	 * @param logFiles files to be compressed
+	 * @return compressed file byte array
+	 */
+	public static byte[] compress(File[] logFiles) {
+		return compress(logFiles, Charset.defaultCharset(), Charset.defaultCharset());
+	}
+
+	/**
+	 * Compress the given file with the system encoding.
 	 *
 	 * @param logFile file to be compressed
 	 * @return compressed file byte array
 	 */
 	public static byte[] compress(File logFile) {
-		FileInputStream fio = null;
-		ByteArrayOutputStream out = null;
-		ZipOutputStream zos = null;
-		try {
-			fio = new FileInputStream(logFile);
-			out = new ByteArrayOutputStream();
-			zos = new ZipOutputStream(out);
-			ZipEntry zipEntry = new ZipEntry("log.txt");
-			zipEntry.setTime(new Date().getTime());
-			zos.putNextEntry(zipEntry);
-			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
-			int count;
-			while ((count = fio.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
-				zos.write(buffer, 0, count);
-			}
-			zos.closeEntry();
-			zos.finish();
-			zos.flush();
-			return out.toByteArray();
-		} catch (IOException e) {
-			LOGGER.error("Error occurs while compress {} : {}", logFile.getAbsolutePath(), e.getMessage());
-			LOGGER.debug("Details : ", e);
-			return null;
-		} finally {
-			IOUtils.closeQuietly(zos);
-			IOUtils.closeQuietly(fio);
-			IOUtils.closeQuietly(out);
-		}
+		return compress(new File[]{logFile}, Charset.defaultCharset(), Charset.defaultCharset());
 	}
 
 	/**

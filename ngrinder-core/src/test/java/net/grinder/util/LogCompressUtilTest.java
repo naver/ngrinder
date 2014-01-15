@@ -13,21 +13,22 @@
  */
 package net.grinder.util;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class LogCompressUtilTest {
 	@Test
 	public void testLogCompressDecompress() throws IOException {
 		File file = new File(LogCompressUtilTest.class.getResource("/grinder1.properties").getFile());
 		byte[] zippedContent = LogCompressUtils.compress(file);
-		File createTempFile2 = File.createTempFile("a22", "zip");
+		File createTempFile2 = File.createTempFile("a22aa", ".zip");
 		createTempFile2.deleteOnExit();
 		FileUtils.writeByteArrayToFile(createTempFile2, zippedContent);
 		File createTempFile = File.createTempFile("a22", "tmp");
@@ -35,6 +36,6 @@ public class LogCompressUtilTest {
 		assertThat(createTempFile.exists(), is(true));
 		byte[] unzippedContent = FileUtils.readFileToByteArray(createTempFile);
 		assertThat(unzippedContent, is(FileUtils.readFileToByteArray(file)));
-
 	}
+
 }

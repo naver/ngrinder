@@ -7,7 +7,6 @@
 		<file>${PREFIX}.log</file>
 
 		<encoder>
-			<charset>UTF-8</charset>
 			<pattern>%d %-5level %message%n</pattern>
 		</encoder>
 
