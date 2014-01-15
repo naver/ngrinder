@@ -24,8 +24,8 @@
 	</cache>
 
 	<cache name="file_entries" maxElementsInMemory="100"
-		   eternal="false" overflowToDisk="false" timeToIdleSeconds="1200"
-		   timeToLiveSeconds="1200">
+		   eternal="false" overflowToDisk="false" timeToIdleSeconds="6000"
+		   timeToLiveSeconds="6000">
 		<cacheEventListenerFactory
 				class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 				properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true"/>

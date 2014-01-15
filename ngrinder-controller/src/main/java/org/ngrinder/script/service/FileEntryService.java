@@ -14,6 +14,7 @@
 package org.ngrinder.script.service;
 
 import org.ngrinder.common.util.PathUtils;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
@@ -86,6 +88,8 @@ public class FileEntryService {
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
+	private Cache fileEntryCache;
+
 	/**
 	 * Initialize {@link FileEntryService}.
 	 */
@@ -102,6 +106,8 @@ public class FileEntryService {
 			}
 		});
 		svnClientManager = fileEntityRepository.getSVNClientManager();
+		fileEntryCache = cacheManager.getCache("file_entries");
+
 	}
 
 	/**
@@ -110,7 +116,7 @@ public class FileEntryService {
 	 * @param userId userId.
 	 */
 	public void invalidateCache(String userId) {
-		cacheManager.getCache("file_entries").evict(userId);
+		fileEntryCache.evict(userId);
 	}
 
 	/**
@@ -149,7 +155,16 @@ public class FileEntryService {
 	 */
 	@Cacheable(value = "file_entries", key = "#user.userId")
 	public List<FileEntry> getAll(User user) {
-		return fileEntityRepository.findAll(user);
+		prepare(user);
+		List<FileEntry> allFileEntries;
+		try {
+			allFileEntries = fileEntityRepository.findAll(user);
+		} catch (Exception e) {
+			// Try once more for the case of the underlying file system fault.
+			ThreadUtils.sleep(3000);
+			allFileEntries = fileEntityRepository.findAll(user);
+		}
+		return allFileEntries;
 	}
 
 	/**

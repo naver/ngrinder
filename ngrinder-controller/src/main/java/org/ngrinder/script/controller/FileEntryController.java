@@ -91,31 +91,7 @@ public class FileEntryController extends BaseController {
 	 */
 	@RequestMapping({"/list/**", ""})
 	public String getAll(User user, final @RemainedPath String path, ModelMap model) { // "fileName"
-		List<FileEntry> files = Lists.newArrayList(Iterables.filter(fileEntryService.getAll(user),
-				new Predicate<FileEntry>() {
-					@Override
-					public boolean apply(@Nullable FileEntry input) {
-						if (input != null) {
-							return PathUtils.trimSeparator(FilenameUtils.getPath(input.getPath())).equals(path);
-						}
-						return false;
-					}
-				}));
-		Collections.sort(files, new Comparator<FileEntry>() {
-			@Override
-			public int compare(FileEntry o1, FileEntry o2) {
-				if (o1.getFileType() == FileType.DIR && o2.getFileType() != FileType.DIR) {
-					return -1;
-				}
-				return (o1.getFileName().compareTo(o2.getFileName()));
-			}
-
-		});
-		for (FileEntry each : files) {
-			each.setPath(PathUtils.removePrependedSlash(each.getPath()));
-		}
-
-		model.addAttribute("files", files);
+		model.addAttribute("files", getAllFiles(user, path));
 		model.addAttribute("currentPath", path);
 		model.addAttribute("svnUrl", getSvnUrlBreadcrumbs(user, path));
 		model.addAttribute("handlers", handlerFactory.getVisibleHandlers());
@@ -489,7 +465,35 @@ public class FileEntryController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = {"/api/**", "/api/", "/api"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
-		return toJsonHttpEntity(fileEntryService.getAll(user, StringUtils.trimToEmpty(path), -1L));
+		return toJsonHttpEntity(getAllFiles(user, path));
+	}
+
+	private List<FileEntry> getAllFiles(User user, String path) {
+		final String trimmedPath = StringUtils.trimToEmpty(path);
+		List<FileEntry> files = Lists.newArrayList(Iterables.filter(fileEntryService.getAll(user),
+				new Predicate<FileEntry>() {
+					@Override
+					public boolean apply(@Nullable FileEntry input) {
+						if (input != null) {
+							return PathUtils.trimSeparator(FilenameUtils.getPath(input.getPath())).equals(trimmedPath);
+						}
+						return false;
+					}
+				}));
+		Collections.sort(files, new Comparator<FileEntry>() {
+			@Override
+			public int compare(FileEntry o1, FileEntry o2) {
+				if (o1.getFileType() == FileType.DIR && o2.getFileType() != FileType.DIR) {
+					return -1;
+				}
+				return (o1.getFileName().compareTo(o2.getFileName()));
+			}
+
+		});
+		for (FileEntry each : files) {
+			each.setPath(PathUtils.removePrependedSlash(each.getPath()));
+		}
+		return files;
 	}
 
 	/**

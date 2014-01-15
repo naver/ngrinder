@@ -17,6 +17,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.infra.config.Config;
@@ -196,6 +197,7 @@ public class FileEntryRepository {
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN for {}", user.getUserId());
 			LOG.debug("Error details :", e);
+			throw new NGrinderRuntimeException(e);
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
