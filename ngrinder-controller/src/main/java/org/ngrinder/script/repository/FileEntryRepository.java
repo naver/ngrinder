@@ -13,23 +13,6 @@
  */
 package org.ngrinder.script.repository;
 
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.EmptyStackException;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -48,15 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.tmatesoft.svn.core.ISVNDirEntryHandler;
-import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNErrorCode;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.SVNProperties;
-import org.tmatesoft.svn.core.SVNProperty;
-import org.tmatesoft.svn.core.SVNPropertyValue;
-import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
@@ -66,6 +41,20 @@ import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.EmptyStackException;
+import java.util.List;
+import java.util.Map.Entry;
+
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * SVN FileEntity repository.
@@ -201,34 +190,12 @@ public class FileEntryRepository {
 					script.setRevision(reversion);
 					script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
 					script.setFileSize(dirEntry.getSize());
-					if (dirEntry.hasProperties()) {
-						setScriptProperties(user, relativePath, reversion, script.getProperties());
-					}
 					scripts.add(script);
-				}
-
-				private void setScriptProperties(User user, String path, long revision,
-				                                 Map<String, String> propertiesMap) {
-					SVNClientManager svnClientManager = null;
-					try {
-						svnClientManager = getSVNClientManager();
-						SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
-						SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
-						SVNProperties fileProperty = new SVNProperties();
-						repo.getFile(path, revision, fileProperty, new ByteArrayOutputStream());
-						propertiesMap.put("validated", fileProperty.getStringValue("validated"));
-					} catch (SVNException e) {
-						LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
-					} finally {
-						closeSVNClientManagerQuietly(svnClientManager);
-					}
 				}
 			});
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN for {}", user.getUserId());
 			LOG.debug("Error details :", e);
-			return new ArrayList<FileEntry>();
-
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
