@@ -17,8 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +58,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -68,8 +67,11 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.*;
 
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
-import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
@@ -402,7 +404,7 @@ public class PerfTestController extends BaseController {
 	}
 
 	private List<Map<String, Object>> getStatus(List<PerfTest> perfTests) {
-		List<Map<String, Object>> statuses = newArrayList();
+		List<Map<String, Object>> statuses = org.ngrinder.common.util.CollectionUtils.newArrayList();
 		for (PerfTest each : perfTests) {
 			Map<String, Object> result = newHashMap();
 			result.put("id", each.getId());
@@ -701,7 +703,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/status")
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		List<PerfTest> perfTests = newArrayList();
+		List<PerfTest> perfTests = org.ngrinder.common.util.CollectionUtils.newArrayList();
 		if (StringUtils.isNotBlank(ids)) {
 			perfTests = perfTestService.getAll(user, convertString2Long(ids));
 		}
@@ -722,14 +724,14 @@ public class PerfTestController extends BaseController {
 		if (StringUtils.isNotEmpty(ownerId)) {
 			user = userService.getOne(ownerId);
 		}
-		List<FileEntry> allFileEntries = fileEntryService.getAll(user);
-		CollectionUtils.filter(allFileEntries, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
-			}
-		});
-		return toJsonHttpEntity(allFileEntries, fileEntryGson);
+		List<FileEntry> scripts = newArrayList(filter(fileEntryService.getAll(user),
+				new com.google.common.base.Predicate<FileEntry>() {
+					@Override
+					public boolean apply(@Nullable FileEntry input) {
+						return input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT;
+					}
+				}));
+		return toJsonHttpEntity(scripts, fileEntryGson);
 	}
 
 
@@ -749,7 +751,7 @@ public class PerfTestController extends BaseController {
 		}
 		FileEntry fileEntry = fileEntryService.getOne(user, scriptPath);
 		String targetHosts = "";
-		List<String> fileStringList = newArrayList();
+		List<String> fileStringList = org.ngrinder.common.util.CollectionUtils.newArrayList();
 		if (fileEntry != null) {
 			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user, fileEntry, -1L);
 			for (FileEntry each : fileList) {

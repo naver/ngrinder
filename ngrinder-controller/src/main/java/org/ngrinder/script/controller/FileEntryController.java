@@ -54,7 +54,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.sort;
+import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
+import static org.ngrinder.common.util.PathUtils.trimSeparator;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -300,15 +306,15 @@ public class FileEntryController extends BaseController {
 	public String search(User user, @RequestParam(required = true, value = "query") final String query,
 	                     ModelMap model) {
 		final String trimmedQuery = StringUtils.trimToEmpty(query);
-		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAll(user),
+		List<FileEntry> searchResult = newArrayList(filter(fileEntryService.getAll(user),
 				new Predicate<FileEntry>() {
 					@Override
-					public boolean apply(FileEntry input) {
+					public boolean apply(@Nullable FileEntry input) {
 						return input.getFileType() != FileType.DIR &&
 								StringUtils.containsIgnoreCase(new File(input.getPath()).getName(),
 										trimmedQuery);
 					}
-				});
+				}));
 		model.addAttribute("query", query);
 		model.addAttribute("files", searchResult);
 		model.addAttribute("currentPath", "");
@@ -338,7 +344,7 @@ public class FileEntryController extends BaseController {
 		}
 		fileEntryService.save(user, fileEntry);
 
-		String basePath = FilenameUtils.getPath(fileEntry.getPath());
+		String basePath = getPath(fileEntry.getPath());
 		if (createLibAndResource) {
 			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
 			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
@@ -470,17 +476,17 @@ public class FileEntryController extends BaseController {
 
 	private List<FileEntry> getAllFiles(User user, String path) {
 		final String trimmedPath = StringUtils.trimToEmpty(path);
-		List<FileEntry> files = Lists.newArrayList(Iterables.filter(fileEntryService.getAll(user),
+		List<FileEntry> files = newArrayList(filter(fileEntryService.getAll(user),
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(@Nullable FileEntry input) {
 						if (input != null) {
-							return PathUtils.trimSeparator(FilenameUtils.getPath(input.getPath())).equals(trimmedPath);
+							return trimSeparator(getPath(input.getPath())).equals(trimmedPath);
 						}
 						return false;
 					}
 				}));
-		Collections.sort(files, new Comparator<FileEntry>() {
+		sort(files, new Comparator<FileEntry>() {
 			@Override
 			public int compare(FileEntry o1, FileEntry o2) {
 				if (o1.getFileType() == FileType.DIR && o2.getFileType() != FileType.DIR) {
@@ -491,7 +497,7 @@ public class FileEntryController extends BaseController {
 
 		});
 		for (FileEntry each : files) {
-			each.setPath(PathUtils.removePrependedSlash(each.getPath()));
+			each.setPath(removePrependedSlash(each.getPath()));
 		}
 		return files;
 	}

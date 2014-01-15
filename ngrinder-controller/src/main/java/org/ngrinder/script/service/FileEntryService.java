@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.unmodifiableList;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -164,7 +165,7 @@ public class FileEntryService {
 			ThreadUtils.sleep(3000);
 			allFileEntries = fileEntityRepository.findAll(user);
 		}
-		return allFileEntries;
+		return unmodifiableList(allFileEntries);
 	}
 
 	/**
