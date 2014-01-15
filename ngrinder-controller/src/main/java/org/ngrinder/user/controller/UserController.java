@@ -240,9 +240,8 @@ public class UserController extends BaseController {
 	/**
 	 * Get the follower list.
 	 *
-	 * @param user     current user
-	 * @param keywords search keyword.
-	 * @param modelMap model
+	 * @param user  current user
+	 * @param model model
 	 * @return json message
 	 */
 	@RequestMapping("/switch_options")
@@ -428,14 +427,20 @@ public class UserController extends BaseController {
 
 	public static class UserSearchResult {
 		@Expose
-		private String id;
+		final private String id;
 
 		@Expose
-		private String text;
+		final private String text;
 
 		public UserSearchResult(User user) {
 			id = user.getUserId();
-			this.text = user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId() + ")";
+			final String email = user.getEmail();
+			final String userName = user.getUserName();
+			if (StringUtils.isEmpty(email)) {
+				this.text = userName + " (" + id + ")";
+			} else {
+				this.text = userName + " (" + email + " / " + id + ")";
+			}
 		}
 
 		public String getText() {
@@ -446,5 +451,4 @@ public class UserController extends BaseController {
 			return id;
 		}
 	}
-
 }
