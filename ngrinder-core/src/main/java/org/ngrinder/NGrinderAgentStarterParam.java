@@ -32,7 +32,8 @@ public class NGrinderAgentStarterParam {
 			description = "run mode. The agent/monitor modes are available.", hidden = true)
 	public String mode = null;
 
-	@Parameter(names = "-command", required = false, description = "run mode. The stop/start command are available.")
+	@Parameter(names = "-command", required = false, description = "command. The stop/start command are " +
+			"available.", hidden = true)
 	public String command = "start";
 
 	@Parameter(names = {"-overwrite-config", "-o"}, required = false,
@@ -46,10 +47,10 @@ public class NGrinderAgentStarterParam {
 	@Parameter(names = "-controller-ip", required = false, description = "the controller ip.")
 	public String controllerIP = null;
 
-	@Parameter(names = "-controller-port", required = false, description = "the controller ip.")
+	@Parameter(names = "-controller-port", required = false, description = "the controller port.")
 	public Integer controllerPort = null;
 
-	@Parameter(names = "-region", required = false, description = "the controller ip.")
+	@Parameter(names = "-region", required = false, description = "the region")
 	public String region = null;
 
 
