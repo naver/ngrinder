@@ -64,11 +64,8 @@ public class MBeanClient {
 	public void connect() {
 		try {
 			connectClient();
-		} catch (TimeoutException e) {
+		} catch (Exception e) {
 			LOGGER.info("Timeout while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
-		} catch (Exception ex) {
-			LOGGER.info("Error while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
-			LOGGER.info("Details is ", ex);
 		}
 	}
 
