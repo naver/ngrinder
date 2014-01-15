@@ -29,13 +29,13 @@
 				<hr>
 				<div class="control-group">
 				<#if test.threshold == "D">
-					<@control_group label_message_key="perfTest.config.duration">
+					<@control_group label_message_key="perfTest.running.duration">
 						<span>${test.durationStr}</span>
 						<code>HH:MM:SS</code>
 					</@control_group>
 				<#else>
-					<@control_group label_message_key="perfTest.config.runCount">
-						${test.runCount}
+					<@control_group label_message_key="perfTest.running.totalRunCount">
+						${test.runCount * test.agentCount * test.vuserPerAgent}
 						<span class="badge badge-success pull-right">
 							<@spring.message "perfTest.running.runCount"/> <span id="running_count"></span>
 						</span>
@@ -65,7 +65,7 @@
 	<div class="span7">
 		<fieldSet>
 			<legend>
-			<@spring.message "perfTest.running.tpsStatistics"/>
+			<@spring.message "perfTest.running.tpsGraph"/>
 				<span id="running_time" class="badge badge-success">&nbsp;</span>
 				<a id="stop_test_btn" class="btn btn-danger pull-right">
 				<@spring.message "common.button.stop"/>

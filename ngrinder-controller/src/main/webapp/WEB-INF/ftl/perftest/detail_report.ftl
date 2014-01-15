@@ -97,7 +97,7 @@
 					<col>
 				</colgroup>
 				<tr>
-					<th><@spring.message "perfTest.report.totalVuser"/></th>
+					<th><@spring.message "perfTest.report.totalVusers"/></th>
 					<td><strong>${test.vuserPerAgent * test.agentCount}</strong></td>
 				</tr>
 				<tr>

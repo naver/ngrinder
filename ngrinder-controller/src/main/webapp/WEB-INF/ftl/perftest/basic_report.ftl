@@ -15,6 +15,11 @@
 		<div class="form-horizontal form-horizontal-3"
 			style="margin-left: 10px">
 			<fieldset>
+
+				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.totalVusers">
+					<strong>${test.agentCount * test.vuserPerAgent}</strong>
+				</@control_group>
+
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.tps">
             		<strong>${(test.tps!0)?string(",##0.#")}</strong>
 				</@control_group>

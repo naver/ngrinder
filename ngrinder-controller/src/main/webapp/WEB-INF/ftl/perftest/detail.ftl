@@ -274,9 +274,9 @@
 	<div class="modal hide fade" id="schedule_modal">
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">&times;</a>
-			<h3>
-				<@spring.message "perfTest.running.scheduleTitle"/> <small class="error-color"></small>
-			</h3>
+			<h4>
+				<@spring.message "perfTest.running.scheduleTitle"/>
+			</h4>
 		</div>
 		<div class="modal-body">
 			<div class="form-horizontal">
