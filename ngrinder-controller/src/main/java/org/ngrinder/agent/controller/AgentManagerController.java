@@ -119,10 +119,9 @@ public class AgentManagerController extends BaseController {
 
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api", params = "action=cleanup", method = RequestMethod.POST)
-	public String cleanUpAgentsInInactiveRegion(ModelMap model) {
+	public HttpEntity<String> cleanUpAgentsInInactiveRegion() {
 		agentManagerService.cleanup();
-		model.clear();
-		return "redirect:/agent/list";
+		return successJsonHttpEntity();
 	}
 
 	/**
