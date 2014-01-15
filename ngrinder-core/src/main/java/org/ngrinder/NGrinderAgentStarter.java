@@ -125,8 +125,6 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 	/**
 	 * Start ngrinder agent.
-	 *
-	 * @param directControllerIP controllerIp to connect directly;
 	 */
 	public void startAgent() {
 		printLog("***************************************************");
