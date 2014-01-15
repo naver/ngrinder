@@ -1,6 +1,51 @@
 3.3 (TBD)
 nGrinder 3.3 is the major release including several new features.
 
+- New feature and changes
+  * All ngrinder packages are integrated into one single ngrinder-controller package.
+    - Admins can run  nGrinder controller using the following command.
+      "java -XX:MaxPermGen:200m -jar ngrinder-controller-X.X.war"
+      nGrinder controller war file became the self-executable. Tomcat mount is supported as well.
+      Check out TBD
+    - Admins can download agents and monitors from the controller and
+      users can download private agents and monitors from the controller.
+      The downloaded agent/monitor packages already contains pre-defined configuration to connect the controller from
+      which they are downloaded, so that no agent configuration is necessary.
+    - Check out TBD
+  * All IP binding is supported.
+    - Previously nGrinder controller bound to only one IP among all available IPs in the single machine.
+      This sometimes made it difficult to run nGrinder in which the internal and external IP are separated.(such as EC2)
+    - Now ngrinder binds all available IPs in the OS to listen all connection requests such as agent connection,
+      cluster member discovery, web connections so that no connection error will be occurred.
+    - Even IP6 are fully supported as well.
+  * nGrinder agents can be automatically upgradable just by clicking Update button in the controller.
+    - Check out TBD
+  * nGrinder monitor package is the now very small(<5MB).
+  * Full REST APIs are supported.
+    - A user and admin can call the REST APIs to manage tests and scripts.
+    - An admin call call the REST APIs to manage users and agents.
+    - Check out TBD
+  * L4 simulation by custom DNS rotation.
+    - A user can input multiple IPs into a single dns name in the target host configuration so that
+      it does random DNS resolution for each calls if multiple IP are mapped into a single host name.
+    - Check out TBD
+  * All configurations key are changed to be more predicable and consistent.
+    - Configuration keys used in the previous version are supported as well.
+    - However we recommends to use the new system configuration keys.
+    - You can see the configuration key mapping table in TBD.
+  * The user self sign-up is supported. The admin doesn't need to care about the user addition anymore.
+    * Check out TBD
+  * The default controller configuration is changed to be easier.
+    * Check out TBD.
+  * The plugin interfaces are changed to be consistent. All plugins should be updated to the latest version which
+    support nGrinder 3.3.
+  * The front page information(which is retrieved from various RSS) can be disabled by system configuration to
+    speed up in the highly restricted network by firewalls.
+  * The Groovy was upgraded to 2.2.1 version abd became the first citizen of nGrinder.
+  * The test report plugins are supported so that plugin like JVMMonitor plugin can see be used.
+  * Ramp-up chart always shows the correct graph.
+
+  * And several UI improvements are included.
 
 
 
