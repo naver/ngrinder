@@ -81,4 +81,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_ADMIN_PASSWORD_RESET = "controller.admin_password_reset";
 	public static final String PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE = "controller.enable_script_console";
 	public static final String PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL = "controller.enable_agent_auto_approval";
+	public static final String PROP_CONTROLLER_AGENT_FORCE_UPDATE = "controller.agent_force_update";
 }

@@ -235,7 +235,8 @@ public class AgentController implements Agent, AgentConstants {
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
 						retryCount = 0;
-						LOGGER.info("same or old agent version is sent for update. skip this");
+						LOGGER.info("same or old agent version {} is sent for update. skip this.",
+								message.getVersion());
 					} catch (Exception e) {
 						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);

@@ -465,7 +465,21 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentManager.updateAgent(agent.getAgentIdentity(), config.getVersion());
+		updateAgent(agent.getAgentIdentity());
+	}
+
+	/**
+	 * Update the agent
+	 *
+	 * @param agentIdentity agent identity to be updated.
+	 */
+	public void updateAgent(AgentIdentity agentIdentity) {
+		agentManager.updateAgent(agentIdentity, shouldUpdateAgentAlways() ? "99.99" : config.getVersion());
+	}
+
+
+	protected boolean shouldUpdateAgentAlways() {
+		return config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_AGENT_FORCE_UPDATE);
 	}
 
 
@@ -484,6 +498,5 @@ public class AgentManagerService extends AbstractAgentManagerService {
 				agentManagerRepository.delete(each);
 			}
 		}
-		return;
 	}
 }

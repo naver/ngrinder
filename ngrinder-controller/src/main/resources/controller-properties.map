@@ -34,3 +34,4 @@ controller.front_page_ask_question_url,,ngrinder.ask.question.url
 controller.help_url,http://www.cubrid.org/wiki_ngrinder/entry/user-guide,ngrinder.help.url
 controller.default_lang,en,ngrinder.langauge.default
 controller.admin_password_reset,false,
+controller.agent_force_update,false,

@@ -381,14 +381,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		getAgentManager().stopAgent(agentIdentity);
 	}
 
-	/**
-	 * Update the agent
-	 *
-	 * @param agentIdentity agent identity to be updated.
-	 */
-	public void updateAgent(AgentControllerIdentityImplementation agentIdentity) {
-		getAgentManager().updateAgent(agentIdentity, getConfig().getVersion());
-	}
 
 	/**
 	 * Update agent by id.
@@ -417,7 +409,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				agentManagerRepository.delete(each);
 			}
 		}
-		return;
 	}
 
 }

@@ -57,7 +57,7 @@ public class AgentUpdateHandler implements Closeable {
 			throws FileNotFoundException {
 		if (!agentConfig.getAgentProperties().getPropertyBoolean(AgentConstants.PROP_AGENT_UPDATE_ALWAYS)) {
 			checkTrue(isNewer(message.getVersion(), agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION)),
-					"Update request was sent. But the old version was sent");
+					"Update request was sent. But it's the older version " + message.getVersion());
 		}
 		this.agentConfig = agentConfig;
 		this.download = new File(agentConfig.getHome().getTempDirectory(), "ngrinder-agent.tar");
