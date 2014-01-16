@@ -32,6 +32,9 @@
 					<@control_group label_message_key="perfTest.running.duration">
 						<span>${test.durationStr}</span>
 						<code>HH:MM:SS</code>
+					  	<span class="badge badge-success pull-right">
+							<@spring.message "perfTest.running.runCount"/> <span id="running_count"></span>
+						</span>
 					</@control_group>
 				<#else>
 					<@control_group label_message_key="perfTest.running.totalRunCount">

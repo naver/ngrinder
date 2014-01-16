@@ -196,7 +196,7 @@
 			<legend>
                 <label for="use_ramp_up"></label><input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
 					<#if test.useRampUp == true>checked</#if> />
-				<@spring.message "perfTest.config.rampEnable"/>
+				<@spring.message "perfTest.config.rampUpEnable"/>
 			</legend>
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
