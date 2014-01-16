@@ -66,10 +66,12 @@ public class AgentDieHardListener implements SamplingLifeCycleListener, Runnable
 				// If the memory is available less than 2%.
 				double freeMemoryRatio = ((double) systemDataModel.getFreeMemory()) / systemDataModel.getTotalMemory();
 				if (freeMemoryRatio < 0.02) {
-					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, //
-							String.format("[ERROR] %s agent is about to die due to lack of free memory.\n"
-									+ "Shutdown PerfTest %s by force for safety\n" + "Please decrease the vuser count.", //
-									agentStates.getAgentName(), perfTest.getId()));
+					if (perfTest.getStatus() != Status.ABNORMAL_TESTING) {
+						perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, //
+								String.format("[ERROR] %s agent is about to die due to lack of free memory.\n"
+										+ "Shutdown PerfTest %s by force for safety\n" + "Please decrease the vuser count.", //
+										agentStates.getAgentName(), perfTest.getId()));
+					}
 				}
 			}
 		}
