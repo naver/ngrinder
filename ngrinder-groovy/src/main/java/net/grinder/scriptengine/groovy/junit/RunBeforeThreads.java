@@ -93,7 +93,8 @@ class RunBeforeThreads extends Statement {
 			final int waitingTime = getWaitingTime(rampUpInterval, rampUpStep, rampUpInitialThread, rampUpInitialSleep, threadNumber);
 			if (waitingTime != 0) {
 				if (Grinder.grinder != null) {
-					Grinder.grinder.getLogger().info("Sleep {}ms for thread ramp-up ", waitingTime);
+					Grinder.grinder.getLogger().info("thread-{} sleep {} ms for ramp-up",
+							threadNumber, waitingTime);
 				}
 				Thread.sleep(waitingTime);
 			}
