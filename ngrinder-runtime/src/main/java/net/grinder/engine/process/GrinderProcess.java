@@ -98,11 +98,11 @@ import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
  * The controller for a worker process.
- * 
+ *
  * <p>
  * Package scope.
  * </p>
- * 
+ *
  * @author Paco Gomez
  * @author Philip Aston
  * @author JunHo Yoon (modifed for nGrinder)
@@ -142,11 +142,10 @@ final class GrinderProcess {
 
 	/**
 	 * Creates a new <code>GrinderProcess</code> instance.
-	 * 
-	 * @param agentReceiver
-	 *            Receiver used to listen to the agent.
-	 * @exception net.grinder.common.GrinderException
-	 *                If the process could not be created.
+	 *
+	 * @param agentReceiver Receiver used to listen to the agent.
+	 * @throws net.grinder.common.GrinderException
+	 *          If the process could not be created.
 	 */
 	public GrinderProcess(final Receiver agentReceiver) throws GrinderException {
 		try {
@@ -181,7 +180,7 @@ final class GrinderProcess {
 
 			if (m_initialisationMessage.getReportToConsole()) {
 				m_consoleSender = new QueuedSenderDecorator(ClientSender.connect(new ConnectorFactory(
-								ConnectionType.WORKER).create(properties), new WorkerAddress(workerIdentity)));
+						ConnectionType.WORKER).create(properties), new WorkerAddress(workerIdentity)));
 
 				barrierGroups = new ClientBarrierGroups(m_consoleSender, messageDispatcher);
 			} else {
@@ -190,7 +189,7 @@ final class GrinderProcess {
 			}
 
 			final BarrierIdentityGenerator barrierIdentityGenerator = new BarrierIdentityGenerator(
-							m_initialisationMessage.getWorkerIdentity());
+					m_initialisationMessage.getWorkerIdentity());
 
 			final ThreadStarter delegatingThreadStarter = new ThreadStarter() {
 				@Override
@@ -210,19 +209,19 @@ final class GrinderProcess {
 
 			m_accumulatedStatistics = new TestStatisticsMap(m_statisticsServices.getStatisticsSetFactory());
 			m_testStatisticsHelper = new TestStatisticsHelperImplementation(
-							m_statisticsServices.getStatisticsIndexMap());
+					m_statisticsServices.getStatisticsIndexMap());
 
 			m_testRegistryImplementation = new TestRegistryImplementation(m_threadContexts,
-							m_statisticsServices.getStatisticsSetFactory(), m_testStatisticsHelper,
-							m_times.getTimeAuthority());
+					m_statisticsServices.getStatisticsSetFactory(), m_testStatisticsHelper,
+					m_times.getTimeAuthority());
 
 			final Logger externalLogger = new ExternalLogger(m_logger, m_threadContexts);
 
 			m_sleeper = new SleeperImplementation(m_times.getTimeAuthority(), externalLogger, properties.getDouble(
-							"grinder.sleepTimeFactor", 1.0d), properties.getDouble("grinder.sleepTimeVariation", 0.2d));
+					"grinder.sleepTimeFactor", 1.0d), properties.getDouble("grinder.sleepTimeVariation", 0.2d));
 
 			final Statistics scriptStatistics = new ScriptStatisticsImplementation(m_threadContexts,
-							m_statisticsServices, m_consoleSender);
+					m_statisticsServices, m_consoleSender);
 
 			final ThreadStopper threadStopper = new ThreadStopper() {
 				@Override
@@ -232,15 +231,15 @@ final class GrinderProcess {
 			};
 
 			final InternalScriptContext scriptContext = new ScriptContextImplementation(workerIdentity,
-							m_initialisationMessage.getFirstWorkerIdentity(), m_threadContexts, properties,
-							externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts),
-							scriptStatistics, m_testRegistryImplementation, delegatingThreadStarter, threadStopper,
-							barrierGroups, barrierIdentityGenerator);
+					m_initialisationMessage.getFirstWorkerIdentity(), m_threadContexts, properties,
+					externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts),
+					scriptStatistics, m_testRegistryImplementation, delegatingThreadStarter, threadStopper,
+					barrierGroups, barrierIdentityGenerator);
 
 			Grinder.grinder = scriptContext;
 
 			final PluginRegistryImplementation pluginRegistry = new PluginRegistryImplementation(externalLogger,
-							scriptContext, m_threadContexts, m_statisticsServices, m_times.getTimeAuthority());
+					scriptContext, m_threadContexts, m_statisticsServices, m_times.getTimeAuthority());
 
 			m_processLifeCycleListeners.add(pluginRegistry);
 
@@ -291,7 +290,7 @@ final class GrinderProcess {
 			return result;
 		} else {
 			m_terminalLogger.warn("Logback not found; grinder log configuration will be ignored.\n"
-							+ "Consider adding logback-classic to the start of the CLASSPATH.");
+					+ "Consider adding logback-classic to the start of the CLASSPATH.");
 
 			return null;
 		}
@@ -301,22 +300,22 @@ final class GrinderProcess {
 	 * The application's main loop. This is split from the constructor as theoretically it might be
 	 * called multiple times. The constructor sets up the static configuration, this does a single
 	 * execution.
-	 * 
+	 *
 	 * <p>
 	 * This method is interruptible, in the same sense as
 	 * {@link net.grinder.util.thread.InterruptibleRunnable#interruptibleRun()}. We don't implement
 	 * that method because we want to be able to throw exceptions.
 	 * </p>
-	 * 
+	 *
 	 * @throws net.grinder.common.GrinderException
-	 *             If something went wrong.
+	 *          If something went wrong.
 	 */
 	public void run() throws GrinderException {
 		try {
 			final GrinderProperties properties = m_initialisationMessage.getProperties();
 
 			final ScriptEngineContainer scriptEngineContainer = new ScriptEngineContainer(properties, m_logger,
-							DCRContextImplementation.create(m_logger), m_initialisationMessage.getScript());
+					DCRContextImplementation.create(m_logger), m_initialisationMessage.getScript());
 
 			final WorkerIdentity workerIdentity = m_initialisationMessage.getWorkerIdentity();
 
@@ -356,7 +355,7 @@ final class GrinderProcess {
 			// monitor. See bug 2936167.
 
 			final ScriptEngine scriptEngine = scriptEngineContainer
-							.getScriptEngine(m_initialisationMessage.getScript());
+					.getScriptEngine(m_initialisationMessage.getScript());
 
 			m_logger.info("Running \"{}\" using {}", m_initialisationMessage.getScript(),
 					scriptEngine.getDescription());
@@ -369,7 +368,7 @@ final class GrinderProcess {
 			final StringBuilder dataLogHeader = new StringBuilder("Thread, Run, Test, Start time (ms since Epoch)");
 
 			final ExpressionView[] detailExpressionViews = m_statisticsServices.getDetailStatisticsView()
-							.getExpressionViews();
+					.getExpressionViews();
 
 			for (final ExpressionView detailExpressionView : detailExpressionViews) {
 				dataLogHeader.append(", ");
@@ -483,8 +482,8 @@ final class GrinderProcess {
 			m_logger.info("Final statistics for this process:");
 
 			final StatisticsTable statisticsTable = new StatisticsTable(
-							m_statisticsServices.getSummaryStatisticsView(),
-							m_statisticsServices.getStatisticsIndexMap(), m_accumulatedStatistics);
+					m_statisticsServices.getSummaryStatisticsView(),
+					m_statisticsServices.getStatisticsIndexMap(), m_accumulatedStatistics);
 
 			final StringWriter statistics = new StringWriter();
 			statistics.write("\n");
@@ -552,8 +551,8 @@ final class GrinderProcess {
 						m_consoleSender.send(new ReportStatisticsMessage(sample));
 					}
 
-					sendStatusMessage(ProcessReport.STATE_RUNNING, m_threads.getNumberOfRunningThreads(),
-									m_threads.getTotalNumberOfThreads());
+					sendStatusMessage(ProcessReport.STATE_RUNNING, m_threads.getRunningThread(),
+							m_threads.getTotalNumberOfThreads());
 				} catch (final CommunicationException e) {
 					m_terminalLogger.info("Report to console failed", e);
 
@@ -564,7 +563,7 @@ final class GrinderProcess {
 	}
 
 	private void sendStatusMessage(final short state, final short numberOfThreads, final short totalNumberOfThreads)
-					throws CommunicationException {
+			throws CommunicationException {
 
 		m_consoleSender.send(new WorkerProcessReportMessage(state, numberOfThreads, totalNumberOfThreads));
 
@@ -585,7 +584,7 @@ final class GrinderProcess {
 	 * Implement {@link net.grinder.engine.process.WorkerThreadSynchronisation}. I looked hard at JSR 166's
 	 * <code>CountDownLatch</code> and <code>CyclicBarrier</code>, but neither of them allow for the
 	 * waiting thread to be interrupted by other events.
-	 * 
+	 *
 	 * <p>
 	 * Package scope for unit tests.
 	 * </p>
@@ -595,8 +594,9 @@ final class GrinderProcess {
 		private final Condition m_threadEventCondition;
 
 		private short m_numberCreated = 0;
-		private short m_numberAwaitingStart = 0;
+		//private short m_numberAwaitingStart = 0;
 		private short m_numberFinished = 0;
+		private short m_numberRunning = 0;
 
 		ThreadSynchronisation(final Condition condition) {
 			m_threadEventCondition = condition;
@@ -605,20 +605,26 @@ final class GrinderProcess {
 		/**
 		 * The number of worker threads that have been created but not run to completion.
 		 */
-		public short getNumberOfRunningThreads() {
+		public short getNumberOfNotFinishedThread() {
 			synchronized (m_threadEventCondition) {
 				return (short) (m_numberCreated - m_numberFinished);
 			}
 		}
 
+		public short getRunningThread() {
+			synchronized (m_threadEventCondition) {
+				return m_numberRunning;
+			}
+		}
+
 		public boolean isReadyToStart() {
 			synchronized (m_threadEventCondition) {
-				return m_numberAwaitingStart >= getNumberOfRunningThreads();
+				return m_numberRunning >= 0;
 			}
 		}
 
 		public boolean isFinished() {
-			return getNumberOfRunningThreads() <= 0;
+			return getNumberOfNotFinishedThread() <= 0;
 		}
 
 		/**
@@ -637,26 +643,21 @@ final class GrinderProcess {
 			}
 		}
 
+
 		public void startThreads() {
 			synchronized (m_threadEventCondition) {
 				while (!isReadyToStart()) {
 					m_threadEventCondition.waitNoInterrruptException();
 				}
-
-				m_numberAwaitingStart = 0;
 			}
-
 			m_started.set(true);
 		}
 
 		@Override
 		public void awaitStart() {
 			synchronized (m_threadEventCondition) {
-				++m_numberAwaitingStart;
-
-				if (isReadyToStart()) {
-					m_threadEventCondition.notifyAll();
-				}
+				m_numberRunning++;
+				m_threadEventCondition.notifyAll();
 			}
 
 			m_started.await(true);
@@ -704,7 +705,7 @@ final class GrinderProcess {
 		private int m_i = -1;
 
 		private ThreadStarterImplementation(final ThreadSynchronisation threadSynchronisation,
-						final ScriptEngine scriptEngine) {
+		                                    final ScriptEngine scriptEngine) {
 			m_threadSynchronisation = threadSynchronisation;
 			m_scriptEngine = scriptEngine;
 
@@ -724,7 +725,7 @@ final class GrinderProcess {
 			}
 
 			final ThreadContext threadContext = new ThreadContextImplementation(
-							m_initialisationMessage.getProperties(), m_statisticsServices, threadNumber, m_dataLogger);
+					m_initialisationMessage.getProperties(), m_statisticsServices, threadNumber, m_dataLogger);
 
 			final WorkerRunnableFactory workerRunnableFactory;
 
@@ -740,8 +741,8 @@ final class GrinderProcess {
 			}
 
 			final GrinderThread runnable = new GrinderThread(m_logger, threadContext, m_threadSynchronisation,
-							m_threadLifeCycleCallbacks, m_initialisationMessage.getProperties(), m_sleeper,
-							workerRunnableFactory);
+					m_threadLifeCycleCallbacks, m_initialisationMessage.getProperties(), m_sleeper,
+					workerRunnableFactory);
 
 			final Thread t = new Thread(runnable, "thread " + threadNumber);
 			t.setDaemon(true);
@@ -758,9 +759,9 @@ final class GrinderProcess {
 		@Override
 		public int startThread(final Object testRunner) throws InvalidContextException {
 			throw new InvalidContextException("You should not start worker threads until the main thread has "
-							+ "initialised the script engine, or after all other threads have "
-							+ "shut down. Typically, you should only call startWorkerThread() "
-							+ "from another worker thread.");
+					+ "initialised the script engine, or after all other threads have "
+					+ "shut down. Typically, you should only call startWorkerThread() "
+					+ "from another worker thread.");
 		}
 	}
 
@@ -783,7 +784,7 @@ final class GrinderProcess {
 		/**
 		 * {@link net.grinder.engine.process.GrinderProcess} calls {@link #setExecutionStartTime} just before launching
 		 * threads, after which it is never called again.
-		 * 
+		 *
 		 * @return Start of execution, in milliseconds since the Epoch.
 		 */
 		public long getExecutionStartTime() {
@@ -792,7 +793,7 @@ final class GrinderProcess {
 
 		/**
 		 * Elapsed time since execution was started.
-		 * 
+		 *
 		 * @return The time in milliseconds.
 		 * @see #getExecutionStartTime()
 		 */

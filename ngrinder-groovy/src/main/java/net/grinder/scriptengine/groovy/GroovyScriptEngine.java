@@ -100,6 +100,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 * Wrapper for groovy's testRunner closure.
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
+		private int runCount = 0;
 		private final GrinderContextExecutor m_groovyThreadRunner;
 		private RunNotifier notifier = new RunNotifier() {
 			@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -117,7 +118,6 @@ public class GroovyScriptEngine implements ScriptEngine {
 
 		private GroovyWorkerRunnable(GrinderContextExecutor groovyRunner) throws EngineException {
 			this.m_groovyThreadRunner = groovyRunner;
-			this.m_groovyThreadRunner.runBeforeThread();
 			this.notifier.addListener(new RunListener() {
 				@Override
 				public void testFailure(Failure failure) throws Exception {
@@ -139,6 +139,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 					}
 				}
 			});
+			this.m_groovyThreadRunner.runBeforeThread();
 		}
 
 		@Override

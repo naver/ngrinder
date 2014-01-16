@@ -683,6 +683,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				writeReportData(each.getKey() + REPORT_DATA, "null");
 			}
 		}
+		writeReportData("Vuser" + REPORT_DATA, formatValue(runningThread));
 	}
 
 	/**
@@ -692,13 +693,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 */
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics) {
 
-		StringBuilder csvLine = new StringBuilder();
-		csvLine.append(DateUtils.dateToString(new Date()));
-
 		// add headers into the csv file.
 		if (!headerAdded) {
 			StringBuilder csvHeader = new StringBuilder();
-			csvHeader.append("DateTime");
+			csvHeader.append("DateTime").append(",").append("vuser");
 
 			// Get the key list from lastStatistic map, use this list to keep
 			// the write order
@@ -723,13 +721,15 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			writeCSVDataLine(csvHeader.toString());
 			headerAdded = true;
 		}
-
+		StringBuilder csvLine = new StringBuilder();
+		csvLine.append(DateUtils.dateToString(new Date())).append(",").append(runningThread);
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 			if (!each.getKey().equals("Peak_TPS")) {
 				double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
 				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
 			}
 		}
+
 		if (intervalStatisticMapPerTest.size() != 1) {
 			for (Entry<Test, StatisticsSet> eachPair : intervalStatisticMapPerTest.entrySet()) {
 				String description = eachPair.getKey().getDescription();
@@ -1005,16 +1005,16 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	@Override
 	public void update(ProcessReports[] processReports) {
 		synchronized (eventSyncCondition) {
-			checkExeuctionErrors(processReports);
+			checkExecutionErrors(processReports);
 			this.processReports = processReports;
-			// The reason I passed porcessReport as parameter here is to prevent
+			// The reason I passed processReport as parameter here is to prevent
 			// the synchronization problem.
 			updateCurrentProcessAndThread(processReports);
 			eventSyncCondition.notifyAll();
 		}
 	}
 
-	private void checkExeuctionErrors(ProcessReports[] processReports) {
+	private void checkExecutionErrors(ProcessReports[] processReports) {
 		if (samplingCount == 0 && ArrayUtils.isNotEmpty(this.processReports) && ArrayUtils.isEmpty(processReports)) {
 			getListeners().apply(new Informer<ConsoleShutdownListener>() {
 				public void inform(ConsoleShutdownListener listener) {
