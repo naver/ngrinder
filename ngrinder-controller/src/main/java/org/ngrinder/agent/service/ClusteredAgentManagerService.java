@@ -184,7 +184,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 
 		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, stateUpdatedAgents, null);
-		if (!newAgents.isEmpty()) {
+		if (!newAgents.isEmpty() || !updatedAgents.isEmpty()) {
 			expireLocalCache();
 		}
 	}
