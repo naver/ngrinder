@@ -15,6 +15,7 @@ package org.ngrinder.infra;
 
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constants.AgentConstants;
@@ -22,6 +23,7 @@ import org.ngrinder.common.constants.CommonConstants;
 import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.common.util.PropertiesKeyMapper;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.python.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -229,7 +231,13 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		if (StringUtils.isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
+		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
+			userHome = System.getProperty("user.home") + File.separator + userHome.substring(2);
+		} else if (StringUtils.startsWith(userHome, "." + File.separator)) {
+			userHome = System.getProperty("user.dir") + File.separator + userHome.substring(2);
 		}
+
+		userHome = FilenameUtils.normalize(userHome);
 		printLog("NGRINDER_AGENT_HOME : {}", userHome);
 		File homeDirectory = new File(userHome);
 		try {

@@ -19,6 +19,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ClusterConstants;
@@ -287,8 +288,16 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
+		if (StringUtils.isEmpty(userHome)) {
+			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
+		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
+			userHome = System.getProperty("user.home") + File.separator + userHome.substring(2);
+		} else if (StringUtils.startsWith(userHome, "." + File.separator)) {
+			userHome = System.getProperty("user.dir") + File.separator + userHome.substring(2);
+		}
+
+		userHome = FilenameUtils.normalize(userHome);
+		File homeDirectory = new File(userHome);
 		CoreLogger.LOGGER.info("nGrinder home directory:{}.", homeDirectory.getPath());
 
 		return new Home(homeDirectory);
@@ -309,8 +318,17 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
-		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-				System.getProperty("user.home"), NGRINDER_EX_FOLDER);
+
+		if (StringUtils.isEmpty(userHome)) {
+			userHome = System.getProperty("user.home") + File.separator + NGRINDER_EX_FOLDER;
+		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
+			userHome = System.getProperty("user.home") + File.separator + userHome.substring(2);
+		} else if (StringUtils.startsWith(userHome, "." + File.separator)) {
+			userHome = System.getProperty("user.dir") + File.separator + userHome.substring(2);
+		}
+
+		userHome = FilenameUtils.normalize(userHome);
+		File exHomeDirectory = new File(userHome);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
 		try {
 			//noinspection ResultOfMethodCallIgnored
