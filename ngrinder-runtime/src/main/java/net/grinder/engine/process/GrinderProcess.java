@@ -378,8 +378,10 @@ final class GrinderProcess {
 			m_dataLogger.info(dataLogHeader.toString());
 
 			sendStatusMessage(ProcessReport.STATE_STARTED, (short) 0, numberOfThreads);
-
-			final ThreadSynchronisation threadSynchronisation = new ThreadSynchronisation(m_eventSynchronisation);
+			boolean threadRampUp = properties.getBoolean("grinder.threadsRampUp", true);
+			final ThreadSynchronisation threadSynchronisation = threadRampUp ?
+					new	ThreadRampUpEnabledThreadSynchronisation(m_eventSynchronisation) :
+					new ThreadSynchronisation(m_eventSynchronisation);
 
 			m_terminalLogger.info("Starting threads");
 
@@ -551,7 +553,7 @@ final class GrinderProcess {
 						m_consoleSender.send(new ReportStatisticsMessage(sample));
 					}
 
-					sendStatusMessage(ProcessReport.STATE_RUNNING, m_threads.getRunningThread(),
+					sendStatusMessage(ProcessReport.STATE_RUNNING, m_threads.getNumberOfRunningThreads(),
 							m_threads.getTotalNumberOfThreads());
 				} catch (final CommunicationException e) {
 					m_terminalLogger.info("Report to console failed", e);
@@ -590,41 +592,36 @@ final class GrinderProcess {
 	 * </p>
 	 */
 	static class ThreadSynchronisation implements WorkerThreadSynchronisation {
-		private final BooleanCondition m_started = new BooleanCondition();
-		private final Condition m_threadEventCondition;
+		final BooleanCondition m_started = new BooleanCondition();
+		final Condition m_threadEventCondition;
 
-		private short m_numberCreated = 0;
-		//private short m_numberAwaitingStart = 0;
-		private short m_numberFinished = 0;
-		private short m_numberRunning = 0;
+		short m_numberCreated = 0;
+		short m_numberAwaitingStart = 0;
+		short m_numberFinished = 0;
+		short m_numberRunning = 0;
 
 		ThreadSynchronisation(final Condition condition) {
 			m_threadEventCondition = condition;
 		}
 
+
 		/**
 		 * The number of worker threads that have been created but not run to completion.
 		 */
-		public short getNumberOfNotFinishedThread() {
+		public short getNumberOfRunningThreads() {
 			synchronized (m_threadEventCondition) {
 				return (short) (m_numberCreated - m_numberFinished);
 			}
 		}
 
-		public short getRunningThread() {
-			synchronized (m_threadEventCondition) {
-				return m_numberRunning;
-			}
-		}
-
 		public boolean isReadyToStart() {
 			synchronized (m_threadEventCondition) {
-				return m_numberRunning >= 0;
+				return m_numberAwaitingStart >= getNumberOfRunningThreads();
 			}
 		}
 
 		public boolean isFinished() {
-			return getNumberOfNotFinishedThread() <= 0;
+			return getNumberOfRunningThreads() <= 0;
 		}
 
 		/**
@@ -643,21 +640,26 @@ final class GrinderProcess {
 			}
 		}
 
-
 		public void startThreads() {
 			synchronized (m_threadEventCondition) {
 				while (!isReadyToStart()) {
 					m_threadEventCondition.waitNoInterrruptException();
 				}
+
+				m_numberAwaitingStart = 0;
 			}
+
 			m_started.set(true);
 		}
 
 		@Override
 		public void awaitStart() {
 			synchronized (m_threadEventCondition) {
-				m_numberRunning++;
-				m_threadEventCondition.notifyAll();
+				++m_numberAwaitingStart;
+
+				if (isReadyToStart()) {
+					m_threadEventCondition.notifyAll();
+				}
 			}
 
 			m_started.await(true);
@@ -671,6 +673,64 @@ final class GrinderProcess {
 				if (isReadyToStart() || isFinished()) {
 					m_threadEventCondition.notifyAll();
 				}
+			}
+		}
+
+
+	}
+
+	static class ThreadRampUpEnabledThreadSynchronisation extends ThreadSynchronisation {
+		ThreadRampUpEnabledThreadSynchronisation(Condition condition) {
+			super(condition);
+		}
+
+		public void startThreads() {
+			synchronized (m_threadEventCondition) {
+				while (!isReadyToStart()) {
+					m_threadEventCondition.waitNoInterrruptException();
+				}
+
+				m_numberAwaitingStart = 0;
+			}
+			m_started.set(true);
+		}
+
+		@Override
+		public void awaitStart() {
+			synchronized (m_threadEventCondition) {
+				m_numberAwaitingStart++;
+				m_numberRunning++;
+				m_threadEventCondition.notifyAll();
+			}
+
+			m_started.await(true);
+		}
+
+		@Override
+		public short getNumberOfRunningThreads() {
+			synchronized (m_threadEventCondition) {
+				return m_numberRunning;
+			}
+		}
+
+
+		@Override
+		public boolean isReadyToStart() {
+			synchronized (m_threadEventCondition) {
+				return m_numberRunning >= 0;
+			}
+		}
+
+		public boolean isFinished() {
+			return getNumberOfNotFinishedThreads() <= 0;
+		}
+
+		/**
+		 * The number of worker threads that have been created but not run to completion.
+		 */
+		public short getNumberOfNotFinishedThreads() {
+			synchronized (m_threadEventCondition) {
+				return (short) (m_numberCreated - m_numberFinished);
 			}
 		}
 	}
