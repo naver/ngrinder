@@ -13,6 +13,9 @@
  */
 package org.ngrinder.infra;
 
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -23,7 +26,6 @@ import org.ngrinder.common.constants.CommonConstants;
 import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.common.util.PropertiesKeyMapper;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.python.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 public class AgentConfig implements AgentConstants, MonitorConstants, CommonConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
-	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger("agent config");
 
 	protected AgentHome home = null;
 	private PropertiesWrapper agentProperties;
@@ -57,7 +59,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 
 	private PropertiesWrapper internalProperties;
-	private boolean silent = false;
 	private PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
 	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
 	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
@@ -74,19 +75,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		copyDefaultConfigurationFiles();
 		loadProperties();
 		loadInternalProperties();
+		configureLogging();
 		return this;
 	}
 
-	/**
-	 * Initialize.
-	 *
-	 * @param silent true if no log should be printed
-	 * @return initialized AgentConfig
-	 */
-	public AgentConfig init(boolean silent) {
-		this.silent = silent;
-		return init();
-	}
 
 	protected void loadInternalProperties() {
 		InputStream inputStream = null;
@@ -114,6 +106,27 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 			}
 		} finally {
 			IOUtils.closeQuietly(inputStream);
+		}
+	}
+
+	private void configureLogging() {
+		File logDirectory = getHome().getLogDirectory();
+		String level = "INFO";
+		if (getCommonProperties().getPropertyBoolean(PROP_COMMON_VERBOSE)) {
+			level = "TRACE";
+		}
+		if (isSilentMode()) {
+			level = "ERROR";
+		}
+		final Context context = (Context) LoggerFactory.getILoggerFactory();
+		final JoranConfigurator configurator = new JoranConfigurator();
+		configurator.setContext(context);
+		context.putProperty("LOG_LEVEL", level);
+		context.putProperty("LOG_DIRECTORY", logDirectory.getAbsolutePath());
+		try {
+			configurator.doConfigure(getClass().getResource("/logback-agent.xml"));
+		} catch (JoranException e) {
+			LOGGER.error("Error while configuring logger", e);
 		}
 	}
 
@@ -310,12 +323,12 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getControllerIP() {
-		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_IP, DEFAULT_LOCAL_HOST_ADDRESS);
+		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 
-	public void setControllerIP(String ip) {
-		getAgentProperties().addProperty(PROP_AGENT_CONTROLLER_IP, ip);
+	public void setControllerHost(String host) {
+		getAgentProperties().addProperty(PROP_AGENT_CONTROLLER_HOST, host);
 	}
 
 	public int getControllerPort() {
@@ -335,7 +348,12 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public boolean isSilentMode() {
-		return silent;
+		final PropertiesWrapper properties = getCommonProperties();
+		if (properties == null) {
+			return Boolean.getBoolean(System.getProperty(PROP_COMMON_SILENT_MODE, "false"));
+		} else {
+			return properties.getPropertyBoolean(PROP_COMMON_SILENT_MODE);
+		}
 	}
 
 	public PropertiesWrapper getCommonProperties() {

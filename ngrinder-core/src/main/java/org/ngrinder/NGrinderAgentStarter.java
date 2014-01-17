@@ -13,9 +13,6 @@
  */
 package org.ngrinder;
 
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.Context;
-import ch.qos.logback.core.joran.spi.JoranException;
 import com.beust.jcommander.JCommander;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.util.VersionNumber;
@@ -31,8 +28,6 @@ import org.ngrinder.monitor.agent.MonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-
 import static net.grinder.util.NetworkUtils.getIP;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -46,7 +41,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  */
 public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
-	private static final Logger LOG = LoggerFactory.getLogger(NGrinderAgentStarter.class);
+	private static final Logger LOG = LoggerFactory.getLogger("starter");
 
 	private AgentConfig agentConfig;
 
@@ -67,20 +62,12 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		} catch (Exception e) {
 			LOG.error("Error while expanding native lib", e);
 		}
-		// Configure log.
-		configureLogging();
 	}
 
 	protected AgentConfig createAgentConfig() {
 		AgentConfig agentConfig = new AgentConfig();
 		agentConfig.init();
 		return agentConfig;
-	}
-
-	private void configureLogging() {
-		Boolean verboseMode = agentConfig.getCommonProperties().getPropertyBoolean(PROP_COMMON_VERBOSE);
-		File logDirectory = agentConfig.getHome().getLogDirectory();
-		configureLogging(verboseMode, logDirectory);
 	}
 
 	/*
@@ -145,7 +132,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 		String controllerIP = getIP(agentConfig.getControllerIP());
 		int controllerPort = agentConfig.getControllerPort();
-		agentConfig.setControllerIP(controllerIP);
+		agentConfig.setControllerHost(controllerIP);
 		LOG.info("connecting to controller {}:{}", controllerIP, controllerPort);
 
 		try {
@@ -173,39 +160,6 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		agentController.shutdown();
 	}
 
-	private void configureLogging(boolean verbose, File logDirectory) {
-		final Context context = (Context) LoggerFactory.getILoggerFactory();
-		final JoranConfigurator configurator = new JoranConfigurator();
-		configurator.setContext(context);
-		context.putProperty("LOG_LEVEL", verbose ? "TRACE" : "INFO");
-		context.putProperty("LOG_DIRECTORY", logDirectory.getAbsolutePath());
-		try {
-			configurator.doConfigure(NGrinderAgentStarter.class.getResource("/logback-agent.xml"));
-		} catch (JoranException e) {
-			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
-					+ ".\n Please check if it's writable.");
-		}
-	}
-
-	/**
-	 * Print help and exit. This is provided for mocking.
-	 *
-	 * @param message message
-	 */
-	protected void printHelpAndExit(String message) {
-		staticPrintHelpAndExit(message);
-	}
-
-	/**
-	 * print help and exit. This is provided for mocking.
-	 *
-	 * @param message message
-	 * @param e       exception
-	 */
-	protected void printHelpAndExit(String message, Exception e) {
-		staticPrintHelpAndExit(message, e);
-	}
-
 
 	public static JCommander commander;
 
@@ -223,19 +177,17 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		try {
 			commander.parse(args);
 		} catch (Exception e) {
-			System.err.println("[Configuration Error]");
-			System.err.println(e.getMessage());
+			LOG.error(e.getMessage());
+			return;
+		}
+
+		if (param.help != null) {
 			commander.usage();
 			return;
 		}
 
-		if (param.help) {
-			commander.usage();
-			return;
-		}
-
-		if (param.controllerIP != null) {
-			System.setProperty(PROP_AGENT_CONTROLLER_IP, param.controllerIP);
+		if (param.controllerHost != null) {
+			System.setProperty(PROP_AGENT_CONTROLLER_HOST, param.controllerHost);
 		}
 
 		if (param.controllerPort != null) {
@@ -255,15 +207,20 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			System.setProperty("ngrinder.agent.home", param.agentHome);
 		}
 
-		if (param.overwriteConfig) {
+		if (param.overwriteConfig != null) {
 			System.setProperty("ngrinder.overwrite.config", "true");
+		}
+
+		if (param.silent != null) {
+			System.setProperty(CommonConstants.PROP_COMMON_SILENT_MODE, "true");
 		}
 
 		System.getProperties().putAll(param.params);
 		starter.init();
-
-
-		System.out.println("nGrinder v" + starter.getVersion());
+		if (param.version != null) {
+			LOG.info("nGrinder v" + starter.getVersion());
+			System.exit(0);
+		}
 		String startMode = (param.mode == null) ? starter.getStartMode() : param.mode;
 		if ("stop".equalsIgnoreCase(param.command)) {
 			starter.stopProcess(startMode);
@@ -276,7 +233,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		} else if (startMode.equalsIgnoreCase("monitor")) {
 			starter.startMonitor();
 		} else {
-			staticPrintHelpAndExit("Invalid agent.conf, '-mode' must be set as 'monitor' or 'agent'.");
+			staticPrintHelpAndExit("Invalid agent.conf, '--mode' must be set as 'monitor' or 'agent'.");
 		}
 	}
 
@@ -333,6 +290,27 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		}
 		this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
 	}
+
+
+	/**
+	 * Print help and exit. This is provided for mocking.
+	 *
+	 * @param message message
+	 */
+	protected void printHelpAndExit(String message) {
+		staticPrintHelpAndExit(message);
+	}
+
+	/**
+	 * print help and exit. This is provided for mocking.
+	 *
+	 * @param message message
+	 * @param e       exception
+	 */
+	protected void printHelpAndExit(String message, Exception e) {
+		staticPrintHelpAndExit(message, e);
+	}
+
 
 	private static void staticPrintHelpAndExit(String message) {
 		staticPrintHelpAndExit(message, null);

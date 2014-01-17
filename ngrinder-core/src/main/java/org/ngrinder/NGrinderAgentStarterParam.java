@@ -25,42 +25,49 @@ import java.util.Map;
  *
  * @since 3.3
  */
-@Parameters(separators = "=")
+@Parameters(separators = "= ")
 public class NGrinderAgentStarterParam {
 
-	@Parameter(names = "-mode", required = false,
+	@Parameter(names = {"-m", "-mode", "--mode"}, required = false,
 			description = "run mode. The agent/monitor modes are available.", hidden = true)
 	public String mode = null;
 
-	@Parameter(names = "-command", required = false, description = "command. The stop/start command are " +
-			"available.", hidden = true)
+	@Parameter(names = {"-c", "-command", "--command"}, required = false, description = "execution command. " +
+			"The stop/start command are available.", hidden = true)
 	public String command = "start";
 
-	@Parameter(names = {"-overwrite-config", "-o"}, required = false,
-			description = "Overwrite overwrite the existing .ngrinder_agent/agent.conf with the local __agent.conf")
-	public boolean overwriteConfig = false;
+	@Parameter(names = {"-o", "--overwrite-config"}, required = false,
+			description = "overwrite overwrite the existing .ngrinder_agent/agent.conf with the local __agent.conf")
+	public Boolean overwriteConfig = null;
 
-	@Parameter(names = "-agent-home", required = false,
-			description = "the agent home path. The default is ~/.ngrinder_agent")
+	@Parameter(names = {"-ah", "--agent-home"}, required = false,
+			description = "this agent's unique home path. The default is ~/.ngrinder_agent")
 	public String agentHome = null;
 
-	@Parameter(names = "-controller-ip", required = false, description = "the controller ip.")
-	public String controllerIP = null;
 
-	@Parameter(names = "-controller-port", required = false, description = "the controller port.")
+	@Parameter(names = {"-ch", "--controller-host"}, required = false, description = "controller host or ip.")
+	public String controllerHost = null;
+
+	@Parameter(names = {"-cp", "--controller-port"}, required = false, description = "controller port.")
 	public Integer controllerPort = null;
 
-	@Parameter(names = "-region", required = false, description = "the region")
+	@Parameter(names = {"-r", "--region"}, required = false, description = "region")
 	public String region = null;
 
 
-	@Parameter(names = "-host-id", required = false, description = "the agent host id.")
+	@Parameter(names = {"-hi", "--host-id"}, required = false, description = "this agent's unique host id")
 	public String hostId = null;
 
 	@SuppressWarnings("FieldCanBeLocal")
 	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
-	public Boolean help = false;
+	public Boolean help = null;
 
-	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
+	@Parameter(names = {"-s", "--silent"}, description = "silent mode")
+	public Boolean silent = null;
+
+	@Parameter(names = {"-v", "--version"}, description = "show version")
+	public Boolean version = null;
+
+	@DynamicParameter(names = "-D", description = "dynamic parameters", hidden = true)
 	public Map<String, String> params = new HashMap<String, String>();
 }

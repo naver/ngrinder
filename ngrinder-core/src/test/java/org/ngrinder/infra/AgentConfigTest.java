@@ -38,7 +38,7 @@ public class AgentConfigTest {
 	public void testAgentConfigInitialization() throws IOException {
 		// Given
 		AgentConfig config = new AgentConfig();
-		config.init(true);
+		config.init();
 		File homeDir = config.getHome().getDirectory();
 		// When
 		config.saveAgentPidProperties("1000", "agent");
@@ -56,7 +56,7 @@ public class AgentConfigTest {
 
 		// When
 		System.setProperty("ngrinder.agent.home", "./tmp_agent_home");
-		config.init(true);
+		config.init();
 		// Then
 		homeDir = config.getHome().getDirectory();
 		assertThat(homeDir.getAbsolutePath()).contains(File.separator + "tmp_agent_home");

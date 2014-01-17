@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("FieldCanBeLocal")
-@Parameters(separators = "=")
+@Parameters(separators = "= ")
 public class NGrinderControllerStarter {
 
-	@Parameters(separators = "=")
+	@Parameters(separators = "= ")
 	enum ClusterMode {
 		none {
-			@Parameter(names = "-controller-port", description = "agent connection port",
+			@Parameter(names = {"-cp", "--controller-port"}, description = "agent connection port",
 					validateValueWith = PortAvailabilityValidator.class)
 			public Integer controllerPort = 16001;
 
@@ -47,39 +47,40 @@ public class NGrinderControllerStarter {
 			}
 		},
 		easy {
-			@Parameter(names = "-cluster-host", required = false,
+			@Parameter(names = {"-clh", "--cluster-host"}, required = false,
 					description = "This cluster member's cluster communication host. The default value is the " +
 							"first non-localhost address. if it's localhost, " +
 							"it can only communicate with the other cluster members in the same machine.")
 			private String clusterHost = null;
 
-			@Parameter(names = "-cluster-port", required = true,
+			@Parameter(names = {"-clp", "--cluster-port"}, required = true,
 					description = "This cluster member's cluster communication port. Each cluster should have the " +
 							"unique port.",
 					validateValueWith = PortAvailabilityValidator.class)
 			private Integer clusterPort = null;
 
-			@Parameter(names = "-controller-port", required = true,
+			@Parameter(names = {"-cp", "--controller-port"}, required = true,
 					description = "This cluster member's agent connection port",
 					validateValueWith = PortAvailabilityValidator.class)
 			private Integer controllerPort = null;
 
-			@Parameter(names = "-region", required = true,
+			@Parameter(names = {"-r", "--region"}, required = true,
 					description = "This cluster member's region name")
 			private String region = null;
 
 
-			@Parameter(names = "-database-host", required = false,
-					description = "The database host. The default value is localhost")
+			@Parameter(names = {"-dh", "--database-host"}, required = false,
+					description = "database host. The default value is localhost")
 			private String databaseHost = "localhost";
 
-			@Parameter(names = "-database-port", required = false,
-					description = "The database port. The default value is 9092"
+			@Parameter(names = {"-dp", "-database-port"}, required = false,
+					description = "database port. The default value is 9092 when h2 is used and " +
+							"33000 when cubrid is used."
 			)
 			private Integer databasePort = null;
 
-			@Parameter(names = "-database-type", required = false,
-					description = "The database type. The default value is h2", hidden = true)
+			@Parameter(names = {"-dt", "-database-type"}, required = false,
+					description = "database type", hidden = true)
 			private String databaseType = "h2";
 
 			@SuppressWarnings("SpellCheckingInspection")
@@ -165,21 +166,21 @@ public class NGrinderControllerStarter {
 
 
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
-	@Parameter(names = "-port", description = "HTTP port of the server, The default is 8080",
+	@Parameter(names = {"-p", "--port"}, description = "HTTP port of the server",
 			validateValueWith = PortAvailabilityValidator.class)
-	private Integer port = null;
+	private Integer port = 8080;
 
-	@Parameter(names = "-context-path", description = "context path of the embedded web application.")
+	@Parameter(names = {"-cp", "--context-path"}, description = "context path of the embedded web application.")
 	private String contextPath = "/";
 
-	@Parameter(names = "-cluster-mode", description = "cluster-mode can be easy or advanced  ")
+	@Parameter(names = {"-cm", "--cluster-mode"}, description = "cluster-mode can be easy or advanced  ")
 	private String clusterMode = "none";
 
-	@Parameter(names = "-home", description = "home directory")
+	@Parameter(names = {"-nh", "--ngrinder-home"}, description = "nGridner home directory")
 	private String home = null;
 
 	@SuppressWarnings("SpellCheckingInspection")
-	@Parameter(names = "-exhome", description = "extended home")
+	@Parameter(names = {"-exh", "--exhome"}, description = "nGridner extended home directory")
 	private String exHome = null;
 
 	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
@@ -276,9 +277,6 @@ public class NGrinderControllerStarter {
 		PortAvailabilityValidator validator = new PortAvailabilityValidator();
 		try {
 			commander.parse(args);
-			if (server.port == null) {
-				server.port = 8080;
-			}
 			validator.validate("-port", server.port);
 		} catch (Exception e) {
 			System.err.println("[Configuration Error]");
