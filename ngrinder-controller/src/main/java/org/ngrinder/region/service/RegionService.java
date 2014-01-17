@@ -107,9 +107,13 @@ public class RegionService {
 	 */
 	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
-			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
-			final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
-			cache.put(getCurrent(), new RegionInfo(regionIP, config.getControllerPort(), newHashSet));
+			try {
+				HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
+				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+				cache.put(getCurrent(), new RegionInfo(regionIP, config.getControllerPort(), newHashSet));
+			} catch (Exception e) {
+				LOGGER.error("Error while updating regions. {}", e.getMessage());
+			}
 		}
 	}
 
