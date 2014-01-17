@@ -73,13 +73,13 @@ public class NGrinderControllerStarter {
 					description = "database host. The default value is localhost")
 			private String databaseHost = "localhost";
 
-			@Parameter(names = {"-dp", "-database-port"}, required = false,
+			@Parameter(names = {"-dp", "--database-port"}, required = false,
 					description = "database port. The default value is 9092 when h2 is used and " +
 							"33000 when cubrid is used."
 			)
 			private Integer databasePort = null;
 
-			@Parameter(names = {"-dt", "-database-type"}, required = false,
+			@Parameter(names = {"-dt", "--database-type"}, required = false,
 					description = "database type", hidden = true)
 			private String databaseType = "h2";
 
@@ -127,7 +127,7 @@ public class NGrinderControllerStarter {
 			JCommander commander = new JCommander(ClusterMode.this);
 			String clusterModeOption = "";
 			if (this != ClusterMode.none) {
-				clusterModeOption = " -cluster-mode=" + name();
+				clusterModeOption = " --cluster-mode=" + name();
 			}
 			commander.setProgramName(getRunningCommand() + clusterModeOption);
 			try {
