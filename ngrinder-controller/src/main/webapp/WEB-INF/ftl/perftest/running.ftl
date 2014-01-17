@@ -1,4 +1,3 @@
-<#setting number_format="computer">
 <#import "../common/spring.ftl" as spring>
 <#include "../common/ngrinder_macros.ftl">
 <div class="row">
@@ -165,8 +164,8 @@
 	var curPerf;
 	var curAgentStat;
 	var curMonitorStat;
-	var tpsQueue = new Queue(60 / ${test.samplingInterval});
-	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval});
+	var tpsQueue = new Queue(60 / ${test.samplingInterval?c});
+	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval?c});
 
 	var samplingAjax = new AjaxObj("/perftest/{testId}/api/sample");
 	samplingAjax.params = { testId: ${(test.id!0)?c} };
@@ -322,5 +321,5 @@
 	});
 	$samplingTab.find('a:first').tab('show');
 	samplingAjax.call();
-	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
+	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval?c});
 </script>

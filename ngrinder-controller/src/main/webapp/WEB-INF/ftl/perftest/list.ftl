@@ -241,8 +241,8 @@
 		</td>
 		<td>
 			<div class="ellipsis" rel="popover" data-html="true" data-placement="left"
-				 data-content="<@spring.message "perfTest.list.agent"/> : ${test.agentCount!"0"}<br/><@spring.message "perfTest.list.process"/>  : ${test.processes!"0"}<br/><@spring.message "perfTest.list.thread"/> : ${test.threads!"0"}">
-				${totalVuser}
+				 data-content="<@spring.message "perfTest.list.agent"/> : ${test.agentCount!0?string(",##0")}<br/><@spring.message "perfTest.list.process"/>  : ${test.processes!0?string(",##0")}<br/><@spring.message "perfTest.list.thread"/> : ${test.threads!0?string(",##0")}">
+				${totalVuser?string(",##0")}
 			<div>
 		</td>
 		<td class="center">
