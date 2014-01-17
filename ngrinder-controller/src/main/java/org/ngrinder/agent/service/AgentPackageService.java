@@ -371,6 +371,9 @@ public class AgentPackageService {
 	 * @return true if dependent lib
 	 */
 	public boolean isMonitorDependentLib(File libFile, Set<String> libs) {
+		if (libFile.getName().contains("grinder-3.9.1.jar")) {
+			return false;
+		}
 		String name = libFile.getName();
 		name = name.replace(".jar", "").replace("-SNAPSHOT", "");
 		for (String each : libs) {
@@ -389,6 +392,9 @@ public class AgentPackageService {
 	 * @return true if dependent lib
 	 */
 	public boolean isAgentDependentLib(File libFile, Set<String> libs) {
+		if (libFile.getName().contains("grinder-3.9.1.jar")) {
+			return false;
+		}
 		String name = libFile.getName();
 		name = name.replace(".jar", "").replace("-SNAPSHOT", "");
 		return libs.contains(name);

@@ -13,7 +13,6 @@
 	<properties>
 		<webappdir>${basedir}/src/main/webapp</webappdir>
 		<deploy.dir>${basedir}/../../deploy</deploy.dir>
-
 		<jetty.version>6.1.25</jetty.version>
 	</properties>
 
@@ -391,6 +390,7 @@
 			</resource>
 		</resources>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
@@ -416,7 +416,9 @@
 							<mainClass>org.ngrinder.NGrinderControllerStarter</mainClass>
 						</manifest>
 					</archive>
-					<packagingExcludes>WEB-INF/lib/jetty-*.jar,WEB-INF/lib/ngrinder-starter*.jar</packagingExcludes>
+					<packagingExcludes>
+						WEB-INF/lib/jetty-*.jar,WEB-INF/lib/ngrinder-starter*.jar,WEB-INF/lib/grinder-3.9.1.jar
+					</packagingExcludes>
 					<overlays>
 						<overlay>
 							<groupId>org.ngrinder</groupId>
