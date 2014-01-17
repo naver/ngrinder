@@ -237,11 +237,15 @@ public class AgentController implements Agent, AgentConstants {
 						retryCount = 0;
 						LOGGER.info("same or old agent version {} is sent for update. skip this.",
 								message.getVersion());
+						m_state = AgentControllerState.READY;
+						sendCurrentState(consoleCommunication);
 					} catch (Exception e) {
 						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
 						LOGGER.error("While updating agent, the exception occurred.", e);
+						m_state = AgentControllerState.READY;
+						sendCurrentState(consoleCommunication);
 					}
 
 				} else {

@@ -76,6 +76,7 @@ public class AgentUpdateHandler implements Closeable {
 
 	public void close() {
 		IOUtils.closeQuietly(agentOutputStream);
+		FileUtils.deleteQuietly(download);
 	}
 
 	/**
