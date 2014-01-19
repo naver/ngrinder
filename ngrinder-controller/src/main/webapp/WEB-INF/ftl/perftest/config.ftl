@@ -23,7 +23,7 @@
 <div class="row">
 	<div class="span6">
 		<fieldset>
-			<legend><@spring.message "perfTest.config.basicConfiguration"/></legend>
+			<legend><span><@spring.message "perfTest.config.basicConfiguration"/></span></legend>
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
 
@@ -194,43 +194,52 @@
 	<div class="span6">
 		<fieldset>
 			<legend>
-                <label for="use_ramp_up"></label><input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
+                <span>
+	               	<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
 					<#if test.useRampUp == true>checked</#if> />
-				<@spring.message "perfTest.config.rampUpEnable"/>
+					<@spring.message "perfTest.config.rampUp.enable"/>
+	            </span>
+				<span  class="pull-right">
+					<select id="ramp_up_type" class="span2" name="rampUpType">
+					<#list availRampUpType  as each>
+						<option value="${each}" <#if test?? && test.rampUpType ?? && test.rampUpType == each>selected</#if>><@spring.message "perfTest.config.rampUp.${each.messageKey}"/></option>
+					</#list>
+					</select>
+				</span>
 			</legend>
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
-						<@input_label name="initProcesses"
-							value="${test.initProcesses}" message="perfTest.config.initialProcesses"
+						<@input_label name="rampUpInitCount"
+							value="${test.rampUpInitCount}" message="perfTest.config.rampUp.initialCount"
 							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 
 					<div class="span3">
-						<@input_label name="processIncrement"
-							value="${test.processIncrement}" message="perfTest.config.rampUp"
+						<@input_label name="rampUpStep"
+							value="${test.rampUpStep}" message="perfTest.config.rampUp.step"
 							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="span3">
-						<@input_label name="initSleepTime"
-							value="${test.initSleepTime}"
-							message="perfTest.config.initialSleepTime" others="<code>MS</code>"
+						<@input_label name="rampUpInitSleepTime"
+							value="${test.rampUpInitSleepTime}"
+							message="perfTest.config.rampUp.initialSleepTime" others="<code>MS</code>"
 							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 					<div class="span3">
 						<@input_label name="processIncrementInterval"
-							value="${test.processIncrementInterval}"
-							message="perfTest.config.processesEvery" others="<code>MS</code>"
+							value="${test.rampUpIncrementInterval}"
+							message="perfTest.config.rampUp.incrementInterval" others="<code>MS</code>"
 							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 				</div>
 			</div>
 		</div>
-		<legend class="center" style="margin-top:0;padding-top:0"> <@spring.message "perfTest.config.rampUpDes"/> </legend>
+		<legend class="center" style="margin-top:0;padding-top:0"> <@spring.message "perfTest.config.rampUp.des"/> </legend>
 		<div id="rampup_chart" class="rampup-chart" style="margin-left: 20px"></div>
 	</div>
 	<!-- end test content right -->

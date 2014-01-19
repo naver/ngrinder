@@ -49,38 +49,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface BeforeThread {
-	/**
-	 * Ramp up interval in millisecond before executing each thread. This enables the thread ramp up.
-	 * Each thread will sleep (rampUp  * threadNumber) before test methods are executed.
-	 *
-	 * If 1 agent, 2 processes per an agent and 2 threads per a process and
-	 * 1000 is provided here and 4 threads(vusers) will be activated every seconds.
-	 *
-	 * This will be only applied when the test is executed in nGrinder not each IDE's JUnit runner.
-	 *
-	 * @return ramp up interval in milliseconds.
-	 */
-	int interval() default 0;
-
-	/**
-	 * Ramp up step. If step is assigned as 2, the 2 threads will be invoked every designated interval.
-	 *
-	 * @return Ramp up tep
-	 */
-	int step() default 1;
-
-	/**
-	 * initial threads which should be invoked from beginning
-	 *
-	 * @return initial thread count
-	 */
-	int initialThread() default 0;
-
-	/**
-	 * initial sleep before starting ramp up
-	 *
-	 * @return initial sleep time in millisecond
-	 */
-	int initialSleep() default 0;
-
 }

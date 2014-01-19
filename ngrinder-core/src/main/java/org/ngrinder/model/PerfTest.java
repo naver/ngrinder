@@ -131,6 +131,24 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Type(type = "true_false")
 	private Boolean useRampUp;
 
+	public RampUp getRampUpType() {
+		return rampUpType;
+	}
+
+	public void setRampUpType(RampUp rampUpType) {
+		this.rampUpType = rampUpType;
+	}
+
+	/**
+	 * Use rampUp or not.
+	 */
+	@Expose
+	@Cloneable
+	@Column(name = "ramp_up_type")
+	@Enumerated(EnumType.STRING)
+	private RampUp rampUpType;
+
+
 	/**
 	 * The threshold code, R for run count; D for duration.
 	 */
@@ -171,23 +189,23 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Expose
 	@Cloneable
-	@Column(name = "init_processes")
-	private Integer initProcesses;
+	@Column(name = "ramp_up_init_count")
+	private Integer rampUpInitCount;
 
 	@Expose
 	@Cloneable
-	@Column(name = "init_sleep_time")
-	private Integer initSleepTime;
+	@Column(name = "ramp_up_init_sleep_time")
+	private Integer rampUpInitSleepTime;
 
 	@Expose
 	@Cloneable
-	@Column(name = "process_increment")
-	private Integer processIncrement;
+	@Column(name = "ramp_up_step")
+	private Integer rampUpStep;
 
 	@Expose
 	@Cloneable
-	@Column(name = "process_increment_interval")
-	private Integer processIncrementInterval;
+	@Column(name = "ramp_up_increment_interval")
+	private Integer rampUpIncrementInterval;
 
 	@Expose
 	@Cloneable
@@ -327,10 +345,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.vuserPerAgent = getSafe(this.vuserPerAgent, 1);
 		this.safeDistribution = getSafe(this.safeDistribution, false);
 		this.useRampUp = getSafe(this.useRampUp, false);
-		this.initProcesses = getSafe(this.initProcesses, 0);
-		this.processIncrement = getSafe(this.processIncrement, 1);
-		this.initSleepTime = getSafe(this.initSleepTime, 0);
-		this.processIncrementInterval = getSafe(this.processIncrementInterval, 1000);
+		this.rampUpInitCount = getSafe(this.rampUpInitCount, 0);
+		this.rampUpStep = getSafe(this.rampUpStep, 1);
+		this.rampUpInitSleepTime = getSafe(this.rampUpInitSleepTime, 0);
+		this.rampUpIncrementInterval = getSafe(this.rampUpIncrementInterval, 1000);
+		this.rampUpType = getSafe(this.rampUpType, RampUp.PROCESS);
 	}
 
 
@@ -518,39 +537,39 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.processes = processes;
 	}
 
-	public Integer getInitProcesses() {
-		return initProcesses;
+	public Integer getRampUpInitCount() {
+		return rampUpInitCount;
 	}
 
-	public void setInitProcesses(Integer initProcesses) {
-		this.initProcesses = initProcesses;
+	public void setRampUpInitCount(Integer initProcesses) {
+		this.rampUpInitCount = initProcesses;
 	}
 
-	public Integer getInitSleepTime() {
-		return initSleepTime;
-	}
-
-
-	public void setInitSleepTime(Integer initSleepTime) {
-		this.initSleepTime = initSleepTime;
-	}
-
-	public Integer getProcessIncrement() {
-		return processIncrement;
+	public Integer getRampUpInitSleepTime() {
+		return rampUpInitSleepTime;
 	}
 
 
-	public void setProcessIncrement(Integer processIncrement) {
-		this.processIncrement = processIncrement;
+	public void setRampUpInitSleepTime(Integer initSleepTime) {
+		this.rampUpInitSleepTime = initSleepTime;
 	}
 
-	public Integer getProcessIncrementInterval() {
-		return processIncrementInterval;
+	public Integer getRampUpStep() {
+		return rampUpStep;
 	}
 
 
-	public void setProcessIncrementInterval(Integer processIncrementInterval) {
-		this.processIncrementInterval = processIncrementInterval;
+	public void setRampUpStep(Integer processIncrement) {
+		this.rampUpStep = processIncrement;
+	}
+
+	public Integer getRampUpIncrementInterval() {
+		return rampUpIncrementInterval;
+	}
+
+
+	public void setRampUpIncrementInterval(Integer processIncrementInterval) {
+		this.rampUpIncrementInterval = processIncrementInterval;
 	}
 
 	public Integer getThreads() {

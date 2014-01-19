@@ -5,7 +5,7 @@ $(document).ready(function () {
 		updateRampupChart();
 	});
 
-	$("#init_processes, #init_sleep_time, #process_increment, #process_increment_interval").on(
+	$("#init_processes, #init_sleep_time, #process_increment, #process_increment_interval, #ramp_up_type").on(
 		"change", function () {
 			updateRampupChart();
 		});
@@ -28,25 +28,34 @@ function enableRampup() {
 }
 
 function updateRampupChart() {
-	var $processes = $('#processes');
+	var $base;
+	var $factor;
+	if ($("#ramp_up_type").val() == "PROCESS") {
+		$base = $("#processes");
+		$factor = $("#threads");
+	} else {
+		$base = $('#threads');
+		$factor = $("#processes");
+    }
 	var $processInc = $('#process_increment');
 	var $initialProcesses = $('#init_processes');
 	var $internalTime = $('#process_increment_interval');
 
-	var processes = parseInt($processes.val(), 10);
-	var processInc = parseInt($processInc.val(), 10);
-	var initialProcesses = parseInt($initialProcesses.val(), 10);
+	var factorVar =  parseInt($factor.val(), 10);
+	var destination = parseInt($base.val(), 10) * factorVar;
+	var increment = parseInt($processInc.val(), 10) * factorVar;
+	var initialCount = parseInt($initialProcesses.val(), 10) * factorVar;
 	var internalTime = parseInt($internalTime.val(), 10);
-	if (isNaN(initialProcesses) || isNaN(processes) || isNaN(processInc) || isNaN(internalTime)) {
+	if (isNaN(initialCount) || isNaN(destination) || isNaN(increment) || isNaN(internalTime)) {
 		return;
 	}
 	var modified = false;
-	if (initialProcesses > processes) {
+	if (initialCount > destination) {
 		$initialProcesses.val(1);
 		modified = true;
 		return;
 	}
-	if (initialProcesses < processes && processInc == 0) {
+	if (initialCount < destination && increment == 0) {
 		$processInc.val(1);
 		modified = true;
 		return;
@@ -56,7 +65,7 @@ function updateRampupChart() {
 		$("#message_div").empty();
 	}
 
-	var steps = (processes - initialProcesses) / processInc;
+	var steps = (destination - initialCount) / increment;
 	if (steps == 0) {
 		steps = 1;
 	}
@@ -72,7 +81,7 @@ function updateRampupChart() {
 	if ($("#use_ramp_up")[0].checked) {
 		enableRampup();
 		var curX = initialSleepTime;
-		var curY = initialProcesses;
+		var curY = initialCount;
 		if (initialSleepTime > 0) {
 			seriesArray.push([0, 0]);
 			seriesArray.push([initialSleepTime, 0]);
@@ -82,9 +91,9 @@ function updateRampupChart() {
 		seriesArray.push([curX, curY]);
 
 		for (var step = 1; step <= Math.ceil(steps); step++) {
-			curY = curY + processInc;
-			if (curY > processes) {
-				curY = processes;
+			curY = curY + increment;
+			if (curY > destination) {
+				curY = destination;
 			}
 			seriesArray.push([curX + 0.01, curY]);
 			curX = curX + internalTime;
@@ -101,9 +110,9 @@ function updateRampupChart() {
 
 		var curX = 0;
 		for (var step = 0; step <= steps; step++) {
-			seriesArray.push([curX + 0.01, processes]);
+			seriesArray.push([curX + 0.01, destination]);
 			curX = curX + internalTime;
-			seriesArray.push([curX, processes]);
+			seriesArray.push([curX, destination]);
 		}
 
 		if (plotObj) {

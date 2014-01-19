@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml" />
 	<changeSet author="ngrinder.3.0-b3" id="4" dbms="h2, cubrid" onValidationFail="MARK_RAN">
@@ -36,4 +35,6 @@
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_22.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_23.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_24.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_25.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_26.xml" />
 </databaseChangeLog>

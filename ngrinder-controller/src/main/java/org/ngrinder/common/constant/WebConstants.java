@@ -40,6 +40,8 @@ public interface WebConstants {
 	public static final String PARAM_QUICK_SCRIPT = "quickScript";
 	public static final String PARAM_QUICK_SCRIPT_REVISION = "quickScriptRevision";
 	public static final String PARAM_PROCESS_THREAD_POLICY_SCRIPT = "vuserCalcScript";
+
+	public static final String PARAM_AVAILABLE_RAMP_UP_TYPE = "availRampUpType";
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
 	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";

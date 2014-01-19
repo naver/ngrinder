@@ -592,11 +592,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
 			grinderProperties.setBoolean(GRINDER_PROP_USE_CONSOLE, true);
 			if (BooleanUtils.isTrue(perfTest.getUseRampUp())) {
-				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, getSafe(perfTest.getProcessIncrement()));
+				grinderProperties.setBoolean(GRINDER_PROP_THREAD_RAMPUP, perfTest.getRampUpType() == RampUp.THREAD);
+				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, getSafe(perfTest.getRampUpStep()));
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL,
-						getSafe(perfTest.getProcessIncrementInterval()));
-				grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, getSafe(perfTest.getInitSleepTime()));
-				grinderProperties.setInt(GRINDER_PROP_INITIAL_PROCESS, getSafe(perfTest.getInitProcesses()));
+						getSafe(perfTest.getRampUpIncrementInterval()));
+				grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, getSafe(perfTest.getRampUpInitSleepTime()));
+				grinderProperties.setInt(GRINDER_PROP_INITIAL_PROCESS, getSafe(perfTest.getRampUpInitCount()));
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}

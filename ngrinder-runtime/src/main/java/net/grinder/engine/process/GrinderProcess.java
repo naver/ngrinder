@@ -24,33 +24,14 @@
 
 package net.grinder.engine.process;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import net.grinder.common.GrinderBuild;
-import net.grinder.common.GrinderException;
-import net.grinder.common.GrinderProperties;
-import net.grinder.common.SkeletonThreadLifeCycleListener;
-import net.grinder.common.Test;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.spi.JoranException;
+import net.grinder.common.*;
 import net.grinder.common.processidentity.ProcessReport;
 import net.grinder.common.processidentity.WorkerIdentity;
-import net.grinder.communication.ClientSender;
-import net.grinder.communication.CommunicationException;
-import net.grinder.communication.ConnectionType;
-import net.grinder.communication.Message;
-import net.grinder.communication.MessageDispatchSender;
-import net.grinder.communication.MessagePump;
-import net.grinder.communication.QueuedSender;
-import net.grinder.communication.QueuedSenderDecorator;
-import net.grinder.communication.Receiver;
+import net.grinder.communication.*;
 import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.communication.ConsoleListener;
@@ -68,37 +49,28 @@ import net.grinder.scriptengine.Instrumenter;
 import net.grinder.scriptengine.ScriptEngineService.ScriptEngine;
 import net.grinder.scriptengine.ScriptEngineService.WorkerRunnable;
 import net.grinder.scriptengine.ScriptExecutionException;
-import net.grinder.statistics.ExpressionView;
-import net.grinder.statistics.StatisticsServices;
-import net.grinder.statistics.StatisticsServicesImplementation;
-import net.grinder.statistics.StatisticsTable;
-import net.grinder.statistics.TestStatisticsMap;
+import net.grinder.statistics.*;
 import net.grinder.synchronisation.BarrierGroups;
 import net.grinder.synchronisation.BarrierIdentityGenerator;
 import net.grinder.synchronisation.ClientBarrierGroups;
 import net.grinder.synchronisation.LocalBarrierGroups;
-import net.grinder.util.JVM;
-import net.grinder.util.ListenerSupport;
+import net.grinder.util.*;
 import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.Sleeper;
-import net.grinder.util.SleeperImplementation;
-import net.grinder.util.StandardTimeAuthority;
-import net.grinder.util.TimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
 import net.grinder.util.thread.Condition;
-
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.Context;
-import ch.qos.logback.core.joran.spi.JoranException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * The controller for a worker process.
- *
+ * <p/>
  * <p>
  * Package scope.
  * </p>
@@ -300,7 +272,7 @@ final class GrinderProcess {
 	 * The application's main loop. This is split from the constructor as theoretically it might be
 	 * called multiple times. The constructor sets up the static configuration, this does a single
 	 * execution.
-	 *
+	 * <p/>
 	 * <p>
 	 * This method is interruptible, in the same sense as
 	 * {@link net.grinder.util.thread.InterruptibleRunnable#interruptibleRun()}. We don't implement
@@ -378,9 +350,9 @@ final class GrinderProcess {
 			m_dataLogger.info(dataLogHeader.toString());
 
 			sendStatusMessage(ProcessReport.STATE_STARTED, (short) 0, numberOfThreads);
-			boolean threadRampUp = properties.getBoolean("grinder.threadsRampUp", true);
+			boolean threadRampUp = properties.getBoolean("grinder.threadRampUp", false);
 			final ThreadSynchronisation threadSynchronisation = threadRampUp ?
-					new	ThreadRampUpEnabledThreadSynchronisation(m_eventSynchronisation) :
+					new ThreadRampUpEnabledThreadSynchronisation(m_eventSynchronisation) :
 					new ThreadSynchronisation(m_eventSynchronisation);
 
 			m_terminalLogger.info("Starting threads");
@@ -586,7 +558,7 @@ final class GrinderProcess {
 	 * Implement {@link net.grinder.engine.process.WorkerThreadSynchronisation}. I looked hard at JSR 166's
 	 * <code>CountDownLatch</code> and <code>CyclicBarrier</code>, but neither of them allow for the
 	 * waiting thread to be interrupted by other events.
-	 *
+	 * <p/>
 	 * <p>
 	 * Package scope for unit tests.
 	 * </p>
@@ -689,7 +661,6 @@ final class GrinderProcess {
 				while (!isReadyToStart()) {
 					m_threadEventCondition.waitNoInterrruptException();
 				}
-
 				m_numberAwaitingStart = 0;
 			}
 			m_started.set(true);
@@ -704,6 +675,7 @@ final class GrinderProcess {
 			}
 
 			m_started.await(true);
+			doRampUp();
 		}
 
 		@Override
@@ -733,6 +705,55 @@ final class GrinderProcess {
 				return (short) (m_numberCreated - m_numberFinished);
 			}
 		}
+
+		public static final String GRINDER_PROP_THREAD_INCREMENT = "grinder.processIncrement";
+		public static final String GRINDER_PROP_THREAD_INCREMENT_INTERVAL = "grinder.processIncrementInterval";
+		public static final String GRINDER_PROP_INITIAL_PROCESS = "grinder.initialProcesses";
+		public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
+
+		protected void doRampUp() {
+			InternalScriptContext grinder = Grinder.grinder;
+			if (grinder != null) {
+				GrinderProperties properties = grinder.getProperties();
+				int rampUpInterval = properties.getInt(GRINDER_PROP_THREAD_INCREMENT_INTERVAL, 0);
+				int rampUpStep = properties.getInt(GRINDER_PROP_THREAD_INCREMENT, 0);
+				int rampUpInitialThread = properties.getInt(GRINDER_PROP_INITIAL_PROCESS, 0);
+				doRampup(rampUpInterval, rampUpStep, rampUpInitialThread);
+			}
+		}
+
+		private void doRampup(int rampUpInterval, int rampUpStep, int rampUpInitialThread) {
+			int threadNumber = 0;
+			if (Grinder.grinder != null) {
+				threadNumber = Math.max(Grinder.grinder.getThreadNumber(), 0);
+			}
+			try {
+				final int waitingTime = getWaitingTime(rampUpInterval, rampUpStep, rampUpInitialThread, threadNumber);
+				if (waitingTime != 0) {
+					if (Grinder.grinder != null) {
+						Grinder.grinder.getLogger().info("thread-{} sleep {} ms for ramp-up",
+								threadNumber, waitingTime);
+					}
+					Thread.sleep(waitingTime);
+				}
+			} catch (InterruptedException e) {
+				throw new RuntimeException("Interrupted while waiting for " +
+						rampUpInterval + "(ms) for ramp up\n" +
+						"thread number : " + threadNumber);
+			}
+		}
+
+		public int getWaitingTime(int rampUpInterval, int rampUpStep,
+		                          int rampUpInitialThread, int threadNumber) {
+			// 100 2 1 0 3   ==> 100
+			if (threadNumber < rampUpInitialThread) {
+				return 0;
+			}
+			int remained = (threadNumber - rampUpInitialThread);
+			int threadStep = (remained / rampUpStep) + 1;
+			return Math.max(threadStep * rampUpInterval, 0);
+		}
+
 	}
 
 	private final class ThreadStarterImplementation implements ThreadStarter {

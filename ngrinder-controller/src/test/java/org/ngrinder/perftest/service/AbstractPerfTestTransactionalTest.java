@@ -75,9 +75,9 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setScriptName("test1.py");
 		test.setProcesses(2);
 		test.setThreads(2);
-		test.setProcessIncrement(1);
-		test.setInitSleepTime(0);
-		test.setProcessIncrementInterval(1000);
+		test.setRampUpStep(1);
+		test.setRampUpInitSleepTime(0);
+		test.setRampUpIncrementInterval(1000);
 		test.setStatus(status);
 		test.setCreatedUser(getTestUser());
 		test.setRegion(config.getRegion());

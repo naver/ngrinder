@@ -31,10 +31,7 @@ import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Role;
-import org.ngrinder.model.Status;
-import org.ngrinder.model.User;
+import org.ngrinder.model.*;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -245,6 +242,7 @@ public class PerfTestController extends BaseController {
 	 * @param model model to which put the default values
 	 */
 	public void addDefaultAttributeOnModel(ModelMap model) {
+		model.addAttribute(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
@@ -308,15 +306,15 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Create a new test or cloneTo a current test.
 	 *
-	 * @param user    user
-	 * @param model   model
-	 * @param test    {@link PerfTest}
-	 * @param isClone true if cloneTo
+	 * @param user     user
+	 * @param perfTest {@link PerfTest}
+	 * @param isClone  true if cloneTo
+	 * @param model    model
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping(value = "/new", method = RequestMethod.POST)
-	public String saveOne(User user, ModelMap model, PerfTest perfTest,
-	                      @RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
+	public String saveOne(User user, PerfTest perfTest,
+	                      @RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone, ModelMap model) {
 
 		validate(user, null, perfTest);
 		// Point to the head revision
@@ -878,7 +876,7 @@ public class PerfTestController extends BaseController {
 	 * Create the given perf test.
 	 *
 	 * @param user     user
-	 * @param perftest perf test
+	 * @param perfTest perf test
 	 * @return json message containing test info.
 	 */
 	@RestAPI

@@ -131,7 +131,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		cloneTest.setId(test.getId()); // set cloned test's ID as previous test
 
 		ModelMap model = new ModelMap();
-		controller.saveOne(getTestUser(), model, cloneTest, true);
+		controller.saveOne(getTestUser(), cloneTest, true, model);
 		assertThat(preId, not(cloneTest.getId()));
 
 		// test leave comment
@@ -176,7 +176,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		newTest.setAgentCount(1);
 
 		ModelMap model = new ModelMap();
-		controller.saveOne(getTestUser(), model, newTest, false);
+		controller.saveOne(getTestUser(), newTest, false, model);
 		controller.getOne(getTestUser(), newTest.getId(), model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
@@ -184,7 +184,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 
 		model.clear();
 		newTest.setStatus(Status.READY);
-		controller.saveOne(getTestUser(), model, newTest, false);
+		controller.saveOne(getTestUser(), newTest, false, model);
 		controller.getOne(getTestUser(), newTest.getId(), model);
 		testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
@@ -194,7 +194,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		newTest.setStatus(Status.START_TESTING);
 		try {
 			newTest.setStatus(Status.START_TESTING);
-			controller.saveOne(getTestUser(), model, newTest, false);
+			controller.saveOne(getTestUser(), newTest, false, model);
 			fail("test status id START_TESTING, can not be saved");
 		} catch (IllegalArgumentException e) {
 		}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.3" id="26" dbms="cubrid, h2">
+		<renameColumn tableName="PERF_TEST" oldColumnName="rampup_type" newColumnName="ramp_up_type"/>
+		<renameColumn tableName="PERF_TEST" oldColumnName="init_processes" newColumnName="ramp_up_init_count"/>
+		<renameColumn tableName="PERF_TEST" oldColumnName="init_sleep_time" newColumnName="ramp_up_init_sleep_time"/>
+		<renameColumn tableName="PERF_TEST" oldColumnName="process_increment" newColumnName="ramp_up_step"/>
+		<renameColumn tableName="PERF_TEST" oldColumnName="process_increment_interval" newColumnName="ramp_up_increment_interval"/>
+	</changeSet>
+</databaseChangeLog>

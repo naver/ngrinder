@@ -241,9 +241,12 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1),
 							workerFactory, m_eventSynchronisation, m_logger);
 					m_workerLauncherForShutdown = workerLauncher;
+					final boolean threadRampUp = properties.getBoolean("grinder.threadRampUp", false);
 					final int increment = properties.getInt("grinder.processIncrement", 0);
-					m_logger.debug("'Ramp Up' mode by {}.", increment);
-					if (increment > 0) {
+					if (!threadRampUp) {
+						m_logger.debug("'Ramp Up' mode by {}.", increment);
+					}
+					if (!threadRampUp && increment > 0) {
 						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties.getInt(
 								"grinder.initialProcesses", increment));
 
@@ -316,15 +319,9 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 					}
 				}
 			}
-		} catch (
-				Exception e
-				)
-
-		{
+		} catch (Exception e) {
 			m_logger.error("Exception occurred in the agent message loop", e);
-		} finally
-
-		{
+		} finally {
 			if (m_timer != null) {
 				m_timer.cancel();
 				m_timer = null;

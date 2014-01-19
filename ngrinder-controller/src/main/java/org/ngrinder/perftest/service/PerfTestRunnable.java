@@ -55,7 +55,7 @@ import static org.ngrinder.model.Status.*;
  * {@link PerfTest} run scheduler.
  * <p/>
  * This class is responsible to execute/finish the performance test. The job is
- * started from {@link #start()} and {@link #finish()} method. These
+ * started from {@link #doStart()}  and {@link #doFinish()} method. These
  * methods are scheduled by Spring Task.
  *
  * @author JunHo Yoon
