@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 
+@Ignore
 public class NGrinderControllerStarterTest {
 	@Test
 	public void test1() throws Exception {
