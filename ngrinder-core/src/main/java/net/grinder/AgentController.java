@@ -231,7 +231,11 @@ public class AgentController implements Agent, AgentConstants {
 						} else {
 							throw new CommunicationException("Error while getting the agent package from controller");
 						}
-						consoleCommunication.sendMessage(agentDownloadGrinderMessage);
+						if (consoleCommunication != null) {
+							consoleCommunication.sendMessage(agentDownloadGrinderMessage);
+						} else {
+							break;
+						}
 
 					} catch (IllegalArgumentException ex) {
 						IOUtils.closeQuietly(agentUpdateHandler);
