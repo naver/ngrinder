@@ -123,13 +123,23 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
 			cluster = resolveClusterMode();
-			if (!isDevMode()) {
-				initLogger(false);
-			}
+
+			initDevModeProperties();
 			loadAnnouncement();
 			loadDatabaseProperties();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
+		}
+	}
+
+	protected void initDevModeProperties() {
+		if (!isDevMode()) {
+			initLogger(false);
+		} else {
+			final PropertiesWrapper controllerProperties = getControllerProperties();
+			controllerProperties.addProperty(PROP_CONTROLLER_AGENT_FORCE_UPDATE, "true");
+			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL, "true");
+			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE, "true");
 		}
 	}
 
