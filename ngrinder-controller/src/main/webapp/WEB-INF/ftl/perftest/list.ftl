@@ -339,42 +339,43 @@ $(document).ready(function () {
 			var ajaxObj = new AjaxObj("/perftest/api/" + id + "/graph");
 			ajaxObj.params = {
 				'dataType': 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
-				'imgWidth': 100
+				'imgWidth': 100,
+				'onlyTotal' : true
 			};
 			ajaxObj.success = function (res) {
 				/** @namespace res.chartInterval */
 				var chartInterval = res.chartInterval;
 				/** @namespace res.TPS */
-				if (res.TPS.lables.length >= 1) {
-					res.TPS.lables[0] = "TPS";
+				if (res.TPS.labels.length >= 1) {
+					res.TPS.labels[0] = "TPS";
 				}
 				new Chart(tpsId, res.TPS.data, chartInterval,
 						{
-							labels: res.TPS.lables,
+							labels: res.TPS.labels,
 							gridPadding: gridPadding,
 							numXTicks: 7,
 							legend_margin: 1,
 							legend_location : "nw"
 						}).plot();
 				/** @namespace res.Mean_Test_Time_ms */
-				if (res.Mean_Test_Time_ms.lables.length >= 1) {
-					res.Mean_Test_Time_ms.lables[0] = "MTT";
+				if (res.Mean_Test_Time_ms.labels.length >= 1) {
+					res.Mean_Test_Time_ms.labels[0] = "MTT";
 				}
 				new Chart(meanTimeChartId, res.Mean_Test_Time_ms.data, chartInterval,
 						{
-							labels: res.Mean_Test_Time_ms.lables,
+							labels: res.Mean_Test_Time_ms.labels,
 							gridPadding: gridPadding,
 							numXTicks: 7,
 							legend_margin: 1,
 							legend_location : "nw"
 						}).plot();
 				/** @namespace res.Errors */
-				if (res.Errors.lables.length >= 1) {
-					res.Errors.lables[0] = "ERR";
+				if (res.Errors.labels.length >= 1) {
+					res.Errors.labels[0] = "ERR";
 				}
 				new Chart(errorChartId, res.Errors.data, chartInterval,
 						{
-							labels: res.Errors.lables,
+							labels: res.Errors.labels,
 							gridPadding: gridPadding,
 							numXTicks: 7,
 							legend_margin: 1,

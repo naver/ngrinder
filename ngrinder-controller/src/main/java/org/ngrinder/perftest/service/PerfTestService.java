@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.grinder.SingleConsole;
@@ -1453,7 +1454,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 
 	/**
-	 * Get list that contains test report data as a json string.
+	 * Get json string that contains test report data as a json string.
 	 *
 	 * @param testId   test id
 	 * @param key      key
@@ -1470,13 +1471,15 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 *
 	 * @param testId   test id
 	 * @param key      report key
+	 * @param onlyTotal true if only total show be passed
 	 * @param interval interval to collect data
 	 * @return list containing label and tps value list
 	 */
-	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, int interval) {
+	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, boolean onlyTotal, int interval) {
 		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<String>(),
 				new ArrayList<String>());
-		for (File file : getReportDataFiles(testId, key)) {
+		List<File> reportDataFiles = onlyTotal ? Lists.newArrayList(getReportDataFile(testId, key)) : getReportDataFiles(testId, key);
+		for (File file : reportDataFiles) {
 			String buildReportName = buildReportName(key, file);
 			if (key.equals(buildReportName)) {
 				buildReportName = "Total";

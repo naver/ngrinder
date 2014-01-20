@@ -295,7 +295,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		controller.getReport(model, test.getId());
 
 		model.clear();
-		controller.getPerfGraph(test.getId(), "TPS,mean_time(ms)", 0);
+		controller.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
 
 		model.clear();
 		controller.getReportSection(getTestUser(), model, test.getId(), 700);

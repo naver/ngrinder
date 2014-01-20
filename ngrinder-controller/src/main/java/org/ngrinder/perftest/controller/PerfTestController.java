@@ -471,14 +471,14 @@ public class PerfTestController extends BaseController {
 	}
 
 
-	private Map<String, Object> getPerfGraphData(Long id, String[] dataTypes, int imgWidth) {
+	private Map<String, Object> getPerfGraphData(Long id, String[] dataTypes, boolean onlyTotal, int imgWidth) {
 		final PerfTest test = perfTestService.getOne(id);
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		Map<String, Object> resultMap = Maps.newHashMap();
 		for (String each : dataTypes) {
-			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(id, each, interval);
+			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(id, each, onlyTotal, interval);
 			Map<String, Object> dataMap = Maps.newHashMap();
-			dataMap.put("lables", tpsResult.getFirst());
+			dataMap.put("labels", tpsResult.getFirst());
 			dataMap.put("data", tpsResult.getSecond());
 			resultMap.put(StringUtils.replaceChars(each, "()", ""), dataMap);
 		}
@@ -790,9 +790,11 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping({"/api/{id}/perf", "/api/{id}/graph"})
 	public HttpEntity<String> getPerfGraph(@PathVariable("id") long id,
-	                                       @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
+	                                       @RequestParam(required = true, defaultValue = "") String dataType,
+	                                       @RequestParam(defaultValue = "false") boolean onlyTotal,
+	                                       @RequestParam int imgWidth) {
 		String[] dataTypes = checkNotEmpty(StringUtils.split(dataType, ","), "dataType argument should be provided");
-		return toJsonHttpEntity(getPerfGraphData(id, dataTypes, imgWidth));
+		return toJsonHttpEntity(getPerfGraphData(id, dataTypes, onlyTotal, imgWidth));
 	}
 
 

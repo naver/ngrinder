@@ -41,13 +41,13 @@
 		};
 		ajaxObj.success = function (data) {
 			var interval = data.chartInterval;
-			drawChart("tps_chart", data.TPS.data, interval, data.TPS.lables);
-			drawChart("mean_time_chart", data.Mean_Test_Time_ms.data, interval, data.Mean_Test_Time_ms.lables);
-			drawChart('vuser_chart', data.Vuser.data, interval, data.Vuser.lables);
-			drawChart('error_chart', data.Errors.data, interval, data.Errors.lables);
+			drawChart("tps_chart", data.TPS.data, interval, data.TPS.labels);
+			drawChart("mean_time_chart", data.Mean_Test_Time_ms.data, interval, data.Mean_Test_Time_ms.labels);
+			drawChart('vuser_chart', data.Vuser.data, interval, data.Vuser.labels);
+			drawChart('error_chart', data.Errors.data, interval, data.Errors.labels);
             drawOptionalChart("min_time_first_byte_chart", data.Mean_time_to_first_byte.data, interval,
-					data.Mean_time_to_first_byte.lables);
-			drawOptionalChart("user_defined_chart", data.User_defined.data, interval, data.User_defined.lables);
+					data.Mean_time_to_first_byte.labels);
+			drawOptionalChart("user_defined_chart", data.User_defined.data, interval, data.User_defined.labels);
 			createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");
 		};
 		ajaxObj.call();
@@ -55,9 +55,9 @@
 	function drawChart(id, data, interval, labels) {
 		new Chart(id, data, interval, { labels: labels }).plot();
 	}
-	function drawOptionalChart(id, data, interval, lables) {
+	function drawOptionalChart(id, data, interval, labels) {
 		if (data !== undefined && data.length != 0) {
-			drawChart(id, data, interval, lables);
+			drawChart(id, data, interval, labels);
 		} else {
 			$("#" + id).hide();
 			$("#" + id + "_header").hide();

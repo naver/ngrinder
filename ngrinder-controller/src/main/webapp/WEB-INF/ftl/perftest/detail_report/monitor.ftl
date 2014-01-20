@@ -46,8 +46,8 @@
 		return new Chart(id, data, interval, {yAxisFormatter: yFormat}).plot();
 	}
 
-	function drawOptionalChart(id, data, interval, lables) {
-		var result = drawChart(id, data, interval, lables);
+	function drawOptionalChart(id, data, interval, labels) {
+		var result = drawChart(id, data, interval, labels);
 		if (result.isEmpty()) {
 			$("#" + id).hide();
 			$("#" + id + "_header").hide();
