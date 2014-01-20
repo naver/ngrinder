@@ -754,8 +754,10 @@ final class GrinderProcess {
 				if (waitingTime != 0) {
 					sleeper.sleepFlat(waitingTime);
 				}
-				Grinder.grinder.getLogger().info("thread-{} is sleeping {} ms for ramp-up", threadNumber,
-						waitingTime);
+				if (Grinder.grinder != null) {
+					Grinder.grinder.getLogger().info("thread-{} is sleeping {} ms for ramp-up", threadNumber,
+							waitingTime);
+				}
 				return waitingTime;
 			} catch (Sleeper.ShutdownException e) {
 				throw new RuntimeException(e);
