@@ -295,7 +295,7 @@ public class AgentController implements Agent, AgentConstants {
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, compressedLog, new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
 		if (!agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_KEEP_LOGS)) {
-			LOGGER.error("Clean up the perftest logs");
+			LOGGER.info("Clean up the perftest logs");
 			FileUtils.deleteQuietly(logFolder);
 		}
 	}

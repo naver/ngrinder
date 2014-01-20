@@ -1,5 +1,6 @@
 3.3 (TBD)
 nGrinder 3.3 is the major release including several new features.
+You should upgrade both agent and controller to 3.3 version to enjoy the new features.
 
 - New feature and changes
   * One single executable package
@@ -19,13 +20,18 @@ nGrinder 3.3 is the major release including several new features.
       cluster member discovery, web connections so that no connection error will be occurred.
     - Even IP6 are fully supported as well.
   * Easier command line options
-    - controller and agent now have the quite good command line interface.
+    - The controller and agent now have the quite detailed command line interface.
     - please provide -h when executing them to see the available options.
     - Even multiple agent and controller execution in a single machine has become very easy.
+    - Check out TBD
   * Agents automatic update
-    - agents can be automatically upgradable just by clicking Update button in the controller.
+    - Now Agents can be upgradable just by clicking Update button in the controller's agent  management  page.
     - Check out TBD
   * Very small monitor package(<5MB)
+  * Thread Ramp-Up
+    - The underlying "The Grinder" engine has supported per process ramp up, but thread ramp up.
+    - nGrinder has enhanced this engine to support the thread ramp up so that more smooth ramp up can be done.
+    - Check out TBD
   * Full REST APIs.
     - A user and admin can call the REST APIs to manage tests and scripts.
     - An admin call call the REST APIs to manage users and agents.
