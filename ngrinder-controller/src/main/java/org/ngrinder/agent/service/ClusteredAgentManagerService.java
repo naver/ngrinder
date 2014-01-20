@@ -13,6 +13,9 @@
  */
 package org.ngrinder.agent.service;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import net.grinder.common.processidentity.AgentIdentity;
@@ -36,6 +39,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
@@ -231,11 +235,22 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	public List<AgentInfo> getAllActive() {
-		return agentManagerRepository.findAll(active());
+		return filterOnlyActiveRegion(agentManagerRepository.findAll(active()));
 	}
 
 	public List<AgentInfo> getAllVisible() {
-		return agentManagerRepository.findAll(visible());
+		return filterOnlyActiveRegion(agentManagerRepository.findAll(visible()));
+	}
+
+	private List<AgentInfo> filterOnlyActiveRegion(List<AgentInfo> agents) {
+		final Set<String> regions = getRegions();
+		return Lists.newArrayList(Iterables.filter(agents,
+				new Predicate<AgentInfo>() {
+					@Override
+					public boolean apply(@Nullable AgentInfo input) {
+						return input != null && regions.contains(extractRegionFromAgentRegion(input.getRegion()));
+					}
+				}));
 	}
 
 

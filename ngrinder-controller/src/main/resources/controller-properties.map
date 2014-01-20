@@ -35,3 +35,4 @@ controller.help_url,http://www.cubrid.org/wiki_ngrinder/entry/user-guide,ngrinde
 controller.default_lang,en,ngrinder.langauge.default
 controller.admin_password_reset,false,
 controller.agent_force_update,false,
+controller.update_chunk_size,1048576,

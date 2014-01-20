@@ -82,4 +82,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE = "controller.enable_script_console";
 	public static final String PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL = "controller.enable_agent_auto_approval";
 	public static final String PROP_CONTROLLER_AGENT_FORCE_UPDATE = "controller.agent_force_update";
+	public static final String PROP_CONTROLLER_UPDATE_CHUNK_SIZE = "controller.update_chunk_size";
 }

@@ -35,7 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.common.constants.AgentConstants;
-import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.collector.SystemDataCollector;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -142,18 +141,21 @@ public class AgentController implements Agent, AgentConstants {
 					}
 
 					if (consoleCommunication != null && startMessage == null) {
-						LOGGER.info("Waiting for agent controller server signal");
-						m_state = AgentControllerState.READY;
-						m_agentControllerServerListener.waitForMessage();
-
-						if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
-							startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
-
-							LOGGER.info("Agent start message is received from controller {}", startMessage);
-							continue;
+						if (m_state == AgentControllerState.UPDATING) {
+							m_agentControllerServerListener.waitForMessage();
+							break;
 						} else {
-							break; // Another message, check at end of outer
-							// while loop.
+							LOGGER.info("Waiting for agent controller server signal");
+							m_state = AgentControllerState.READY;
+							m_agentControllerServerListener.waitForMessage();
+							if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
+								startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
+								LOGGER.info("Agent start message is received from controller {}", startMessage);
+								continue;
+							} else {
+								break; // Another message, check at end of outer
+								// while loop.
+							}
 						}
 					}
 
@@ -206,28 +208,28 @@ public class AgentController implements Agent, AgentConstants {
 					startMessage = null;
 					m_connectionPort = 0;
 					m_state = AgentControllerState.UPDATING;
-					sendCurrentState(consoleCommunication);
 					final AgentUpdateGrinderMessage message = m_agentControllerServerListener.getLastAgentUpdateGrinderMessage();
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.AGENT_UPDATE);
 					AgentDownloadGrinderMessage agentDownloadGrinderMessage = new AgentDownloadGrinderMessage(message.getVersion());
 					try {
 						// If it's initial message
-						if (message.getNext() == 0 && message.getBinary().length == 0) {
+						if (agentUpdateHandler == null && message.getNext() == 0) {
 							IOUtils.closeQuietly(agentUpdateHandler);
 							agentUpdateHandler = new AgentUpdateHandler(agentConfig, message);
 						} else if (agentUpdateHandler != null) {
-
-							if (message.getChecksum() == CRC32ChecksumUtils.getCRC32Checksum(message.getBinary())) {
+							if (message.isValid()) {
 								retryCount = 0;
 								agentUpdateHandler.update(message);
-								agentDownloadGrinderMessage.setNext(message.getNext() + message.getBinary().length);
+								agentDownloadGrinderMessage.setNext(message.getNext());
 							} else if (retryCount <= AgentDownloadGrinderMessage.MAX_RETRY_COUNT) {
 								retryCount++;
-								agentDownloadGrinderMessage.setNext(message.getNext());
+								agentDownloadGrinderMessage.setNext(message.getOffset());
 							} else {
-								throw new CommunicationException("Error while getting agent package from controller");
+								throw new CommunicationException("Error while getting the agent package from " +
+										"controller");
 							}
-
+						} else {
+							throw new CommunicationException("Error while getting the agent package from controller");
 						}
 						consoleCommunication.sendMessage(agentDownloadGrinderMessage);
 
@@ -238,14 +240,12 @@ public class AgentController implements Agent, AgentConstants {
 						LOGGER.info("same or old agent version {} is sent for update. skip this.",
 								message.getVersion());
 						m_state = AgentControllerState.READY;
-						sendCurrentState(consoleCommunication);
 					} catch (Exception e) {
 						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
 						LOGGER.error("While updating agent, the exception occurred.", e);
 						m_state = AgentControllerState.READY;
-						sendCurrentState(consoleCommunication);
 					}
 
 				} else {

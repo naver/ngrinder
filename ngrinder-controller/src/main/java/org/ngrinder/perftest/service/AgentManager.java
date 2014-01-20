@@ -34,7 +34,6 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.agent.service.LocalAgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
-import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
@@ -50,7 +49,10 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -498,30 +500,31 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	}
 
 	@Override
-	public AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset) {
-		if (offset == -1) {
-			return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
-		}
-		byte[] buffer = new byte[FileDownloadUtils.FILE_CHUNK_BUFFER_SIZE];
+	public synchronized AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset) {
+		final int updateChunkSize = getUpdateChunkSize();
+		byte[] buffer = new byte[updateChunkSize];
 		RandomAccessFile agentPackageReader = null;
 		try {
 			agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r");
 			agentPackageReader.seek(offset);
-			int count = agentPackageReader.read(buffer, 0, FileDownloadUtils.FILE_CHUNK_BUFFER_SIZE);
+			int count = agentPackageReader.read(buffer, 0, updateChunkSize);
 			byte[] bytes = buffer;
-			if (count != FileDownloadUtils.FILE_CHUNK_BUFFER_SIZE) {
+			int next = offset + count;
+			if (count != updateChunkSize) {
 				bytes = Arrays.copyOf(buffer, count);
+				next = 0;
 			}
-			if (count != -1) {
-				return new AgentUpdateGrinderMessage(version, bytes, offset, CRC32ChecksumUtils.getCRC32Checksum(bytes));
-			}
-
+			return new AgentUpdateGrinderMessage(version, bytes, offset, next,
+					CRC32ChecksumUtils.getCRC32Checksum(bytes));
 		} catch (Exception e) {
-			LOGGER.error("Error while reading agent package, its offset is {} and details {}:", offset,
-					e.getMessage());
+			LOGGER.error("Error while reading agent package, its offset is {} and details {}:", offset, e);
 		} finally {
 			IOUtils.closeQuietly(agentPackageReader);
 		}
 		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
+	}
+
+	private int getUpdateChunkSize() {
+		return config.getControllerProperties().getPropertyInt(ControllerConstants.PROP_CONTROLLER_UPDATE_CHUNK_SIZE);
 	}
 }

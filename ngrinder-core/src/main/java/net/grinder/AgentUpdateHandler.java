@@ -14,12 +14,12 @@
 package net.grinder;
 
 import net.grinder.communication.CommunicationException;
-import net.grinder.engine.communication.AgentControllerServerListener;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -85,19 +85,21 @@ public class AgentUpdateHandler implements Closeable {
 	 * @param message message to be sent
 	 */
 	public void update(AgentUpdateGrinderMessage message) throws CommunicationException {
-		if (message.getNext() != -1) {
-			try {
-				IOUtils.write(message.getBinary(), agentOutputStream);
-				offset = message.getNext();
-			} catch (IOException e) {
-				throw new CommunicationException("Error while writing binary", e);
-			}
-		} else if (message.getNext() == -1) {
+		if (message.getOffset() != offset) {
+			throw new CommunicationException("Expected " + offset + " offset," +
+					" but " + message.getOffset() + " was sent. " + ToStringBuilder.reflectionToString(message));
+		}
+		try {
+			IOUtils.write(message.getBinary(), agentOutputStream);
+			offset = message.getNext();
+		} catch (IOException e) {
+			throw new CommunicationException("Error while writing binary", e);
+		}
+		if (message.getNext() == 0) {
+			IOUtils.closeQuietly(agentOutputStream);
 			decompressDownloadPackage();
 			// Then just exist to run the agent update process.
 			System.exit(0);
-		} else {
-			throw new CommunicationException("Received wrong offset from controller !");
 		}
 	}
 

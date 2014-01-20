@@ -75,10 +75,11 @@ public class AgentManagerController extends BaseController {
 		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
 			@Override
 			public boolean apply(AgentInfo agentInfo) {
+				final String eachAgentRegion = agentInfo.getRegion();
+				//noinspection SimplifiableIfStatement
 				if (StringUtils.equals(region, "all") || StringUtils.isEmpty(region)) {
 					return true;
 				}
-				final String eachAgentRegion = agentInfo.getRegion();
 				return eachAgentRegion.startsWith(region + "_owned") || region.equals(eachAgentRegion);
 			}
 		}));

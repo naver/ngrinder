@@ -14,6 +14,7 @@
 package net.grinder.engine.communication;
 
 import net.grinder.communication.Message;
+import org.ngrinder.common.util.CRC32ChecksumUtils;
 
 /**
  * Message for agent update.
@@ -25,36 +26,50 @@ public class AgentUpdateGrinderMessage implements Message {
 
 	private final String version;
 	private final byte[] binary;
-	private final int next;
+	private final int offset;
+	/**
+	 * -1 is ending, -2 is error
+	 */
+	private int next;
 	private final long checksum;
 
 	/**
 	 * Constructor.
 	 */
-	public AgentUpdateGrinderMessage(String version, byte[] binary, int next, long checksum) {
+	public AgentUpdateGrinderMessage(String version, byte[] binary, int offset, int next, long checksum) {
 		this.version = version;
 		this.binary = binary;
+		this.offset = offset;
 		this.next = next;
 		this.checksum = checksum;
 	}
 
 	/**
-	 *Get Null AgentUpdateGrinderMessage when nothing can be read.
+	 * Get Null AgentUpdateGrinderMessage when nothing can be read.
 	 *
-	 *@param version version
-	 *
-	 *@return AgentUpdateGrinderMessage null message
+	 * @param version version
+	 * @return AgentUpdateGrinderMessage null message
 	 */
 	public static AgentUpdateGrinderMessage getNullAgentUpdateGrinderMessage(String version) {
-		return new AgentUpdateGrinderMessage(version, new byte[0], -1, 0);
+		return new AgentUpdateGrinderMessage(version, new byte[0], 0, -1, -1);
+	}
+
+	/**
+	 * Get Initial AgentUpdateGrinderMessage.
+	 *
+	 * @param version version
+	 * @return AgentUpdateGrinderMessage
+	 */
+	public static AgentUpdateGrinderMessage getStartAgentUpdateGrinderMessage(String version) {
+		return new AgentUpdateGrinderMessage(version, new byte[0], 0, 0, 0);
 	}
 
 	public String getVersion() {
 		return version;
 	}
 
-	public int getNext() {
-		return next;
+	public int getOffset() {
+		return offset;
 	}
 
 	public long getChecksum() {
@@ -63,5 +78,13 @@ public class AgentUpdateGrinderMessage implements Message {
 
 	public byte[] getBinary() {
 		return binary;
+	}
+
+	public int getNext() {
+		return next;
+	}
+
+	public boolean isValid() {
+		return next >= 0 && getChecksum() == CRC32ChecksumUtils.getCRC32Checksum(getBinary());
 	}
 }
