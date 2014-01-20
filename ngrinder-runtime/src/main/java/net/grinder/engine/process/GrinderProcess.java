@@ -668,14 +668,13 @@ final class GrinderProcess {
 
 		@Override
 		public void awaitStart() {
+			doRampUp();
 			synchronized (m_threadEventCondition) {
 				m_numberAwaitingStart++;
 				m_numberRunning++;
 				m_threadEventCondition.notifyAll();
 			}
-
 			m_started.await(true);
-			doRampUp();
 		}
 
 		@Override
@@ -688,9 +687,7 @@ final class GrinderProcess {
 
 		@Override
 		public boolean isReadyToStart() {
-			synchronized (m_threadEventCondition) {
-				return m_numberRunning >= 0;
-			}
+			return true;
 		}
 
 		public boolean isFinished() {
@@ -709,7 +706,6 @@ final class GrinderProcess {
 		public static final String GRINDER_PROP_THREAD_INCREMENT = "grinder.processIncrement";
 		public static final String GRINDER_PROP_THREAD_INCREMENT_INTERVAL = "grinder.processIncrementInterval";
 		public static final String GRINDER_PROP_INITIAL_PROCESS = "grinder.initialProcesses";
-		public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
 
 		protected void doRampUp() {
 			InternalScriptContext grinder = Grinder.grinder;

@@ -231,7 +231,7 @@
 							err_style="margin-left:-125px; width:220px; height:10px"/>
 					</div>
 					<div class="span3">
-						<@input_label name="processIncrementInterval"
+						<@input_label name="rampUpIncrementInterval"
 							value="${test.rampUpIncrementInterval}"
 							message="perfTest.config.rampUp.incrementInterval" others="<code>MS</code>"
 							err_style="margin-left:-125px; width:220px; height:10px"/>

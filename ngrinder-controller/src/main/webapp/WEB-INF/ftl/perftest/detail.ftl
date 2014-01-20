@@ -301,7 +301,7 @@
 <#include "../common/copyright.ftl">
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
-<script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
+<script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}_p1"></script>
 <script>
 // vuser calc
 ${vuserCalcScript};

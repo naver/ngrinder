@@ -37,9 +37,9 @@ function updateRampupChart() {
 		$base = $('#threads');
 		$factor = $("#processes");
     }
-	var $processInc = $('#process_increment');
-	var $initialProcesses = $('#init_processes');
-	var $internalTime = $('#process_increment_interval');
+	var $processInc = $('#ramp_up_step');
+	var $initialProcesses = $('#ramp_up_init_count');
+	var $internalTime = $('#ramp_up_increment_interval');
 
 	var factorVar =  parseInt($factor.val(), 10);
 	var destination = parseInt($base.val(), 10) * factorVar;
@@ -70,7 +70,7 @@ function updateRampupChart() {
 		steps = 1;
 	}
 
-	var initialSleepTime = parseInt($('#init_sleep_time').val());
+	var initialSleepTime = parseInt($('#ramp_up_init_sleep_time').val());
 
 	if (isNaN(initialSleepTime)) {
 		return;
