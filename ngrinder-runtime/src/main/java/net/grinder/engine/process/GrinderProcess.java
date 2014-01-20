@@ -352,7 +352,7 @@ final class GrinderProcess {
 			sendStatusMessage(ProcessReport.STATE_STARTED, (short) 0, numberOfThreads);
 			boolean threadRampUp = properties.getBoolean("grinder.threadRampUp", false);
 			final ThreadSynchronisation threadSynchronisation = threadRampUp ?
-					new ThreadRampUpEnabledThreadSynchronisation(m_eventSynchronisation) :
+					new ThreadRampUpEnabledThreadSynchronisation(m_eventSynchronisation, m_sleeper) :
 					new ThreadSynchronisation(m_eventSynchronisation);
 
 			m_terminalLogger.info("Starting threads");
@@ -652,8 +652,11 @@ final class GrinderProcess {
 	}
 
 	static class ThreadRampUpEnabledThreadSynchronisation extends ThreadSynchronisation {
-		ThreadRampUpEnabledThreadSynchronisation(Condition condition) {
+		private final Sleeper sleeper;
+
+		ThreadRampUpEnabledThreadSynchronisation(Condition condition, Sleeper sleeper) {
 			super(condition);
+			this.sleeper = sleeper;
 		}
 
 		public void startThreads() {
@@ -663,18 +666,27 @@ final class GrinderProcess {
 				}
 				m_numberAwaitingStart = 0;
 			}
-			m_started.set(true);
+//			m_started.set(true);
 		}
 
 		@Override
 		public void awaitStart() {
-			doRampUp();
+			int waitingTime = doRampUp();
+			int threadNumber = 0;
+			if (Grinder.grinder != null) {
+				threadNumber = Math.max(Grinder.grinder.getThreadNumber(), 0);
+			}
 			synchronized (m_threadEventCondition) {
 				m_numberAwaitingStart++;
 				m_numberRunning++;
 				m_threadEventCondition.notifyAll();
 			}
-			m_started.await(true);
+			if (Grinder.grinder != null) {
+				Grinder.grinder.getLogger().info("thread-{} is invoked after {} ms sleep", threadNumber,
+						waitingTime);
+			}
+
+//			m_started.await(true);
 		}
 
 		@Override
@@ -688,6 +700,18 @@ final class GrinderProcess {
 		@Override
 		public boolean isReadyToStart() {
 			return true;
+		}
+
+
+		@Override
+		public void threadFinished() {
+			synchronized (m_threadEventCondition) {
+				++m_numberFinished;
+
+				if (isFinished()) {
+					m_threadEventCondition.notifyAll();
+				}
+			}
 		}
 
 		public boolean isFinished() {
@@ -707,35 +731,34 @@ final class GrinderProcess {
 		public static final String GRINDER_PROP_THREAD_INCREMENT_INTERVAL = "grinder.processIncrementInterval";
 		public static final String GRINDER_PROP_INITIAL_PROCESS = "grinder.initialProcesses";
 
-		protected void doRampUp() {
+		protected int doRampUp() {
 			InternalScriptContext grinder = Grinder.grinder;
 			if (grinder != null) {
 				GrinderProperties properties = grinder.getProperties();
 				int rampUpInterval = properties.getInt(GRINDER_PROP_THREAD_INCREMENT_INTERVAL, 0);
 				int rampUpStep = properties.getInt(GRINDER_PROP_THREAD_INCREMENT, 0);
 				int rampUpInitialThread = properties.getInt(GRINDER_PROP_INITIAL_PROCESS, 0);
-				doRampup(rampUpInterval, rampUpStep, rampUpInitialThread);
+				return doRampup(rampUpInterval, rampUpStep, rampUpInitialThread);
 			}
+			return 0;
 		}
 
-		private void doRampup(int rampUpInterval, int rampUpStep, int rampUpInitialThread) {
+		private int doRampup(int rampUpInterval, int rampUpStep, int rampUpInitialThread) {
 			int threadNumber = 0;
+			int waitingTime = 0;
 			if (Grinder.grinder != null) {
 				threadNumber = Math.max(Grinder.grinder.getThreadNumber(), 0);
 			}
 			try {
-				final int waitingTime = getWaitingTime(rampUpInterval, rampUpStep, rampUpInitialThread, threadNumber);
+				waitingTime = getWaitingTime(rampUpInterval, rampUpStep, rampUpInitialThread, threadNumber);
 				if (waitingTime != 0) {
-					if (Grinder.grinder != null) {
-						Grinder.grinder.getLogger().info("thread-{} sleep {} ms for ramp-up",
-								threadNumber, waitingTime);
-					}
-					Thread.sleep(waitingTime);
+					sleeper.sleepFlat(waitingTime);
 				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException("Interrupted while waiting for " +
-						rampUpInterval + "(ms) for ramp up\n" +
-						"thread number : " + threadNumber);
+				Grinder.grinder.getLogger().info("thread-{} is sleeping {} ms for ramp-up", threadNumber,
+						waitingTime);
+				return waitingTime;
+			} catch (Sleeper.ShutdownException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
