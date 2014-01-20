@@ -738,14 +738,14 @@ final class GrinderProcess {
 				int rampUpInterval = properties.getInt(GRINDER_PROP_THREAD_INCREMENT_INTERVAL, 0);
 				int rampUpStep = properties.getInt(GRINDER_PROP_THREAD_INCREMENT, 0);
 				int rampUpInitialThread = properties.getInt(GRINDER_PROP_INITIAL_PROCESS, 0);
-				return doRampup(rampUpInterval, rampUpStep, rampUpInitialThread);
+				return doRampUp(rampUpInterval, rampUpStep, rampUpInitialThread);
 			}
 			return 0;
 		}
 
-		private int doRampup(int rampUpInterval, int rampUpStep, int rampUpInitialThread) {
+		private int doRampUp(int rampUpInterval, int rampUpStep, int rampUpInitialThread) {
 			int threadNumber = 0;
-			int waitingTime = 0;
+			int waitingTime;
 			if (Grinder.grinder != null) {
 				threadNumber = Math.max(Grinder.grinder.getThreadNumber(), 0);
 			}
