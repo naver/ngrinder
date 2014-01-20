@@ -32,7 +32,7 @@
 						<span>${test.durationStr}</span>
 						<code>HH:MM:SS</code>
 					  	<span class="badge badge-success pull-right">
-							<@spring.message "perfTest.running.runCount"/> <span id="running_count"></span>
+							<span id="running_count"></span> <@spring.message "perfTest.running.runCount"/>
 						</span>
 					</@control_group>
 				<#else>
