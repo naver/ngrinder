@@ -355,7 +355,6 @@ public abstract class CompressionUtils {
 				}
 				untaredFiles.add(outputFile);
 			}
-			debInputStream.close();
 		} catch (Exception e) {
 			throw processException("Error while untar file", e);
 		} finally {
