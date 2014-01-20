@@ -105,6 +105,8 @@ Chart.prototype.isEmpty = function () {
 };
 Chart.prototype.plot = function () {
 	if (this.isEmpty()) {
+		$("#" + this.containerId).hide();
+		$("#" + this.containerId + "_header").hide();
 		return this;
 	}
 	var preYmax = this.ymax;

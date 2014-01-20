@@ -3,9 +3,9 @@
 <div class="page-header page-header">
 	<h4>Monitor</h4>
 </div>
-<h6>CPU</h6>
+<h6 id="cpu_usage_chart_header">CPU</h6>
 <div class="chart" id="cpu_usage_chart"></div>
-<h6>Used Memory</h6>
+<h6 id="mem_usage_chart_header">Used Memory</h6>
 <div class="chart" id="mem_usage_chart"></div>
 <h6 id="received_byte_per_sec_chart_header">Received Byte Per Second</h6>
 <div class="chart" id="received_byte_per_sec_chart"></div>
