@@ -166,9 +166,9 @@ public class NGrinderControllerStarter {
 
 
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
-	@Parameter(names = {"-p", "--port"}, description = "HTTP port of the server",
+	@Parameter(names = {"-p", "--port"}, description = "HTTP port of the server. The default port is 8080.",
 			validateValueWith = PortAvailabilityValidator.class)
-	private Integer port = 8080;
+	private Integer port = null;
 
 	@Parameter(names = {"-cp", "--context-path"}, description = "context path of the embedded web application.")
 	private String contextPath = "/";
@@ -277,9 +277,11 @@ public class NGrinderControllerStarter {
 		PortAvailabilityValidator validator = new PortAvailabilityValidator();
 		try {
 			commander.parse(args);
-			validator.validate("-port", server.port);
+			if (server.port == null) {
+				server.port = 8080;
+			}
+			validator.validate("-p / --port", server.port);
 		} catch (Exception e) {
-			System.err.println("[Configuration Error]");
 			System.err.println(e.getMessage());
 			commander.usage();
 			System.exit(0);

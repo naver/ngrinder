@@ -9,6 +9,9 @@ import java.net.ServerSocket;
 public class PortAvailabilityValidator extends PortRangeValidator {
 	@Override
 	public void validate(String name, Integer value) throws ParameterException {
+		if (value == null) {
+			return;
+		}
 		super.validate(name, value);
 		if (!checkExactPortAvailability(null, value)) {
 			throw new ParameterException(name + "=" + value + " port is already occupied by the other system " +
