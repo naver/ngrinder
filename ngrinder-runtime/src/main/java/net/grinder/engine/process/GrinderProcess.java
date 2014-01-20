@@ -752,12 +752,13 @@ final class GrinderProcess {
 			try {
 				waitingTime = getWaitingTime(rampUpInterval, rampUpStep, rampUpInitialThread, threadNumber);
 				if (waitingTime != 0) {
-					sleeper.sleepFlat(waitingTime);
+					if (Grinder.grinder != null) {
+						Grinder.grinder.getLogger().info("thread-{} is sleeping {} ms for ramp-up", threadNumber,
+								waitingTime);
+					}
+					sleeper.sleepNormal(waitingTime, 0);
 				}
-				if (Grinder.grinder != null) {
-					Grinder.grinder.getLogger().info("thread-{} is sleeping {} ms for ramp-up", threadNumber,
-							waitingTime);
-				}
+
 				return waitingTime;
 			} catch (Sleeper.ShutdownException e) {
 				throw new RuntimeException(e);
