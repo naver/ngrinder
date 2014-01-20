@@ -596,7 +596,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, getSafe(perfTest.getRampUpStep()));
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL,
 						getSafe(perfTest.getRampUpIncrementInterval()));
-				grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, getSafe(perfTest.getRampUpInitSleepTime()));
+				if (perfTest.getRampUpType() == RampUp.PROCESS) {
+					grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, getSafe(perfTest.getRampUpInitSleepTime()));
+				} else {
+					grinderProperties.setInt(GRINDER_PROP_INITIAL_THREAD_SLEEP_TIME,
+							getSafe(perfTest.getRampUpInitSleepTime()));
+				}
 				grinderProperties.setInt(GRINDER_PROP_INITIAL_PROCESS, getSafe(perfTest.getRampUpInitCount()));
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);

@@ -730,6 +730,7 @@ final class GrinderProcess {
 		public static final String GRINDER_PROP_THREAD_INCREMENT = "grinder.processIncrement";
 		public static final String GRINDER_PROP_THREAD_INCREMENT_INTERVAL = "grinder.processIncrementInterval";
 		public static final String GRINDER_PROP_INITIAL_PROCESS = "grinder.initialProcesses";
+		public static final String GRINDER_PROP_INITIAL_THREAD_SLEEP_TIME = "grinder.initialThreadSleepTime";
 
 		protected int doRampUp() {
 			InternalScriptContext grinder = Grinder.grinder;
@@ -738,19 +739,22 @@ final class GrinderProcess {
 				int rampUpInterval = properties.getInt(GRINDER_PROP_THREAD_INCREMENT_INTERVAL, 0);
 				int rampUpStep = properties.getInt(GRINDER_PROP_THREAD_INCREMENT, 0);
 				int rampUpInitialThread = properties.getInt(GRINDER_PROP_INITIAL_PROCESS, 0);
-				return doRampUp(rampUpInterval, rampUpStep, rampUpInitialThread);
+				int rampUpInitialSleep = properties.getInt(GRINDER_PROP_INITIAL_THREAD_SLEEP_TIME, 0);
+				return doRampUp(rampUpInterval, rampUpStep, rampUpInitialThread, rampUpInitialSleep);
 			}
 			return 0;
 		}
 
-		private int doRampUp(int rampUpInterval, int rampUpStep, int rampUpInitialThread) {
+		private int doRampUp(int rampUpInterval, int rampUpStep, int rampUpInitialThread, int rampUpInitialSleep) {
 			int threadNumber = 0;
 			int waitingTime;
 			if (Grinder.grinder != null) {
 				threadNumber = Math.max(Grinder.grinder.getThreadNumber(), 0);
 			}
 			try {
-				waitingTime = getWaitingTime(rampUpInterval, rampUpStep, rampUpInitialThread, threadNumber);
+				waitingTime = getWaitingTime(rampUpInterval, rampUpStep,
+						rampUpInitialThread, rampUpInitialSleep,
+						threadNumber);
 				if (waitingTime != 0) {
 					if (Grinder.grinder != null) {
 						Grinder.grinder.getLogger().info("thread-{} is sleeping {} ms for ramp-up", threadNumber,
@@ -766,14 +770,14 @@ final class GrinderProcess {
 		}
 
 		public int getWaitingTime(int rampUpInterval, int rampUpStep,
-		                          int rampUpInitialThread, int threadNumber) {
+		                          int rampUpInitialThread, int rampUpInitialSleep, int threadNumber) {
 			// 100 2 1 0 3   ==> 100
 			if (threadNumber < rampUpInitialThread) {
 				return 0;
 			}
 			int remained = (threadNumber - rampUpInitialThread);
 			int threadStep = (remained / rampUpStep) + 1;
-			return Math.max(threadStep * rampUpInterval, 0);
+			return Math.max(rampUpInitialSleep + (threadStep * rampUpInterval), 0);
 		}
 
 	}

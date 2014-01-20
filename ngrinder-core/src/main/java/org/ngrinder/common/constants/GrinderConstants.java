@@ -36,6 +36,7 @@ public interface GrinderConstants {
 	public static final String GRINDER_PROP_USE_CONSOLE = "grinder.useConsole";
 	public static final String GRINDER_PROP_REPORT_TO_CONSOLE = "grinder.reportToConsole.interval";
 	public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
+	public static final String GRINDER_PROP_INITIAL_THREAD_SLEEP_TIME = "grinder.initialThreadSleepTime";
 	public static final String GRINDER_PROP_THREAD_RAMPUP ="grinder.threadRampUp";
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 	public static final String GRINDER_PROP_IGNORE_SAMPLE_COUNT = "grinder.ignoreSampleCount";
