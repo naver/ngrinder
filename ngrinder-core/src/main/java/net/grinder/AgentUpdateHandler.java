@@ -104,7 +104,7 @@ public class AgentUpdateHandler implements Closeable {
 	}
 
 	void decompressDownloadPackage() {
-		File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unzip");
+		File interDir = new File(agentConfig.getHome().getTempDirectory(), "update_package_unpacked");
 		File toDir = new File(agentConfig.getCurrentDirectory(), "update_package");
 		interDir.mkdirs();
 		toDir.mkdirs();
@@ -114,7 +114,7 @@ public class AgentUpdateHandler implements Closeable {
 			CompressionUtils.untar(download, interDir);
 			FileUtils.deleteQuietly(outFile);
 		} else {
-			LOGGER.error("{} is not allowed to be unzipped.", download.getName());
+			LOGGER.error("{} is not allowed to be unpacked.", download.getName());
 		}
 
 		try {
