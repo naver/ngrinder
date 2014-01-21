@@ -786,6 +786,8 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/{id}/logs")
 	public HttpEntity<String> getLogs(User user, @PathVariable("id") Long id) {
+		// Check permission
+		getOneWithPermissionCheck(user, id, false);
 		return toJsonHttpEntity(perfTestService.getLogFiles(id));
 	}
 
