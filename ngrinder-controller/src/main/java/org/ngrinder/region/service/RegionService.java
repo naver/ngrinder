@@ -92,7 +92,7 @@ public class RegionService {
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
 		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getClusterProperties().getProperty
-				(ClusterConstants.PROP_CLUSTER_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
+				(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
 			throw processException("The region name, " + localRegion
 					+ ", is already used by other controller " + regionInfo.getIp()
 					+ ". Please set the different region name in this controller.");
