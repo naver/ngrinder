@@ -25,7 +25,7 @@ public class PropertiesKeyMapperTest {
 	@Test
 	public void testEmptyKeyMapTest() {
 		PropertiesKeyMapper propertiesKeyMapper = PropertiesKeyMapper.create("agent-properties.map");
-		assertThat(propertiesKeyMapper.getKeys("agent.host_id")).isNotNull().isEmpty();
+		assertThat(propertiesKeyMapper.getKeys("agent.host_id")).isNotEmpty();
 		assertThat(propertiesKeyMapper.getDefaultValue("agent.host_id")).isNull();
 		assertThat(propertiesKeyMapper.getKeys("agent.java_opt")).isNotNull().isNotEmpty();
 		assertThat(propertiesKeyMapper.getDefaultValue("agent.java_opt")).isNull();
