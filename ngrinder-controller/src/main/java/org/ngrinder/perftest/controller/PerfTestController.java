@@ -777,8 +777,20 @@ public class PerfTestController extends BaseController {
 	}
 
 	/**
+	 * Get the logs of the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perftest id
+	 * @return JSON message containing log file names
+	 */
+	@RestAPI
+	@RequestMapping("/api/{id}/logs")
+	public HttpEntity<String> getLogs(User user, @PathVariable("id") Long id) {
+		return toJsonHttpEntity(perfTestService.getLogFiles(id));
+	}
+
+	/**
 	 * Get the detailed report graph data for the given perf test id.
-	 * <p/>
 	 * This method returns the appropriate points based on the given imgWidth.
 	 *
 	 * @param id       test id
