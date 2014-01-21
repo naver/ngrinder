@@ -2,7 +2,7 @@ agent.verbose,,verbose
 agent.controller_host,,agent.controller.ip,agent.console.ip,agent.controller_ip
 agent.controller_port,16001,agent.controller.port,agent.console.port
 agent.region,,
-agent.host_id,,
+agent.host_id,,agent.hostid
 agent.server_mode,,
 agent.all_logs,false,agent.send.all.logs
 agent.limit_xmx,true,agent.useXmxLimit
