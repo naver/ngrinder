@@ -41,7 +41,6 @@ import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
-import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -330,6 +329,7 @@ public class PerfTestController extends BaseController {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
 		if (oldOne == null) {
 			oldOne = new PerfTest();
@@ -402,7 +402,7 @@ public class PerfTestController extends BaseController {
 	}
 
 	private List<Map<String, Object>> getStatus(List<PerfTest> perfTests) {
-		List<Map<String, Object>> statuses = org.ngrinder.common.util.CollectionUtils.newArrayList();
+		List<Map<String, Object>> statuses = newArrayList();
 		for (PerfTest each : perfTests) {
 			Map<String, Object> result = newHashMap();
 			result.put("id", each.getId());
@@ -461,7 +461,7 @@ public class PerfTestController extends BaseController {
 	 * @return filtered string
 	 */
 	private String filterHostString(String originalString) {
-		List<String> hosts = Lists.newArrayList();
+		List<String> hosts = newArrayList();
 		for (String each : StringUtils.split(StringUtils.trimToEmpty(originalString), ",")) {
 			if (!each.contains("please_modify_this.com")) {
 				hosts.add(each);
@@ -701,10 +701,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping("/api/status")
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		List<PerfTest> perfTests = org.ngrinder.common.util.CollectionUtils.newArrayList();
-		if (StringUtils.isNotBlank(ids)) {
-			perfTests = perfTestService.getAll(user, convertString2Long(ids));
-		}
+		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getStatus(perfTests)));
 	}
@@ -749,7 +746,7 @@ public class PerfTestController extends BaseController {
 		}
 		FileEntry fileEntry = fileEntryService.getOne(user, scriptPath);
 		String targetHosts = "";
-		List<String> fileStringList = org.ngrinder.common.util.CollectionUtils.newArrayList();
+		List<String> fileStringList = newArrayList();
 		if (fileEntry != null) {
 			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user, fileEntry, -1L);
 			for (FileEntry each : fileList) {
