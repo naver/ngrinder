@@ -7,12 +7,11 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     - Admins can run  nGrinder controller using the following command.
       "java -XX:MaxPermGen:200m -jar ngrinder-controller-X.X.war"
       nGrinder controller war file became the self-executable. Tomcat mount is supported as well.
-      Check out TBD
     - Admins can download agents and monitors from the controller and
       users can download private agents and monitors from the controller.
       The downloaded agent/monitor packages already contains pre-defined configuration to connect the controller from
       which they are downloaded, so that no agent configuration is necessary.
-    - Check out TBD
+    - Check out http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
   * No more controller-agent connection problem
     - Previously nGrinder controller bound to only one IP among all available IPs in the single machine.
       This sometimes made it difficult to run nGrinder in which the internal and external IP are separated.(such as EC2)
@@ -26,12 +25,12 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     - Check out TBD
   * Agents automatic update
     - Now Agents can be upgradable just by clicking Update button in the controller's agent  management  page.
-    - Check out TBD
+    - Check out http://www.cubrid.org/wiki_ngrinder/entry/agent-auto-update
   * Very small monitor package(<5MB)
   * Thread Ramp-Up
     - The underlying "The Grinder" engine has supported per process ramp up, but thread ramp up.
     - nGrinder has enhanced this engine to support the thread ramp up so that more smooth ramp up can be done.
-    - Check out TBD
+    - Check out http://www.cubrid.org/wiki_ngrinder/entry/how-to-ramp-up-by-threads
   * Full REST APIs.
     - A user and admin can call the REST APIs to manage tests and scripts.
     - An admin call call the REST APIs to manage users and agents.

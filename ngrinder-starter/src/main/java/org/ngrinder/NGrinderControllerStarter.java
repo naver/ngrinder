@@ -87,7 +87,7 @@ public class NGrinderControllerStarter {
 			public void process() {
 				System.setProperty("cluster.mode", "easy");
 				if (clusterHost != null) {
-					System.setProperty("cluster.ip", clusterHost);
+					System.setProperty("cluster.host", clusterHost);
 				}
 				System.setProperty("cluster.port", clusterPort.toString());
 				System.setProperty("cluster.region", region);

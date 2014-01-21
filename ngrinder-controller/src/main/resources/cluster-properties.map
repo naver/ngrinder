@@ -5,4 +5,4 @@ cluster.region,NONE,ngrinder.cluster.region
 cluster.hidden_region,false,ngrinder.cluster.region.hide
 cluster.safe_dist,false,
 cluster.mode,,
-cluster.ip,,
+cluster.host,,cluster.ip
