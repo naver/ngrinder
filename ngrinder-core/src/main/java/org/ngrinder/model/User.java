@@ -13,12 +13,12 @@
  */
 package org.ngrinder.model;
 
-import java.util.List;
+import com.google.gson.annotations.Expose;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-
-import com.google.gson.annotations.Expose;
-import org.hibernate.annotations.Type;
+import java.util.List;
 
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
@@ -128,6 +128,10 @@ public class User extends BaseModel<User> {
 	@PrePersist
 	@PreUpdate
 	public void init() {
+		this.userId = StringUtils.trim(this.userId);
+		this.userName = StringUtils.trim(this.userName);
+		this.email = StringUtils.trim(this.email);
+		this.mobilePhone = StringUtils.trim(this.mobilePhone);
 		this.enabled = getSafe(this.enabled, true);
 		this.external = getSafe(this.enabled);
 		this.role = getSafe(this.role, Role.USER);

@@ -131,7 +131,7 @@ public class UserService extends AbstractUserService {
 			user = existing.merge(user);
 		}
 		User createdUser = userRepository.save(user);
-		prepareUserEnv(user);
+		prepareUserEnv(createdUser);
 		return createdUser;
 	}
 
