@@ -2,32 +2,32 @@ var plotObj;
 
 $(document).ready(function () {
 	$("#use_ramp_up").on("click", function () {
-		updateRampupChart();
+		updateRampUpChart();
 	});
 
-	$("#init_processes, #init_sleep_time, #process_increment, #process_increment_interval, #ramp_up_type").on(
+	$("#ramp_up_init_count, #ramp_up_init_sleep_time, #ramp_up_step, #ramp_up_increment_interval, #ramp_up_type").on(
 		"change", function () {
-			updateRampupChart();
+			updateRampUpChart();
 		});
 });
 
-function disableRampup() {
-	var $initProcesses = $('#init_processes');
+function disableRampUp() {
+	var $initProcesses = $('#ramp_up_init_count');
 	$initProcesses.val(0);
 	$initProcesses.attr("readonly", "readonly");
-	$('#init_sleep_time').attr("readonly", "readonly");
-	$('#process_increment').attr("readonly", "readonly");
-	$('#process_increment_interval').attr("readonly", "readonly");
+	$('#ramp_up_init_sleep_time').attr("readonly", "readonly");
+	$('#ramp_up_step').attr("readonly", "readonly");
+	$('#ramp_up_increment_interval').attr("readonly", "readonly");
 }
 
-function enableRampup() {
-	$('#init_processes').removeAttr("readonly");
-	$('#init_sleep_time').removeAttr("readonly");
-	$('#process_increment').removeAttr("readonly");
-	$('#process_increment_interval').removeAttr("readonly");
+function enableRampUp() {
+	$('#ramp_up_init_count').removeAttr("readonly");
+	$('#ramp_up_init_sleep_time').removeAttr("readonly");
+	$('#ramp_up_step').removeAttr("readonly");
+	$('#ramp_up_increment_interval').removeAttr("readonly");
 }
 
-function updateRampupChart() {
+function updateRampUpChart() {
 	var $base;
 	var $factor;
 	if ($("#ramp_up_type").val() == "PROCESS") {
@@ -79,7 +79,7 @@ function updateRampupChart() {
 	var seriesArray = [];
 
 	if ($("#use_ramp_up")[0].checked) {
-		enableRampup();
+		enableRampUp();
 		var curX = initialSleepTime;
 		var curY = initialCount;
 		if (initialSleepTime > 0) {
@@ -104,9 +104,9 @@ function updateRampupChart() {
 
 		var maxX = seriesArray[seriesArray.length-1][0];
 		var maxY = seriesArray[seriesArray.length-1][1];
-		drawRampup(seriesArray, internalTime, maxX, maxY);
+		drawRampUp(seriesArray, internalTime, maxX, maxY);
 	} else {
-		disableRampup();
+		disableRampUp();
 
 		var curX = 0;
 		for (var step = 0; step <= steps; step++) {
@@ -121,12 +121,12 @@ function updateRampupChart() {
 		} else {
 			var maxX = seriesArray[seriesArray.length-1][0];
 			var maxY = seriesArray[seriesArray.length-1][1];
-			drawRampup(seriesArray, internalTime, maxX, maxY);
+			drawRampUp(seriesArray, internalTime, maxX, maxY);
 		}
 	}
 }
 
-function drawRampup(data, intervalTime, maxX, maxY, snapX) {
+function drawRampUp(data, intervalTime, maxX, maxY, snapX) {
 	var numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
 	var pointCutter = 1;
 	if (parseInt(intervalTime / 1000) == (intervalTime / 1000)){

@@ -323,7 +323,7 @@ $(document).ready(function () {
 	bindEvent();
 	updateScript();
 	updateTotalVuser();
-	updateRampupChart();
+	updateRampUpChart();
 <#assign category = test.status.category>
 <#if category == "TESTING">
 	displayConfigAndRunningSection();
@@ -1041,7 +1041,7 @@ function updateVuserPolicy(vuser) {
 function updateVuserGraph() {
 	//if ramp-up chart is not enabled, update init process count as total 
 	if ($("#use_ramp_up")[0].checked) {
-		updateRampupChart();
+		updateRampUpChart();
 	}
 }
 

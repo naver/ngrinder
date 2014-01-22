@@ -3,7 +3,7 @@
 <style>
 	div.div-resources {
         border: 1px solid #D6D6D6;
-        height: 50px;
+        height: 40px;
         margin-bottom: 8px;
         overflow-y: scroll;
         border-radius: 3px 3px 3px 3px;
