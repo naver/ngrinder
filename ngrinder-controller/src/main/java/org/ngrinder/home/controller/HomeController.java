@@ -157,11 +157,11 @@ public class HomeController extends BaseController implements ControllerConstant
 		model.addAttribute(
 				"ask_question_url",
 				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL,
-						getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS + "_new")));
+						getMessages(PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL)));
 		model.addAttribute(
 				"see_more_question_url",
 				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_MORE_QNA_URL,
-						getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS + "_more")));
+						getMessages(PROP_CONTROLLER_FRONT_PAGE_MORE_QNA_URL)));
 		model.addAttribute("see_more_resources_url", getConfig().getControllerProperties().getProperty
 				(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL));
 

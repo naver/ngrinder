@@ -74,8 +74,6 @@
 							<td>
 								<img src="${req.getContextPath()}/img/asksupport.gif"/>
 								<a href="${ask_question_url}" target="_blank"><@spring.message "home.button.ask"/></a>
-								&nbsp;&nbsp;&nbsp; <img src="${req.getContextPath()}/img/bug_icon.gif"/>
-								<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug" target="_blank"><@spring.message "home.button.bug"/></a>
 							</td>
 							<td><a href="${see_more_question_url}" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
 						</tr>
