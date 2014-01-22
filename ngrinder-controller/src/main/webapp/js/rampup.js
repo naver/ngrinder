@@ -17,6 +17,7 @@ function disableRampUp() {
 	$initProcesses.attr("readonly", "readonly");
 	$('#ramp_up_init_sleep_time').attr("readonly", "readonly");
 	$('#ramp_up_step').attr("readonly", "readonly");
+    $('#ramp_up_type').attr("readonly", "readonly");
 	$('#ramp_up_increment_interval').attr("readonly", "readonly");
 }
 
@@ -24,6 +25,7 @@ function enableRampUp() {
 	$('#ramp_up_init_count').removeAttr("readonly");
 	$('#ramp_up_init_sleep_time').removeAttr("readonly");
 	$('#ramp_up_step').removeAttr("readonly");
+    $('#ramp_up_type').removeAttr("readonly");
 	$('#ramp_up_increment_interval').removeAttr("readonly");
 }
 
