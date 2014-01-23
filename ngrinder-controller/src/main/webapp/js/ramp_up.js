@@ -102,7 +102,7 @@ function updateRampUpChart() {
 			seriesArray.push([curX, curY]);
 		}
 
-		$("#rampup_chart").empty();
+		$("#ramp_up_chart").empty();
 
 		var maxX = seriesArray[seriesArray.length-1][0];
 		var maxY = seriesArray[seriesArray.length-1][1];
@@ -134,7 +134,7 @@ function drawRampUp(data, intervalTime, maxX, maxY, snapX) {
 	if (parseInt(intervalTime / 1000) == (intervalTime / 1000)){
 		pointCutter = 0;
 	}
-	plotObj = $.jqplot("rampup_chart", [data], {
+	plotObj = $.jqplot("ramp_up_chart", [data], {
 		axesDefaults: {
 			tickRenderer: $.jqplot.AxisTickRenderer,
 			tickOptions: {

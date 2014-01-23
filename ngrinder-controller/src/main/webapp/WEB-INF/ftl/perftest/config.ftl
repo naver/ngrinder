@@ -133,58 +133,66 @@
 						append_prefix="perfTest.config.max" append="${maxRunCount}" />
 			</@control_group_with_radio>
 
-
-			<div class="row">
-				<div class="span3">
-					<@control_group name="samplingInterval" label_message_key="perfTest.config.samplingInterval">
-						<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
-						<select class="select-item" id="sampling_interval" name="samplingInterval">
-							<#list samplingIntervalArray as eachInterval>
-								<option value="${eachInterval}"
-									<#if test.samplingInterval != 0>
-										<#if eachInterval == test.samplingInterval> selected="selected" </#if>
-									<#else>
-										<#if eachInterval == 2>
-										selected="selected"
-										</#if>
-									</#if> >
-								${eachInterval}
-								</option>
-							</#list>
-						</select>
-					</@control_group>
-				</div>
-				<div class="span3">
-					<@control_group name="ignoreSampleCount" label_message_key="perfTest.config.ignoreSampleCount"
-						label_style="width:150px;margin-left:-20px"
-						err_style="margin-left:-140px"
-						>
-						<@input_popover name="ignoreSampleCount"
-							value="${test.ignoreSampleCount}"
-							message="perfTest.config.ignoreSampleCount"
-							extra_css="input-mini" />
-					</@control_group>
-				</div>
+			<div class="row accordion-heading" style="margin-top:-20px">
+				<span class="pull-right">
+					<a id="detail_config_section_btn" class="pointer-cursor">
+					<@spring.message "perfTest.config.showAdvancedConfig"/>
+					</a>
+				</span>
 			</div>
-
-			<div class="row">
-				<div class="span3">
-					<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution"
-						label_help_message_key="perfTest.config.safeDistribution">
-						<input type="checkbox" id="safe_distribution" name="safeDistribution"
-						<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
-					</@control_group>
+			<div id="detail_config_section" style='display:none' >
+				<div class="row">
+					<div class="span3">
+						<@control_group name="samplingInterval" label_message_key="perfTest.config.samplingInterval">
+							<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
+							<select class="select-item" id="sampling_interval" name="samplingInterval">
+								<#list samplingIntervalArray as eachInterval>
+									<option value="${eachInterval}"
+										<#if test.samplingInterval != 0>
+											<#if eachInterval == test.samplingInterval> selected="selected" </#if>
+										<#else>
+											<#if eachInterval == 2>
+											selected="selected"
+											</#if>
+										</#if> >
+									${eachInterval}
+									</option>
+								</#list>
+							</select>
+						</@control_group>
+					</div>
+					<div class="span3">
+						<@control_group name="ignoreSampleCount" label_message_key="perfTest.config.ignoreSampleCount"
+							label_style="width:150px;margin-left:-20px"
+							err_style="margin-left:-140px"
+							>
+							<@input_popover name="ignoreSampleCount"
+								value="${test.ignoreSampleCount}"
+								message="perfTest.config.ignoreSampleCount"
+								extra_css="input-mini" />
+						</@control_group>
+					</div>
 				</div>
-				<div class="span3">
-					<@control_group name="param" label_message_key="perfTest.config.param"
-						label_style="width:70px;margin-left:-20px"
-						err_style="margin-left:-90px"
-						controls_style="margin-left:70px">
-						<@input_popover name="param"
-							value="${(test.param?html)}"
-							message="perfTest.config.param"
-							others='style="width:120px"'/>
-					</@control_group>
+
+				<div class="row">
+					<div class="span3">
+						<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution"
+							label_help_message_key="perfTest.config.safeDistribution">
+							<input type="checkbox" id="safe_distribution" name="safeDistribution"
+							<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
+						</@control_group>
+					</div>
+					<div class="span3">
+						<@control_group name="param" label_message_key="perfTest.config.param"
+							label_style="width:70px;margin-left:-20px"
+							err_style="margin-left:-90px"
+							controls_style="margin-left:70px">
+							<@input_popover name="param"
+								value="${(test.param?html)}"
+								message="perfTest.config.param"
+								others='style="width:120px"'/>
+						</@control_group>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -240,7 +248,7 @@
 			</div>
 		</div>
 		<legend class="center" style="margin-top:0;padding-top:0"> <@spring.message "perfTest.config.rampUp.des"/> </legend>
-		<div id="rampup_chart" class="rampup-chart" style="margin-left: 20px"></div>
+		<div id="ramp_up_chart" class="ramp_up_chart" style="margin-left: 20px"></div>
 	</div>
 	<!-- end test content right -->
 </div>

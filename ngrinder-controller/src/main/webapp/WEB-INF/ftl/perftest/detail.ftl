@@ -301,7 +301,7 @@
 <#include "../common/copyright.ftl">
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
-<script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}_p1"></script>
+<script src="${req.getContextPath()}/js/ramp_up.js?${nGrinderVersion}"></script>
 <script>
 // vuser calc
 ${vuserCalcScript};
@@ -626,16 +626,20 @@ function addValidation() {
 			}
 		},
 		highlight : function(element, errorClass, validClass) {
-			var controlGroup = $(element).parents('.control-group');
-			if (controlGroup.length >= 1) {
-				$(controlGroup[0]).removeClass("success");
-				$(controlGroup[0]).addClass("error");
+			var $detailedSection = $(element).parents("#detail_config_section");
+			if ($detailedSection.length >= 1) {
+				$detailedSection.show();
+			}
+			var $controlGroup = $(element).parents('.control-group');
+			if ($controlGroup.length >= 1) {
+				$($controlGroup[0]).removeClass("success");
+				$($controlGroup[0]).addClass("error");
 			}
 		},
 		unhighlight : function(element, errorClass, validClass) {
 			var $elem = $(element);
-			var controlGroup = $elem.parents('.control-group');
-			if (controlGroup.length >= 1) {
+			var $controlGroup = $elem.parents('.control-group');
+			if ($controlGroup.length >= 1) {
 				var isSuccess = true;
 				$elem.siblings("span.help-inline:visible").each(function() {
 					if ($(this).attr("for") != $elem.attr("id")) {
@@ -643,8 +647,8 @@ function addValidation() {
 					}
 				});
 				if (isSuccess) {
-					$(controlGroup[0]).removeClass("error");
-					$(controlGroup[0]).addClass("success");
+					$($controlGroup[0]).removeClass("error");
+					$($controlGroup[0]).addClass("success");
 				}
 			}
 		}
@@ -705,6 +709,14 @@ function bindEvent() {
 		}
 		setDuration(); 
 		$("#duration_ratio").click();
+	});
+
+	$("#detail_config_section_btn").click(function() {
+		if ($("#detail_config_section").is(":hidden")) {
+			$("#detail_config_section").show("slow");
+		} else {
+			$("#detail_config_section").slideUp();
+		}
 	});
 
 	$("#save_schedule_btn").click(function() {		
