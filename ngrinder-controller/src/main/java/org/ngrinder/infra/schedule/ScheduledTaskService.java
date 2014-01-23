@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra.schedule;
 
+import org.ngrinder.infra.transaction.TransactionService;
 import org.ngrinder.service.IScheduledTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -39,12 +40,25 @@ public class ScheduledTaskService implements IScheduledTaskService {
 
 	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
 
+	@Autowired
+	private TransactionService transactionService;
 
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);
 		scheduledRunnable.put(runnable, scheduledFuture);
 	}
 
+
+	public void addFixedDelayedScheduledTaskInTransactionContext(final Runnable runnable, int delay) {
+		final Runnable transactionalRunnable = new Runnable() {
+			@Override
+			public void run() {
+				transactionService.runInTransaction(runnable);
+			}
+		};
+		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(transactionalRunnable, delay);
+		scheduledRunnable.put(runnable, scheduledFuture);
+	}
 
 	public void removeScheduledJob(Runnable runnable) {
 		final ScheduledFuture scheduledTaskInfo = scheduledRunnable.remove(runnable);

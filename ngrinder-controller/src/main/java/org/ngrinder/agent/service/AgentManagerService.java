@@ -23,6 +23,7 @@ import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -31,9 +32,10 @@ import org.ngrinder.service.AbstractAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.*;
 
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
@@ -62,16 +64,27 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	protected ScheduledTaskService scheduledTaskService;
 
-	/**
-	 * Run a scheduled task to check the agent status periodically.
-	 * <p/>
-	 * This method updates the agent statuses in DB.
-	 *
-	 * @since 3.1
-	 */
-	@Scheduled(fixedDelay = 1000)
-	@Transactional
+	private Runnable runnable;
+
+	@PostConstruct
+	public void init() {
+		runnable = new Runnable() {
+			@Override
+			public void run() {
+				checkAgentStatePeriodically();
+			}
+		};
+		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(runnable, 1000);
+	}
+
+	@PreDestroy
+	public void destroy() {
+		scheduledTaskService.removeScheduledJob(runnable);
+	}
+
 	public void checkAgentStatePeriodically() {
 		checkAgentState();
 	}

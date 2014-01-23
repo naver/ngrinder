@@ -70,8 +70,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	private Cache agentMonitoringTargetsCache;
 
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
 
 	@Autowired
 	private RegionService regionService;
@@ -81,6 +79,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@PostConstruct
 	public void init() {
+		super.init();
 		agentMonitoringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
 		if (getConfig().isClustered()) {
 			agentRequestCache = cacheManager.getCache("agent_request");
@@ -118,13 +117,18 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 	}
 
+	@Override
+	public void checkAgentStatePeriodically() {
+		super.checkAgentStatePeriodically();
+		collectAgentSystemData();
+	}
 
 	/**
 	 * Run a scheduled task to check the agent statuses.
 	 *
 	 * @since 3.1
 	 */
-
+	@Override
 	public void checkAgentState() {
 		List<AgentInfo> newAgents = newArrayList(0);
 		List<AgentInfo> updatedAgents = newArrayList(0);
@@ -199,8 +203,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Collect the agent system info every second.
 	 */
-	@Scheduled(fixedDelay = 1000)
-	@Transactional
 	public void collectAgentSystemData() {
 		Ehcache nativeCache = (Ehcache) agentMonitoringTargetsCache.getNativeCache();
 		List<String> keysWithExpiryCheck = cast(nativeCache.getKeysWithExpiryCheck());
