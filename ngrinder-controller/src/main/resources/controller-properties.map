@@ -6,6 +6,7 @@ controller.user_password_sha256,false,ngrinder.security.sha256
 controller.usage_report,true,usage.report
 controller.plugin_support,true,pluginsupport
 controller.user_security,false,user.security
+controller.allow_sign_up,false,
 controller.max_agent_per_test,10,agent.max.size
 controller.max_vuser_per_agent,3000,agent.max.vuser
 controller.max_run_count,10000,agent.max.runcount
@@ -15,7 +16,6 @@ controller.monitor_port,13243,monitor.listen.port
 controller.url,,ngrinder.http.url,http.url
 controller.console_port_base,12000,ngrinder.console.portbase
 controller.controller_port,16001,ngrinder.agent.control.port
-controller.front_page_enabled,true,
 controller.ip,,ngrinder.controller.ipaddress,ngrinder.controller.ip
 controller.validation_timeout,100,ngrinder.validation.timeout
 controller.enable_agent_auto_approval,true,
@@ -24,8 +24,8 @@ controller.validation_syntax_check,false,
 controller.dist_logback,false,ngrinder.dist.logback
 controller.safe_dist,false,ngrinder.dist.safe
 controller.safe_dist_threshold,1000000,ngrinder.dist.safe.threshold,ngrinder.dist.safe.threashhold
-controller.allow_sign_up,false,
 controller.max_connection_waiting_millisecond,5000,ngrinder.max.waitingmilliseconds
+controller.front_page_enabled,true,
 controller.front_page_resources_rss,http://www.cubrid.org/wiki_ngrinder/rss,ngrinder.frontpage.rss
 controller.front_page_resources_more_url,http://www.cubrid.org/wiki_ngrinder,
 controller.front_page_qna_rss,,ngrinder.qna.rss
