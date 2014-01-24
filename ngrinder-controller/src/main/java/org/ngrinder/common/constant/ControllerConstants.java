@@ -53,7 +53,7 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_FRONT_PAGE_ENABLED = "controller.front_page_enabled";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL = "controller.front_page_ask_question_url";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS = "controller.front_page_resources_rss";
-	public static final String PROP_CONTROLLER_FRONT_PAGE_MORE_QNA_URL = "controller.front_page_more_qna_url";
+	public static final String PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL = "controller.front_page_qna_more_url";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_QNA_RSS = "controller.front_page_qna_rss";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL = "controller" +
 			".front_page_resources_more_url";

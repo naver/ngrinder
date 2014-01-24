@@ -319,11 +319,11 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	protected Home resolveExHome() {
 		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
-		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
+		String exHomeFromProperty = System.getProperty("ngrinder.ex_home");
 		if (!StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
 			CoreLogger.LOGGER.warn("The path to ngrinder ex home is ambiguous:");
 			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
-			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.exhome=" + exHomeFromProperty);
+			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.ex_home=" + exHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
@@ -386,6 +386,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		if (exHome.exists()) {
 			Properties exProperties = exHome.getProperties("system-ex.conf");
+			if (exProperties.isEmpty()) {
+				exProperties = exHome.getProperties("system.conf");
+			}
 			properties.putAll(exProperties);
 		}
 		properties.putAll(System.getProperties());

@@ -29,7 +29,7 @@ controller.front_page_enabled,true,
 controller.front_page_resources_rss,http://www.cubrid.org/wiki_ngrinder/rss,ngrinder.frontpage.rss
 controller.front_page_resources_more_url,http://www.cubrid.org/wiki_ngrinder,
 controller.front_page_qna_rss,,ngrinder.qna.rss
-controller.front_page_more_qna_url,,ngrinder.more.question.url
+controller.front_page_qna_more_url,,ngrinder.more.question.url
 controller.front_page_ask_question_url,,ngrinder.ask.question.url
 controller.help_url,http://www.cubrid.org/wiki_ngrinder/entry/user-guide,ngrinder.help.url
 controller.default_lang,en,ngrinder.langauge.default
