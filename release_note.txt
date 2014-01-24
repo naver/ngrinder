@@ -22,9 +22,10 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     - The controller and agent now have the quite detailed command line interface.
     - please provide -h when executing them to see the available options.
     - Even multiple agent and controller execution in a single machine has become very easy.
-    - Check out TBD
+    - Check out http://www.cubrid.org/wiki_ngrinder/entry/controller-configuration-guide#command_line_options
+    - and http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide#command_line_options
   * Agents automatic update
-    - Now Agents can be upgradable just by clicking Update button in the controller's agent  management  page.
+    - Now Agents can be upgradable just by clicking Update button in the controller's agent management page.
     - Check out http://www.cubrid.org/wiki_ngrinder/entry/agent-auto-update
   * Very small monitor package(<5MB)
   * Thread Ramp-Up
@@ -34,20 +35,24 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
   * Full REST APIs.
     - A user and admin can call the REST APIs to manage tests and scripts.
     - An admin call call the REST APIs to manage users and agents.
-    - Check out TBD
+    - Check out http://www.cubrid.org/wiki_ngrinder/entry/rest-apis
   * L4 simulation by custom DNS rotation.
     - A user can input multiple IPs into a single dns name in the target host configuration so that
       it does random DNS resolution for each calls if multiple IP are mapped into a single host name.
-    - Check out TBD
+    - Check out http://www.cubrid.org/wiki_ngrinder/entry/how-to-change-dns#l4_simulation
   * More consistent configuration keys.
     - Configuration keys used in the previous version are supported as well.
     - However we recommends to use the new system configuration keys.
-    - You can see the configuration key mapping table in TBD.
+    - You can see the configuration key mapping table in the followings.
+      * http://www.cubrid.org/wiki_ngrinder/entry/controller-configuration-guide#controller_configuration_keys
+      * http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide#agent_configuration_keys
   * The user self sign-up
     * The new user can sign up by himself/herself. The admin doesn't need to care about the users anymore.
-    * Check out TBD
+    * Check out http://www.cubrid.org/wiki_ngrinder/entry/user-sign-up
   * Easier default configuration
-    * Check out TBD.
+    * Agents are now automatically approved when they connect at the first time
+    * Script console is disabled by default to reduce the unnecessary menu complexity.
+    * Email and Mobile phone number fields in the user creation page is not mandatory by default.
   * More consistent plugin interfaces
     * All plugins should be updated to the latest version which support nGrinder 3.3.
   * Groovy as a the first-citizen.

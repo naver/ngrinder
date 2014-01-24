@@ -40,7 +40,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -66,6 +68,8 @@ public class UserController extends BaseController {
 
 	@Autowired
 	protected Config config;
+
+	private ServletContext servletContext;
 
 
 	/**
@@ -278,16 +282,18 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping("/switch")
 	public String switchUser(@RequestParam(required = false, defaultValue = "") String to,
-	                         HttpServletResponse response, ModelMap model) {
+	                         HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
 		if (StringUtils.isEmpty(to)) {
 			cookie.setMaxAge(0);
 		}
+
 		response.addCookie(cookie);
 		model.clear();
-		return "redirect:/perftest/";
+		final String referer = request.getHeader("referer");
+		return "redirect:" + StringUtils.defaultIfBlank(referer, "/");
 	}
 
 	/**

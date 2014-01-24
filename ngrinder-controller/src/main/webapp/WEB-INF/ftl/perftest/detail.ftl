@@ -223,7 +223,9 @@
 			<@security.authorize ifAnyGranted="A, S">
 				<#if test.createdUser?? && currentUser.userId != test.createdUser.userId>
 					<div class="pull-right">
+						<a href="${req.getContextPath()}/user/switch?to=${test.createdUser.userId!""}">
 						<@spring.message "perfTest.list.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})
+						</a>
 					</div>
 				</#if>
 			</@security.authorize >
