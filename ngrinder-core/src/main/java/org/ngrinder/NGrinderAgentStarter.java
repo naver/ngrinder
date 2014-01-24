@@ -16,6 +16,7 @@ package org.ngrinder;
 import com.beust.jcommander.JCommander;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.util.VersionNumber;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
@@ -27,6 +28,11 @@ import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.monitor.agent.MonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Properties;
 
 import static net.grinder.util.NetworkUtils.getIP;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
@@ -161,7 +167,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 	}
 
 
-	public static JCommander commander;
+	public static NGrinderAgentStarterParam.NGrinderModeParam modeParam;
 
 	/**
 	 * Agent starter.
@@ -172,56 +178,33 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		NGrinderAgentStarter starter = new NGrinderAgentStarter();
 		final NGrinderAgentStarterParam param = new NGrinderAgentStarterParam();
 		checkJavaVersion();
-		commander = new JCommander(param);
+		JCommander commander = new JCommander(param);
 		commander.setProgramName("ngrinder-agent");
+		commander.setAcceptUnknownOptions(true);
 		try {
 			commander.parse(args);
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
 			return;
 		}
+		final List<String> unknownOptions = commander.getUnknownOptions();
+		modeParam = param.getModeParam();
+		modeParam.parse(unknownOptions.toArray(new String[unknownOptions.size()]));
 
-		if (param.help != null) {
-			commander.usage();
+		if (modeParam.version != null) {
+			System.out.println("nGrinder v" + getStaticVersion());
 			return;
 		}
 
-		if (param.controllerHost != null) {
-			System.setProperty(PROP_AGENT_CONTROLLER_HOST, param.controllerHost);
+		if (modeParam.help != null) {
+			modeParam.usage();
+			return;
 		}
 
-		if (param.controllerPort != null) {
-			System.setProperty(PROP_AGENT_CONTROLLER_PORT,
-					param.controllerPort.toString());
-		}
-
-		if (param.hostId != null) {
-			System.setProperty(PROP_AGENT_HOST_ID, param.hostId);
-		}
-
-		if (param.region != null) {
-			System.setProperty(PROP_AGENT_REGION, param.region);
-		}
-
-		if (param.agentHome != null) {
-			System.setProperty("ngrinder.agent.home", param.agentHome);
-		}
-
-		if (param.overwriteConfig != null) {
-			System.setProperty("ngrinder.overwrite.config", "true");
-		}
-
-		if (param.silent != null) {
-			System.setProperty(CommonConstants.PROP_COMMON_SILENT_MODE, "true");
-		}
-
-		System.getProperties().putAll(param.params);
+		System.getProperties().putAll(modeParam.params);
 		starter.init();
-		if (param.version != null) {
-			LOG.info("nGrinder v" + starter.getVersion());
-			System.exit(0);
-		}
-		String startMode = (param.mode == null) ? starter.getStartMode() : param.mode;
+
+		final String startMode = modeParam.name();
 		if ("stop".equalsIgnoreCase(param.command)) {
 			starter.stopProcess(startMode);
 			System.out.println("Stop the " + startMode);
@@ -235,6 +218,20 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		} else {
 			staticPrintHelpAndExit("Invalid agent.conf, '--mode' must be set as 'monitor' or 'agent'.");
 		}
+	}
+
+	private static String getStaticVersion() {
+		InputStream inputStream = null;
+		Properties properties = new Properties();
+		try {
+			inputStream = NGrinderAgentStarter.class.getResourceAsStream("/internal.properties");
+			properties.load(inputStream);
+		} catch (IOException e) {
+			// Do nothing.
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
+		return properties.getProperty("ngrinder.version", "UNKNOWN");
 	}
 
 	static void checkJavaVersion() {
@@ -322,8 +319,8 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		} else {
 			LOG.error(message, e);
 		}
-		if (commander != null) {
-			commander.usage();
+		if (modeParam != null) {
+			modeParam.usage();
 		}
 		System.exit(-1);
 	}

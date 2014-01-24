@@ -36,7 +36,7 @@ public class NGrinderControllerStarter {
 	@Parameters(separators = "= ")
 	enum ClusterMode {
 		none {
-			@Parameter(names = {"-cp", "--controller-port"}, description = "agent connection port",
+			@Parameter(names = {"-cp", "--controller-port"}, description = "controller port for agent connection",
 					validateValueWith = PortAvailabilityValidator.class)
 			public Integer controllerPort = 16001;
 
@@ -54,8 +54,8 @@ public class NGrinderControllerStarter {
 			private String clusterHost = null;
 
 			@Parameter(names = {"-clp", "--cluster-port"}, required = true,
-					description = "This cluster member's cluster communication port. Each cluster should have the " +
-							"unique port.",
+					description = "This cluster member's cluster communication port. Each cluster member should " +
+							"be run with unique cluster port.",
 					validateValueWith = PortAvailabilityValidator.class)
 			private Integer clusterPort = null;
 
@@ -180,11 +180,12 @@ public class NGrinderControllerStarter {
 	private String home = null;
 
 	@SuppressWarnings("SpellCheckingInspection")
-	@Parameter(names = {"-exh", "--exhome"}, description = "nGridner extended home directory")
+	@Parameter(names = {"-exh", "--ex-home"}, description = "nGridner extended home directory")
 	private String exHome = null;
 
 	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
 	private Boolean help = false;
+
 
 	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
 	private Map<String, String> params = new HashMap<String, String>();
@@ -297,7 +298,7 @@ public class NGrinderControllerStarter {
 			System.setProperty("ngrinder.home", server.home);
 		}
 		if (server.exHome != null) {
-			System.setProperty("ngrinder.exhome", server.exHome);
+			System.setProperty("ngrinder.ex.home", server.exHome);
 		}
 		final List<String> unknownOptions = commander.getUnknownOptions();
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);

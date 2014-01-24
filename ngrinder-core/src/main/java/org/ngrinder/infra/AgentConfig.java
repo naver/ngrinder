@@ -135,7 +135,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		final File agentConfig = home.getFile("agent.conf");
 		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
 		if (agentConfig.exists()) {
-			if (System.getProperty("ngrinder.overwrite.config") != null) {
+			if (System.getProperty(CommonConstants.PROP_OVERWRITE_CONFIG) != null) {
 				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
 			} else if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig
 					.lastModified()) {

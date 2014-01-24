@@ -76,10 +76,9 @@ public final class DataCollectManager implements MonitorConstants {
 			for (MXBean mxBean : mxBeans) {
 				DataCollector collector = mxBean.gainDataCollector(agentConfig.getHome().getDirectory());
 				scheduler.scheduleWithFixedDelay(collector, 0L, getInterval(), TimeUnit.SECONDS);
-				LOG.info("Agent collector: {} started.", collector.getClass().getSimpleName());
+				LOG.info("{} started.", collector.getClass().getSimpleName());
 			}
-			LOG.info("Agent collector start (interval :{} s).", getInterval());
-
+			LOG.info("Collection interval : {}s).", getInterval());
 			isRunning = true;
 		}
 	}
@@ -91,7 +90,7 @@ public final class DataCollectManager implements MonitorConstants {
 		if (isRunning()) {
 			scheduler.shutdown();
 			isRunning = false;
-			LOG.info("Agent collector End");
+			LOG.info("Collector shutdown");
 		}
 	}
 }
