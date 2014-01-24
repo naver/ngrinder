@@ -41,6 +41,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
@@ -72,9 +74,6 @@ public class PerfTestRunnable implements ControllerConstants {
 	private PerfTestService perfTestService;
 
 	@Autowired
-	private ScheduledTaskService scheduledTaskService;
-
-	@Autowired
 	private ConsoleManager consoleManager;
 
 	@Autowired
@@ -86,12 +85,32 @@ public class PerfTestRunnable implements ControllerConstants {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private ScheduledTaskService scheduledTaskService;
+
+	private Runnable runnable;
+
+	@PostConstruct
+	public void init() {
+		this.runnable = new Runnable() {
+			@Override
+			public void run() {
+				startPeriodically();
+			}
+		};
+		scheduledTaskService.addFixedDelayedScheduledTask(runnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
+	}
+
+	@PreDestroy
+	public void destroy() {
+		scheduledTaskService.removeScheduledJob(this.runnable);
+	}
+
 	/**
 	 * Scheduled method for test execution. This method dispatches the test
 	 * candidates and run one of them. This method is responsible until a test
 	 * is executed.
 	 */
-	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startPeriodically() {
 		doStart();
 	}
