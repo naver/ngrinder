@@ -103,7 +103,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		assertThat(perfTestService.getAllTesting().size(), is(1));
 		perfTestService.stop(getTestUser(), currentTest.getId());
 		sleep(5000);
-		perfTestRunnable.doFinish();
+		perfTestRunnable.doFinish(false);
 		assertThat(perfTestService.getAllTesting().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
@@ -155,7 +155,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		sleep(10000);
 		perfTestService.stop(getTestUser(), currentTest.getId());
 		singleConsole.waitUntilAllAgentDisconnected();
-		perfTestRunnable.doFinish();
+		perfTestRunnable.doFinish(false);
 		// Waiting for termination
 
 

@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -88,22 +87,36 @@ public class PerfTestRunnable implements ControllerConstants {
 	@Autowired
 	private ScheduledTaskService scheduledTaskService;
 
-	private Runnable runnable;
+	private Runnable startRunnable;
+
+	private Runnable finishRunnable;
 
 	@PostConstruct
 	public void init() {
-		this.runnable = new Runnable() {
+		// Clean up db first.
+		doFinish(true);
+
+		this.startRunnable = new Runnable() {
 			@Override
 			public void run() {
 				startPeriodically();
 			}
 		};
-		scheduledTaskService.addFixedDelayedScheduledTask(runnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
+		scheduledTaskService.addFixedDelayedScheduledTask(startRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
+		this.finishRunnable = new Runnable() {
+			@Override
+			public void run() {
+				finishPeriodically();
+			}
+		};
+		scheduledTaskService.addFixedDelayedScheduledTask(finishRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
+
 	}
 
 	@PreDestroy
 	public void destroy() {
-		scheduledTaskService.removeScheduledJob(this.runnable);
+		scheduledTaskService.removeScheduledJob(this.startRunnable);
+		scheduledTaskService.removeScheduledJob(this.finishRunnable);
 	}
 
 	/**
@@ -384,12 +397,14 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * count.</li>
 	 * </ul>
 	 */
-	@Scheduled(fixedDelay = PERFTEST_TERMINATION_FREQUENCY_MILLISECONDS)
 	public void finishPeriodically() {
-		doFinish();
+		doFinish(false);
 	}
 
-	protected void doFinish() {
+	protected void doFinish(boolean initial) {
+		if (!initial && consoleManager.getConsoleInUse().isEmpty()) {
+			return;
+		}
 		for (PerfTest each : perfTestService.getAllAbnormalTesting()) {
 			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
@@ -505,7 +520,6 @@ public class PerfTestRunnable implements ControllerConstants {
 	 *                           {@link PerfTest}
 	 */
 	public void doNormalFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		// FIXME... it should found abnormal test status..
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 				singleConsoleInUse.getCurrentRunningTime());
 		singleConsoleInUse.unregisterSampling();
