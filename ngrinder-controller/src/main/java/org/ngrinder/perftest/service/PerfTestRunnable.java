@@ -120,14 +120,14 @@ public class PerfTestRunnable implements ControllerConstants {
 			return;
 		}
 		// Block if the count of testing exceed the limit
-		if (!perfTestService.canExecuteTestMore()) {
+		if (canExecuteMore()) {
 			// LOG MORE
 			List<PerfTest> currentlyRunningTests = perfTestService.getCurrentlyRunningTest();
 			LOG.debug("Currently running test is {}. No more tests can not run.", currentlyRunningTests.size());
 			return;
 		}
 		// Find out next ready perftest
-		PerfTest runCandidate = perfTestService.getNextRunnablePerfTestPerfTestCandidate();
+		PerfTest runCandidate = getRunnablePerfTest();
 		if (runCandidate == null) {
 			return;
 		}
@@ -144,6 +144,14 @@ public class PerfTestRunnable implements ControllerConstants {
 		}
 
 		doTest(runCandidate);
+	}
+
+	private PerfTest getRunnablePerfTest() {
+		return perfTestService.getNextRunnablePerfTestPerfTestCandidate();
+	}
+
+	private boolean canExecuteMore() {
+		return consoleManager.getConsoleInUse().size() >= perfTestService.getMaximumConcurrentTestCount();
 	}
 
 	private boolean isScheduledNow(PerfTest test) {
