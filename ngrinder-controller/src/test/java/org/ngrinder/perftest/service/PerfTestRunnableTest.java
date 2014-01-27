@@ -90,18 +90,15 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 			}
 			sleep(1000);
 		}
+
+		sleep(1000);
+		agentService.expireLocalCache();
 		agentService.checkAgentState();
 		List<AgentInfo> agentList = agentService.getAllLocal();
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}
-		List<AgentInfo> approved = Lists.newArrayList();
-		for (AgentInfo each : agentList) {
-			if (each.isApproved() && each.getState() == AgentControllerState.READY) {
-				approved.add(each);
-			}
-		}
-		assertThat(approved.size(), is(1));
+		agentService.checkAgentState();
 	}
 
 	@Test

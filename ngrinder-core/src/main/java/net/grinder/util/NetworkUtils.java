@@ -216,7 +216,7 @@ public abstract class NetworkUtils {
 	 * @return port list
 	 */
 	public static List<Integer> getAvailablePorts(String ip, int size, int from, int limit) {
-		List<Integer> ports = new ArrayList<Integer>();
+		List<Integer> ports = new ArrayList<Integer>(size);
 		int freeSocket;
 		InetAddress inetAddress = null;
 		if (StringUtils.isNotBlank(ip)) {
