@@ -405,6 +405,10 @@ public class PerfTestRunnable implements ControllerConstants {
 		if (!initial && consoleManager.getConsoleInUse().isEmpty()) {
 			return;
 		}
+		doFinish();
+	}
+
+	void doFinish() {
 		for (PerfTest each : perfTestService.getAllAbnormalTesting()) {
 			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
