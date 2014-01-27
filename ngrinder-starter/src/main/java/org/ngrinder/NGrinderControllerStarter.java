@@ -170,7 +170,7 @@ public class NGrinderControllerStarter {
 			validateValueWith = PortAvailabilityValidator.class)
 	private Integer port = null;
 
-	@Parameter(names = {"-cp", "--context-path"}, description = "context path of the embedded web application.")
+	@Parameter(names = {"-c", "--context-path"}, description = "context path of the embedded web application.")
 	private String contextPath = "/";
 
 	@Parameter(names = {"-cm", "--cluster-mode"}, description = "cluster-mode can be easy or advanced  ")
