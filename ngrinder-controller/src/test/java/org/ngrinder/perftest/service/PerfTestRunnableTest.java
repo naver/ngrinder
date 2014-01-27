@@ -101,7 +101,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 				approved.add(each);
 			}
 		}
-		assertThat(agentList.size(), is(1));
+		assertThat(approved.size(), is(1));
 	}
 
 	@Test

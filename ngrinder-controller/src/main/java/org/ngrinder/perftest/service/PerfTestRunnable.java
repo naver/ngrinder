@@ -486,9 +486,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		LOG.info("Cancel test {} by user request.", perfTest.getId());
-		if (singleConsoleInUse != null) {
-			singleConsoleInUse.unregisterSampling();
-		}
+		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
 					"Stop requested by user");
@@ -507,9 +505,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 *                           {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		if (singleConsoleInUse != null) {
-			singleConsoleInUse.unregisterSampling();
-		}
+		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 					"Stopped by error");
@@ -530,9 +526,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	public void doNormalFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 				singleConsoleInUse.getCurrentRunningTime());
-		if (singleConsoleInUse != null) {
-			singleConsoleInUse.unregisterSampling();
-		}
+		singleConsoleInUse.unregisterSampling();
 		try {
 			// stop target host monitor
 			if (perfTestService.hasTooManError(perfTest)) {
