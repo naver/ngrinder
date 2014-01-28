@@ -76,7 +76,7 @@
 		<div class="left-float">
 			<select id="tag" name="tag" style="width:150px">
 				<option value=""></option>
-			<@list list_items = availTags  ; eachTag >
+			<@list list_items=availTags others="none"; eachTag >
 				<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
 			</@list>
 			</select>
