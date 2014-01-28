@@ -27,6 +27,7 @@ import com.atlassian.plugin.osgi.container.impl.DefaultPackageScannerConfigurati
 import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
 import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
 import com.atlassian.plugin.predicate.ModuleDescriptorPredicate;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -51,6 +52,8 @@ import org.springframework.web.context.ServletContextAware;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -143,18 +146,38 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 			}
 		};
 		Home home = config.getHome();
+		final String region = config.getRegion();
 
 		// Construct the configuration
-		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(home.getPluginsDirectory())
+		final File pluginsDirectory = home.getPluginsDirectory();
+		File pluginCache = getPluginCacheFolder(region, pluginsDirectory);
+		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(pluginsDirectory)
 				.packageScannerConfiguration(scannerConfig)
 				.hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
-				.hostComponentProvider(host).moduleDescriptorFactory(modules).build();
+				.hostComponentProvider(host).moduleDescriptorFactory(modules).osgiPersistentCache(pluginCache).build();
 
 		// Start the plugin framework
 		this.plugins = new AtlassianPlugins(config);
 		addPluginUpdateEvent(this);
 		plugins.start();
 		CoreLogger.LOGGER.info("Plugin System is started.");
+	}
+
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+	private File getPluginCacheFolder(String region, File pluginsDirectory) {
+		File pluginCache = new File(pluginsDirectory, "cache");
+		if (config.isClustered()) {
+			pluginCache = new File(pluginCache, region);
+		}
+		try {
+			FileUtils.forceMkdir(pluginCache);
+		} catch (IOException e) {
+			LOGGER.error("Failed to create plugin cache folder {}", pluginCache);
+			pluginCache = new File(FileUtils.getTempDirectory(), "cache");
+			pluginCache.mkdirs();
+			LOGGER.error("Failed to use temp folder to cache {}", pluginCache);
+		}
+		return pluginCache;
 	}
 
 	/**
