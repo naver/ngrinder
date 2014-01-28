@@ -1,4 +1,4 @@
-3.3 (TBD)
+3.3 (2014.01.29)
 nGrinder 3.3 is the major release including several new features.
 You should upgrade both agent and controller to 3.3 version to enjoy the new features.
 
@@ -11,7 +11,7 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
       users can download private agents and monitors from the controller.
       The downloaded agent/monitor packages already contains pre-defined configuration to connect the controller from
       which they are downloaded, so that no agent configuration is necessary.
-    - Check out http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
+    - See http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
   * No more controller-agent connection problem
     - Previously nGrinder controller bound to only one IP among all available IPs in the single machine.
       This sometimes made it difficult to run nGrinder in which the internal and external IP are separated.(such as EC2)
@@ -22,20 +22,20 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     - The controller and agent now have the quite detailed command line interface.
     - please provide -h when executing them to see the available options.
     - Even multiple agent and controller execution in a single machine has become very easy.
-    - Check out http://www.cubrid.org/wiki_ngrinder/entry/controller-configuration-guide#command_line_options
+    - See http://www.cubrid.org/wiki_ngrinder/entry/controller-configuration-guide#command_line_options
     - and http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide#command_line_options
   * Agents automatic update
     - Now Agents can be upgradable just by clicking Update button in the controller's agent management page.
-    - Check out http://www.cubrid.org/wiki_ngrinder/entry/agent-auto-update
+    - See http://www.cubrid.org/wiki_ngrinder/entry/agent-auto-update
   * Very small monitor package(<5MB)
   * Thread Ramp-Up
     - The underlying "The Grinder" engine has supported per process ramp up, but thread ramp up.
     - nGrinder has enhanced this engine to support the thread ramp up so that more smooth ramp up can be done.
-    - Check out http://www.cubrid.org/wiki_ngrinder/entry/how-to-ramp-up-by-threads
+    - See http://www.cubrid.org/wiki_ngrinder/entry/how-to-ramp-up-by-threads
   * Full REST APIs.
     - A user and admin can call the REST APIs to manage tests and scripts.
     - An admin call call the REST APIs to manage users and agents.
-    - Check out http://www.cubrid.org/wiki_ngrinder/entry/rest-apis
+    - See http://www.cubrid.org/wiki_ngrinder/entry/rest-api
   * L4 simulation by custom DNS rotation.
     - A user can input multiple IPs into a single dns name in the target host configuration so that
       it does random DNS resolution for each calls if multiple IP are mapped into a single host name.
@@ -48,7 +48,7 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
       * http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide#agent_configuration_keys
   * The user self sign-up
     * The new user can sign up by himself/herself. The admin doesn't need to care about the users anymore.
-    * Check out http://www.cubrid.org/wiki_ngrinder/entry/user-sign-up
+    * See http://www.cubrid.org/wiki_ngrinder/entry/user-sign-up
   * Easier default configuration
     * Agents are now automatically approved when they connect at the first time
     * Script console is disabled by default to reduce the unnecessary menu complexity.
@@ -61,6 +61,59 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     * Some plugins will be provided soon such as (JVMMonitor).
   * In addition, several UI improvements.
 
+Bug
+[NGRINDER-679] - Support intellij
+[NGRINDER-680] - Make test parameter removable
+[NGRINDER-681] - Fix NullPointerException while getting monitor data
+[NGRINDER-684] - Fix typo errors
+[NGRINDER-694] - Make unit tests work again
+[NGRINDER-695] - Make the Initial process recognized in ramp up settings
+[NGRINDER-700] - ; in URL should be changed to _ when creating an script
+[NGRINDER-705] - Fix user deletion failure
+[NGRINDER-706] - Fix the agent resolution bug with regions having same prefix
+[NGRINDER-707] - Provide the attached agent list in healthcheck messages
+[NGRINDER-714] - Clean up intellij warning
+[NGRINDER-715] - Fix the incorrect svn author property bug when editing files in controller
+[NGRINDER-716] - Make Asian languages correctly shown in the agent log
+[NGRINDER-719] - Fix unrecognized user svn path error when creating a user with not trimmed user id
+
+Improvement
+[NGRINDER-289] - Test Compare feature should be provided
+[NGRINDER-486] - Support agent auto update
+[NGRINDER-675] - Add statistics data chart at perftest list
+[NGRINDER-676] - Provide more consistent plugin interfaces
+[NGRINDER-677] - Fix checkstyle errors
+[NGRINDER-682] - Adjust logger level to see only necessary logs
+[NGRINDER-685] - Provide custom report plugin structure
+[NGRINDER-686] - Delete all jnlp related codes from ngrinder
+[NGRINDER-687] - Make OnTestSamplingRunnable initiated whenever the test is executed.
+[NGRINDER-689] - Clearfy index page logic
+[NGRINDER-691] - Refactor ngrinder to be readable
+[NGRINDER-692] - Support IPv6 and bind to all IPs
+[NGRINDER-693] - Add agent version info agent list page
+[NGRINDER-696] - Provide dynamic agent status view in the agent list
+[NGRINDER-697] - Use freemarker macro to make ftl more concise
+[NGRINDER-698] - Switch from Jython to Groovy in ScriptConsole
+[NGRINDER-699] - Make APIs and maven project name consistent
+[NGRINDER-701] - Make monitoring service clean
+[NGRINDER-702] - Review all java methods doc
+[NGRINDER-703] - Make the configuration keys more consistent
+[NGRINDER-704] - Make the script syntax check optional during script validation
+[NGRINDER-708] - Remove unnecessary replicated cache
+[NGRINDER-710] - Add the easy cluster mode using local file system and h2 tcpserver
+[NGRINDER-711] - Make the default configuration easily manageable
+[NGRINDER-712] - Make ngrinder war executable from command line
+[NGRINDER-713] - Reduce unnecessary db and access to speed up
+[NGRINDER-717] - Make the unused region's agent info deletable.
+[NGRINDER-720] - Make not frequently used configurations collapsable
+[NGRINDER-721] - Provide easy user switch for admin
+
+New Feature
+[NGRINDER-678] - Allow user sign up
+[NGRINDER-688] - Allow multiple DNS entries to simulate the L4.
+[NGRINDER-690] - Provide full REST APIs
+[NGRINDER-709] - Make admin password be able to reset
+[NGRINDER-718] - Enable ramp up by thread
 
 
 3.2.3 (2013.10.04)
