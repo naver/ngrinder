@@ -430,8 +430,8 @@ public class PerfTestController extends BaseController {
 	 * @return success json messages if succeeded.
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/delete", method = RequestMethod.POST)
-	public HttpEntity<String> delete(User user, @RequestParam(defaultValue = "") String ids) {
+	@RequestMapping(value = "/api", method = RequestMethod.DELETE)
+	public HttpEntity<String> delete(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -446,7 +446,7 @@ public class PerfTestController extends BaseController {
 	 * @return success json if succeeded.
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/stop", method = RequestMethod.POST)
+	@RequestMapping(value = "/api", params = "action=stop", method = RequestMethod.PUT)
 	public HttpEntity<String> stop(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));

@@ -299,11 +299,12 @@
 	}
 
 	function stopTests(ids) {
-		var ajaxObj = new AjaxPostObj("/perftest/api/stop",
-				{ "ids": ids },
+		var ajaxObj = new AjaxPutObj("/perftest/api?action=stop",
+				{ "ids" : ids },
 				"<@spring.message "perfTest.message.stop.success"/>",
 				"<@spring.message "perfTest.message.stop.error"/>");
 		ajaxObj.call();
+
 	}
 
 	$("#stop_test_btn").click(function () {

@@ -448,10 +448,10 @@ function checkboxReject(obj1, obj2) {
 }
 
 function deleteTests(ids) {
-	var ajaxObj = new AjaxPostObj("/perftest/api/delete",
-			{ "ids": ids },
+	var ajaxObj = new AjaxObj("/perftest/api?ids="+ ids,
 			"<@spring.message "perfTest.message.delete.success"/>",
 			"<@spring.message "perfTest.message.delete.error"/>");
+	ajaxObj.type = "DELETE";
 	ajaxObj.success = function () {
 		setTimeout(function () {
 			getList(1);
@@ -461,10 +461,10 @@ function deleteTests(ids) {
 }
 
 function stopTests(ids) {
-	var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/stop",
+	var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api?action=stop",
 			"<@spring.message "perfTest.message.stop.success"/>",
 			"<@spring.message "perfTest.message.stop.error"/>");
-	ajaxObj.type = "POST";
+	ajaxObj.type = "PUT";
 	ajaxObj.params = { "ids": ids };
 	ajaxObj.call();
 }
@@ -512,7 +512,7 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 		}
 	});
 	var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
-	ajaxObj.type = "POST";
+	ajaxObj.type = "GET";
 	ajaxObj.params = {"ids": ids.join(",")};
 	ajaxObj.success = function (data) {
 		data = eval(data);
