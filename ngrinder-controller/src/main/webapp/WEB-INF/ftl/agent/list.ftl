@@ -63,7 +63,7 @@
 		</tr>
 		</thead>
 		<tbody>
-		<@list list_items=agents ; agent>
+		<@list list_items=agents others="table_list" colspan="8"; agent>
 		<tr>
 			<td class="center">
 				<input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}" value="${agent.id}">

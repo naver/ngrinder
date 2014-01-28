@@ -113,7 +113,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<@list list_items=files ; script>
+				<@list list_items=files others="table_list" colspan="8"; script>
 					<tr>
 						<td><#if script.fileName != ".."><input type="checkbox" class="checkbox"  value="${script.fileName}"></#if></td>
 						<td>

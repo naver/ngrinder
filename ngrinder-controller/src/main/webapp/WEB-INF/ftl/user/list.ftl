@@ -71,8 +71,8 @@
 			</thead>
 			<tbody>
 
-				<#list userList as user>
-				<tr class='${["odd", ""][user_index%2]}'>
+				<@list list_items=userList others="table_list" colspan="8"; user>
+				<tr>
 					<td class="center">
 						<input type="checkbox" class="checkbox" id="user_info_check"
 							<#if user.userId == "admin">disabled</#if>
@@ -96,7 +96,7 @@
 						</#if>
 					</td>
 				</tr>
-				</#list>
+				</@list>
 			</tbody>
 		</table>
 		<#if userList?has_content>
