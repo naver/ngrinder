@@ -136,16 +136,13 @@
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
 	<#include "../perftest/host_modal.ftl">
 	<script>
-		var changed = false;
 		var curRevision = ${curRevision!0};
 		var lastRevision = ${lastRevision!0};
-		$(window).on('beforeunload', function(e) {
-			e.preventDefault();
-			if (changed == true) {
-				return "<@spring.message "script.editor.message.exitWithoutSave"/>";
-			}
-			return undefined;
-		});
+
+		function beforeUnload() {
+			return "<@spring.message "script.editor.message.exitWithoutSave"/>";
+		}
+		window.onbeforeunload = beforeUnload;
 		function saveScript() {
 			document.forms.content_form.action = "${req.getContextPath()}/script/save";
 			document.forms.content_form.submit();
@@ -174,7 +171,7 @@
 				 hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
 				},
 				onChange : function() {
-				   changed = true;
+					window.onbeforeunload = beforeUnload;
 				}
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
@@ -185,7 +182,7 @@
 					$("#validated").val("0");
 				}
 				$('#contentHd').val(newContent);
-				changed = false;
+				window.onbeforeunload = undefined;
 				if (curRevision > 0 && lastRevision > 0 && curRevision <  lastRevision) {
 					bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 						if (result) {
