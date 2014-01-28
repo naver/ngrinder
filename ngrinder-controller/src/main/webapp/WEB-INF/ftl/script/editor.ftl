@@ -142,7 +142,6 @@
 		function beforeUnload() {
 			return "<@spring.message "script.editor.message.exitWithoutSave"/>";
 		}
-		window.onbeforeunload = beforeUnload;
 		function saveScript() {
 			document.forms.content_form.action = "${req.getContextPath()}/script/save";
 			document.forms.content_form.submit();
@@ -219,7 +218,6 @@
 					$('#validation_result_pre_div').text(res);
 					$('#validation_result_panel').show();
 					$('#validated').val("1");//should control the validation success or not later.
-					$("#old_content").val(newContent);
 				};
 				ajaxObj.complete = function () {
 					hideProgressBar();

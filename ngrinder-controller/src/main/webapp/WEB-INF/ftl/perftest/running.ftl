@@ -269,7 +269,7 @@
 		var monitorStatusString = "<ul>";
 		$.each(status, function (name, value) {
 			monitorStatusString = monitorStatusString +
-					"<li class='monitor_state'><div style='width:100%;' class='ellipsis'>";
+					"<li class='monitor-state' style='height:20px'><div style='width:100%;' class='ellipsis'>";
 			monitorStatusString = monitorStatusString +
 					"<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
 					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +

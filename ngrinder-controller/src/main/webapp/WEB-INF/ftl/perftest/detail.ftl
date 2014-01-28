@@ -18,6 +18,9 @@
 		margin-left: 2px
 	}
 
+	li.monitor-state {
+		height: 10px;
+	}
 	.controls code {
 		vertical-align: middle;
 	}
