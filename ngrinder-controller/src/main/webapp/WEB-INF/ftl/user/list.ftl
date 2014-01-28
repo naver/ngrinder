@@ -166,9 +166,8 @@
 			}
 			var checkedUserName = [];
 			var checkedUserId = [];
-			var $elem;
 			list.each(function() {
-				$elem = $(this);
+				var $elem = $(this);
 				checkedUserName.push($elem.attr("uname"));
 				checkedUserId.push($elem.val());
 			});
