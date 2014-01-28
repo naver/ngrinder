@@ -168,6 +168,15 @@ public class Home {
 	}
 
 	/**
+	 * Get the plugin cache directory.
+	 *
+	 * @return plugin cache directory.
+	 */
+	public File getPluginsCacheDirectory() {
+		return getSubFile(PATH_PLUGIN + "_cache");
+	}
+
+	/**
 	 * Get the plugin directory.
 	 *
 	 * @return plugin directory.

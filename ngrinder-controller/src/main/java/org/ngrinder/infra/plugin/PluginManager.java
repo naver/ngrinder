@@ -150,7 +150,7 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 
 		// Construct the configuration
 		final File pluginsDirectory = home.getPluginsDirectory();
-		File pluginCache = getPluginCacheFolder(region, pluginsDirectory);
+		File pluginCache = getPluginCacheFolder(region, home.getPluginsCacheDirectory());
 		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(pluginsDirectory)
 				.packageScannerConfiguration(scannerConfig)
 				.hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
@@ -164,20 +164,19 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	private File getPluginCacheFolder(String region, File pluginsDirectory) {
-		File pluginCache = new File(pluginsDirectory, "cache");
+	private File getPluginCacheFolder(String region, File pluginsCacheDirectory) {
 		if (config.isClustered()) {
-			pluginCache = new File(pluginCache, region);
+			pluginsCacheDirectory = new File(pluginsCacheDirectory, region);
 		}
 		try {
-			FileUtils.forceMkdir(pluginCache);
+			FileUtils.forceMkdir(pluginsCacheDirectory);
 		} catch (IOException e) {
-			LOGGER.error("Failed to create plugin cache folder {}", pluginCache);
-			pluginCache = new File(FileUtils.getTempDirectory(), "cache");
-			pluginCache.mkdirs();
-			LOGGER.error("Failed to use temp folder to cache {}", pluginCache);
+			LOGGER.error("Failed to create plugin cache folder {}", pluginsCacheDirectory);
+			pluginsCacheDirectory = new File(FileUtils.getTempDirectory(), "cache");
+			pluginsCacheDirectory.mkdirs();
+			LOGGER.error("Failed to use temp folder to cache {}", pluginsCacheDirectory);
 		}
-		return pluginCache;
+		return pluginsCacheDirectory;
 	}
 
 	/**
