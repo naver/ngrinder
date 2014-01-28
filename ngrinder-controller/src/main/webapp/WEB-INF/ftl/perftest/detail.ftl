@@ -292,7 +292,7 @@
 							<input type="text" class="input span2" id="scheduled_date" value="" readyonly>&nbsp; 
 							<select id="scheduled_hour" class="select-item"></select> : <select id="scheduled_min" class="select-item"></select>
 							<code>HH:MM</code>
-							<div class="small-error-box" class="margin-left:30px"></div>
+							<div class="help-inline" class="margin-left:30px"></div>
 						</div>
 					</div>
 				</fieldset>
@@ -783,7 +783,8 @@ function bindEvent() {
 	$("#add_schedule_btn").click(function() {
         var $scheduleModal = $("#schedule_modal");
         if (checkEmptyByID("scheduled_date")) {
-			$scheduleModal.find(".small-error-box").html("<@spring.message "perfTest.message.setScheduleDate.alert"/>");
+			$scheduleModal.find(".control-group").addClass("error");
+			$scheduleModal.find(".help-inline").html("<@spring.message "perfTest.message.setScheduleDate.alert"/>");
 			return;
 		}
 
@@ -792,9 +793,11 @@ function bindEvent() {
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime());
         if (new Date() > scheduledTime) {
-			$scheduleModal.find(".small-error-box").html("<@spring.message "perfTest.message.scheduleDate.error"/>");
+			$scheduleModal.find(".control-group").addClass("error");
+			$scheduleModal.find(".help-inline").html("<@spring.message "perfTest.message.scheduleDate.error"/>");
 			return;
 		}
+		$scheduleModal.find(".control-group").removeClass("error");
 		$("#scheduled_time").val(scheduledTime);
         $scheduleModal.modal("hide");
 		$scheduleModal.find("small").html("");
