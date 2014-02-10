@@ -6,13 +6,14 @@
 	<version>0.0.1</version>
 
 	<properties>
-		<jdk-version>1.6</jdk-version>
-		<source-encoding>UTF-8</source-encoding>
-	</properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 	<repositories>
 		<repository>
-			<id>nhnopensource.maver.repo</id>
+			<id>nhnopensource.maven.repo</id>
 			<url>https://github.com/nhnopensource/nhnopensource.maven.repo/raw/master/releases</url>
 		</repository>
 	</repositories>
