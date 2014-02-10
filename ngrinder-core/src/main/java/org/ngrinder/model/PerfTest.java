@@ -854,5 +854,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 			this.setId(null);
 			this.setTestComment("");
 		}
+		this.useRampUp = getSafe(this.useRampUp);
+		this.safeDistribution = getSafe(this.safeDistribution);
 	}
 }
