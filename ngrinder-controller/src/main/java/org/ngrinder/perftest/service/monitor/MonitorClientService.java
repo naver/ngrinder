@@ -67,11 +67,6 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 
 	/**
 	 * Initialize the mBeanClient connection.
-	 *
-	 * @param ip         IP address of the monitor target
-	 * @param port       port of the monitor target
-	 * @param reportPath report path
-	 * @param cache      cache for {@link SystemInfo} data.
 	 */
 	public void init() {
 		LOGGER.debug("Init MonitorClientService for {}:{}", ip, port);
@@ -89,7 +84,6 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 	/**
 	 * Get monitor data from MBClient and record into writer.
 	 *
-	 * @return {@link SystemInfo}
 	 */
 	public void update() {
 		try {

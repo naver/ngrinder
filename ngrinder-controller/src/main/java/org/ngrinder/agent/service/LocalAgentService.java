@@ -52,7 +52,7 @@ public class LocalAgentService {
 
 	@Cacheable("local_agents")
 	public List<AgentInfo> getLocalAgents() {
-		LOGGER.info("Local Cache is Updated.");
+		LOGGER.debug("Local Cache is Updated.");
 		if (clustered) {
 			return agentManagerRepository.findAll(startWithRegion(region));
 		} else {

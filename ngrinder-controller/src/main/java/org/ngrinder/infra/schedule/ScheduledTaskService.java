@@ -15,6 +15,7 @@ package org.ngrinder.infra.schedule;
 
 import org.ngrinder.infra.transaction.TransactionService;
 import org.ngrinder.service.IScheduledTaskService;
+import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+
+import static net.grinder.util.NoOp.noOp;
 
 /**
  * Convenient class which makes scheduled task.
@@ -32,43 +35,49 @@ import java.util.concurrent.ScheduledFuture;
 @Service
 public class ScheduledTaskService implements IScheduledTaskService {
 
-	@Autowired
-	private TaskScheduler taskScheduler;
+    @Autowired
+    private TaskScheduler taskScheduler;
 
-	@Autowired
-	private InternalAsyncTaskService internalAsyncTaskService;
+    @Autowired
+    private InternalAsyncTaskService internalAsyncTaskService;
 
-	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
+    private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
 
-	@Autowired
-	private TransactionService transactionService;
+    @Autowired
+    private TransactionService transactionService;
 
-	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
-		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);
-		scheduledRunnable.put(runnable, scheduledFuture);
-	}
+    public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
+        final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);
+        scheduledRunnable.put(runnable, scheduledFuture);
+    }
 
 
-	public void addFixedDelayedScheduledTaskInTransactionContext(final Runnable runnable, int delay) {
-		final Runnable transactionalRunnable = new Runnable() {
-			@Override
-			public void run() {
-				transactionService.runInTransaction(runnable);
-			}
-		};
-		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(transactionalRunnable, delay);
-		scheduledRunnable.put(runnable, scheduledFuture);
-	}
+    public void addFixedDelayedScheduledTaskInTransactionContext(final Runnable runnable, int delay) {
+        final Runnable transactionalRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    transactionService.runInTransaction(runnable);
+                } catch (IllegalStateException e) {
+                    noOp();
+                } catch (BeanCreationNotAllowedException e) {
+                    noOp();
+                }
+            }
+        };
+        final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(transactionalRunnable, delay);
+        scheduledRunnable.put(runnable, scheduledFuture);
+    }
 
-	public void removeScheduledJob(Runnable runnable) {
-		final ScheduledFuture scheduledTaskInfo = scheduledRunnable.remove(runnable);
-		if (scheduledTaskInfo != null) {
-			scheduledTaskInfo.cancel(false);
-		}
-	}
+    public void removeScheduledJob(Runnable runnable) {
+        final ScheduledFuture scheduledTaskInfo = scheduledRunnable.remove(runnable);
+        if (scheduledTaskInfo != null) {
+            scheduledTaskInfo.cancel(false);
+        }
+    }
 
-	public void runAsync(Runnable runnable) {
-		internalAsyncTaskService.runAsync(runnable);
-	}
+    public void runAsync(Runnable runnable) {
+        internalAsyncTaskService.runAsync(runnable);
+    }
 
 }

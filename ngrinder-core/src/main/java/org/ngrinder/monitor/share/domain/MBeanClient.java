@@ -80,9 +80,9 @@ public class MBeanClient {
 	 * local, disconnect the binding.
 	 */
 	public void disconnect() {
+        connected = false;
 		IOUtils.closeQuietly(jmxConnector);
 		mbeanServerConnection = null;
-		connected = false;
 	}
 
 
