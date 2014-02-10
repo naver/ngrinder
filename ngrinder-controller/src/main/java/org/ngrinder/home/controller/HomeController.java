@@ -119,8 +119,8 @@ public class HomeController extends BaseController implements ControllerConstant
 	 */
 	@RequestMapping(value = {"/home", "/"})
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
-	                   @RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
-	                   HttpServletResponse response, HttpServletRequest request) {
+					   @RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
+					   HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role;
 			try {
@@ -229,7 +229,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
 	public HttpEntity<String> healthCheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
-	                                            HttpServletResponse response) {
+												HttpServletResponse response) {
 		ThreadUtils.sleep(sleep);
 		return healthCheck(response);
 	}
@@ -278,7 +278,8 @@ public class HomeController extends BaseController implements ControllerConstant
 	 * @return "redirect:/doError"
 	 */
 	@RequestMapping(value = "/error_404")
-	public String error404() {
+	public String error404(ModelMap model) {
+		model.clear();
 		return "redirect:/doError?type=404";
 	}
 

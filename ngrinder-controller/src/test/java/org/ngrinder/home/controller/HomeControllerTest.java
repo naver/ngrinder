@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -56,10 +55,10 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testHealthcheck() {
-		MockHttpServletResponse resq = new MockHttpServletResponse();
-		homeController.healthCheck(resq);
-		HttpEntity<String> message = homeController.healthCheckSlowly(500, resq);
+	public void testHealthCheck() {
+		MockHttpServletResponse res = new MockHttpServletResponse();
+		homeController.healthCheck(res);
+		HttpEntity<String> message = homeController.healthCheckSlowly(500, res);
 		assertThat(message.getBody(), containsString("NONE"));
 	}
 
@@ -73,8 +72,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testErrorPage() {
-
-		String viewName = homeController.error404();
+		String viewName = homeController.error404(new ModelMap());
 		assertThat(viewName, startsWith("redirect:/doError"));
 
 		MockHttpServletResponse res = new MockHttpServletResponse();
