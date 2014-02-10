@@ -1,44 +1,48 @@
-3.3 (2014.01.29)
+3.3 (2014.02.10)
 nGrinder 3.3 is the major release including several new features.
 You should upgrade both agent and controller to 3.3 version to enjoy the new features.
 
 - New feature and changes
   * One single executable package
-    - Admins can run  nGrinder controller using the following command.
+    - Admins can run nGrinder controller using the following command.
       "java -XX:MaxPermGen:200m -jar ngrinder-controller-X.X.war"
-      nGrinder controller war file became the self-executable. Tomcat mount is supported as well.
+      nGrinder controller war file became the self-executable and Tomcat mount is supported as well.
     - Admins can download agents and monitors from the controller and
       users can download private agents and monitors from the controller.
-      The downloaded agent/monitor packages already contains pre-defined configuration to connect the controller from
-      which they are downloaded, so that no agent configuration is necessary.
+      The downloaded agent/monitor packages already contains the pre-defined configuration
+      to connect the controller from which they are downloaded,
+      so that no agent configuration is necessary.
     - See http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
   * No more controller-agent connection problem
-    - Previously nGrinder controller bound to only one IP among all available IPs in the single machine.
-      This sometimes made it difficult to run nGrinder in which the internal and external IP are separated.(such as EC2)
-    - Now ngrinder binds all available IPs in the OS to listen all connection requests such as agent connection,
-      cluster member discovery, web connections so that no connection error will be occurred.
-    - Even IP6 are fully supported as well.
+    - Previously nGrinder controller was bound to only one IP among all available IPs in the single machine.
+      Sometimes this made it difficult to run nGrinder in which the internal and external IP are separated.
+      (such as EC2)
+    - Now nGrinder controller is bound to all available IPs in the OS to listen all connection requests
+      such as agent connection, cluster member discovery, web connections so that the less connection error will be
+      occurred.
+    - Even IP6 are fully supported.
   * Easier command line options
-    - The controller and agent now have the quite detailed command line interface.
-    - please provide -h when executing them to see the available options.
-    - Even multiple agent and controller execution in a single machine has become very easy.
+    - The controller and agents now have the detailed command line interface.
+    - Please run with -h when executing them to see the available options.
+    - Even multiple agent and controller executions in a single machine have become very easy.
     - See http://www.cubrid.org/wiki_ngrinder/entry/controller-configuration-guide#command_line_options
     - and http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide#command_line_options
-  * Agents automatic update
-    - Now Agents can be upgradable just by clicking Update button in the controller's agent management page.
+  * Agent automatic update
+    - Now agents can be upgradable by clicking "Update" button in the controller's agent management page.
     - See http://www.cubrid.org/wiki_ngrinder/entry/agent-auto-update
   * Very small monitor package(<5MB)
   * Thread Ramp-Up
-    - The underlying "The Grinder" engine has supported per process ramp up, but thread ramp up.
-    - nGrinder has enhanced this engine to support the thread ramp up so that more smooth ramp up can be done.
+    - The underlying "The Grinder" engine supports only per process ramp up, but not thread ramp up.
+    - nGrinder has enhanced The Grinder engine to support the thread ramp up as well
+      so that more smooth ramp up can be performed.
     - See http://www.cubrid.org/wiki_ngrinder/entry/how-to-ramp-up-by-threads
   * Full REST APIs.
     - A user and admin can call the REST APIs to manage tests and scripts.
-    - An admin call call the REST APIs to manage users and agents.
+    - The REST APIs includes user and agent management API as well for the admin user.
     - See http://www.cubrid.org/wiki_ngrinder/entry/rest-api
   * L4 simulation by custom DNS rotation.
-    - A user can input multiple IPs into a single dns name in the target host configuration so that
-      it does random DNS resolution for each calls if multiple IP are mapped into a single host name.
+    - A user can map multiple IPs into a single DNS name in the target host configuration so that
+      Whenever the DNS name and ip resolution is requested, the agent resolves DNS name into the random IP.
     - Check out http://www.cubrid.org/wiki_ngrinder/entry/how-to-change-dns#l4_simulation
   * More consistent configuration keys.
     - Configuration keys used in the previous version are supported as well.
@@ -47,18 +51,18 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
       * http://www.cubrid.org/wiki_ngrinder/entry/controller-configuration-guide#controller_configuration_keys
       * http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide#agent_configuration_keys
   * The user self sign-up
-    * The new user can sign up by himself/herself. The admin doesn't need to care about the users anymore.
+    * The new user can sign up by himself/herself. The admin doesn't need to care about the user registration anymore.
     * See http://www.cubrid.org/wiki_ngrinder/entry/user-sign-up
   * Easier default configuration
-    * Agents are now automatically approved when they connect at the first time
-    * Script console is disabled by default to reduce the unnecessary menu complexity.
-    * Email and Mobile phone number fields in the user creation page is not mandatory by default.
+    * By default, Agents are now automatically approved when they connect to the controller.
+    * By default, Script console is disabled by default to reduce the unnecessary complexity.
+    * By default, Email and Mobile phone number fields in the user creation page is not mandatory.
   * More consistent plugin interfaces
     * All plugins should be updated to the latest version which support nGrinder 3.3.
   * Groovy as a the first-citizen.
     * Groovy was upgraded to 2.2.1 version abd became the first citizen of nGrinder.
   * Custom test report plugins support
-    * Some plugins will be provided soon such as (JVMMonitor).
+    * Some plugins will be provided soon such as JVMMonitor.
   * In addition, several UI improvements.
 
 Bug
@@ -105,7 +109,7 @@ Improvement
 [NGRINDER-712] - Make ngrinder war executable from command line
 [NGRINDER-713] - Reduce unnecessary db and access to speed up
 [NGRINDER-717] - Make the unused region's agent info deletable.
-[NGRINDER-720] - Make not frequently used configurations collapsable
+[NGRINDER-720] - Make not frequently used configurations collapsible
 [NGRINDER-721] - Provide easy user switch for admin
 
 New Feature
@@ -174,14 +178,14 @@ Bug
 [NGRINDER-641] - Fix the popover width overflow when the script path is long
 [NGRINDER-643] - Use ${NGRINDER_HOME}/subversion folder for subversion auth store
 [NGRINDER-644] - SVN access doesn't block the illegal access
-[NGRINDER-648] - User password is changed whenever the user is loggined with login plugin
+[NGRINDER-648] - User password is changed whenever the user is logined with login plugin
 
 Improvement
 [NGRINDER-631] - Make monitor be able to select listening IP
 [NGRINDER-632] - Make perftest distribute sub folders in the resource / lib folder
 [NGRINDER-635] - Show the error rate rather than error count
 [NGRINDER-636] - Add running test view filter in the test list
-[NGRINDER-638] - Add the new announcement lable to show announcement change explicitly
+[NGRINDER-638] - Add the new announcement labels to show announcement change explicitly
 [NGRINDER-639] - Provide the flexible way to customize the java opt when invoking agent process
 [NGRINDER-642] - Check the java version during agent starting
 [NGRINDER-645] - Add ${NGRINDER_HOME}/logback.xml recognized by ngrinder to customize logger
