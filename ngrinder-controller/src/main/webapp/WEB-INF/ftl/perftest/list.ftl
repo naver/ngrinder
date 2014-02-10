@@ -230,7 +230,7 @@
 			</#if>
 		</td>
 		<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>
-		<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
+		<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.#")}</#if></td>
 		<td>
 			<div class="ellipsis" rel="popover" data-html="true" data-placement="top"
 				 data-content="<@spring.message "perfTest.list.totalTests"/> : ${((test.tests + test.errors)?string(",##0"))!""}<br/><@spring.message "perfTest.list.successfulTests"/> : ${(test.tests?string(",##0"))!""}<br/><@spring.message "perfTest.list.errors"/> : ${(test.errors?string(",##0"))!""}<br/>">
