@@ -26,7 +26,10 @@
 	//@ sourceURL=/perftest/detail_report/monitor
 	function getMonitorDataAndDraw(testId, targetIP) {
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/monitor");
-		ajaxObj.params = { targetIP: targetIP, imgWidth: $("#cpu_usage_chart").width()};
+		ajaxObj.params = {
+			targetIP: targetIP,
+			imgWidth: parseInt($("#cpu_usage_chart").width())
+		};
 		ajaxObj.success = function (data) {
 			var interval = data.chartInterval;
 			drawChart('cpu_usage_chart', [data.cpu], formatPercentage, interval);

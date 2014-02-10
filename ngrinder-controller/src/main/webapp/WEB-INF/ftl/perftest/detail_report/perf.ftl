@@ -37,7 +37,7 @@
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/perf");
 		ajaxObj.params = {
 			dataType : 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined,Vuser',
-			imgWidth : $("#tps_chart").width()
+			imgWidth : parseInt($("#tps_chart").width())
 		};
 		ajaxObj.success = function (data) {
 			var interval = data.chartInterval;
