@@ -379,14 +379,14 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				}
 			}
 		});
-		final MutableBoolean mutableBoolean = new MutableBoolean(safe);
+		final MutableBoolean safeDist = new MutableBoolean(safe);
 		ConsoleProperties consoleComponent = getConsoleComponent(ConsoleProperties.class);
 		final File file = consoleComponent.getDistributionDirectory().getFile();
 		if (listener != null) {
 			listener.apply(new Informer<FileDistributionListener>() {
 				@Override
 				public void inform(FileDistributionListener listener) {
-					mutableBoolean.setValue(listener.start(file, safe));
+					safeDist.setValue(listener.start(file, safe));
 				}
 			});
 		}
@@ -409,7 +409,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					});
 				}
 
-				if (mutableBoolean.isTrue()) {
+				if (safeDist.isTrue()) {
 					// The cache status is updated asynchronously by agent
 					// reports. If the listener is registered, this waits for up
 					// to five seconds for
@@ -420,7 +420,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				throw processException("Error while distribute files for " + getConsolePort());
 			}
 		}
-		if (mutableBoolean.isFalse()) {
+		if (safeDist.isFalse()) {
 			ThreadUtils.sleep(1000);
 			checkSafetyWithCacheState(fileDistribution, cacheStateCondition, fileCount);
 		}
@@ -428,7 +428,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	private void checkSafetyWithCacheState(final FileDistribution fileDistribution,
 										   final Condition cacheStateCondition, int fileCount) {
-		synchronized (this) {
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		synchronized (cacheStateCondition) {
 			for (int i = 0; i < (10 * fileCount) && shouldEnable(fileDistribution); ++i) {
 				cacheStateCondition.waitNoInterrruptException(500);
 			}
