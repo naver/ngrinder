@@ -936,7 +936,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	/**
 	 * Check if the given perfTest has too many errors. (20%)
 	 *
-	 * @param perfTest perftes t
+	 * @param perfTest perftest
 	 * @return true if too many errors.
 	 */
 	@SuppressWarnings("unchecked")
@@ -980,7 +980,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * Check the test can be executed more.
 	 *
 	 * @return true if possible
+	 * @deprecated
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public boolean canExecuteTestMore() {
 		return count(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
 	}
@@ -1217,7 +1219,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param testId       test id
 	 * @param targetIP     ip address of the monitor target
 	 * @param dataInterval interval value to get data. Interval value "2" means, get one record for every "2" records.
-	 * @return r  eturn the data in map
+	 * @return return the data in map
 	 */
 	public Map<String, String> getMonitorGraph(long testId, String targetIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
