@@ -83,7 +83,6 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 
 	/**
 	 * Get monitor data from MBClient and record into writer.
-	 *
 	 */
 	public void update() {
 		try {

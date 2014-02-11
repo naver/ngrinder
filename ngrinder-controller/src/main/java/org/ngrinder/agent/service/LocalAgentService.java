@@ -63,9 +63,9 @@ public class LocalAgentService {
 
 	@Transactional
 	public void updateAgents(List<AgentInfo> newAgents,
-	                         List<AgentInfo> updatedAgents,
-	                         List<AgentInfo> stateUpdatedAgents,
-	                         List<AgentInfo> removedAgents) {
+							 List<AgentInfo> updatedAgents,
+							 List<AgentInfo> stateUpdatedAgents,
+							 List<AgentInfo> removedAgents) {
 		if (CollectionUtils.isNotEmpty(newAgents)) {
 			agentManagerRepository.save(newAgents);
 		}
