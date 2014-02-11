@@ -129,7 +129,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 	private FactoryConfiguration createPearListenerFactory(String ip, int port) {
 		FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 		peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-		peerListenerConfig.setProperties(String.format("hostName=%s, port=%d, socketTimeoutMillis=1000", ip, port));
+		peerListenerConfig.setProperties(String.format("hostName=%s, port=%d, socketTimeoutMillis=3000", ip, port));
 		CoreLogger.LOGGER.info("peer listener is set as {}:{}", ip, port);
 		return peerListenerConfig;
 	}
