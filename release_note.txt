@@ -1,4 +1,4 @@
-3.3 (2014.02.10)
+3.3 (2014.02.12)
 nGrinder 3.3 is the major release including several new features.
 You should upgrade both agent and controller to 3.3 version to enjoy the new features.
 
