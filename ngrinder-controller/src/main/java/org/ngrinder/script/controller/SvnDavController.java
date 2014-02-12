@@ -13,25 +13,8 @@
  */
 package org.ngrinder.script.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.script.svnkitdav.DAVHandlerExFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +29,7 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVConfig;
 import org.tmatesoft.svn.core.internal.server.dav.DAVException;
 import org.tmatesoft.svn.core.internal.server.dav.DAVRepositoryManager;
 import org.tmatesoft.svn.core.internal.server.dav.DAVXMLUtil;
+import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVHandlerFactory;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVResponse;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.ServletDAVHandler;
 import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
@@ -53,10 +37,21 @@ import org.tmatesoft.svn.core.internal.util.SVNXMLUtil;
 import org.tmatesoft.svn.util.SVNDebugLog;
 import org.tmatesoft.svn.util.SVNLogType;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
+
 /**
  * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV request into
  * underlying SVN Repo.
- *
+ * <p/>
  * This implementation is borrowed from SVNKit-DAV project.
  *
  * @author JunHo Yoon
@@ -128,7 +123,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 			// To make it understand Asian Language..
 			request = new MyHttpServletRequestWrapper(request);
 			DAVRepositoryManager repositoryManager = new DAVRepositoryManager(getDAVConfig(), request);
-			ServletDAVHandler handler = DAVHandlerExFactory.createHandler(repositoryManager, request, response);
+			ServletDAVHandler handler = DAVHandlerFactory.createHandler(repositoryManager, request, response);
 			handler.execute();
 		} catch (DAVException de) {
 			response.setContentType(XML_CONTENT_TYPE);
