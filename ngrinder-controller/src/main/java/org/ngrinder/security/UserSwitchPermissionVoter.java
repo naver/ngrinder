@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * User Switch Recognized Voter for SVN.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -66,7 +66,7 @@ public class UserSwitchPermissionVoter implements AccessDecisionVoter<FilterInvo
 		} else {
 			List<User> owners = user.getOwners();
 			for (User each : owners) {
-				if (realm.equals(each.getUserName())) {
+				if (realm.equals(each.getUserId())) {
 					return ACCESS_GRANTED;
 				}
 			}
