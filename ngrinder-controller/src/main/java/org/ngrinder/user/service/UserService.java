@@ -141,12 +141,14 @@ public class UserService extends AbstractUserService {
 			user.setPassword(null);
 		}
 		final User existing = userRepository.findOneByUserId(user.getUserId());
-		// First expire existing followers.
-		for (User eachFollower : existing.getFollowers()) {
-			userCache.evict(eachFollower.getUserId());
-		}
-
 		if (existing != null) {
+			// First expire existing followers.
+			final List<User> existingFollowers = existing.getFollowers();
+			if (existingFollowers != null) {
+				for (User eachFollower : existingFollowers) {
+					userCache.evict(eachFollower.getUserId());
+				}
+			}
 			user = existing.merge(user);
 		}
 		User createdUser = userRepository.save(user);
@@ -200,7 +202,6 @@ public class UserService extends AbstractUserService {
 	 * @param role role
 	 * @param sort sort
 	 * @return found user list
-	 * @throws Exception
 	 */
 	public List<User> getAll(Role role, Sort sort) {
 		return (role == null) ? userRepository.findAll(sort) : userRepository.findAllByRole(role, sort);
@@ -212,7 +213,6 @@ public class UserService extends AbstractUserService {
 	 * @param role     role
 	 * @param pageable sort
 	 * @return found user list
-	 * @throws Exception
 	 */
 	public Page<User> getPagedAll(Role role, Pageable pageable) {
 		return (role == null) ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
@@ -223,7 +223,6 @@ public class UserService extends AbstractUserService {
 	 *
 	 * @param role role
 	 * @return found user list
-	 * @throws Exception
 	 */
 	public List<User> getAll(Role role) {
 		return getAll(role, new Sort(Direction.ASC, "userName"));
