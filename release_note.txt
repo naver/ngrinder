@@ -82,6 +82,7 @@ Bug
 [NGRINDER-715] - Fix the incorrect svn author property bug when editing files in controller
 [NGRINDER-716] - Make Asian languages correctly shown in the agent log
 [NGRINDER-719] - Fix unrecognized user svn path error when creating a user with not trimmed user id
+[NGRINDER-723] - Cache expiration is necessary when the user's followers are changed.
 
 Improvement
 [NGRINDER-289] - Test Compare feature should be provided
@@ -114,6 +115,8 @@ Improvement
 [NGRINDER-720] - Make not frequently used configurations collapsible
 [NGRINDER-721] - Provide easy user switch for admin
 [NGRINDER-722] - Support SVN 1.8
+
+
 New Feature
 [NGRINDER-678] - Allow user sign up
 [NGRINDER-688] - Allow multiple DNS entries to simulate the L4.
