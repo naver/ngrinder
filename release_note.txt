@@ -44,6 +44,8 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     - A user can map multiple IPs into a single DNS name in the target host configuration so that
       Whenever the DNS name and ip resolution is requested, the agent resolves DNS name into the random IP.
     - Check out http://www.cubrid.org/wiki_ngrinder/entry/how-to-change-dns#l4_simulation
+  * SVN 1.8 Support
+    - Underlying SVNKit has been upgraded to 1.8.3 version so that 1.8 SVN client works well
   * More consistent configuration keys.
     - Configuration keys used in the previous version are supported as well.
     - However we recommends to use the new system configuration keys.
@@ -111,7 +113,7 @@ Improvement
 [NGRINDER-717] - Make the unused region's agent info deletable.
 [NGRINDER-720] - Make not frequently used configurations collapsible
 [NGRINDER-721] - Provide easy user switch for admin
-
+[NGRINDER-722] - Support SVN 1.8
 New Feature
 [NGRINDER-678] - Allow user sign up
 [NGRINDER-688] - Allow multiple DNS entries to simulate the L4.

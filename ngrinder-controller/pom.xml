@@ -47,12 +47,12 @@
 		<dependency>
 			<groupId>sonia.svnkit</groupId>
 			<artifactId>svnkit-dav</artifactId>
-			<version>1.7.5-2</version>
+			<version>1.8.3-scm1</version>
 		</dependency>
 		<dependency>
 			<groupId>sonia.svnkit</groupId>
 			<artifactId>svnkit</artifactId>
-			<version>1.7.5-2</version>
+			<version>1.8.3-scm1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ngrinder</groupId>
