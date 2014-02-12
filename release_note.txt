@@ -44,8 +44,9 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
     - A user can map multiple IPs into a single DNS name in the target host configuration so that
       Whenever the DNS name and ip resolution is requested, the agent resolves DNS name into the random IP.
     - Check out http://www.cubrid.org/wiki_ngrinder/entry/how-to-change-dns#l4_simulation
-  * SVN 1.8 Support
+  * SVN 1.8 Support and user switch support
     - Underlying SVNKit has been upgraded to 1.8.3 version so that 1.8 SVN client works well
+    - Fix the access deny issue when followers access the other's SVN.
   * More consistent configuration keys.
     - Configuration keys used in the previous version are supported as well.
     - However we recommends to use the new system configuration keys.
@@ -83,6 +84,7 @@ Bug
 [NGRINDER-716] - Make Asian languages correctly shown in the agent log
 [NGRINDER-719] - Fix unrecognized user svn path error when creating a user with not trimmed user id
 [NGRINDER-723] - Cache expiration is necessary when the user's followers are changed.
+[NGRINDER-724] - SVN access from followers is denied.
 
 Improvement
 [NGRINDER-289] - Test Compare feature should be provided
