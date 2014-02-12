@@ -27,6 +27,8 @@ import org.ngrinder.service.AbstractUserService;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,6 +41,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +73,16 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private Config config;
+
+	@Autowired
+	private CacheManager cacheManager;
+
+	private Cache userCache;
+
+	@PostConstruct
+	public void init() {
+		userCache = cacheManager.getCache("users");
+	}
 
 	/**
 	 * Get user by user id.
@@ -122,15 +135,25 @@ public class UserService extends AbstractUserService {
 	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User saveWithoutPasswordEncoding(User user) {
-		user.setFollowers(getFollowers(user.getFollowersStr()));
+		final List<User> followers = getFollowers(user.getFollowersStr());
+		user.setFollowers(followers);
 		if (user.getPassword() != null && StringUtils.isBlank(user.getPassword())) {
 			user.setPassword(null);
 		}
 		final User existing = userRepository.findOneByUserId(user.getUserId());
+		// First expire existing followers.
+		for (User eachFollower : existing.getFollowers()) {
+			userCache.evict(eachFollower.getUserId());
+		}
+
 		if (existing != null) {
 			user = existing.merge(user);
 		}
 		User createdUser = userRepository.save(user);
+		// Then expires new followers so that new followers info can be loaded.
+		for (User eachFollower : followers) {
+			userCache.evict(eachFollower.getUserId());
+		}
 		prepareUserEnv(createdUser);
 		return createdUser;
 	}
