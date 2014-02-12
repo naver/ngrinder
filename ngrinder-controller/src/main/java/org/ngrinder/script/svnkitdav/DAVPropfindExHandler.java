@@ -177,7 +177,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		// "utf-8"
 		// so set "text/html;charset=utf-8"
 		HttpServletResponse myResponse = getHttpServletResponse();
-		myResponse.setContentType("text/html;charset=utf-8");
+		myResponse.setContentType("text/html;charset=UTF-8");
 		try {
 			setResponseContentLength(responseBody.getBytes(UTF8_ENCODING).length);
 		} catch (UnsupportedEncodingException e) {

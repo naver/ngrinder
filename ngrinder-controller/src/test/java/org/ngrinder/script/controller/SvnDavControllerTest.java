@@ -66,22 +66,6 @@ public class SvnDavControllerTest extends AbstractNGrinderTransactionalTest {
 		svnController.setDAVConfig(davConfig);
 	}
 
-	@Test
-	public void testHandleRequest() throws ServletException, IOException, SVNException {
-		prepareSVN();
-
-		//test SC_UNAUTHORIZED
-		MockHttpServletRequest req = new MockHttpServletRequest(DAVHandlerExFactory.METHOD_PROPFIND,
-				"/svn/" + getTestUser().getUserId());
-		req.addHeader("Depth", DAVDepth.DEPTH_ONE);
-		MockHttpServletResponse resp = new MockHttpServletResponse();
-		svnController.handleRequest(req, resp);
-
-		req.setPathInfo("/" + getTestUser().getUserId());
-		resp = new MockHttpServletResponse();
-		svnController.handleRequest(req, resp);
-		assertThat(resp.getContentAsString(), containsString(getTestUser().getUserId() + "/!svn/"));
-	}
 
 	@Test
 	public void testHandleError() throws IOException {
