@@ -247,7 +247,7 @@
 		</td>
 		<td class="center">
 			<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
-			   style="<#if !test.status.isReportable() || (test.tests!0 + test.errors!0) == 0>display: none;</#if>"
+			   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
 			   class="icon-download	test-display pointer-cursor"  sid="${test.id}"></i>
 			<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
 			   style="<#if deletable>display: none;</#if>"
