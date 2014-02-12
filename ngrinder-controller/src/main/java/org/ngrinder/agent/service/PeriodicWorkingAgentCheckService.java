@@ -20,6 +20,7 @@ import net.grinder.console.communication.AgentProcessControlImplementation.Agent
 
 import org.ngrinder.extension.OnPeriodicWorkingAgentCheckRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
 import org.python.google.common.base.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,35 +28,38 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Agent periodic check service.
- * 
+ * <p/>
  * This class runs the plugins implementing
  * {@link OnPeriodicWorkingAgentCheckRunnable}.
- * 
+ * <p/>
  * It's separated from {@link AgentManagerService} to get rid of cyclic
  * injection.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1.2
  */
 @Service
-public class PeriodicWorkingAgentCheckService {
+public class PeriodicWorkingAgentCheckService implements Runnable {
 	@Autowired
 	private PluginManager pluginManager;
 
 	@Autowired
 	private AgentManager agentManager;
 
-	/**
-	 * Run scheduled tasks checking the agent status on the currently working
-	 * agents.
-	 * 
-	 * @since 3.1.2
-	 */
-	@Scheduled(fixedDelay = 2000)
-	@Transactional
-	public void checkWorkingAgents() {
+	@Autowired
+	private ScheduledTaskService scheduledTaskService;
+
+	@PostConstruct
+	public void init() {
+		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(this, 2000);
+	}
+
+	@Override
+	public void run() {
 		Set<AgentStatus> workingAgents = agentManager
 				.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
 					@Override
@@ -67,6 +71,5 @@ public class PeriodicWorkingAgentCheckService {
 				.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
 			runnable.checkWorkingAgent(workingAgents);
 		}
-
 	}
 }
