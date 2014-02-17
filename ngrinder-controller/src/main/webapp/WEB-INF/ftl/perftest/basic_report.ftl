@@ -35,7 +35,7 @@
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.totalTests">
-					${test.tests!0 + test.errors!0}
+					${(test.tests!0) + (test.errors!0)}
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.successfulTests">
