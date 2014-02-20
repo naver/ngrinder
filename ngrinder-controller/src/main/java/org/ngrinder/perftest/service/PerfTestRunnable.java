@@ -529,7 +529,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		singleConsoleInUse.unregisterSampling();
 		try {
 			// stop target host monitor
-			if (perfTestService.hasTooManError(perfTest)) {
+			if (perfTestService.hasTooManyError(perfTest)) {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 						"[WARNING] The test is finished but contains too much errors(over 30% of total runs).");
 			} else if (singleConsoleInUse.hasNoPerformedTest()) {

@@ -940,7 +940,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return true if too many errors.
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean hasTooManError(PerfTest perfTest) {
+	public boolean hasTooManyError(PerfTest perfTest) {
 		Map<String, Object> result = getStatistics(perfTest);
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
