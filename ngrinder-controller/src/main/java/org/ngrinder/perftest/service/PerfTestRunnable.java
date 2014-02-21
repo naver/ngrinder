@@ -133,7 +133,7 @@ public class PerfTestRunnable implements ControllerConstants {
 			return;
 		}
 		// Block if the count of testing exceed the limit
-		if (canExecuteMore()) {
+		if (!canExecuteMore()) {
 			// LOG MORE
 			List<PerfTest> currentlyRunningTests = perfTestService.getCurrentlyRunningTest();
 			LOG.debug("Currently running test is {}. No more tests can not run.", currentlyRunningTests.size());
@@ -164,7 +164,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	}
 
 	private boolean canExecuteMore() {
-		return consoleManager.getConsoleInUse().size() >= perfTestService.getMaximumConcurrentTestCount();
+		return consoleManager.getConsoleInUse().size() < perfTestService.getMaximumConcurrentTestCount();
 	}
 
 	private boolean isScheduledNow(PerfTest test) {
