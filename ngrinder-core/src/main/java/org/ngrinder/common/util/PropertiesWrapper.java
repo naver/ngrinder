@@ -131,6 +131,17 @@ public class PropertiesWrapper {
 	}
 
 	/**
+	 * Get property as long.
+	 *
+	 * @param key property key
+	 * @return property long value
+	 */
+	public long getPropertyLong(String key) {
+		return NumberUtils.toLong(getProperty(key));
+	}
+
+
+	/**
 	 * Get the property as boolean.
 	 *
 	 * @param key property key

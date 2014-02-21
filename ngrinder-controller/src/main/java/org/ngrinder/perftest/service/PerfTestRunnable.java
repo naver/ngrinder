@@ -262,7 +262,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
-		final int safeThreadHold = getSafeTransmissionThreshold();
+		final long safeThreadHold = getSafeTransmissionThreshold();
 
 		listener.add(new SingleConsole.FileDistributionListener() {
 			@Override
@@ -294,9 +294,8 @@ public class PerfTestRunnable implements ControllerConstants {
 				"All necessary files are distributed.");
 	}
 
-	protected int getSafeTransmissionThreshold() {
-		// For backward compatibility
-		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_SAFE_DIST_THRESHOLD);
+	protected long getSafeTransmissionThreshold() {
+		return config.getControllerProperties().getPropertyLong(PROP_CONTROLLER_SAFE_DIST_THRESHOLD);
 	}
 
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
