@@ -48,7 +48,7 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 	}
 
 	@Override
-	protected int getSafeTransmissionThreshold() {
+	protected long getSafeTransmissionThreshold() {
 		return 1;
 	}
 
