@@ -13,11 +13,11 @@
  */
 package org.ngrinder.common.util;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Automatic encoding detection utility.
@@ -62,5 +62,15 @@ public abstract class EncodingUtils {
 		String estimatedEncoding = cm.getName();
 		boolean isReliable = Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= MINIMAL_CONFIDENCE_LEVEL;
 		return isReliable ? estimatedEncoding : defaultEncoding;
+	}
+
+	/**
+	 * Trim null characters in the string.
+	 *
+	 * @param string string
+	 * @return
+	 */
+	public static String trimNullCharacter(String string) {
+		return string == null ? null : string.replaceAll("\0", "");
 	}
 }
