@@ -1,15 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ngrinder</groupId>
 	<artifactId>${name}</artifactId>
 	<version>0.0.1</version>
 
 	<properties>
+		<ngrinder.version>3.3</ngrinder.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	</properties>
 
 	<repositories>
 		<repository>
@@ -17,18 +18,38 @@
 			<url>https://github.com/nhnopensource/nhnopensource.maven.repo/raw/master/releases</url>
 		</repository>
 	</repositories>
-
-	<dependencies>
+	<profiles>
 		<!-- Following dependency is mandatory -->
-		<dependency>
-			<groupId>org.ngrinder</groupId>
-			<artifactId>ngrinder-groovy</artifactId>
-			<version>3.3</version>
-			<scope>provided</scope>
-		</dependency>
-
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.ngrinder</groupId>
+					<artifactId>ngrinder-groovy</artifactId>
+					<version>${ngrinder.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- Use intellij profile when running tests in the intellij -->
+		<profile>
+			<id>intellij</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.ngrinder</groupId>
+					<artifactId>ngrinder-groovy</artifactId>
+					<version>${ngrinder.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+	<dependencies>
 		<!-- Add the dependencies -->
-		<!--  
+		<!--
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -36,7 +57,7 @@
 		</dependency>
 		 -->
 		<!-- Put your private library like this -->
-		<!--  
+		<!--
 		<dependency>
 			<groupId>your_lib</groupId>
 			<artifactId>your_lib</artifactId>
