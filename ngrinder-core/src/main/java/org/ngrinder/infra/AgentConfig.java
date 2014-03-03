@@ -53,17 +53,16 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent config");
 
 	protected AgentHome home = null;
+
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper monitorProperties;
 	private PropertiesWrapper commonProperties;
-
-
 	private PropertiesWrapper internalProperties;
+
 	private PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
 	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
 	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
 	private PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
-
 
 	/**
 	 * Initialize.
@@ -79,6 +78,41 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return this;
 	}
 
+	private void copyDefaultConfigurationFiles() {
+		checkNotNull(home);
+		final File agentConfig = home.getFile("agent.conf");
+		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
+		if (agentConfig.exists()) {
+			if (System.getProperty(CommonConstants.PROP_OVERWRITE_CONFIG) != null) {
+				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
+			} else if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig
+					.lastModified()) {
+				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
+				LOGGER.warn("If you want to use the recent agent configuration provided from the controller.");
+				LOGGER.warn("Please run agent with -o option");
+				return;
+			}
+		}
+		if (newAgentConfig.exists()) {
+			home.copyFileTo(newAgentConfig, "agent.conf");
+		} else {
+			try {
+				home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
+			} catch (IOException e) {
+				throw processException(e);
+			}
+		}
+	}
+
+	protected void loadProperties() {
+		checkNotNull(home);
+		Properties properties = home.getProperties("agent.conf");
+		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
+		properties.putAll(System.getProperties());
+		agentProperties = new PropertiesWrapper(properties, agentPropertyMapper);
+		monitorProperties = new PropertiesWrapper(properties, monitorPropertyMapper);
+		commonProperties = new PropertiesWrapper(properties, commonPropertyMapper);
+	}
 
 	protected void loadInternalProperties() {
 		InputStream inputStream = null;
@@ -128,43 +162,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		} catch (JoranException e) {
 			LOGGER.error("Error while configuring logger", e);
 		}
-	}
-
-	private void copyDefaultConfigurationFiles() {
-		checkNotNull(home);
-		final File agentConfig = home.getFile("agent.conf");
-		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
-		if (agentConfig.exists()) {
-			if (System.getProperty(CommonConstants.PROP_OVERWRITE_CONFIG) != null) {
-				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
-			} else if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig
-					.lastModified()) {
-				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
-				LOGGER.warn("If you want to use the recent agent configuration provided from the controller.");
-				LOGGER.warn("Please run agent with -o option");
-				return;
-			}
-		}
-		if (newAgentConfig.exists()) {
-			home.copyFileTo(newAgentConfig, "agent.conf");
-		} else {
-			try {
-				home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
-			} catch (IOException e) {
-				throw processException(e);
-			}
-		}
-	}
-
-
-	protected void loadProperties() {
-		checkNotNull(home);
-		Properties properties = home.getProperties("agent.conf");
-		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
-		properties.putAll(System.getProperties());
-		agentProperties = new PropertiesWrapper(properties, agentPropertyMapper);
-		monitorProperties = new PropertiesWrapper(properties, monitorPropertyMapper);
-		commonProperties = new PropertiesWrapper(properties, commonPropertyMapper);
 	}
 
 	/**
@@ -317,7 +314,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return new File(System.getProperty("user.dir"));
 	}
 
-
 	public String getMonitorBindingIP() {
 		return getMonitorProperties().getProperty(PROP_MONITOR_BINDING_IP);
 	}
@@ -325,7 +321,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	public String getControllerIP() {
 		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
 	}
-
 
 	public void setControllerHost(String host) {
 		getAgentProperties().addProperty(PROP_AGENT_CONTROLLER_HOST, host);
@@ -360,7 +355,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return commonProperties;
 	}
 
-
 	public static class NullAgentConfig extends AgentConfig {
 		public int counter = 0;
 		private int controllerPort = 0;
@@ -371,7 +365,6 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 			loadProperties();
 			loadInternalProperties();
 		}
-
 
 		public int getControllerPort() {
 			return (this.controllerPort == 0) ? super.getControllerPort() : this.controllerPort;

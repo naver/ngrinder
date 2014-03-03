@@ -32,7 +32,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 public abstract class ReflectionUtils {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtils.class);
 
 	/**
 	 * Get object field value, bypassing getter method.
@@ -49,7 +49,7 @@ public abstract class ReflectionUtils {
 		try {
 			return field.get(object);
 		} catch (IllegalAccessException e) {
-			LOG.error(e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}

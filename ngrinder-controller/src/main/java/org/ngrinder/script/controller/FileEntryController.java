@@ -60,7 +60,7 @@ import static java.util.Collections.sort;
 import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
-import static org.ngrinder.common.util.PathUtils.trimSeparator;
+import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -481,7 +481,7 @@ public class FileEntryController extends BaseController {
 					@Override
 					public boolean apply(@Nullable FileEntry input) {
 						if (input != null) {
-							return trimSeparator(getPath(input.getPath())).equals(trimmedPath);
+							return trimPathSeparatorBothSides(getPath(input.getPath())).equals(trimmedPath);
 						}
 						return false;
 					}

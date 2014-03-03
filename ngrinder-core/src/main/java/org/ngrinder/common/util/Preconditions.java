@@ -13,10 +13,10 @@
  */
 package org.ngrinder.common.util;
 
-import java.net.URL;
-
 import org.apache.commons.lang.StringUtils;
 import org.picocontainer.annotations.Nullable;
+
+import java.net.URL;
 
 /**
  * Simple static methods to be called at the start of your own methods to verify correct arguments and state. This
@@ -109,13 +109,13 @@ public final class Preconditions {
 	}
 
 	/**
-	 * Check the given array contains at least one element.
+	 * Ensures that an object reference passed as a parameter to the calling method is not null and also not empty.
 	 *
+	 * @param <T>                  type
 	 * @param expression           array
 	 * @param errorMessageTemplate error message
 	 * @param errorMessageArgs     args
-	 * @param <T>                  type
-	 * @return
+	 * @return the non-null reference and the non-empty value that was validated
 	 */
 	public static <T> T[] checkNotEmpty(T[] expression, @Nullable String errorMessageTemplate,
 	                                    @Nullable Object... errorMessageArgs) {
@@ -381,12 +381,12 @@ public final class Preconditions {
 		// Carefully optimized for execution by hotspot (explanatory comment
 		// above)
 		if (index < 0 || index >= size) {
-			throw new IndexOutOfBoundsException(badElementIndex(index, size, desc));
+			throw new IndexOutOfBoundsException(buildBadElementIndexMessage(index, size, desc));
 		}
 		return index;
 	}
 
-	private static String badElementIndex(int index, int size, String desc) {
+	private static String buildBadElementIndexMessage(int index, int size, String desc) {
 		if (index < 0) {
 			return format("%s (%s) must not be negative", desc, index);
 		} else if (size < 0) {
@@ -421,12 +421,12 @@ public final class Preconditions {
 		// Carefully optimized for execution by hotspot (explanatory comment
 		// above)
 		if (index < 0 || index > size) {
-			throw new IndexOutOfBoundsException(badPositionIndex(index, size, desc));
+			throw new IndexOutOfBoundsException(buildBadPositionIndexMessage(index, size, desc));
 		}
 		return index;
 	}
 
-	private static String badPositionIndex(int index, int size, String desc) {
+	private static String buildBadPositionIndexMessage(int index, int size, String desc) {
 		if (index < 0) {
 			return format("%s (%s) must not be negative", desc, index);
 		} else if (size < 0) {
@@ -448,16 +448,16 @@ public final class Preconditions {
 		// Carefully optimized for execution by hotspot (explanatory comment
 		// above)
 		if (start < 0 || end < start || end > size) {
-			throw new IndexOutOfBoundsException(badPositionIndexes(start, end, size));
+			throw new IndexOutOfBoundsException(buildBadPositionIndexesMessage(start, end, size));
 		}
 	}
 
-	private static String badPositionIndexes(int start, int end, int size) {
+	private static String buildBadPositionIndexesMessage(int start, int end, int size) {
 		if (start < 0 || start > size) {
-			return badPositionIndex(start, size, "start index");
+			return buildBadPositionIndexMessage(start, size, "start index");
 		}
 		if (end < 0 || end > size) {
-			return badPositionIndex(end, size, "end index");
+			return buildBadPositionIndexMessage(end, size, "end index");
 		}
 		// end < start
 		return format("end index (%s) must not be less than start index (%s)", end, start);
@@ -517,6 +517,5 @@ public final class Preconditions {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Url " + url + "should be valid", e);
 		}
-
 	}
 }

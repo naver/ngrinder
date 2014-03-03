@@ -47,23 +47,29 @@ public abstract class PathUtils {
 	 * @return joined path
 	 */
 	public static String join(String path1, String path2) {
-		path1 = trimSeparator(path1);
-		path2 = trimSeparator(path2);
+		path1 = trimPathSeparatorBothSides(path1);
+		path2 = trimPathSeparatorBothSides(path2);
 		return FilenameUtils.normalizeNoEndSeparator(path1 + "/" + path2, true);
 	}
 
-	public static String trimSeparator(String str) {
-		int len = str.length();
+	/**
+	 * Trim both leading and tailing of the path separator '/' from the given path.
+	 *
+	 * @param path the given path
+	 * @return a path which is removed the path separator both sides
+	 */
+	public static String trimPathSeparatorBothSides(String path) {
+		int len = path.length();
 		int st = 0;
 		int off = 0;
-		char[] val = str.toCharArray();
+		char[] val = path.toCharArray();
 		while ((st < len) && (val[off + st] == '/')) {
 			st++;
 		}
 		while ((st < len) && (val[off + len - 1] == '/')) {
 			len--;
 		}
-		return ((st > 0) || (len < str.length())) ? str.substring(st, len) : str;
+		return ((st > 0) || (len < path.length())) ? path.substring(st, len) : path;
 	}
 
 	/**

@@ -46,7 +46,7 @@ public abstract class DateUtils {
 	private static Map<String, String> timezoneIDMap;
 
 	/**
-	 * get the time in long format : "yyyyMMddHHmmss".
+	 * Get the time in long format : "yyyyMMddHHmmss".
 	 * 
 	 * @param date	date to be format
 	 * @return time time in format of long type
@@ -57,7 +57,7 @@ public abstract class DateUtils {
 	}
 
 	/**
-	 * convert user date to new date with server side Locale.
+	 * Convert user date to new date with server side Locale.
 	 * 
 	 * @param userTimeZone	user TimeZone id
 	 * @param userDate		date in user's Local
@@ -70,7 +70,7 @@ public abstract class DateUtils {
 	}
 
 	/**
-	 * convert server date to new date with user Locale.
+	 * Convert server date to new date with user Locale.
 	 * 
 	 * @param userTimeZone	user TimeZone id
 	 * @param serverDate	date in server's Local

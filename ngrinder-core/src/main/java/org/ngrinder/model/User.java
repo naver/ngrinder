@@ -124,7 +124,6 @@ public class User extends BaseModel<User> {
 		isEnabled();
 	}
 
-
 	@PrePersist
 	@PreUpdate
 	public void init() {
@@ -142,7 +141,6 @@ public class User extends BaseModel<User> {
 		user.init();
 		return user;
 	}
-
 
 	/**
 	 * Constructor.

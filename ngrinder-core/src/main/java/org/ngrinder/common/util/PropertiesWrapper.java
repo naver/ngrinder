@@ -72,8 +72,8 @@ public class PropertiesWrapper {
 		if (StringUtils.isNotBlank(value)) {
 			return value.trim();
 		}
-		List<String> keys = propertiesKeyMapper.getKeys(key);
 
+		List<String> keys = propertiesKeyMapper.getKeys(key);
 		for (String each : checkNotNull(keys, key + " should be exists")) {
 			value = this.properties.getProperty(each);
 			if (StringUtils.isNotBlank(value)) {
@@ -83,7 +83,6 @@ public class PropertiesWrapper {
 		return propertiesKeyMapper.getDefaultValue(key);
 	}
 
-
 	public String getProperty(String key, String defaultValue) {
 		try {
 			String property = getProperty(key);
@@ -92,7 +91,6 @@ public class PropertiesWrapper {
 			return defaultValue;
 		}
 	}
-
 
 	public int getPropertyInt(String key, int defaultValue) {
 		try {
@@ -139,7 +137,6 @@ public class PropertiesWrapper {
 	public long getPropertyLong(String key) {
 		return NumberUtils.toLong(getProperty(key));
 	}
-
 
 	/**
 	 * Get the property as boolean.
