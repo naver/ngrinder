@@ -117,7 +117,7 @@ public class MBeanClient {
         if (jmxUrl == null || ("localhost".equals(jmxUrl.getHost()) && jmxUrl.getPort() == 0)) {
             mbeanServerConnection = ManagementFactory.getPlatformMBeanServer();
         } else {
-            jmxConnector = connectWithTimeout(jmxUrl, 2000);
+            jmxConnector = connectWithTimeout(jmxUrl, timeout);
             mbeanServerConnection = jmxConnector.getMBeanServerConnection();
         }
         this.connected = true;
