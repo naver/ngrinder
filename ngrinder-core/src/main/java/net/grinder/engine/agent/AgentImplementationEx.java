@@ -361,7 +361,9 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
 				"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
 				NetworkUtils.getLocalHostName(), m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE),
-				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX), m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JAVA_OPT));
+				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX),
+				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_LOCAL_DNS),
+				m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JAVA_OPT));
 		String jvmArguments = builder.buildJVMArgument();
 		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
 				+ File.pathSeparator

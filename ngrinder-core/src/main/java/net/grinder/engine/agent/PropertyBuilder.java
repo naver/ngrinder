@@ -35,7 +35,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Class which is responsible to build custom jvm arguments.
- *
+ * <p/>
  * This class aware of security. So it produces the appropriate JVM arguments
  * which works at security env.
  *
@@ -52,6 +52,35 @@ public class PropertyBuilder {
 	private final boolean server;
 	private final boolean useXmxLimit;
 	private final String additionalJavaOpt;
+	private boolean enableLocalDNS;
+
+
+	/**
+	 * Constructor with null additional java opt value.
+	 *
+	 * @param properties        {@link GrinderProperties}
+	 * @param baseDirectory     base directory which the script executes.
+	 * @param securityEnabled   true if security enable mode
+	 * @param hostString        hostString
+	 * @param hostName          current host name
+	 * @param server            server mode
+	 * @param useXmxLimit       true if 1G limit should be enabled
+	 * @param enableLocalDNS    true if the local dns should be enabled.
+	 * @param additionalJavaOpt additional java option to be provided when invoking agent
+	 *                          process
+	 */
+	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
+						   String hostString, String hostName, boolean server, boolean useXmxLimit, boolean enableLocalDNS, String additionalJavaOpt) {
+		this.enableLocalDNS = enableLocalDNS;
+		this.properties = checkNotNull(properties);
+		this.baseDirectory = checkNotNull(baseDirectory);
+		this.securityEnabled = securityEnabled;
+		this.hostString = hostString;
+		this.hostName = checkNotEmpty(hostName);
+		this.server = server;
+		this.useXmxLimit = useXmxLimit;
+		this.additionalJavaOpt = additionalJavaOpt;
+	}
 
 	/**
 	 * Constructor with null additional java opt value.
@@ -67,15 +96,8 @@ public class PropertyBuilder {
 	 *                          process
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-	                       String hostString, String hostName, boolean server, boolean useXmxLimit, String additionalJavaOpt) {
-		this.properties = checkNotNull(properties);
-		this.baseDirectory = checkNotNull(baseDirectory);
-		this.securityEnabled = securityEnabled;
-		this.hostString = hostString;
-		this.hostName = checkNotEmpty(hostName);
-		this.server = server;
-		this.useXmxLimit = useXmxLimit;
-		this.additionalJavaOpt = additionalJavaOpt;
+						   String hostString, String hostName, boolean server, boolean useXmxLimit, String additionalJavaOpt) {
+		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, useXmxLimit, true, null);
 	}
 
 	/**
@@ -90,7 +112,7 @@ public class PropertyBuilder {
 	 * @param useXmxLimit     true if 1G limit should be enabled
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-	                       String hostString, String hostName, boolean server, boolean useXmxLimit) {
+						   String hostString, String hostName, boolean server, boolean useXmxLimit) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, useXmxLimit, null);
 	}
 
@@ -105,7 +127,7 @@ public class PropertyBuilder {
 	 * @param server          server mode
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-	                       String hostString, String hostName, boolean server) {
+						   String hostString, String hostName, boolean server) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, true);
 	}
 
@@ -119,7 +141,7 @@ public class PropertyBuilder {
 	 * @param hostName        current host name
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-	                       String hostString, String hostName) {
+						   String hostString, String hostName) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, false);
 	}
 
@@ -329,7 +351,9 @@ public class PropertyBuilder {
 		if (StringUtils.isNotEmpty(hostString)) {
 			jvmArguments.append(",").append(rebaseHostString(hostString));
 		}
-		jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
+		if (enableLocalDNS) {
+			jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
+		}
 		return jvmArguments;
 	}
 
