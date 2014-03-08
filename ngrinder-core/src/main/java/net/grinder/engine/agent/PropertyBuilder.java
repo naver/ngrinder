@@ -97,7 +97,7 @@ public class PropertyBuilder {
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
 						   String hostString, String hostName, boolean server, boolean useXmxLimit, String additionalJavaOpt) {
-		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, useXmxLimit, true, null);
+		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, useXmxLimit, true, additionalJavaOpt);
 	}
 
 	/**
