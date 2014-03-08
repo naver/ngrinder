@@ -33,6 +33,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
+	private String jreHomeDirectory = System.getProperty("java.home");
 	private final String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private final String pythonPath = System.getProperty("python.path");
 	private final String pythonHome = System.getProperty("python.home");
@@ -45,10 +46,13 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private final List<String> deleteAllowedDirectory = new ArrayList<String>();
 
 	{
+		this.init();
+	}
+
+	void init() {
 		this.initAccessOfDirectories();
 		this.initAccessOfHosts();
 	}
-
 	/**
 	 * Set default accessed of directories. <br>
 	 */
@@ -65,20 +69,14 @@ public class NGrinderSecurityManager extends SecurityManager {
 		agentExecDirectory = normalize(new File(agentExecDirectory).getAbsolutePath(), null);
 		if (javaHomeDirectory == null) {
 			System.out.println("env var JAVA_HOME should be provided.");
-		}
-		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
-		String jreHomeDirectory;
-		if (javaHomeDirectory != null && !javaHomeDirectory.isEmpty()) {
-			jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
-					+ File.separator + "jre";
 		} else {
-			jreHomeDirectory = "JAVA";
+			javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
+			readAllowedDirectory.add(javaHomeDirectory);
 		}
-
 		readAllowedDirectory.add(workDirectory);
 		readAllowedDirectory.add(logDirectory);
 		readAllowedDirectory.add(agentExecDirectory);
-		readAllowedDirectory.add(javaHomeDirectory);
+
 		readAllowedDirectory.add(jreHomeDirectory);
 		if (isNotEmpty(pythonHome)) {
 			readAllowedDirectory.add(pythonHome);
