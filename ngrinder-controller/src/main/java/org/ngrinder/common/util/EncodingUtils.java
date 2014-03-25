@@ -63,14 +63,4 @@ public abstract class EncodingUtils {
 		boolean isReliable = Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= MINIMAL_CONFIDENCE_LEVEL;
 		return isReliable ? estimatedEncoding : defaultEncoding;
 	}
-
-	/**
-	 * Trim null characters in the string.
-	 *
-	 * @param string string
-	 * @return
-	 */
-	public static String trimNullCharacter(String string) {
-		return string == null ? null : string.replaceAll("\0", "");
-	}
 }

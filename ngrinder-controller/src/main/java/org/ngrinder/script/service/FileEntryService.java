@@ -21,7 +21,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.handler.ProjectHandler;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
-import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
@@ -55,7 +54,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.EncodingUtils.trimNullCharacter;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -247,9 +245,6 @@ public class FileEntryService {
 	public void save(User user, FileEntry fileEntry) {
 		prepare(user);
 		checkNotEmpty(fileEntry.getPath());
-		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
-			fileEntry.setContent(trimNullCharacter(fileEntry.getContent()));
-		}
 		fileEntityRepository.save(user, fileEntry, fileEntry.getEncoding());
 	}
 
