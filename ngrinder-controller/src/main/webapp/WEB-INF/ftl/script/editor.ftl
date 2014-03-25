@@ -23,8 +23,9 @@
 			}
 
 			.add-host-btn {
-				margin-top:-25px;
-				margin-right:67px
+				margin-top:38px;
+				margin-left:210px;
+                position:absolute
 			}
 
 			div.modal-body div.chart {
