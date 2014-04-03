@@ -75,10 +75,11 @@
 		margin-bottom: 2px;
 	}
 
-	.add-host-btn {
-		margin-right:20px;
-		margin-top:-32px;
-	}
+    .add-host-btn {
+        margin-top:27px;
+        margin-left:287px;
+        position:absolute
+    }
 
 	i.expand {
         background: url('${req.getContextPath()}/img/icon_expand.png') no-repeat;
