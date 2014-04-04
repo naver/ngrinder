@@ -1,4 +1,4 @@
-// Copyright (C) 2003 - 2009 Philip Aston
+// Copyright (C) 2000 - 2012 Philip Aston
 // All rights reserved.
 //
 // This file is part of The Grinder software distribution. Refer to
@@ -18,7 +18,6 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
-
 package net.grinder.console.model;
 
 import net.grinder.statistics.PeakStatisticExpression;
@@ -30,8 +29,9 @@ import net.grinder.util.ListenerSupport;
 /**
  * Extended {@link SampleAccumulator} class to enable snapshot of existing {@link SampleAccumulator}
  * object. .
- * 
- * @author JunHo Yoon
+ *
+ * @author Grinder Developers.
+ * @author JunHo Yoon (modified for nGrinder)
  * @since 3.1.3
  */
 public class SampleAccumulatorEx implements Cloneable {
