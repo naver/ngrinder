@@ -13,6 +13,8 @@
  */
 package org.ngrinder.monitor.agent;
 
+import net.grinder.util.NetworkUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorContext;
@@ -69,8 +71,11 @@ public final class MonitorServer implements MonitorConstants {
 		int port = agentConfig.getMonitorProperties().getPropertyInt(PROP_MONITOR_BINDING_PORT);
 		this.rmiRegistry = LocateRegistry.createRegistry(port);
 		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-		final String hostname = agentConfig.getMonitorBindingIP();
-		final String jmxUrlString = String.format("service:jmx:rmi://%s:%d/jndi/rmi://%s:%d/jmxrmi", hostname, port, hostname, port);
+		String hostname = agentConfig.getMonitorBindingIP();
+		if (StringUtils.isBlank(hostname)) {
+			hostname = NetworkUtils.getAllPBindingAddress();
+		}
+ 		final String jmxUrlString = String.format("service:jmx:rmi://%s:%d/jndi/rmi://%s:%d/jmxrmi", hostname, port, hostname, port);
 		JMXServiceURL jmxUrl = new JMXServiceURL(jmxUrlString);
 		this.jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
 		RegisterMXBean.getInstance().addDefaultMXBean(mBeanServer);

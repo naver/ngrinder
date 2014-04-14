@@ -255,8 +255,8 @@ public abstract class NetworkUtils {
 	/**
 	 * Check if the given port is available.
 	 *
-	 * @param addr address to be bound
-	 * @param port port to be checked
+	 * @param inetAddress address to be bound
+	 * @param port        port to be checked
 	 * @return true if available
 	 */
 	private static boolean checkExactPortAvailability(InetAddress inetAddress, int port) {
@@ -280,6 +280,45 @@ public abstract class NetworkUtils {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Check if the current machine support IP6
+	 *
+	 * @return true if the IP6 is supported.
+	 */
+	public static boolean isIP6Supported() {
+		final Enumeration<NetworkInterface> networkInterfaces;
+		try {
+			networkInterfaces = getNetworkInterfaces();
+			while (networkInterfaces.hasMoreElements()) {
+
+				final NetworkInterface networkInterface = networkInterfaces.nextElement();
+				if (networkInterface.isUp() && !networkInterface.isLoopback() && !networkInterface.isPointToPoint()) {
+					final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+					while (inetAddresses.hasMoreElements()) {
+						final InetAddress inetAddress = inetAddresses.nextElement();
+						if (inetAddress instanceof Inet6Address) {
+							System.out.println(true);
+							return true;
+						}
+					}
+				}
+			}
+		} catch (SocketException e) {
+			LOGGER.error("Error while resolving non look back local addresses.", e);
+		}
+		return false;
+
+	}
+
+	/**
+	 * Get the all IP binding address.
+	 *
+	 * @return [::] if IP6 is supported, "0.0.0.0" otherwise.
+	 */
+	public static String getAllPBindingAddress() {
+		return isIP6Supported() ? "[::]" : "0.0.0.0";
 	}
 
 	public static class IPPortPair {
@@ -401,6 +440,7 @@ public abstract class NetworkUtils {
 	 * <p/>
 	 * If the given ipOrHost is host name, it tries to turn it into IP.
 	 * If the host name is not available, it returns 127.0.0.1 instead.
+	 * ff
 	 *
 	 * @param ipOrHost textual representation of ip or host name
 	 * @return ip
@@ -420,12 +460,14 @@ public abstract class NetworkUtils {
 		return ip;
 	}
 
+
 	private static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
 		List<InetAddress> addresses = new ArrayList<InetAddress>();
 		final Enumeration<NetworkInterface> networkInterfaces;
 		try {
 			networkInterfaces = getNetworkInterfaces();
 			while (networkInterfaces.hasMoreElements()) {
+
 				final NetworkInterface networkInterface = networkInterfaces.nextElement();
 				if (networkInterface.isUp()) {
 					final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
