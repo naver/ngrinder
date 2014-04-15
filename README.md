@@ -10,7 +10,7 @@ nGrinder
 nGrinder is a platform for stress tests that enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The open-source nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
 
-Want to to know what's changed from the orginial grinder platform?
+Want to to know what's changed from the original grinder platform?
  * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture !
 
 To get to know what's different from previous ngrinder 2.0?
@@ -19,7 +19,7 @@ To get to know what's different from previous ngrinder 2.0?
 To get started,
  * Checkout http://www.cubrid.org/wiki_ngrinder/entry/user-guide !
 
-You can find out what nGrinder looks like with screenshot.
+You can find out what nGrinder looks like with screen-shot.
  * http://www.cubrid.org/wiki_ngrinder/entry/screen-shot
 
 Do you really want to use nGrinder? Check out our demo instance.
@@ -38,9 +38,9 @@ Features
 --------
 
 * Use Jython script to create test scenario and generate stress in JVM using multiple agents.
-* Extend tests with custom libaries(jar, py). It's unlimited practically.
+* Extend tests with custom libraies(jar, py). It's unlimited practically.
 * Provide web-based interface for project management, monitoring, result management and report management.
-* Run multiple tests concurrently. Assign the preinstalled multiple agents to maximize each agent's utilization.
+* Run multiple tests concurrently. Assign the pre-installed multiple agents to maximize each agent's utilization.
 * Deploy agents on multiple network regions. Execute tests on various network locations
 * Embed Subversion to manage scripts.
 * Allow to monitor the state of agents generating stress and target machines receiving stress
@@ -63,8 +63,8 @@ You can find the user guide at the following location link.
 
 Road Map
 --------
-The explicit roadmap of nGrinder enables it to be a most effective and efficient performance test tool.
-Check out our roadmap :
+The explicit road-map of nGrinder enables it to be a most effective and efficient performance test tool.
+Check out our road-map :
 * http://www.cubrid.org/wiki_ngrinder/entry/road-map
 
 
@@ -94,11 +94,8 @@ Release will be constructed based on the following guidelines:
 
 Q/A and Bug tracker
 -------------------
-Found a bug? Got an idea for an enhancement? Please create an issue here on GitHub so you can notify us!
+Found the apparent bug? Got a brilliant idea for an enhancement? Please create an issue here on GitHub so you can notify us!
 * https://github.com/nhnopensource/ngrinder/issues
-
-Our official bug tracker is at the following link. Check here to monitor our development status.
-* http://jira.cubrid.org/browse/NGRINDER
 
 You can join our forum as well
 * Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
