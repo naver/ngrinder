@@ -1,2 +1,7 @@
 @ECHO OFF
-java -server -cp "lib/*" org.ngrinder.NGrinderAgentStarter --mode agent --command run %*
+setLocal EnableDelayedExpansion
+for /R ./lib %%a in (*.jar) do (
+  set CLASSPATH=!CLASSPATH!;%%a
+)
+set CLASSPATH=!CLASSPATH!
+java -server -cp "%CLASSPATH%" org.ngrinder.NGrinderAgentStarter --mode agent --command run %*
