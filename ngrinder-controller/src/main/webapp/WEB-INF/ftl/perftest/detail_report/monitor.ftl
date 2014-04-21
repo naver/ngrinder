@@ -31,7 +31,7 @@
 			imgWidth: parseInt($("#cpu_usage_chart").width())
 		};
 		ajaxObj.success = function (data) {
-			var interval = data.chartInterval;
+			var interval = data.interval;
 			drawChart('cpu_usage_chart', [data.cpu], formatPercentage, interval);
 			drawChart('mem_usage_chart', [data.memory], formatMemory, interval);
 			drawChart("received_byte_per_sec_chart", [data.received], formatNetwork, interval);
