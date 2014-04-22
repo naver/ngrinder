@@ -1,4 +1,4 @@
-controller.verbose,true,verbose
+controller.verbose,false,verbose
 controller.dev_mode,false,testmode
 controller.demo_mode,false,demo
 controller.security,false,security
