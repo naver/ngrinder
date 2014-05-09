@@ -174,7 +174,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 	}
 
-
 	/**
 	 * Get the assigned console port.
 	 *
@@ -218,7 +217,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				}
 				samplingCount = 0;
 			}
-
 		} catch (Exception e) {
 			throw processException("Exception occurred while shutting down console", e);
 		} finally {
@@ -351,7 +349,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @author JunHo Yoon
 	 */
 	public abstract static class FileDistributionListener {
-
 		/**
 		 * Notify the file distribution start event and the returns if the safe
 		 * mode is enabled or not.
@@ -436,7 +433,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	private void checkSafetyWithCacheState(final FileDistribution fileDistribution,
 										   final Condition cacheStateCondition, int fileCount) {
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		// noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (cacheStateCondition) {
 			for (int i = 0; i < (10 * fileCount) && shouldEnable(fileDistribution); ++i) {
 				cacheStateCondition.waitNoInterrruptException(500);
@@ -459,7 +456,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(1000);
 				}
-			} else if (isCanceled()) {
+			} else if (isCanceled()) { // TODO Is it required?
 				return;
 			} else {
 				return;
@@ -535,12 +532,12 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	public long getCurrentRunningTime() {
 		return System.currentTimeMillis() - startTime;
 	}
+
 	/*
      * (non-Javadoc)
 	 * 
 	 * @see net.grinder.ISingleConsole2#getStatisticsIndexMap()
 	 */
-
 	public StatisticsIndexMap getStatisticsIndexMap() {
 		return StatisticsServicesImplementation.getInstance().getStatisticsIndexMap();
 	}
@@ -578,7 +575,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			this.statisticExpressionMap = expressionMap.entrySet();
 		}
 		return this.statisticExpressionMap;
-
 	}
 
 	/**
@@ -615,8 +611,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				gap = ((currentPeriod - lastSamplingPeriod) / interval);
 			}
 			// Adjust sampling delay.. run write data multiple times... when it
-			// takes longer than 1
-			// sec.
+			// takes longer than 1 sec.
 
 			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 				@Override
@@ -624,8 +619,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics);
 				}
 			});
-			for (int i = 0; i < (gap + 1); i++) {
-				final boolean lastCall = (samplingCount == 1 && i == 0) || (samplingCount != 1 && i == gap);
+			for (long index = 0, repeatCounts = gap + 1; index < repeatCounts; index++) {
+				final boolean lastCall = (samplingCount == 1 && index == 0) || (samplingCount != 1 && index == gap);
 				writeIntervalSummaryData(intervalStatistics, lastCall);
 				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest, lastCall);
@@ -701,7 +696,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param intervalStatistics interval statistics
 	 */
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics) {
-
 		// add headers into the csv file.
 		if (!headerAdded) {
 			StringBuilder csvHeader = new StringBuilder();
@@ -730,6 +724,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			writeCSVDataLine(csvHeader.toString());
 			headerAdded = true;
 		}
+
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtils.dateToString(new Date())).append(",").append(runningThread);
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
@@ -923,7 +918,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		 * Called when the sampling is ended.
 		 */
 		void onSamplingEnded();
-
 	}
 
 	/**
@@ -957,7 +951,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		 * Called when the sampling is ended.
 		 */
 		void onSamplingEnded();
-
 	}
 
 	/**
@@ -1184,7 +1177,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		informTestSamplingStart();
 		this.sampleModel.start();
 		LOGGER.info("Sampling is started");
-
 	}
 
 	/**
@@ -1234,7 +1226,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				}
 			}
 		});
-
 		samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
 			@Override
 			public void inform(SamplingLifeCycleFollowUpListener listener) {

@@ -27,6 +27,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CompressionUtils.*;
@@ -38,11 +40,12 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * @author Matt
  * @since 3.3
  */
-
 @Service
 public class AgentPackageService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentPackageService.class);
 	public static final int EXEC = 0x81ed;
+	private static final int TIME_MILLIS_OF_DAY = 1000 * 60 * 60 * 24;
+
 	@Autowired
 	private Config config;
 
@@ -58,7 +61,7 @@ public class AgentPackageService {
 			public void run() {
 				cleanUpPackageDir(false);
 			}
-		}, 1000 * 60 * 60 * 24);
+		}, TIME_MILLIS_OF_DAY);
 	}
 
 	private void cleanUpPackageDir(boolean all) {
@@ -67,10 +70,9 @@ public class AgentPackageService {
 			final File[] files = packagesDir.listFiles();
 			if (files != null) {
 				for (File each : files) {
-
 					if (!each.isDirectory()) {
-						if (all || (each.lastModified() + (1000 * 60 * 60 * 24 * 2) < System
-								.currentTimeMillis())) {
+						long expiryTimestamp = each.lastModified() + (TIME_MILLIS_OF_DAY * 2);
+						if (all || expiryTimestamp < System.currentTimeMillis()) {
 							FileUtils.deleteQuietly(each);
 						}
 					}
@@ -85,7 +87,6 @@ public class AgentPackageService {
 	 * @param moduleName nGrinder module name.
 	 * @return String module full name.
 	 */
-
 	public String getPackageName(String moduleName) {
 		return moduleName + "-" + config.getVersion();
 	}
@@ -108,8 +109,8 @@ public class AgentPackageService {
 	}
 
 	private String getFilenameComponent(String value) {
-		value = StringUtils.trimToEmpty(value);
-		if (StringUtils.isNotEmpty(value)) {
+		value = trimToEmpty(value);
+		if (isNotEmpty(value)) {
 			value = "-" + value;
 		}
 		return value;
@@ -187,7 +188,6 @@ public class AgentPackageService {
 					}
 				}
 				addMonitorConfToTar(tarOutputStream, basePath, config.getMonitorPort());
-
 			} catch (IOException e) {
 				LOGGER.error("Error while generating an monitor package" + e.getMessage());
 			} finally {
@@ -200,15 +200,15 @@ public class AgentPackageService {
 	/**
 	 * Create agent package
 	 *
-	 * @param classLoader  URLClass Loader.
-	 * @param connectionIP host ip.
-	 * @param region       region
+	 * @param classLoader  URLClass Loader
+	 * @param regionName   region
+	 * @param connectionIP host ip
+	 * @param port         host port
 	 * @param owner        owner
 	 * @return File
 	 */
 	synchronized File createAgentPackage(URLClassLoader classLoader, String regionName, String connectionIP,
 	                                     int port, String owner) {
-
 		synchronized (AgentPackageService.this) {
 			File agentPackagesDir = getPackagesDir();
 			if (agentPackagesDir.mkdirs()) {
@@ -264,7 +264,6 @@ public class AgentPackageService {
 		return new TarArchiveOutputStream(new BufferedOutputStream(fos));
 	}
 
-
 	private void addMonitorConfToTar(TarArchiveOutputStream tarOutputStream, String basePath,
 	                                 Integer monitorPort) throws IOException {
 		final String config = getAgentConfigContent("agent_monitor.conf", buildMap("monitorPort",
@@ -277,7 +276,7 @@ public class AgentPackageService {
 	private void addAgentConfToTar(TarArchiveOutputStream tarOutputStream, String basePath,
 	                               String regionName, String connectingIP,
 	                               int port, String owner) throws IOException {
-		if (StringUtils.isNotEmpty(connectingIP)) {
+		if (isNotEmpty(connectingIP)) {
 			final String config = getAgentConfigContent("agent_agent.conf", getAgentConfigParam(regionName,
 					connectingIP, port, owner));
 			final byte[] bytes = config.getBytes();
@@ -285,7 +284,6 @@ public class AgentPackageService {
 					bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
 		}
 	}
-
 
 	private Set<String> getMonitorDependentLibs(URLClassLoader cl) throws IOException {
 		Set<String> libs = new HashSet<String>();
@@ -407,7 +405,6 @@ public class AgentPackageService {
 	 * @param values       map of configurations.
 	 * @return generated string
 	 */
-
 	public String getAgentConfigContent(String templateName, Map<String, Object> values) {
 		StringWriter writer = null;
 		try {
@@ -432,7 +429,6 @@ public class AgentPackageService {
 		private String basePath;
 		private int mode;
 
-
 		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, FilePredicate filePredicate, String basePath, int mode) {
 			this.tao = tao;
 			this.filePredicate = filePredicate;
@@ -451,12 +447,10 @@ public class AgentPackageService {
 							entry.getSize(),
 							this.mode);
 				}
-
 			} finally {
 				IOUtils.closeQuietly(inputStream);
 			}
 		}
 	}
-
 
 }

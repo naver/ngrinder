@@ -329,7 +329,6 @@ public class BaseController implements WebConstants {
 		return toHttpEntity(serializer.toJson(content), responseHeaders);
 	}
 
-
 	/**
 	 * Exception handler to forward to front page showing the error message box.
 	 *
@@ -343,6 +342,5 @@ public class BaseController implements WebConstants {
 		modelAndView.addObject("exception", e.getMessage());
 		return modelAndView;
 	}
-
 
 }
