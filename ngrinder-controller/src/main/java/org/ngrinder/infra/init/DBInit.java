@@ -46,6 +46,15 @@ public class DBInit {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private SaltSource saltSource;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private FileEntryService fileEntryService;
+
 	/**
 	 * Initialize DB.
 	 */
@@ -54,8 +63,6 @@ public class DBInit {
 	public void init() {
 		createDefaultUserIfNecessary();
 		resetAdminPasswordIfNecessary();
-
-
 	}
 
 	private void resetAdminPasswordIfNecessary() {
@@ -73,15 +80,6 @@ public class DBInit {
 			}
 		}
 	}
-
-	@Autowired
-	private SaltSource saltSource;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private FileEntryService fileEntryService;
 
 	/**
 	 * Create users.
@@ -106,7 +104,6 @@ public class DBInit {
 			user = userRepository.save(user);
 			fileEntryService.prepare(user);
 		}
-
 	}
 
 	/**

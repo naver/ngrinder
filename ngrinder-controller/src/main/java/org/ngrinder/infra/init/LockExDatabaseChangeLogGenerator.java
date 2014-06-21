@@ -63,9 +63,6 @@ public class LockExDatabaseChangeLogGenerator extends
 	@Override
 	public Sql[] generateSql(LockExDatabaseChangeLogStatement statement, Database database,
 					SqlGeneratorChain sqlGeneratorChain) {
-		String liquibaseSchema = null;
-		liquibaseSchema = database.getLiquibaseSchemaName();
-
 		InetAddress localHost;
 		try {
 			localHost = NetUtil.getLocalHost();
@@ -73,6 +70,7 @@ public class LockExDatabaseChangeLogGenerator extends
 			throw new UnexpectedLiquibaseException(e);
 		}
 
+		String liquibaseSchema = database.getLiquibaseSchemaName();
 		UpdateStatement updateStatement = new UpdateStatement(liquibaseSchema,
 						database.getDatabaseChangeLogLockTableName());
 		updateStatement.addNewColumnValue("LOCKED", true);

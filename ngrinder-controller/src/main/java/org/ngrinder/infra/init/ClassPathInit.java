@@ -15,6 +15,7 @@ package org.ngrinder.infra.init;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.util.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -45,9 +46,7 @@ public class ClassPathInit {
 	public void init() {
 		final String systemClasspath = System.getProperty("java.class.path", StringUtils.EMPTY);
 		for (String pathEntry : systemClasspath.split(File.pathSeparator)) {
-			final File f = new File(pathEntry).getParentFile();
-			final File parentFile = f != null ? f : new File(".");
-
+			final File parentFile = ObjectUtils.defaultIfNull(new File(pathEntry).getParentFile(), new File("."));
 			final Collection<File> childrenFileList = FileUtils.listFiles(parentFile, new String[]{"jar"}, false);
 			for (File candidate : childrenFileList) {
 				final String name = candidate.getName();

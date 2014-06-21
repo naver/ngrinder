@@ -56,24 +56,20 @@ public class ClusteredAgentRequest implements Serializable {
 			}
 
 		},
-		UPDATE_AGENT
-
-				{
-					@Override
-					public void process(ClusteredAgentManagerService agentManagerService,
-					                    AgentControllerIdentityImplementation agentIdentity) {
-						agentManagerService.updateAgent(agentIdentity);
-					}
-				},
-		SHARE_AGENT_SYSTEM_DATA_MODEL
-
-				{
-					@Override
-					public void process(ClusteredAgentManagerService agentManagerService,
-					                    AgentControllerIdentityImplementation agentIdentity) {
-						agentManagerService.addAgentMonitoringTarget(agentIdentity);
-					}
-				};
+		UPDATE_AGENT {
+			@Override
+			public void process(ClusteredAgentManagerService agentManagerService,
+								AgentControllerIdentityImplementation agentIdentity) {
+				agentManagerService.updateAgent(agentIdentity);
+			}
+		},
+		SHARE_AGENT_SYSTEM_DATA_MODEL {
+			@Override
+			public void process(ClusteredAgentManagerService agentManagerService,
+								AgentControllerIdentityImplementation agentIdentity) {
+				agentManagerService.addAgentMonitoringTarget(agentIdentity);
+			}
+		};
 
 		RequestType() {
 		}

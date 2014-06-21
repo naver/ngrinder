@@ -66,7 +66,7 @@ public class AgentController implements Agent, AgentConstants {
 
 	private Timer m_timer;
 	@SuppressWarnings("FieldCanBeLocal")
-	private final Condition m_eventSynchronisation = new Condition();
+	private final Condition m_eventSynchronization = new Condition();
 	private final AgentControllerIdentityImplementation m_agentIdentity;
 	private final AgentControllerServerListener m_agentControllerServerListener;
 	private FanOutStreamSender m_fanOutStreamSender;
@@ -97,7 +97,7 @@ public class AgentController implements Agent, AgentConstants {
 
 		this.agentConfig = agentConfig;
 		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
-		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
+		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronization, LOGGER);
 		// Set it with the default name
 		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
