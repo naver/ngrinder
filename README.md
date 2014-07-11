@@ -71,7 +71,7 @@ Check out our road-map :
 Contribution?
 -------------
 nGrinder welcomes any contributions from users. Please make all pull requests against master branches.
-* Clone the REPO : 'git clone git://github.com/nhnopensource/ngrinder.git'
+* Clone the REPO : 'git clone git://github.com/naver/ngrinder.git'
 
 You can find general developer documents at the following link.
  * http://www.cubrid.org/wiki_ngrinder/entry/dev-document
@@ -95,7 +95,7 @@ Release will be constructed based on the following guidelines:
 Q/A and Bug tracker
 -------------------
 Found the apparent bug? Got a brilliant idea for an enhancement? Please create an issue here on GitHub so you can notify us!
-* https://github.com/nhnopensource/ngrinder/issues
+* https://github.com/naver/ngrinder/issues
 
 You can join our forum as well
 * Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
