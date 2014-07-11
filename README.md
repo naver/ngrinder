@@ -121,4 +121,4 @@ Copyright and license
       
    
 nGrinder includes the following software and libraries as follows. See the LICENCE folder for the license and copyright details for each.
-* https://github.com/nhnopensource/ngrinder/tree/master/license
+* https://github.com/naver/ngrinder/tree/master/license
