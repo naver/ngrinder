@@ -46,6 +46,7 @@ abstract class DnsUtils {
 	}
 
 	// take as input an array of strings and rearrange them in random order
+	// Fisher-Yates shuffle by Durstenfeld, O(n) complexity
 	public static <T> T[] shuffle(T[] a) {
 		int N = a.length;
 		for (int i = 0; i < N; i++) {
@@ -54,7 +55,6 @@ abstract class DnsUtils {
 		}
 		return a;
 	}
-
 
 	/**
 	 * Converts IPv4 binary address into a string suitable for presentation.
