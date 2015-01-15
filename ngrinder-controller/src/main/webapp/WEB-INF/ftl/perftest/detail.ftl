@@ -9,6 +9,11 @@
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
+	.popover {
+		max-height: 700px;
+		overflow-y: scroll;
+	}
+	
 	.select-item {
 		width: 60px;
 	}
