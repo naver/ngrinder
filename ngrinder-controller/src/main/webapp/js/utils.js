@@ -194,24 +194,49 @@ $(document).ready(function () {
 });
 
 function PopoverEventHandler(elTarget) {
-	var hideDisable = false;
-	var popoverTarget = $("[rel='popover']");
-	popoverTarget.popover({trigger: 'hover', container: 'body'});
+	this.HIDE_CHECK_INTERVAL = 1000;
+	this.elTarget = elTarget;
+	this.aPopover = $(".popover");
+	this.bDisableHide = false;
+	this.bMouseoverInPopover = false;
 	
-	popoverTarget.bind("click", function(){
-		hideDisable = true;
-	});
-	
-	popoverTarget.on('show.bs.popover', function(evt) {
-		hideDisable = false;
-	});
-	
-	popoverTarget.on('hide.bs.popover', function(evt) {
-		if (hideDisable) {
-			return false;
-		}
-	});
+	this.bindEvnet();
 }
+PopoverEventHandler.prototype = {
+	bindEvnet : function() {
+		this.aPopover.bind("mouseover", $.proxy(this.setMouseoverInPopover, this, true));
+		this.aPopover.bind("mouseout", $.proxy(this.setMouseoverInPopover, this, false));
+		
+		$(this.elTarget).bind("click", $.proxy(this.onDisableHide, this));
+		$(this.elTarget).on("hide.bs.popover", $.proxy(this.hidePopover, this));
+	},
+	isDisableHide : function() {
+		return this.bDisableHide || this.bMouseoverInPopover;
+	},
+	setMouseoverInPopover : function(bOver) {
+		this.bMouseoverInPopover = bOver;
+	},
+	onDisableHide : function() {
+		this.bDisableHide = true;
+	},
+	hidePopover : function() {
+		if (this.isDisableHide()) {
+			this.bDisableHide = false;
+			setTimeout($.proxy(this.hidePopover, this), this.HIDE_CHECK_INTERVAL);
+			return false;
+		} else {
+			this.unbindEvent();
+			this.elTarget.popover("hide");
+		}
+	},
+	unbindEvent : function() {
+		$(this.elTarget).off("hide.bs.popover");
+		$(this.elTarget).unbind("click", this.onDisableHide, this);
+		
+		this.aPopover.unbind("mouseover", this.setMouseoverInPopover);
+		this.aPopover.unbind("mouseout", this.setMouseoverInPopover);
+	}
+};
 
 
 function cookie(name, value, expiredays) {

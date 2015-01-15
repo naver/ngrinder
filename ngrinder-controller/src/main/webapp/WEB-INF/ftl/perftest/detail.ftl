@@ -10,7 +10,7 @@
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
 	.popover {
-		max-height: 400px;
+		max-height: 700px;
 		overflow-y: scroll;
 	}
 	
