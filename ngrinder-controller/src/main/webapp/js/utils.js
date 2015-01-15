@@ -187,7 +187,31 @@ function markInput(obj, success, message) {
 
 $(document).ready(function () {
 	$("[rel='popover']").popover({trigger: 'hover', container: 'body'});
+	
+	$("[rel='popover']").on('shown.bs.popover', function(evt) {
+		new PopoverEventHandler($(evt.target));
+	});
 });
+
+function PopoverEventHandler(elTarget) {
+	var hideDisable = false;
+	var popoverTarget = $("[rel='popover']");
+	popoverTarget.popover({trigger: 'hover', container: 'body'});
+	
+	popoverTarget.bind("click", function(){
+		hideDisable = true;
+	});
+	
+	popoverTarget.on('show.bs.popover', function(evt) {
+		hideDisable = false;
+	});
+	
+	popoverTarget.on('hide.bs.popover', function(evt) {
+		if (hideDisable) {
+			return false;
+		}
+	});
+}
 
 
 function cookie(name, value, expiredays) {
