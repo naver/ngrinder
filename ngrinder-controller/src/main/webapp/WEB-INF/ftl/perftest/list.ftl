@@ -18,6 +18,8 @@
 			width: auto;
 			min-width: 300px;
 			max-width: 600px;
+			max-height: 500px;
+			overflow-y: scroll;
 		}
 
 		.popover-content {
