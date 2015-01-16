@@ -292,14 +292,12 @@ public abstract class NetworkUtils {
 		try {
 			networkInterfaces = getNetworkInterfaces();
 			while (networkInterfaces.hasMoreElements()) {
-
 				final NetworkInterface networkInterface = networkInterfaces.nextElement();
 				if (networkInterface.isUp() && !networkInterface.isLoopback() && !networkInterface.isPointToPoint()) {
 					final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
 					while (inetAddresses.hasMoreElements()) {
 						final InetAddress inetAddress = inetAddresses.nextElement();
 						if (inetAddress instanceof Inet6Address) {
-							System.out.println(true);
 							return true;
 						}
 					}
