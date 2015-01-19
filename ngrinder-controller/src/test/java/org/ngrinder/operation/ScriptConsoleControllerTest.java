@@ -20,16 +20,16 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.operation.cotroller.ScriptConsoleController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 
 public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTest {
+	@Autowired
+	MockScriptConsoleController scriptController;
 
 	@Test
 	public void runScriptTest() {
-		ScriptConsoleController scriptController = new ScriptConsoleController();
-
 		Model model = new ExtendedModelMap();
 		scriptController.run("", model);
 		assertThat((String) model.asMap().get("result"), nullValue());
