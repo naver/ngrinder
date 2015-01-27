@@ -683,4 +683,13 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public PropertiesWrapper getClusterProperties() {
 		return clusterProperties;
 	}
+
+	/**
+	 * Get the time out milliseconds which would be used between the console and the agent while preparing to test.
+	 *
+	 * @return
+	 */
+	public long getInactiveClientTimeOut() {
+		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);
+	}
 }

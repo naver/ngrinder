@@ -56,7 +56,6 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL = "controller.front_page_qna_more_url";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_QNA_RSS = "controller.front_page_qna_rss";
 	public static final String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL = "controller.front_page_resources_more_url";
-
 	public static final String PROP_CONTROLLER_HELP_URL = "controller.help_url";
 	public static final String PROP_CONTROLLER_IP = "controller.ip";
 	public static final String PROP_CONTROLLER_MAX_AGENT_PER_TEST = "controller.max_agent_per_test";
@@ -82,4 +81,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL = "controller.enable_agent_auto_approval";
 	public static final String PROP_CONTROLLER_AGENT_FORCE_UPDATE = "controller.agent_force_update";
 	public static final String PROP_CONTROLLER_UPDATE_CHUNK_SIZE = "controller.update_chunk_size";
+	public static final String PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT = "controller.inactive_client_time_out";
 }

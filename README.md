@@ -38,7 +38,7 @@ Features
 --------
 
 * Use Jython script to create test scenario and generate stress in JVM using multiple agents.
-* Extend tests with custom libraies(jar, py). It's unlimited practically.
+* Extend tests with custom libraries(jar, py). It's unlimited practically.
 * Provide web-based interface for project management, monitoring, result management and report management.
 * Run multiple tests concurrently. Assign the pre-installed multiple agents to maximize each agent's utilization.
 * Deploy agents on multiple network regions. Execute tests on various network locations

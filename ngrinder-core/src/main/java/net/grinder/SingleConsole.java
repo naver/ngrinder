@@ -146,7 +146,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param port PORT
 	 */
 	public SingleConsole(int port) {
-		this("", port, ConsolePropertiesFactory.createEmptyConsoleProperties());
+		this("", port, ConsoleCommunicationSetting.asDefault(), ConsolePropertiesFactory.createEmptyConsoleProperties());
 	}
 
 	/**
@@ -156,17 +156,20 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param port              PORT
 	 * @param consoleProperties {@link ConsoleProperties} used.
 	 */
-	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
-		init(ip, port, consoleProperties);
+	public SingleConsole(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting,
+						 ConsoleProperties consoleProperties) {
+		init(ip, port, consoleCommunicationSetting, consoleProperties);
 	}
 
-	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
+	protected void init(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting,
+						ConsoleProperties consoleProperties) {
 		try {
 			if (StringUtils.isNotEmpty(ip)) {
 				consoleProperties.setConsoleHost(ip);
 			}
 			consoleProperties.setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
+					consoleCommunicationSetting, eventSyncCondition);
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		} catch (GrinderException e) {

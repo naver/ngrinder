@@ -93,10 +93,19 @@ public class Home {
 	/**
 	 * Get the home directory.
 	 *
-	 * @return home directory
+	 * @return the home directory
 	 */
 	public File getDirectory() {
 		return directory;
+	}
+
+	/**
+	 * Get the plugin directory.
+	 *
+	 * @return the plugin directory
+	 */
+	public File getPluginDirectory() {
+		return new File(directory, PATH_PLUGIN);
 	}
 
 	/**

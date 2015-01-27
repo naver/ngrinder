@@ -15,14 +15,20 @@ package net.grinder;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.model.ConsoleCommunicationSetting;
+import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.NetworkUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractMultiGrinderTestBase;
 
+import java.io.File;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -32,6 +38,10 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 	AgentControllerDaemon agentControllerDaemon2;
 	SingleConsole console1;
 	Set<AgentIdentity> allAvailableAgents;
+
+	static {
+		System.setProperty("ngrinder.agent.home", "./tmp_agent_home");
+	}
 
 	@Before
 	public void before() {
@@ -139,6 +149,75 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		agentControllerServerDaemon.startAgent(grinderProperties, agentIdentity);
 		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(1));
+	}
+
+	@Test
+	public void testConsoleCommunicationSettingInTime() throws Exception {
+		testConsoleCommunicationSetting(30000, false);
+	}
+
+	@Test
+	public void testConsoleCommunicationSettingOverTime() throws Exception {
+		testConsoleCommunicationSetting(3000, true);
+	}
+
+	private void testConsoleCommunicationSetting(long timeout, boolean needTimeoutState) throws Exception {
+		// Get one agent
+		AgentIdentity agentIdentity = getAgentIdentity(allAvailableAgents, 0);
+
+		// In order to control timeout milliseconds
+		ConsoleCommunicationSetting consoleCommunicationSetting = ConsoleCommunicationSetting.asDefault();
+		consoleCommunicationSetting.setInactiveClientTimeOut(timeout);
+
+		// Start console
+		final SingleConsole console1 = new SingleConsole("", getFreePort(), consoleCommunicationSetting,
+				ConsolePropertiesFactory.createEmptyConsoleProperties());
+		console1.start();
+		console1.startSampling();
+
+		// Start one agent
+		GrinderProperties grinderProperties = new GrinderProperties();
+		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
+		agentControllerServerDaemon.startAgent(grinderProperties, agentIdentity);
+		sleep(3000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(1));
+
+		final Set<String> result = new HashSet<String>();
+
+		URL scriptUrl = this.getClass().getResource("/long-time-prepare-test.properties");
+		File scriptFile = new File(scriptUrl.getFile());
+		GrinderProperties properties = new GrinderProperties(scriptFile);
+		console1.addListener(new SingleConsole.ConsoleShutdownListener() {
+			@Override
+			public void readyToStop(StopReason stopReason) {
+				// Notice: it couldn't distinguish between a script error or
+				// timed out of the keepalive connection.
+				if (stopReason.getDisplay().equals("Script error")) {
+					result.add("timeout");
+				}
+			}
+		});
+		console1.startTest(properties);
+
+		for (int i = 0; i < 20; i++) {
+			if (result.contains("timeout")) {
+				break;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+		}
+
+		if (needTimeoutState && !result.contains("timeout") ||
+				!needTimeoutState && result.contains("timeout")) {
+			assertTrue(false);
+		}
+
+		// Stop that agent and see it's well disconnected
+		agentControllerServerDaemon.stopAgent(agentIdentity);
+		sleep(10000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 	}
 
 	@Test

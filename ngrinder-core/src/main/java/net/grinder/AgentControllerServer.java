@@ -18,6 +18,7 @@ import net.grinder.console.common.Resources;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.ConsoleCommunication;
 import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
+import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.util.StandardTimeAuthority;
@@ -53,13 +54,14 @@ public class AgentControllerServer {
 	 * @param eventSyncCondition	event synchronized condition to synchronize server stop phase.
 	 */
 	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties,
-					Condition eventSyncCondition) {
+					Condition eventSyncCondition, ConsoleCommunicationSetting consoleCommunicationSetting) {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
 		m_container.addComponent(resources);
 		m_container.addComponent(properties);
 		m_container.addComponent(new StandardTimeAuthority());
+		m_container.addComponent(consoleCommunicationSetting);
 		m_container.addComponent(ConsoleCommunicationImplementationEx.class);
 		m_container.addComponent(AgentProcessControlImplementation.class);
 		m_timer = new Timer(true);

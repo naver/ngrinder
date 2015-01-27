@@ -80,7 +80,8 @@ public class ConsoleFoundationEx {
 	 * @exception GrinderException	occurs If an error occurs.
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
-					Condition eventSyncCondition) throws GrinderException {
+							   ConsoleCommunicationSetting consoleCommunicationSetting,
+							   Condition eventSyncCondition) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
@@ -88,6 +89,7 @@ public class ConsoleFoundationEx {
 		m_container.addComponent(properties);
 		m_container.addComponent(StatisticsServicesImplementation.getInstance());
 		m_container.addComponent(new StandardTimeAuthority());
+		m_container.addComponent(consoleCommunicationSetting);
 
 		m_container.addComponent(SampleModelImplementationEx.class);
 		m_container.addComponent(SampleModelViewsImplementation.class);

@@ -14,6 +14,7 @@
 package org.ngrinder.perftest.model;
 
 import net.grinder.SingleConsole;
+import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 
 import java.util.HashMap;
@@ -36,7 +37,8 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
-	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
+	protected void init(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting,
+						ConsoleProperties consoleProperties) {
 
 	}
 

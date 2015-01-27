@@ -21,6 +21,7 @@ import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.LogArrivedListener;
+import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
@@ -85,7 +86,13 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	@PostConstruct
 	public void init() {
 		int port = config.getControllerPort();
-		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port);
+
+		ConsoleCommunicationSetting consoleCommunicationSetting = ConsoleCommunicationSetting.asDefault();
+		if (config.getInactiveClientTimeOut() > 0) {
+			consoleCommunicationSetting.setInactiveClientTimeOut(config.getInactiveClientTimeOut());
+		}
+
+		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port, consoleCommunicationSetting);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.setAgentDownloadRequestListener(this);
 		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {

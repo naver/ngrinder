@@ -14,6 +14,7 @@
 package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
+import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 import org.h2.util.StringUtils;
 import org.ngrinder.infra.config.Config;
@@ -130,8 +131,12 @@ public class ConsoleManager {
 			synchronized (this) {
 				consoleEntry.releaseSocket();
 				// FIXME : It might fail here
+				ConsoleCommunicationSetting consoleCommunicationSetting = ConsoleCommunicationSetting.asDefault();
+				if (config.getInactiveClientTimeOut() > 0) {
+					consoleCommunicationSetting.setInactiveClientTimeOut(config.getInactiveClientTimeOut());
+				}
 				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
-						baseConsoleProperties);
+						consoleCommunicationSetting, baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}

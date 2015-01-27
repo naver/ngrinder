@@ -20,6 +20,7 @@ import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.*;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
+import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -61,8 +62,8 @@ public class AgentControllerServerDaemon {
 	 * @param ip   IP
 	 * @param port port
 	 */
-	public AgentControllerServerDaemon(String ip, int port) {
-		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
+	public AgentControllerServerDaemon(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting) {
+		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties(), consoleCommunicationSetting);
 	}
 
 	/**
@@ -72,13 +73,14 @@ public class AgentControllerServerDaemon {
 	 * @param port              port
 	 * @param consoleProperties default property.
 	 */
-	public AgentControllerServerDaemon(String ip, int port, ConsoleProperties consoleProperties) {
+	public AgentControllerServerDaemon(String ip, int port, ConsoleProperties consoleProperties,
+									   ConsoleCommunicationSetting consoleCommunicationSetting) {
 		this.consoleProperties = consoleProperties;
 		try {
 			this.consoleProperties.setConsoleHost(ip);
 			this.consoleProperties.setConsolePort(port);
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
-					m_eventSyncCondition);
+					m_eventSyncCondition, consoleCommunicationSetting);
 		} catch (GrinderException e) {
 			throw processException("Exception occurred while initiating the agent controller server daemon", e);
 		}
@@ -99,7 +101,7 @@ public class AgentControllerServerDaemon {
 	 * @param port port used.
 	 */
 	public AgentControllerServerDaemon(int port) {
-		this("", port);
+		this("", port, ConsoleCommunicationSetting.asDefault());
 	}
 
 	/**

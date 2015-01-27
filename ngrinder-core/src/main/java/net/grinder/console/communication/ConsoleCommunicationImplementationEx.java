@@ -24,6 +24,7 @@ import net.grinder.communication.*;
 import net.grinder.console.common.DisplayMessageConsoleException;
 import net.grinder.console.common.ErrorHandler;
 import net.grinder.console.common.Resources;
+import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.TimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
@@ -49,7 +50,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	private final ErrorHandler m_errorHandler;
 	private final TimeAuthority m_timeAuthority;
 	private final long m_idlePollDelay;
-	private final long m_inactiveClientTimeOut;
+	private long m_inactiveClientTimeOut;
 
 	private final MessageDispatchSender m_messageDispatcher = new MessageDispatchSender();
 
@@ -63,43 +64,27 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	private AcceptorResolver acceptorResolver = null;
 
 	/**
-	 * Constructor that uses a default idlePollDelay.
-	 *
-	 * @param resources     Resources.
-	 * @param properties    Console properties.
-	 * @param errorHandler  Error handler.
-	 * @param timeAuthority Knows the time
-	 * @throws DisplayMessageConsoleException If properties are invalid.
-	 */
-	@SuppressWarnings("UnusedDeclaration")
-	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
-		this(resources, properties, errorHandler, timeAuthority, 500, 30000);
-	}
-
-	/**
 	 * Constructor.
 	 *
 	 * @param resources             Resources.
 	 * @param properties            Console properties.
 	 * @param errorHandler          Error handler.
 	 * @param timeAuthority         Knows the time
-	 * @param idlePollDelay         Time in milliseconds that our ServerReceiver threads should sleep for if there's
-	 *                              no incoming messages.
-	 * @param inactiveClientTimeOut How long before we consider a client connection that presents no data to be
-	 *                              inactive.
 	 * @throws DisplayMessageConsoleException If properties are invalid.
 	 */
+	@SuppressWarnings("UnusedDeclaration")
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority, long idlePollDelay,
-	                                            long inactiveClientTimeOut) throws DisplayMessageConsoleException {
-
+	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority,
+												ConsoleCommunicationSetting consoleCommunicationSetting) throws DisplayMessageConsoleException {
 		m_resources = resources;
 		m_properties = properties;
 		m_errorHandler = errorHandler;
 		m_timeAuthority = timeAuthority;
-		m_idlePollDelay = idlePollDelay;
-		m_inactiveClientTimeOut = inactiveClientTimeOut;
+		if (consoleCommunicationSetting == null) {
+			consoleCommunicationSetting = ConsoleCommunicationSetting.asDefault();
+		}
+		m_idlePollDelay = consoleCommunicationSetting.getIdlePollDelay();
+		m_inactiveClientTimeOut = consoleCommunicationSetting.getInactiveClientTimeOut();
 
 		properties.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
