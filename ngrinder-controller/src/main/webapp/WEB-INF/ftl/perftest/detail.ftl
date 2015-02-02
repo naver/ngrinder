@@ -181,7 +181,7 @@
 								</div>
 								<div class="span1">
 									<#if test.id??>
-										<img id="test_status_img" 
+										<img id="test_status_img" class="ball" 
 										src="${req.getContextPath()}/img/ball/${test.status.iconName}"
 										rel='popover'
 										data-html='true'
