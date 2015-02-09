@@ -85,9 +85,9 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		if (agentConfig.exists()) {
 			if (System.getProperty(CommonConstants.PROP_OVERWRITE_CONFIG) != null) {
 				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
-			} else if (newAgentConfig.exists() && newAgentConfig.lastModified() > agentConfig.lastModified()) {
+			} else if (newAgentConfig.exists()) {
 				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
-				LOGGER.warn("If you want to use the recent agent configuration provided from the controller.");
+				LOGGER.warn("If you want to use the '{}' file", newAgentConfig.getAbsolutePath());
 				LOGGER.warn("Please run agent with -o option");
 				return;
 			}
