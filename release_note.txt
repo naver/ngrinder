@@ -1,3 +1,32 @@
+3.3.1 (2015.03.20)
+nGrinder 3.3.1 is the bug fix and minor enhancement release.
+
+Bug
+[NGRINDER-725] - Fix wrong total executed test count.
+#32 Abnormal execution result if the script has a null character(0x0).
+#33 Too fast timeout when connecting Mbean.
+#40 Cannot switch an user who has 2 characters name on switching other user.
+#41 Some mac os didn't show "Add Host" button well on the script editor.
+#43 Monitor is not accessible when IP6 is not supported.
+#44 The time differences b/w controller and agents causes agent.conf overwriting.
+#45 JDK7 prior to JDK7u50 in windows does not accept the classpath "lib/*".
+#46 Fix wrong chart interval on the monitor page.
+#47 Remove unnecessarily verbose log in controller.
+
+Improvement
+#30 Get the safe file transmission size as long type.
+#34 Provide intellij profile in groovy maven project.
+#36 Provide the option which disables the local DNS.
+#37 Make the agent work with JRE under security mode.
+#38 Need to allow changing a timeout which is related while @BeforeProcess is running.
+
+Trivial fix
+
+Make the target host field 65535 varchar.
+Modify popover function for showing "Test Log"
+Fix a new line issue of install_maven_lib.sh on unix platform.
+
+
 3.3 (2014.02.12)
 nGrinder 3.3 is the major release including several new features.
 You should upgrade both agent and controller to 3.3 version to enjoy the new features.
