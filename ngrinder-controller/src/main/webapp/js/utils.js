@@ -188,7 +188,7 @@ function markInput(obj, success, message) {
 $(document).ready(function () {
 	$("[rel='popover']").popover({trigger: 'hover', container: 'body'});
 	
-	$("[rel='popover']").on('shown.bs.popover', function(evt) {
+	$(".ball[rel='popover']").on('shown.bs.popover', function(evt) {
 		new PopoverEventHandler($(evt.target));
 	});
 });
