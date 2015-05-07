@@ -235,7 +235,7 @@ public class NGrinderControllerStarter {
 			server.start();
 			//noinspection StatementWithEmptyBody
 			while (System.in.read() != 'q') {
-				// Fall through
+				Thread.sleep(1000);
 			}
 			server.stop();
 			server.join();
