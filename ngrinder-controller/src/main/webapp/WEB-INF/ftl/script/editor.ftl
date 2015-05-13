@@ -102,7 +102,7 @@
 			<input type="hidden" id="create_lib_and_resource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 			<input type="hidden" id="validated" name="validated" value="${(file.properties.validated)!"0"}">
 			<input type="hidden" id="contentHd" name="content">
-			<@security.authorize ifAnyGranted="A, S">
+			<@security.authorize access="hasAnyRole('A', 'S')">
 				<#if ownerId??>
 					<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 				</#if>
@@ -209,7 +209,7 @@
 				var ajaxObj = new AjaxPostObj("/script/api/validate",
 								{
 									'path':scriptPath, 'content': newContent,
-									<@security.authorize ifAnyGranted="A, S"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
+									<@security.authorize access="hasAnyRole('A', 'S')"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
 									'hostString': hostString
 								},
 								null,

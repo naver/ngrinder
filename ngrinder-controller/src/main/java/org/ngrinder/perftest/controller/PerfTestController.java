@@ -48,7 +48,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefaults;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -133,7 +133,7 @@ public class PerfTestController extends BaseController {
 	@RequestMapping({"/list", "/", ""})
 	public String getAll(User user, @RequestParam(required = false) String query,
 	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
-	                     @PageableDefaults Pageable pageable, ModelMap model) {
+	                     @PageableDefault Pageable pageable, ModelMap model) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
 				defaultIfNull(pageable.getSort(),
 						new Sort(Direction.DESC, "lastModifiedDate")));

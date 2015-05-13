@@ -62,8 +62,8 @@
 	</repositories>
 
 	<properties>
-		<spring.version>3.1.0.RELEASE</spring.version>
-		<spring.security.version>3.1.0.RELEASE</spring.security.version>
+		<spring.version>4.1.0.RELEASE</spring.version>
+		<spring.security.version>4.0.1.RELEASE</spring.security.version>
 		<jdk-version>1.6</jdk-version>
 		<ngrinder.version>${project.version}</ngrinder.version>
 		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/releases</altDeploymentRepository>
@@ -199,15 +199,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<configuration>
-					<formats>
-						<format>xml</format>
-					</formats>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-reactor-plugin</artifactId>

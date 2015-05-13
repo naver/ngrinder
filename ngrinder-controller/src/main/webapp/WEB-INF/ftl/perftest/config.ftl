@@ -178,8 +178,7 @@
 					<div class="span3">
 						<@control_group name="safeDistribution" label_message_key="perfTest.config.safeDistribution"
 							label_help_message_key="perfTest.config.safeDistribution">
-							<input type="checkbox" id="safe_distribution" name="safeDistribution"
-							<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
+							<input type="checkbox" id="safe_distribution" name="safeDistribution"	<#if test.safeDistribution>checked<#else><#if safeFileDistribution!false>checked</#if> </#if> />
 						</@control_group>
 					</div>
 					<div class="span3">

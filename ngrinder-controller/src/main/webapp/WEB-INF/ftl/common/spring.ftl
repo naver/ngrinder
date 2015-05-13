@@ -119,8 +119,8 @@
     <#else>
         <#assign status = springMacroRequestContext.getBindStatus(path)>
     </#if>
-    <#-- assign a temporary value, forcing a string representation for any
-    kind of variable. This temp value is only used in this macro lib -->
+<#-- assign a temporary value, forcing a string representation for any
+kind of variable. This temp value is only used in this macro lib -->
     <#if status.value?exists && status.value?is_boolean>
         <#assign stringStatusValue=status.value?string>
     <#else>
@@ -136,8 +136,8 @@
  -->
 <#macro bindEscaped path, htmlEscape>
     <#assign status = springMacroRequestContext.getBindStatus(path, htmlEscape)>
-    <#-- assign a temporary value, forcing a string representation for any
-    kind of variable. This temp value is only used in this macro lib -->
+<#-- assign a temporary value, forcing a string representation for any
+kind of variable. This temp value is only used in this macro lib -->
     <#if status.value?exists && status.value?is_boolean>
         <#assign stringStatusValue=status.value?string>
     <#else>
@@ -157,7 +157,7 @@
  -->
 <#macro formInput path attributes="" fieldType="text">
     <@bind path/>
-    <input type="${fieldType}" id="${status.expression}" name="${status.expression}" value="<#if fieldType!="password">${stringStatusValue}</#if>" ${attributes}<@closeTag/>
+<input type="${fieldType}" id="${status.expression?replace('[','')?replace(']','')}" name="${status.expression}" value="<#if fieldType!="password">${stringStatusValue}</#if>" ${attributes}<@closeTag/>
 </#macro>
 
 <#--
@@ -202,7 +202,7 @@
  -->
 <#macro formTextarea path attributes="">
     <@bind path/>
-    <textarea id="${status.expression}" name="${status.expression}" ${attributes}>${stringStatusValue}</textarea>
+<textarea id="${status.expression?replace('[','')?replace(']','')}" name="${status.expression}" ${attributes}>${stringStatusValue}</textarea>
 </#macro>
 
 <#--
@@ -218,17 +218,17 @@
 -->
 <#macro formSingleSelect path options attributes="">
     <@bind path/>
-    <select id="${status.expression}" name="${status.expression}" ${attributes}>
-        <#if options?is_hash>
-            <#list options?keys as value>
+<select id="${status.expression?replace('[','')?replace(']','')}" name="${status.expression}" ${attributes}>
+    <#if options?is_hash>
+        <#list options?keys as value>
             <option value="${value?html}"<@checkSelected value/>>${options[value]?html}</option>
-            </#list>
-        <#else> 
-            <#list options as value>
+        </#list>
+    <#else>
+        <#list options as value>
             <option value="${value?html}"<@checkSelected value/>>${value?html}</option>
-            </#list>
-        </#if>
-    </select>
+        </#list>
+    </#if>
+</select>
 </#macro>
 
 <#--
@@ -244,12 +244,12 @@
 -->
 <#macro formMultiSelect path options attributes="">
     <@bind path/>
-    <select multiple="multiple" id="${status.expression}" name="${status.expression}" ${attributes}>
-        <#list options?keys as value>
-        <#assign isSelected = contains(status.value?default([""]), value)>
+<select multiple="multiple" id="${status.expression?replace('[','')?replace(']','')}" name="${status.expression}" ${attributes}>
+    <#list options?keys as value>
+        <#assign isSelected = contains(status.actualValue?default([""]), value)>
         <option value="${value?html}"<#if isSelected> selected="selected"</#if>>${options[value]?html}</option>
-        </#list>
-    </select>
+    </#list>
+</select>
 </#macro>
 
 <#--
@@ -267,8 +267,8 @@
 <#macro formRadioButtons path options separator attributes="">
     <@bind path/>
     <#list options?keys as value>
-    <#assign id="${status.expression}${value_index}">
-    <input type="radio" id="${id}" name="${status.expression}" value="${value?html}"<#if stringStatusValue == value> checked="checked"</#if> ${attributes}<@closeTag/>
+        <#assign id="${status.expression?replace('[','')?replace(']','')}${value_index}">
+            <input type="radio" id="${id}" name="${status.expression}" value="${value?html}"<#if stringStatusValue == value> checked="checked"</#if> ${attributes}<@closeTag/>
     <label for="${id}">${options[value]?html}</label>${separator}
     </#list>
 </#macro>
@@ -288,12 +288,12 @@
 <#macro formCheckboxes path options separator attributes="">
     <@bind path/>
     <#list options?keys as value>
-    <#assign id="${status.expression}${value_index}">
-    <#assign isSelected = contains(status.value?default([""]), value)>
-    <input type="checkbox" id="${id}" name="${status.expression}" value="${value?html}"<#if isSelected> checked="checked"</#if> ${attributes}<@closeTag/>
+        <#assign id="${status.expression?replace('[','')?replace(']','')}${value_index}">
+        <#assign isSelected = contains(status.actualValue?default([""]), value)>
+            <input type="checkbox" id="${id}" name="${status.expression}" value="${value?html}"<#if isSelected> checked="checked"</#if> ${attributes}<@closeTag/>
     <label for="${id}">${options[value]?html}</label>${separator}
     </#list>
-    <input type="hidden" name="_${status.expression}" value="on"/>
+<input type="hidden" name="_${status.expression}" value="on"/>
 </#macro>
 
 <#--
@@ -306,11 +306,11 @@
  *    or CSS styles or size
 -->
 <#macro formCheckbox path attributes="">
-	<@bind path />
-    <#assign id="${status.expression}">
+    <@bind path />
+    <#assign id="${status.expression?replace('[','')?replace(']','')}">
     <#assign isSelected = status.value?? && status.value?string=="true">
-	<input type="hidden" name="_${id}" value="on"/>
-	<input type="checkbox" id="${id}" name="${id}"<#if isSelected> checked="checked"</#if> ${attributes}/>
+<input type="hidden" name="_${status.expression}" value="on"/>
+<input type="checkbox" id="${id}" name="${status.expression}"<#if isSelected> checked="checked"</#if> ${attributes}/>
 </#macro>
 
 <#--
@@ -328,13 +328,13 @@
 -->
 <#macro showErrors separator classOrStyle="">
     <#list status.errorMessages as error>
-    <#if classOrStyle == "">
+        <#if classOrStyle == "">
         <b>${error}</b>
-    <#else>
-        <#if classOrStyle?index_of(":") == -1><#assign attr="class"><#else><#assign attr="style"></#if>
+        <#else>
+            <#if classOrStyle?index_of(":") == -1><#assign attr="class"><#else><#assign attr="style"></#if>
         <span ${attr}="${classOrStyle}">${error}</span>
-    </#if>
-    <#if error_has_next>${separator}</#if>
+        </#if>
+        <#if error_has_next>${separator}</#if>
     </#list>
 </#macro>
 
@@ -366,7 +366,7 @@
 -->
 <#function contains list item>
     <#list list as nextInList>
-    <#if nextInList == item><#return true></#if>
+        <#if nextInList == item><#return true></#if>
     </#list>
     <#return false>
 </#function>

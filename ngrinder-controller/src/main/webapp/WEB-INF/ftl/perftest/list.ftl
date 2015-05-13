@@ -117,7 +117,7 @@
 		<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 	</form>
 
-<@security.authorize ifAnyGranted="A, S">
+<@security.authorize access="hasAnyRole('A', 'S')">
 	<#assign isAdmin = true />
 </@security.authorize>
 <table class="table table-striped table-bordered ellipsis" id="test_table" style="width:940px">

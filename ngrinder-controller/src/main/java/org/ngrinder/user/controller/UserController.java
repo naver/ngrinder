@@ -33,7 +33,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefaults;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -84,7 +84,7 @@ public class UserController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"", "/"})
 	public String getAll(ModelMap model, @RequestParam(required = false) Role role,
-	                     @PageableDefaults Pageable pageable,
+	                     @PageableDefault Pageable pageable,
 	                     @RequestParam(required = false) String keywords) {
 
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
@@ -408,7 +408,7 @@ public class UserController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/search", method = RequestMethod.GET)
-	public HttpEntity<String> search(User user, @PageableDefaults Pageable pageable,
+	public HttpEntity<String> search(User user, @PageableDefault Pageable pageable,
 	                                 @RequestParam(required = true) String keywords) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
 				defaultIfNull(pageable.getSort(),

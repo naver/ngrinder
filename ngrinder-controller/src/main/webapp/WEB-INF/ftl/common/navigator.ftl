@@ -49,14 +49,14 @@
 						</#if>
 
 						<li class="divider"></li>
-						<@security.authorize ifAnyGranted="A">
+						<@security.authorize access="hasRole('A')">
 							<#if clustered==true>
 								<li class="dropdown-submenu">
 									<a class="pointer-cursor"><@spring.message "navigator.dropDown.downloadAgent"/></a>
 									<ul class="dropdown-menu">
 										<@list list_items=visibleRegions; region>
 											<li>
-												<a href="${req.getContextPath()}/agent/download?region=${region}"/>
+												<a href="${req.getContextPath()}/agent/download?region=${region}">
 												<@spring.message code="${region}"/>
 												</a>
 											</li>
@@ -72,7 +72,7 @@
 							</#if>
 						</@security.authorize>
 
-						<@security.authorize ifNotGranted="A">
+						<@security.authorize access="!hasAnyRole('A')">
 							<#if clustered==true>
 								<li class="dropdown-submenu">
 									<a class="pointer-cursor"><@spring.message "navigator.dropDown.downloadPrivateAgent"/></a>
@@ -97,7 +97,7 @@
 						<li>
 							<a href="${req.getContextPath()}/monitor/download"><@spring.message "navigator.dropDown.downloadMonitor"/></a>
 						</li>
-						<@security.authorize ifAnyGranted="A">
+						<@security.authorize access="hasRole('A')">
 							<li class="divider"></li>
 							<li>
 								<a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropDown.userManagement"/></a>
@@ -119,7 +119,7 @@
 								<a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropDown.systemConfig"/></a>
 							</li>
 						</@security.authorize>
-						<@security.authorize ifAnyGranted="S, A">
+						<@security.authorize access="hasAnyRole('A', 'S')">
 							<li class="divider"></li>
 							<li>
 								<a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropDown.announcement"/></a>
@@ -187,11 +187,11 @@
 		<div class="form-horizontal" style="margin-left:20px;overflow-y:hidden">
 			<fieldset>
 			<@control_group label_style="width:100px" controls_style = "margin-left:140px" label_message_key = "user.switch.title">
-				<@security.authorize ifNotGranted="A">
+				<@security.authorize access="!hasAnyRole('A')">
 					<select id="switch_user_select" style="width:310px">
 					</select>
 				</@security.authorize>
-				<@security.authorize ifAnyGranted="A">
+				<@security.authorize access="hasRole('A')">
 					<div id="switch_user_select" style="width:310px">
 					</div>
 				</@security.authorize>
@@ -239,13 +239,13 @@
 			document.location.href = "${req.getContextPath()}/user/switch?to=" + $(this).val();
 		});
 		$("#switch_user_menu").click(function () {
-			<@security.authorize ifNotGranted="A">
+			<@security.authorize access="!hasAnyRole('A')">
 			$("#switch_user_select").load("${req.getContextPath()}/user/switch_options", function () {
 				$(this).val("");
 				$("#switch_user_select").select2();
 			});
 			</@security.authorize>
-			<@security.authorize ifAnyGranted="A">
+			<@security.authorize access="hasRole('A')">
 			$("#switch_user_select").select2({
 				minimumInputLength: 2,
 				ajax: {
