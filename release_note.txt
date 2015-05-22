@@ -1,4 +1,4 @@
-3.3.1 (2015.03.20)
+3.3.1 (2015.06.31/Planned)
 nGrinder 3.3.1 is the bug fix and minor enhancement release.
 
 Bug
