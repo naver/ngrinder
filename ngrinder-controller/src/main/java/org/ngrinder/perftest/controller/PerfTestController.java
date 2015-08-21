@@ -33,6 +33,7 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.*;
 import org.ngrinder.perftest.service.AgentManager;
+import org.ngrinder.agent.service.AgentAutoScaleService;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.region.service.RegionService;
@@ -235,56 +236,59 @@ public class PerfTestController extends BaseController {
 		return toJsonHttpEntity(allStrings);
 	}
 
-	/**
-	 * Add the various default configuration values on the model.
-	 *
-	 * @param model model to which put the default values
-	 */
-	public void addDefaultAttributeOnModel(ModelMap model) {
-		model.addAttribute(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
-		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
-		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
-		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
-		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
-				getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
-		String timeZone = getCurrentUser().getTimeZone();
-		int offset;
-		if (StringUtils.isNotBlank(timeZone)) {
-			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
-		} else {
-			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
-		}
-		model.addAttribute(PARAM_TIMEZONE_OFFSET, offset);
-	}
+    /**
+     * Add the various default configuration values on the model.
+     *
+     * @param model model to which put the default values
+     */
+    public void addDefaultAttributeOnModel(ModelMap model) {
+        model.addAttribute(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
+        model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+        model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+        model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
+        model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
+        model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
+                getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
+        String timeZone = getCurrentUser().getTimeZone();
+        int offset;
+        if (StringUtils.isNotBlank(timeZone)) {
+            offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
+        } else {
+            offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+        }
+        model.addAttribute(PARAM_TIMEZONE_OFFSET, offset);
+        model.addAttribute(PARAM_AGENT_AUTO_SCALE_ENABLED, getConfig().isAgentAutoScaleEnabled());
+    }
 
-	/**
-	 * Get the perf test creation form for quickStart.
-	 *
-	 * @param user       user
-	 * @param urlString  URL string to be tested.
-	 * @param scriptType scriptType
-	 * @param model      model
-	 * @return perftest/detail
-	 */
-	@RequestMapping("/quickstart")
-	public String getQuickStart(User user,
-	                            @RequestParam(value = "url", required = true) String urlString,
-	                            @RequestParam(value = "scriptType", required = true) String scriptType,
-	                            ModelMap model) {
-		URL url = checkValidURL(urlString);
-		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
-				scriptHandlerFactory.getHandler(scriptType));
-		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
-		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
-		model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
-		addDefaultAttributeOnModel(model);
-		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		return "perftest/detail";
-	}
+    /**
+     * Get the perf test creation form for quickStart.
+     *
+     * @param user       user
+     * @param urlString  URL string to be tested.
+     * @param scriptType scriptType
+     * @param model      model
+     * @return perftest/detail
+     */
+    @RequestMapping("/quickstart")
+    public String getQuickStart(User user,
+                                @RequestParam(value = "url", required = true) String urlString,
+                                @RequestParam(value = "scriptType", required = true) String scriptType,
+                                ModelMap model) {
+        URL url = checkValidURL(urlString);
+        FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
+                scriptHandlerFactory.getHandler(scriptType));
+        model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
+        model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
+        model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
+        Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+        model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+        model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
+        model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
+        addDefaultAttributeOnModel(model);
+
+
+        return "perftest/detail";
+    }
 
 	/**
 	 * Create a new test from quick start mode.
@@ -329,49 +333,54 @@ public class PerfTestController extends BaseController {
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
-	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
-		if (oldOne == null) {
-			oldOne = new PerfTest();
-			oldOne.init();
-		}
-		newOne = oldOne.merge(newOne);
-		checkNotEmpty(newOne.getTestName(), "testName should be provided");
-		checkArgument(newOne.getStatus().equals(Status.READY) || newOne.getStatus().equals(Status.SAVED),
-				"status only allows SAVE or READY");
-		if (newOne.isThresholdRunCount()) {
-			final Integer runCount = newOne.getRunCount();
-			checkArgument(runCount > 0 && runCount <= agentManager
-					.getMaxRunCount(),
-					"runCount should be equal to or less than %s", agentManager.getMaxRunCount());
-		} else {
-			final Long duration = newOne.getDuration();
-			checkArgument(duration > 0 && duration <= (((long) agentManager.getMaxRunHour()) *
-					3600000L),
-					"duration should be equal to or less than %s", agentManager.getMaxRunHour());
-		}
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		MutableInt agentCountObj = agentCountMap.get(isClustered() ? newOne.getRegion() : Config.NONE_REGION);
-		checkNotNull(agentCountObj, "region should be within current region list");
-		int agentMaxCount = agentCountObj.intValue();
-		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
-				agentMaxCount);
-		if (newOne.getStatus().equals(Status.READY)) {
-			checkArgument(newOne.getAgentCount() >= 1, "agentCount should be more than 1 when it's READY status.");
-		}
+    @SuppressWarnings("ConstantConditions")
+    private void validate(User user, PerfTest oldOne, PerfTest newOne) {
+        if (oldOne == null) {
+            oldOne = new PerfTest();
+            oldOne.init();
+        }
+        newOne = oldOne.merge(newOne);
+        checkNotEmpty(newOne.getTestName(), "testName should be provided");
+        checkArgument(newOne.getStatus().equals(Status.READY) || newOne.getStatus().equals(Status.SAVED),
+                "status only allows SAVE or READY");
+        if (newOne.isThresholdRunCount()) {
+            final Integer runCount = newOne.getRunCount();
+            checkArgument(runCount > 0 && runCount <= agentManager
+                            .getMaxRunCount(),
+                    "runCount should be equal to or less than %s", agentManager.getMaxRunCount());
+        } else {
+            final Long duration = newOne.getDuration();
+            checkArgument(duration > 0 && duration <= (((long) agentManager.getMaxRunHour()) *
+                            3600000L),
+                    "duration should be equal to or less than %s", agentManager.getMaxRunHour());
+        }
+        Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+        MutableInt agentCountObj = agentCountMap.get(isClustered() ? newOne.getRegion() : Config.NONE_REGION);
+        checkNotNull(agentCountObj, "region should be within current region list");
 
-		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
-		if (getConfig().isSecurityEnabled()) {
-			checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
-					"targetHosts should be provided when security mode is enabled");
-		}
-		if (newOne.getStatus() != Status.SAVED) {
-			checkArgument(StringUtils.isNotBlank(newOne.getScriptName()), "scriptName should be provided.");
-		}
-		checkArgument(newOne.getVuserPerAgent() == newOne.getProcesses() * newOne.getThreads(),
-				"vuserPerAgent should be equal to (processes * threads)");
-	}
+		/*
+         * If agent auto scale is enabled, bypass the validation
+		 */
+        if (!getConfig().isAgentAutoScaleEnabled()) {
+            int agentMaxCount = agentCountObj.intValue();
+            checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
+                    agentMaxCount);
+            if (newOne.getStatus().equals(Status.READY)) {
+                checkArgument(newOne.getAgentCount() >= 1, "agentCount should be more than 1 when it's READY status.");
+            }
+        }
+        checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+                "vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
+        if (getConfig().isSecurityEnabled()) {
+            checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
+                    "targetHosts should be provided when security mode is enabled");
+        }
+        if (newOne.getStatus() != Status.SAVED) {
+            checkArgument(StringUtils.isNotBlank(newOne.getScriptName()), "scriptName should be provided.");
+        }
+        checkArgument(newOne.getVuserPerAgent() == newOne.getProcesses() * newOne.getThreads(),
+                "vuserPerAgent should be equal to (processes * threads)");
+    }
 
 	/**
 	 * Leave the comment on the perf test.

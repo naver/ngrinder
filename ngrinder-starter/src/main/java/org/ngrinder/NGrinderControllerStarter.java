@@ -190,6 +190,35 @@ public class NGrinderControllerStarter {
 	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
 	private Map<String, String> params = new HashMap<String, String>();
 
+    /**
+     * Agent auto scale related props
+     */
+    @Parameter(names = {"-ast", "--auto-scale-type"}, description = "agent auto scale - type")
+    private String agentAutoScaleType = null;
+
+    @Parameter(names = {"-asgt", "--auto-scale-guard-time"}, description = "agent auto scale - the guard time for agent shutdown")
+    private Integer agentAutoScaleGuardTime = null;
+
+    @Parameter(names = {"-asmn", "--auto-scale-max-nodes"}, description = "agent auto scale - the max node count can be created")
+    private Integer agentAutoScaleMaxNodes = null;
+
+    @Parameter(names = {"-asi", "--auto-scale-identity"}, description = "agent auto scale - identity to login to the cloud provider")
+    private String agentAutoScaleIdentity = null;
+
+    @Parameter(names = {"-asc", "--auto-scale-credential"}, description = "agent auto scale - credential to login to cloud provider")
+    private String agentAutoScaleCredential = null;
+
+    @Parameter(names = {"-asci", "--auto-scale-controller-ip"}, description = "agent auto scale - the controller ip for docker to download agent")
+    private String agentAutoScaleControllerIP = null;
+
+    @Parameter(names = {"-ascp", "--auto-scale-controller-port"}, description = "agent auto scale - the controller port for docker to download agent")
+    private Integer agentAutoScaleControllerPort = null;
+
+    @Parameter(names = {"-asdr", "--auto-scale-docker-repo"}, description = "agent auto scale - the docker image repository")
+    private String agentAutoScaleDockerRepo = null;
+
+    @Parameter(names = {"-asdt", "--auto-scale-docker-tag"}, description = "agent auto scale - the docker image tag")
+    private String agentAutoScaleDockerTag = null;
 
 	public static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
@@ -294,21 +323,41 @@ public class NGrinderControllerStarter {
 			System.exit(0);
 		}
 
-		if (server.home != null) {
-			System.setProperty("ngrinder.home", server.home);
-		}
-		if (server.exHome != null) {
-			System.setProperty("ngrinder.ex.home", server.exHome);
-		}
-		final List<String> unknownOptions = commander.getUnknownOptions();
-		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
-		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
-		System.getProperties().putAll(server.params);
-		server.run();
-	}
+        if (server.home != null) {
+            System.setProperty("ngrinder.home", server.home);
+        }
+        if (server.exHome != null) {
+            System.setProperty("ngrinder.ex.home", server.exHome);
+        }
+
+        setAgentAutoScaleParameters(server);
+        final List<String> unknownOptions = commander.getUnknownOptions();
+        final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
+        clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
+        System.getProperties().putAll(server.params);
+        server.run();
+    }
 
 	private static String getRunningCommand() {
 		return "java -XX:MaxPermSize=200m -jar  " + new File(getWarName()).getName();
 	}
 
+    private static void setAgentAutoScaleParameters(NGrinderControllerStarter svr) {
+        setSystemProp("agent.auto_scale.type", svr.agentAutoScaleType);
+        setSystemProp("agent.auto_scale.identity", svr.agentAutoScaleIdentity);
+        setSystemProp("agent.auto_scale.credential", svr.agentAutoScaleCredential);
+        setSystemProp("agent.auto_scale.controller_ip", svr.agentAutoScaleControllerIP);
+        setSystemProp("agent.auto_scale.controller_port", svr.agentAutoScaleControllerPort);
+        setSystemProp("agent.auto_scale.docker_repo", svr.agentAutoScaleDockerRepo);
+        setSystemProp("agent.auto_scale.docker_tag", svr.agentAutoScaleDockerTag);
+        setSystemProp("agent.auto_scale.guard_time", svr.agentAutoScaleGuardTime);
+        setSystemProp("agent.auto_scale.max_nodes", svr.agentAutoScaleMaxNodes);
+    }
+
+    private static void setSystemProp(String key, Object value) {
+        if (value != null) {
+            System.setProperty(key, value.toString());
+        }
+
+    }
 }

@@ -1,0 +1,8 @@
+agent.auto_scale.type,aws,
+agent.auto_scale.identity,,
+agent.auto_scale.credential,,
+agent.auto_scale.docker_repo,ngrinder/agent,
+agent.auto_scale.docker_tag,3.3-p1,
+agent.auto_scale.controller_ip,,
+agent.auto_scale.controller_port,8080,
+agent.auto_scale.region,ap-southeast-1,

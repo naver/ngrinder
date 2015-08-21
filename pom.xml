@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder</artifactId>
-	<version>3.3.1</version>
+	<version>3.3.2</version>
 	<packaging>pom</packaging>
 	<name>ngrinder</name>
 	<modules>
@@ -202,6 +202,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.3</version> <!-- added by shihuc for fix mvn compiling worning-->
 				<configuration>
 					<formats>
 						<format>xml</format>
