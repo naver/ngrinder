@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.AgentAutoScaleConstants;
 import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.InternalConstants;
@@ -59,16 +60,18 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Component
-public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
+public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants, AgentAutoScaleConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
+
 	private Home home = null;
 	private Home exHome = null;
 	private PropertiesWrapper internalProperties;
 	private PropertiesWrapper controllerProperties;
 	private PropertiesWrapper databaseProperties;
 	private PropertiesWrapper clusterProperties;
+	private PropertiesWrapper agentAutoScaleProperties;
 	private String announcement = "";
 	private Date announcementDate;
 	private boolean verbose;
@@ -82,6 +85,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	protected PropertiesKeyMapper databasePropertiesKeyMapper = PropertiesKeyMapper.create("database-properties.map");
 	protected PropertiesKeyMapper controllerPropertiesKeyMapper = PropertiesKeyMapper.create("controller-properties.map");
 	protected PropertiesKeyMapper clusterPropertiesKeyMapper = PropertiesKeyMapper.create("cluster-properties.map");
+	protected PropertiesKeyMapper agentAutoScalePropertiesKeyMapper = PropertiesKeyMapper.create("agent-auto-scale-properties.map");
 
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
@@ -127,7 +131,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			loadAnnouncement();
 			loadDatabaseProperties();
 		} catch (IOException e) {
-			throw new ConfigurationException("Error while init nGrinder", e);
+			throw new ConfigurationException("Error while prepare nGrinder", e);
 		}
 	}
 
@@ -395,6 +399,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		// Override if exists
 		controllerProperties = new PropertiesWrapper(properties, controllerPropertiesKeyMapper);
 		clusterProperties = new PropertiesWrapper(properties, clusterPropertiesKeyMapper);
+		agentAutoScaleProperties = new PropertiesWrapper(properties, agentAutoScalePropertiesKeyMapper);
 	}
 
 	/**
@@ -687,9 +692,128 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	/**
 	 * Get the time out milliseconds which would be used between the console and the agent while preparing to test.
 	 *
-	 * @return
+	 * @return inactive client time out.
 	 */
 	public long getInactiveClientTimeOut() {
 		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);
 	}
+
+	/**
+	 * Get proxy host if the controller is behind proxy.
+	 *
+	 * @return proxy host
+	 */
+	public String getProxyHost() {
+		return getControllerProperties().getProperty(PROP_CONTROLLER_PROXY_HOST);
+	}
+
+	/**
+	 * Get proxy port if the controller is behind proxy.
+	 *
+	 * @return proxy port
+	 */
+	public int getProxyPort() {
+		return getControllerProperties().getPropertyInt(PROP_CONTROLLER_PROXY_PORT, 0);
+	}
+
+	/**
+	 * Get the auto scale properties.
+	 *
+	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
+	 */
+	public PropertiesWrapper getAgentAutoScaleProperties() {
+		return checkNotNull(agentAutoScaleProperties);
+	}
+
+	/**
+	 * Get the configured agent auto scale type, it may be aws or mesos
+	 *
+	 * @return agent auto scale type
+	 */
+	public String getAgentAutoScaleType() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_TYPE);
+	}
+
+	/**
+	 * Get the configured agent auto scale region.
+	 *
+	 * @return agent auto scale region
+	 */
+	public String getAgentAutoScaleRegion() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_REGION);
+	}
+
+
+	/**
+	 * Get the configured credential identity for cloud provider, it may be username or access key
+	 *
+	 * @return credential username/access key
+	 */
+	public String getAgentAutoScaleIdentity() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_IDENTITY);
+	}
+
+	/**
+	 * Get the configured credential key for cloud provider, it may be password or secret key
+	 *
+	 * @return credential password/secret key
+	 */
+	public String getAgentAutoScaleCredential() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_CREDENTIAL);
+	}
+
+
+	/**
+	 * Get the docker image repository which will used to pull the wanted docker image to run agent
+	 *
+	 * @return docker image repo
+	 */
+	public String getAgentAutoScaleDockerRepo() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_DOCKER_REPO);
+	}
+
+
+	/**
+	 * Get the docker image tag which will used to pull the wanted docker image to run agent
+	 *
+	 * @return docker image tag
+	 */
+	public String getAgentAutoScaleDockerTag() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_DOCKER_TAG);
+	}
+
+	/**
+	 * Get the ngrinder controller IP which will be used if dynamic agent feature is enabled
+	 *
+	 * @return controller IP
+	 */
+	public String getAgentAutoScaleControllerIP() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_CONTROLLER_IP);
+	}
+
+
+	/**
+	 * Get the ngrinder controller port which will be used if dynamic agent feature is enabled
+	 *
+	 * @return controller port for auto scale
+	 */
+	public String getAgentAutoScaleControllerPort() {
+		return getAgentAutoScaleProperties().getProperty(PROP_AGENT_AUTO_SCALE_CONTROLLER_PORT);
+	}
+
+
+	/**
+	 * check whether the agent auto scale is enabled.
+	 *
+	 * @return true if enabled
+	 */
+	public boolean isAgentAutoScaleEnabled() {
+		return (StringUtils.isNotEmpty(getAgentAutoScaleType()) &&
+				StringUtils.isNotEmpty(getAgentAutoScaleIdentity()) &&
+				StringUtils.isNotEmpty(getAgentAutoScaleCredential()) &&
+				StringUtils.isNotEmpty(getAgentAutoScaleControllerIP()) &&
+				StringUtils.isNotEmpty(getAgentAutoScaleControllerPort()));
+	}
+
+
 }

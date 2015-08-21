@@ -15,6 +15,7 @@ package org.ngrinder.operation.cotroller;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.service.AgentAutoScaleService;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -91,6 +92,8 @@ public class ScriptConsoleController extends BaseController implements Applicati
 	@Autowired
 	private CacheManager cacheManager;
 
+	@Autowired
+	private AgentAutoScaleService agentAutoScaleService;
 
 	/**
 	 * Run the given script. The run result is stored in "result" of the given model.
@@ -115,7 +118,9 @@ public class ScriptConsoleController extends BaseController implements Applicati
 			engine.put("config", getConfig());
 			engine.put("pluginManager", this.pluginManager);
 			engine.put("cacheManager", this.cacheManager);
+			engine.put("cacheManager", this.cacheManager);
 			engine.put("user", getCurrentUser());
+			engine.put("agentAutoScaleService", this.agentAutoScaleService);
 			final StringWriter out = new StringWriter();
 			PrintWriter writer = new PrintWriter(out);
 			engine.getContext().setWriter(writer);

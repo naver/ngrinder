@@ -14,35 +14,35 @@
 package org.ngrinder.common.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.picocontainer.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.net.URL;
 
 /**
  * Simple static methods to be called at the start of your own methods to verify correct arguments and state. This
  * allows constructs such as
- *
+ * <p/>
  * <pre>
  * if (count &lt;= 0) {
  * 	throw new IllegalArgumentException(&quot;must be positive: &quot; + count);
  * }
  * </pre>
- *
+ * <p/>
  * to be replaced with the more compact
- *
+ * <p/>
  * <pre>
  * checkArgument(count &gt; 0, &quot;must be positive: %s&quot;, count);
  * </pre>
- *
+ * <p/>
  * Note that the sense of the expression is inverted; with {@code Preconditions} you declare what you expect to be
  * <i>true</i>, just as you do with an <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/assert.html">
  * {@code assert}</a> or a JUnit {@code assertTrue} call.
- *
- * <p>
+ * <p/>
+ * <p/>
  * <b>Warning:</b> only the {@code "%s"} specifier is recognized as a placeholder in these messages, not the full range
  * of {@link String#format(String, Object[])} specifiers.
- *
- * <p>
+ * <p/>
+ * <p/>
  * Take care not to confuse precondition checking with other similar types of checks! Precondition exceptions --
  * including those provided here, but also {@link IndexOutOfBoundsException}, {@link UnsupportedOperationException} and
  * others -- are used to signal that the <i>calling method</i> has made an error. This tells the caller that it should

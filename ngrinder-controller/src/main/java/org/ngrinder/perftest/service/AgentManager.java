@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Agent manager.
@@ -230,15 +231,15 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		return null;
 	}
 
-	/**
-	 * Convert {@link AgentIdentity} to {@link AgentControllerIdentityImplementation} type.
-	 *
-	 * @param identity identity
-	 * @return converted identity.
-	 */
-	AgentControllerIdentityImplementation convert(AgentIdentity identity) {
-		return (AgentControllerIdentityImplementation) identity;
-	}
+    /**
+     * Convert {@link AgentIdentity} to {@link AgentControllerIdentityImplementation} type.
+     *
+     * @param identity identity
+     * @return converted identity.
+     */
+    public AgentControllerIdentityImplementation convert(AgentIdentity identity) {
+        return (AgentControllerIdentityImplementation) identity;
+    }
 
 	/**
 	 * Get all agents which are not used now.
@@ -390,41 +391,46 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		return agentControllerServerDaemon.getAgentVersion(agentIdentity);
 	}
 
-	/**
-	 * Assign the agents on the given console.
-	 *
-	 * @param user              user
-	 * @param singleConsole     {@link SingleConsole} to which agents will be assigned
-	 * @param grinderProperties {@link GrinderProperties} to be distributed.
-	 * @param agentCount        the count of agents.
-	 */
-	public synchronized void runAgent(User user, final SingleConsole singleConsole,
-	                                  final GrinderProperties grinderProperties, final Integer agentCount) {
-		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
-		final Set<AgentIdentity> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
-		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
-		for (AgentIdentity each : necessaryAgents) {
-			LOGGER.info("- Agent {}", each.getName());
-		}
-		ExecutorService execService = null;
-		try {
-			// Make the agents connect to console.
-			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
-			execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
-			for (final AgentIdentity eachAgentIdentity : necessaryAgents) {
-				execService.submit(new Runnable() {
-					@Override
-					public void run() {
-						agentControllerServerDaemon.startAgent(grinderProperties, eachAgentIdentity);
-					}
-				});
-			}
-		} finally {
-			if (execService != null) {
-				execService.shutdown();
-			}
-		}
-	}
+    /**
+     * Assign the agents on the given console.
+     *
+     * @param user              user
+     * @param singleConsole     {@link SingleConsole} to which agents will be assigned
+     * @param grinderProperties {@link GrinderProperties} to be distributed.
+     * @param agentCount        the count of agents.
+     */
+    public synchronized void runAgent(User user, final SingleConsole singleConsole,
+                                      final GrinderProperties grinderProperties, final Integer agentCount) {
+        final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
+        final Set<AgentIdentity> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
+        LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
+        for (AgentIdentity each : necessaryAgents) {
+            LOGGER.info("- Agent {}", each.getName());
+        }
+        ExecutorService execService = null;
+        try {
+            // Make the agents connect to console.
+            grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
+            execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
+            for (final AgentIdentity eachAgentIdentity : necessaryAgents) {
+                execService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        agentControllerServerDaemon.startAgent(grinderProperties, eachAgentIdentity);
+                    }
+                });
+            }
+            try {
+                execService.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                LOGGER.error("Error while executing agents", e);
+            }
+        } finally {
+            if (execService != null) {
+                execService.shutdown();
+            }
+        }
+    }
 
 	/**
 	 * Select agent. This method return agent set which is belong to the given user first and then share agent set.

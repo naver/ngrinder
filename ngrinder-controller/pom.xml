@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.ngrinder</groupId>
-		<artifactId>ngrinder</artifactId>
-		<version>3.3.1</version>
-	</parent>
-	<artifactId>ngrinder-controller</artifactId>
-	<name>ngrinder-controller</name>
-	<packaging>war</packaging>
-	<properties>
-		<webappdir>${basedir}/src/main/webapp</webappdir>
-		<deploy.dir>${basedir}/../../deploy</deploy.dir>
-		<jetty.version>6.1.25</jetty.version>
-	</properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.ngrinder</groupId>
+        <artifactId>ngrinder</artifactId>
+        <version>3.3.2</version>
+    </parent>
+    <artifactId>ngrinder-controller</artifactId>
+    <name>ngrinder-controller</name>
+    <packaging>war</packaging>
+    <properties>
+        <webappdir>${basedir}/src/main/webapp</webappdir>
+        <deploy.dir>${basedir}/../../deploy</deploy.dir>
+        <jetty.version>6.1.25</jetty.version>
+    </properties>
 
-	<profiles>
-		<profile>
-			<id>internal</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-war-plugin</artifactId>
-						<configuration>
-							<webappDirectory>${deploy.dir}</webappDirectory>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-	<dependencies>
-		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>rome</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<!-- Encoding Detection -->
-		<dependency>
-			<groupId>com.ibm.icu</groupId>
-			<artifactId>icu4j</artifactId>
-			<version>4.6</version>
-		</dependency>
-		<dependency>
-			<groupId>sonia.svnkit</groupId>
-			<artifactId>svnkit-dav</artifactId>
-			<version>1.8.3-scm1</version>
-		</dependency>
-		<dependency>
-			<groupId>sonia.svnkit</groupId>
-			<artifactId>svnkit</artifactId>
-			<version>1.8.3-scm1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.ngrinder</groupId>
-			<artifactId>ngrinder-starter</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+    <profiles>
+        <profile>
+            <id>internal</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <webappDirectory>${deploy.dir}</webappDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <dependencies>
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- Encoding Detection -->
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>4.6</version>
+        </dependency>
+        <dependency>
+            <groupId>sonia.svnkit</groupId>
+            <artifactId>svnkit-dav</artifactId>
+            <version>1.8.3-scm1</version>
+        </dependency>
+        <dependency>
+            <groupId>sonia.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.8.3-scm1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ngrinder</groupId>
+            <artifactId>ngrinder-starter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 		<!-- Servlet -->
 		<dependency>
@@ -121,32 +121,27 @@
 			<version>0.9.8</version>
 		</dependency>
 
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-			<version>2.5.1</version>
-		</dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.5.1</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>12.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.mojo.webstart</groupId>
-			<artifactId>webstart-jnlp-servlet</artifactId>
-			<version>1.0-6.0.02_ea_b02.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo.webstart</groupId>
+            <artifactId>webstart-jnlp-servlet</artifactId>
+            <version>1.0-6.0.02_ea_b02.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -179,16 +174,23 @@
 			<version>${spring.security.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-embedder</artifactId>
-			<version>3.0.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.sonatype.aether</groupId>
-			<artifactId>aether-connector-asynchttpclient</artifactId>
-			<version>1.13.1</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-embedder</artifactId>
+            <version>3.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.sonatype.sisu</groupId>
+                    <artifactId>sisu-guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-connector-asynchttpclient</artifactId>
+            <version>1.13.1</version>
+        </dependency>
 
 		<!-- Spring Data -->
 		<dependency>
@@ -309,28 +311,71 @@
 			<version>1.3.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.atlassian.plugins</groupId>
-			<artifactId>atlassian-plugins-main</artifactId>
-			<version>2.12.2</version>
-		</dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.8</version>
+        </dependency>
 
-		<!-- Json conversion -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2</version>
-		</dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-main</artifactId>
+            <version>2.12.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dasein</groupId>
+            <artifactId>dasein-cloud-aws</artifactId>
+            <version>2015.06.6</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>com.github.docker-java</groupId>-->
+            <!--<artifactId>docker-java</artifactId>-->
+            <!--<version>1.4.0</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>261</version>
+        </dependency>
+
+        <!-- Below httpclient is a MUST for docker-client -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>3.1.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.jnr</groupId>
+                    <artifactId>jnr-ffi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <!-- Json conversion -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2</version>
+        </dependency>
 
 		<dependency>
 			<groupId>jaxen</groupId>
@@ -353,7 +398,18 @@
 			<version>1.32</version>
 		</dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0</version>
+            <!-- 12 -->
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<resources>
@@ -374,55 +430,56 @@
 		</resources>
 		<plugins>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.15</version>
-				<configuration>
-					<argLine>-Xms600m -Xmx1024m -XX:MaxPermSize=200m</argLine>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.ngrinder.NGrinderControllerStarter</mainClass>
-						</manifest>
-					</archive>
-					<packagingExcludes>
-						WEB-INF/lib/jetty-*.jar,WEB-INF/lib/ngrinder-starter*.jar,WEB-INF/lib/grinder-3.9.1.jar
-					</packagingExcludes>
-					<overlays>
-						<overlay>
-							<groupId>org.ngrinder</groupId>
-							<artifactId>ngrinder-starter</artifactId>
-							<type>jar</type>
-						</overlay>
-						<overlay>
-							<groupId>org.mortbay.jetty</groupId>
-							<artifactId>jetty</artifactId>
-							<type>jar</type>
-						</overlay>
-						<overlay>
-							<groupId>org.mortbay.jetty</groupId>
-							<artifactId>jetty-util</artifactId>
-							<type>jar</type>
-						</overlay>
-						<overlay>
-							<groupId>com.beust</groupId>
-							<artifactId>jcommander</artifactId>
-							<type>jar</type>
-						</overlay>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <argLine>-Xms600m -Xmx1024m -XX:MaxPermSize=200m</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.ngrinder.NGrinderControllerStarter</mainClass>
+                        </manifest>
+                    </archive>
+                    <packagingExcludes>
+                        WEB-INF/lib/jetty-*.jar,WEB-INF/lib/ngrinder-starter*.jar,WEB-INF/lib/grinder-3.9.1.jar
+                    </packagingExcludes>
+                    <overlays>
+                        <overlay>
+                            <groupId>org.ngrinder</groupId>
+                            <artifactId>ngrinder-starter</artifactId>
+                            <type>jar</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>org.mortbay.jetty</groupId>
+                            <artifactId>jetty</artifactId>
+                            <type>jar</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>org.mortbay.jetty</groupId>
+                            <artifactId>jetty-util</artifactId>
+                            <type>jar</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>com.beust</groupId>
+                            <artifactId>jcommander</artifactId>
+                            <type>jar</type>
+                        </overlay>
 
 						<overlay>
 							<groupId>javax.servlet</groupId>

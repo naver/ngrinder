@@ -17,12 +17,15 @@ import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.UnitUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.ngrinder.agent.service.AgentAutoScaleService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -43,9 +46,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
@@ -90,6 +91,9 @@ public class PerfTestRunnable implements ControllerConstants {
 	private Runnable startRunnable;
 
 	private Runnable finishRunnable;
+
+	@Autowired
+	private AgentAutoScaleService agentAutoScaleService;
 
 	@PostConstruct
 	public void init() {
@@ -151,13 +155,26 @@ public class PerfTestRunnable implements ControllerConstants {
 			return;
 		}
 
-
 		if (!hasEnoughFreeAgents(runCandidate)) {
+			scaleUpAgent(runCandidate);
 			return;
 		}
 
 		doTest(runCandidate);
 	}
+
+	private void scaleUpAgent(PerfTest runCandidate) {
+		int requiredAgentCount = 0;
+		try {
+			requiredAgentCount = runCandidate.getAgentCount() -
+					agentManager.getAllFreeApprovedAgentsForUser(runCandidate.getCreatedUser()).size();
+			agentAutoScaleService.activateNodes(requiredAgentCount);
+		} catch (Exception e) {
+			LOG.error("Error while activating {} agents.", requiredAgentCount, e);
+			perfTestService.markProgress(runCandidate, "The agent activation is canceled.\n" + e.getMessage());
+		}
+	}
+
 
 	private PerfTest getRunnablePerfTest() {
 		return perfTestService.getNextRunnablePerfTestPerfTestCandidate();
@@ -206,9 +223,9 @@ public class PerfTestRunnable implements ControllerConstants {
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, checkCancellation(singleConsole));
-
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
+			touchAgent(singleConsole);
 		} catch (SingleConsoleCancellationException ex) {
 			// In case of error, mark the occurs error on perftest.
 			doCancel(perfTest, singleConsole);
@@ -219,6 +236,17 @@ public class PerfTestRunnable implements ControllerConstants {
 			LOG.debug("Stack Trace is : ", e);
 			doTerminate(perfTest, singleConsole);
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
+		}
+	}
+
+	/**
+	 * Make the agent aliveness longer
+	 */
+	void touchAgent(SingleConsole singleConsole) {
+		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
+		List<String> names = new ArrayList<String>(allAttachedAgents.size());
+		for (AgentIdentity each : allAttachedAgents) {
+			agentAutoScaleService.touchNode(each.getName());
 		}
 	}
 
@@ -352,7 +380,6 @@ public class PerfTestRunnable implements ControllerConstants {
 		addSamplingListeners(perfTest, singleConsole);
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
 		singleConsole.startSampling();
-
 	}
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
@@ -361,6 +388,12 @@ public class PerfTestRunnable implements ControllerConstants {
 				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
 				perfTestService, scheduledTaskService));
+		singleConsole.addSamplingLifeCyleListener(new SamplingListenerAdapter() {
+			@Override
+			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+				touchAgent(singleConsole);
+			}
+		});
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
 				(OnTestSamplingRunnable.class, new MonitorCollectorPlugin(config, scheduledTaskService,
 						perfTestService, perfTest.getId()));
@@ -411,6 +444,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		for (PerfTest each : perfTestService.getAllAbnormalTesting()) {
 			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
+			touchAgent(consoleUsingPort);
 			doTerminate(each, consoleUsingPort);
 			cleanUp(each);
 			notifyFinish(each, StopReason.TOO_MANY_ERRORS);
@@ -419,6 +453,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		for (PerfTest each : perfTestService.getAllStopRequested()) {
 			LOG.info("Stop test {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
+			touchAgent(consoleUsingPort);
 			doCancel(each, consoleUsingPort);
 			cleanUp(each);
 			notifyFinish(each, StopReason.CANCEL_BY_USER);
@@ -427,6 +462,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		for (PerfTest each : perfTestService.getAllTesting()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
+				touchAgent(consoleUsingPort);
 				doNormalFinish(each, consoleUsingPort);
 				cleanUp(each);
 				notifyFinish(each, StopReason.NORMAL);
