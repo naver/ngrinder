@@ -40,6 +40,9 @@ then
 		done
 	fi
 else
-	echo "Please set CONTROLLER_ADDR environment variable"
+	echo "CONTROLLE_ADDR environment varible is not set. Use the built in controller"
+	AGENT="${BASE_DIR}/builtin/ngrinder-agent"
+	cd ${AGENT}
+	${AGENT}/run_agent.sh "$@"
 fi
 
