@@ -1,0 +1,4 @@
+Before build, locate ngrinder-agent-${VERSION}.tar file in this folderi deleteing __agent.conf file internally.
+This file is not version controlled because of the size.
+
+
