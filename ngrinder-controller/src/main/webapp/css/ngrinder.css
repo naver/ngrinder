@@ -151,6 +151,13 @@ table.ellipsis td.ellipsis {
 	margin: 10px 0 20px
 }
 
+@media (min-width: 992px) {
+	.modal-lg {
+		width: 900px;
+		margin-left: -450px;
+	}
+}
+
 .modal-body form {
 	margin-bottom: 0
 }
@@ -307,4 +314,9 @@ legend a {
 .small-error-box span.help-inline {
     height: 15px;
     padding-left:0px;
+}
+
+
+hr.small {
+	margin : 4px;
 }

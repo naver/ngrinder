@@ -186,6 +186,7 @@ public class FileEntryController extends BaseController {
 	                         @RequestParam("fileName") String fileName,
 	                         @RequestParam(value = "scriptType", required = false) String scriptType,
 	                         @RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
+	                         @RequestParam(value = "options", required = false) String options,
 	                         RedirectAttributes redirectAttributes, ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
 		String name = "Test1";
@@ -200,7 +201,7 @@ public class FileEntryController extends BaseController {
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler,
-						createLibAndResources);
+						createLibAndResources, options);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
 				return "redirect:/script/list/" + path + "/" + fileName;
 			} else {
@@ -215,7 +216,7 @@ public class FileEntryController extends BaseController {
 				model.addAttribute("file", fileEntryService.getOne(user, fullPath));
 			} else {
 				model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl,
-						scriptHandler, createLibAndResources));
+						scriptHandler, createLibAndResources, options));
 			}
 		}
 		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(PathUtils.join(path, fileName)));

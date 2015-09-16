@@ -167,13 +167,13 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 
 	@Override
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, // LF
-	                                String url, boolean createLib) {
+	                                String url, boolean createLib, String scriptContent) {
 		path = PathUtils.join(path, fileName);
 		try {
 			// Create Dir entry
 			createBaseDirectory(user, path);
 			// Create each template entries
-			createFileEntries(user, path, name, url);
+			createFileEntries(user, path, name, url, scriptContent);
 			if (createLib) {
 				createLibraryDirectory(user, path);
 			}
@@ -191,16 +191,21 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		getFileEntryRepository().save(user, fileEntry, null);
 	}
 
-	private void createFileEntries(User user, String path, String name, String url) throws IOException {
+	private void createFileEntries(User user, String path, String name, String url,
+		String scriptContent) throws IOException {
 		File scriptTemplateDir;
 		scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
 		for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
 			try {
 				String subpath = each.getPath().substring(scriptTemplateDir.getPath().length());
 				String fileContent = FileUtils.readFileToString(each, "UTF8");
-				fileContent = fileContent.replace("${userName}", user.getUserName());
-				fileContent = fileContent.replace("${name}", name);
-				fileContent = fileContent.replace("${url}", url);
+				if (subpath.endsWith("TestRunner.groovy")) {
+					fileContent = scriptContent;
+				} else {
+					fileContent = fileContent.replace("${userName}", user.getUserName());
+					fileContent = fileContent.replace("${name}", name);
+					fileContent = fileContent.replace("${url}", url);
+				}
 				FileEntry fileEntry = new FileEntry();
 				fileEntry.setContent(fileContent);
 				fileEntry.setPath(FilenameUtils.normalize(PathUtils.join(path, subpath), true));

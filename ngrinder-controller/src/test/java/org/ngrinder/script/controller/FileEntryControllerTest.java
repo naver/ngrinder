@@ -76,7 +76,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
 		scriptController.createForm(getTestUser(), path, "test.com", "new_file.py", "jython", false,
-						new RedirectAttributesModelMap(), model);
+						null, new RedirectAttributesModelMap(), model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
@@ -112,7 +112,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
 		scriptController.createForm(getTestUser(), path, "test.com", "file-for-search.py", "jython", false,
-						new RedirectAttributesModelMap(), model);
+						null, new RedirectAttributesModelMap(), model);
 		FileEntry script = (FileEntry) model.get("file");
 		scriptController.save(getTestUser(), script, null, "", false, model);
 
@@ -161,13 +161,15 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String fileName = "download_file.py";
 		scriptController.addFolder(getTestUser(), "", path, model);
 		RedirectAttributesModelMap attrMap = new RedirectAttributesModelMap();
-		scriptController.createForm(getTestUser(), path, "test.com", fileName, "jython", false, attrMap, model);
+		scriptController.createForm(getTestUser(), path, "test.com", fileName, "jython", false,
+			null, attrMap, model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.save(getTestUser(), script, null, "", false, model);
 
-		scriptController.createForm(getTestUser(), path, "", fileName, "", false, attrMap, model);
+		scriptController.createForm(getTestUser(), path, "", fileName, "", false, null, attrMap,
+			model);
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		path = path + "/" + fileName;

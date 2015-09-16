@@ -173,7 +173,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return true if process more.
 	 */
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
-	                                boolean createLibAndResources) {
+	                                boolean createLibAndResources, String scriptContent) {
 		return true;
 	}
 
