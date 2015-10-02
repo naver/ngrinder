@@ -1,0 +1,30 @@
+{
+	"manifest_version": 2,
+
+	"name": "nGrinder script recorder",
+	"description": "The extension enable you to generate the performance test script of nGrinder super easy without coding just by browsing web sites using chrome browser.",
+	"version": "1.0",
+	"icons": { "128": "/images/nGrinder_recorder_icon.png" },
+
+	// popup
+	"browser_action": {
+		"default_icon": "/images/nGrinder_recorder_icon.png",
+		"default_popup": "popup.html",
+		"default_title": "nGrinder script recorder"
+	},
+
+	// background process
+	"background": {
+		"page": "background.html"
+	},
+
+	// DevTools
+	"devtools_page": "devtools.html",
+
+	// permission
+	"permissions": [
+		"webRequest",
+		"webRequestBlocking",
+		"*://*/*"
+	]
+}

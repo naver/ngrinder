@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+    <head>
+        <title>nGrinder recorder configuration</title>
+        <style type="text/css" rel="stylesheet">
+            body {
+                width : 428px;
+            }
+        </style>
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+        <script type="text/javascript" src="js/lib/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/common.js"></script>
+        <script type="text/javascript" src="js/popup.js"></script>
+    </head>
+    <body>
+        <div class="panel panel-info" style="margin-bottom:0px;">
+            <div class="panel-heading"><img src="images/nGrinder_recorder_icon.png"> nGrinder Script Recorder Settings</div>
+            <div class="panel-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-xs-3 control-label" style="margin-top: 3px;">URL Filter</label>
+                        <div class="col-xs-9 btn-group" role="group">
+                            <div class="input-group">
+                                <input id="urlFilter" type="text" class="form-control" placeholder="ex) ^(http|https):\/\/.*:1234">
+                                <span class="input-group-btn">
+                                    <button id="applyUrlFilterBtn" class="btn btn-default" type="button">Apply</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-xs-3 control-label">Record</label>
+                        <div class="col-xs-9 btn-group" role="group">
+                            <button id="recordOnBtn" type="button" class="btn btn-default">ON</button>
+                            <button id="recordOffBtn" type="button" class="btn btn-success">OFF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="well">
+                    <h4>URL Filter is "Regular Expression".</h4>
+                    <table class="table table-bordered">
+                    	<tr>
+                    		<td><strong>All http</strong></td>
+                    		<td>^http:\/\/</td>
+                    	</tr>
+                    	<tr>
+                    		<td><strong>Sub domain</strong></td>
+                    		<td>^http:\/\/[^:\/]+\.domain(:\d*)+(\/.*)?$</td>
+                    	</tr>
+                    	<tr>
+                    		<td><strong>html file</strong></td>
+                    		<td>\.html(\?.*)?$</td>
+                    	</tr>
+                    </table>
+                    <h4>Getting Started</h4>
+                    Step1. Record enable.<br>
+                    Step2. Use browser.<br>
+                    Step3. Generate script.
+                </div>
+            </div>
+            <div class="panel-footer text-center">
+                <button id="clearBtn" type="button" class="btn btn-warning">Clear  <span id="recordCountBadge" class="badge">0</span></button>
+                <button id="generateGroovyBtn" type="button" class="btn btn-success">Generate Groovy</button>
+                <button id="generateJythonBtn" type="button" class="btn btn-info">Generate Jython</button>
+            </div>
+        </div>
+    </body>
+</html>

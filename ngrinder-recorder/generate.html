@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<title>nGrinder Script Create Settings</title>
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="css/jquery.dataTables.min.css">
+        <style type="text/css">
+        	body {
+        		padding-top: 15px;
+        	}
+        	.align-center {
+        		vertical-align: middle !important;
+        		text-align: center !important;
+        	}
+			.ellipsis {
+				display: inline-block;
+				max-width: 250px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+        </style>
+        <script type="text/javascript" src="js/lib/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/common.js"></script>
+        <script type="text/javascript" src="js/generate.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="alert alert-success">
+						<ul style="font-weight: bold;">
+							<li>
+								진하게(bold체) 표시된 행은 연속된 요청 중 첫번째 요청입니다.<br>
+								<font color="red" style="font-weight: normal;">300ms 이전에 요청이 없는 경우를 체크한 것으로 정확하지 않을 수 있습니다.</font>
+							</li>
+							<li>Script 생성에 사용될 Request를 클릭하세요.</li>
+							<li>Request를 전송할 시점을 선택하세요.(초기화/테스트/후처리)</li>
+							<li>
+								기본적으로 Header안의 Cookie는 사용되지 않습니다.<br>
+								테스트에서 Header안의 Cookie를 복제하여 테스트하고 싶은 경우 "use cookie"를 체크해주세요.<br>
+								<font color="red" style="font-weight: normal;">이전 Response에서 받은 Cookie 값이 제거될 수 있습니다.</font>
+							</li>
+							<li>선택이 완료되면 "Create Script" 버튼을 눌러 다음단계로 진행해주세요.</li>
+						</ul>
+					</div>
+					<hr>
+					<table id="recordListTbl" class="table table-hover table-bordered table-condensed" style="width: 100%; font-size: 12px;">
+						<thead>
+							<tr>
+								<th class="align-center" width="0px">Id</th>
+								<th class="align-center" width="90px">Scope</th>
+								<th class="align-center" width="42px">Method</th>
+								<th class="align-center" width="246px">URL</th>
+								<th class="align-center" width="246px">Header</th>
+								<th class="align-center" width="40px" title="Override cookies which from the response of this request.">Use Cookie</th>
+								<th class="align-center" width="246px">FormData</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+					<div class="pull-right" style="margin-bottom: 15px;">
+						<button id="deleteBtn" type="button" class="btn btn-danger">Delete None Scope</button>
+						<button id="createBtn" type="button" class="btn btn-success">Create Script</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
