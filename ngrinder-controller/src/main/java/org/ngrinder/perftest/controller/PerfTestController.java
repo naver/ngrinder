@@ -15,6 +15,7 @@ package org.ngrinder.perftest.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
 import org.apache.commons.io.FilenameUtils;
@@ -271,10 +272,11 @@ public class PerfTestController extends BaseController {
 	public String getQuickStart(User user,
 	                            @RequestParam(value = "url", required = true) String urlString,
 	                            @RequestParam(value = "scriptType", required = true) String scriptType,
+	                            @RequestParam(value = "options", required = true) String options,
 	                            ModelMap model) {
 		URL url = checkValidURL(urlString);
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
-				scriptHandlerFactory.getHandler(scriptType));
+				scriptHandlerFactory.getHandler(scriptType), options);
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
 		model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));

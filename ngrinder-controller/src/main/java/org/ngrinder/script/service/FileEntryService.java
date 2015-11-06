@@ -305,15 +305,16 @@ public class FileEntryService {
 	 * @return created file entry. main test file if it's the project creation.
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String name, String url,
-	                                 ScriptHandler scriptHandler, boolean libAndResource) {
+	                                 ScriptHandler scriptHandler, boolean libAndResource, String options) {
 		if (scriptHandler instanceof ProjectHandler) {
-			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource);
+			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource,
+				loadTemplate(user, getScriptHandler("groovy"), url, name, options));
 			return null;
 		}
 		path = PathUtils.join(path, fileName);
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(path);
-		fileEntry.setContent(loadTemplate(user, scriptHandler, url, name));
+		fileEntry.setContent(loadTemplate(user, scriptHandler, url, name, options));
 		if (!"http://please_modify_this.com".equals(url)) {
 			fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
 		} else {
@@ -330,16 +331,17 @@ public class FileEntryService {
 	 * @param scriptHandler scriptHandler
 	 * @return created new {@link FileEntry}
 	 */
-	public FileEntry prepareNewEntryForQuickTest(User user, String url, ScriptHandler scriptHandler) {
+	public FileEntry prepareNewEntryForQuickTest(User user, String url,
+		ScriptHandler scriptHandler, String options) {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
 		if (scriptHandler instanceof ProjectHandler) {
 			String[] pathPart = dividePathAndFile(path);
-			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false);
+			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, options);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-					false);
+					false, options);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}
@@ -355,11 +357,13 @@ public class FileEntryService {
 	 * @param name    name
 	 * @return generated test script
 	 */
-	public String loadTemplate(User user, ScriptHandler handler, String url, String name) {
+	public String loadTemplate(User user, ScriptHandler handler, String url, String name,
+		String options) {
 		Map<String, Object> map = newHashMap();
 		map.put("url", url);
 		map.put("userName", user.getUserName());
 		map.put("name", name);
+		map.put("options", options);
 		return handler.getScriptTemplate(map);
 	}
 

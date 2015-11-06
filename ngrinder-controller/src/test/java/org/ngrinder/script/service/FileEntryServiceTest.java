@@ -27,13 +27,33 @@ public class FileEntryServiceTest {
 	private FileEntryService fileEntryService = new FileEntryService();
 
 	@Test
-	public void testFileTemplate() {
+	public void testFileTemplateWithoutOptions() {
 		User user = new User();
 		user.setUserName("JunHo Yoon");
 		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(), "http://helloworld/myname/is",
-						"hello");
+						"hello", null);
 		assertThat(content, containsString("JunHo Yoon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
+	}
+
+	@Test
+	public void testFileTemplateWithOptions() {
+		String options = "{\"method\":\"POST_TEST\"," +
+			"\"headers\":[{\"name\":\"header\",\"value\":\"123\"}," +
+			"{\"name\":\"auth\",\"value\":\"no\"}]," +
+			"\"params\":[{\"name\":\"pName\",\"value\":\"pValue\"}]," +
+			"\"cookies\":[{\"name\":\"cook\",\"value\":\"good\",\"domain\":\"naver.com\",\"path\":\"/home\"}]}";
+		User user = new User();
+		user.setUserName("Gisoo Gwon");
+		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(), "http://helloworld/myname/is",
+						"hello", options);
+		System.out.println(content);
+		assertThat(content, containsString("Gisoo Gwon"));
+		assertThat(content, containsString("http://helloworld/myname/is"));
+		assertThat(content, containsString("request1.POST_TEST"));
+		assertThat(content, containsString("self.headers.append(NVPair(\"header\", \"123\"))"));
+		assertThat(content, containsString("self.params.append(NVPair(\"pName\", \"pValue\"))"));
+		assertThat(content, containsString("Cookie(\"cook\", \"good\", \"naver.com\", \"/home\""));
 	}
 
 	@Test

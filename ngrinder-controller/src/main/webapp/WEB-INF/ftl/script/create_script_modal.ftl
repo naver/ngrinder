@@ -1,31 +1,29 @@
-<div class="modal hide fade" id="create_script_modal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal hide fade modal-lg" id="create_script_modal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h4><@spring.message "script.action.createScript"/></h4>
 	</div>
-	<div class="modal-body">
+	<div class="modal-body" style="max-height:500px;">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/new/${currentPath}">
-			<fieldset>
+			<fieldset style="padding-left: 50px;">
 
 				<@control_group name="fileName" inline_help="true" label_message_key="script.info.name">
 					<#assign name_message>
 						<@spring.message "script.info.name.help"/>
 					</#assign>
+					
+					<select id="script_type" name="scriptType" class="span2">
+						<#list handlers as handler>
+							<option value="${handler.key}" extension="${handler.extension}" project_handler="${handler.isProjectHandler()?string}">${handler.title}</option>
+						</#list>
+					</select>
 
 					<@input_popover name="fileName" rel="create_script_modal_popover"
 						data_placement="right"
 						message="script.info.name"
 						message_content="${name_message?js_string}"
-						extra_css="input-large" />
-				</@control_group>
-
-				<@control_group name="scriptType" inline_help="true" label_message_key="script.info.type">
+						extra_css="input-large span5" />
 					<input type="hidden" name="type" value="script"/>
-					<select id="script_type" name="scriptType">
-						<#list handlers as handler>
-							<option value="${handler.key}" extension="${handler.extension}" project_handler="${handler.isProjectHandler()?string}">${handler.title}</option>
-						</#list>
-					</select>
 				</@control_group>
 
 				<@control_group name="testUrl" inline_help="true" label_message_key="script.info.url">
@@ -33,12 +31,17 @@
 						<@spring.message "home.tip.url.content"/>
 					</#assign>
 
+					<select id="method" name="method" class="span2">
+						<option value="GET">GET</option>
+						<option value="POST">POST</option>
+					</select>
+
 					<@input_popover name="testUrl" rel="create_script_modal_popover"
-						data_placement="right"
+						data_placement="bottom"
 						message="home.tip.url.title"
 						message_content="${url_message}"
 						placeholder="home.placeholder.url"
-						extra_css="input-large" />
+						extra_css="input-large span5 test-url" />
 				</@control_group>
 
 				<div class="control-group">
@@ -63,6 +66,17 @@
 					</div> 
 				</div>
 			</fieldset>
+			<div class="text-center">
+				<span>
+					<a id="detail_config_section_btn" class="pointer-cursor">
+						<@spring.message "perfTest.config.showAdvancedConfig"/>
+					</a>
+				</span>
+			</div>
+			<input id="options" type="hidden" name="options">
+			<div id="detail_config_section" class="well hide">
+				<#include "../common/script_option.ftl">
+			</div>
 		</form>
 	</div>
 	
@@ -112,7 +126,15 @@
 					markInput($testUrl, true);
 				}
 			}
+			$("#options").val(options.toJson($("#method").val()));
 			document.forms.createForm.submit();
+		});
+		$("#detail_config_section_btn").click(function() {
+			$("#detail_config_section").toggle();
+		});
+		$("#method").change(function(e) {
+			var methodName = $(e.target).val();
+			changeHTTPMethod(methodName);
 		});
 	});
 </script>
