@@ -36,11 +36,18 @@ import org.ngrinder.service.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +66,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Component
-public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
+public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants,
+		ApplicationListener<ContextRefreshedEvent> {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
@@ -86,6 +94,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private SpringContext context;
+	
+	@Autowired
+	private ApplicationContext appContext;
 
 	/**
 	 * Make it singleton.
@@ -124,6 +135,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			// reloadable.
 			cluster = resolveClusterMode();
 			initDevModeProperties();
+			addChangeConfigListenerForStatistics();
 			loadAnnouncement();
 			loadDatabaseProperties();
 		} catch (IOException e) {
@@ -131,6 +143,15 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		}
 	}
 
+	/**
+	 * In order to initialize the cache statistics supports, we have to use this application event.
+	 * Because we should update the cache statistics supports after the CacheManager has been initialized.
+	 */
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		updateCacheStatisticsSupports();
+	}
+	
 	protected void initDevModeProperties() {
 		if (!isDevMode()) {
 			initLogger(false);
@@ -139,6 +160,24 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			controllerProperties.addProperty(PROP_CONTROLLER_AGENT_FORCE_UPDATE, "true");
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL, "true");
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE, "true");
+		}
+	}
+	
+	private void addChangeConfigListenerForStatistics() {
+		addSystemConfListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				updateCacheStatisticsSupports();
+			}
+		});
+	}
+	
+	private void updateCacheStatisticsSupports() {
+		CacheManager cacheManager = appContext.getBean("cacheManager", CacheManager.class);
+		boolean enableStatistics = isEnableStatistics();
+		for (String cacheName : cacheManager.getCacheNames()) {
+			Cache cache = cacheManager.getCache(cacheName);
+			((net.sf.ehcache.Cache) cache.getNativeCache()).setStatisticsEnabled(enableStatistics);
 		}
 	}
 
@@ -691,5 +730,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	public long getInactiveClientTimeOut() {
 		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);
+	}
+	
+	public boolean isEnableStatistics() {
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_STATISTICS);
 	}
 }

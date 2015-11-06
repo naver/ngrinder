@@ -82,4 +82,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_AGENT_FORCE_UPDATE = "controller.agent_force_update";
 	public static final String PROP_CONTROLLER_UPDATE_CHUNK_SIZE = "controller.update_chunk_size";
 	public static final String PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT = "controller.inactive_client_time_out";
+	public static final String PROP_CONTROLLER_ENABLE_STATISTICS = "controller.enable_statistics";
 }
