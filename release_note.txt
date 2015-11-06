@@ -10,7 +10,8 @@ nGrinder 3.4 is the including function statistics API and auto create script.
 	* nGrinder recorder(Chrome extension)
 		- Chrome extension program.
 		- If you used chrome browser, install extension in "ngrinder/ngrinder-recorder"
-		- Recorder do record request in browser, and auto create script. 
+		- Recorder do record request in browser, and auto create script.
+	* Dockerfiles and running scripts for easy clusting version
 
 
 3.3.1 (2015.06.31/Planned)
