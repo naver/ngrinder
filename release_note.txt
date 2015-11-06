@@ -1,3 +1,18 @@
+3.4 (2015.11.06)
+nGrinder 3.4 is the including function statistics API and auto create script.
+
+- New feature and changes
+	* Statistics API
+		- You can monitoring JVM, Ehcache, dbcp statistics of nGrinder web server.
+		- If you want use, need enable "controller.enable_statistics" in system.conf.
+	* Easy generate script
+		- You can do scripting header/cookie/parameter for send request, in a simple setting.
+	* nGrinder recorder(Chrome extension)
+		- Chrome extension program.
+		- If you used chrome browser, install extension in "ngrinder/ngrinder-recorder"
+		- Recorder do record request in browser, and auto create script. 
+
+
 3.3.1 (2015.06.31/Planned)
 nGrinder 3.3.1 is the bug fix and minor enhancement release.
 
