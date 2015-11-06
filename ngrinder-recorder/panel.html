@@ -1,0 +1,61 @@
+<html>
+	<head>
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="css/jquery.dataTables.min.css">
+        <style type="text/css">
+			.ellipsis {
+				display: inline-block;
+				max-width: 300px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+        </style>
+        <script type="text/javascript" src="js/lib/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/common.js"></script>
+        <script type="text/javascript" src="js/panel.js"></script>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="alert alert-success" role="alert" style="margin-bottom: 0px;padding: 5px;">
+						<div class="row">
+							<div class="col-xs-1">Filter</div>
+							<div id="urlFilter" class="col-xs-11" style="color: #888888;"></div>
+						</div>
+						<div class="row">
+							<div class="col-xs-1">Enable Record</div>
+							<div id="recordEnable" class="col-xs-11" style="color: #888888;"></div>
+						</div>
+						<div class="row">
+							<div class="col-xs-1">Record Count</div>
+							<div id="recordCount" class="col-xs-11" style="color: #888888;"></div>
+						</div>
+					</div>
+
+					<table id="recordListTbl" class="table table-hover table-bordered table-condensed" style="font-size:12px;">
+						<colgroup>
+							<col width="70">
+							<col width="*">
+							<col width="20%">
+							<col width="20%">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>Method</th>
+								<th>URL</th>
+								<th>Header</th>
+								<th>FormData</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
