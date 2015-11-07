@@ -2,16 +2,18 @@
 nGrinder 3.4 is the including function statistics API and auto create script.
 
 - New feature and changes
-	* Statistics API
-		- You can monitoring JVM, Ehcache, dbcp statistics of nGrinder web server.
-		- If you want use, need enable "controller.enable_statistics" in system.conf.
-	* Easy generate script
-		- You can do scripting header/cookie/parameter for send request, in a simple setting.
-	* nGrinder recorder(Chrome extension)
-		- Chrome extension program.
-		- If you used chrome browser, install extension in "ngrinder/ngrinder-recorder"
-		- Recorder do record request in browser, and auto create script.
-	* Dockerfiles and running scripts for easy clusting version
+  * Easy Script Generator
+    Since nGrinder 3.0, we started to provide the script generate wizard that help you easy generate a default script, however, it only supported simply a get method for HTTP. Now, you can choose one of methods such as GET, POST as well as you can set http headers and cookies even form data on the wizard dialog, then it will create useful example codes for you.
+
+  * nGrinder Script Recorder
+    Actually, a few years ago, we released a script recorder, however, even though we can create some script using the script recorder, it makes to complicate the results because of bunch of script codes, moreover, we must install java before running it.
+    Now, we developed brand-new script recorder from the beginning using the Chrome extension technology. If you are using Chrome browser, you have only to install nGrinder Script Recorder package.
+
+  * Dockerfiles and running scripts for easy clusting version
+    Now, dockerize is becoming as one of fashions now. nGrinder is well-designed on distributed environment besides all the components are loosely connected with each other. If you have docker infrastructures, it makes you to easy run and manage agents.
+
+  * Statistics API
+    It might help you to monitor your own nGrinder controller if you are using nGrinder on the cluster mode just by enabled the "controller.enable_statistics" in your system.conf.
 
 
 3.3.1 (2015.06.31/Planned)
