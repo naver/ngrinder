@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
 /**
@@ -88,10 +89,12 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 					if (client.isConnected()) {
 						File testReportDir = singleConsole.getReportPath();
 						File dataFile = null;
+						FileWriter fw = null;
+						BufferedWriter bw = null;
 						try {
 							dataFile = new File(testReportDir, MONITOR_FILE_PREFIX + target + ".data");
-							FileWriter fileWriter = new FileWriter(dataFile, false);
-							BufferedWriter bw = new BufferedWriter(fileWriter);
+							fw = new FileWriter(dataFile, false);
+							bw = new BufferedWriter(fw);
 							// write header info
 							bw.write(SystemInfo.HEADER);
 							bw.newLine();
@@ -99,6 +102,9 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 							clientMap.put(client, bw);
 						} catch (IOException e) {
 							LOGGER.error("Error to write to file:{}, Error:{}", dataFile.getPath(), e.getMessage());
+						} finally {
+							closeQuietly(bw);
+							closeQuietly(fw);
 						}
 					}
 				}
@@ -129,8 +135,8 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 	public void endSampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService) {
 		scheduledTaskService.removeScheduledJob(this);
 		for (Map.Entry<MonitorClientService, BufferedWriter> each : clientMap.entrySet()) {
-			IOUtils.closeQuietly(each.getKey());
-			IOUtils.closeQuietly(each.getValue());
+			closeQuietly(each.getKey());
+			closeQuietly(each.getValue());
 		}
 		clientMap.clear();
 	}

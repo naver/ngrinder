@@ -295,8 +295,9 @@ public class AgentPackageService {
 				libs.add(FilenameUtils.getBaseName(each.trim()).replace("-SNAPSHOT", ""));
 			}
 		} catch (Exception e) {
-			IOUtils.closeQuietly(dependencyStream);
 			LOGGER.error("Error while loading monitor-dependencies.txt", e);
+		} finally {
+			IOUtils.closeQuietly(dependencyStream);
 		}
 
 		return libs;
@@ -315,8 +316,9 @@ public class AgentPackageService {
 			libs.add(getPackageName("ngrinder-runtime").replace("-SNAPSHOT", ""));
 			libs.add(getPackageName("ngrinder-groovy").replace("-SNAPSHOT", ""));
 		} catch (Exception e) {
-			IOUtils.closeQuietly(dependencyStream);
 			LOGGER.error("Error while loading dependencies.txt", e);
+		} finally {
+			IOUtils.closeQuietly(dependencyStream);
 		}
 
 		return libs;

@@ -890,9 +890,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	private static Object getRealDoubleValue(Double doubleValue) {
 		if (doubleValue == null) {
-			return 0;
+			return (double) 0;
 		}
-		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? 0 : doubleValue;
+		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? (double) 0 : doubleValue;
 	}
 
 	/**
@@ -901,7 +901,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @author JunHo Yoon
 	 * @since 3.0
 	 */
-	public static interface SamplingLifeCycleListener {
+	public interface SamplingLifeCycleListener {
 		/**
 		 * Called when the sampling is started.
 		 */
@@ -930,7 +930,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @author JunHo Yoon
 	 * @since 3.1.3
 	 */
-	public static interface SamplingLifeCycleFollowUpListener {
+	public interface SamplingLifeCycleFollowUpListener {
 		/**
 		 * Called when the sampling is started.
 		 */

@@ -498,6 +498,8 @@ public abstract class NetworkUtils {
 				dnsServers.add(each.replace("dns://", ""));
 			}
 		} catch (Exception e) {
+			NoOp.noOp();
+		} finally {
 			if (ctx != null) {
 				ctx.close();
 			}

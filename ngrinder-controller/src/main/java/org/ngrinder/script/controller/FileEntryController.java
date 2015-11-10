@@ -311,9 +311,7 @@ public class FileEntryController extends BaseController {
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(@Nullable FileEntry input) {
-						return input.getFileType() != FileType.DIR &&
-								StringUtils.containsIgnoreCase(new File(input.getPath()).getName(),
-										trimmedQuery);
+						return input != null && input.getFileType() != FileType.DIR && StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimmedQuery);
 					}
 				}));
 		model.addAttribute("query", query);
@@ -481,10 +479,7 @@ public class FileEntryController extends BaseController {
 				new Predicate<FileEntry>() {
 					@Override
 					public boolean apply(@Nullable FileEntry input) {
-						if (input != null) {
-							return trimPathSeparatorBothSides(getPath(input.getPath())).equals(trimmedPath);
-						}
-						return false;
+						return input != null && trimPathSeparatorBothSides(getPath(input.getPath())).equals(trimmedPath);
 					}
 				}));
 		sort(files, new Comparator<FileEntry>() {

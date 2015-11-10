@@ -100,7 +100,6 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 * Wrapper for groovy's testRunner closure.
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
-		private int runCount = 0;
 		private final GrinderContextExecutor m_groovyThreadRunner;
 		private RunNotifier notifier = new RunNotifier() {
 			@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
