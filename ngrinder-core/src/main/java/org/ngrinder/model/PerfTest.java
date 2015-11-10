@@ -799,7 +799,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public Boolean getSafeDistribution() {
-		return safeDistribution == null ? false : safeDistribution;
+		return safeDistribution == null ? Boolean.FALSE : safeDistribution;
 	}
 
 
