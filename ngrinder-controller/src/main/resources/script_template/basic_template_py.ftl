@@ -22,9 +22,6 @@ control.timeout = 6000
 test1 = Test(1, "${name}")
 request1 = HTTPRequest()
 
-# Make any method call on request1 increase TPS
-test1.record(request1)
-
 <#if options??>
 	<#assign options = options?eval>
 	<#assign method = options["method"]>
@@ -66,6 +63,7 @@ cookies.append(Cookie("${cookie["name"]?j_string}", "${cookie["value"]?j_string}
 class TestRunner:
 	# initlialize a thread 
 	def __init__(self):
+		test1.record(TestRunner.__call__)
 		grinder.statistics.delayReports=True
 		pass
 	
@@ -80,18 +78,16 @@ class TestRunner:
 		result = request1.${method?default("GET")}("${url}", <#if body??>body<#else>params</#if>)
 		
 		# You get the message body using the getText() method.
-		# if result.getText().find("HELLO WORLD") != -1 :
-		#    grinder.statistics.forLastTest.success = 1
-		# else :
-		#	 grinder.statistics.forLastTest.success = 0
+		# if result.getText().find("HELLO WORLD") == -1 :
+		#	 raise
 			
 		# if you want to print out log.. Don't use print keyword. Instead, use following.
 		# grinder.logger.info("Hello World")
 		
 		if result.getStatusCode() == 200 :
-			grinder.statistics.forLastTest.success = 1
+			return
 		elif result.getStatusCode() in (301, 302) :
 			grinder.logger.warn("Warning. The response may not be correct. The response code was %d." %  result.getStatusCode()) 
-			grinder.statistics.forLastTest.success = 1
+			return
 		else :
-			grinder.statistics.forLastTest.success = 0
+			raise
