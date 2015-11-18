@@ -60,7 +60,6 @@ class TestRunner {
 		HTTPPluginControl.getConnectionDefaults().timeout = 6000
 		test = new GTest(1, "${name}")
 		request = new HTTPRequest()
-		test.record(request);
 	<#if headers?? && headers?size != 0>
 		// Set header datas
 		List<NVPair> headerList = new ArrayList<NVPair>()
@@ -90,6 +89,7 @@ class TestRunner {
 
 	@BeforeThread 
 	public void beforeThread() {
+		test.record(this, "test")
 		grinder.statistics.delayReports=true;
 		grinder.logger.info("before thread.");
 	}
