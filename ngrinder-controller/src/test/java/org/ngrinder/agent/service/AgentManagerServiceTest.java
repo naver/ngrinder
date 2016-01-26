@@ -18,11 +18,13 @@ import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.mutable.MutableInt;
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -30,10 +32,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
@@ -60,6 +64,12 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private Config config;
 
+	@Before
+	public void before() {
+		agentRepository.deleteAll();
+		localAgentService.expireCache();
+	}
+	
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
@@ -85,6 +95,17 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agent.setState(AgentControllerState.BUSY);
 		agentRepository.save(agent);
 		return agent;
+	}
+	
+	private void saveAgent(String key , AgentControllerState agentStatus) {
+		AgentInfo agent = new AgentInfo();
+		agent.setIp("1.1.1.1");
+		agent.setName(key);
+		agent.setPort(8080);
+		agent.setRegion(key);
+		agent.setState(agentStatus);
+		agent.setApproved(true);
+		agentRepository.save(agent);
 	}
 
 	@Test
@@ -140,7 +161,102 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testOther() {
+	public void testGetAllReady() {
+		List<AgentInfo> agents = new ArrayList<AgentInfo>();
+		String currRegion = config.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+
+		saveAgent("nhn", AgentControllerState.BUSY);
+		saveAgent("nhn_owned_userNm", AgentControllerState.INACTIVE);
+		saveAgent("google", AgentControllerState.UNKNOWN);
+		localAgentService.expireCache();
+		agents = agentManagerService.getAllReady();
+		assertThat(agents.size(), is(oriCount + 0));
+
+		saveAgent("nhn", AgentControllerState.READY);
+		saveAgent("nhn_owned_userNm", AgentControllerState.READY);
+		saveAgent("google", AgentControllerState.READY);
+		localAgentService.expireCache();
+		agents = agentManagerService.getAllReady();
+		assertThat(agents.size(), is(oriCount + 3));
+	}
+
+	@Test
+	public void testReadyAgentCountPublicAgent() {
+		String currRegion = config.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+
+		saveAgent("nhn", AgentControllerState.READY);
+		saveAgent("google", AgentControllerState.READY);
+		localAgentService.expireCache();
+
+		int newCount = agentManagerService.getReadyAgentCount(getTestUser(), "nhn");
+		assertThat(newCount, is(oriCount + 1));
+	}
+
+	@Test
+	public void testReadyAgentCountPublicAgentAllInactivy() {
+		String currRegion = config.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+
+		saveAgent("nhn", AgentControllerState.INACTIVE);
+		saveAgent("nhn", AgentControllerState.UNKNOWN);
+		saveAgent("nhn", AgentControllerState.BUSY);
+		saveAgent("google", AgentControllerState.INACTIVE);
+		saveAgent("google", AgentControllerState.UNKNOWN);
+		saveAgent("google", AgentControllerState.BUSY);
+		localAgentService.expireCache();
+
+		int newCount = agentManagerService.getReadyAgentCount(getTestUser(), "nhn");
+		assertThat(newCount, is(oriCount + 0));
+	}
+
+	@Test
+	public void testReadyAgentCountOwnedAgent() {
+		String currRegion = config.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+		String owendAgentName = "nhn_owned_" + getTestUser().getUserName();
+
+		saveAgent(owendAgentName, AgentControllerState.READY);
+		saveAgent("nhn_owned_otherUserNm", AgentControllerState.READY);
+		saveAgent("nhn_owned_admin", AgentControllerState.READY);
+		localAgentService.expireCache();
+
+		int newCount = agentManagerService.getReadyAgentCount(getTestUser(), "nhn");
+		assertThat(newCount, is(oriCount + 1));
+	}
+
+	@Test
+	public void testReadyAgentCountPublicAgentInactivy() {
+		String currRegion = config.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+
+		saveAgent("nhn", AgentControllerState.INACTIVE);
+		saveAgent("google", AgentControllerState.READY);
+		localAgentService.expireCache();
+
+		int newCount = agentManagerService.getReadyAgentCount(getTestUser(), "nhn");
+		assertThat(newCount, is(oriCount + 0));
+	}
+
+	@Test
+	public void testReadyAgentCountOwnedAgentInactivy() {
+		String currRegion = config.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+
+		saveAgent("nhn_owned_otherUser", AgentControllerState.INACTIVE);
+		saveAgent("google_owned_admin", AgentControllerState.READY);
+		localAgentService.expireCache();
+
+		int newCount = agentManagerService.getReadyAgentCount(getTestUser(), "nhn");
+		assertThat(newCount, is(oriCount + 0));
+	}
+
+	private int getAvailableAgentCountBy(String currRegion) {
+		int oriCount = 0;
+		Map<String, MutableInt> countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
+		oriCount = countMap.get(currRegion).intValue();
+		return oriCount;
 	}
 
 }

@@ -135,12 +135,19 @@ public interface IAgentManagerService {
 	 */
 	public abstract SystemDataModel getSystemDataModel(String ip, String name);
 
-
 	/**
 	 * Update agent
 	 *
 	 * @param id ids.
 	 */
 	public abstract void update(Long id) throws IOException;
+	
+	/**
+	 * Get Ready agent state count return
+	 *
+	 * @param user current user
+	 * @return int readyAgentCnt
+	 */
+	public abstract int getReadyAgentCount(User user, String targetRegion);
 
 }

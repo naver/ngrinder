@@ -90,4 +90,9 @@ public enum AgentControllerState {
 	public boolean isVisible() {
 		return category != AgentStatusCategory.INACTIVE;
 	}
+	
+	public boolean isReady() {
+		return category == AgentStatusCategory.READY;
+	}
+	
 }

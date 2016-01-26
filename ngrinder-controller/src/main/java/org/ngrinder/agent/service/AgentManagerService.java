@@ -512,4 +512,42 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			}
 		}
 	}
+
+	/**
+	 * All ready state agent return
+	 */
+	List<AgentInfo> getAllReady() {
+		List<AgentInfo> agents = Lists.newArrayList();
+		for (AgentInfo agentInfo : getAllLocal()) {
+			final AgentControllerState state = agentInfo.getState();
+			if (state != null && state.isReady()) {
+				agents.add(agentInfo);
+			}
+		}
+		return agents;
+	}
+
+	/**
+	 * Ready agent state count return
+	 *
+	 * @param user The login user
+	 * @param String targetRegion The name of target region
+	 * @return ready Agent count
+	 */
+	@Override
+	public int getReadyAgentCount(User user, String targetRegion) {
+		int readyAgentCnt = 0;
+		String myOwnAgent = targetRegion + "_owned_" + user.getUserId();
+		for (AgentInfo agentInfo : getAllReady()) {
+			if (!agentInfo.isApproved()) {
+				continue;
+			}
+			String fullRegion = agentInfo.getRegion();
+			if (fullRegion.equals(targetRegion) || fullRegion.equals(myOwnAgent)) {
+				readyAgentCnt++;
+			}
+		}
+		return readyAgentCnt;
+	}
+	
 }

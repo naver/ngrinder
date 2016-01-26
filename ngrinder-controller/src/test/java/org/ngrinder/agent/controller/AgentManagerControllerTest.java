@@ -15,6 +15,7 @@ package org.ngrinder.agent.controller;
 
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -139,4 +140,14 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		assertTrue(rtnStr.getBody().contains("freeMemory"));
 	}
 
+	@Test
+	public void testGetAvailableAgentCount() throws Exception {
+		String targetRegion = "test";
+		HttpEntity<String> returnHttpEntity = agentController.getAvailableAgentCount(getTestUser(),
+			targetRegion);
+		String result = returnHttpEntity.getBody();
+		JSONObject obj = new JSONObject(result);
+		assertThat(0, is(obj.get("availableAgentCount")));
+	}
+	
 }

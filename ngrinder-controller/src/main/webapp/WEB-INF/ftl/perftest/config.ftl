@@ -28,13 +28,15 @@
 		<div class="form-horizontal form-horizontal-2">
 
 			<div class="row">
-					<div class="span4">
+					<div class="span4" style="height:-1px">
 						<@control_group name="agentCount" label_message_key="perfTest.config.agent"
-							inline_help="${clustered?string}" err_style="height:20px">
+							inline_help="${clustered?string}" err_style="height:15px">
 							<@input_append name="agentCount"
 								value="${test.agentCount}"
 								message="perfTest.config.agent"
 								append_prefix="perfTest.config.max" append='<span id="maxAgentCount"></span>' />
+							<i class="pointer-cursor expand" id="expand_ready_agent_cnt_btn"></i>
+							<div id="div_ready_agent_cnt" style="display: none;padding:0px 0 0 0;"><@spring.message "perfTest.message.available.AgentCount"/><span id="availableAgentCount">0</span></div>
 						</@control_group>
 					</div>
 
@@ -42,7 +44,7 @@
 						<#if clustered == true>
 							<@control_group name="region" label_message_key="perfTest.config.region"
 								label_help_message_key="perfTest.config.region"
-								label_style="margin-left:-50px;width:80px"
+								label_style="margin:3px -35px;width:61px"
 								err_style="margin-left: -140px;width: 170px;display:inline-block;margin-top:6px;
 								height:20px">
 								<select id="region" name="region" class="pull-right required" style="width: 110px">

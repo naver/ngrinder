@@ -16,6 +16,7 @@ package org.ngrinder.agent.repository;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.ready;
 
 import java.util.List;
 
@@ -57,6 +58,16 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		agentRepository.save(agentInfo);
 	}
 
+	private void addAgentState(String name, String region, AgentControllerState state) {
+		agentInfo = new AgentInfo();
+		agentInfo.setName(name);
+		agentInfo.setIp("127.0.0.1");
+		agentInfo.setRegion(region);
+		agentInfo.setState(state);
+		agentInfo.setApproved(false);
+		agentRepository.save(agentInfo);
+	}
+
 	@Test
 	public void testGetByIp() {
 		AgentInfo findByIp = agentRepository.findByIp("127.0.0.1");
@@ -78,4 +89,16 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("world1"));
 		assertThat(findAll.size(), is(2));
 	}
+
+	@Test
+	public void testReady() {
+		addAgentState("hello5", "world5_owned_hello", AgentControllerState.READY);
+		addAgentState("hello6", "world6_owned_hello", AgentControllerState.READY);
+		addAgentState("hello7", "world7_owned_hello", AgentControllerState.STARTED);
+		addAgentState("hello8", "world8_owned_hello", AgentControllerState.FINISHED);
+		assertThat(agentRepository.findAll().size(), is(5));
+		List<AgentInfo> readyAgentList = agentRepository.findAll(AgentManagerSpecification.ready());
+		assertThat(readyAgentList.size(), is(2));
+	}
+	
 }

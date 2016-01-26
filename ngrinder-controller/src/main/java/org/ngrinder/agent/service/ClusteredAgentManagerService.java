@@ -50,6 +50,7 @@ import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.ready;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -243,6 +244,14 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public List<AgentInfo> getAllVisible() {
 		return filterOnlyActiveRegion(agentManagerRepository.findAll(visible()));
 	}
+	
+	/**
+	 * All ready state agent return
+	 */
+	@Override
+	public List<AgentInfo> getAllReady() {
+		return filterOnlyActiveRegion(agentManagerRepository.findAll(ready()));
+	}
 
 	private List<AgentInfo> filterOnlyActiveRegion(List<AgentInfo> agents) {
 		final Set<String> regions = getRegions();
@@ -397,7 +406,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
 		getAgentManager().stopAgent(agentIdentity);
 	}
-
 
 	/**
 	 * Update agent by id.
