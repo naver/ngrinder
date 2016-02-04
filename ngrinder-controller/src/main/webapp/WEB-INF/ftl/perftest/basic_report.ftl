@@ -5,8 +5,8 @@
 		width:170px;
 	}
 </style>
-<div class="row">
-	<div class="span4">
+<div class="row report">
+	<div class="span4 intro" data-step="4" data-intro="<@spring.message 'intro.report.summary'/>">
 		<fieldset>
 			<legend>
 				<@spring.message "perfTest.report.summary"/>
@@ -52,7 +52,7 @@
 			</fieldset>
 		</div>
 	</div>
-	<div class="span8">
+	<div class="span8 intro" data-step="5" data-intro="<@spring.message 'intro.report.tpsGraph'/>">
 		<fieldSet>
 			<legend>
 				<@spring.message "perfTest.report.tpsGraph"/>
@@ -64,7 +64,7 @@
 		<div id="tps_chart" class="chart" style="width: 610px; height: 300px"></div> 
 	</div>
 </div>
-<div class="row" >
+<div class="row report">
 	<div class="span4">
 		<fieldSet>
 			<legend>
@@ -87,7 +87,7 @@
 			</@list>
 		</div>
 	</div>
-	<div class="span8">
+	<div class="span8 intro" data-step="6" data-intro="<@spring.message 'intro.report.testComment'/>">
 		<fieldSet>
 			<legend>
 				<@spring.message "perfTest.report.testComment"/>

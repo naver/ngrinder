@@ -20,47 +20,46 @@
 
 </style>
 <!--suppress ALL -->
-<div class="row">
+<div class="row config">
 	<div class="span6">
 		<fieldset>
 			<legend><span><@spring.message "perfTest.config.basicConfiguration"/></span></legend>
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
 
-			<div class="row">
-					<div class="span4" style="height:-1px">
-						<@control_group name="agentCount" label_message_key="perfTest.config.agent"
-							inline_help="${clustered?string}" err_style="height:15px">
-							<@input_append name="agentCount"
-								value="${test.agentCount}"
-								message="perfTest.config.agent"
-								append_prefix="perfTest.config.max" append='<span id="maxAgentCount"></span>' />
-							<i class="pointer-cursor expand" id="expand_ready_agent_cnt_btn"></i>
-							<div id="div_ready_agent_cnt" style="display: none;padding:0px 0 0 0;"><@spring.message "perfTest.message.available.AgentCount"/><span id="availableAgentCount">0</span></div>
-						</@control_group>
-					</div>
-
-					<div class="span2">
-						<#if clustered == true>
-							<@control_group name="region" label_message_key="perfTest.config.region"
-								label_help_message_key="perfTest.config.region"
-								label_style="margin:3px -35px;width:61px"
-								err_style="margin-left: -140px;width: 170px;display:inline-block;margin-top:6px;
-								height:20px">
-								<select id="region" name="region" class="pull-right required" style="width: 110px">
-									<option value=""></option>
-									<#list regions as each>
-										<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
-											<@spring.message "${each}"/>
-										</option>
-									</#list>
-								</select>
-							</@control_group>
-						</#if>
-					</div>
+			<div class="row intro" data-step="4" data-intro="<@spring.message 'intro.config.basic.agent'/>">
+				<div class="span4">
+					<@control_group name="agentCount" label_message_key="perfTest.config.agent"
+						inline_help="${clustered?string}" err_style="height:20px">
+						<@input_append name="agentCount"
+							value="${test.agentCount}"
+							message="perfTest.config.agent"
+							append_prefix="perfTest.config.max" append='<span id="maxAgentCount"></span>' />
+					</@control_group>
 				</div>
+	
+				<div class="span2">
+					<#if clustered == true>
+						<@control_group name="region" label_message_key="perfTest.config.region"
+							label_help_message_key="perfTest.config.region"
+							label_style="margin-left:-50px;width:80px"
+							err_style="margin-left: -140px;width: 170px;display:inline-block;margin-top:6px;
+							height:20px">
+							<select id="region" name="region" class="pull-right required" style="width: 110px">
+								<option value=""></option>
+								<#list regions as each>
+									<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
+										<@spring.message "${each}"/>
+									</option>
+								</#list>
+							</select>
+						</@control_group>
+					</#if>
+				</div>
+			</div>
 
-			<@control_group  name="vuserPerAgent" label_message_key="perfTest.config.vuserPerAgent">
+			<@control_group name="vuserPerAgent" label_message_key="perfTest.config.vuserPerAgent" 
+				data_step="5" data_intro="intro.config.basic.vuser">
 				<@input_append name="vuserPerAgent"
 					value="${(test.vuserPerAgent)!1}"
 					message="perfTest.config.vuserPerAgent"
@@ -81,7 +80,8 @@
 				</div>
 			</@control_group>
 
-			<@control_group group_id="script_control" name="scriptName" label_message_key="perfTest.config.script">
+			<@control_group group_id="script_control" name="scriptName" label_message_key="perfTest.config.script"
+				data_step="6" data_intro="intro.config.basic.script">
 				<select id="script_name" class="required" name="scriptName" style="width: 275px"
 				        old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" ></select>
 				<input type="hidden" id="script_revision"
@@ -99,12 +99,13 @@
 				</button>
 			</@control_group>
 
-			<@control_group label_message_key="perfTest.config.scriptResources">
+			<@control_group label_message_key="perfTest.config.scriptResources"
+				data_step="7" data_intro="intro.config.basic.scriptResources">
             	<div class="div-resources" id="script_resources"></div>
 			</@control_group>
 
 			<#assign targetHosts = test.targetHosts>
-			<@control_group label_message_key="perfTest.config.targetHost">
+			<@control_group label_message_key="perfTest.config.targetHost" data_step="8" data_intro="intro.config.basic.target">
 				<#include "host.ftl">
 			</@control_group>
 			<hr>
@@ -112,7 +113,8 @@
 			<#assign duration_checked><#if test.threshold == "D">checked</#if></#assign>
 
 			<@control_group_with_radio label_message_key="perfTest.config.duration" controls_extra_class="docs-input-sizes"
-				input_id="duration_ratio" input_name="threshold" input_value="D" radio_checked="${duration_checked}" >
+				input_id="duration_ratio" input_name="threshold" input_value="D" radio_checked="${duration_checked}"
+				data_step="9" data_intro="intro.config.basic.duration">
 				<select class="select-item" id="select_hour"></select> :
 				<select class="select-item" id="select_min"></select> :
 				<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
@@ -127,7 +129,7 @@
 
 			<@control_group_with_radio label_message_key="perfTest.config.runCount"
 				input_id="run_count_radio" input_name="threshold" input_value="R" radio_checked="${count_checked}"
-				name="runCount">
+				name="runCount" data_step="10" data_intro="intro.config.basic.runcount">
 					<@input_append  name="runCount"
 						value="${test.runCount}"
 						message="perfTest.config.runCount"
@@ -200,7 +202,7 @@
 	</div>
 	<!-- end test content left -->
 
-	<div class="span6">
+	<div class="span6 intro" data-step="11" data-intro="<@spring.message 'intro.config.rampup'/>">
 		<fieldset>
 			<legend>
                 <span>

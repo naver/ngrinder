@@ -28,30 +28,36 @@
 				background-image: url('${req.getContextPath()}/img/bg_main_banner_popup.png?${nGrinderVersion}');
 				background-repeat: no-repeat;
 			}
+            .popover {
+                width: auto;
+                min-width: 200px;
+                max-width: 600px;
+                max-height: 500px;
+            }
 		</style> 
 	</head>
 	<body>
 	<div id="wrap">
 	<#include "common/navigator.ftl">
 	<div class="container wrap">
-		<div class="hero-unit"/>
+		<div class="hero-unit" data-step="1" data-intro="<@spring.message 'intro.index.quick.start'/>"/>
 			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickstart" method="POST">
 				<div class="quick-start" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
-					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message code="home.placeholder.url"/>"/>
+					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message code="home.placeholder.url"/>" data-step="2" data-intro="<@spring.message 'intro.index.test.url'/>"/>
 					<input id="options" type="hidden" name="options">
-					<select class="select-item span2" id="script_type" name="scriptType">
+					<select class="select-item span2" id="script_type" name="scriptType"  data-step="3" data-intro="<@spring.message 'intro.index.select.language'/>">
 						<#list handlers as handler>
 							<option value="${handler.key}">${handler.title}</option>
 						</#list>
 					</select>
-					<button id="start_test_btn" class="btn btn-primary" ><@spring.message "home.button.startTest"/></button>
+					<button id="start_test_btn" class="btn btn-primary" data-step="4" data-intro="<@spring.message 'intro.index.create'/>"><@spring.message "home.button.startTest"/></button>
 				</div> 
 			</form>
 		</div>
 		<div class="row">
 			<div class="span6">
 				<div class="page-header">
-	 				 <h4><@spring.message "home.qa.title"/></h4>  
+	 				 <h4 data-step="5" data-intro="<@spring.message 'intro.index.qna'/>"><@spring.message "home.qa.title"/></h4>  
 				</div>
 		   		<div class="well">
 			  		<br/>
@@ -88,7 +94,7 @@
 			</div>
 			<div class="span6">
 				<div class="page-header">
-	 				 <h4><@spring.message "home.resources.title"/></h4>
+	 				 <h4 data-step="6" data-intro="<@spring.message 'intro.index.resource'/>"><@spring.message "home.resources.title"/></h4>
 				</div>
 
 		   		<div class="well">
@@ -118,7 +124,12 @@
 						</#if>
 					</table>
 			  	</div>
-
+                <div class="pull-right" rel="popover" style="float;margin-top:-40px;margin-right:-30px"
+					title="Tip" data-html="ture" data-placement="left"
+					data-content="<@spring.message "intro.public.button.show"/>"
+					id="introButton"	>
+					<code>Tip</code>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -197,6 +208,10 @@
 				$("#url").val($("#fixed_url").val());
 				$("#script_type").val($("#fixed_script_type").val());
 				$("#quick_start").submit();
+			});
+			
+			$("#introButton").click(function() {
+				introJs().start();
 			});
 		});
 	</script>
