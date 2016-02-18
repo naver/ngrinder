@@ -1152,6 +1152,10 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 	} else {
 		displayConfigOnly();
 	}
+	
+	if (statusType == "STOP_BY_ERROR"){
+		$("#test_status_img").trigger('mouseover');
+	}
 }
 
 var finished = false;
