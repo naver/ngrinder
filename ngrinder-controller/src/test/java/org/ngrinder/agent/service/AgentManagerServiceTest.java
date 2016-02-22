@@ -70,33 +70,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		localAgentService.expireCache();
 	}
 	
-	@Test
-	public void testSaveGetDeleteAgent() {
-		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
-		Assert.assertNotNull(agent2);
-
-		List<AgentInfo> agentListDB = agentManagerService.getAllLocal();
-		Assert.assertNotNull(agentListDB);
-
-		agentManagerService.approve(agent.getId(), true);
-
-		agentRepository.delete(agent.getId());
-		agent2 = agentManagerService.getOne(agent.getId());
-		Assert.assertNull(agent2);
-	}
-
-	private AgentInfo saveAgent(String key) {
-		AgentInfo agent = new AgentInfo();
-		agent.setIp("1.1.1.1");
-		agent.setName("testAppName" + key);
-		agent.setPort(8080);
-		agent.setRegion("testRegion" + key);
-		agent.setState(AgentControllerState.BUSY);
-		agentRepository.save(agent);
-		return agent;
-	}
-	
 	private void saveAgent(String key , AgentControllerState agentStatus) {
 		AgentInfo agent = new AgentInfo();
 		agent.setIp("1.1.1.1");
@@ -109,24 +82,21 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testGetUserAvailableAgentCount() {
-		Map<String, MutableInt> countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
+	public void testSaveGetDeleteAgent() {
+		List<AgentInfo> agents = new ArrayList<AgentInfo>();
 		String currRegion = config.getRegion();
-		int oriCount = countMap.get(currRegion).intValue();
+		int oriCount = getAvailableAgentCountBy(currRegion);
 
-		AgentInfo agentInfo = new AgentInfo();
-		agentInfo.setName("localhost");
-		agentInfo.setRegion(config.getRegion());
-		agentInfo.setIp("127.127.127.127");
-		agentInfo.setPort(1);
-		agentInfo.setState(AgentControllerState.READY);
-		agentInfo.setApproved(true);
-		agentRepository.save(agentInfo);
+		saveAgent("agentSave", AgentControllerState.BUSY);
+		saveAgent("agentSave", AgentControllerState.UNKNOWN);
 		localAgentService.expireCache();
-		countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
+		agents = agentManagerService.getAllLocal();
+		assertThat(agents.size(), is(oriCount + 2));
 
-		int newCount = countMap.get(config.getRegion()).intValue();
-		assertThat(newCount, is(oriCount + 1));
+		agentRepository.deleteAll();
+		localAgentService.expireCache();
+		agents = agentManagerService.getAllLocal();
+		assertEquals("agent delete test error", agents.size(), 0);
 	}
 
 	@Test
