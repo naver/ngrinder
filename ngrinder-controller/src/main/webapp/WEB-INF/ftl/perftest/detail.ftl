@@ -229,7 +229,7 @@
 				</div>
 			</div>
 			<!-- end well -->
-			<@security.authorize ifAnyGranted="A, S">
+			<@security.authorize access="hasAnyRole('A', 'S')">
 				<#if test.createdUser?? && currentUser.userId != test.createdUser.userId>
 					<div class="pull-right">
 						<a href="${req.getContextPath()}/user/switch?to=${test.createdUser.userId!""}">
@@ -899,7 +899,7 @@ function bindEvent() {
 		if (currentScript) {
 			//noinspection JSUnusedAssignment
             var ownerId = "";
-			<@security.authorize ifAnyGranted="A, S">					
+			<@security.authorize access="hasAnyRole('A', 'S')">
 				<#if test.id??>
 					ownerId = "&ownerId=${(test.createdUser.userId)!}";
 				</#if>
@@ -988,7 +988,7 @@ function updateTotalVuser() {
 function updateScript() {
 	var ajaxObj = new AjaxObj("/perftest/api/script", null, "<@spring.message "common.error.error"/>");
 	ajaxObj.params = {
-		<@security.authorize ifAnyGranted="A, S">
+		<@security.authorize access="hasAnyRole('A', 'S')">
 				<#if test.id?? && test.createdUser??>'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>
 	};
@@ -1031,7 +1031,7 @@ function updateScriptResources(first) {
 	ajaxObj.params = {
 		'scriptPath' : scriptName,
 		'r' : $("#script_revision").val()
-		<@security.authorize ifAnyGranted="A, S">
+		<@security.authorize access="hasAnyRole('A', 'S')">
 			<#if test.id??>,'ownerId' : '${(test.createdUser.userId)!}'</#if>
 		</@security.authorize>
 	};

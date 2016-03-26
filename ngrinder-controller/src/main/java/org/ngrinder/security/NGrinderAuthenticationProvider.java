@@ -35,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.taglibs.authz.JspAuthorizeTag;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -94,13 +95,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		if (this.saltSource != null) {
 			salt = this.saltSource.getSalt(userDetails);
 		}
-
 		String message = messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials",
 				"Bad credentials");
 		if (authentication.getCredentials() == null) {
 			LOG.debug("Authentication failed: no credentials provided");
-
-			throw new BadCredentialsException(message, userDetails);
+			throw new BadCredentialsException(message);
 		}
 
 		String presentedPassword = authentication.getCredentials().toString();
@@ -121,7 +120,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (!authorized) {
-			throw new BadCredentialsException(message, user);
+			throw new BadCredentialsException(message);
 		}
 
 		// If It's the first time to login

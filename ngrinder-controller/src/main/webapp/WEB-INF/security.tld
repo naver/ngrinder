@@ -1,12 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ ~ Copyright 2002-2014 the original author or authors.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
         version="2.0">
     <description>Spring Security Authorization Tag Library</description>
 
-    <tlib-version>3.1</tlib-version>
+    <tlib-version>4.0</tlib-version>
     <short-name>security</short-name>
     <uri>http://www.springframework.org/security/tags</uri>
 
@@ -59,36 +73,6 @@
             <name>var</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <description>
-                A comma separated list of roles which the user must not have
-                for the body to be output. Deprecated in favour of the access expression.
-            </description>
-            <name>ifNotGranted</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <description>
-                A comma separated list of roles which the user must all
-                possess for the body to be output. Deprecated in favour of the access expression.
-            </description>
-            <name>ifAllGranted</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
-        <attribute>
-            <description>
-                A comma separated list of roles, one of which the user must
-                possess for the body to be output. Deprecated in favour of the access expression.
-            </description>
-            <name>ifAnyGranted</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
 
@@ -175,6 +159,37 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+    </tag>
+
+    <tag>
+        <description><![CDATA[
+            If CSRF protection is enabled, this tag inserts a hidden form field with the correct name and value for the
+            CSRF protection token. If CSRF protection is not enabled, this tag outputs nothing. Normally Spring Security
+            automatically inserts this form field for any <form:form> tags, but if for some reason you cannot use
+            <form:form> this tag is a handy replacement. You should place this tag within an HTML <form></form> block,
+            where you would normally place other <input>s. Do NOT place this tag within a Spring <form:form></form:form>
+            block—Spring Security handles Spring forms automatically.
+        ]]></description>
+        <name>csrfInput</name>
+        <tag-class>org.springframework.security.taglibs.csrf.CsrfInputTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <description><![CDATA[
+            If CSRF protection is enabled, this tag inserts meta tags containing the CSRF protection token form
+            field and header names and CSRF protection token value. These tags are useful for employing CSRF protection
+            within JavaScript in your applications. You should place this tag within an HTML <head></head> block, where
+            you would normally place other meta tags. Once you use this tag, you can access the form field name using
+            the JQuery $("meta[name='_csrf_parameter']").attr("content") and the header name using
+            $("meta[name='_csrf_header']").attr("content"). Likewise, you can access the token value with
+            $("meta[name='_csrf']").attr("content"). You should use a form field when creating and submitting forms from
+            JavaScript, and you should use a header when sending AJAX requests. If CSRF protection is not enabled, this
+            tag outputs nothing.
+        ]]></description>
+        <name>csrfMetaTags</name>
+        <tag-class>org.springframework.security.taglibs.csrf.CsrfMetaTagsTag</tag-class>
+        <body-content>empty</body-content>
     </tag>
 
 </taglib>

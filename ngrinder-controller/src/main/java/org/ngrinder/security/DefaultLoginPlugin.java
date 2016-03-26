@@ -55,7 +55,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 			LOG.debug("Authentication failed: password does not match stored value");
 
 			throw new BadCredentialsException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userId);
+					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 		}
 		return true;
 	}
