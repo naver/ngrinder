@@ -37,7 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +69,7 @@ public class UserService extends AbstractUserService {
 	private SaltSource saltSource;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private ShaPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private Config config;

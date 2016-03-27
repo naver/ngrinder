@@ -20,7 +20,7 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
 /**
  * Class description.
@@ -31,8 +31,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 public class DefaultLoginPluginTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	@Qualifier("shaPasswordEncoder")
-	private PasswordEncoder passwordEncoder;
+	private ShaPasswordEncoder passwordEncoder;
 
 	@Test
 	public void testValidateUser() {

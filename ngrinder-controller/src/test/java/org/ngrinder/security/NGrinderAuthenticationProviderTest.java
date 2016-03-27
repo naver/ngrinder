@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -35,65 +35,63 @@ import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since
  */
 public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransactionalTest {
 
-	@Autowired
-	private NGrinderAuthenticationProvider provider;
-	
-	@Autowired
-	private NGrinderUserDetailsService userDetailService;
+    @Autowired
+    private NGrinderAuthenticationProvider provider;
 
-	@Autowired
-	@Qualifier("shaPasswordEncoder")
-	private PasswordEncoder passwordEncoder;
-	
-	@Test
-	public void testAdditionalAuthenticationChecks() {
-		UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
-		
-		//remove authentication temporally
-		Authentication oriAuth = SecurityContextHolder.getContext().getAuthentication();
-		SecurityContextImpl context = new SecurityContextImpl();
-		SecurityContextHolder.setContext(context);
+    @Autowired
+    private NGrinderUserDetailsService userDetailService;
 
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
-		try {
-			provider.additionalAuthenticationChecks(user, token);
-			assertTrue(false);
-		} catch (BadCredentialsException e) {
-			assertTrue(true);
-		}
+    @Autowired
+    private ShaPasswordEncoder passwordEncoder;
 
-		token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
-		provider.additionalAuthenticationChecks(user, token);
-		
-		context.setAuthentication(oriAuth);
-	}
-	
-	@Test
-	public void testSetPasswordEncoder() {
-		org.springframework.security.authentication.encoding.PasswordEncoder enc1 = new PlaintextPasswordEncoder();
-		provider.setPasswordEncoder(enc1);
+    @Test
+    public void testAdditionalAuthenticationChecks() {
+        UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
 
-		org.springframework.security.crypto.password.PasswordEncoder enc2 = new StandardPasswordEncoder();
-		provider.setPasswordEncoder(enc2);
-		
-		provider.setPasswordEncoder(passwordEncoder);
-	}
-	
-	@Test
-	public void testAddNewUserIntoLocal() {
-		SecuredUser secUser = new SecuredUser(getTestUser(), null);
-		provider.addNewUserIntoLocal(secUser);
-		assertThat(secUser.getUser(), is(getTestUser()));
-		
-		User tmpUser = new User("tmpUserId", "tmpName", "123", "test.nhn.com", Role.USER);
-		SecuredUser tmpSecUser = new SecuredUser(tmpUser, null);
-		provider.addNewUserIntoLocal(tmpSecUser);
-		assertThat(tmpSecUser.getUser(), is(tmpUser));
-	}
+        //remove authentication temporally
+        Authentication oriAuth = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContextImpl context = new SecurityContextImpl();
+        SecurityContextHolder.setContext(context);
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
+        try {
+            provider.additionalAuthenticationChecks(user, token);
+            assertTrue(false);
+        } catch (BadCredentialsException e) {
+            assertTrue(true);
+        }
+
+        token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
+        provider.additionalAuthenticationChecks(user, token);
+
+        context.setAuthentication(oriAuth);
+    }
+
+    @Test
+    public void testSetPasswordEncoder() {
+        PlaintextPasswordEncoder plaintextPasswordEncoder = new PlaintextPasswordEncoder();
+        provider.setPasswordEncoder(plaintextPasswordEncoder);
+
+        org.springframework.security.crypto.password.PasswordEncoder enc2 = new StandardPasswordEncoder();
+        provider.setPasswordEncoder(enc2);
+
+        provider.setPasswordEncoder(passwordEncoder);
+    }
+
+    @Test
+    public void testAddNewUserIntoLocal() {
+        SecuredUser secUser = new SecuredUser(getTestUser(), null);
+        provider.addNewUserIntoLocal(secUser);
+        assertThat(secUser.getUser(), is(getTestUser()));
+
+        User tmpUser = new User("tmpUserId", "tmpName", "123", "test.nhn.com", Role.USER);
+        SecuredUser tmpSecUser = new SecuredUser(tmpUser, null);
+        provider.addNewUserIntoLocal(tmpSecUser);
+        assertThat(tmpSecUser.getUser(), is(tmpUser));
+    }
 }

@@ -20,7 +20,7 @@ import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -42,7 +42,7 @@ public class MockUserContext extends UserContext {
 	protected UserRepository userRepository;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private ShaPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private SaltSource saltSource;

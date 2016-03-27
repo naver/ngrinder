@@ -62,8 +62,9 @@
 	</repositories>
 
 	<properties>
-		<spring.version>4.1.0.RELEASE</spring.version>
-		<spring.security.version>4.0.1.RELEASE</spring.security.version>
+		<spring.version>4.2.5.RELEASE</spring.version>
+		<spring.security.version>4.0.4.RELEASE</spring.security.version>
+		<spring.data.version>1.9.4.RELEASE</spring.data.version>
 		<jdk-version>1.7</jdk-version>
 		<ngrinder.version>${project.version}</ngrinder.version>
 		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/releases</altDeploymentRepository>

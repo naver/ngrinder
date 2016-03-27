@@ -22,7 +22,7 @@ import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +50,7 @@ public class DBInit {
 	private SaltSource saltSource;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private ShaPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private FileEntryService fileEntryService;

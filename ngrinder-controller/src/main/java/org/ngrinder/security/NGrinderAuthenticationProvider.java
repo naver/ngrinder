@@ -13,8 +13,6 @@
  */
 package org.ngrinder.security;
 
-import java.util.Date;
-
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
@@ -29,16 +27,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.taglibs.authz.JspAuthorizeTag;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.util.Date;
 
 /**
  * nGrinder UserDetailsAuthenticationProvider.
@@ -66,8 +65,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	// ================================================================================================
 
 	@Autowired
-	@Qualifier("shaPasswordEncoder")
-	private PasswordEncoder passwordEncoder;
+	private ShaPasswordEncoder passwordEncoder;
 
 	@Autowired
 	@Qualifier("reflectionSaltSource")
@@ -188,14 +186,14 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	public void setPasswordEncoder(Object passwordEncoder) {
 		Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");
 
-		if (passwordEncoder instanceof PasswordEncoder) {
-			this.passwordEncoder = (PasswordEncoder) passwordEncoder;
+		if (passwordEncoder instanceof ShaPasswordEncoder) {
+			this.passwordEncoder = (ShaPasswordEncoder) passwordEncoder;
 			return;
 		}
 
 		if (passwordEncoder instanceof org.springframework.security.crypto.password.PasswordEncoder) {
 			final org.springframework.security.crypto.password.PasswordEncoder delegate = cast(passwordEncoder);
-			this.passwordEncoder = new PasswordEncoder() {
+			this.passwordEncoder = new ShaPasswordEncoder() {
 				public String encodePassword(String rawPass, Object salt) {
 					checkSalt(salt);
 					return delegate.encode(rawPass);
@@ -222,7 +220,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		return (T) passwordEncoder;
 	}
 
-	protected PasswordEncoder getPasswordEncoder() {
+	protected ShaPasswordEncoder getPasswordEncoder() {
 		return passwordEncoder;
 	}
 
