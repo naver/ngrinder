@@ -16,6 +16,8 @@ package org.ngrinder.extension;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
 
+import ro.fortsoft.pf4j.ExtensionPoint;
+
 /**
  * Plugin extension point for {@link PerfTest} start and finish.
  * 
@@ -24,7 +26,7 @@ import org.ngrinder.service.IPerfTestService;
  * @author JunHo Yoon
  * @since 3.0
  */
-public interface OnTestLifeCycleRunnable {
+public interface OnTestLifeCycleRunnable extends ExtensionPoint {
 
 	/**
 	 * Callback method which will be invoked whenever {@link PerfTest} is started.

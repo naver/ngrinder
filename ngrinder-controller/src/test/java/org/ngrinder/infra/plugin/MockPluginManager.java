@@ -33,12 +33,4 @@ public class MockPluginManager extends PluginManager {
 		return true;
 	}
 
-	/**
-	 * Stop plugin framework
-	 */
-	@PreDestroy
-	@Override
-	public void destroy() {
-
-	}
 }

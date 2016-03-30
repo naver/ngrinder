@@ -13,6 +13,8 @@
  */
 package org.ngrinder.extension;
 
+import ro.fortsoft.pf4j.ExtensionPoint;
+
 /**
  * Plugin extension point which is executable when controller start and finish.
  * 
@@ -21,7 +23,7 @@ package org.ngrinder.extension;
  * @author JunHo Yoon
  * @since 3.0
  */
-public interface OnControllerLifeCycleRunnable {
+public interface OnControllerLifeCycleRunnable extends ExtensionPoint {
 
 	/**
 	 * Callback method which will be invoked whenever Controller is started.
