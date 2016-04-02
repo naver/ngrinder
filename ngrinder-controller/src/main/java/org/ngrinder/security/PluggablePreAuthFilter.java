@@ -13,20 +13,23 @@
  */
 package org.ngrinder.security;
 
-import com.atlassian.plugin.event.PluginEventListener;
-import com.atlassian.plugin.event.events.PluginDisabledEvent;
-import com.atlassian.plugin.event.events.PluginEnabledEvent;
-import org.ngrinder.infra.plugin.OnPreAuthServletFilterModuleDescriptor;
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.ngrinder.extension.OnPreAuthServletFilter;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CompositeFilter;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.*;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Proxy filter which run combined preauth plugins.
@@ -50,37 +53,8 @@ public class PluggablePreAuthFilter implements Filter {
 	@PostConstruct
 	public void init() {
 		this.compositeFilter = new CompositeFilter();
-		pluginInit();
-		pluginManager.addPluginUpdateEvent(this);
-	}
-
-	/**
-	 * Initialize plugins.
-	 */
-	protected void pluginInit() {
-		List<Filter> enabledModulesByClass = pluginManager.getEnabledModulesByDescriptorAndClass(
-				OnPreAuthServletFilterModuleDescriptor.class, Filter.class);
+		List<OnPreAuthServletFilter> enabledModulesByClass = pluginManager.getEnabledModulesByClass(OnPreAuthServletFilter.class);
 		this.compositeFilter.setFilters(enabledModulesByClass);
-	}
-
-	/**
-	 * Event handler for plugin enable.
-	 *
-	 * @param event event
-	 */
-	@PluginEventListener
-	public void onPluginEnabled(PluginEnabledEvent event) {
-		pluginInit();
-	}
-
-	/**
-	 * Event handler for plugin disable.
-	 *
-	 * @param event event
-	 */
-	@PluginEventListener
-	public void onPluginDisabled(PluginDisabledEvent event) {
-		pluginInit();
 	}
 
 	/*
@@ -90,9 +64,8 @@ public class PluggablePreAuthFilter implements Filter {
 	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+		ServletException {
 		this.compositeFilter.doFilter(request, response, chain);
 	}
 

@@ -19,6 +19,8 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
 import org.ngrinder.service.ISingleConsole;
 
+import ro.fortsoft.pf4j.ExtensionPoint;
+
 /**
  * Plugin extension point for {@link PerfTest} control by examining each sampling statistics.
  * 
@@ -27,7 +29,7 @@ import org.ngrinder.service.ISingleConsole;
  * @author JunHo Yoon
  * @since 3.0.3
  */
-public interface OnTestSamplingRunnable {
+public interface OnTestSamplingRunnable extends ExtensionPoint {
 
 	/**
 	 * Callback method which will be invoked when the given {@link PerfTest} test sampling is

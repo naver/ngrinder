@@ -13,91 +13,35 @@
  */
 package org.ngrinder.infra.plugin;
 
-import com.atlassian.plugin.DefaultModuleDescriptorFactory;
-import com.atlassian.plugin.ModuleDescriptor;
-import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
-import com.atlassian.plugin.event.PluginEventListener;
-import com.atlassian.plugin.event.events.PluginFrameworkShutdownEvent;
-import com.atlassian.plugin.event.events.PluginFrameworkStartedEvent;
-import com.atlassian.plugin.hostcontainer.DefaultHostContainer;
-import com.atlassian.plugin.main.AtlassianPlugins;
-import com.atlassian.plugin.main.PluginsConfiguration;
-import com.atlassian.plugin.main.PluginsConfigurationBuilder;
-import com.atlassian.plugin.osgi.container.impl.DefaultPackageScannerConfiguration;
-import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
-import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
-import com.atlassian.plugin.predicate.ModuleDescriptorPredicate;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.model.Home;
-import org.ngrinder.extension.OnControllerLifeCycleRunnable;
-import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.infra.schedule.ScheduledTaskService;
-import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.service.*;
-import org.ngrinder.user.service.UserService;
-import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.ServletContextAware;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.servlet.ServletContext;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
+import org.ngrinder.infra.config.Config;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import ro.fortsoft.pf4j.DefaultPluginManager;
 
 /**
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
- * It is built on atlassian plugin framework.
+ * It is built on Plugin Framework for Java.
  *
- * @author JunHo Yoon
- * @see https://developer.atlassian.com/display/PLUGINFRAMEWORK/Plugin+Framework
+ * @author JunHo Yoon ,GeunWoo Son
+ * @see https://github.com/decebals/pf4j
  * @since 3.0
  */
 @Profile("production")
 @Component
-public class PluginManager implements ServletContextAware, ControllerConstants {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(PluginManager.class);
-
-	private AtlassianPlugins plugins;
-	private ServletContext servletContext;
+public class PluginManager {
 
 	@Autowired
 	private Config config;
 
-	@Autowired(required = false)
-	private AuthenticationManager authenticationManager;
-
-	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
-	private AgentManagerService agentManagerService;
-
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	@Autowired
-	private PerfTestService perfTestService;
-
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private CacheManager cacheManager;
+	private DefaultPluginManager manager;
 
 	/**
 	 * Initialize plugin component.
@@ -114,95 +58,8 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 	 * Initialize Plugin Framework.
 	 */
 	public void initPluginFramework() {
-		CoreLogger.LOGGER.info("Initializing Plugin System");
-		// Determine which packages to expose to plugins
-		DefaultPackageScannerConfiguration scannerConfig = new DefaultPackageScannerConfiguration();
-		scannerConfig.setServletContext(servletContext);
-
-		// Expose current packages to the plugins
-		scannerConfig.getPackageIncludes().add("net.grinder.*");
-		scannerConfig.getPackageIncludes().add("net.grinder.statistics.*");
-		scannerConfig.getPackageIncludes().add("org.ngrinder.*");
-		scannerConfig.getPackageIncludes().add("org.ngrinder.service.*");
-		scannerConfig.getPackageIncludes().add("org.apache.*");
-		scannerConfig.getPackageIncludes().add("org.slf4j.*");
-
-		scannerConfig.getPackageIncludes().add("javax.servlet.*");
-		scannerConfig.getPackageIncludes().add("org.springframework.security.*");
-		// Determine which module descriptors, or extension points, to expose.
-		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
-		initPluginDescriptor(modules, DEFAULT_PACKAGE_NAME);
-
-		// Determine which service objects to expose to plugins
-		HostComponentProvider host = new HostComponentProvider() {
-			public void provide(ComponentRegistrar reg) {
-				reg.register(AuthenticationManager.class).forInstance(authenticationManager);
-				reg.register(IAgentManagerService.class).forInstance(agentManagerService);
-				reg.register(IUserService.class).forInstance(userService);
-				reg.register(IPerfTestService.class).forInstance(perfTestService);
-				reg.register(IConfig.class).forInstance(config);
-				reg.register(CacheManager.class).forInstance(cacheManager);
-				reg.register(IScheduledTaskService.class).forInstance(scheduledTaskService);
-			}
-		};
-		Home home = config.getHome();
-		final String region = config.getRegion();
-
-		// Construct the configuration
-		final File pluginsDirectory = home.getPluginsDirectory();
-		File pluginCache = getPluginCacheFolder(region, home.getPluginsCacheDirectory());
-		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(pluginsDirectory)
-				.packageScannerConfiguration(scannerConfig)
-				.hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
-				.hostComponentProvider(host).moduleDescriptorFactory(modules).osgiPersistentCache(pluginCache).build();
-
-		// Start the plugin framework
-		this.plugins = new AtlassianPlugins(config);
-		addPluginUpdateEvent(this);
-		plugins.start();
-		CoreLogger.LOGGER.info("Plugin System is started.");
-	}
-
-	@SuppressWarnings("ResultOfMethodCallIgnored")
-	private File getPluginCacheFolder(String region, File pluginsCacheDirectory) {
-		if (config.isClustered()) {
-			pluginsCacheDirectory = new File(pluginsCacheDirectory, region);
-		}
-		try {
-			FileUtils.forceMkdir(pluginsCacheDirectory);
-		} catch (IOException e) {
-			LOGGER.error("Failed to create plugin cache folder {}", pluginsCacheDirectory);
-			pluginsCacheDirectory = new File(FileUtils.getTempDirectory(), "cache");
-			pluginsCacheDirectory.mkdirs();
-			LOGGER.error("Failed to use temp folder to cache {}", pluginsCacheDirectory);
-		}
-		return pluginsCacheDirectory;
-	}
-
-	/**
-	 * Plugin Framework start listener.
-	 *
-	 * @param event event
-	 */
-	@PluginEventListener
-	public void onPluginFrameworkStart(PluginFrameworkStartedEvent event) {
-		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
-				OnControllerLifeCycleRunnable.class)) {
-			runnable.start(config.getCurrentIP(), this.config.getVersion());
-		}
-	}
-
-	/**
-	 * Plugin Framework shutdown listener.
-	 *
-	 * @param event event
-	 */
-	@PluginEventListener
-	public void onPluginFrameworkShutdown(PluginFrameworkShutdownEvent event) {
-		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
-				OnControllerLifeCycleRunnable.class)) {
-			runnable.finish(config.getCurrentIP(), this.config.getVersion());
-		}
+		manager.loadPlugins();
+		manager.startPlugins();
 	}
 
 	/**
@@ -212,34 +69,6 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 	 */
 	protected boolean isPluginSupportEnabled() {
 		return config.isPluginSupported();
-	}
-
-	/**
-	 * Collect all plugin descriptors by scanning.
-	 *
-	 * @param modules     module factory
-	 * @param packageName the package name from which scan is done.
-	 */
-	@SuppressWarnings("rawtypes")
-	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packageName) {
-		final Reflections reflections = new Reflections(packageName);
-		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
-				.getSubTypesOf(AbstractModuleDescriptor.class);
-
-		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
-			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
-			if (pluginDescriptorAnnotation == null) {
-				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
-						+ " doesn't have PluginDescriptor annotation. Skip..");
-			} else if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
-				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
-						+ " doesn't have corresponding plugin key. Skip..");
-			} else {
-				modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
-				LOGGER.info("plugin descriptor {} with {} is initiated.", pluginDescriptor.getName(),
-						pluginDescriptorAnnotation.value());
-			}
-		}
 	}
 
 	/**
@@ -268,85 +97,8 @@ public class PluginManager implements ServletContextAware, ControllerConstants {
 		if (defaultPlugin != null) {
 			pluginClasses.add(defaultPlugin);
 		}
-		if (plugins == null) {
-			return pluginClasses;
-		}
-		pluginClasses.addAll(plugins.getPluginAccessor().getEnabledModulesByClass(moduleClass));
+		pluginClasses.addAll(manager.getExtensions(moduleClass));
 		return pluginClasses;
-	}
-
-	/**
-	 * Get plugins by module descriptor and module class.<br/>
-	 * This method puts the given default plugin at a head of returned plugin list.
-	 *
-	 * @param <M>              module type
-	 * @param moduleDescriptor module descriptor
-	 * @param moduleClass      module class
-	 * @param defaultPlugin    default plugin
-	 * @return plugin list
-	 */
-	public <M> List<M> getEnabledModulesByDescriptorAndClass(
-			final Class<? extends ModuleDescriptor<M>> moduleDescriptor, final Class<M> moduleClass,
-			M defaultPlugin) {
-		ArrayList<M> pluginClasses = new ArrayList<M>();
-		if (defaultPlugin != null) {
-			pluginClasses.add(defaultPlugin);
-		}
-		if (plugins == null) {
-			return pluginClasses;
-		}
-		pluginClasses.addAll(plugins.getPluginAccessor().getModules(new ModuleDescriptorPredicate<M>() {
-			@Override
-			public boolean matches(ModuleDescriptor<? extends M> eachModuleDescriptor) {
-				Class<? extends M> eachModuleClass = eachModuleDescriptor.getModuleClass();
-				return eachModuleClass != null && moduleClass.isAssignableFrom(eachModuleClass) && eachModuleDescriptor.getClass().equals(moduleDescriptor);
-			}
-		}));
-
-		return pluginClasses;
-	}
-
-	/**
-	 * Get plugins by module descriptor and module class.
-	 *
-	 * @param <M>              module type
-	 * @param moduleDescriptor module descriptor class
-	 * @param moduleClass      model type class
-	 * @return plugin list
-	 */
-	public <M> List<M> getEnabledModulesByDescriptorAndClass(Class<? extends ModuleDescriptor<M>> moduleDescriptor,
-	                                                         Class<M> moduleClass) {
-		return getEnabledModulesByDescriptorAndClass(moduleDescriptor, moduleClass, null);
-	}
-
-	/**
-	 * Stop plugin framework.
-	 */
-	@PreDestroy
-	public void destroy() {
-		plugins.stop();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.web.context.ServletContextAware#setServletContext (javax.servlet.
-	 * ServletContext)
-	 */
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
-
-	/**
-	 * Add plugin update event.
-	 *
-	 * @param listener any listener.
-	 */
-	public void addPluginUpdateEvent(Object listener) {
-		if (this.plugins != null) {
-			this.plugins.getPluginEventManager().register(listener);
-		}
 	}
 
 }

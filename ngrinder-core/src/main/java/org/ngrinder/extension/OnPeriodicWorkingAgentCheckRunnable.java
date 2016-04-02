@@ -17,6 +17,8 @@ import net.grinder.console.communication.AgentProcessControlImplementation.Agent
 
 import java.util.Set;
 
+import ro.fortsoft.pf4j.ExtensionPoint;
+
 /**
  * Plugin extension point which is executed whenever the controller periodically check currently
  * working agent status.
@@ -25,7 +27,7 @@ import java.util.Set;
  * @author JunHo Yoon
  * @since 3.1.2.
  */
-public interface OnPeriodicWorkingAgentCheckRunnable {
+public interface OnPeriodicWorkingAgentCheckRunnable extends ExtensionPoint {
 
 	/**
 	 * Check currently working agent status.
