@@ -21,6 +21,7 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.model.User;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
@@ -280,4 +282,23 @@ public class AgentManagerController extends BaseController {
 		}
 		return statuses;
 	}
+	
+	/**
+	 * Get the number of available agents.
+	 * 
+	 * @param user The login user
+	 * @param targetRegion The name of target region
+	 * @return availableAgentCount Available agent count
+	 */
+	@RestAPI
+	@RequestMapping(value = {"/api/availableAgentCount"}, method = RequestMethod.GET)
+	@PreAuthorize("permitAll")
+	public HttpEntity<String> getAvailableAgentCount(User user,
+		@RequestParam(value = "targetRegion", required = true) String targetRegion) {
+		int availableAgentCount = agentManagerService.getReadyAgentCount(user, targetRegion);
+		HttpEntity<String> returnHttpEntity = toJsonHttpEntity(buildMap("availableAgentCount",
+			availableAgentCount));
+		return returnHttpEntity;
+	}
+	
 }

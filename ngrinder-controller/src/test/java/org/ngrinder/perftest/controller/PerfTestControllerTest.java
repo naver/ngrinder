@@ -358,4 +358,5 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		rtn = controller.searchTag(getAdminUser(), "test");
 		assertThat(rtn.getBody(), notNullValue());
 	}
+
 }

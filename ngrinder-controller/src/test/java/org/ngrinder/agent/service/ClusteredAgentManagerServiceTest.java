@@ -161,4 +161,58 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
 	}
 
+	private void saveAgent(String name, String region , AgentControllerState agentStatus) {
+		AgentInfo agent = new AgentInfo();
+		agent.setIp("1.1.1.1");
+		agent.setName(spiedConfig.getRegion() + name);
+		agent.setPort(8080);
+		agent.setRegion(region);
+		agent.setState(agentStatus);
+		agent.setApproved(true);
+		agentRepository.save(agent);
+	}
+	
+	@Test
+	public void getReadyAgentCountOwnedAdmin() throws Exception {
+		String currRegion = spiedConfig.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+
+		saveAgent("_test_1", currRegion , AgentControllerState.READY);
+		saveAgent("_test_2", currRegion + "_owned_admin", AgentControllerState.READY);
+		saveAgent("_test_3", currRegion + "_owned_user", AgentControllerState.READY);
+		saveAgent("_test_4", currRegion + "", AgentControllerState.BUSY);
+		saveAgent("_test_5", currRegion + "_owned_admin", AgentControllerState.BUSY);
+		agentManagerService.expireLocalCache();
+
+		int newCount = agentManagerService.getReadyAgentCount(getAdminUser(),
+			spiedConfig.getRegion());
+		assertThat(newCount, is(oriCount + 2));
+	}
+
+	@Test
+	public void getReadyAgentCountOtherRegion() throws Exception {
+		String currRegion = spiedConfig.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
+		
+		// add vaild
+		saveAgent("_test_1", currRegion , AgentControllerState.READY);
+		saveAgent("_test_2", currRegion + "_owned_admin", AgentControllerState.READY);
+		// add invalid
+		saveAgent("_test_3", currRegion , AgentControllerState.INACTIVE);
+		saveAgent("_test_4", "nhn_owned_admin", AgentControllerState.BUSY);
+		saveAgent("_test_5", "nhn", AgentControllerState.READY);
+		saveAgent("_test_6", "nhn_owned_admin", AgentControllerState.READY);
+		agentManagerService.expireLocalCache();
+		
+		int newCount = agentManagerService.getReadyAgentCount(getAdminUser(), currRegion);
+		assertThat(newCount, is(oriCount + 2));
+	}
+	
+	private int getAvailableAgentCountBy(String currRegion) {
+		int oriCount = 0;
+		Map<String, MutableInt> countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
+		oriCount = countMap.get(currRegion).intValue();
+		return oriCount;
+	}
+	
 }

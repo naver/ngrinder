@@ -336,6 +336,7 @@ $(document).ready(function () {
 	updateScript();
 	updateTotalVuser();
 	updateRampUpChart();
+	callUpdateAvailableAgentInfo();
 <#assign category = test.status.category>
 <#if category == "TESTING">
 	displayConfigAndRunningSection();
@@ -919,6 +920,17 @@ function bindEvent() {
 			$panel.slideUp();
 		}
 	});
+	
+	$("#expand_ready_agent_cnt_btn").click(function() {
+		$(this).toggleClass("collapse");
+		var $panel = $("#div_ready_agent_cnt");
+		if ($panel.is(":hidden")) {
+			$panel.show("slow");
+		} else {
+			$panel.slideUp();
+			
+		}
+	});
 
 	$("#select_hour, #select_min, #select_sec").change(function() {
 		$("#duration_ratio").click();
@@ -939,6 +951,7 @@ function bindEvent() {
 	$region.select2();
 	$region.change(function(){
 		changeAgentMaxCount($(this).val(), true);
+		updateAvailableAgentInfo($(this).val());
 	});
 	changeAgentMaxCount($region.val(), false);
 <#else>
@@ -1200,6 +1213,34 @@ function setDurationHour(durationVal) {
 	durationHour = durationVal % 3600000 == 0 ? durationHour : durationHour + 1;
 	$("#duration_hour").val(durationHour);
 }
+
+function callUpdateAvailableAgentInfo() {
+	var targetRegion;
+<#if clustered>
+	targetRegion = $("#region").val();
+<#else>
+	targetRegion = "NONE";
+</#if>	
+	if(targetRegion != '') {
+		updateAvailableAgentInfo(targetRegion);	
+	}
+	setTimeout(callUpdateAvailableAgentInfo, 2000);
+}
+
+function updateAvailableAgentInfo(targetRegion) {
+	var ajaxObj = new AjaxObj("${req.getContextPath()}/agent/api/availableAgentCount");
+	ajaxObj.type = "GET";
+	ajaxObj.params = {"targetRegion": targetRegion };
+	ajaxObj.success = function (data) {
+		$("#availableAgentCount").text(data.availableAgentCount);
+	};
+	ajaxObj.error = function () {
+		$("#availableAgentCount").text('');
+		$("#div_ready_agent_cnt").text('<@spring.message "common.error.error"/>');
+	};
+	ajaxObj.call();
+}
+
 </script>
 	</body>
 </html>

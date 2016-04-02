@@ -82,4 +82,23 @@ public abstract class AgentManagerSpecification {
 			}
 		};
 	}
+	
+	/**
+	 * Query specification to query the ready agents.
+	 * (state in READY,FINISHED,STARTED)
+	 *
+	 * @return Specification of this query
+	 */
+	public static Specification<AgentInfo> ready() {
+		return new Specification<AgentInfo>() {
+			@Override
+			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query,
+				CriteriaBuilder cb) {
+				Expression<AgentControllerState> status = root.get("state").as(
+					AgentControllerState.class);
+				return cb.and(cb.equal(status, AgentControllerState.READY));
+			}
+		};
+	}
+	
 }
