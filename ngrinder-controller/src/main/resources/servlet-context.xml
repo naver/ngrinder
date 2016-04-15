@@ -85,5 +85,6 @@
 	<mvc:resources mapping="/img/**" location="/img/" />
 	<mvc:resources mapping="/js/**" location="/js/" />
 	<mvc:resources mapping="/plugins/**" location="/plugins/" />
+	<mvc:resources mapping="/crx/**" location="/crx/" />
 
 </beans>
