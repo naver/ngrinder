@@ -29,11 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_ADDRESSES;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -102,39 +104,31 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getSystemDataModel("127.0.0.1", "127.0.0.1");
-		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(NetworkUtils.DEFAULT_LOCAL_HOST_NAME,
-				"127.0.0.1");
+		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(
+			NetworkUtils.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1");
 		monitor.setRegion(spiedConfig.getRegion());
 		agentManagerService.addAgentMonitoringTarget(monitor);
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(NetworkUtils.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1"));
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(
+			NetworkUtils.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1"));
 		agentManagerService.collectAgentSystemData();
 	}
 
 	@Test
 	public void testSaveGetDeleteAgent() {
-		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
-		Assert.assertNotNull(agent2);
+		List<AgentInfo> agents = new ArrayList<AgentInfo>();
+		String currRegion = spiedConfig.getRegion();
+		int oriCount = getAvailableAgentCountBy(currRegion);
 
-		List<AgentInfo> agentListDB = agentManagerService.getAllLocal();
-		Assert.assertNotNull(agentListDB);
+		saveAgent("agentSave", currRegion, AgentControllerState.BUSY);
+		saveAgent("agentSave", currRegion, AgentControllerState.UNKNOWN);
+		agentManagerService.expireLocalCache();
+		agents = agentManagerService.getAllLocal();
+		assertThat(agents.size(), is(oriCount + 2));
 
-		agentManagerService.approve(agent.getId(), true);
-
-		agentRepository.delete(agent.getId());
-		agent2 = agentManagerService.getOne(agent.getId());
-		Assert.assertNull(agent2);
-	}
-
-	private AgentInfo saveAgent(String key) {
-		AgentInfo agent = new AgentInfo();
-		agent.setIp("1.1.1.1");
-		agent.setName("TestRegion" + key);
-		agent.setPort(8080);
-		agent.setRegion("TestRegion" + key);
-		agent.setState(AgentControllerState.BUSY);
-		agentRepository.save(agent);
-		return agent;
+		agentRepository.deleteAll();
+		agentManagerService.expireLocalCache();
+		agents = agentManagerService.getAllLocal();
+		assertEquals("agent delete test error", agents.size(), 0);
 	}
 
 	@Test
@@ -161,23 +155,12 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
 	}
 
-	private void saveAgent(String name, String region , AgentControllerState agentStatus) {
-		AgentInfo agent = new AgentInfo();
-		agent.setIp("1.1.1.1");
-		agent.setName(spiedConfig.getRegion() + name);
-		agent.setPort(8080);
-		agent.setRegion(region);
-		agent.setState(agentStatus);
-		agent.setApproved(true);
-		agentRepository.save(agent);
-	}
-	
 	@Test
 	public void getReadyAgentCountOwnedAdmin() throws Exception {
 		String currRegion = spiedConfig.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
 
-		saveAgent("_test_1", currRegion , AgentControllerState.READY);
+		saveAgent("_test_1", currRegion, AgentControllerState.READY);
 		saveAgent("_test_2", currRegion + "_owned_admin", AgentControllerState.READY);
 		saveAgent("_test_3", currRegion + "_owned_user", AgentControllerState.READY);
 		saveAgent("_test_4", currRegion + "", AgentControllerState.BUSY);
@@ -193,26 +176,37 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	public void getReadyAgentCountOtherRegion() throws Exception {
 		String currRegion = spiedConfig.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
-		
+
 		// add vaild
-		saveAgent("_test_1", currRegion , AgentControllerState.READY);
+		saveAgent("_test_1", currRegion, AgentControllerState.READY);
 		saveAgent("_test_2", currRegion + "_owned_admin", AgentControllerState.READY);
 		// add invalid
-		saveAgent("_test_3", currRegion , AgentControllerState.INACTIVE);
+		saveAgent("_test_3", currRegion, AgentControllerState.INACTIVE);
 		saveAgent("_test_4", "nhn_owned_admin", AgentControllerState.BUSY);
 		saveAgent("_test_5", "nhn", AgentControllerState.READY);
 		saveAgent("_test_6", "nhn_owned_admin", AgentControllerState.READY);
 		agentManagerService.expireLocalCache();
-		
+
 		int newCount = agentManagerService.getReadyAgentCount(getAdminUser(), currRegion);
 		assertThat(newCount, is(oriCount + 2));
 	}
-	
+
+	private void saveAgent(String name, String region, AgentControllerState status) {
+		AgentInfo agent = new AgentInfo();
+		agent.setIp("1.1.1.1");
+		agent.setName(spiedConfig.getRegion() + name);
+		agent.setPort(8080);
+		agent.setRegion(region);
+		agent.setState(status);
+		agent.setApproved(true);
+		agentRepository.save(agent);
+	}
+
 	private int getAvailableAgentCountBy(String currRegion) {
 		int oriCount = 0;
 		Map<String, MutableInt> countMap = agentManagerService.getAvailableAgentCountMap(getTestUser());
 		oriCount = countMap.get(currRegion).intValue();
 		return oriCount;
 	}
-	
+
 }

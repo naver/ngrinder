@@ -44,21 +44,10 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 	@Before
 	public void before() {
 		agentRepository.deleteAll();
-		addAgent("hello", "world1");
-
+		addAgent("hello", "world1", AgentControllerState.BUSY);
 	}
 
-	private void addAgent(String name, String region) {
-		agentInfo = new AgentInfo();
-		agentInfo.setName(name);
-		agentInfo.setIp("127.0.0.1");
-		agentInfo.setRegion(region);
-		agentInfo.setState(AgentControllerState.BUSY);
-		agentInfo.setApproved(false);
-		agentRepository.save(agentInfo);
-	}
-
-	private void addAgentState(String name, String region, AgentControllerState state) {
+	private void addAgent(String name, String region, AgentControllerState state) {
 		agentInfo = new AgentInfo();
 		agentInfo.setName(name);
 		agentInfo.setIp("127.0.0.1");
@@ -83,19 +72,21 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testGetByOwner() {
-		addAgent("hello2", "world1_owned_hello");
-		addAgent("hello3", "world2_owned_hello");
+		addAgent("hello2", "NAVER", AgentControllerState.BUSY);
+		addAgent("hello3", "NAVER", AgentControllerState.BUSY);
 		assertThat(agentRepository.findAll().size(), is(3));
-		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("world1"));
+		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("NAVER"));
 		assertThat(findAll.size(), is(2));
 	}
 
 	@Test
-	public void testReady() {
-		addAgentState("hello5", "world5_owned_hello", AgentControllerState.READY);
-		addAgentState("hello6", "world6_owned_hello", AgentControllerState.READY);
-		addAgentState("hello7", "world7_owned_hello", AgentControllerState.STARTED);
-		addAgentState("hello8", "world8_owned_hello", AgentControllerState.FINISHED);
+	public void testAgentStateByReady() {
+		//add ready state
+		addAgent("hello5", "stateTest", AgentControllerState.READY);
+		addAgent("hello6", "stateTest", AgentControllerState.READY);
+		//add order state
+		addAgent("hello7", "stateTest", AgentControllerState.STARTED);
+		addAgent("hello8", "stateTest", AgentControllerState.FINISHED);
 		assertThat(agentRepository.findAll().size(), is(5));
 		List<AgentInfo> readyAgentList = agentRepository.findAll(AgentManagerSpecification.ready());
 		assertThat(readyAgentList.size(), is(2));
