@@ -27,7 +27,7 @@
         </params>
     </global>
 
-    <!-- url rule setting -->
+    <!-- url rule setting and url can specify settings for each xssSaxFilterDefender -->
     <url-rule-set>
         <url-rule>
             <url disable="true">/operation/announcement/</url>

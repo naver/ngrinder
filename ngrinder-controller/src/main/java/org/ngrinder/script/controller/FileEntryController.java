@@ -14,6 +14,7 @@
 package org.ngrinder.script.controller;
 
 import com.google.common.base.Predicate;
+import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -366,6 +367,7 @@ public class FileEntryController extends BaseController {
 	public String upload(User user, @RemainedPath String path, @RequestParam("description") String description,
 	                     @RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
+			description = XssPreventer.escape(description);
 			upload(user, path, description, file);
 			model.clear();
 			return "redirect:/script/list/" + path;
