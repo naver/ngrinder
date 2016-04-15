@@ -160,12 +160,8 @@
 			<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>"
 				 id="announcement_content">
 			<#if announcement?has_content>
-					<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0>
-			${announcement}
-			<#else>
-			${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
+				${announcement?replace('\r\n\r\n', '<br />')?replace('\t', '    ')}
 			</#if>
-				</#if>
 			</div>
 		</div>
 	</div>

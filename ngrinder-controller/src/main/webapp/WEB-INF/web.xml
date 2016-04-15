@@ -114,10 +114,18 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>xssEscapeServletFilter</filter-name>
+        <filter-class>com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>xssEscapeServletFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>httpPutFormContentFilter</filter-name>
         <filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>httpPutFormContentFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -127,7 +135,6 @@
         <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
         <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -137,7 +144,6 @@
         <filter-name>httpMethodFilter</filter-name>
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>httpMethodFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -147,7 +153,6 @@
         <filter-name>pluggableServletFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>pluggableServletFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -157,7 +162,6 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.navercorp.com/lucy-xss-servlet">
+   <defenders>
+       <defender>
+           <name>xssPreventerDefender</name>
+           <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssPreventerDefender</class>
+       </defender>
+       <defender>
+           <name>xssSaxFilterDefender</name>
+           <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssSaxFilterDefender</class>
+           <init-param>
+               <param-value>lucy-xss-superset-sax.xml</param-value>
+               <param-value>true</param-value>
+           </init-param>
+       </defender>
+   </defenders>
+
+    <!-- default defender -->
+    <default>
+        <defender>xssPreventerDefender</defender>
+    </default>
+
+    <!-- global setting -->
+    <global>
+        <params>
+            <param name="options" useDefender="false" />
+        </params>
+    </global>
+
+    <!-- url rule setting -->
+    <url-rule-set>
+        <url-rule>
+            <url disable="true">/operation/announcement/</url>
+        </url-rule>
+        <url-rule>
+            <url>/script/api/validate</url>
+            <params>
+                <param name="content" >
+                    <defender>xssSaxFilterDefender</defender>
+                </param>
+            </params>
+        </url-rule>
+        <url-rule>
+            <url>/script/save</url>
+            <params>
+                <param name="content" >
+                    <defender>xssSaxFilterDefender</defender>
+                </param>
+            </params>
+        </url-rule>
+    </url-rule-set>
+</config>
