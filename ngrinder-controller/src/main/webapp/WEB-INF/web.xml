@@ -119,7 +119,19 @@
     </filter>
     <filter-mapping>
         <filter-name>xssEscapeServletFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/login/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>xssEscapeServletFilter</filter-name>
+        <url-pattern>/perftest/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>xssEscapeServletFilter</filter-name>
+        <url-pattern>/user/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>xssEscapeServletFilter</filter-name>
+        <url-pattern>/script/*</url-pattern>
     </filter-mapping>
 
     <filter>

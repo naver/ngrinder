@@ -10,7 +10,7 @@
            <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssSaxFilterDefender</class>
            <init-param>
                <param-value>lucy-xss-superset-sax.xml</param-value>
-               <param-value>true</param-value>
+               <param-value>false</param-value>
            </init-param>
        </defender>
    </defenders>
@@ -29,9 +29,6 @@
 
     <!-- url rule setting and url can specify settings for each xssSaxFilterDefender -->
     <url-rule-set>
-        <url-rule>
-            <url disable="true">/operation/announcement/</url>
-        </url-rule>
         <url-rule>
             <url>/script/api/validate</url>
             <params>
