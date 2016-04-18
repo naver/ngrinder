@@ -5,26 +5,26 @@
 	</div>
 	<div class="modal-body">
 		<div>
-			<p>Follow below step in Chrome browser:</p>
+			<p>Follow below steps in Chrome browser:</p>
 			<ol>
 				<li>
-					nGrinder Recorder <a href="${req.getContextPath()}/crx/ngrinder-recorder-1.0.crx">download here</a>
+					Download <a href="${req.getContextPath()}/crx/ngrinder-recorder-1.0.crx">nGrinder Recorder</a>
 				</li>
 				<li>
 					Move to the Extensions management page by this URL: <b>chrome://extensions</b><br>
 					(other way : Chrome menu -> Tools -> Extensions)
 				</li>
 				<li>
-					Drags the <b>ngrinder-recorder.crx</b> file into the Extensions management page
+					Drags the <b>ngrinder-recorder.crx</b> file into the extensions management page
 				</li>
 				<li>
-					Accept in installing
+					Allow to install local extension
 				</li>
 				<li>
 					If completed, you will be able to see nGrinder Recorder Extension icon!
 				</li>
 			</ol>
-			<p>If you want a how to usage, <a href="https://github.com/naver/ngrinder/tree/master/ngrinder-controller#ngrinder-recorder-chrome-extension">show nGrinder Recorder READMD.md</a></p>
+			<p>If you want to know how to use, <a href="https://github.com/naver/ngrinder/tree/master/ngrinder-controller#ngrinder-recorder-chrome-extension">show nGrinder Recorder READMD.md</a></p>
 		</div>
 	</div>
 
