@@ -62,6 +62,8 @@ import net.grinder.scriptengine.groovy.junit.annotation.AfterThread
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
 
+import org.codehaus.groovy.reflection.ReflectionUtils;
+
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -91,7 +93,7 @@ class TestRunner {
 		test = new GTest(1, "Test1")
 		request = new HTTPRequest()
 		// Upload request.txt at resources folder
-		// If use Groovy Manve porject, "loadResourceFromClassPath("/request.json").getText("UTF-8")"
+		// If use Groovy Manve porject, "ReflectionUtils.getCallingClass(0).getResourceAsStream("/request.json").getText("UTF-8")"
 		String requestStr = new File("./resources/request.json").getText("UTF-8")
 		requestJson = RecorderUtils.parseRequestToJson(requestStr)
 	}
