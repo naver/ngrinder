@@ -21,7 +21,9 @@
 				<property name="userService" ref="userService" />
 			</bean>
 			<bean class="org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver" />
-			<bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver" />
+			<bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver">
+				<property name="prefix" value="page."/>
+			</bean>
 		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
 

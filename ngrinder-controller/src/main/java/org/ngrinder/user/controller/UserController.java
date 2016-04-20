@@ -81,10 +81,10 @@ public class UserController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"", "/"})
 	public String getAll(ModelMap model, @RequestParam(required = false) Role role,
-	                     @PageableDefault Pageable pageable,
+	                     @PageableDefault(page = 1) Pageable pageable,
 	                     @RequestParam(required = false) String keywords) {
 
-		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+		pageable = new PageRequest(pageable.getPageNumber() - 1, pageable.getPageSize(),
 				defaultIfNull(pageable.getSort(),
 						new Sort(Direction.ASC, "userName")));
 		Page<User> pagedUser;

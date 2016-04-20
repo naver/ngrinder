@@ -134,8 +134,8 @@ public class PerfTestController extends BaseController {
 	@RequestMapping({"/list", "/", ""})
 	public String getAll(User user, @RequestParam(required = false) String query,
 	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
-	                     @PageableDefault Pageable pageable, ModelMap model) {
-		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+	                     @PageableDefault(page = 1) Pageable pageable, ModelMap model) {
+		pageable = new PageRequest(pageable.getPageNumber() - 1, pageable.getPageSize(),
 				defaultIfNull(pageable.getSort(),
 						new Sort(Direction.DESC, "lastModifiedDate")));
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);

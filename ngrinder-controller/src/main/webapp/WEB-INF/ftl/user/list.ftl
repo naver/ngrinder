@@ -39,7 +39,7 @@
 					</a>
 				</span>
 			</div>
-			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}"/>
+			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}"/>
 			<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}"/>
 			<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 			<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
