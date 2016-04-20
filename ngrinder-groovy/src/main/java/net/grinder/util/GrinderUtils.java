@@ -42,13 +42,16 @@ public abstract class GrinderUtils {
 	public static int getThreadUniqId() {
 		InternalScriptContext grinder = getGrinderInstance();
 		GrinderProperties properties = grinder.getProperties();
-		int totalProcessCount = properties.getInt("grinder.processes", 1);
-		int totalThreadCount = properties.getInt("grinder.threads", 1);
-		int agentNumber = grinder.getAgentNumber();
-		int processNumber = grinder.getProcessNumber();
-		int threadNumber = grinder.getThreadNumber();
-		// Calc the current thread's unique id
-		return (agentNumber * totalProcessCount * totalThreadCount) + (processNumber * totalThreadCount) + threadNumber;
+		if (properties != null) {
+			int totalProcessCount = properties.getInt("grinder.processes", 1);
+			int totalThreadCount = properties.getInt("grinder.threads", 1);
+			int agentNumber = grinder.getAgentNumber();
+			int processNumber = grinder.getProcessNumber();
+			int threadNumber = grinder.getThreadNumber();
+			// Calc the current thread's unique id
+			return (agentNumber * totalProcessCount * totalThreadCount) + (processNumber * totalThreadCount) + threadNumber;
+		}
+		return 0;
 	}
 
 	private static InternalScriptContext getGrinderInstance() {
