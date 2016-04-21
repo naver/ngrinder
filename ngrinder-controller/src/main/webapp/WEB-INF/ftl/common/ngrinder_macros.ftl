@@ -87,9 +87,10 @@
 
 <#macro control_group name = "", group_id = "", label_message_key = "", lable_extra_class = ""
 	controls_style = "", label_style = "", err_style = "", inline_help="false" controls_extra_class = ""
-	label_help_message_key="">
+	label_help_message_key="" data_step="" data_intro="">
 
-<div class="control-group" id="${group_id}">
+<div class="control-group <#if data_step != ''>intro</#if>" <#if group_id!="">id="${group_id}"</#if>
+	<#if data_step!="">data-step="${data_step}"</#if> <#if data_intro!="">data-intro="<@spring.message '${data_intro}'/>"</#if>>
 	<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}">
 		<@spring.message "${label_message_key}"/>
 		<#if label_help_message_key != "">
@@ -122,8 +123,10 @@
 
 <#macro control_group_with_radio name="", group_id="", label_message_key="", lable_extra_class=""
 	controls_style="", label_style="", err_style="", inline_help="false" controls_extra_class=""
-	input_id="", input_name="", input_value="" radio_checked="">
-<div class="control-group" id="${group_id}">
+	input_id="", input_name="", input_value="" radio_checked="" data_step="" data_intro="">
+	
+<div class="control-group <#if data_step != ''>intro</#if>" id="${group_id}"
+	<#if data_step!="">data-step="${data_step}"</#if> <#if data_intro!="">data-intro="<@spring.message '${data_intro}'/>"</#if>>
 	<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}">
 		<input type="radio" id="${input_id}" name="${input_name}" value="${input_value}" ${radio_checked}/>
 		<@spring.message "${label_message_key}"/>

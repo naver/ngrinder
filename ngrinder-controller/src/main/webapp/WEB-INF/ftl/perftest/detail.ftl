@@ -10,8 +10,10 @@
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
 	.popover {
+		width: auto;
+		min-width: 200px;
+		max-width: 600px;
 		max-height: 500px;
-		overflow-y: scroll;
 	}
 	
 	.select-item {
@@ -169,12 +171,12 @@
 					<fieldset>
 						<div class="control-group">
 							<div class="row">
-								<div class="span4-5">
+								<div class="span4-5" data-step="1" data-intro="<@spring.message 'intro.detail.testName'/>">
 									<@control_group name = "testName" controls_style = "margin-left: 120px;" label_message_key = "perfTest.config.testName">
 										<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${test.testName}"/>
 									</@control_group>
 								</div>
-								<div class="span3-4">
+								<div class="span3-4" data-step="2" data-intro="<@spring.message 'intro.detail.tags'/>">
 									<@control_group name = "tagString" label_style = "width:60px;" controls_style = "margin-left: 40px;" label_message_key = "perfTest.config.tags">
 										<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${test.tagString}">
 									</@control_group>
@@ -198,7 +200,7 @@
 									<#assign isClone = false/>
 								</#if>
 
-								<div class="span2-3" style="margin-left:0">
+								<div class="span2-3" style="margin-left:0" data-step="3" data-intro="<@spring.message 'intro.detail.startbutton'/>">
 									<div class="control-group">
 										<input type="hidden" name="isClone" value="${isClone?string}"/>
 										<#--  Save/Clone is available only when the test owner is current user.   -->
@@ -269,6 +271,12 @@
 					</div>
 				</div>
 				<!-- end tab content -->
+				<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-30px"
+					title="Tip" data-html="ture" data-placement="left"
+					data-content="<@spring.message "intro.public.button.show"/>"
+					id="introButton"	>
+					<code>Tip</code>
+				</div>
 			</div>
 			<!-- end tabbable -->
 			<input type="hidden" id="scheduled_time" name="scheduledTime" /> 
@@ -888,6 +896,15 @@ function bindEvent() {
 		openReportDiv(function() {
 			$("#footer").show();
 		});
+		switchIntroData('report');
+	});
+	
+	$("#test_config_section_tab").click(function() {
+		switchIntroData('config');		
+	});
+
+	$("#running_section_tab").click(function() {
+		switchIntroData('running');		
 	});
 
 	$("#sample_tab").find("a").click(function(e) {
@@ -957,6 +974,9 @@ function bindEvent() {
 <#else>
 	changeAgentMaxCount("NONE", false);
 </#if>	
+	$("#introButton").click(function() {
+		introJs().start();
+	});
 }
 var agentCountMap = {};
 <#list regionAgentCountMap?keys as key>
@@ -1116,7 +1136,6 @@ function getOption(cnt) {
 	return contents.join("\n");
 }
 
-
 function openRunningDiv(onFinishHook) {
 	$("#running_section").load("${req.getContextPath()}/perftest/${(test.id!0)?c}/running_div",
 		function() {
@@ -1126,7 +1145,6 @@ function openRunningDiv(onFinishHook) {
 		}
 	);
 }
-
 
 function openReportDiv(onFinishHook) {
 	$("#report_section").load("${req.getContextPath()}/perftest/${(test.id!0)?c}/basic_report?imgWidth=600",
@@ -1180,12 +1198,10 @@ function displayConfigOnly() {
     $("#report_section_tab").hide();
 }
 
-
 var samplingInterval = 1;
-
-
 var $reportSectionTab = $("#report_section_tab");
 var $runningSectionTab = $("#running_section_tab");
+
 function displayConfigAndRunningSection() {
     $runningSectionTab.show();
     $runningSectionTab.find("a").tab('show');
@@ -1194,6 +1210,7 @@ function displayConfigAndRunningSection() {
     openRunningDiv(function() {
 		$("#foot_div").show();
 	});
+	switchIntroData('running');
 }
 
 function displayConfigAndReportSection() {
@@ -1204,6 +1221,7 @@ function displayConfigAndReportSection() {
 	openReportDiv(function() {
 		$("#foot_div").show();
 	});
+	switchIntroData('report');
 }
 
 function initScheduleTime() {
@@ -1232,19 +1250,30 @@ function callUpdateAvailableAgentInfo() {
 }
 
 function updateAvailableAgentInfo(targetRegion) {
-	var ajaxObj = new AjaxObj("${req.getContextPath()}/agent/api/availableAgentCount");
-	ajaxObj.type = "GET";
-	ajaxObj.params = {"targetRegion": targetRegion };
-	ajaxObj.success = function (data) {
-		$("#availableAgentCount").text(data.availableAgentCount);
-	};
-	ajaxObj.error = function () {
-		$("#availableAgentCount").text('');
-		$("#div_ready_agent_cnt").text('<@spring.message "common.error.error"/>');
-	};
-	ajaxObj.call();
+    var ajaxObj = new AjaxObj("${req.getContextPath()}/agent/api/availableAgentCount");
+    ajaxObj.type = "GET";
+    ajaxObj.params = {"targetRegion": targetRegion };
+    ajaxObj.success = function (data) {
+        $("#availableAgentCount").text(data.availableAgentCount);
+    };
+    ajaxObj.error = function () {
+        $("#availableAgentCount").text('');
+        $("#div_ready_agent_cnt").text('<@spring.message "common.error.error"/>');
+    };
+    ajaxObj.call();
+}
+
+function switchIntroData(showArea){
+	$(".intro").each(function(index , value){
+        $(this).attr("temp_data-step", $(this).attr("data-step")).removeAttr("data-step");
+        $(this).attr("temp_data-intro", $(this).attr("data-intro")).removeAttr("data-intro");
+	});
+	$("." + showArea + " .intro").each(function(index , value){
+        $(this).attr("data-step", $(this).attr("temp_data-step")).removeAttr("temp_data-step");
+        $(this).attr("data-intro", $(this).attr("temp_data-intro")).removeAttr("temp_data-intro");
+	});	
 }
 
 </script>
-	</body>
+</body>
 </html>

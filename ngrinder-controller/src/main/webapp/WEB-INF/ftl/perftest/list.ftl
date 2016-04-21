@@ -16,10 +16,9 @@
 
 		.popover {
 			width: auto;
-			min-width: 300px;
+			min-width: 200px;
 			max-width: 600px;
 			max-height: 500px;
-			overflow-y: scroll;
 		}
 
 		.popover-content {
@@ -75,7 +74,7 @@
 		<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 		<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
 
-		<div class="left-float">
+		<div class="left-float" data-step="3" data-intro="<@spring.message 'intro.list.search'/>">
 			<select id="tag" name="tag" style="width:150px">
 				<option value=""></option>
 			<@list list_items=availTags others="none"; eachTag >
@@ -103,11 +102,11 @@
 		</div>
 
 		<div class="right-float">
-			<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
+			<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn" data-step="1" data-intro="<@spring.message 'intro.list.create'/>">
 				<i class="icon-file icon-white"></i>
 			<@spring.message "perfTest.action.createTest"/>
 			</a>
-			<a class="pointer-cursor btn btn-danger" id="delete_btn">
+			<a class="pointer-cursor btn btn-danger" id="delete_btn" data-step="2" data-intro="<@spring.message 'intro.list.delete'/>">
 				<i class="icon-remove icon-white"></i>
 			<@spring.message "perfTest.action.deleteSelectedTest"/>
 			</a>
@@ -141,7 +140,7 @@
 	<thead>
 	<tr id="head_tr_id">
 		<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
-		<th class="center nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
+		<th class="center nothing" style="padding-left:3px" data-step="4" data-intro="<@spring.message 'intro.list.perftest.status'/>"><@spring.message "common.label.status"/></th>
 		<th id="test_name" name="testName"><@spring.message "perfTest.list.testName"/></th>
 		<th id="script_name" name="scriptName"><@spring.message "perfTest.list.scriptName"/></th>
 		<th class="nothing"><#if isAdmin??><@spring.message "perfTest.list.owner"/><#else><@spring.message "perfTest.list.modifier.oneLine"/></#if></th>
@@ -154,7 +153,7 @@
 		<th id="mean_test_time" name="meanTestTime" title='<@spring.message "perfTest.list.meantime"/>'>MTT</th>
 		<th id="errors" class="ellipsis" name="errors"><@spring.message "perfTest.list.errorRate"/></th>
 		<th class="nothing small-border"><@spring.message "perfTest.list.vusers"/></th>
-		<th class="nothing"><@spring.message "common.label.actions"/></th>
+		<th class="nothing" data-step="5" data-intro="<@spring.message 'intro.list.perftest.actions'/>"><@spring.message "common.label.actions"/></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -262,17 +261,22 @@
 	</@list>
 	</tbody>
 </table>
-<#if testList?has_content>
+		<div class="pull-right" rel="popover" style="float;margin-top:-26px;margin-right:-30px"
+			title="Tip" data-html="ture" data-placement="left"
+			data-content="<@spring.message "intro.public.button.show"/>"
+			id="introButton"	>
+			<code>Tip</code>
+		</div>
+	<#if testList?has_content>
 	<#include "../common/paging.ftl">
 	<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>
-<script type="text/javascript">
-	function doSubmit(page) {
-		getList(page);
-	}
+    <script type="text/javascript">
+            function doSubmit(page) {
+        getList(page);
+    }
 </script>
 </#if>
-</div>
-
+    </div>
 </div>
 <#include "../common/copyright.ftl">
 
@@ -440,6 +444,10 @@ $(document).ready(function () {
 			checkboxReject($this, $("#scheduled_only_checkbox"));
 		}
 		document.forms.test_list_form.submit();
+	});
+	
+	$("#introButton").click(function() {
+		introJs().start();
 	});
 });
 

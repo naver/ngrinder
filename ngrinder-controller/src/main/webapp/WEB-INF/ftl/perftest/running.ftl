@@ -1,7 +1,7 @@
 <#import "../common/spring.ftl" as spring>
 <#include "../common/ngrinder_macros.ftl">
-<div class="row">
-	<div class="span5">
+<div class="row running">
+	<div class="span5 intro" data-step="4" data-intro="<@spring.message 'intro.running.summary'/>">
 		<fieldSet>
 			<legend><@spring.message "perfTest.running.summaryTitle"/></legend>
 		</fieldSet>
@@ -69,13 +69,13 @@
 			<legend>
 			<@spring.message "perfTest.running.tpsGraph"/>
 				<span id="running_time" class="badge badge-success">&nbsp;</span>
-				<a id="stop_test_btn" class="btn btn-danger pull-right">
+				<a id="stop_test_btn" class="btn btn-danger pull-right intro" data-step="5" data-intro="<@spring.message 'intro.running.stopButton'/>">
 				<@spring.message "common.button.stop"/>
 				</a>
 			</legend>
 		</fieldSet>
 		<div id="running_tps_chart" class="chart" style="width: 530px; height: 300px"></div>
-		<div class="tabbable">
+		<div class="tabbable intro" data-step="6" data-intro="<@spring.message 'intro.running.accumulated'/>">
 			<ul class="nav nav-tabs" style="" id="sample_tab">
 				<li class="active">
 					<a href="#last_sample_tab"><@spring.message "perfTest.running.latestSample"/></a>
