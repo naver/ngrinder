@@ -4,3 +4,5 @@ before_install:
 jdk:
   - oraclejdk8
   - oraclejdk7
+script:
+  - mvn test -DskipTests=true
