@@ -138,6 +138,7 @@ public class ConsoleManager {
 				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
 						consoleCommunicationSetting, baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
+				singleConsole.setCsvSeparator(config.getCsvSeparator());
 				return singleConsole;
 			}
 		} catch (Exception e) {

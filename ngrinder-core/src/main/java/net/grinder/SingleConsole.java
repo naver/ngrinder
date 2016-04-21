@@ -137,7 +137,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
 	private Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Collections
 			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
-
+    /**
+     * cvs file Separator value.
+     */
+	private String cvsSeparator = ",";
 	/**
 	 * Constructor to bind all ip and the given port.
 	 * <p/>
@@ -702,23 +705,23 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		// add headers into the csv file.
 		if (!headerAdded) {
 			StringBuilder csvHeader = new StringBuilder();
-			csvHeader.append("DateTime").append(",").append("vuser");
+			csvHeader.append("DateTime").append(cvsSeparator).append("vuser");
 
 			// Get the key list from lastStatistic map, use this list to keep
 			// the write order
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 				if (!each.getKey().equals("Peak_TPS")) {
-					csvHeader.append(",").append(each.getKey());
+					csvHeader.append(cvsSeparator).append(each.getKey());
 				}
 			}
 			if (intervalStatisticMapPerTest.size() != 1) {
 				for (int i = 1; i <= intervalStatisticMapPerTest.size(); i++) {
-					csvHeader.append(",").append("Description");
+					csvHeader.append(cvsSeparator).append("Description");
 					// get the key list from lastStatistic map, use list to keep
 					// the order
 					for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 						if (!each.getKey().equals("Peak_TPS")) {
-							csvHeader.append(",").append(each.getKey()).append("-").append(i);
+							csvHeader.append(cvsSeparator).append(each.getKey()).append("-").append(i);
 						}
 					}
 
@@ -729,11 +732,11 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 
 		StringBuilder csvLine = new StringBuilder();
-		csvLine.append(DateUtils.dateToString(new Date())).append(",").append(runningThread);
+		csvLine.append(DateUtils.dateToString(new Date())).append(cvsSeparator).append(runningThread);
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 			if (!each.getKey().equals("Peak_TPS")) {
 				double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
-				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
+				csvLine.append(cvsSeparator).append(formatValue(getRealDoubleValue(doubleValue)));
 			}
 		}
 
@@ -743,7 +746,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				csvLine.append(",").append(description);
 				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 					if (!each.getKey().equals("Peak_TPS")) {
-						csvLine.append(",").append(
+						csvLine.append(cvsSeparator).append(
 								formatValue(getRealDoubleValue(each.getValue().getDoubleValue(eachPair.getValue()))));
 					}
 				}
@@ -1342,5 +1345,14 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	@SuppressWarnings("UnusedDeclaration")
 	public void addSamplingLifeCycleFollowUpCycleListener(SamplingLifeCycleFollowUpListener listener) {
 		samplingLifeCycleFollowupListener.add(listener);
+	}
+
+	/*
+	 * set CsvSeparator.
+	 *
+	 * @param String csvSeparator
+	 */
+	public void setCsvSeparator(String csvSeparator){
+		this.cvsSeparator = csvSeparator;
 	}
 }
