@@ -735,4 +735,24 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public boolean isEnableStatistics() {
 		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_STATISTICS);
 	}
+
+	/**
+	 * Get Csv Separator.
+	 * default csvSeparator Value is comma
+	 *
+	 * @return String csvSeparator
+	 */
+	public String getCsvSeparator() {
+		String csvSeparator = getControllerProperties().getProperty(PROP_CONTROLLER_CSV_SEPARATOR);
+		if (("tab").equals(csvSeparator)) {
+			csvSeparator = "\t";
+		} else if (("semicolon").equals(csvSeparator)) {
+			csvSeparator = ";";
+		} else {
+			csvSeparator = ",";
+		}
+
+		return csvSeparator;
+	}
+
 }
