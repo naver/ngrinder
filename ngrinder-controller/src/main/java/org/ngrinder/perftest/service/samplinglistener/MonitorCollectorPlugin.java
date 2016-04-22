@@ -102,9 +102,6 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 							clientMap.put(client, bw);
 						} catch (IOException e) {
 							LOGGER.error("Error to write to file:{}, Error:{}", dataFile.getPath(), e.getMessage());
-						} finally {
-							closeQuietly(bw);
-							closeQuietly(fw);
 						}
 					}
 				}
