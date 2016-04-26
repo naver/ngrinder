@@ -5,14 +5,6 @@
            <name>xssPreventerDefender</name>
            <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssPreventerDefender</class>
        </defender>
-       <defender>
-           <name>xssSaxFilterDefender</name>
-           <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssSaxFilterDefender</class>
-           <init-param>
-               <param-value>lucy-xss-superset-sax.xml</param-value>
-               <param-value>false</param-value>
-           </init-param>
-       </defender>
    </defenders>
 
     <!-- default defender -->
@@ -27,21 +19,19 @@
         </params>
     </global>
 
-    <!-- url rule setting and url can specify settings for each xssSaxFilterDefender -->
+    <!-- url rule setting -->
     <url-rule-set>
         <url-rule>
             <url>/script/api/validate</url>
             <params>
-                <param name="content" >
-                    <defender>xssSaxFilterDefender</defender>
+                <param name="content" useDefender="false" >
                 </param>
             </params>
         </url-rule>
         <url-rule>
             <url>/script/save</url>
             <params>
-                <param name="content" >
-                    <defender>xssSaxFilterDefender</defender>
+                <param name="content" useDefender="false" >
                 </param>
             </params>
         </url-rule>
