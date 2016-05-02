@@ -60,8 +60,7 @@ public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 	@Test
 	public void testGetQuickStart() {
 		ModelMap model = new ModelMap();
-		String options = "{\"headers\":[],\"params\":[],\"cookies\":[]}";
-		controller.getQuickStart(getTestUser(), "http://naver.com", "jython", options, model);
+		controller.getQuickStart(getTestUser(), "http://naver.com", "jython", model);
 		assertThat(repo.findOne(getTestUser(), "naver.com/TestRunner.py", SVNRevision.HEAD), notNullValue());
 	}
 

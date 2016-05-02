@@ -332,16 +332,17 @@ public class FileEntryService {
 	 * @return created new {@link FileEntry}
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String url,
-		ScriptHandler scriptHandler, String options) {
+		ScriptHandler scriptHandler) {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
+		String nullOptions = null;
 		if (scriptHandler instanceof ProjectHandler) {
 			String[] pathPart = dividePathAndFile(path);
-			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, options);
+			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, nullOptions);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-					false, options);
+					false, nullOptions);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}
