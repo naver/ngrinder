@@ -24,7 +24,7 @@
 					If completed, you will be able to see nGrinder Recorder Extension icon!
 				</li>
 			</ol>
-			<p>If you want to know how to use, <a href="https://github.com/naver/ngrinder/tree/master/ngrinder-controller#ngrinder-recorder-chrome-extension">show nGrinder Recorder READMD.md</a></p>
+			<p>If you want to know how to use, <a href="https://github.com/naver/ngrinder/blob/master/ngrinder-recorder/README.md#ngrinder-recorder-chrome-extension">show nGrinder Recorder READMD.md</a></p>
 		</div>
 	</div>
 
