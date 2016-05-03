@@ -8,7 +8,7 @@
 			<p>Follow below steps in Chrome browser:</p>
 			<ol>
 				<li>
-					Download <a href="${req.getContextPath()}/crx/ngrinder-recorder-1.0.crx">nGrinder Recorder</a>
+					Download <a href="https://github.com/naver/ngrinder/releases/download/nGrinder3.4_RC2/ngrinder-recorder-1.0.crx">nGrinder Recorder</a>
 				</li>
 				<li>
 					Move to the Extensions management page by this URL: <b>chrome://extensions</b><br>
