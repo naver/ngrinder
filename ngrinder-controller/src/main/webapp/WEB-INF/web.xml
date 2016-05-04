@@ -42,12 +42,6 @@
     </session-config>
 
     <servlet>
-        <servlet-name>jnlpDownloadServlet</servlet-name>
-        <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>svnDavServlet</servlet-name>
         <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -56,11 +50,6 @@
     <servlet-mapping>
         <servlet-name>svnDavServlet</servlet-name>
         <url-pattern>/svn/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>jnlpDownloadServlet</servlet-name>
-        <url-pattern>/jnlp/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
