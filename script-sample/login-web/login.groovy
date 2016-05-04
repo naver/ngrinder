@@ -44,8 +44,7 @@ class Login {
         grinder.statistics.delayReports=true;
          
         // reset to the all cookies
-        HTTPRequest loginReq = new HTTPRequest()
-        Object threadContext = HTTPPluginControl.getThreadHTTPClientContext()
+        def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
         cookies = CookieModule.listAllCookies(threadContext)
         cookies.each {
             CookieModule.removeCookie(it, threadContext)
@@ -53,14 +52,14 @@ class Login {
          
         // do login & save to the login info in cookies 
         NVPair[] params = [new NVPair("id", "MY_ID"), new NVPair("pw", "MY_PASSWORD")];
-        HTTPResponse res = loginReq.POST("https://login.site.com/login/do", params);
+        HTTPResponse res = request.POST("https://login.site.com/login/do", params);
         cookies = CookieModule.listAllCookies(threadContext)
     }
  
     @Before
     public void before() {
         // set cookies for login state
-        Object threadContext = HTTPPluginControl.getThreadHTTPClientContext()
+        def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
         cookies.each {
             CookieModule.addCookie(it ,threadContext)
             grinder.logger.info("{}", it)
