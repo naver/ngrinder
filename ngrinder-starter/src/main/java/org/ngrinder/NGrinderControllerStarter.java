@@ -218,10 +218,11 @@ public class NGrinderControllerStarter {
 		server.setConnectors(new Connector[]{connector});
 
 		WebAppContext context = new WebAppContext();
-		final File home = resolveHome();
+		final File tmpDir = new File(resolveHome(), "tmp");
 		//noinspection ResultOfMethodCallIgnored
-		home.mkdirs();
-		context.setTempDirectory(home);
+		tmpDir.mkdirs();
+
+		context.setTempDirectory(tmpDir);
 		context.setServer(server);
 		if (!contextPath.startsWith("/")) {
 			contextPath = "/" + contextPath;
