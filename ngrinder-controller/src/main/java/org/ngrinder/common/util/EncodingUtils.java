@@ -15,9 +15,14 @@ package org.ngrinder.common.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Automatic encoding detection utility.
@@ -62,5 +67,28 @@ public abstract class EncodingUtils {
 		String estimatedEncoding = cm.getName();
 		boolean isReliable = Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= MINIMAL_CONFIDENCE_LEVEL;
 		return isReliable ? estimatedEncoding : defaultEncoding;
+	}
+
+	/**
+	 * Encode the given path with UTF-8.
+	 *
+	 * "/" is not encoded.
+	 * @param path path
+	 * @return encoded path
+	 */
+	public static String encodePathWithUTF8(String path) {
+		try {
+			StringBuilder result = new StringBuilder();
+			for (char each : path.toCharArray()) {
+				if (each == '/') {
+					result.append("/");
+				} else {
+					result.append(URLEncoder.encode(String.valueOf(each), "UTF-8"));
+				}
+			}
+			return result.toString();
+		} catch (UnsupportedEncodingException e) {
+			throw processException(e);
+		}
 	}
 }

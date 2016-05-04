@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
+import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -59,6 +60,7 @@ import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.sort;
 import static org.apache.commons.io.FilenameUtils.getPath;
+import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
@@ -165,7 +167,7 @@ public class FileEntryController extends BaseController {
 	                        ModelMap model) { // "fileName"
 		fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
 		model.clear();
-		return "redirect:/script/list/" + path;
+		return "redirect:/script/list/" + encodePathWithUTF8(path);
 	}
 
 	/**
@@ -204,11 +206,11 @@ public class FileEntryController extends BaseController {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler,
 						createLibAndResources, options);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
-				return "redirect:/script/list/" + path + "/" + fileName;
+				return "redirect:/script/list/" + encodePathWithUTF8(path) + "/" + fileName;
 			} else {
 				redirectAttributes.addFlashAttribute("exception", fileName
 						+ " is already existing. Please choose the different name");
-				return "redirect:/script/list/" + path + "/";
+				return "redirect:/script/list/" + encodePathWithUTF8(path) + "/";
 			}
 
 		} else {
@@ -350,7 +352,7 @@ public class FileEntryController extends BaseController {
 			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
 		}
 		model.clear();
-		return "redirect:/script/list/" + basePath;
+		return "redirect:/script/list/" + encodePathWithUTF8(basePath);
 	}
 
 	/**
@@ -370,7 +372,7 @@ public class FileEntryController extends BaseController {
 			description = XssPreventer.escape(description);
 			upload(user, path, description, file);
 			model.clear();
-			return "redirect:/script/list/" + path;
+			return "redirect:/script/list/" + encodePathWithUTF8(path);
 		} catch (IOException e) {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
 			throw processException("Error while getting file content:" + e.getMessage(), e);
