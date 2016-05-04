@@ -50,11 +50,6 @@
 			<url>http://maven.cubrid.org</url>
 		</repository>
 		<repository>
-			<id>atlassian.maven.repo</id>
-			<name>atlassian.maven.repo</name>
-			<url>https://maven.atlassian.com/repository/public</url>
-		</repository>
-		<repository>
 			<id>scm-manager.repo</id>
 			<name>scm-manager.repo</name>
 			<url>http://maven.scm-manager.org/nexus/content/repositories/releases</url>
