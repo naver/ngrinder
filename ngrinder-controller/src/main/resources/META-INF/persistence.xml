@@ -6,6 +6,7 @@
 			<property name="hibernate.archive.autodetection" value="class, hbm" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.hbm2ddl.auto" value="validate" />
+			<property name="hibernate.connection.release_mode" value="on_close"/>
 		</properties>
 	</persistence-unit> 
 </persistence>
