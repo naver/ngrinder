@@ -14,10 +14,10 @@
 package org.ngrinder;
 
 import com.beust.jcommander.*;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -209,19 +209,19 @@ public class NGrinderControllerStarter {
 
 
 	private void run() {
-		Server server = new Server();
-		SocketConnector connector = new SocketConnector();
+		Server server = new Server(port);
+		ServerConnector connector = new ServerConnector(server);
 		// Set some timeout options to make debugging easier.
-		connector.setMaxIdleTime(1000 * 60 * 60);
 		connector.setSoLingerTime(-1);
 		connector.setPort(port);
 		server.setConnectors(new Connector[]{connector});
 
 		WebAppContext context = new WebAppContext();
-		final File home = resolveHome();
+		final File tmpDir = new File(resolveHome(), "tmp");
 		//noinspection ResultOfMethodCallIgnored
-		home.mkdirs();
-		context.setTempDirectory(home);
+		tmpDir.mkdirs();
+
+		context.setTempDirectory(tmpDir);
 		context.setServer(server);
 		if (!contextPath.startsWith("/")) {
 			contextPath = "/" + contextPath;
@@ -246,6 +246,7 @@ public class NGrinderControllerStarter {
 	}
 
 	private static String getWarName() {
+
 		ProtectionDomain protectionDomain = NGrinderControllerStarter.class.getProtectionDomain();
 		String warName = protectionDomain.getCodeSource().getLocation().toExternalForm();
 		if (warName.endsWith("/classes/")) {
@@ -271,6 +272,7 @@ public class NGrinderControllerStarter {
 							getRunningCommand());
 			System.exit(-1);
 		}
+
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server);
 		commander.setAcceptUnknownOptions(true);
