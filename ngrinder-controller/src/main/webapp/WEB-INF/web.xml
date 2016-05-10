@@ -88,15 +88,6 @@
         <servlet-name>default</servlet-name>
         <url-pattern>*.ico</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>*.crx</url-pattern>
-    </servlet-mapping>
-    
-    <mime-mapping>
-    	<extension>crx</extension>
-    	<mime-type>application/unknwon</mime-type>
-    </mime-mapping>
 
     <filter>
         <filter-name>encodingFilter</filter-name>

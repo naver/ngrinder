@@ -98,7 +98,7 @@
 							<a href="${req.getContextPath()}/monitor/download"><@spring.message "navigator.dropDown.downloadMonitor"/></a>
 						</li>
 						<li>
-							<a id="download_recorder_button"><@spring.message "navigator.dropDown.downloadRecorder"/></a>
+							<a href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank"><@spring.message "navigator.dropDown.downloadRecorder"/></a>
 						</li>
 						<@security.authorize access="hasRole('A')">
 							<li class="divider"></li>
@@ -200,7 +200,6 @@
 	</div>
 </div>
 
-<#include "recorder_guide_modal.ftl">
 <#include "messages.ftl">
 
 <script type="text/javascript">
@@ -221,10 +220,6 @@
 				$("#announcement_icon").removeClass("icon-minus").addClass("icon-plus");
 				cookie("announcement_hide", "true", 6);
 			}
-		});
-		$("#download_recorder_button").click(function(e) {
-			$("#recorder_guide_modal").modal("show");
-			e.preventDefault();
 		});
 
 	});
