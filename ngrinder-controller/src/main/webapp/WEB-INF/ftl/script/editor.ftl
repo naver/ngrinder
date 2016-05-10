@@ -35,6 +35,9 @@
 				margin-bottom:12px;
 				padding:5px
 			}
+			code a {
+				color:inherit;
+			}
 		</style>
 	</head>
 
@@ -112,6 +115,12 @@
 
 		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
 		<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
+		<div class="pull-right" rel="popover" style="float;margin-top:-40px;margin-right:-51px"
+			title="Sample Script Link" data-html="ture"
+			data-placement="left"
+			data-content="<@spring.message 'script.editor.sample.message'/>">
+			<code><a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Sample</a></code>
+		</div>
 		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
 			title="Tip" data-html="ture"
 			data-placement="left"
