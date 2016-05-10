@@ -1,7 +1,13 @@
 <div class="modal hide fade modal-lg" id="create_script_modal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		<h4><@spring.message "script.action.createScript"/></h4>
+		<div><h4><@spring.message "script.action.createScript"/></h4></div>
+		<div style="float;margin-top:-35px;padding-left:753px"
+			title="Sample Script Link" data-html="ture"
+			data-placement="left"
+			data-content="<@spring.message 'script.editor.sample.message'/>">
+			<code><a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a></code>
+		</div>
 	</div>
 	<div class="modal-body" style="max-height:500px;">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/new/${currentPath}">
