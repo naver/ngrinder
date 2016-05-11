@@ -1,9 +1,3 @@
-We are ACTIVE.
-==============
-* We're really active developers. So if you have any issues using nGrinder. Please let us know.
-* We promise to correct any bugs and problems within 1 week.
-* See our release note http://www.cubrid.org/wiki_ngrinder/entry/ngrinder-release-notes
-
 nGrinder 
 ========
 
@@ -11,20 +5,16 @@ nGrinder is a platform for stress tests that enables you to execute script creat
 
 
 Want to to know what's changed from the original grinder platform?
- * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture !
+ * Checkout https://github.com/naver/ngrinder/wiki/Architecture !
 
 To get to know what's different from previous ngrinder 2.0?
  * Checkout http://www.slideshare.net/junhoyoon3994/ngrinder-30-load-test-even-kids-can-do !
 
 To get started,
- * Checkout http://www.cubrid.org/wiki_ngrinder/entry/user-guide !
+ * Checkout https://github.com/naver/ngrinder/wiki/User-Guide !
 
 You can find out what nGrinder looks like with screen-shot.
- * http://www.cubrid.org/wiki_ngrinder/entry/screen-shot
-
-Do you really want to use nGrinder? Check out our demo instance.
- * http://ngrinder-demo.nhnopensource.org
- * Login with id : user / password : user
+ * https://github.com/naver/ngrinder/wiki/Screen-Shot
 
 nGrinder consists of two major components. 
 
@@ -56,16 +46,11 @@ You can download the latest nGrinder in the following link.
 Documentation
 -------------
 You can find the installation guide at the following link.
-* http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
+* https://github.com/naver/ngrinder/wiki/Installation-Guide
 
 You can find the user guide at the following location link.
-* http://www.cubrid.org/wiki_ngrinder/entry/user-guide
+* https://github.com/naver/ngrinder/wiki/User-Guide
 
-Road Map
---------
-The explicit road-map of nGrinder enables it to be a most effective and efficient performance test tool.
-Check out our road-map :
-* http://www.cubrid.org/wiki_ngrinder/entry/road-map
 
 
 Contribution?
@@ -74,7 +59,7 @@ nGrinder welcomes any contributions from users. Please make all pull requests ag
 * Clone the REPO : 'git clone git://github.com/naver/ngrinder.git'
 
 You can find general developer documents at the following link.
- * http://www.cubrid.org/wiki_ngrinder/entry/dev-document
+ * https://github.com/naver/ngrinder/wiki/Dev-Document
 
 Versioning
 ----------
