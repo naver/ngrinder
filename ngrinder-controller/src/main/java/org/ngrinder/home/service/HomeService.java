@@ -104,6 +104,10 @@ public class HomeService {
 				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
 						.getUpdatedDate());
 				entry.setTitle(each.getTitle());
+				if (entry.getTitle() == null)
+				{
+					entry.setTitle(each.getLink());
+				}
 				entry.setLink(each.getLink());
 				panelEntries.add(entry);
 			}
