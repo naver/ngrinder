@@ -115,12 +115,6 @@
 
 		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
 		<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
-		<div class="pull-right" rel="popover" style="float;margin-top:-40px;margin-right:-102px"
-			title="Sample Script Link" data-html="ture"
-			data-placement="left"
-			data-content="<@spring.message 'script.editor.sample.message'/>">
-			<code><a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a></code>
-		</div>
 		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
 			title="Tip" data-html="ture"
 			data-placement="left"
@@ -133,7 +127,9 @@
 				F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
 				ESC : <@spring.message 'script.editor.tip.back'/>
 				"><code>Tip</code></div>
-
+		<div id="script_samples_link" style="text-align: center;margin-top: 10px;">
+			<a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
+		</div>
 		<div id="validation_result_panel" style="display:none;">
 			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
 			</pre>
@@ -212,6 +208,7 @@
 				var scriptPath = $("#script_name").val();
 				var hostString = $("#target_hosts").val();
 				$('#validation_result_panel').hide();
+				$('#script_samples_link').show();
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 
@@ -227,6 +224,7 @@
 					validating = false;
 					$('#validation_result_pre_div').text(res);
 					$('#validation_result_panel').show();
+					$('#script_samples_link').hide();
 					$('#validated').val("1");//should control the validation success or not later.
 				};
 				ajaxObj.complete = function () {
