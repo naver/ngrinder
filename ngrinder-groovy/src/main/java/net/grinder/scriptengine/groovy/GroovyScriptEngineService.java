@@ -35,10 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class description.
+ * Groovy script engine service.
  * 
  * @author Mavlarn
- * @since
+ * @since 3.0
  */
 public class GroovyScriptEngineService implements ScriptEngineService {
 

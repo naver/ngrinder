@@ -28,7 +28,7 @@ import net.grinder.util.weave.Weaver.TargetSource;
 /**
  * DCR instrumenter for Java.
  * 
- * This is modified from {@link JavaDCRInstrumenter} due to it's package
+ * This is modified from JavaDCRInstrumenter due to it's package
  * protected visibility.
  * 
  * @author Philip Aston
