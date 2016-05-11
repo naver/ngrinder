@@ -62,7 +62,7 @@
 		<spring.data.version>1.9.4.RELEASE</spring.data.version>
 		<jdk-version>1.7</jdk-version>
 		<ngrinder.version>${project.version}</ngrinder.version>
-		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/releases</altDeploymentRepository>
+		<altDeploymentRepository>ngrinder::default::file:../ngrinder.maven.repo/releases</altDeploymentRepository>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
@@ -187,6 +187,9 @@
 								</goals>
 							</execution>
 						</executions>
+						<configuration>
+							<failOnError>false</failOnError>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

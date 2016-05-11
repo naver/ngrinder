@@ -19,7 +19,7 @@ import org.junit.runners.model.Statement;
 
 /**
  * <code>RepetitionStatement</code> is a custom JUnit 4.5+ {@link Statement} which adds support for
- * {@link net.grinder.scriptengine.groovy.junit.annotation.RepeatRepeat} annotation by repeating the
+ * {@link net.grinder.scriptengine.groovy.junit.annotation.Repeat} annotation by repeating the
  * test for the specified number of times.
  * 
  * @see #evaluate()

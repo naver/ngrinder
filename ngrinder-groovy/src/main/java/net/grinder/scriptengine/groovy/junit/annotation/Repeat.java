@@ -53,6 +53,8 @@ import java.lang.annotation.Target;
 public @interface Repeat {
 	/**
 	 * Repetition count.
+	 *
+	 * @return repetition count
 	 */
 	int value();
 }

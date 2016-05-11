@@ -99,6 +99,7 @@ public abstract class GrinderUtils {
 	 * </code>
 	 *
 	 * @param from list
+	 * @param <T>  element type
 	 * @return any element in the list
 	 * @since 3.2.3
 	 */
@@ -110,6 +111,7 @@ public abstract class GrinderUtils {
 	 * Get the any element from araay.
 	 *
 	 * @param from list
+	 * @param <T>  element type
 	 * @return any element in the list
 	 * @since 3.2.3
 	 */
@@ -132,6 +134,7 @@ public abstract class GrinderUtils {
 	 * Get the parameter passed by controller. When it's executed in the
 	 * validation mode, always returns the given default value.
 	 *
+	 * @param defaultValue default value
 	 * @return param. default value string if the param was not provided.
 	 * @since 3.2.3
 	 */
@@ -143,6 +146,7 @@ public abstract class GrinderUtils {
 	 * Get the parameter passed by controller. When it's executed in the
 	 * validation mode, always returns the given default value 0.
 	 *
+	 * @return param. 0 if the param was not provided.
 	 * @since 3.2.3
 	 */
 	public static int getParamInt() {
@@ -153,6 +157,7 @@ public abstract class GrinderUtils {
 	 * Get the parameter passed by controller. When it's executed in the
 	 * validation mode, always returns the given default value 0.
 	 *
+	 * @return param. 0 if the param was not provided.
 	 * @since 3.2.3
 	 */
 	public static long getParamLong() {
@@ -163,6 +168,7 @@ public abstract class GrinderUtils {
 	 * Get the parameter passed by controller. When it's executed in the
 	 * validation mode, always returns the given default value 0.
 	 *
+	 * @return param. 0 if the param was not provided.
 	 * @since 3.2.3
 	 */
 	public static float getParamFloat() {
@@ -173,6 +179,7 @@ public abstract class GrinderUtils {
 	 * Get the parameter passed by controller. When it's executed in the
 	 * validation mode, always returns the given default value 0.
 	 *
+	 * @return param. 0 if the param was not provided.
 	 * @since 3.2.3
 	 */
 	public static double getParamDouble() {
@@ -183,6 +190,7 @@ public abstract class GrinderUtils {
 	 * Get the parameter passed by controller. When it's executed in the
 	 * validation mode, always returns the given default value(false).
 	 *
+	 * @return param. false if the param was not provided.
 	 * @since 3.2.3
 	 */
 	public static boolean getParamBoolean() {

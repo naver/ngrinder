@@ -6,48 +6,26 @@
 	<version>0.0.1</version>
 
 	<properties>
-		<ngrinder.version>3.3</ngrinder.version>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+		<ngrinder.version>3.4</ngrinder.version>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<repositories>
 		<repository>
-			<id>nhnopensource.maven.repo</id>
-			<url>https://github.com/nhnopensource/nhnopensource.maven.repo/raw/master/releases</url>
+			<id>ngrinder.maven.repo</id>
+			<url>https://github.com/naver/ngrinder/raw/ngrinder.maven.repo/releases</url>
 		</repository>
 	</repositories>
-	<profiles>
-		<!-- Following dependency is mandatory -->
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>org.ngrinder</groupId>
-					<artifactId>ngrinder-groovy</artifactId>
-					<version>${ngrinder.version}</version>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<!-- Use intellij profile when running tests in the intellij -->
-		<profile>
-			<id>intellij</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.ngrinder</groupId>
-					<artifactId>ngrinder-groovy</artifactId>
-					<version>${ngrinder.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 	<dependencies>
+		<dependency>
+			<groupId>org.ngrinder</groupId>
+			<artifactId>ngrinder-groovy</artifactId>
+			<version>${ngrinder.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- Add the dependencies -->
 		<!--
 		<dependency>
