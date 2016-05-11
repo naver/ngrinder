@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>grinder</groupId>
+  <artifactId>grinder-patch</artifactId>
+  <versioning>
+    <release>3.9.1-patch</release>
+    <versions>
+      <version>3.9.1-patch</version>
+    </versions>
+    <lastUpdated>20131211012930</lastUpdated>
+  </versioning>
+</metadata>
