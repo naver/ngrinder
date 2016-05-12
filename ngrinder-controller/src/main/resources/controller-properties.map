@@ -26,12 +26,12 @@ controller.safe_dist,false,ngrinder.dist.safe
 controller.safe_dist_threshold,1000000,ngrinder.dist.safe.threshold,ngrinder.dist.safe.threashhold
 controller.max_connection_waiting_millisecond,5000,ngrinder.max.waitingmilliseconds
 controller.front_page_enabled,true,
-controller.front_page_resources_rss,http://www.cubrid.org/wiki_ngrinder/rss,ngrinder.frontpage.rss
-controller.front_page_resources_more_url,http://www.cubrid.org/wiki_ngrinder,
+controller.front_page_resources_rss,https://github.com/naver/ngrinder/wiki.atom
+controller.front_page_resources_more_url,https://github.com/naver/ngrinder/wiki,
 controller.front_page_qna_rss,,ngrinder.qna.rss
 controller.front_page_qna_more_url,,ngrinder.more.question.url
 controller.front_page_ask_question_url,,ngrinder.ask.question.url
-controller.help_url,http://www.cubrid.org/wiki_ngrinder/entry/user-guide,ngrinder.help.url
+controller.help_url,https://github.com/naver/ngrinder/wiki/user-guide,ngrinder.help.url
 controller.default_lang,en,ngrinder.langauge.default
 controller.admin_password_reset,false,
 controller.agent_force_update,false,

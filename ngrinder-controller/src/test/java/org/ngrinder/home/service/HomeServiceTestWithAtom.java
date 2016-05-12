@@ -24,19 +24,19 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class HomeServiceTest extends AbstractNGrinderTransactionalTest {
+public class HomeServiceTestWithAtom {
 
-	@Autowired
-	private HomeService homeService;
+	private HomeService homeService = new HomeService();
 
 	@Test
-	public void testHome() throws IOException {
-		List<PanelEntry> leftPanelEntries = homeService.getLeftPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
+	public void testAtom() {
+		List<PanelEntry> leftPanelEntries = homeService.getLeftPanelEntries("https://github.com/naver/ngrinder/wiki.atom");
+
 		assertThat(leftPanelEntries.size(), greaterThan(2));
 		assertThat(leftPanelEntries.size(), lessThanOrEqualTo(8));
-		List<PanelEntry> rightPanel = homeService.getRightPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
-		assertThat(rightPanel.size(), greaterThanOrEqualTo(2));
-		assertThat(rightPanel.size(), lessThanOrEqualTo(8));
+		for (PanelEntry panelEntry : leftPanelEntries) {
+			assertThat(panelEntry.getTitle(), notNullValue());
+			assertThat(panelEntry.getLink(), startsWith("http"));
+		}
 	}
-
 }

@@ -86,11 +86,12 @@ public class HomeService {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
-			feedConnection.setConnectTimeout(4000);
-			feedConnection.setReadTimeout(4000);
+			feedConnection.setConnectTimeout(8000);
+			feedConnection.setReadTimeout(8000);
 			reader = new XmlReader(feedConnection);
 			SyndFeed feed = input.build(reader);
 			int count = 0;
+
 			for (Object eachObj : feed.getEntries()) {
 				SyndEntryImpl each = cast(eachObj);
 				if (!includeReply && StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
@@ -99,12 +100,12 @@ public class HomeService {
 				if (count++ > maxSize) {
 					break;
 				}
-				PanelEntry entry = new PanelEntry();
-				entry.setAuthor(each.getAuthor());
-				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
-						.getUpdatedDate());
-				entry.setTitle(each.getTitle());
-				entry.setLink(each.getLink());
+				PanelEntry entry;
+				if ("atom_1.0".equals(feed.getFeedType())) {
+					entry = getPanelEntryFromAtom(each);
+				} else {
+					entry = getPanelEntryFromRSS(each);
+				}
 				panelEntries.add(entry);
 			}
 			Collections.sort(panelEntries);
@@ -118,5 +119,30 @@ public class HomeService {
 			IOUtils.closeQuietly(reader);
 		}
 		return Collections.emptyList();
+	}
+
+	private PanelEntry getPanelEntryFromRSS(SyndEntryImpl each) {
+		PanelEntry entry = new PanelEntry();
+		entry.setAuthor(each.getAuthor());
+		entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
+				.getUpdatedDate());
+		entry.setTitle(each.getTitle());
+		entry.setLink(each.getLink());
+		return entry;
+	}
+
+	private PanelEntry getPanelEntryFromAtom(SyndEntryImpl each) {
+		PanelEntry entry = new PanelEntry();
+		entry.setAuthor(each.getAuthor());
+		entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
+				.getUpdatedDate());
+		if (each.getTitle() == null) {
+			String[] split = StringUtils.split(each.getLink(), "/");
+			entry.setTitle(split[split.length - 1].replace("-", " "));
+		} else {
+			entry.setTitle(each.getTitle());
+		}
+		entry.setLink(each.getUri());
+		return entry;
 	}
 }
