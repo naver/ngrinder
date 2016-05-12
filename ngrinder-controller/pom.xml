@@ -14,6 +14,8 @@
 		<webappdir>${basedir}/src/main/webapp</webappdir>
 		<deploy.dir>${basedir}/../../deploy</deploy.dir>
 		<jetty.version>9.3.8.v20160314</jetty.version>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 
 	<profiles>
