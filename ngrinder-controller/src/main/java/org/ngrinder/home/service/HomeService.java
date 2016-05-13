@@ -100,13 +100,7 @@ public class HomeService {
 				if (count++ > maxSize) {
 					break;
 				}
-				PanelEntry entry;
-				if ("atom_1.0".equals(feed.getFeedType())) {
-					entry = getPanelEntryFromAtom(each);
-				} else {
-					entry = getPanelEntryFromRSS(each);
-				}
-				panelEntries.add(entry);
+				panelEntries.add(getPanelEntry(each));
 			}
 			Collections.sort(panelEntries);
 			return panelEntries;
@@ -121,17 +115,8 @@ public class HomeService {
 		return Collections.emptyList();
 	}
 
-	private PanelEntry getPanelEntryFromRSS(SyndEntryImpl each) {
-		PanelEntry entry = new PanelEntry();
-		entry.setAuthor(each.getAuthor());
-		entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
-				.getUpdatedDate());
-		entry.setTitle(each.getTitle());
-		entry.setLink(each.getLink());
-		return entry;
-	}
 
-	private PanelEntry getPanelEntryFromAtom(SyndEntryImpl each) {
+	private PanelEntry getPanelEntry(SyndEntryImpl each) {
 		PanelEntry entry = new PanelEntry();
 		entry.setAuthor(each.getAuthor());
 		entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
@@ -142,7 +127,11 @@ public class HomeService {
 		} else {
 			entry.setTitle(each.getTitle());
 		}
-		entry.setLink(each.getUri());
+		if (StringUtils.startsWith(each.getLink(), "http")) {
+			entry.setLink(each.getLink());
+		} else {
+			entry.setLink(each.getUri());
+		}
 		return entry;
 	}
 }
