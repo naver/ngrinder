@@ -100,15 +100,6 @@ public class Home {
 	}
 
 	/**
-	 * Get the plugin directory.
-	 *
-	 * @return the plugin directory
-	 */
-	public File getPluginDirectory() {
-		return new File(directory, PATH_PLUGIN);
-	}
-
-	/**
 	 * Copy the given file from given location.
 	 *
 	 * @param from file location
@@ -182,7 +173,9 @@ public class Home {
 	 * @return plugin cache directory.
 	 */
 	public File getPluginsCacheDirectory() {
-		return getSubFile(PATH_PLUGIN + "_cache");
+		File cacheDir =  getSubFile(PATH_PLUGIN + "_cache");
+		cacheDir.mkdirs();
+		return cacheDir;
 	}
 
 	/**

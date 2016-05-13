@@ -30,8 +30,8 @@ public class NGrinderDefaultPluginManager extends DefaultPluginManager {
 
 	@Autowired
 	public NGrinderDefaultPluginManager(Config config, ApplicationContext applicationContext) throws MalformedURLException {
-		super(config.getHome().getPluginsDirectory());
-		super.pluginRepository = new DefaultPluginRepository(pluginsDirectory, new JarFileFilter());
+		super(config.isClustered() ? config.getExHome().getPluginsCacheDirectory() : config.getHome().getPluginsCacheDirectory());
+		super.pluginRepository = new DefaultPluginRepository(config.getHome().getPluginsDirectory(), new JarFileFilter());
 	}
 
 	@Autowired
