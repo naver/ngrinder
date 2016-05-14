@@ -261,22 +261,22 @@
 	</@list>
 	</tbody>
 </table>
-		<div class="pull-right" rel="popover" style="float;margin-top:-26px;margin-right:-30px"
-			title="Tip" data-html="ture" data-placement="left"
-			data-content="<@spring.message "intro.public.button.show"/>"
-			id="introButton"	>
-			<code>Tip</code>
-		</div>
-	<#if testList?has_content>
-	<#include "../common/paging.ftl">
-	<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>
-    <script type="text/javascript">
-            function doSubmit(page) {
-        getList(page);
-    }
+<div class="pull-right" rel="popover" style="float;margin-top:-26px;margin-right:-30px"
+	title="Tip" data-html="ture" data-placement="left"
+	data-content="<@spring.message "intro.public.button.show"/>"
+	id="introButton"	>
+	<code>Tip</code>
+</div>
+<#if testList?has_content>
+<#include "../common/paging.ftl">
+<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>
+<script type="text/javascript">
+	function doSubmit(page) {
+		getList(Math.max(page - 1, 0));
+	}
 </script>
 </#if>
-    </div>
+</div>
 </div>
 <#include "../common/copyright.ftl">
 
@@ -288,8 +288,8 @@ $(document).ready(function () {
 		placeholder: '<@spring.message "perfTest.action.selectATag"/>',
 		allowClear: true
 	}).change(function () {
-			document.forms.test_list_form.submit();
-		});
+		document.forms.test_list_form.submit();
+	});
 
 	$("#nav_test").addClass("active");
 
@@ -318,7 +318,7 @@ $(document).ready(function () {
 		bootbox.confirm("<@spring.message "perfTest.message.delete.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
 			if (result) {
 				deleteTests(id);
-				setTimeout(location.reload, 1000);
+				setTimeout(getList(), 1000);
 			}
 		});
 	});
@@ -427,8 +427,7 @@ $(document).ready(function () {
 
 		$("#sort_column").val($currObj.attr('name'));
 		$("#sort_direction").val(sortDirection);
-
-		getList(1);
+		getList(0);
 	});
 
 	$("#current_running_status").click(function () {
@@ -464,7 +463,7 @@ function deleteTests(ids) {
 	ajaxObj.type = "DELETE";
 	ajaxObj.success = function () {
 		setTimeout(function () {
-			getList(1);
+			getList();
 		}, 500);
 	};
 	ajaxObj.call();
@@ -480,7 +479,9 @@ function stopTests(ids) {
 }
 
 function getList(page) {
-	$("#page_number").val(page);
+	if (page !== undefined) {
+		$("#page_number").val(page);
+	}
 	document.forms.test_list_form.submit();
 }
 
@@ -538,7 +539,7 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 			var statusId = each.status_type;
 			$("#check_" + each.id).attr("status", statusId);
 			if (each.reportable) {
-				location.reload();
+				getList();
 			}
 			/** @namespace each.deletable */
 			/** @namespace each.reportable */

@@ -134,11 +134,16 @@ public class PerfTestController extends BaseController {
 	@RequestMapping({"/list", "/", ""})
 	public String getAll(User user, @RequestParam(required = false) String query,
 	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
-	                     @PageableDefault(page = 1) Pageable pageable, ModelMap model) {
-		pageable = new PageRequest(pageable.getPageNumber() - 1, pageable.getPageSize(),
-				defaultIfNull(pageable.getSort(),
+	                     @PageableDefault(page = 0, size = 10) Pageable pageable, ModelMap model) {
+		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+						defaultIfNull(pageable.getSort(),
 						new Sort(Direction.DESC, "lastModifiedDate")));
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
+		if (tests.getNumberOfElements() == 0) {
+			pageable = new PageRequest(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(),
+							new Sort(Direction.DESC, "lastModifiedDate")));
+			tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
+		}
 		annotateDateMarker(tests);
 		model.addAttribute("tag", tag);
 		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
