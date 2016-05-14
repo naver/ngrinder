@@ -39,10 +39,9 @@
 					</a>
 				</span>
 			</div>
-			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}"/>
-			<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}"/>
-			<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
-			<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
+			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}">
+			<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
+			<input type="hidden" id="sort" name="sort" value="${sort!'lastModifiedDate,DESC'}">
 
 		</form>
 		<table class="table table-striped table-bordered ellipsis" id="user_table">
@@ -104,7 +103,7 @@
 			<@paging  users.totalElements users.number+1 users.size 10 ""/>
 			<script type="text/javascript">
 				function doSubmit(page) {
-					getList(page);
+					getList(Math.max(page - 1, 0));
 				}
 			</script>
 		</#if>
@@ -114,7 +113,9 @@
 
 	<script type="text/javascript">
 		function getList(page) {
-			$("#page_number").val(page);
+			if (page !== undefined) {
+				$("#page_number").val(page);
+			}
 			document.forms.user_list_form.submit();
 		}
 
@@ -139,10 +140,11 @@
 					$this.addClass("sorting");
 				}
 			});
-			var sortColumn = $("#sort_column").val();
-			var sortDir = $("#sort_direction").val().toLowerCase();
+			var sort = $("#sort").val().split(",");
+			var sortColumn = sort[0];
+			var sortDir = sort[1];
 
-			$("th[name='" + sortColumn + "']").addClass("sorting_" + sortDir);
+			$("th[name='" + sortColumn + "']").addClass("sorting_" + sortDir.toLowerCase());
 
 			$("th.sorting").click(function() {
 				var $currObj = $(this);
@@ -151,9 +153,8 @@
 					sortDirection = "DESC";
 				}
 
-				$("#sort_column").val($currObj.attr('name'));
-				$("#sort_direction").val(sortDirection);
-				getList(1);
+				$("#sort").val($currObj.attr('name') + "," + sortDirection);
+				getList(0);
 			});
 
 		});

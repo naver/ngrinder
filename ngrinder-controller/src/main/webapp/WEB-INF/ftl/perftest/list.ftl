@@ -71,9 +71,6 @@
 	<form id="test_list_form" name="test_list_form"
 	      class="well form-inline search-bar" style="margin-top:0;margin-bottom:0;height:30px;"
 		  action="${req.getContextPath()}/perftest/list" method="POST">
-		<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
-		<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
-
 		<div class="left-float" data-step="3" data-intro="<@spring.message 'intro.list.search'/>">
 			<select id="tag" name="tag" style="width:150px">
 				<option value=""></option>
@@ -114,6 +111,7 @@
 
 		<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}">
 		<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
+		<input type="hidden" id="sort" name="sort" value="${sort!'lastModifiedDate,DESC'}">
 	</form>
 
 <@security.authorize access="hasAnyRole('A', 'S')">
@@ -413,20 +411,20 @@ $(document).ready(function () {
 		}
 	});
 
-	var sortColumn = $("#sort_column").val();
-	var sortDir = $("#sort_direction").val().toLowerCase();
+	var sort = $("#sort").val().split(",");
+	var sortColumn = sort[0];
+	var sortDir = sort[1];
 
-	$("th[name='" + sortColumn + "']").addClass("sorting_" + sortDir);
+	$("th[name='" + sortColumn + "']").addClass("sorting_" + sortDir.toLowerCase());
 
-	$("th.sorting").click(function () {
+	$("th.sorting").click(function() {
 		var $currObj = $(this);
 		var sortDirection = "ASC";
 		if ($currObj.hasClass("sorting_asc")) {
 			sortDirection = "DESC";
 		}
 
-		$("#sort_column").val($currObj.attr('name'));
-		$("#sort_direction").val(sortDirection);
+		$("#sort").val($currObj.attr('name') + "," + sortDirection);
 		getList(0);
 	});
 
