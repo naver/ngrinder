@@ -897,6 +897,10 @@ public class PerfTestController extends BaseController {
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, PerfTest perfTest) {
 		checkNull(perfTest.getId(), "id should be null");
+		// Make the vuser count optional.
+		if (perfTest.getVuserPerAgent() == null && perfTest.getThreads() != null && perfTest.getProcesses() != null) {
+			perfTest.setVuserPerAgent(perfTest.getThreads() * perfTest.getProcesses());
+		}
 		validate(user, null, perfTest);
 		PerfTest savePerfTest = perfTestService.save(user, perfTest);
 		return toJsonHttpEntity(savePerfTest);
