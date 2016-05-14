@@ -103,8 +103,7 @@ public class BaseController implements WebConstants {
 		final Iterator<Sort.Order> iterator = pageable.getSort().iterator();
 		if (iterator.hasNext()) {
 			Sort.Order sortProp = iterator.next();
-			model.addAttribute("sortColumn", sortProp.getProperty());
-			model.addAttribute("sortDirection", sortProp.getDirection());
+			model.addAttribute("sort", sortProp.getProperty() + "," + sortProp.getDirection());
 		}
 	}
 
