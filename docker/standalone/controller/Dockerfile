@@ -5,7 +5,7 @@ MAINTAINER JunHo Yoon "junoyoon@gmail.com"
 ENV BASE_DIR=/opt
 
 # Download ngrinder controller file
-RUN mkdir $BASE_DIR
+RUN mkdir -p $BASE_DIR
 
 # Expose ports
 EXPOSE 80 16001 12000-12009
