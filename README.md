@@ -3,6 +3,7 @@ nGrinder
 
 [![Join the chat at https://gitter.im/naver/ngrinder](https://badges.gitter.im/naver/ngrinder.svg)](https://gitter.im/naver/ngrinder?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+
 nGrinder is a platform for stress tests that enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The open-source nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
 
@@ -89,9 +90,8 @@ You can join our forum as well
 * User Forum : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
 * 中文论坛 (Chinese) http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
 * 한국어 유저 포럼 (Korean) http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
+* [![Developer chat at https://gitter.im/naver/ngrinder-kr](https://badges.gitter.im/naver/ngrinder-kr.svg)](https://gitter.im/naver/ngrinder-kr?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-
-Copyright and license
 ---------------------
 
      Licensed under the Apache License, Version 2.0 (the "License");
