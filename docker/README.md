@@ -33,20 +33,10 @@ $ docker pull ngrinder-controller:3.4
 Start controller.
 
 ```
-docker run -d -v ~/.ngrinder:/root/.ngrinder \
-    -e 'COUNT=number_of_regions' -e 'REGION_1=name_of_region' -e 'REGION_2=name_of_region' -e 'REGION_N=name_of_region'\
-    -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 \
-    ngrinder-controller:3.4
+docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder-controller:3.4
 ``` 
 
-The controller creates a data folder under /root/.ngrinder to maintain test history and configuration data. In order to keep the data persistently, you should map the folder /root/.ngrinder on the container to a folder on your host . 
-
-
-You should set the following configuration parameters.
-
-* __COUNT__: the number of your regions (max N = 10)
-
-* __REGION\_1 ~ REGION\_N__: the name of each region (default values = REGION\_1=region1 ~ REGION\_N=regionN)
+The controller creates a data folder under /opt/ngrinder-controller to maintain test history and configuration data. In order to keep the data persistently, you should map the folder /opt/ngrinder-controller on the container to a folder on your host . 
 
 Port information:
 
@@ -56,14 +46,6 @@ Port information:
 
 * __12000-12029__: controllers allocate stress tests through these ports.
 
-
-For example, if you would like to conduct stress tests on your servers which are distributed to three regions - US, EU and ASIA, you can simply enter the following command on a machine to setup and start the ngrinder clustered controllers.
-
-```
-docker run -d -v ~/.ngrinder:/root/.ngrinder \
-    -e 'COUNT=3' -e 'REGION_1=AWS_US' -e 'REGION_2=localDC_EU' -e 'REGION_3=AZURE_ASIA'\
-    -p 80:80 -p 9010-9019:9010-9019 -p 12000-12029:12000-12029 ngrinder/multi-controller:3.4
-```
 
 Agent
 --------
@@ -78,7 +60,5 @@ $ docker pull ngrinder/agent:3.4
 Start agent.
 
 ```
-docker run -d ngrinder/agent:3.4 controller_ip:controller_web_port
+docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.4 controller_ip:controller_web_port
 ``` 
-
-Enjoy~

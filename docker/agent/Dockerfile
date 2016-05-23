@@ -3,22 +3,16 @@ MAINTAINER JunHo Yoon "junoyoon@gmail.com"
 
 RUN apk update; apk add curl bash
 
+
 # Set up environment variables
 ENV BASE_DIR=/opt \
-    NGRINDER_HOME=/opt/ngrinder-controller
+    NGRINDER_AGENT_BASE=/opt/ngrinder-agent \
+    NGRINDER_AGENT_HOME=/opt/ngrinder-agent/.ngrinder-agent
 
-# Expose ports
-EXPOSE 80 16001 12000-12009
-
-# Volume mapping
-VOLUME $NGRINDER_HOME
+VOLUME $NGRINDER_AGENT_BASE
 
 # Copy initial execution script
 ADD scripts /scripts
 
-# Copy final binary
-ADD binary/*.war ${BASE_DIR}
-
-# Execution
-CMD ["/scripts/run.sh"]
-
+# Excution
+ENTRYPOINT ["/scripts/run.sh"]
