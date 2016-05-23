@@ -97,7 +97,7 @@ public class HomeService {
 				if (!includeReply && StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
 					continue;
 				}
-				if (count++ > maxSize) {
+				if (count++ >= maxSize) {
 					break;
 				}
 				panelEntries.add(getPanelEntry(each));
@@ -115,7 +115,6 @@ public class HomeService {
 		return Collections.emptyList();
 	}
 
-
 	private PanelEntry getPanelEntry(SyndEntryImpl each) {
 		PanelEntry entry = new PanelEntry();
 		entry.setAuthor(each.getAuthor());
@@ -130,8 +129,17 @@ public class HomeService {
 		if (StringUtils.startsWith(each.getLink(), "http")) {
 			entry.setLink(each.getLink());
 		} else {
-			entry.setLink(each.getUri());
+			String uri = each.getUri();
+			if (isGithubWiki(uri)) {
+				uri = uri.substring(0, StringUtils.lastIndexOf(uri, "/"));
+			}
+			entry.setLink(uri);
 		}
 		return entry;
 	}
+
+	private boolean isGithubWiki(String uri) {
+		return StringUtils.startsWith(uri, "https://github.com") && StringUtils.contains(uri, "/wiki/");
+	}
+
 }
