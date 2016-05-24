@@ -40,7 +40,7 @@ then
 		done
 	fi
 else
-	echo "CONTROLLE_ADDR environment varible is not set. Use the built in controller"
+	echo "CONTROLLE_ADDR environment varible is not set. Use the built in docker image"
 	AGENT="${BASE_DIR}/builtin/ngrinder-agent"
 	cd ${AGENT}
 	${AGENT}/run_agent.sh "$@"

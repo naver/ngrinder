@@ -48,14 +48,13 @@ Install docker 1.5.0 or above on your another host. You should run your agent on
 Pull the ngrinder/agent image.
 
 ```
-$ docker pull ngrinder/agent:3.3
+$ docker pull ngrinder/agent:3.4
 ```
 
 Start agent.
 
 ```
-docker run -d -e 'CONTROLLER_ADDR=controller_ip:controller_web_port]' \
-    ngrinder/agent:3.3
+docker run -d ngrinder/agent:3.4 controller_ip:controller_web_port
 ``` 
 
 Enjoy~
