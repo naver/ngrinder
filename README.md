@@ -44,7 +44,7 @@ Download
 --------
 
 You can download the latest nGrinder in the following link. 
-* http://sourceforge.net/projects/ngrinder/files/
+* https://github.com/naver/ngrinder/releases
 
 Documentation
 -------------
