@@ -10,9 +10,7 @@
 	</parent>
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder-starter</artifactId>
-	<properties>
-		<jetty.version>9.3.8.v20160314</jetty.version>
-	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
