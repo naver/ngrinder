@@ -1,0 +1,14 @@
+controller:
+     build: controller
+     ports:
+      - "80:80"
+      - "16001:16001"
+      - "12000-12009:12000-12009"
+     volumes:
+      - ~/ngrinder-controller:/opt/ngrinder-controller
+agent:
+     build: agent
+     links:
+     - controller
+     volumes:
+     - ~/ngrinder-agent:/opt/ngrinder-agent
