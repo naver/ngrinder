@@ -66,6 +66,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
+		<jetty.version>9.2.17.v20160517</jetty.version>
 	</properties>
 
 	<dependencies>
