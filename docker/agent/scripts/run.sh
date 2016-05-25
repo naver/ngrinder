@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 controller=$1
+shift
 if [ ! -n "$controller" ]
 then
     echo "controller:port should be provided as an argument to download an agent"
@@ -7,7 +8,6 @@ then
     echo "use controller:80 as a default"    
 fi
 AGENT_DOWNLOAD_URL="http://$controller/agent/download"
-CNT=1
 cd $BASE_DIR
 echo "deleting pid..."
 rm -rf $NGRINDER_AGENT_HOME/pid
@@ -25,4 +25,5 @@ else
     fi
     tar -xvf ngrinder-agent.tar
 fi
+
 $NGRINDER_AGENT_BASE/run_agent.sh $*
