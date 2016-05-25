@@ -1,3 +1,5 @@
+* nGrinder 3.4 has benn released. See https://github.com/naver/ngrinder/releases
+
 nGrinder 
 ========
 
