@@ -139,29 +139,6 @@
 	</dependencies>
 	<profiles>
 		<profile>
-			<id>klocwork</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.klocwork.ps</groupId>
-						<artifactId>kwmaven</artifactId>
-						<version>2.1.1</version>
-						<configuration>
-							<buildspec_filename>${KWINJECT_OUT_PATH}</buildspec_filename>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>validate</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
 			<id>javadoc</id>
 			<build>
 				<plugins>
@@ -180,6 +157,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.5</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
