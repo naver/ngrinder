@@ -259,7 +259,7 @@
 	</@list>
 	</tbody>
 </table>
-<div class="pull-right" rel="popover" style="float;margin-top:-26px;margin-right:-30px"
+<div class="pull-right" rel="popover" style="float;margin-top:-26px;margin-right:-30px;cursor: pointer"
 	title="Tip" data-html="ture" data-placement="left"
 	data-content="<@spring.message "intro.public.button.show"/>"
 	id="introButton"	>

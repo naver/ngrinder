@@ -115,7 +115,7 @@
 
 		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
 		<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
-		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
+		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px;cursor: pointer"
 			title="Tip" data-html="ture"
 			data-placement="left"
 			data-content="
