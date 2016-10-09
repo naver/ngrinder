@@ -461,4 +461,32 @@ public class UserController extends BaseController {
 			return id;
 		}
 	}
+	
+	/**
+	 * JSessionId SSO
+	 * @param request
+	 * @param response
+	 * @param sessionId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/sso/{sessionId}/{lang}")
+	public String setSSO(  
+			HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable("sessionId") String sessionId,
+            @PathVariable("lang") String lang) {
+	    
+		//session setting
+		Cookie sessionCookie = new Cookie("JSESSIONID", sessionId);
+		sessionCookie.setPath("/");
+		response.addCookie(sessionCookie);
+		
+		//lang setting
+		Cookie langCookie = new Cookie("ngrinder_lang", lang);
+		langCookie.setPath("/");
+		response.addCookie(langCookie);
+
+		return "redirect:/home";
+	}	
 }
