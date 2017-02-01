@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>ngrinder</artifactId>
 		<groupId>org.ngrinder</groupId>
-		<version>3.4.1-SNAPSHOT</version>
+		<version>3.4.1</version>
 	</parent>
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>

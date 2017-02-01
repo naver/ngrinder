@@ -6,7 +6,7 @@
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder-sh</artifactId>
 	<name>ngrinder-sh</name>
-	<version>3.4.1-SNAPSHOT</version>
+	<version>3.4.1</version>
 
 	<packaging>jar</packaging>
 	<build>
