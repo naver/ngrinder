@@ -16,6 +16,7 @@
     <global>
         <params>
             <param name="options" useDefender="false" />
+            <param name="content" useDefender="false" />
         </params>
     </global>
 
