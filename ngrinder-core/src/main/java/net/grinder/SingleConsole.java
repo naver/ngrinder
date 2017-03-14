@@ -743,7 +743,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		if (intervalStatisticMapPerTest.size() != 1) {
 			for (Entry<Test, StatisticsSet> eachPair : intervalStatisticMapPerTest.entrySet()) {
 				String description = eachPair.getKey().getDescription();
-				csvLine.append(",").append(description);
+				csvLine.append(cvsSeparator).append(description);
 				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 					if (!each.getKey().equals("Peak_TPS")) {
 						csvLine.append(cvsSeparator).append(
