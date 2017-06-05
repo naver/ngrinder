@@ -9,7 +9,7 @@ nGrinder
 nGrinder is a platform for stress tests that enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The open-source nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
 
-Want to know what's changed from the original grinder platform?
+To want to know what's changed from the original grinder platform?
  * Checkout https://github.com/naver/ngrinder/wiki/Architecture !
 
 To get to know what's different from previous ngrinder 2.0?
