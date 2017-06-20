@@ -25,21 +25,17 @@ import ro.fortsoft.pf4j.util.JarFileFilter;
  * @see https://github.com/decebals/pf4j
  * @since 3.0
  */
-@Component
 public class NGrinderDefaultPluginManager extends DefaultPluginManager {
 
-	@Autowired
-	public NGrinderDefaultPluginManager(Config config, ApplicationContext applicationContext) throws MalformedURLException {
-		super(config.isClustered() ? config.getExHome().getPluginsCacheDirectory() : config.getHome().getPluginsCacheDirectory());
-		super.pluginRepository = new DefaultPluginRepository(config.getHome().getPluginsDirectory(), new JarFileFilter());
-	}
-
-	@Autowired
 	public void setExtensionFinder(ExtensionFinder extensionFinder) {
 		super.extensionFinder = extensionFinder;
 	}
 
-	@Autowired
+	public NGrinderDefaultPluginManager(Config config, ApplicationContext applicationContext)  {
+		super(config.isClustered() ? config.getExHome().getPluginsCacheDirectory() : config.getHome().getPluginsCacheDirectory());
+		super.pluginRepository = new DefaultPluginRepository(config.getHome().getPluginsDirectory(), new JarFileFilter());
+	}
+
 	public void setSpringExtensionFactory(SpringExtensionFactory extensionFactory) {
 		super.extensionFactory = extensionFactory;
 	}

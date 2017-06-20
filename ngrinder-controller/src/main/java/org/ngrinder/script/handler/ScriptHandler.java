@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.handler;
 
@@ -17,6 +17,8 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.FileUtils;
 import org.ngrinder.common.util.PathUtils;
@@ -220,7 +222,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "lib/", revision, true)) {
 			// Skip jython 2.5... it's already included.
 			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+				|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
@@ -288,13 +290,29 @@ public abstract class ScriptHandler implements ControllerConstants {
 			ClassPathResource cpr = new ClassPathResource("script_template");
 			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			Template template = freemarkerConfig.getTemplate("basic_template_" + getExtension() + ".ftl");
+			Template template = freemarkerConfig.getTemplate(getTemplateFileName(values));
 			StringWriter writer = new StringWriter();
 			template.process(values, writer);
 			return writer.toString();
 		} catch (Exception e) {
 			throw processException("Error while fetching the script template.", e);
 		}
+	}
+
+	/**
+	 * Get template file name.
+	 *
+	 * @param values input value
+	 * @return templateFileName String
+	 */
+	private String getTemplateFileName(Map<String, Object> values) {
+		String templateFileName = "";
+		if (values.get("userName") != null) {
+			templateFileName = "basic_template_";
+		} else {
+			templateFileName = "har_template_";
+		}
+		return templateFileName + getExtension() + ".ftl";
 	}
 
 	public String getTitle() {

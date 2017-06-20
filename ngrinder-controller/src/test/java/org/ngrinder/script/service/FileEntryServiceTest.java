@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,18 +9,28 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.service;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.User;
 import org.ngrinder.script.handler.JythonScriptHandler;
+import org.ngrinder.script.model.Request;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class FileEntryServiceTest {
 
@@ -82,6 +92,64 @@ public class FileEntryServiceTest {
 	@Test(expected = NGrinderRuntimeException.class)
 	public void testFileNameFromInvalidUrl() {
 		fileEntryService.getPathFromUrl("htt22p://helloworld22");
+	}
+
+	public String loadHAR(String fileNmae, boolean removeStaticResource) throws Exception {
+		Map<String, Object> result = newHashMap();
+		Map<String, Object> paramMap = newHashMap();
+		ClassPathResource resource = new ClassPathResource(fileNmae);
+		MultipartFile upFile = new MockMultipartFile(fileNmae, resource.getInputStream());
+		String har = fileEntryService.loadHAR(upFile, removeStaticResource);
+		return har;
+	}
+
+	@Test
+	public void testConvertFileUploadPostData() throws Exception {
+		String har = loadHAR("www.ngrinder.har", true);
+		assertNotNull(har);
+	}
+
+	@Test
+	public void testCleanStaticResources() throws Exception {
+		String har = loadHAR("ngrinder.navercorp.com.har", false);
+		Map<String, Object> result = newHashMap();
+		ArrayList<Request> requests = new ArrayList<Request>();
+		result = fileEntryService.getHARParam(har, false);
+		assertNotNull(result.get("requests"));
+
+		requests = (ArrayList<Request>) result.get("requests");
+		assertThat(requests.size(), is(18));
+
+		result = fileEntryService.getHARParam(har, true);
+		assertNotNull(result.get("requests"));
+
+		requests = (ArrayList<Request>) result.get("requests");
+		assertThat(result.size(), is(2));
+	}
+
+	@Test
+	public void testGetHARParamCheckCommonHeader() throws Exception {
+		String har = loadHAR("www.ngrinder.har", false);
+		Map<String, Object> result = fileEntryService.getHARParam(har, false);
+		assertNotNull(result.get("commonHeader"));
+
+		Map<String, Object> commonHeader = newHashMap();
+		commonHeader.put("commonHeader", result.get("commonHeader"));
+		commonHeader = (Map<String, Object>) result.get("commonHeader");
+		assertThat(commonHeader.size(), is(5));
+	}
+
+	@Test
+	public void testGetHARParamCheckRequest() throws Exception {
+		String har = loadHAR("www.ngrinder.har", false);
+		Map<String, Object> result = fileEntryService.getHARParam(har, false);
+		assertNotNull(result.get("requests"));
+
+		ArrayList<Request> requests = (ArrayList<Request>) result.get("requests");
+		assertThat(Integer.valueOf(requests.get(0).getState()), is(200));
+		assertThat(requests.get(0).getUrl(), is("https://www.google.com/auth/loginProcess.do"));
+		assertThat(requests.get(0).getPostData().size(), is(2));
+		assertNull(requests.get(0).getHeaders().get("host"));
 	}
 
 }

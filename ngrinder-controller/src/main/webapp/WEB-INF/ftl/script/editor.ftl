@@ -127,18 +127,18 @@
 				F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
 				ESC : <@spring.message 'script.editor.tip.back'/>
 				"><code>Tip</code></div>
-		<div id="script_samples_link" style="text-align: center;margin-top: 10px;">
+		<div id="script_generation_helper" style="text-align: center;margin-top: 10px;">
 			<a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
-		</div>
-		<div id="validation_result_panel" style="display:none;">
-			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
-			</pre>
-			<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
+			&nbsp; | &nbsp;
+            <a href="#upload_file_modal" data-toggle="modal" id="upload_har2script_btn">
+				<@spring.message "script.action.convert.uploadHAR2Script"/>
+            </a>
 		</div>
 	</div>
 	</div>
 	<#include "../common/copyright.ftl">
 	<#include "../common/codemirror.ftl">
+	<#include "upload_har_modal.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
 	<#include "../perftest/host_modal.ftl">
 	<script>
@@ -208,7 +208,6 @@
 				var scriptPath = $("#script_name").val();
 				var hostString = $("#target_hosts").val();
 				$('#validation_result_panel').hide();
-				$('#script_samples_link').show();
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 
@@ -224,7 +223,7 @@
 					validating = false;
 					$('#validation_result_pre_div').text(res);
 					$('#validation_result_panel').show();
-					$('#script_samples_link').hide();
+					$('#script_generation_helper').hide();
 					$('#validated').val("1");//should control the validation success or not later.
 				};
 				ajaxObj.complete = function () {
@@ -248,8 +247,23 @@
 					editor.setSize(null, 500);
 				}
 			});
-		});
 
+			$('#upload_har2script_btn').click(function() {
+				$('#upload_file_modal').css('width', '900px');
+				$('#upload_file_modal').css('height', '700px');
+                $('#upload_file_modal').css('left', '39%');
+				$('#file_input').val('');
+				$('#har_textarea').val('');
+				$('#groovy_textarea').val('');
+				$('#jython_textarea').val('');
+				$('.control-group').removeClass("error").removeClass('success');
+				$('.help-inline').text('');
+				$('#input_form').show();
+				$('#result_form').hide();
+				$('#upload_file_button').show();
+                $('#input_tab').find('a:first').click();
+			});
+		});
 
 		</script>
 	</body>
