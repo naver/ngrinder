@@ -109,5 +109,5 @@ You can join our forum as well
      limitations under the License. 
       
    
-nGrinder includes the following software and libraries as follows. See the LICENCE folder for the license and copyright details for each.
+nGrinder includes the following software and libraries as follows. See the LICENSE folder for the license and copyright details for each.
 * https://github.com/naver/ngrinder/tree/master/license
