@@ -2,7 +2,7 @@
 ================
 
 > We have not been publically released nGrinder for last 2 years. It's true that we thought previous nGrinder was enough for our internal use.
-As time goes by, surrounding circumstances(for example Java version or Docker) was been changing.. So we decided to continously enhance nGrinder.
+As time goes by, surrounding circumstances(for example Java version or Docker) was been changing.. So we decided to continuously enhance nGrinder.
 
 
 - New feature and changes
@@ -10,7 +10,7 @@ As time goes by, surrounding circumstances(for example Java version or Docker) w
     - nGrinder now support Java 1.8. Controller supports java 1.7 or above and Agent supports java 1.6 or above.
   * Provide elaborated script generator
     - Since nGrinder 3.0, we provided the script generation wizard that helps you easily create a default script.
-    -  However, it only created simple script for GET method case and pepole frequently asked to us how to use the other methods and how to use cookies and headers in the script.
+    -  However, it only created simple script for GET method case and people frequently asked to us how to use the other methods and how to use cookies and headers in the script.
     - In nGrinder 3.4, you can choose one of methods such as GET, POST and set HTTP headers and cookies even form data on the wizard    dialog, then it will create useful example codes for you.
   * Provide brand new nGrinder script recorder
     - A few years ago, we had released a script recorder based on JXBrowser. However it was not easy to run it due to several reasons.
@@ -303,7 +303,7 @@ This made this version more concrete and workable in the large deployment.
   * [NGRINDER-617] - Fix wrong classpath filtering in the process execution
   * [NGRINDER-618] - Dynamic system configuration update is not working after the first update.
   * [NGRINDER-622] - Add host settings for groovy maven project  in quicktest
-  * [NGRINDER-625] - Make groovy tc thread use diffrent test object
+  * [NGRINDER-625] - Make groovy tc thread use different test object
   * [NGRINDER-629] - Clean up the url after upload files
   * [NGRINDER-630] - Use UTF-8 for groovy class loading
 
