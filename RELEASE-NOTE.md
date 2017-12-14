@@ -2,7 +2,7 @@
 ================
 
 > We have not been publically released nGrinder for last 2 years. It's true that we thought previous nGrinder was enough for our internal use.
-As time goes by, surrounding circumstances(for example Java version or Docker) was been changing.. So we decided to continously enhance nGrinder.
+As time goes by, surrounding circumstances(for example Java version or Docker) was been changing.. So we decided to continuously enhance nGrinder.
 
 
 - New feature and changes
@@ -12,7 +12,7 @@ As time goes by, surrounding circumstances(for example Java version or Docker) w
     - Since nGrinder 3.0, we provided the script generation wizard that helps you easily create a default script.
     -  However, it only created simple script for GET method case and pepole frequently asked to us how to use the other methods and how to use cookies and headers in the script.
     - In nGrinder 3.4, you can choose one of methods such as GET, POST and set HTTP headers and cookies even form data on the wizard    dialog, then it will create useful example codes for you.
-  * Provide brand new nGrinder script recorder
+  * Provide brand-new nGrinder script recorder
     - A few years ago, we had released a script recorder based on JXBrowser. However it was not easy to run it due to several reasons.
     -  Now, we have developed brand-new script recorder from the beginning using the Chrome extension technology. If you are using Chrome browser, you have only to install nGrinder Script Recorder package.
     - See https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide
