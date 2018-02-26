@@ -526,7 +526,7 @@ public class FileEntryService {
 				tempHeader.put(header.getName(), header.getValue());
 			}
 
-			if(harEntry.getRequest().getPostData() != null) {
+			if(harEntry.getRequest().getPostData() != null && harEntry.getRequest().getPostData().getParams() != null) {
 				for (HAR.param param : harEntry.getRequest().getPostData().getParams()) {
 					postData.put(param.getName(), param.getValue());
 				}
