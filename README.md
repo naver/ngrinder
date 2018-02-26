@@ -1,4 +1,4 @@
-* nGrinder 3.4 has benn released. See https://github.com/naver/ngrinder/releases
+* nGrinder 3.4 has been released. See https://github.com/naver/ngrinder/releases
 
 nGrinder 
 ========
@@ -9,7 +9,7 @@ nGrinder
 nGrinder is a platform for stress tests that enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The open-source nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
 
-Want to to know what's changed from the original grinder platform?
+Want to know what's changed from the original grinder platform?
  * Checkout https://github.com/naver/ngrinder/wiki/Architecture !
 
 To get to know what's different from previous ngrinder 2.0?
@@ -109,5 +109,5 @@ You can join our forum as well
      limitations under the License. 
       
    
-nGrinder includes the following software and libraries as follows. See the LICENCE folder for the license and copyright details for each.
+nGrinder includes the following software and libraries as follows. See the LICENSE folder for the license and copyright details for each.
 * https://github.com/naver/ngrinder/tree/master/license
