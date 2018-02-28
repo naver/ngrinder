@@ -142,6 +142,42 @@
 					<th><@spring.message "perfTest.report.errors"/></th>
 					<td>${test.errors!""}</td>
 				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.errorRate"/></th>
+					<td>${(test.errors /(test.tests + test.errors))!""}</td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.minRT"/></th>
+					<td>${test.minRT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.pct25RT"/></th>
+					<td>${test.pct25RT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.pct50RT"/></th>
+					<td>${test.pct50RT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.pct75RT"/></th>
+					<td>${test.pct75RT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.pct90RT"/></th>
+					<td>${test.pct90RT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.pct95RT"/></th>
+					<td>${test.pct95RT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.pct99RT"/></th>
+					<td>${test.pct99RT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
+				<tr>
+					<th><@spring.message "perfTest.report.maxRT"/></th>
+					<td>${test.maxRT!""}&nbsp;&nbsp; <code>ms</code></td>
+				</tr>
 			</table>
 
 			<div class="well" style="max-width: 340px; padding: 8px 0;">

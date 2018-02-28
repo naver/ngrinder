@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -492,7 +492,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
@@ -502,7 +502,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#getPerfTestFilePath(org .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
@@ -901,7 +901,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#getAllPerfTest()
 	 */
 	@Override
@@ -958,13 +958,26 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatisticsData();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> additionalStats = MapUtils.getMap(result, "additionalStats", MapUtils.EMPTY_MAP);
+
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
+		LOGGER.info("Additional Statistics for test {}  is {}", perfTest.getId(), additionalStats);
+
 		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
 		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));
 		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue());
 		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue());
 
+		perfTest.setMinRT(parseDoubleWithSafety(additionalStats, "minRT", 0D));
+		perfTest.setPct25RT(parseDoubleWithSafety(additionalStats, "pct25RT", 0D));
+		perfTest.setPct50RT(parseDoubleWithSafety(additionalStats, "pct50RT", 0D));
+		perfTest.setPct75RT(parseDoubleWithSafety(additionalStats, "pct75RT", 0D));
+		perfTest.setPct90RT(parseDoubleWithSafety(additionalStats, "pct90RT", 0D));
+		perfTest.setPct95RT(parseDoubleWithSafety(additionalStats, "pct95RT", 0D));
+		perfTest.setPct99RT(parseDoubleWithSafety(additionalStats, "pct99RT", 0D));
+		perfTest.setMaxRT(parseDoubleWithSafety(additionalStats, "maxRT", 0D));
 	}
 
 	/**
@@ -989,7 +1002,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#stop(org.ngrinder .model.User, java.lang.Long)
 	 */
 	@Override
@@ -1025,7 +1038,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#getAllStopRequested()
 	 */
 	@Override
@@ -1042,7 +1055,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#addCommentOn(org.ngrinder .model.User, int, java.lang.String)
 	 */
 	@Override
@@ -1582,7 +1595,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#getAll(java.util.Date, java.util.Date)
 	 */
 	@Override
@@ -1592,7 +1605,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.service.IPerfTestService#getAll(java.util.Date, java.util.Date, java.lang.String)
 	 */
 	@Override

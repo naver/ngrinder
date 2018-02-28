@@ -44,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.ReflectionUtils;
@@ -61,6 +62,7 @@ import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -100,7 +102,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingLifeCycleFollowupListener = ListenerHelper
-			.create();
+		.create();
 	public static final int MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST = 3000;
 	private boolean capture = false;
 	private File reportPath;
@@ -134,13 +136,14 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private static final int TOO_LOW_TPS_TIME = 60000;
 	private static final int TOO_MANY_ERROR_TIME = 10000;
 	private Map<Test, StatisticsSet> intervalStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
+		.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
 	private Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
-    /**
-     * cvs file Separator value.
-     */
+		.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
+	/**
+	 * cvs file Separator value.
+	 */
 	private String cvsSeparator = ",";
+
 	/**
 	 * Constructor to bind all ip and the given port.
 	 * <p/>
@@ -172,7 +175,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			}
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
-					consoleCommunicationSetting, eventSyncCondition);
+				consoleCommunicationSetting, eventSyncCondition);
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		} catch (GrinderException e) {
@@ -255,10 +258,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-				ReflectionUtils.getFieldValue(
-						getConsoleFoundation().getComponent(ProcessControl.class),
-						"m_agentNumberMap"),
-				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
+			ReflectionUtils.getFieldValue(
+				getConsoleFoundation().getComponent(ProcessControl.class),
+				"m_agentNumberMap"),
+			"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -540,8 +543,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	/*
-     * (non-Javadoc)
-	 * 
+	 * (non-Javadoc)
+	 *
 	 * @see net.grinder.ISingleConsole2#getStatisticsIndexMap()
 	 */
 	public StatisticsIndexMap getStatisticsIndexMap() {
@@ -665,10 +668,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 							StatisticsSet value = entry.getValue();
 							writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
 									+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
-									formatValue(getRealDoubleValue(each.getValue().getDoubleValue(value))));
+								formatValue(getRealDoubleValue(each.getValue().getDoubleValue(value))));
 						} else {
 							writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
-									+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "null");
+								+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "null");
 						}
 
 					}
@@ -747,7 +750,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 					if (!each.getKey().equals("Peak_TPS")) {
 						csvLine.append(cvsSeparator).append(
-								formatValue(getRealDoubleValue(each.getValue().getDoubleValue(eachPair.getValue()))));
+							formatValue(getRealDoubleValue(each.getValue().getDoubleValue(eachPair.getValue()))));
 					}
 				}
 			}
@@ -769,7 +772,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				momentWhenTpsBeganToHaveVerySmall = System.currentTimeMillis();
 			} else if (new Date().getTime() - momentWhenTpsBeganToHaveVerySmall >= TOO_LOW_TPS_TIME) {
 				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
-						TOO_LOW_TPS_TIME / 60000);
+					TOO_LOW_TPS_TIME / 60000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
@@ -799,7 +802,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = System.currentTimeMillis();
 			} else if (isOverLowTpsThreshold()) {
 				LOGGER.warn("Stop the test because the count of test error is more than"
-						+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
+					+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
@@ -815,10 +818,12 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	public static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",
-			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)", "User_defined");
+		"Mean_time_to_first_byte", "Mean_Test_Time_(ms)", "User_defined");
 
 	public static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
-			"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)", "User_defined");
+		"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)", "User_defined");
+
+	private List<Double> responseTimeList = new CopyOnWriteArrayList<Double>();
 
 	/**
 	 * Build up statistics for current sampling.
@@ -846,9 +851,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 				if (INTERESTING_STATISTICS.contains(each.getKey())) {
 					accumulatedStatisticMap.put(each.getKey(),
-							getRealDoubleValue(each.getValue().getDoubleValue(accumulatedSet)));
+						getRealDoubleValue(each.getValue().getDoubleValue(accumulatedSet)));
 					intervalStatisticsMap.put(each.getKey(),
-							getRealDoubleValue(each.getValue().getDoubleValue(intervalSet)));
+						getRealDoubleValue(each.getValue().getDoubleValue(intervalSet)));
 				}
 			}
 			cumulativeStatistics.add(accumulatedStatisticMap);
@@ -860,7 +865,11 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 			if (INTERESTING_STATISTICS.contains(each.getKey())) {
 				totalStatistics.put(each.getKey(),
-						getRealDoubleValue(each.getValue().getDoubleValue(accumulatedStatistics)));
+					getRealDoubleValue(each.getValue().getDoubleValue(accumulatedStatistics)));
+			}
+			if ("Mean_Test_Time_(ms)".equals(each.getKey())) {
+				responseTimeList.add((Double) getRealDoubleValue(each.getValue()
+					.getDoubleValue(intervalStatistics)));
 			}
 		}
 
@@ -876,6 +885,36 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 		// Finally overwrite.. current one.
 		this.statisticData = result;
+	}
+
+	private void getAdditionalStats() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getAdditionalStats() responseTimeList is {}", responseTimeList.toString());
+		}
+
+		// list to array
+		int i = 0;
+		double[] rtArray = new double[responseTimeList.size()];
+		for (double responseTime : responseTimeList) {
+			rtArray[i++] = responseTime;
+		}
+
+		Arrays.sort(rtArray);
+
+		Percentile percentile = new Percentile();
+		Map<String, Object> additionalStats = newHashMap();
+		additionalStats.put("minRT", rtArray[0]);
+		additionalStats.put("pct25RT", percentile.evaluate(rtArray, 25));
+		additionalStats.put("pct50RT", percentile.evaluate(rtArray, 50));
+		additionalStats.put("pct75RT", percentile.evaluate(rtArray, 75));
+		additionalStats.put("pct90RT", percentile.evaluate(rtArray, 90));
+		additionalStats.put("pct95RT", percentile.evaluate(rtArray, 95));
+		additionalStats.put("pct99RT", percentile.evaluate(rtArray, 99));
+		additionalStats.put("maxRT", rtArray[rtArray.length - 1]);
+
+		LOGGER.debug("SingleConsole getAdditionalStats additionalStats {}", additionalStats);
+
+		this.statisticData.put("additionalStats", additionalStats);
 	}
 
 	/*
@@ -1196,6 +1235,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 		LOGGER.info("Sampling is stopped");
 		informTestSamplingEnd();
+
+		getAdditionalStats();
 	}
 
 	private void informTestSamplingStart() {
@@ -1352,7 +1393,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 *
 	 * @param String csvSeparator
 	 */
-	public void setCsvSeparator(String csvSeparator){
+	public void setCsvSeparator(String csvSeparator) {
 		this.cvsSeparator = csvSeparator;
 	}
 }
