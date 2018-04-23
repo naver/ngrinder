@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.monitor.share.domain;
 
@@ -19,9 +19,9 @@ import java.io.Serializable;
 
 /**
  * Network Usage Calculation Class. This class get the bandwidth so far and calc RX, TX.
- * 
+ *
  * @author JunHo Yoon
- * 
+ *
  */
 public class BandWidth implements Serializable {
 
@@ -41,7 +41,7 @@ public class BandWidth implements Serializable {
 
 	/**
 	 * Constructor with the timestamp.
-	 * 
+	 *
 	 * @param time	current timestamp.
 	 */
 	public BandWidth(long time) {
@@ -56,14 +56,14 @@ public class BandWidth implements Serializable {
 
 	/**
 	 * Calculate the bandWith by subtracting prev bandwidth.
-	 * 
+	 *
 	 * @param bandWidth	bandWidth adjusted against.
 	 * @return adjusted bandWidth.
 	 */
 	public BandWidth adjust(BandWidth bandWidth) {
 		float rate = ((float) Math.abs(time - bandWidth.getTime())) / 1000;
-		receivedPerSec = ((long) ((received - bandWidth.getReceived()) * rate));
-		sentPerSec = ((long) ((sent - bandWidth.getSent()) * rate));
+		receivedPerSec = ((long) ((received - bandWidth.getReceived()) / rate));
+		sentPerSec = ((long) ((sent - bandWidth.getSent()) / rate));
 		return this;
 	}
 
