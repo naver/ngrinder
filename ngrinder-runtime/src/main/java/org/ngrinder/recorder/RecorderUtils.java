@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.recorder;
 
@@ -40,7 +40,7 @@ import HTTPClient.NVPair;
  * @author Gisoo Gwon
  */
 public class RecorderUtils {
-	
+
 	private static Pattern urlPattern = Pattern.compile("^[^:]+:\\/\\/([^\\/:]+)[:\\/]?.*$");
 	private static Pattern fileTagPattern = Pattern.compile("<nGrinderRecorderFileName>([^<]+)<\\/nGrinderRecorderFileName>");
 
@@ -52,12 +52,12 @@ public class RecorderUtils {
 	public static JSONObject parseRequestToJson(String requestText) throws JSONException {
 		return new JSONObject(requestText);
 	}
-	
+
 	public static HTTPResponse sendBy(HTTPRequest request, JSONObject requestJson) throws Exception {
 		initRequest(request, requestJson);
 		return send(request, requestJson);
 	}
-	
+
 	private static void initRequest(HTTPRequest request, JSONObject requestJson) throws Exception {
 		String domain = extractDomain(requestJson.getString("url"));
 		setRequestHeader(request, requestJson, domain);
@@ -72,7 +72,7 @@ public class RecorderUtils {
 	static String extractDomain(String url) {
 		Matcher m = urlPattern.matcher(url);
 		if (m.find()) {
-			return m.group(1); 
+			return m.group(1);
 		}
 		return null;
 	}
@@ -80,10 +80,10 @@ public class RecorderUtils {
 	/**
 	 * Set request header by requestJson.headers
 	 * @param request	Target request object
-	 * @param req_123	JSON of request info
+	 * @param requestJson	JSON of request info
 	 * @param domain	Cookie domain
-	 * @throws JSONException 
-	 * @throws GrinderException 
+	 * @throws JSONException
+	 * @throws GrinderException
 	 */
 	@SuppressWarnings("unchecked")
 	private static void setRequestHeader(HTTPRequest request, JSONObject requestJson, String domain)
@@ -105,7 +105,7 @@ public class RecorderUtils {
 	 * Add cookie in {@link CookieModule}
 	 * @param cookieHeader
 	 * @param domain
-	 * @throws GrinderException 
+	 * @throws GrinderException
 	 */
 	private static void setCookie(String cookieHeader, String domain) throws GrinderException {
 		for (String cookie : cookieHeader.split(";")) {
@@ -123,7 +123,7 @@ public class RecorderUtils {
 		if (!requestJson.has("formData")) {
 			return;
 		}
-		
+
 		Object formData = requestJson.get("formData");
 		if (formData instanceof String) {
 			initStringBody(request, formData);
@@ -131,7 +131,7 @@ public class RecorderUtils {
 		}
 		initPairDataBody(request, formData);
 	}
-	
+
 	private static HTTPResponse send(HTTPRequest request, JSONObject requestJson) throws Exception {
 		String method = requestJson.getString("method");
 		String url = requestJson.getString("url");
@@ -179,5 +179,5 @@ public class RecorderUtils {
 		}
 		request.setData(replacedBody.getBytes("utf-8"));
 	}
-	
+
 }
