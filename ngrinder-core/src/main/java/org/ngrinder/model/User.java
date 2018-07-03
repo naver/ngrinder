@@ -15,6 +15,7 @@ package org.ngrinder.model;
 
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -29,6 +30,8 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @since 3.0
  */
 @Entity
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "NUSER")
 public class User extends BaseModel<User> {
 
@@ -93,12 +96,12 @@ public class User extends BaseModel<User> {
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
-			inverseJoinColumns = @JoinColumn(name = "follow_id"))
+		inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), // LF
-			inverseJoinColumns = @JoinColumn(name = "owner_id"))
+		inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
 
 	/**

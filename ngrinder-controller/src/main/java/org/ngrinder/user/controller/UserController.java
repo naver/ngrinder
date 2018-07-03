@@ -162,7 +162,7 @@ public class UserController extends BaseController {
 	@RequestMapping("/profile")
 	public String getOne(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User one = userService.getOne(user.getUserId());
+		User one = userService.getOneWithFollowers(user.getUserId());
 		model.addAttribute("user", one);
 		model.addAttribute("allowPasswordChange", !config.isDemo());
 		model.addAttribute("allowRoleChange", false);

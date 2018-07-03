@@ -7,6 +7,9 @@
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.hbm2ddl.auto" value="validate" />
 			<property name="hibernate.connection.release_mode" value="on_close"/>
+			<property name="hibernate.max_fetch_depth" value="0"/>
+			<property name="hibernate.cache.use_second_level_cache" value="true"/>
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
 		</properties>
 	</persistence-unit> 
 </persistence>

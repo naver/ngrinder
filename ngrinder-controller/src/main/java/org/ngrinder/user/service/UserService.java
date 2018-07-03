@@ -80,9 +80,12 @@ public class UserService extends AbstractUserService {
 
 	private Cache userCache;
 
+	private Cache userModelCache;
+
 	@PostConstruct
 	public void init() {
 		userCache = cacheManager.getCache("users");
+		userModelCache = cacheManager.getCache("org.ngrinder.model.User");
 	}
 
 	/**
@@ -97,6 +100,20 @@ public class UserService extends AbstractUserService {
 	public User getOne(String userId) {
 		return userRepository.findOneByUserId(userId);
 	}
+
+	/**
+	 * Get user by user id with followers.
+	 *
+	 * @param userId user id
+	 * @return user
+	 */
+	@Transactional
+	public User getOneWithFollowers(String userId) {
+		User one = userRepository.findOneByUserId(userId);
+		one.getFollowers().size();
+		return one;
+	}
+
 
 	/**
 	 * Encoding given user's password.
@@ -148,6 +165,7 @@ public class UserService extends AbstractUserService {
 			if (existingFollowers != null) {
 				for (User eachFollower : existingFollowers) {
 					userCache.evict(eachFollower.getUserId());
+					userModelCache.evict(eachFollower.getId());
 				}
 			}
 			user = existing.merge(user);
@@ -156,6 +174,7 @@ public class UserService extends AbstractUserService {
 		// Then expires new followers so that new followers info can be loaded.
 		for (User eachFollower : followers) {
 			userCache.evict(eachFollower.getUserId());
+			userModelCache.evict(eachFollower.getId());
 		}
 		prepareUserEnv(createdUser);
 		return createdUser;
