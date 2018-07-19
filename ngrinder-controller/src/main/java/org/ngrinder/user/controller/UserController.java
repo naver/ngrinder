@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.user.controller;
 
@@ -162,7 +162,7 @@ public class UserController extends BaseController {
 	@RequestMapping("/profile")
 	public String getOne(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User one = userService.getOne(user.getUserId());
+		User one = userService.getOneWithFollowers(user.getUserId());
 		model.addAttribute("user", one);
 		model.addAttribute("allowPasswordChange", !config.isDemo());
 		model.addAttribute("allowRoleChange", false);
@@ -261,18 +261,16 @@ public class UserController extends BaseController {
 
 
 	private List<UserSearchResult> getSwitchableUsers(User user, String keywords) {
-		List<UserSearchResult> result = newArrayList();
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
+			List<UserSearchResult> result = newArrayList();
 			for (User each : userService.getPagedAll(keywords, new PageRequest(0, 10))) {
 				result.add(new UserSearchResult(each));
 			}
+			return result;
 		} else {
-			User currUser = userService.getOne(user.getUserId());
-			for (User each : currUser.getOwners()) {
-				result.add(new UserSearchResult(each));
-			}
+			return userService.getSharedUser(user);
 		}
-		return result;
+
 	}
 
 
@@ -415,8 +413,8 @@ public class UserController extends BaseController {
 	public HttpEntity<String> search(User user, @PageableDefault Pageable pageable,
 	                                 @RequestParam(required = true) String keywords) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
-				defaultIfNull(pageable.getSort(),
-						new Sort(Direction.ASC, "userName")));
+			defaultIfNull(pageable.getSort(),
+				new Sort(Direction.ASC, "userName")));
 		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
 		List<UserSearchResult> result = newArrayList();
 		for (User each : pagedUser) {

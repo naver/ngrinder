@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.controller;
 
@@ -137,11 +137,11 @@ public class PerfTestController extends BaseController {
 	                     @PageableDefault(page = 0, size = 10) Pageable pageable, ModelMap model) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
 						defaultIfNull(pageable.getSort(),
-						new Sort(Direction.DESC, "lastModifiedDate")));
+						new Sort(Direction.DESC, "id")));
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		if (tests.getNumberOfElements() == 0) {
 			pageable = new PageRequest(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(),
-							new Sort(Direction.DESC, "lastModifiedDate")));
+							new Sort(Direction.DESC, "id")));
 			tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		}
 		annotateDateMarker(tests);

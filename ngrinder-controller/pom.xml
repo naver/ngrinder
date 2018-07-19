@@ -278,7 +278,11 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.2.Final</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>4.2.2.Final</version>
+		</dependency>
 
 		<!-- AspectJ dependencies -->
 		<dependency>
