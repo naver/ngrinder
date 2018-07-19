@@ -3,7 +3,7 @@
 <head>
 	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
-	<#include "../common/common.ftl"> 
+	<#include "../common/common.ftl">
 	<#include "../common/jqplot.ftl">
 	<title><@spring.message "perfTest.title"/></title>
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
@@ -15,7 +15,7 @@
 		max-width: 600px;
 		max-height: 500px;
 	}
-	
+
 	.select-item {
 		width: 60px;
 	}
@@ -42,11 +42,11 @@
 	}
 
 	div.modal-body div.chart {
-		border:1px solid #878988; 
-		height:250px; 
-		min-width:500px; 
-		margin-bottom:12px; 
-		padding:5px 
+		border:1px solid #878988;
+		height:250px;
+		min-width:500px;
+		margin-bottom:12px;
+		padding:5px
 	}
 
 	.table thead th {
@@ -59,7 +59,7 @@
 
 	.jqplot-xaxis {
 		margin-top: 5px;
-	} 
+	}
 
 	.rampup-chart {
 		width: 400px;
@@ -183,11 +183,11 @@
 								</div>
 								<div class="span1">
 									<#if test.id??>
-										<img id="test_status_img" class="ball" 
+										<img id="test_status_img" class="ball"
 										src="${req.getContextPath()}/img/ball/${test.status.iconName}"
 										rel='popover'
 										data-html='true'
-										data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
+										data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'
 										title="<@spring.message "${test.status.springMessageKey}"/>"
 										data-placement='bottom'
 										/>
@@ -212,7 +212,7 @@
 												<@spring.message "perfTest.action.clone"/>
 											<#else>
 												<@spring.message "common.button.save"/>
-											</#if> 
+											</#if>
 										</button>
 										<button type="button" class="btn btn-primary" style="width:116px" id="save_schedule_btn" ${disabled!}>
 											<#if isClone><@spring.message "perfTest.action.clone"/><#else><@spring.message "common.button.save"/></#if>&nbsp;<@spring.message "perfTest.action.andStart"/>
@@ -246,7 +246,7 @@
 						<a href="#test_config_section" data-toggle="tab">
 							<@spring.message "perfTest.config.testConfiguration"/>
 						</a>
-					</li> 
+					</li>
 					<li id="running_section_tab" style="display: none;">
 						<a href="#running_section" data-toggle="tab" id="running_section_btn">
 							<@spring.message "perfTest.running.title"/>
@@ -279,10 +279,10 @@
 				</div>
 			</div>
 			<!-- end tabbable -->
-			<input type="hidden" id="scheduled_time" name="scheduledTime" /> 
+			<input type="hidden" id="scheduled_time" name="scheduledTime" />
 			<#if test.id??>
 				<input type="hidden" id="test_status" name="status" value="${(test.status)}">
-				<input type="hidden" id="test_status_type" name="statusType" value="${(test.status.category)}"> 
+				<input type="hidden" id="test_status_type" name="statusType" value="${(test.status.category)}">
 			<#else>
 				<input type="hidden" id="test_status" name="status" value="SAVED">
 			</#if>
@@ -303,7 +303,7 @@
 					<div class="control-group">
 						<label class="control-label"><@spring.message "perfTest.running.schedule"/></label>
 						<div class="controls form-inline">
-							<input type="text" class="input span2" id="scheduled_date" value="" readyonly>&nbsp; 
+							<input type="text" class="input span2" id="scheduled_date" value="" readyonly>&nbsp;
 							<select id="scheduled_hour" class="select-item"></select> : <select id="scheduled_min" class="select-item"></select>
 							<code>HH:MM</code>
 							<div class="help-inline" class="margin-left:30px"></div>
@@ -394,7 +394,7 @@ function formatTags(e) {
 }
 
 function initTags() {
-	$("#tag_string").select2({	
+	$("#tag_string").select2({
 		tokenSeparators: [",", " "],
 		tags:[""],
 		placeholder: '<@spring.message "perfTest.config.tagInput"/>',
@@ -524,7 +524,7 @@ function addValidation() {
     //noinspection JSUnusedLocalSymbols,JSUnusedLocalSymbols
     validationOptions = {
 		rules: {
-			testName: { 
+			testName: {
 				required: true
 			},
 			agentCount: {
@@ -575,7 +575,7 @@ function addValidation() {
 				required: true,
 				digits: true,
 				min: 1
-			},				
+			},
 			runCount: {
 				digits: true,
 				max: ${maxRunCount},
@@ -712,7 +712,7 @@ function getBrowserTimeApplyingTimezone(time) {
 		// Now it's browser time reflecting the timezone difference.
 		return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes()));
 	}
-}	
+}
 
 
 function bindEvent() {
@@ -728,7 +728,7 @@ function bindEvent() {
 		} else {
 			$duration.val(durationMap[this.value] * 60000);
 		}
-		setDuration(); 
+		setDuration();
 		$("#duration_ratio").click();
 	});
 
@@ -740,10 +740,10 @@ function bindEvent() {
 		}
 	});
 
-	$("#save_schedule_btn").click(function() {		
+	$("#save_schedule_btn").click(function() {
 		$("#agent_count").rules("add", {
 			min:1
-		}); 
+		});
 		if (!validateForm()) {
 			return false;
 		}
@@ -898,13 +898,13 @@ function bindEvent() {
 		});
 		switchIntroData('report');
 	});
-	
+
 	$("#test_config_section_tab").click(function() {
-		switchIntroData('config');		
+		switchIntroData('config');
 	});
 
 	$("#running_section_tab").click(function() {
-		switchIntroData('running');		
+		switchIntroData('running');
 	});
 
 	$("#sample_tab").find("a").click(function(e) {
@@ -924,7 +924,7 @@ function bindEvent() {
 			</@security.authorize>
 			var scriptRevision = $("#script_revision").val();
 			var openedWindow = window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
-			openedWindow.focus(); 
+			openedWindow.focus();
 		}
 	});
 
@@ -937,7 +937,7 @@ function bindEvent() {
 			$panel.slideUp();
 		}
 	});
-	
+
 	$("#expand_ready_agent_cnt_btn").click(function() {
 		$(this).toggleClass("collapse");
 		var $panel = $("#div_ready_agent_cnt");
@@ -945,7 +945,7 @@ function bindEvent() {
 			$panel.show("slow");
 		} else {
 			$panel.slideUp();
-			
+
 		}
 	});
 
@@ -973,7 +973,7 @@ function bindEvent() {
 	changeAgentMaxCount($region.val(), false);
 <#else>
 	changeAgentMaxCount("NONE", false);
-</#if>	
+</#if>
 	$("#introButton").click(function() {
 		introJs().start();
 	});
@@ -1099,7 +1099,7 @@ function updateVuserPolicy(vuser) {
 }
 
 function updateVuserGraph() {
-	//if ramp-up chart is not enabled, update init process count as total 
+	//if ramp-up chart is not enabled, update init process count as total
 	if ($("#use_ramp_up")[0].checked) {
 		updateRampUpChart();
 	}
@@ -1177,13 +1177,13 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 	if (isRunningStatusType(statusType)) {
 		displayConfigAndRunningSection();
 	} else if (isFinishedStatusType(statusType)) {
-		finished = true; 
+		finished = true;
 		// Wait and run because it takes time to transfer logs.
 		setTimeout('displayConfigAndReportSection()', 3000);
 	} else {
 		displayConfigOnly();
 	}
-	
+
 	if (statusType == "STOP_BY_ERROR"){
 		$("#test_status_img").trigger('mouseover');
 	}
@@ -1242,15 +1242,15 @@ function callUpdateAvailableAgentInfo() {
 	targetRegion = $("#region").val();
 <#else>
 	targetRegion = "NONE";
-</#if>	
+</#if>
 	if(targetRegion != '') {
-		updateAvailableAgentInfo(targetRegion);	
+		updateAvailableAgentInfo(targetRegion);
 	}
 	setTimeout(callUpdateAvailableAgentInfo, 2000);
 }
 
 function updateAvailableAgentInfo(targetRegion) {
-    var ajaxObj = new AjaxObj("${req.getContextPath()}/agent/api/availableAgentCount");
+    var ajaxObj = new AjaxObj("/agent/api/availableAgentCount");
     ajaxObj.type = "GET";
     ajaxObj.params = {"targetRegion": targetRegion };
     ajaxObj.success = function (data) {
@@ -1271,7 +1271,7 @@ function switchIntroData(showArea){
 	$("." + showArea + " .intro").each(function(index , value){
         $(this).attr("data-step", $(this).attr("temp_data-step")).removeAttr("temp_data-step");
         $(this).attr("data-intro", $(this).attr("temp_data-intro")).removeAttr("temp_data-intro");
-	});	
+	});
 }
 
 </script>
