@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.user.service;
 
@@ -24,6 +24,7 @@ import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.AbstractUserService;
+import org.ngrinder.user.controller.UserController;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -270,4 +271,13 @@ public class UserService extends AbstractUserService {
 	}
 
 
+	@Transactional
+	public List<UserController.UserSearchResult> getSharedUser(User user) {
+		List<UserController.UserSearchResult> result = new ArrayList<UserController.UserSearchResult>();
+		User currUser = getOne(user.getUserId());
+		for (User each : currUser.getOwners()) {
+			result.add(new UserController.UserSearchResult(each));
+		}
+		return result;
+	}
 }
