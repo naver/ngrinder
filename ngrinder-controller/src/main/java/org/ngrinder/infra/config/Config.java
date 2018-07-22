@@ -57,6 +57,7 @@ import java.util.Properties;
 
 import static net.grinder.util.NoOp.noOp;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -551,6 +552,15 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	public boolean isSecurityEnabled() {
 		return !isDevMode() && getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_SECURITY);
+	}
+
+	/**
+	 * Get system security level from system properties.
+	 *
+	 * @return security level.
+	 */
+	public String getSecurityLevel() {
+		return getControllerProperties().getProperty(PROP_CONTROLLER_SECURITY_LEVEL, GRINDER_SECURITY_LEVEL_NORMAL);
 	}
 
 	/**

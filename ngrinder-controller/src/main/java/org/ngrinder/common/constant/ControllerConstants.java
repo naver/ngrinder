@@ -68,6 +68,7 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_SAFE_DIST = "controller.safe_dist";
 	public static final String PROP_CONTROLLER_SAFE_DIST_THRESHOLD = "controller.safe_dist_threshold";
 	public static final String PROP_CONTROLLER_SECURITY = "controller.security";
+	public static final String PROP_CONTROLLER_SECURITY_LEVEL = "controller.security.level";
 	public static final String PROP_CONTROLLER_URL = "controller.url";
 	public static final String PROP_CONTROLLER_VALIDATION_SYNTAX_CHECK = "controller.validation_syntax_check";
 	public static final String PROP_CONTROLLER_USAGE_REPORT = "controller.usage_report";
