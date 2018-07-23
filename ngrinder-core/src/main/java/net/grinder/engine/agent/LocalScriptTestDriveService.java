@@ -59,8 +59,8 @@ public class LocalScriptTestDriveService {
 	 * @return File which stores validation result.
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-	                       String hostString) {
-		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, getDefaultTimeout());
+						   String securityLevel, String hostString) {
+		return doValidate(base, script, eventSynchronisation, securityEnabled, securityLevel, hostString, getDefaultTimeout());
 	}
 
 	protected int getDefaultTimeout() {
@@ -80,7 +80,7 @@ public class LocalScriptTestDriveService {
 	 */
 	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-	                       String hostString, final int timeout) {
+						   String securityLevel, String hostString, final int timeout) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -94,8 +94,8 @@ public class LocalScriptTestDriveService {
 			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
-			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
-					NetworkUtils.getLocalHostName());
+			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, securityLevel, hostString,
+				NetworkUtils.getLocalHostName());
 			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);

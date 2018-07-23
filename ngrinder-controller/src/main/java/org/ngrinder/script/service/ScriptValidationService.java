@@ -112,7 +112,7 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-					config.isSecurityEnabled(), hostString, getTimeout());
+					config.isSecurityEnabled(), config.getSecurityLevel(), hostString, getTimeout());
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuilder output = new StringBuilder();
 			String path = config.getHome().getDirectory().getAbsolutePath();
