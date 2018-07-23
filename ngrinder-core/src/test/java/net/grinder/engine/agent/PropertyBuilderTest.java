@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 
 import java.io.File;
 
@@ -66,6 +67,6 @@ public class PropertyBuilderTest {
 		Directory directory = new Directory(new File("."));
 		GrinderProperties property = new GrinderProperties();
 
-		return new PropertyBuilder(property, directory, true, hostString, NetworkUtils.getLocalHostName());
+		return new PropertyBuilder(property, directory, true, GRINDER_SECURITY_LEVEL_NORMAL, hostString, NetworkUtils.getLocalHostName());
 	}
 }

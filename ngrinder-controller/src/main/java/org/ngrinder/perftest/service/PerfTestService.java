@@ -612,6 +612,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
+			grinderProperties.setProperty(GRINDER_PROP_SECURITY_LEVEL,  config.getSecurityLevel());
 			// For backward agent compatibility.
 			// If the security is not enabled, pass it as jvm argument.
 			// If enabled, pass it to grinder.param. In this case, I drop the

@@ -53,6 +53,8 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static org.ngrinder.common.constants.GrinderConstants.*;
+
 /**
  * This is the entry point of The Grinder agent process.
  *
@@ -367,7 +369,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 	private String buildTestRunProperties(ScriptLocation script, AbstractLanguageHandler handler, Properties systemProperty,
 	                                      GrinderProperties properties) {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
-				"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
+				GRINDER_PROP_SECURITY, false), properties.getProperty(GRINDER_PROP_SECURITY_LEVEL, GRINDER_SECURITY_LEVEL_NORMAL), properties.getProperty(GRINDER_PROP_ETC_HOSTS),
 				NetworkUtils.getLocalHostName(), m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE),
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX),
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_LOCAL_DNS),
