@@ -15,6 +15,7 @@ package org.ngrinder.script.service;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	public void testValidation() throws EngineException, DirectoryException, IOException {
 		File file = new ClassPathResource("/validation/script_1time.py").getFile();
 		Condition m_eventSync = new Condition();
-		File log = validationService.doValidate(file.getParentFile(), file, m_eventSync, false, "");
+		File log = validationService.doValidate(file.getParentFile(), file, m_eventSync, false, GRINDER_SECURITY_LEVEL_NORMAL, "");
 		assertThat(log.length(), greaterThan(1000L));
 	}
 

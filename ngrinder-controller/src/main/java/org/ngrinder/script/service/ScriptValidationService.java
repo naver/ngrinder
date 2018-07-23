@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.util.List;
 
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_SECURITY_LEVEL;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_VALIDATION_SYNTAX_CHECK;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_VALIDATION_TIMEOUT;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -112,7 +113,7 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-					config.isSecurityEnabled(), hostString, getTimeout());
+					config.isSecurityEnabled(), config.getSecurityLevel(), hostString, getTimeout());
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuilder output = new StringBuilder();
 			String path = config.getHome().getDirectory().getAbsolutePath();
