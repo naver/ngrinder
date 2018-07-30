@@ -62,8 +62,8 @@ public class BandWidth implements Serializable {
 	 */
 	public BandWidth adjust(BandWidth bandWidth) {
 		float rate = ((float) Math.abs(time - bandWidth.getTime())) / 1000;
-		receivedPerSec = ((long) ((received - bandWidth.getReceived()) * rate));
-		sentPerSec = ((long) ((sent - bandWidth.getSent()) * rate));
+		receivedPerSec = ((long) ((received - bandWidth.getReceived()) / rate));
+		sentPerSec = ((long) ((sent - bandWidth.getSent()) / rate));
 		return this;
 	}
 
