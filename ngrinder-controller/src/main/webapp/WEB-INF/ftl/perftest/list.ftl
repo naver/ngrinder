@@ -468,7 +468,7 @@ function deleteTests(ids) {
 }
 
 function stopTests(ids) {
-	var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api?action=stop",
+	var ajaxObj = new AjaxObj("/perftest/api?action=stop",
 			"<@spring.message "perfTest.message.stop.success"/>",
 			"<@spring.message "perfTest.message.stop.error"/>");
 	ajaxObj.type = "PUT";
@@ -520,7 +520,7 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 			ids.push($each.val());
 		}
 	});
-	var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
+	var ajaxObj = new AjaxObj("/perftest/api/status");
 	ajaxObj.type = "GET";
 	ajaxObj.params = {"ids": ids.join(",")};
 	ajaxObj.success = function (data) {

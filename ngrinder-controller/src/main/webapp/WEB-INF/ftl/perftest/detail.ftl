@@ -1250,7 +1250,7 @@ function callUpdateAvailableAgentInfo() {
 }
 
 function updateAvailableAgentInfo(targetRegion) {
-    var ajaxObj = new AjaxObj("${req.getContextPath()}/agent/api/availableAgentCount");
+    var ajaxObj = new AjaxObj("/agent/api/availableAgentCount");
     ajaxObj.type = "GET";
     ajaxObj.params = {"targetRegion": targetRegion };
     ajaxObj.success = function (data) {

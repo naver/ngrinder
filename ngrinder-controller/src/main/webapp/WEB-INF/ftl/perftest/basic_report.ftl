@@ -105,7 +105,7 @@
 	$("#leave_comment_btn").click(function(){
 		var comment = $("#test_comment").val();
 		var tagString = buildTagString();
-		var ajaxObj = new AjaxPostObj("${req.getContextPath()}/perftest/${(test.id)?c}/leave_comment",
+		var ajaxObj = new AjaxPostObj("/perftest/${(test.id)?c}/leave_comment",
 				{ "testComment": comment, "tagString":tagString },
 				"<@spring.message "perfTest.report.message.leaveComment"/>"
 		);
