@@ -2,7 +2,7 @@
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<div><h4><@spring.message "script.action.createScript"/></h4></div>
-		<div style="float;margin-top:-35px;padding-left:753px"
+		<div style="float;margin-top:-35px;padding-left:741px"
 			title="Sample Script Link" data-html="ture"
 			data-placement="left"
 			data-content="<@spring.message 'script.editor.sample.message'/>">
@@ -17,7 +17,7 @@
 					<#assign name_message>
 						<@spring.message "script.info.name.help"/>
 					</#assign>
-					
+
 					<select id="script_type" name="scriptType" class="span2">
 						<#list handlers as handler>
 							<option value="${handler.key}" extension="${handler.extension}" project_handler="${handler.isProjectHandler()?string}">${handler.title}</option>
@@ -67,9 +67,9 @@
 							<@spring.message "script.action.createResourceAndLib"/>
 						</label>
 						<span class="help-inline well"><@spring.message "script.action.createResourceAndLib.help"/>
-						<a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
+						<a href="https://github.com/naver/ngrinder/wiki/How-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
 						</span>
-					</div> 
+					</div>
 				</div>
 			</fieldset>
 			<div class="text-center">
@@ -85,7 +85,7 @@
 			</div>
 		</form>
 	</div>
-	
+
 	<div class="modal-footer">
 		<button class="btn btn-primary" id="create_script_btn"><@spring.message "common.button.create"/></button>
 		<button class="btn" data-dismiss="modal"><@spring.message "common.button.cancel"/></button>
@@ -106,10 +106,10 @@
 					markInput($name, false, "<@spring.message "common.message.validate.format"/>");
 					return;
 				}
-				
+
 				markInput($name, true);
 			}
-			
+
 			var name = $name.val();
 			var $selectedElement = $("#script_type").find("option:selected");
 			var extension = $selectedElement.attr("extension").toLowerCase();

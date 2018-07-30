@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,21 +9,23 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.plugin.extension.NGrinderDefaultPluginManager;
+import org.ngrinder.infra.plugin.extension.NGrinderSpringExtensionFactory;
+import org.ngrinder.infra.plugin.finder.NGrinderDefaultExtensionFinder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import ro.fortsoft.pf4j.spring.SpringExtensionFactory;
 
-import ro.fortsoft.pf4j.DefaultPluginManager;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
@@ -40,9 +42,10 @@ public class PluginManager {
 	@Autowired
 	private Config config;
 
-	@Autowired
-	private DefaultPluginManager manager;
+	private NGrinderDefaultPluginManager manager;
 
+	@Autowired
+	private ApplicationContext applicationContext;
 	/**
 	 * Initialize plugin component.
 	 */
@@ -58,6 +61,9 @@ public class PluginManager {
 	 * Initialize Plugin Framework.
 	 */
 	public void initPluginFramework() {
+		manager = new NGrinderDefaultPluginManager(config, applicationContext);
+		manager.setExtensionFinder(new NGrinderDefaultExtensionFinder(manager));
+		manager.setSpringExtensionFactory(new NGrinderSpringExtensionFactory(manager, applicationContext));
 		manager.loadPlugins();
 		manager.startPlugins();
 	}

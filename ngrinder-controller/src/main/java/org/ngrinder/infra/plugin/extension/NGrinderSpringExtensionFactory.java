@@ -18,21 +18,15 @@ import ro.fortsoft.pf4j.spring.SpringPlugin;
  * @see https://github.com/decebals/pf4j-spring
  * @since 3.0
  */
-@Component
 public class NGrinderSpringExtensionFactory extends SpringExtensionFactory {
 
 	private final PluginManager pluginManager;
 
-	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Autowired
-	public NGrinderSpringExtensionFactory(PluginManager pluginManager) {
+	public NGrinderSpringExtensionFactory(PluginManager pluginManager, ApplicationContext applicationContext) {
 		super(pluginManager);
 		this.pluginManager = pluginManager;
-	}
-
-	protected void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 

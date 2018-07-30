@@ -1,3 +1,12 @@
+3.4.1 (2017.01.31)
+================
+
+> We release ngrinder 3.4.1 version to fix below bugs.
+
+- Bug
+ - #136 circular injection
+ - #194 Online editor replace double quotes
+
 3.4 (2016.05.24)
 ================
 
