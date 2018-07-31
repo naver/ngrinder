@@ -103,9 +103,9 @@
 							<th class="no-click"><@spring.message "perfTest.running.testName"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.success"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.errors"/></th>
-							<th class="no-click" title="<@spring.message "perfTest.running.meantime"/>">MTT</th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.meantime'/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.running.tps"/></th>
-							<th class="no-click" title='<@spring.message "perfTest.running.meanTimeToFirstByte"/>'>MTTFB</th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.meanTimeToFirstByte'/>">MTTFB</th>
 							<th class="no-click" title="<@spring.message 'perfTest.running.responseBytePerSecond.full'/>">
 								<@spring.message "perfTest.running.responseBytePerSecond"/>
 							</th>
@@ -133,7 +133,7 @@
 							<th class="no-click"><@spring.message "perfTest.running.testName"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.success"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.errors"/></th>
-							<th class="no-click" title="<@spring.message "perfTest.running.meantime"/>">MTT</th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.meantime'/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.running.tps"/></th>
 							<th class="no-click"
 								title="<@spring.message 'perfTest.running.peakTPS.full'/>">
