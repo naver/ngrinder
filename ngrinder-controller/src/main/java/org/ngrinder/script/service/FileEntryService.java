@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,10 +9,17 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -23,6 +30,8 @@ import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
+import org.ngrinder.script.model.HAR;
+import org.ngrinder.script.model.Request;
 import org.ngrinder.script.repository.FileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +42,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.fs.FSHook;
@@ -42,13 +52,10 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
@@ -60,7 +67,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * File entry service class.
- *
+ * <p>
  * This class is responsible for creating user svn repository whenever a user is
  * created and connect the user to the underlying svn.
  *
@@ -76,7 +83,6 @@ public class FileEntryService {
 
 	@Autowired
 	private Config config;
-
 
 	@Autowired
 	@Qualifier("cacheManager")
@@ -122,7 +128,7 @@ public class FileEntryService {
 
 	/**
 	 * Create user svn repo.
-	 *
+	 * <p>
 	 * This method is executed async way.
 	 *
 	 * @param user newly created user.
@@ -197,7 +203,7 @@ public class FileEntryService {
 
 	/**
 	 * Get single file entity.
-	 *
+	 * <p>
 	 * The return value has content byte.
 	 *
 	 * @param user the user
@@ -239,7 +245,7 @@ public class FileEntryService {
 	/**
 	 * Save File entry.
 	 *
-	 * @param user       the user
+	 * @param user      the user
 	 * @param fileEntry fileEntry to be saved
 	 */
 	public void save(User user, FileEntry fileEntry) {
@@ -332,7 +338,7 @@ public class FileEntryService {
 	 * @return created new {@link FileEntry}
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String url,
-		ScriptHandler scriptHandler) {
+	                                             ScriptHandler scriptHandler) {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
@@ -342,7 +348,7 @@ public class FileEntryService {
 			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, nullOptions);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-					false, nullOptions);
+				false, nullOptions);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}
@@ -359,7 +365,7 @@ public class FileEntryService {
 	 * @return generated test script
 	 */
 	public String loadTemplate(User user, ScriptHandler handler, String url, String name,
-		String options) {
+	                           String options) {
 		Map<String, Object> map = newHashMap();
 		map.put("url", url);
 		map.put("userName", user.getUserName());
@@ -400,4 +406,165 @@ public class FileEntryService {
 	public ScriptHandler getScriptHandler(String key) {
 		return scriptHandlerFactory.getHandler(key);
 	}
+
+	/**
+	 * ignore Headers.
+	 *
+	 * @param headers headers
+	 * @param ignores ignores
+	 * @return entrys
+	 */
+	private Map<String, String> ignoreHeaders(Map<String, String> headers, String[] ignores) {
+		for (String ignore : ignores) {
+			headers.remove(ignore);
+		}
+		return headers;
+	}
+
+	/**
+	 * Load HAR and return converted script.
+	 *
+	 * @param har HAR content
+	 * @return resultMap converted script map
+	 * @throws JSONException, IOException
+	 */
+	public Map<String, Object> convertToScript(String har, boolean removeStaticResource) throws JSONException, IOException {
+		Map<String, Object> resultMap = newHashMap();
+		Map<String, Object> paramMap = newHashMap();
+		paramMap = getHARParam(har, removeStaticResource);
+		resultMap.put("groovy", getScriptHandler("groovy").getScriptTemplate(paramMap));
+		resultMap.put("jython", getScriptHandler("jython").getScriptTemplate(paramMap));
+		return resultMap;
+	}
+
+	/**
+	 * Clean Static Resources.
+	 *
+	 * @param har HAR
+	 * @return cleaned HAR
+	 */
+	HAR cleanStaticResources(HAR har) {
+		HAR result = new HAR();
+		ArrayList<HAR.HAREntry> harEntrys = new ArrayList<HAR.HAREntry>();
+		for (HAR.HAREntry harEntry : har.getLog().getEntries()) {
+			boolean recordable = false;
+			for (HAR.Header header : harEntry.getResponse().getHeaders()) {
+				if ("Content-Type".equals(header.getName())) {
+					if (StringUtils.startsWith(header.getValue(), "text") ||
+						StringUtils.startsWith(header.getValue(), "application")) {
+						harEntrys.add(harEntry);
+						break;
+					}
+				}
+			}
+		}
+		result.setLog(har.getLog());
+		result.getLog().setEntries(harEntrys);
+		return result;
+	}
+
+	/**
+	 * load HAR File.
+	 *
+	 * @param file HAR file
+	 * @param removeStaticResource true if you want to remove static resources from HAR
+	 * @return String cleaned HAR
+	 * @throws IOException
+	 */
+	public String loadHAR(MultipartFile file, boolean removeStaticResource) throws IOException {
+		HAR har = new HAR();
+		InputStream io = null;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			io = file.getInputStream();
+			har = mapper.readValue(io, HAR.class);
+			if (removeStaticResource) {
+				har = cleanStaticResources(har);
+			}
+		} catch (IOException e) {
+			throw processException(e);
+		} finally {
+			IOUtils.closeQuietly(io);
+		}
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(har);
+	}
+
+	/**
+	 * Get HAR param.
+	 *
+	 * @param paramHar HAR Content
+	 * @param removeStaticResource true if you want to remove static resources from HAR
+	 * @return paramMap result Map
+	 * @throws JSONException, IOException
+	 */
+	Map<String, Object> getHARParam(String paramHar, boolean removeStaticResource) throws JSONException, IOException {
+		HAR har;
+		String[] ignores = {"Host"};
+		Map<String, Object> paramMap = newHashMap();
+		ArrayList<Request> requests = new ArrayList<Request>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			har = mapper.readValue(paramHar, HAR.class);
+		} catch (IOException e) {
+			throw processException(e);
+		}
+
+		if (removeStaticResource) {
+			har = cleanStaticResources(har);
+		}
+
+		// Extract commonHeaders.
+		Map<String, String> commonHeader = ignoreHeaders(extractCommonHeader(har), ignores);
+
+		// Set requests.
+		for (HAR.HAREntry harEntry : har.getLog().getEntries()) {
+			Request request = new Request();
+			Map<String, String> tempHeader = newHashMap();
+			Map<String, String> postData = newHashMap();
+
+			for (HAR.Header header :harEntry.getRequest().getHeaders()) {
+				tempHeader.put(header.getName(), header.getValue());
+			}
+
+			if(harEntry.getRequest().getPostData() != null) {
+				for (HAR.param param : harEntry.getRequest().getPostData().getParams()) {
+					postData.put(param.getName(), param.getValue());
+				}
+				request.setPostData(postData);
+			}
+			request.setMethod(harEntry.getRequest().getMethod());
+			request.setUrl(harEntry.getRequest().getUrl());
+			request.setState(harEntry.getResponse().getStatus());
+			request.setHeaders(ignoreHeaders(tempHeader, ignores));
+			requests.add(request);
+		}
+		paramMap.put("requests", requests);
+		paramMap.put("commonHeader", commonHeader);
+		return paramMap;
+	}
+
+	/**
+	 * Extract Common Header.
+	 *
+	 * @param har HAR
+	 * @return commonHeaders common headers
+	 */
+	private Map<String, String> extractCommonHeader(HAR har) {
+		Map<String, String> commonHeaders = newHashMap();
+		boolean first = true;
+		for (HAR.HAREntry harEntry : har.getLog().getEntries()) {
+			Map<String, String> headers = newHashMap();
+			for (HAR.Header header : harEntry.getRequest().getHeaders()) {
+				headers.put(header.getName(), header.getValue());
+			}
+			if (first) {
+				commonHeaders = headers;
+				first = false;
+			} else {
+				commonHeaders.entrySet().retainAll(headers.entrySet());
+			}
+		}
+		return commonHeaders;
+	}
+
 }
