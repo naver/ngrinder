@@ -94,7 +94,7 @@ public class LocalScriptTestDriveService {
 			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
-			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, securityLevel, hostString,
+			PropertyBuilder builder = new ValidationPropertyBuilder(properties, new Directory(base), securityEnabled, securityLevel, hostString,
 				NetworkUtils.getLocalHostName());
 			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
