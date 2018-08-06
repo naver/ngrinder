@@ -94,7 +94,7 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTest perfTestWithTag = perfTestService.getOneWithTag(updated.getId());
 		List<Tag> listTags = tagService.getAllTags(getTestUser(), "H");
 		assertThat(listTags.size(), is(1));
-		assertThat(tagRepository.count(hasPerfTest()), is(1L));
+		assertThat(tagRepository.count(hasPerfTest()), is(2L));
 		assertThat(perfTestWithTag.getTags().size(), is(2));
 	}
 

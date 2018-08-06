@@ -17,5 +17,6 @@ class TestRunner:
 	def __call__(self):
 		grinder.sleep(1000)
 		while True:
+		    grinder.sleep(1000)
 			log("WOW")
         
