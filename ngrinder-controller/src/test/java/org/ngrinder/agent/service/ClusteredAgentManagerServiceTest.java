@@ -62,15 +62,10 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Autowired
 	private RegionService regionService;
 
-	private boolean initialed = false;
-
 	String curAddress;
 
 	@Before
 	public void before() {
-		if (initialed) {
-			return;
-		}
 		spiedConfig = spy(config);
 		when(spiedConfig.isClustered()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
@@ -91,10 +86,10 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.cacheManager = cacheManager;
 		assertThat(cacheConfig.getConfig(), not(nullValue()));
 		agentManagerService.init();
+		agentManagerService.expireLocalCache();
 		regionService.setCache(cacheManager.getCache("regions"));
 		regionService.setConfig(spiedConfig);
 		regionService.checkRegionUpdate();
-		initialed = true;
 	}
 
 	@Test
@@ -115,14 +110,13 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 	@Test
 	public void testSaveGetDeleteAgent() {
-		List<AgentInfo> agents = new ArrayList<AgentInfo>();
 		String currRegion = spiedConfig.getRegion();
-		int oriCount = getAvailableAgentCountBy(currRegion);
+		int oriCount = agentManagerService.getAllLocal().size();
 
 		saveAgent("agentSave", currRegion, AgentControllerState.BUSY);
 		saveAgent("agentSave", currRegion, AgentControllerState.UNKNOWN);
 		agentManagerService.expireLocalCache();
-		agents = agentManagerService.getAllLocal();
+		List<AgentInfo> agents = agentManagerService.getAllLocal();
 		assertThat(agents.size(), is(oriCount + 2));
 
 		agentRepository.deleteAll();
