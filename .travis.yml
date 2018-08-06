@@ -3,6 +3,5 @@ before_install:
   - ./install_maven_lib.sh
 jdk:
   - oraclejdk8
-  - oraclejdk7
 script:
   - mvn test -DskipTests=true
