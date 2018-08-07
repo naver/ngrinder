@@ -2,6 +2,6 @@ language: java
 before_install:
   - ./install_maven_lib.sh
 jdk:
-  - oraclejdk8
+  - openjdk8
 script:
   - mvn test -DskipTests=true
