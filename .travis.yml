@@ -4,4 +4,4 @@ before_install:
 jdk:
   - openjdk8
 script:
-  - mvn test -DskipTests=true
+  - mvn test
