@@ -95,7 +95,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script.py");
 		fileEntry.setContent(script);
-		String validateScript = scriptValidationService.validate(getTestUser(), fileEntry, false, "");
+		scriptValidationService.validate(getTestUser(), fileEntry, false, "");
 	}
 
 	@Test

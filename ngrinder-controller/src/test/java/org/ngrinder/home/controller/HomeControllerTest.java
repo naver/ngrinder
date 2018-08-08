@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -34,6 +35,9 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private HomeController homeController;
+
+	@Autowired
+	private RegionService regionService;
 
 	@Test
 	public void testHome() {
@@ -59,7 +63,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		homeController.healthCheck(res);
 		HttpEntity<String> message = homeController.healthCheckSlowly(500, res);
-		assertThat(message.getBody(), containsString("NONE"));
+		assertThat(message.getBody(), containsString(regionService.getCurrent()));
 	}
 
 	@Test
