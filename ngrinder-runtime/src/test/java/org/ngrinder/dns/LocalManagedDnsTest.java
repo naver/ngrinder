@@ -13,11 +13,9 @@
  */
 package org.ngrinder.dns;
 
+import org.junit.After;
 import org.junit.Test;
-import org.xbill.DNS.Cache;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.RRset;
-import org.xbill.DNS.SetResponse;
+import org.xbill.DNS.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -36,6 +34,10 @@ public class LocalManagedDnsTest {
 
 	private final LocalManagedDnsProxy localDNS = (LocalManagedDnsProxy) new LocalManagedDnsDescriptor().createNameService();
 
+	@After
+	public void after() {
+		Lookup.setDefaultCache(new Cache(), DClass.IN);
+	}
 
 	@Test
 	public void testCustomDNSLookup() throws UnknownHostException {
@@ -54,7 +56,7 @@ public class LocalManagedDnsTest {
 	public void testNotRegisteredDNSLookup() throws UnknownHostException {
 		System.setProperty("ngrinder.etc.hosts", "www.google.com:10.10.10.10,www.google.com:10.10.10.11");
 		NameStore.getInstance().reset();
-		assertThat(localDNS.lookupAllHostAddr("www.naver.com").length, greaterThan(1));
+		assertThat(localDNS.lookupAllHostAddr("www.naver.com").length, greaterThan(0));
 	}
 
 
@@ -64,7 +66,6 @@ public class LocalManagedDnsTest {
 		localDNS.lookupAllHostAddr("www.wowwowwowow11.com");
 	}
 
-	public RRset[] result = null;
 	int count = 0;
 
 	@Test
