@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -18,12 +18,14 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.NetworkUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractMultiGrinderTestBase;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,11 +42,15 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 	Set<AgentIdentity> allAvailableAgents;
 
 	static {
-		System.setProperty("ngrinder.agent.home", "./tmp_agent_home");
+		System.setProperty("ngrinder.agent.home", "./tmp/agent-home");
 	}
 
 	@Before
-	public void before() {
+	public void before() throws IOException {
+		FileUtils.copyFileToDirectory(
+			new File(this.getClass().getResource("/long-time-prepare-test.py").getFile()),
+			new File("./tmp/agent-home/tmp_1/file-store/_default/current")
+		);
 		final int freePort = getFreePort();
 		agentControllerServerDaemon = new AgentControllerServerDaemon(freePort);
 		agentControllerServerDaemon.start();
@@ -97,7 +103,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		// Start Console
 		console1 = new SingleConsole(getFreePort());
 		console1.start();
-
+		console1.setReportPath(new File("./tmp/console-home"));
 		// Check there is no agents are attached.
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
@@ -171,7 +177,8 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 
 		// Start console
 		final SingleConsole console1 = new SingleConsole("", getFreePort(), consoleCommunicationSetting,
-				ConsolePropertiesFactory.createEmptyConsoleProperties());
+			ConsolePropertiesFactory.createEmptyConsoleProperties());
+		console1.setReportPath(new File("./tmp/console-home"));
 		console1.start();
 		console1.startSampling();
 
@@ -187,6 +194,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		URL scriptUrl = this.getClass().getResource("/long-time-prepare-test.properties");
 		File scriptFile = new File(scriptUrl.getFile());
 		GrinderProperties properties = new GrinderProperties(scriptFile);
+		properties.setAssociatedFile(new File("long-time-prepare-test.properties"));
 		console1.addListener(new SingleConsole.ConsoleShutdownListener() {
 			@Override
 			public void readyToStop(StopReason stopReason) {
@@ -204,13 +212,13 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 				break;
 			}
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
 		}
 
-		if (needTimeoutState && !result.contains("timeout") ||
-				!needTimeoutState && result.contains("timeout")) {
+		if ((needTimeoutState && !result.contains("timeout")) ||
+			(!needTimeoutState && result.contains("timeout"))) {
 			assertTrue(false);
 		}
 
@@ -228,6 +236,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		assertThat(allAvailableAgents.size(), is(2));
 		SingleConsole console1 = new SingleConsole(6372);
 		console1.start();
+		console1.setReportPath(new File("./tmp/console-home"));
 		GrinderProperties grinderProperties = new GrinderProperties();
 		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
 

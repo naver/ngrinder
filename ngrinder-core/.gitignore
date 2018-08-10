@@ -1,6 +1,6 @@
 /lib
 /deploy.bat
-/tmp_agent_home
+/tmp
 /*.data
 testdrive
 /.grinder
