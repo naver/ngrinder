@@ -12,6 +12,7 @@
 
 	<properties>
 		<outputfilename>${project.version}.jar</outputfilename>
+		<ngrinder.version>${project.version}</ngrinder.version>
 	</properties>
 
 	<dependencies>
