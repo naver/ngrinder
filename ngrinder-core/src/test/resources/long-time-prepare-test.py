@@ -11,15 +11,16 @@ class TestRunner:
 	def __init__(self):
 		grinder.statistics.delayReports=True
 		grinder.logger.info("prepare")
-		grinder.sleep(5000)
+`		grinder.sleep(10)
 		pass
 
 	def test(self):
-		grinder.logger.info("test")
+		print "make the test inactive for a 10 sec"
+		grinder.sleep(10000)
 
 	def __call__(self):
+		print "called"
 		self.test()
-		grinder.sleep(100)
 		grinder.statistics.forLastTest.success = 1
 
 test1.record(TestRunner.test)
