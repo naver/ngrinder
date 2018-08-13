@@ -205,6 +205,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * Collect the agent system info every second.
 	 */
 	public void collectAgentSystemData() {
+		if (agentMonitoringTargetsCache == null) {
+			return;
+		}
 		Ehcache nativeCache = (Ehcache) agentMonitoringTargetsCache.getNativeCache();
 		List<String> keysWithExpiryCheck = cast(nativeCache.getKeysWithExpiryCheck());
 		for (String each : keysWithExpiryCheck) {

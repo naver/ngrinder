@@ -95,7 +95,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private SpringContext context;
-	
+
 	@Autowired
 	private ApplicationContext appContext;
 
@@ -152,7 +152,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		updateCacheStatisticsSupports();
 	}
-	
+
 	protected void initDevModeProperties() {
 		if (!isDevMode()) {
 			initLogger(false);
@@ -163,7 +163,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE, "true");
 		}
 	}
-	
+
 	private void addChangeConfigListenerForStatistics() {
 		addSystemConfListener(new PropertyChangeListener() {
 			@Override
@@ -172,8 +172,11 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			}
 		});
 	}
-	
+
 	private void updateCacheStatisticsSupports() {
+		if (appContext == null) {
+			return;
+		}
 		CacheManager cacheManager = appContext.getBean("cacheManager", CacheManager.class);
 		boolean enableStatistics = isEnableStatistics();
 		for (String cacheName : cacheManager.getCacheNames()) {
@@ -741,7 +744,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public long getInactiveClientTimeOut() {
 		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);
 	}
-	
+
 	public boolean isEnableStatistics() {
 		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_STATISTICS);
 	}
