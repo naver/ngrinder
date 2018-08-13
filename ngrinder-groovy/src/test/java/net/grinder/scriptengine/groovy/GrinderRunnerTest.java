@@ -35,6 +35,7 @@ import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
 import net.grinder.scriptengine.groovy.junit.annotation.RunRate;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
@@ -46,7 +47,7 @@ import HTTPClient.HTTPResponse;
 
 /**
  * Grinder Runner Test
- * 
+ *
  * @author Mavlarn
  * @author JunHo Yoon
  * @since 3.2
@@ -66,6 +67,7 @@ public class GrinderRunnerTest {
 		});
 	}
 
+	@Ignore
 	@RunWith(GrinderRunner.class)
 	@Repeat(100)
 	public static class TestSample {
@@ -112,7 +114,7 @@ public class GrinderRunnerTest {
 		@AfterThread
 		public void doAfter() {
 		}
-		
+
 		@AfterProcess
 		public static void afterProcess() {
 		}
