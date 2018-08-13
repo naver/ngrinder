@@ -66,6 +66,7 @@ public class GrinderRunnerTest {
 		});
 	}
 
+	@Ignore
 	@RunWith(GrinderRunner.class)
 	@Repeat(100)
 	public static class TestSample {
