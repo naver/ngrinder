@@ -1,6 +1,6 @@
 language: java
 before_install:
-  - ./install_maven_lib.sh
+  - ./install-maven-lib.sh
 jdk:
   - openjdk8
 script:
