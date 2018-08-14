@@ -8,7 +8,6 @@
 		<artifactId>ngrinder</artifactId>
 		<version>3.4.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder-starter</artifactId>
 
 	<dependencies>
