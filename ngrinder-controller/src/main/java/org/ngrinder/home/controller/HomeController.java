@@ -127,7 +127,8 @@ public class HomeController extends BaseController implements ControllerConstant
 				recordReferrer(region);
 				// set local language
 				setLanguage(getCurrentUser().getUserLanguage(), response, request);
-				setLoginPageDate(model);
+				addTimezoneLoginAttribute(model);
+				addCommonLoginAttribute(model);
 				role = user.getRole();
 			} catch (AuthenticationCredentialsNotFoundException e) {
 				return "login";
@@ -252,10 +253,8 @@ public class HomeController extends BaseController implements ControllerConstant
 	 */
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
-		setLoginPageDate(model);
-		model.addAttribute("signUpEnabled", getConfig().isSignUpEnabled());
-		final String defaultLang = getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG);
-		model.addAttribute("defaultLang", defaultLang);
+		addTimezoneLoginAttribute(model);
+		addCommonLoginAttribute(model);
 		try {
 			getCurrentUser();
 		} catch (Exception e) {
@@ -266,7 +265,13 @@ public class HomeController extends BaseController implements ControllerConstant
 		return "redirect:/";
 	}
 
-	private void setLoginPageDate(ModelMap model) {
+	private void addCommonLoginAttribute(ModelMap model) {
+		model.addAttribute("signUpEnabled", getConfig().isSignUpEnabled());
+		final String defaultLang = getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG);
+		model.addAttribute("defaultLang", defaultLang);
+	}
+
+	private void addTimezoneLoginAttribute(ModelMap model) {
 		TimeZone defaultTime = TimeZone.getDefault();
 		model.addAttribute("timezones", timeZones);
 		model.addAttribute("defaultTime", defaultTime.getID());
