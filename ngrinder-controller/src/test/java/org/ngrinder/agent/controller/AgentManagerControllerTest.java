@@ -24,6 +24,7 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -54,6 +55,9 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private UserContext userContext;
+
 	@Before
 	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
@@ -72,7 +76,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 
 		ModelMap model = new ModelMap();
-		agentController.getAll("", model);
+		agentController.getAll(userContext.getCurrentUser(), "", model);
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -93,7 +97,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 
 		model.clear();
-		agentController.getAll("", model);
+		agentController.getAll(userContext.getCurrentUser(), "", model);
 		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
 	}
 
