@@ -14,6 +14,10 @@
 	</fieldSet>
 	<#include "region_selector.ftl">
 
+	<@security.authorize access="hasAnyRole('A')">
+		<#assign isAdmin = true />
+	</@security.authorize>
+
 	<@security.authorize access="hasRole('A')">
 	<div class="well search-bar">
 		<button class="btn btn-success" id="update_agent_button">
