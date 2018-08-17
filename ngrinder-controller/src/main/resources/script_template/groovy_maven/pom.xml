@@ -6,7 +6,7 @@
 	<version>0.0.1</version>
 
 	<properties>
-		<ngrinder.version>3.4.2-SNAPSHOT</ngrinder.version>
+		<ngrinder.version>3.4.2</ngrinder.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
