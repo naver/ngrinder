@@ -13,6 +13,8 @@
 		<legend class="header"> <@spring.message "agent.list.title"/> </legend>
 	</fieldSet>
 	<#include "region_selector.ftl">
+
+	<@security.authorize access="hasRole('A')">
 	<div class="well search-bar">
 		<button class="btn btn-success" id="update_agent_button">
 			<i class="icon-arrow-up"></i> <@spring.message "agent.list.update"/>
@@ -36,11 +38,12 @@
 				</#if>
 			</span>
 		</div>
-
 	</div>
+	</@security.authorize>
 
 	<table class="table table-striped table-bordered ellipsis" id="agent_table">
 		<colgroup>
+		<@security.authorize access="hasRole('A')">
 			<col width="30">
 			<col width="80">
 			<col width="130">
@@ -49,25 +52,41 @@
 			<col width="100">
 			<col width="150">
 			<col width="160">
+		</@security.authorize>
+		<@security.authorize access="hasAnyRole('S', 'U')">
+			<col width="90">
+			<col width="170">
+			<col width="100">
+			<col width="*">
+			<col width="150">
+			<col width="190">
+		</@security.authorize>
 		</colgroup>
 		<thead>
 		<tr>
+		<@security.authorize access="hasRole('A')">
 			<th class="no-click"><input type="checkbox" class="checkbox" value=""></th>
+		</@security.authorize>
 			<th><@spring.message "agent.list.state"/></th>
 			<th><@spring.message "agent.list.IPAndDns"/></th>
 			<th class="no-click"><@spring.message "agent.list.port"/></th>
 			<th class="ellipsis"><@spring.message "agent.list.name"/></th>
 			<th><@spring.message "agent.list.version"/></th>
 			<th><@spring.message "agent.list.region"/></th>
+		<@security.authorize access="hasRole('A')">
 			<th class="no-click"><@spring.message "agent.list.approved"/></th>
+		</@security.authorize>
 		</tr>
 		</thead>
 		<tbody>
-		<@list list_items=agents others="table_list" colspan="8"; agent>
+		<#if isAdmin??><#assign column=8/><#else><#assign column=6/></#if>
+		<@list list_items=agents others="table_list" colspan="${column}"; agent>
 		<tr>
-			<td class="center">
-				<input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}" value="${agent.id}">
-			</td>
+			<@security.authorize access="hasRole('A')">
+				<td class="center">
+					<input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}" value="${agent.id}">
+				</td>
+			</@security.authorize>
 			<td class="center" id="row_${agent.id}">
 				<div class="ball" id="ball_${agent.id}"
 					 data-html="true"
@@ -77,13 +96,19 @@
 			</td>
 			<td>
 				<div class="ellipsis" title="${agent.ip}">
-					<a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+					<@security.authorize access="hasRole('A')">
+						<a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+					</@security.authorize>
+					<@security.authorize access="hasAnyRole('S', 'U')">
+						<span>${agent.ip}</span>
+					</@security.authorize>
 				</div>
 			</td>
 			<td id="port_${agent.id}">${(agent.port)!}</td>
 			<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
 			<td class="ellipsis"><#if agent.version?has_content>${agent.version}<#else>Prior to 3.3</#if></td>
 			<td class="ellipsis" <#if (agent.region)??>title="${(agent.region)!}"</#if> >${(agent.region)!}</td>
+			<@security.authorize access="hasRole('A')">
 			<td>
 				<div class="btn-group" data-toggle="buttons-radio">
 					<button type="button"
@@ -98,6 +123,7 @@
 					</button>
 				</div>
 			</td>
+			</@security.authorize>
 		</tr>
 		</@list>
 		</tbody>
@@ -117,9 +143,17 @@
 			"bInfo": false,
 			"iDisplayLength": 10,
 			"aaSorting": [
-				[2, "asc"]
+				<#if isAdmin??>
+					[2, "asc"]
+				<#else>
+					[1, "asc"]
+				</#if>
 			],
-			"aoColumns": [null, null, {"asSorting": []}, {"asSorting": []}, null, null, null, {"asSorting": []}],
+			<#if isAdmin??>
+				"aoColumns": [null, null, {"asSorting": []}, {"asSorting": []}, null, null, null, {"asSorting": []}],
+			<#else>
+				"aoColumns": [null, {"asSorting": []}, {"asSorting": []}, null, null, null],
+			</#if>
 			"sPaginationType": "bootstrap",
 			"oLanguage": {
 				"oPaginate": {
