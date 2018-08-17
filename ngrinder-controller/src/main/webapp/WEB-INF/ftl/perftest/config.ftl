@@ -202,7 +202,7 @@
 	</div>
 	<!-- end test content left -->
 
-	<div class="span6 intro" data-step="11" data-intro="<@spring.message 'intro.config.rampup'/>">
+	<div class="span6 intro" data-step="11" style="margin-left: 18px" data-intro="<@spring.message 'intro.config.rampup'/>">
 		<fieldset>
 			<legend>
                 <span>
