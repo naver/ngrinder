@@ -93,22 +93,6 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	}
 
 	@Test
-	public void testOther() {
-		agentManagerService.getAllVisible();
-		agentManagerService.getAllActive();
-		agentManagerService.stopAgent(0L);
-		agentManagerService.requestShareAgentSystemDataModel(0L);
-		agentManagerService.getSystemDataModel("127.0.0.1", "127.0.0.1");
-		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(
-			NetworkUtils.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1");
-		monitor.setRegion(spiedConfig.getRegion());
-		agentManagerService.addAgentMonitoringTarget(monitor);
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(
-			NetworkUtils.DEFAULT_LOCAL_HOST_NAME, "127.0.0.1"));
-		agentManagerService.collectAgentSystemData();
-	}
-
-	@Test
 	public void testSaveGetDeleteAgent() {
 		String currRegion = spiedConfig.getRegion();
 		int oriCount = agentManagerService.getAllLocal().size();
