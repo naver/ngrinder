@@ -1,3 +1,42 @@
+3.4.2 (2018.08.20)
+==================
+
+> This is the last version in 3.4.X. 
+  nGrinder supports only JDK1.7 and JDK1.8.  JDK1.9 or above will be supported from 3.5.
+
+- New feature and changes
+  * Speed up the page navigation when there are many users who have the followers.
+    - Use LAZY patching in JPA
+    - Use Hibernate 2nd Level Cache not to query user
+    - Use id for perftest ordering instead of modified_date to avoid full db search
+  * Add light security mode
+    - Allows multicast / tcp connection to unspecified address compared normal security mode.
+    - Can be configured by adding ```controller.security.level=light``` in system.conf 
+  * Provide the way to turn off security mode in agent config
+    - Allow the some agent to ignore security mode restriction
+    - Can be configured by adding ```agent.enable_security=false``` in agent.conf     
+  * Make agent list shown even for not admin user.
+    - Lists public and own agents in the agent management menu even for non admin users.
+
+- Bug Fix
+  * #274 Use internal in monitor and report plugin
+  * #278 fix bug when har file has no params
+  * #294 Fix bandWidth calculation
+  * #295 Fix csv separator inside SingleConsole
+  * #297 Remove context path from AjaxObj url
+  * #299 Modify NGrinderSecurityManager read access
+  * #303 Fix failed controller test case
+  * #308 Fix test failure
+  * #318 Fix invalid reference bug in login.ftl
+  * #323 Fix invalid rampup section layout
+  * #335 Make GTest only instrument method in ngrinder context
+  
+- Improvement
+  * #291 Speed up page navigation
+  * #293 Add setting security level in system configuration
+  * #317 Show agent list to non admin user
+  * #330 Provide the way to turn off security mode in agent config
+  
 3.4 (2016.05.24)
 ================
 
@@ -25,8 +64,7 @@ As time goes by, surrounding circumstances(for example Java version or Docker) w
   * Add intro.js for easy understanding.
     - You can find the very small button "Tip" on every pages. Click it and see what it is.
 
-
-- Bug
+- Bug Fix
   * #136 Support CJK for folder and script name
   * #111 GrinderUtils.getThreadUniqId() is not working in IntelliJ context
   * #103 Fix security issue
@@ -44,7 +82,7 @@ As time goes by, surrounding circumstances(for example Java version or Docker) w
 3.3.1 (2015.06.31/Internal Release)
 ===================================
 
-- Bug
+- Bug Fix
   * #32 Abnormal execution result if the script has a null character(0x0).
   * #33 Too fast timeout when connecting Mbean.
   * #40 Cannot switch an user who has 2 characters name on switching other user.
@@ -64,7 +102,7 @@ As time goes by, surrounding circumstances(for example Java version or Docker) w
   * #38 Need to allow changing a timeout which is related while @BeforeProcess is running.
 
 
-- Trivial fix
+- Trivial Fix
   * Make the target host field 65535 varchar.
   * Modify popover function for showing "Test Log"
   * Fix a new line issue of install_maven_lib.sh on unix platform.
@@ -138,7 +176,7 @@ You should upgrade both agent and controller to 3.3 version to enjoy the new fea
   * In addition, several UI improvements.
 
 
-- Bug
+- Bug Fix
   * [NGRINDER-679] - Support intellij
   * [NGRINDER-680] - Make test parameter removable
   * [NGRINDER-681] - Fix NullPointerException while getting monitor data
@@ -214,7 +252,7 @@ Special Thanks to Karel Piwko and Egoing.
   * And several UI improvements are included.
 
 
-- Bug
+- Bug Fix
   * [NGRINDER-659] - Fix typo errors
   * [NGRINDER-668] - Fix wrong test schedule calculation when browser timezone and user specified timezone are different
 
@@ -253,7 +291,7 @@ Special Thanks to Karel Piwko and Egoing.
     and grinder.jvm.arguments in grinder.properties file at the same folder where the script exists respectively. This is for the extreme use case of ngrinder.
   * And several UI improvements are included.
 
-- Bug
+- Bug Fix
   * [NGRINDER-633] - Make agent to connect the real ip first if no agent.controller.ip is provided
   * [NGRINDER-634] - Test description including ' breaks the test list layout
   * [NGRINDER-640] - &para turns into different symbol in the code editor
@@ -292,7 +330,7 @@ This made this version more concrete and workable in the large deployment.
   * The available agent memory is calculated more accurately. Instead of using free memory, now it uses actual free memory.
   * Each performance test page retrieval becomes speedy even when there are many files in SVN.
 
-- Bug
+- Bug Fix
   * [NGRINDER-600] - Fix IE10 compatibility issue
   * [NGRINDER-608] - Make the memory setting more concrete for test process
   * [NGRINDER-610] - Fix typo errors
@@ -349,7 +387,7 @@ We believe nGrinder 3.2 is the most developer friendly performance testing tool 
   * And.. several minor UI enhancements.
 
 
-- Bug
+- Bug Fix
   * [NGRINDER-414] - Fix access error to the shared user's repo by SVN
   * [NGRINDER-449] - Fix script display when 2 admin users have a script with same name
   * [NGRINDER-580] - Fix the graph fluctuation
@@ -400,7 +438,7 @@ This is the last version 3.1.X series, we'll work on 3.2 as a next release.
   * A user can upload dll or so to run test using native libs. SecurityMode should be disabled and JNA should be imported for native lib access.
 
 
-- Bug
+- Bug Fix
   * [NGRINDER-560] - Make test report visible without login
   * [NGRINDER-564] - Ignore Sigar Exception while collecting network usage.
   * [NGRINDER-569] - Make agent status string longer
@@ -447,7 +485,7 @@ With some bug fix, the following improvements are for the effective operations o
   * Fix the bugs in which the some sampling points are missing in the final result.
 
 
-- Bug
+- Bug Fix
   * [NGRINDER-511] - Make the agent server mode optional
   * [NGRINDER-512] - Provide a user defined statistic chart
   * [NGRINDER-516] - Fix typo errors
@@ -491,8 +529,8 @@ With some bug fix, the following improvements are for the effective operations o
   * Change the default QnA site into nabble not github.
   * Change Process and Thread calculation logic more stable to support more than 300 users. Please delete the previous ${NGRINDER_HOME}/process_and_thread_policy.js in advance.
 
-
-- Bug
+ 
+- Bug Fix
   * [NGRINDER-482] - Add grinder.processes and grinder.threads as properties during script validation
   * [NGRINDER-488] - Add a error message when there are no sampling was performed.
   * [NGRINDER-496] - Make user not to be able to change the underlying SecurityManager
@@ -569,7 +607,7 @@ With some bug fix, the following improvements are for the effective operations o
 > Hot fix for nGrinder 3.0
   Mostly fix the bug which happens if there are more than 1000 tests.
 
-- Bug
+- Bug Fix
 
   * [NGRINDER-367] - Tests over 1000 is not supported
   * [NGRINDER-368] - Agent approval in the agent page 2 is not supported
@@ -587,7 +625,7 @@ With some bug fix, the following improvements are for the effective operations o
 > Hot fix for nGrinder 3.0
   Mostly we made this version work on Ubuntu
 
-- Bug
+- Bug Fix
   * [NGRINDER-332] - User specific agents show max agents value 0
   * [NGRINDER-333] - agent ip is always 127.0.0.1 in Ubuntu
   * [NGRINDER-334] - Error - Abnormally Testing (TOO_LOW_TPS)
@@ -617,7 +655,7 @@ With some bug fix, the following improvements are for the effective operations o
 
 > Hot fix for nGrinder 3.0
 
-- Bug
+- Bug Fix
 
   * [NGRINDER-331] - Jar classpath is not passed to the agents
 
@@ -627,7 +665,7 @@ With some bug fix, the following improvements are for the effective operations o
 
 > First Official Version
 
-- Bug
+- Bug Fix
   * [NGRINDER-232] - Running Time is wrong
   * [NGRINDER-238] - If the 1st minute of Test Report and the 1st minutes of Report_in_Detail are much different
   * [NGRINDER-287] - Table titles are overlapped on running page
@@ -650,7 +688,7 @@ With some bug fix, the following improvements are for the effective operations o
 
 > Third beta version.
 
-- Bug
+- Bug Fix
   * [NGRINDER-282] - Create a error showing page. For bad request which doesn't exist, redirect to index page.
   * [NGRINDER-283] - Provide DB upgrade feature
   * [NGRINDER-306] - Fixed a but to search with tag. If user selected tag to search items in perftest list page, then he can't search all items.
