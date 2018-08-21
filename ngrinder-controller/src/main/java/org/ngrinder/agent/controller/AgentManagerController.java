@@ -112,10 +112,11 @@ public class AgentManagerController extends BaseController {
 	 */
 	private boolean filterAgentByCluster(String region, String agentRegion) {
 		//noinspection SimplifiableIfStatement
-		if (StringUtils.equals(region, "all") || StringUtils.isEmpty(region)) {
+		if (StringUtils.isEmpty(region)) {
 			return true;
+		} else {
+			return agentRegion.startsWith(region + "_owned") || region.equals(agentRegion);
 		}
-		return agentRegion.startsWith(region + "_owned") || region.equals(agentRegion);
 	}
 
 	/**
@@ -126,8 +127,8 @@ public class AgentManagerController extends BaseController {
 			return true;
 		}
 
-		if (region == null) {
-			return agentRegion == null || "all".equals(agentRegion) || "NONE".equals(agentRegion) || agentRegion.endsWith("_owned_" + userId);
+		if (StringUtils.isEmpty(region)) {
+			return !agentRegion.contains("_owned_") || agentRegion.endsWith("_owned_" + userId);
 		} else {
 			return agentRegion.startsWith(region + "_owned_" + userId) ||  region.equals(agentRegion);
 		}
