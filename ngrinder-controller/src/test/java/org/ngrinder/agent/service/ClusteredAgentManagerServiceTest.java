@@ -19,6 +19,7 @@ import net.grinder.message.console.AgentControllerState;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.when;
  *
  * @since 3.0
  */
+@Ignore
 public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	private ClusteredAgentManagerService agentManagerService;
