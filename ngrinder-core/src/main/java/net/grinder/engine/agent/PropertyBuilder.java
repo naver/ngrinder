@@ -176,6 +176,7 @@ public class PropertyBuilder {
 		jvmArguments = addParam(jvmArguments, properties.getProperty("grinder.param", ""));
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
+		jvmArguments = addUserDir(jvmArguments);
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
 		}
@@ -365,6 +366,11 @@ public class PropertyBuilder {
 		if (enableLocalDNS) {
 			jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
 		}
+		return jvmArguments;
+	}
+
+	private StringBuilder addUserDir(StringBuilder jvmArguments) {
+		jvmArguments.append(" -Duser.dir=" + baseDirectory.getFile().getPath() + " ");
 		return jvmArguments;
 	}
 
