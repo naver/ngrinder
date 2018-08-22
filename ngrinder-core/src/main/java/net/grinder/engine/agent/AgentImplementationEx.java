@@ -366,10 +366,13 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 		return newProperties;
 	}
 
+	private boolean isSecurityEnabled(GrinderProperties properties) {
+		return m_agentConfig.isSecurityEnabled() && properties.getBoolean(GRINDER_PROP_SECURITY, false);
+	}
+
 	private String buildTestRunProperties(ScriptLocation script, AbstractLanguageHandler handler, Properties systemProperty,
 	                                      GrinderProperties properties) {
-		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
-				GRINDER_PROP_SECURITY, false), properties.getProperty(GRINDER_PROP_SECURITY_LEVEL, GRINDER_SECURITY_LEVEL_NORMAL), properties.getProperty(GRINDER_PROP_ETC_HOSTS),
+		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), isSecurityEnabled(properties), properties.getProperty(GRINDER_PROP_SECURITY_LEVEL, GRINDER_SECURITY_LEVEL_NORMAL), properties.getProperty(GRINDER_PROP_ETC_HOSTS),
 				NetworkUtils.getLocalHostName(), m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE),
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX),
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_LOCAL_DNS),

@@ -10,3 +10,4 @@ agent.java_opt,,agent.javaopt
 agent.keep_logs,false,
 agent.update_always,false,
 agent.enable_local_dns,true,
+agent.enable_security,true,
