@@ -553,7 +553,7 @@ function addValidation() {
 				digits: true,
 				min: 0
 			},
-			<#if securityMode?? && securityMode == true>
+			<#if securityLevel?? && securityLevel == "normal">
 			targetHosts: {
 				required: true
 			},

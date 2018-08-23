@@ -25,6 +25,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
@@ -250,7 +251,9 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
+		if (getConfig().isSecurityEnabled()) {
+			model.addAttribute(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
+		}
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
 				getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
@@ -368,7 +371,7 @@ public class PerfTestController extends BaseController {
 
 		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 				"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
-		if (getConfig().isSecurityEnabled()) {
+		if (getConfig().isSecurityEnabled() && GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL.equals(getConfig().getSecurityLevel())) {
 			checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
 					"targetHosts should be provided when security mode is enabled");
 		}
