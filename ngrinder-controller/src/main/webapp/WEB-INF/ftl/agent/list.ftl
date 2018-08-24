@@ -45,7 +45,7 @@
 	</div>
 	</@security.authorize>
 
-	<table class="table table-striped table-bordered ellipsis" id="agent_table">
+	<table class="table table-striped table-bordered ellipsis" id="agent_table" style="visibility: hidden;">
 		<colgroup>
 		<@security.authorize access="hasRole('A')">
 			<col width="30">
@@ -164,7 +164,8 @@
 					"sPrevious": "<@spring.message 'common.paging.previous'/>",
 					"sNext": "<@spring.message 'common.paging.next'/>"
 				}
-			}
+			},
+			"fnInitComplete": finalizeDataTablesLoading($agentTable)
 		});
 
 		removeClick();
@@ -183,6 +184,8 @@
 					"<@spring.message 'agent.message.disapprove'/>"
 			).call();
 		});
+	<#else>
+		finalizeDataTablesLoading($agentTable);
 	</#if>
 
 		$("#stop_agent_button").click(function () {
@@ -231,6 +234,10 @@
 			$confirm.children(".modal-body").addClass("error-color");
 		});
 	});
+
+	function finalizeDataTablesLoading($agentTable) {
+		$agentTable.css('visibility', 'visible');
+	}
 
 	function cleanup() {
 		var ajaxObj = new AjaxPostObj("/agent/api?action=cleanup",
