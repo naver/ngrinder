@@ -9,7 +9,7 @@ public class ValidationPropertyBuilder extends PropertyBuilder {
 	}
 
 	@Override
-	public String buildJVMArgumentWithoutMemory() {
-		return super.buildJVMArgumentWithoutMemory() + " -Dngrinder.context=controller ";
+	protected StringBuilder addContext(StringBuilder jvmArguments) {
+		return jvmArguments.append( " -Dngrinder.context=controller ");
 	}
 }
