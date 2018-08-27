@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.engine.agent;
 
@@ -176,6 +176,9 @@ public class PropertyBuilder {
 		jvmArguments = addParam(jvmArguments, properties.getProperty("grinder.param", ""));
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
+		jvmArguments = addUserDir(jvmArguments);
+		jvmArguments = addContext(jvmArguments);
+
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
 		}
@@ -185,18 +188,22 @@ public class PropertyBuilder {
 		return jvmArguments.toString();
 	}
 
-	private StringBuilder addParam(StringBuilder jvmArguments, String param) {
+	protected StringBuilder addContext(StringBuilder jvmArguments) {
+		return jvmArguments.append( " -Dngrinder.context=agent ");
+	}
+
+	protected StringBuilder addParam(StringBuilder jvmArguments, String param) {
 		if (StringUtils.isEmpty(param)) {
 			return jvmArguments;
 		}
 		return jvmArguments.append(" -Dparam=").append(param).append(" ");
 	}
 
-	private StringBuilder addAdditionalJavaOpt(StringBuilder jvmArguments) {
+	protected StringBuilder addAdditionalJavaOpt(StringBuilder jvmArguments) {
 		return jvmArguments.append(" ").append(additionalJavaOpt).append(" ");
 	}
 
-	private StringBuilder addNativeLibraryPath(StringBuilder jvmArguments) {
+	protected StringBuilder addNativeLibraryPath(StringBuilder jvmArguments) {
 		return jvmArguments.append(" -Djna.library.path=").append(new File(baseDirectory.getFile(), "/lib"))
 				.append(" ");
 	}
@@ -365,6 +372,11 @@ public class PropertyBuilder {
 		if (enableLocalDNS) {
 			jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
 		}
+		return jvmArguments;
+	}
+
+	private StringBuilder addUserDir(StringBuilder jvmArguments) {
+		jvmArguments.append(" -Duser.dir=" + baseDirectory.getFile().getPath() + " ");
 		return jvmArguments;
 	}
 

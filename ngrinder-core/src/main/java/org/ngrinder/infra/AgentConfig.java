@@ -338,6 +338,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getAgentProperties().getProperty(PROP_AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
 	}
 
+	public boolean isSecurityEnabled() {
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_SECURITY);
+	}
+
 	public boolean isServerMode() {
 		return getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE);
 	}
