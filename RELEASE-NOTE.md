@@ -1,3 +1,31 @@
+3.4.2 (2018.08.20)
+================
+- New feature and changes
+  * Speed up the page navigation when threr are much users setting followers.
+    - Not use EAGER fetching but LAZY in JPA
+    - Use Hibernate 2nd Level Cache not to query user
+    - Use id for perftest ordering instead of modified date (modified data requires full search)
+  * Add system configuration for setting security level.
+    - To distinguish nGrinder's security level we add `NGrinderLightSecurityManager` which less secured than `NGrinderSecurityManager`.
+    - This allows followings.(not allowed in NGrinderSecurityManager.)
+      1. multicast
+      2.  tcp connection unspecified address
+  * Limit `NGrinderSecurityManager` read access for enhance nGrinder security.
+    - ngrinder controller
+      1. Restrict read access for ngrinder home. but user can access their work and tmp folder in there
+    - ngrinder agent
+      1.  No restrict
+  * Fix test failure.
+    - Fix all failed test case in nGrinder.
+  * Provide limited agent management menu for user.
+    - Users can view the list of public and User's agents from the agent management menu.
+    - They can't use the management functions(approve, update, etc..) that admin can do.
+- Bug
+  * https://github.com/naver/ngrinder/pull/285#issuecomment-384192486 #297 API URL does not exist.
+  * #285 #294  Fix bug of bandWidth calculation method.
+- Improvement
+  * #291  Speed up the page navigation when threr are much users setting followers.
+  
 3.4 (2016.05.24)
 ================
 
