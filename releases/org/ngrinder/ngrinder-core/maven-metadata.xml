@@ -3,10 +3,11 @@
   <groupId>org.ngrinder</groupId>
   <artifactId>ngrinder-core</artifactId>
   <versioning>
-    <release>3.4</release>
+    <release>3.4.2</release>
     <versions>
       <version>3.4</version>
+      <version>3.4.2</version>
     </versions>
-    <lastUpdated>20160512064129</lastUpdated>
+    <lastUpdated>20180828031333</lastUpdated>
   </versioning>
 </metadata>
