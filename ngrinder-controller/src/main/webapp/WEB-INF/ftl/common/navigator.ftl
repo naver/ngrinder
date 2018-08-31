@@ -100,14 +100,16 @@
 						<li>
 							<a href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank"><@spring.message "navigator.dropDown.downloadRecorder"/></a>
 						</li>
+						<li class="divider"></li>
 						<@security.authorize access="hasRole('A')">
-							<li class="divider"></li>
 							<li>
 								<a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropDown.userManagement"/></a>
 							</li>
+						</@security.authorize>
 							<li>
 								<a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropDown.agentManagement"/></a>
 							</li>
+						<@security.authorize access="hasRole('A')">
 							<#if clustered == false>
 								<li>
 									<a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropDown.logMonitoring"/></a>

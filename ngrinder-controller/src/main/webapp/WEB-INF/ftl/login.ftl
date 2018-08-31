@@ -111,7 +111,7 @@
 				</select>
 			</div>
 
-		<#if signUpEnabled>
+		<#if signUpEnabled??>
 			<div class="prompt">
 				<a id="sign_up" class="pointer-cursor" style="margin-left:200px;">Sign Up</a>
 			</div>

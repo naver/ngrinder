@@ -51,8 +51,8 @@ public class FileEntryServiceTest {
 		assertThat(content, containsString("Gisoo Gwon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
 		assertThat(content, containsString("request1.POST_TEST"));
-		assertThat(content, containsString("self.headers.append(NVPair(\"header\", \"123\"))"));
-		assertThat(content, containsString("self.params.append(NVPair(\"pName\", \"pValue\"))"));
+		assertThat(content, containsString("headers.append(NVPair(\"header\", \"123\"))"));
+		assertThat(content, containsString("params.append(NVPair(\"pName\", \"pValue\"))"));
 		assertThat(content, containsString("Cookie(\"cook\", \"good\", \"naver.com\", \"/home\""));
 	}
 

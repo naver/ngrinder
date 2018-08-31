@@ -1,8 +1,10 @@
 language: java
 before_install:
-  - ./install_maven_lib.sh
+  - ./install-maven-lib.sh
 jdk:
-  - oraclejdk8
-  - oraclejdk7
+  - openjdk8
 script:
-  - mvn test -DskipTests=true
+  - mvn test
+cache:
+  directories:
+  - $HOME/.m2

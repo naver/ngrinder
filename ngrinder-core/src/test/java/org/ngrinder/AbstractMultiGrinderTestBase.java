@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder;
 
@@ -20,23 +20,37 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.grinder.AgentControllerServer;
+import net.grinder.AgentControllerServerDaemon;
 import net.grinder.AgentDaemon.AgentShutDownListener;
+import net.grinder.Console;
+import net.grinder.SingleConsole;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.Condition;
 
+import org.hamcrest.Matchers;
 import org.hyperic.jni.ArchLoaderException;
 import org.hyperic.jni.ArchNotSupportedException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.ArchLoaderInit;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 abstract public class AbstractMultiGrinderTestBase {
 	public AgentConfig.NullAgentConfig agentConfig1;
 	public AgentConfig.NullAgentConfig agentConfig2;
 	public AgentConfig.NullAgentConfig agentConfig3;
 
+
+
+	static {
+		System.setProperty("ngrinder.agent.home", "./tmp/agent-home");
+	}
 
 	@Before
 	public void agentInit() throws ArchNotSupportedException, ArchLoaderException {
@@ -122,16 +136,44 @@ abstract public class AbstractMultiGrinderTestBase {
 		try {
 			socket = new ServerSocket(0);
 			return socket.getLocalPort();
-		} catch (IOException e) {
+		} catch (IOException ignored) {
 		} finally {
 			if (socket != null) {
 				try {
 					socket.close();
-				} catch (IOException e) {
+				} catch (IOException ignored) {
 				}
 			}
 		}
 		return -1;
 	}
 
+	protected void waitAndAssertUntilAgentAttachedTo(SingleConsole console, int expected, int retryCount) {
+		int size = 0;
+		retryCount++;
+		for (int i = 0; i < retryCount; i++) {
+			size = console.getAllAttachedAgents().size();
+			if (size == expected) {
+				return;
+			}
+			sleep(1000);
+		}
+		assertThat(size, equalTo(expected));
+	}
+
+
+
+	protected void waitAndAssertUntilAgentAttachedTo(AgentControllerServerDaemon server, int expected, int retryCount) {
+		int size = 0;
+		retryCount++;
+
+		for (int i = 0; i < retryCount; i++) {
+			size = server.getAllAttachedAgentsCount();
+			if (size == expected) {
+				return;
+			}
+			sleep(1000);
+		}
+		assertThat(size, equalTo(expected));
+	}
 }

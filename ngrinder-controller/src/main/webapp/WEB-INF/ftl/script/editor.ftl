@@ -114,8 +114,8 @@
 
 
 		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
-		<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
-		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px"
+		<textarea id="old_content" class="hidden">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
+		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px;cursor: pointer"
 			title="Tip" data-html="ture"
 			data-placement="left"
 			data-content="
@@ -183,7 +183,7 @@
 
 			$("#save_btn").click(function() {
 				var newContent = editor.getValue();
-				if ($("#oldContent").val() != newContent) {
+				if ($("#old_content").val() != newContent) {
 					$("#validated").val("0");
 				}
 				$('#contentHd').val(newContent);

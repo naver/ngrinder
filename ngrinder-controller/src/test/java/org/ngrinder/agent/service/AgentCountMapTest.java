@@ -48,10 +48,6 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
 	ClusteredAgentManagerService agentManagerService;
 
-	@Before
-	public void before() {
-	}
-
 	public AgentInfo createAgentInfo(String region, boolean approved, AgentControllerState status) {
 		AgentInfo agentInfo1 = new AgentInfo();
 		agentInfo1.setRegion(region);

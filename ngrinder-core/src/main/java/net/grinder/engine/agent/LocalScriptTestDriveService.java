@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.engine.agent;
 
@@ -59,8 +59,8 @@ public class LocalScriptTestDriveService {
 	 * @return File which stores validation result.
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-	                       String hostString) {
-		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, getDefaultTimeout());
+						   String securityLevel, String hostString) {
+		return doValidate(base, script, eventSynchronisation, securityEnabled, securityLevel, hostString, getDefaultTimeout());
 	}
 
 	protected int getDefaultTimeout() {
@@ -80,7 +80,7 @@ public class LocalScriptTestDriveService {
 	 */
 	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-	                       String hostString, final int timeout) {
+						   String securityLevel, String hostString, final int timeout) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -94,8 +94,8 @@ public class LocalScriptTestDriveService {
 			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
-			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
-					NetworkUtils.getLocalHostName());
+			PropertyBuilder builder = new ValidationPropertyBuilder(properties, new Directory(base), securityEnabled, securityLevel, hostString,
+				NetworkUtils.getLocalHostName());
 			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);

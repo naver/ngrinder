@@ -271,7 +271,7 @@
 					</div>
 				</div>
 				<!-- end tab content -->
-				<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-30px"
+				<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-30px;cursor: pointer"
 					title="Tip" data-html="ture" data-placement="left"
 					data-content="<@spring.message "intro.public.button.show"/>"
 					id="introButton"	>
@@ -553,7 +553,7 @@ function addValidation() {
 				digits: true,
 				min: 0
 			},
-			<#if securityMode?? && securityMode == true>
+			<#if securityLevel?? && securityLevel == "normal">
 			targetHosts: {
 				required: true
 			},
@@ -1250,7 +1250,7 @@ function callUpdateAvailableAgentInfo() {
 }
 
 function updateAvailableAgentInfo(targetRegion) {
-    var ajaxObj = new AjaxObj("${req.getContextPath()}/agent/api/availableAgentCount");
+    var ajaxObj = new AjaxObj("/agent/api/availableAgentCount");
     ajaxObj.type = "GET";
     ajaxObj.params = {"targetRegion": targetRegion };
     ajaxObj.success = function (data) {

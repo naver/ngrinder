@@ -13,6 +13,9 @@
  */
 package org.ngrinder.sm;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
@@ -28,20 +31,21 @@ import java.util.List;
  * @since 3.0
  */
 public class NGrinderSecurityManager extends SecurityManager {
+	private static final String NGRINDER_CONTROLLER_DEFAULT_FOLDER = ".ngrinder";
+	private static final String NGRINDER_CONTROLLER_TEMP_FOLDER = "tmp";
+	private static final String NGRINDER_CONTEXT_CONTROLLER = "controller";
 
 	private String workDirectory = System.getProperty("user.dir");
+	private String controllerHomeDir = "";
+	private String controllerHomeTmpDir = "";
+	private String ngrinderContext = "";
 
-	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
-	private String javaHomeDirectory = System.getenv("JAVA_HOME");
-	private String jreHomeDirectory = System.getProperty("java.home");
-	private final String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private final String pythonPath = System.getProperty("python.path");
 	private final String pythonHome = System.getProperty("python.home");
 	private final String pythonCache = System.getProperty("python.cachedir");
 	private final String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private final String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
 	private final List<String> allowedHost = new ArrayList<String>();
-	private final List<String> readAllowedDirectory = new ArrayList<String>();
 	private final List<String> writeAllowedDirectory = new ArrayList<String>();
 	private final List<String> deleteAllowedDirectory = new ArrayList<String>();
 
@@ -50,9 +54,29 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	void init() {
+		ngrinderContext = System.getProperty("ngrinder.context", "agent");
+		if (isControllerContext()) {
+			controllerHomeDir = resolveControllerHomeDir();
+			controllerHomeTmpDir = (controllerHomeDir + File.separator + NGRINDER_CONTROLLER_TEMP_FOLDER);
+		}
 		this.initAccessOfDirectories();
 		this.initAccessOfHosts();
 	}
+
+	private String resolveControllerHomeDir() {
+		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
+		String userHomeFromProperty = System.getProperty("ngrinder.home");
+		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+		if (StringUtils.isEmpty(userHome)) {
+			userHome = System.getProperty("user.home") + File.separator + NGRINDER_CONTROLLER_DEFAULT_FOLDER;
+		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
+			userHome = System.getProperty("user.home") + File.separator + userHome.substring(2);
+		} else if (StringUtils.startsWith(userHome, "." + File.separator)) {
+			userHome = System.getProperty("user.dir") + File.separator + userHome.substring(2);
+		}
+		return FilenameUtils.normalize(userHome);
+	}
+
 	/**
 	 * Set default accessed of directories. <br>
 	 */
@@ -66,33 +90,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 		} else {
 			logDirectory = "log";
 		}
-		agentExecDirectory = normalize(new File(agentExecDirectory).getAbsolutePath(), null);
-		if (javaHomeDirectory == null) {
-			System.out.println("env var JAVA_HOME should be provided.");
-		} else {
-			javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
-			readAllowedDirectory.add(javaHomeDirectory);
-		}
-		readAllowedDirectory.add(workDirectory);
-		readAllowedDirectory.add(logDirectory);
-		readAllowedDirectory.add(agentExecDirectory);
 
-		readAllowedDirectory.add(jreHomeDirectory);
-		if (isNotEmpty(pythonHome)) {
-			readAllowedDirectory.add(pythonHome);
-		}
-		if (isNotEmpty(pythonPath)) {
-			readAllowedDirectory.add(pythonPath);
-		}
 		if (isNotEmpty(pythonCache)) {
 			writeAllowedDirectory.add(pythonCache);
-		}
-		readAllowedDirectory.add(getTempDirectoryPath());
-		readAllowedDirectory.add("/dev/");
-		String[] jed = javaExtDirectory.split(";");
-		for (String je : jed) {
-			je = normalize(new File(je).getAbsolutePath(), null);
-			readAllowedDirectory.add(je);
 		}
 		if (isNotEmpty(pythonHome)) {
 			writeAllowedDirectory.add(pythonHome);
@@ -191,16 +191,19 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		if (file != null && file.contains("database.conf")) {
-			throw new SecurityException("File Read access on database.conf is not allowed.");
+		if (isControllerContext()) {
+			if (file != null) {
+				this.fileAccessReadAllowed(file);
+			}
 		}
-		// fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		if (file != null && file.contains("database.conf")) {
-			throw new SecurityException("File Read access on database.conf is not allowed.");
+		if (isControllerContext()) {
+			if (file != null) {
+				this.fileAccessReadAllowed(file);
+			}
 		}
 	}
 
@@ -224,21 +227,17 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	/**
-	 * File read access is allowed on <br>
-	 * "agent.exec.folder" and "agent.exec.folder".
+	 * Check if the given file is safe to read.
 	 *
 	 * @param file file path
 	 */
-	@SuppressWarnings("unused")
 	private void fileAccessReadAllowed(String file) {
-		// We don't use this for a while.
 		String filePath = normalize(file, workDirectory);
-		for (String dir : readAllowedDirectory) {
-			if (filePath != null && filePath.startsWith(dir)) {
-				return;
+		if (filePath != null && filePath.startsWith(controllerHomeDir)) {
+			if (!filePath.startsWith(workDirectory) && !filePath.startsWith(controllerHomeTmpDir)) {
+				throw new SecurityException("File Read access on " + file + "(" + filePath + ") is not allowed.");
 			}
 		}
-		throw new SecurityException("File Read access on " + file + "(" + filePath + ") is not allowed.");
 	}
 
 	/**
@@ -310,6 +309,13 @@ public class NGrinderSecurityManager extends SecurityManager {
 		}
 		throw new SecurityException("NetWork access on " + host + " is not allowed. Please add " + host
 				+ " on the target host setting.");
+	}
+
+	/**
+	 * check current ngrinde context is controller.
+	 */
+	private boolean isControllerContext() {
+		return ngrinderContext.equalsIgnoreCase(NGRINDER_CONTEXT_CONTROLLER);
 	}
 
 	/**

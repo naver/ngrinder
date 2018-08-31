@@ -57,6 +57,7 @@ import java.util.Properties;
 
 import static net.grinder.util.NoOp.noOp;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -94,7 +95,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private SpringContext context;
-	
+
 	@Autowired
 	private ApplicationContext appContext;
 
@@ -151,7 +152,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		updateCacheStatisticsSupports();
 	}
-	
+
 	protected void initDevModeProperties() {
 		if (!isDevMode()) {
 			initLogger(false);
@@ -162,7 +163,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE, "true");
 		}
 	}
-	
+
 	private void addChangeConfigListenerForStatistics() {
 		addSystemConfListener(new PropertyChangeListener() {
 			@Override
@@ -171,8 +172,11 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			}
 		});
 	}
-	
+
 	private void updateCacheStatisticsSupports() {
+		if (appContext == null) {
+			return;
+		}
 		CacheManager cacheManager = appContext.getBean("cacheManager", CacheManager.class);
 		boolean enableStatistics = isEnableStatistics();
 		for (String cacheName : cacheManager.getCacheNames()) {
@@ -554,6 +558,15 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	}
 
 	/**
+	 * Get system security level from system properties.
+	 *
+	 * @return security level.
+	 */
+	public String getSecurityLevel() {
+		return getControllerProperties().getProperty(PROP_CONTROLLER_SECURITY_LEVEL, GRINDER_SECURITY_LEVEL_NORMAL);
+	}
+
+	/**
 	 * Check if it is the demo mode.
 	 *
 	 * @return true if demo mode is enabled.
@@ -731,7 +744,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public long getInactiveClientTimeOut() {
 		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);
 	}
-	
+
 	public boolean isEnableStatistics() {
 		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_STATISTICS);
 	}

@@ -1,0 +1,20 @@
+root = true
+
+[*]
+end_of_line = crlf
+insert_final_newline = true
+
+[**.java]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+
+[**.ftl]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+
+[**.css]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true

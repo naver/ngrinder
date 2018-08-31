@@ -24,7 +24,7 @@
 			</legend> 
 		</fieldSet>
 		<!--suppress HtmlUnknownTarget -->
-		<form id="user_list_form" action="${req.getContextPath()}/user" method="POST">
+		<form id="user_list_form" action="${req.getContextPath()}/user" method="GET">
 			<div class="well form-inline search-bar">			 
 				<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="search_text" name="keywords" value="${keywords!}">
 				<a class="btn" id="search_user">

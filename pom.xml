@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder</artifactId>
-	<version>3.4-SNAPSHOT</version>
+	<version>3.4.2</version>
 	<packaging>pom</packaging>
 	<name>ngrinder</name>
 	<modules>
@@ -64,8 +64,8 @@
 		<ngrinder.version>${project.version}</ngrinder.version>
 		<altDeploymentRepository>ngrinder::default::file:../ngrinder.maven.repo/releases</altDeploymentRepository>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 		<jetty.version>9.2.17.v20160517</jetty.version>
 	</properties>
 
@@ -137,137 +137,4 @@
 			<version>2.6</version>
 		</dependency>
 	</dependencies>
-	<profiles>
-		<profile>
-			<id>klocwork</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.klocwork.ps</groupId>
-						<artifactId>kwmaven</artifactId>
-						<version>2.1.1</version>
-						<configuration>
-							<buildspec_filename>${KWINJECT_OUT_PATH}</buildspec_filename>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>validate</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>javadoc</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<failOnError>false</failOnError>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-reactor-plugin</artifactId>
-				<version>1.0</version>
-			</plugin>
-			<plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<includesTestSourceRoots>true</includesTestSourceRoots>
-					<generateHtml>true</generateHtml>
-					<generateXml>true</generateXml>
-					<jdk>${jdk-version}</jdk>
-					<excludes>
-						<exclude>liquibase/**/*.java</exclude>
-						<exclude>org/ngrinder/*/model/*.java</exclude>
-						<exclude>org/ngrinder/dns/*.java</exclude>
-						<exclude>org/ngrinder/sm/*.java</exclude>
-						<exclude>org/ngrinder/monitor/controller/model/*.java</exclude>
-						<exclude>org/hibernate/dialect/*.java</exclude>
-						<exclude>org/ngrinder/common/util/Preconditions.java</exclude>
-						<exclude>net/grinder/console/model/*.java</exclude>
-						<exclude>**/DavSvnController.java</exclude>
-						<exclude>**/Main.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<configLocation>checkstyle.xml</configLocation>
-					<excludes>**/test/java/**/*.java</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<includesTestSourceRoots>true</includesTestSourceRoots>
-					<jdk>${jdk-version}</jdk>
-					<excludes>
-						<exclude>org/ngrinder/*/model/*.java</exclude>
-						<exclude>org/ngrinder/dns/*.java</exclude>
-						<exclude>org/ngrinder/sm/*.java</exclude>
-						<exclude>org/ngrinder/monitor/controller/model/*.java</exclude>
-						<exclude>org/hibernate/dialect/*.java</exclude>
-						<exclude>org/ngrinder/common/util/Preconditions.java</exclude>
-						<exclude>**/DavSvnController.java</exclude>
-						<exclude>**/Main.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<excludes>**/test/java/**/*.java</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-
 </project>
