@@ -79,7 +79,7 @@ Release will be constructed based on the following guidelines:
 
 * Breaking backward compatibility bumps the major (and resets the minor and patch)
 * New additions without breaking backward compatibility bump the minor (and reset the patch)
-* Bug fixes and misc. changes bump the patch
+* Bug fixes and small enhancement. changes bump the patch
 
 
 Q/A and Bug tracker
