@@ -9,6 +9,7 @@
 .clover
 .idea
 target/
+build/
 ~$*
 /Servers
 /.metadata
