@@ -1,0 +1,22 @@
+description = "ngrinder-groovy"
+
+configurations {
+    testAgent {
+        transitive = false
+    }
+}
+
+dependencies {
+    compile (group: "org.json", name: "json", version:"20090211")
+    compile (group: "org.codehaus.groovy", name: "groovy-all", version:"2.2.1")
+    compile (group: "junit", name: "junit-dep", version:"4.8.2")
+    compile (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
+
+    testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
+
+    testAgent (group: "net.sf.grinder", name: "grinder-dcr-agent", version: "3.9.1")
+}
+
+test {
+    jvmArgs "-javaagent:${configurations.testAgent.singleFile}"
+}

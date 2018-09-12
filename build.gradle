@@ -1,0 +1,63 @@
+allprojects  {
+  apply plugin: "idea"
+
+  group = "org.ngrinder"
+  version = "3.5.0-SNAPSHOT"
+
+  idea {
+    module {
+      outputDir file("build/classes/main")
+      testOutputDir file("build/classes/test")
+    }
+  }
+
+  if(project.convention.findPlugin(JavaPluginConvention)) {
+    // Change the output directory for the main and test source sets back to the old path
+    sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
+    sourceSets.test.output.classesDir = new File(buildDir, "classes/test")
+  }
+}
+
+subprojects {
+  apply plugin: "java"
+
+  compileJava.options.encoding = "UTF-8"
+  compileTestJava.options.encoding = "UTF-8"
+
+  sourceCompatibility = 1.7
+  targetCompatibility = 1.7
+
+  ext {
+    slf4j_version = "1.6.4"
+    jetty_version = "9.2.17.v20160517"
+    spring_security_version = "4.0.4.RELEASE"
+    spring_data_version = "1.9.4.RELEASE"
+    spring_version = "4.2.5.RELEASE"
+    svnkit_version = "1.8.3-scm1"
+    jetty_version = "9.2.17.v20160517"
+  }
+
+  repositories {
+    mavenCentral()
+    maven { url "http://repo.springsource.org/release" }
+    maven { url "http://maven.scm-manager.org/nexus/content/repositories/releases" }
+    maven { url "http://maven.cubrid.org" }
+  }
+
+  dependencies {
+    compile files("${rootDir}/lib/grinder-3.9.1-patch.jar")
+    compile (group: "ch.qos.logback", name: "logback-classic", version:"1.0.0")
+    compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)
+    compile (group: "asm", name: "asm", version:"3.3.1")
+    compile (group: "commons-io", name: "commons-io", version:"2.2")
+    compile (group: "commons-lang", name: "commons-lang", version:"2.6")
+    compile (group: "net.sf.grinder", name: "grinder", version:"3.9.1") {
+      exclude (module: "clojure")
+      exclude (module: "jython")
+      exclude (module: "grinder-xmlbeans")
+      exclude (module: "jedit-syntax")
+      exclude (module: "asm")
+    }
+    runtime (group: "org.slf4j", name: "jcl-over-slf4j", version: slf4j_version)
+  }
+}
