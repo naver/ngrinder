@@ -8,6 +8,7 @@
 .checkstyle
 .clover
 .idea
+.gradle
 target/
 build/
 ~$*
