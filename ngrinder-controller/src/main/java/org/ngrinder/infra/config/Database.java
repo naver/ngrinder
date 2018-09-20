@@ -16,9 +16,7 @@ package org.ngrinder.infra.config;
 import cubrid.jdbc.driver.CUBRIDDriver;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.dialect.CUBRIDExDialect;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.H2ExDialect;
+import org.hibernate.dialect.*;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +42,19 @@ public enum Database {
 			dataSource.setUrl(String.format(getUrlTemplate(),
 					databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
 					StringUtils.trimToEmpty(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
+			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
+			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
+		}
+	},
+	
+
+	/**
+	 * MYSQL.
+	 */
+	mysql(com.mysql.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8") {
+		@Override
+		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
+			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL)));
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
 			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
