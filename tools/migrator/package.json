@@ -1,0 +1,22 @@
+{
+  "name": "mysql-migrator",
+  "version": "1.0.0",
+  "description": "ngrinder-cubrid-to-mysql-migrator",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@https://github.com/naver/ngrinder.git"
+  },
+  "scripts": {
+    "start": "node ./cubrid-to-mysql-migrator.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "generic-pool": "2.x.x",
+    "mysql": "2.x.x",
+    "node-cubrid": "1.x.x",
+    "q": "^1.5.0"
+  },
+  "devDependencies": {}
+}
