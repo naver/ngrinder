@@ -82,15 +82,6 @@ dependencies {
     testCompile (group: "junit", name: "junit-dep", version: "4.9")
     testCompile (group: "org.mockito", name: "mockito-core", version: "1.8.5")
 
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-server", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-http", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-io", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-servlet", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-xml", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-util", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-webapp", version: jetty_version)
-    executableWarDeps (group: "org.eclipse.jetty", name: "jetty-security", version: jetty_version)
-    executableWarDeps (group: "javax.servlet", name: "javax.servlet-api", version: "3.1.0")
     executableWarDeps (project(":ngrinder-starter"))
 }
 
@@ -108,4 +99,3 @@ war {
 test {
     jvmArgs "-Xms600m", "-Xmx1024m", "-XX:MaxPermSize=200m"
 }
-
