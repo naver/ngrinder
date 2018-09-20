@@ -2,24 +2,25 @@ sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 description = "ngrinder-core"
 dependencies {
     compile files("${rootDir}/lib/sigar-native-1.0.jar")
+    compile files("${rootDir}/lib/grinder-3.9.1-patch.jar")
     compile (project(":ngrinder-runtime"))
     compile (project(":ngrinder-groovy"))
-    compile (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
     compile (group: "org.fusesource", name: "sigar", version:"1.6.4")
     compile (group: "ro.fortsoft.pf4j", name: "pf4j", version:"0.12.0")
     compile (group: "javax.servlet", name: "javax.servlet-api", version:"3.1.0")
     compile (group: "commons-collections", name: "commons-collections", version:"3.2.1")
     compile (group: "org.python", name: "jython-standalone", version:"2.5.3")
-    compile (group: "org.json", name: "json", version:"20090211")
     compile (group: "com.google.code.gson", name: "gson", version:"2.2")
     compile (group: "net.java.dev.jna", name: "jna", version:"3.4.0")
     compile (group: "org.apache.commons", name: "commons-compress", version:"1.4.1")
     compile (group: "com.beust", name: "jcommander", version:"1.32")
-    compile (group: "junit", name: "junit-dep", version:"4.8.2")
+    compile (group: "ch.qos.logback", name: "logback-classic", version:"1.0.0")
+    compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)
+    compile (group: "org.slf4j", name: "jcl-over-slf4j", version: slf4j_version)
+    
     compile (group: "org.hibernate", name: "hibernate-core", version:"4.2.2.Final") {
         exclude (module: "jboss-logging")
     }
-    compile (group: "dnsjava", name: "dnsjava", version:"2.1.6")
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
     testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
