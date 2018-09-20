@@ -81,7 +81,7 @@ public class DatabaseConfig implements DatabaseConstants {
 
 		Database database = Database.getDatabase(databaseProperties.getProperty(PROP_DATABASE_TYPE));
 		if (config.isClustered() && !database.isClusterSupport()) {
-			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select cubrid as database");
+			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select mysql as database");
 		}
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
 		hibernateJpaVendorAdapter.setShowSql(false);
