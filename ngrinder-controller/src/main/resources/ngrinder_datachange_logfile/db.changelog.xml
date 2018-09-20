@@ -2,10 +2,9 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-	<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_MYSQL.xml"/>
-	<changeSet author="ngrinder.3.0-b3" id="4" dbms="h2, cubrid" onValidationFail="MARK_RAN">
+	<changeSet author="ngrinder.3.0-b3" id="4" dbms="h2" onValidationFail="MARK_RAN">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="system_monitor" columnName="load_avg_1" />
 		</preConditions>
@@ -18,7 +17,6 @@
 		<dropColumn tableName="system_monitor" columnName="crtime" />
 	</changeSet>
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_H2_5.xml" />
-	<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID_6.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_7.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_8.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_9.xml" />

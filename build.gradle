@@ -40,7 +40,6 @@ subprojects {
     mavenCentral()
     maven { url "http://repo.springsource.org/release" }
     maven { url "http://maven.scm-manager.org/nexus/content/repositories/releases" }
-    maven { url "http://maven.cubrid.org" }
   }
 
   test {

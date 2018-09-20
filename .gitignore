@@ -11,6 +11,8 @@
 target/
 build/
 ~$*
+**/node_modules
+package-lock.json
 /Servers
 /.metadata
 /ngrinder-core-3.*
