@@ -54,14 +54,14 @@ public class ClusterConfigurationVerifier {
 	}
 
 	/**
-	 * check if they use CUBRID in cluster mode.
+	 * check if they use MySQL in cluster mode.
 	 */
 	private void checkDB() {
 		String db = config.getDatabaseProperties().getProperty(DatabaseConstants.PROP_DATABASE_TYPE).toLowerCase();
-		if (!db.equals("cubrid")) {
+		if (!db.equals("mysql")) {
 			final String dbURL = config.getDatabaseProperties().getProperty(DatabaseConstants.PROP_DATABASE_URL, "");
 			checkState(dbURL.startsWith("tcp://"), "Wrong database.url configuration " + dbURL + "\n" +
-					"When cluster mode is enabled, embedded H2 db can not be used. Use cubrid or Use H2 TCP server");
+					"When cluster mode is enabled, embedded H2 db can not be used. Use mysql or Use H2 TCP server");
 		}
 	}
 
