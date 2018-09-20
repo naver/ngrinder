@@ -13,9 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
-import cubrid.jdbc.driver.CUBRIDDriver;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.dialect.*;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
@@ -34,27 +32,13 @@ import java.sql.Driver;
 public enum Database {
 
 	/**
-	 * CUBRID.
-	 */
-	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8%s") {
-		@Override
-		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			dataSource.setUrl(String.format(getUrlTemplate(),
-					databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
-					StringUtils.trimToEmpty(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
-			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
-			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
-		}
-	},
-	
-
-	/**
 	 * MYSQL.
 	 */
-	mysql(com.mysql.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8") {
+	mysql(com.mysql.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL)));
+			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
+				databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION)));
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
 			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
@@ -146,7 +130,7 @@ public enum Database {
 	/**
 	 * Get the {@link Database} enum value for the given type.
 	 *
-	 * @param type db type name. For example... H2, Cubrid..
+	 * @param type db type name. For example... H2, MySQL..
 	 * @return found {@link Database}. {@link Database#H2} if not found.
 	 */
 	public static Database getDatabase(String type) {

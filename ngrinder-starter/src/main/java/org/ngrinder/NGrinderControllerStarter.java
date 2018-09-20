@@ -75,7 +75,7 @@ public class NGrinderControllerStarter {
 
 			@Parameter(names = {"-dp", "--database-port"}, required = false,
 					description = "database port. The default value is 9092 when h2 is used and " +
-							"33000 when cubrid is used."
+							"3306 when mysql is used."
 			)
 			private Integer databasePort = null;
 
@@ -105,11 +105,11 @@ public class NGrinderControllerStarter {
 					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
 				} else {
 					if (databasePort == null) {
-						databasePort = 33000;
+						databasePort = 3306;
 					}
 					if (!tryConnection(databaseHost, databasePort)) {
-						throw new ParameterException("Failed to connect cubrid db.\n" +
-								"Please run the cubrid db " + databaseHost + ":" + databasePort + "in advance\n" +
+						throw new ParameterException("Failed to connect mysql db.\n" +
+								"Please run the mysql db " + databaseHost + ":" + databasePort + "in advance\n" +
 								"or set the correct -database-host and -database-port parameters");
 					}
 					System.setProperty("database.url", this.databaseHost + ":" + this.databasePort);

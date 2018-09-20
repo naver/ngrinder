@@ -1,6 +1,6 @@
 /**
  * nGrinder customized LiquiBase implementation.
- * Mainly include Cubrid and H2 support.
+ * Mainly include MySQL and H2 support.
  */
 package liquibase.database.core;
 
