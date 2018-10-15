@@ -17,9 +17,9 @@ dependencies {
     compile (group: "ch.qos.logback", name: "logback-classic", version:"1.0.0")
     compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)
     compile (group: "org.slf4j", name: "jcl-over-slf4j", version: slf4j_version)
-    
-    compile (group: "org.hibernate", name: "hibernate-core", version:"4.2.2.Final") {
-        exclude (module: "jboss-logging")
+
+    compile (group: 'org.hibernate', name: 'hibernate-core', version:'5.2.10.Final') {
+        exclude(module: 'jboss-logging')
     }
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")

@@ -77,7 +77,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 		Liquibase liquibase = new Liquibase(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 				.getClassLoader()), getDatabase());
 		try {
-			liquibase.update(null);
+			liquibase.update((String) null);
 		} catch (LiquibaseException e) {
 			throw processException("Exception occurs while Liquibase update DB", e);
 		}

@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -278,28 +279,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	protected void setupLogger(boolean verbose) {
 		this.verbose = verbose;
 		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-		final JoranConfigurator configurator = new JoranConfigurator();
-		configurator.setContext(context);
-		context.reset();
-		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		File logbackConf = home.getSubFile("logback.xml");
-		try {
-			if (!logbackConf.exists()) {
-				logbackConf = new ClassPathResource("/logback/logback-ngrinder.xml").getFile();
-				if (exHome.exists() && isClustered()) {
-					context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
-					context.putProperty("SUFFIX", "_" + getRegion());
-				} else {
-					context.putProperty("SUFFIX", "");
-					context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
-				}
-			}
-			configurator.doConfigure(logbackConf);
-		} catch (JoranException e) {
-			CoreLogger.LOGGER.error(e.getMessage(), e);
-		} catch (IOException e) {
-			CoreLogger.LOGGER.error(e.getMessage(), e);
-		}
+		context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(verbose ? Level.DEBUG : Level.INFO);
 	}
 
 	/**
