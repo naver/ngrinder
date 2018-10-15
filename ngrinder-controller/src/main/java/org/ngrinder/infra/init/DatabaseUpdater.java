@@ -16,9 +16,10 @@ package org.ngrinder.infra.init;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
-import liquibase.database.core.H2ExTypeConverter;
+import liquibase.database.core.BooleanTypeEx;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.database.typeconversion.TypeConverterFactory;
+import liquibase.datatype.DataTypeFactory;
+import liquibase.datatype.core.BooleanType;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
@@ -73,7 +74,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@PostConstruct
 	public void init() throws Exception {
 		SqlGeneratorFactory.getInstance().register(new LockDatabaseChangeLogGenerator());
-		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
+		DataTypeFactory.getInstance().register(BooleanTypeEx.class);
 		Liquibase liquibase = new Liquibase(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 				.getClassLoader()), getDatabase());
 		try {
