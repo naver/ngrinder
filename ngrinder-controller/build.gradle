@@ -5,45 +5,45 @@ buildscript {
         maven { url "http://repo.spring.io/libs-snapshot" }
         maven { url "https://repo.spring.io/libs-milestone" }
     }
-}
-
-configurations {
-    executableWarDeps
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+    }
 }
 
 apply plugin: "war"
+apply plugin: 'spring-boot'
 
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 
 dependencies {
-    compile project(":ngrinder-starter")
     compile project(":ngrinder-core")
     compile project(":ngrinder-sh")
     compile files("${rootDir}/lib/universal-analytics-java-1.0.jar")
+
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springboot_version) {
+        exclude (module: "asm")
+    }
+
     compile (group: "rome", name: "rome", version: "1.0")
     compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
     compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
     compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version)
     compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
     compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
-    compile (group: "org.freemarker", name: "freemarker", version: "2.3.20")
     compile (group: "net.sf.ehcache", name: "ehcache-core", version: "2.5.1")
     compile (group: "com.google.guava", name: "guava", version: "12.0")
-    compile (group: "org.springframework", name: "spring-web", version: spring_version)
-    compile (group: "org.springframework", name: "spring-tx", version: spring_version)
-    compile (group: "org.springframework", name: "spring-context-support", version: spring_version)
-    compile (group: "org.springframework", name: "spring-aspects", version: spring_version)
-    compile (group: "org.springframework", name: "spring-expression", version: spring_version)
     compile (group: "org.springframework.security", name: "spring-security-web", version: spring_security_version)
     compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
     compile (group: "org.springframework.security", name: "spring-security-config", version: spring_security_version)
     compile (group: "org.apache.maven", name: "maven-embedder", version: "3.0.5")
     compile (group: "org.sonatype.aether", name: "aether-connector-asynchttpclient", version: "1.13.1")
-    compile (group: "org.liquibase", name: "liquibase-core", version: "2.0.5")
-    compile (group: "org.springframework", name: "spring-webmvc", version: spring_version)
-    compile (group: "org.hibernate.javax.persistence", name: "hibernate-jpa-2.0-api", version: "1.0.0.Final")
-    compile (group: "org.hibernate", name: "hibernate-entitymanager", version: "4.2.2.Final")
-    compile (group: "org.hibernate", name: "hibernate-ehcache", version: "4.2.2.Final")
+    compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")
+    compile (group: "org.hibernate", name: "hibernate-ehcache", version: "5.0.11.Final")
     compile (group: "org.aspectj", name: "aspectjrt", version: "1.6.12")
     compile (group: "org.aspectj", name: "aspectjweaver", version: "1.6.12")
     compile (group: "mysql", name: "mysql-connector-java", version: "5.1.33")
@@ -61,32 +61,16 @@ dependencies {
     compile (group: "ro.fortsoft.pf4j", name: "pf4j-spring", version: "0.2.0") {
         exclude (module: "slf4j-log4j12")
     }
-    compile (group: "org.springframework.data", name: "spring-data-jpa", version: spring_data_version) {
-        exclude (module: "spring-core")
-        exclude (module: "spring-orm")
-        exclude (module: "spring-tx")
-        exclude (module: "spring-beans")
-    }
-    compile (group: "org.springframework", name: "spring-context", version: spring_version)
-    compile (group: "org.springframework", name: "spring-orm", version: spring_version)
     compile (group: "org.reflections", name: "reflections", version: "0.9.9")
 
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
-    testCompile (group: "org.springframework", name: "spring-test", version: spring_version)
     testCompile (group: "junit", name: "junit-dep", version: "4.9")
     testCompile (group: "org.mockito", name: "mockito-core", version: "1.8.5")
-
-    executableWarDeps (project(":ngrinder-starter"))
 }
 
 war {
-    from {
-        configurations.executableWarDeps.collect {
-            it.isDirectory() ? it : project.zipTree(it)
-        }
-    }
     manifest {
-        attributes "Implementation-Version": project.version, "Main-Class": "org.ngrinder.NGrinderControllerStarter"
+        attributes "Implementation-Version": project.version, "Main-Class": "org.ngrinder.starter.NGrinderControllerStarter"
     }
 }
 

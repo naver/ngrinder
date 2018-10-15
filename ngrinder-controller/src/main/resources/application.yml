@@ -1,0 +1,15 @@
+ngrinder:
+  version: 3.5.0-SNAPSHOT
+
+server:
+  session:
+    timeout: 10000
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration
+      - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+  profiles:
+    active: production
