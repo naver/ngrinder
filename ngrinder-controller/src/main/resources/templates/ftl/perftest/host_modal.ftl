@@ -52,7 +52,7 @@
 	function validateHost(arr) {
 		var successDomain = true;
 		var $domain = $("#domain_input");
-		var domainEmpty = checkEmptyByObj($domain);		
+		var domainEmpty = checkEmptyByObj($domain);
 		if (!domainEmpty) {
 			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 			var str = $domain.val();
@@ -60,7 +60,7 @@
 			if (successDomain) {
 				arr.push(str);
 			}
-		} 
+		}
 		markInput($domain, successDomain, '<@spring.message "perfTest.config.addHost.inputTargetDomain"/>');
 
 		var successIp = true;
