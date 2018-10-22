@@ -52,6 +52,5 @@ public abstract class FileUtils {
 			IOUtils.closeQuietly(io);
 			IOUtils.closeQuietly(fos);
 		}
-
 	}
 }

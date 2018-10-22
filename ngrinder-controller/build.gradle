@@ -4,14 +4,15 @@ buildscript {
     repositories {
         maven { url "http://repo.spring.io/libs-snapshot" }
         maven { url "https://repo.spring.io/libs-milestone" }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.6.RELEASE")
     }
 }
 
 apply plugin: "war"
-apply plugin: 'spring-boot'
+apply plugin: "org.springframework.boot"
 
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 
@@ -20,7 +21,6 @@ def monitorScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/moni
 
 dependencies {
     compile project(":ngrinder-core")
-    compile project(":ngrinder-sh")
     compile files("${rootDir}/lib/universal-analytics-java-1.0.jar")
 
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springboot_version)
@@ -28,9 +28,7 @@ dependencies {
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springboot_version)
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springboot_version)
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springboot_version)
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springboot_version) {
-        exclude (module: "asm")
-    }
+    compile (group: 'org.springframework.boot', name: 'spring-boot-loader', version: springboot_version)
 
     compile (group: "rome", name: "rome", version: "1.0")
     compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
@@ -69,12 +67,15 @@ dependencies {
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
     testCompile (group: "junit", name: "junit-dep", version: "4.9")
     testCompile (group: "org.mockito", name: "mockito-core", version: "1.8.5")
+    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springboot_version)
 }
 
-war {
+
+bootWar {
     manifest {
-        attributes "Implementation-Version": project.version, "Main-Class": "org.ngrinder.starter.NGrinderControllerStarter"
+        attributes "Implementation-Version": project.version, mainClassName: "org.ngrinder.starter.NGrinderControllerStarter"
     }
+    requiresUnpack "**/*.jar"
 }
 
 task convert_cr_lf {

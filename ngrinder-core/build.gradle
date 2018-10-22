@@ -17,10 +17,8 @@ dependencies {
     compile (group: "ch.qos.logback", name: "logback-classic", version:"1.0.0")
     compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)
     compile (group: "org.slf4j", name: "jcl-over-slf4j", version: slf4j_version)
-
-    compile (group: 'org.hibernate', name: 'hibernate-core', version:'5.2.10.Final') {
-        exclude(module: 'jboss-logging')
-    }
+    compile (group: 'org.hibernate', name: 'hibernate-core', version: hibernate_version)
+    compile (group: 'org.jboss.spec.javax.transaction', name: 'jboss-transaction-api_1.2_spec', version: '1.0.1.Final')
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
     testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
@@ -44,7 +42,7 @@ task makeAgentDependencies {
             }
             classpath += "${removedVersion.substring(0, removedVersion.lastIndexOf("-"))};"
         }
-        new File("${buildDir}/classes/main/dependencies.txt").write(classpath)
+        new File("${buildDir}/classes/java/main/dependencies.txt").write(classpath)
     }
 }
 

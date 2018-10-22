@@ -14,16 +14,16 @@
 package org.ngrinder.starter;
 
 import com.beust.jcommander.*;
-import net.grinder.lang.Lang;
 import org.apache.catalina.Context;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.webresources.StandardRoot;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.config.ServletFilterConfig;
 import org.ngrinder.infra.config.SpringConfig;
-import org.ngrinder.infra.config.TaskConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -38,11 +38,15 @@ import org.springframework.web.context.ContextLoaderListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.ProtectionDomain;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static net.grinder.util.NoOp.noOp;
 
@@ -57,6 +61,9 @@ import static net.grinder.util.NoOp.noOp;
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NGrinderControllerStarter.class);
+
+	@Autowired
+	private static Config config;
 
 	@Parameters(separators = "= ")
 	enum ClusterMode {
@@ -268,8 +275,8 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
 		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
 		System.getProperties().putAll(server.params);
-		// copyRequiredLibraryForValidation();
 		SpringApplication.run(NGrinderControllerStarter.class, args);
+		cleanupPreviouslyUnpackedFolders();
 	}
 
 	private static String getRunningCommand() {
@@ -280,53 +287,22 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		return application.sources(NGrinderControllerStarter.class);
 	}
 
-/*	private static void copyRequiredLibraryForValidation() throws IOException {
-		Set<String> classPathSet = new HashSet<>();
-		StringBuilder classPaths = new StringBuilder();
-		Arrays.stream(Lang.values()).forEach(l -> classPaths.append(l.getHandler().getClassPathProcessor().buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)).append(File.pathSeparator)
-			.append(l.getHandler().getClassPathProcessor().buildPatchClasspathBasedOnCurrentClassLoader(LOGGER)).append(File.pathSeparator)
-			.append(l.getHandler().getClassPathProcessor().buildClasspathBasedOnCurrentClassLoader(LOGGER)));
-		Arrays.stream(classPaths.toString().split(File.pathSeparator)).filter(StringUtils::isNotEmpty).forEach(path -> classPathSet.add(FilenameUtils.getName(path)));
-		copyLibs(classPathSet);
-	}
+	private static void cleanupPreviouslyUnpackedFolders() {
+		File[] previouslyUnpackedFolder = FileUtils.getTempDirectory().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith("ngrinder-controller") && !Config.getCurrentLibPath().contains(name);
+			}
+		});
 
-	private static void copyLibs(Set classPathSet) throws IOException {
-		Path requiredLibraryDirectory = new File(Config.getUserHome(), "libs").toPath();
-		FileUtils.deleteDirectory(new File(requiredLibraryDirectory.toString()));
-		if (getWarName().contains(".war!")) {
-			FileSystem zipFs = FileSystems.newFileSystem(getWarFileURI(), new HashMap<>());
-			Path pathInZip = zipFs.getPath("/WEB-INF", "lib");
-			Files.createDirectories(requiredLibraryDirectory);
-			Files.walkFileTree(pathInZip, new SimpleFileVisitor<Path>() {
-				@Override
-				public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
-					// Make sure that we conserve the hierachy of files and folders inside the zip
-					Path relativePathInZip = pathInZip.relativize(filePath);
-					if (classPathSet.contains(relativePathInZip.getFileName().toString())) {
-						Path targetPath = requiredLibraryDirectory.resolve(relativePathInZip.toString());
-						Files.copy(filePath, targetPath);
-					}
-					return FileVisitResult.CONTINUE;
-				}
-			});
-		} else {
-			List<Path> copyLibs = Arrays.stream(((URLClassLoader) NGrinderControllerStarter.class.getClassLoader()).getURLs())
-				.filter(path -> classPathSet.contains(FilenameUtils.getName(path.getFile())))
-				.map(path -> new File(path.getFile()).toPath()).collect(Collectors.toList());
-			Files.createDirectories(requiredLibraryDirectory);
-			for (Path lib : copyLibs) {
-				Path path = Paths.get(requiredLibraryDirectory.toString(), lib.getFileName().toString());
-				if (Files.exists(path)) {
-					Files.copy(lib, path);
-				}
+		for (File file : Objects.requireNonNull(previouslyUnpackedFolder)) {
+			try {
+				FileUtils.forceDelete(file);
+			} catch (IOException e) {
+				LOGGER.error("Previously unpacked folder {} delete failed", file.getName(), e);
 			}
 		}
 	}
-
-	private static URI getWarFileURI() {
-		String warFilePath = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs()[0].getPath();
-		return URI.create("jar:" + warFilePath.substring(0, warFilePath.indexOf(".war!") + ".war".length()));
-	}*/
 
 	@Override
 	public void onStartup(ServletContext servletContext)
