@@ -155,6 +155,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("ngrinder-patch");
 		usefulJarList.add("junit");
 		usefulJarList.add("hamcrest");
+		usefulJarList.add("commons-lang");
 
 		uselessJarList.add("jython-2.2");
 		uselessJarList.add("ngrinder-core");

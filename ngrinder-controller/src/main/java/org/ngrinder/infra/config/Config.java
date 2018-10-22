@@ -43,6 +43,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -53,6 +56,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLClassLoader;
 import java.util.Date;
 import java.util.Properties;
 
@@ -289,7 +293,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
-		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile());
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		Resource[] resources = resolver.getResources("classpath*:ngrinder_home_template/*");
+		home.copyFrom(resources);
 	}
 
 	/**
@@ -311,6 +317,16 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			}
 			return new Home(tmpHome);
 		}
+
+		File homeDirectory = new File(getUserHome());
+		return new Home(homeDirectory);
+	}
+
+	public static String getCurrentLibPath() {
+		return ApplicationContext.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	}
+
+	public static String getUserHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
@@ -327,12 +343,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		} else if (StringUtils.startsWith(userHome, "." + File.separator)) {
 			userHome = System.getProperty("user.dir") + File.separator + userHome.substring(2);
 		}
-
-		userHome = FilenameUtils.normalize(userHome);
-		File homeDirectory = new File(userHome);
-		CoreLogger.LOGGER.info("nGrinder home directory:{}.", homeDirectory.getPath());
-
-		return new Home(homeDirectory);
+		return FilenameUtils.normalize(userHome);
 	}
 
 	/**
