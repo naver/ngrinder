@@ -478,6 +478,30 @@ public abstract class CompressionUtils {
 		}
 	}
 
+	/**
+	 * Add the given byte into tar.
+	 *
+	 * @param tarStream   TarArchive outputStream
+	 * @param data        data byte array
+	 * @param path        relative path to append
+	 * @param size        size of stream
+	 * @param mode        mode for this entry
+	 * @throws IOException thrown when having IO problem.
+	 */
+	public static void addByteToTar(TarArchiveOutputStream tarStream, byte[] data, String path,
+									long size, int mode) throws IOException {
+		TarArchiveEntry entry = new TarArchiveEntry(path);
+		entry.setSize(size);
+		entry.setMode(mode);
+		try {
+			tarStream.putArchiveEntry(entry);
+			tarStream.write(data);
+		} catch (IOException e) {
+			throw processException("Error while adding File to Tar file", e);
+		} finally {
+			tarStream.closeArchiveEntry();
+		}
+	}
 
 	/**
 	 * Add a file into tar.
