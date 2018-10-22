@@ -14,7 +14,9 @@ import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -167,23 +169,14 @@ public class AgentPackageService {
 				addFolderToTar(tarOutputStream, libPath);
 				final URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
 				Set<String> libs = getMonitorDependentLibs(classLoader);
+				copyShellFile(tarOutputStream, basePath, "monitor");
 
 				for (URL eachUrl : classLoader.getURLs()) {
 					File eachClassPath = new File(eachUrl.getFile());
 					if (!isJar(eachClassPath)) {
 						continue;
 					}
-					if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
-						processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
-							@Override
-							public boolean evaluate(Object object) {
-								ZipEntry zipEntry = (ZipEntry) object;
-								final String name = zipEntry.getName();
-								return name.contains("monitor") && (zipEntry.getName().endsWith("sh") ||
-										zipEntry.getName().endsWith("bat"));
-							}
-						}, basePath, EXEC));
-					} else if (isMonitorDependentLib(eachClassPath, libs)) {
+					if (isMonitorDependentLib(eachClassPath, libs)) {
 						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 					}
 				}
@@ -229,23 +222,14 @@ public class AgentPackageService {
 				addFolderToTar(tarOutputStream, basePath);
 				addFolderToTar(tarOutputStream, libPath);
 				Set<String> libs = getDependentLibs(classLoader);
+				copyShellFile(tarOutputStream, basePath, "agent");
 
 				for (URL eachUrl : classLoader.getURLs()) {
 					File eachClassPath = new File(eachUrl.getFile());
 					if (!isJar(eachClassPath)) {
 						continue;
 					}
-					if (isAgentDependentLib(eachClassPath, "ngrinder-sh")) {
-						processJarEntries(eachClassPath, new TarArchivingZipEntryProcessor(tarOutputStream, new FilePredicate() {
-							@Override
-							public boolean evaluate(Object object) {
-								ZipEntry zipEntry = (ZipEntry) object;
-								final String name = zipEntry.getName();
-								return name.contains("agent") && (zipEntry.getName().endsWith("sh") ||
-										zipEntry.getName().endsWith("bat"));
-							}
-						}, basePath, EXEC));
-					} else if (isAgentDependentLib(eachClassPath, libs)) {
+					if (isAgentDependentLib(eachClassPath, libs)) {
 						addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 					}
 				}
@@ -256,6 +240,20 @@ public class AgentPackageService {
 				IOUtils.closeQuietly(tarOutputStream);
 			}
 			return agentTar;
+		}
+	}
+
+	private void copyShellFile(TarArchiveOutputStream tarOutputStream, String basePath, String type) throws IOException {
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		Resource[] resources = resolver.getResources("classpath*:" + "ngrinder-sh/" + type + "/*");
+		InputStream shellFileIs;
+		byte[] shellFileBytes;
+		for (Resource resource : resources) {
+			shellFileIs = resource.getInputStream();
+			shellFileBytes = IOUtils.toByteArray(shellFileIs);
+			IOUtils.closeQuietly(shellFileIs);
+			addByteToTar(tarOutputStream, shellFileBytes, basePath + FilenameUtils.getName(resource.getFilename()),
+				shellFileBytes.length, EXEC);
 		}
 	}
 
@@ -349,7 +347,7 @@ public class AgentPackageService {
 	 * @return true if it's jar
 	 */
 	public boolean isJar(File libFile) {
-		return StringUtils.endsWith(libFile.getName(), ".jar");
+		return libFile.getName().matches("^.*\\.jar(!)?$");
 	}
 
 	/**
@@ -396,7 +394,8 @@ public class AgentPackageService {
 			return false;
 		}
 		String name = libFile.getName().replace("-SNAPSHOT", "").replace("-GA", "");
-		name = name.substring(0, name.lastIndexOf("-"));
+		final int libVersionStartIndex = name.lastIndexOf("-");
+		name = name.substring(0, (libVersionStartIndex == -1) ? name.lastIndexOf(".") : libVersionStartIndex);
 		return libs.contains(name);
 	}
 
@@ -411,8 +410,7 @@ public class AgentPackageService {
 		StringWriter writer = null;
 		try {
 			Configuration config = new Configuration();
-			ClassPathResource cpr = new ClassPathResource("ngrinder_agent_home_template");
-			config.setDirectoryForTemplateLoading(cpr.getFile());
+			config.setClassForTemplateLoading(this.getClass(), "/ngrinder_agent_home_template");
 			config.setObjectWrapper(new DefaultObjectWrapper());
 			Template template = config.getTemplate(templateName);
 			writer = new StringWriter();

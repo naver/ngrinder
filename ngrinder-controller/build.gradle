@@ -15,6 +15,9 @@ apply plugin: 'spring-boot'
 
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 
+def agentScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/agent"
+def monitorScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/monitor"
+
 dependencies {
     compile project(":ngrinder-core")
     compile project(":ngrinder-sh")
@@ -80,6 +83,17 @@ war {
     }
 }
 
+task convert_cr_lf {
+    doFirst {
+        ant.fixcrlf(srcDir: agentScriptPath, destDir: agentScriptPath, includes:"**/*.sh" ,eol: "unix")
+        ant.fixcrlf(srcDir: agentScriptPath, destDir: agentScriptPath, includes:"**/*.bat" ,eol: "dos")
+        ant.fixcrlf(srcDir: monitorScriptPath, destDir: monitorScriptPath, includes:"**/*.sh" ,eol: "unix")
+        ant.fixcrlf(srcDir: monitorScriptPath, destDir: monitorScriptPath, includes:"**/*.bat" ,eol: "dos")
+    }
+}
+
 test {
     jvmArgs "-Xms600m", "-Xmx1024m", "-XX:MaxPermSize=200m"
 }
+
+tasks.bootWar.dependsOn convert_cr_lf
