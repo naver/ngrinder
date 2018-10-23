@@ -30,6 +30,7 @@ import java.util.List;
  * @author Tobi
  * @since 3.0
  */
+@SuppressWarnings("Duplicates")
 public class NGrinderSecurityManager extends SecurityManager {
 	private static final String NGRINDER_CONTROLLER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_CONTROLLER_TEMP_FOLDER = "tmp";

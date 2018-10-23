@@ -20,6 +20,8 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_URL;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
@@ -54,8 +56,7 @@ public class HttpContainerContext {
 		}
 
 		// if empty
-		SecurityContextHolderAwareRequestWrapper request = cast(RequestContextHolder.currentRequestAttributes()
-				.resolveReference("request"));
+		HttpServletRequest request = cast(RequestContextHolder.currentRequestAttributes().resolveReference("request"));
 		int serverPort = request.getServerPort();
 		// If it's http default port it will ignore the port part.
 		// However, if ngrinder is provided in HTTPS.. it can be a problem.

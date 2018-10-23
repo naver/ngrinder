@@ -243,9 +243,9 @@ public class AgentPackageService {
 		}
 	}
 
-	private void copyShellFile(TarArchiveOutputStream tarOutputStream, String basePath, String type) throws IOException {
+	private void copyShellFile(TarArchiveOutputStream tarOutputStream, String basePath, String copyShellPath) throws IOException {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		Resource[] resources = resolver.getResources("classpath*:" + "ngrinder-sh/" + type + "/*");
+		Resource[] resources = resolver.getResources(copyShellPath);
 		InputStream shellFileIs;
 		byte[] shellFileBytes;
 		for (Resource resource : resources) {
@@ -347,7 +347,7 @@ public class AgentPackageService {
 	 * @return true if it's jar
 	 */
 	public boolean isJar(File libFile) {
-		return libFile.getName().matches("^.*\\.jar(!)?$");
+		return libFile.getName().endsWith(".jar");
 	}
 
 	/**

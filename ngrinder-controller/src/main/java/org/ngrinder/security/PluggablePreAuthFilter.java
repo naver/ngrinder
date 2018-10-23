@@ -13,23 +13,15 @@
  */
 package org.ngrinder.security;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.ngrinder.extension.OnPreAuthServletFilter;
 import org.ngrinder.infra.plugin.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CompositeFilter;
+
+import javax.servlet.*;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Proxy filter which run combined preauth plugins.
@@ -37,22 +29,15 @@ import org.springframework.web.filter.CompositeFilter;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Profile("production")
-@Component("pluggablePreAuthFilter")
+@Component
 public class PluggablePreAuthFilter implements Filter {
-	@Autowired
-	private PluginManager pluginManager;
 
-	private CompositeFilter compositeFilter;
+	private CompositeFilter compositeFilter = new CompositeFilter();
 
 	/**
-	 * Initialize the servlet filter plugins.
-	 *
-	 * @throws ServletException
+	 * load the servlet filter plugins.
 	 */
-	@PostConstruct
-	public void init() {
-		this.compositeFilter = new CompositeFilter();
+	public void loadPlugins(PluginManager pluginManager) {
 		List<OnPreAuthServletFilter> enabledModulesByClass = pluginManager.getEnabledModulesByClass(OnPreAuthServletFilter.class);
 		this.compositeFilter.setFilters(enabledModulesByClass);
 	}
