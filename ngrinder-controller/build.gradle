@@ -2,7 +2,7 @@ description = "ngrinder-controller"
 
 buildscript {
     repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "https://repo.spring.io/libs-snapshot" }
         maven { url "https://repo.spring.io/libs-milestone" }
         maven { url "https://plugins.gradle.org/m2/" }
     }
@@ -26,8 +26,8 @@ dependencies {
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springboot_version)
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker', version: springboot_version)
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springboot_version)
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springboot_version)
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: springboot_version)
     compile (group: 'org.springframework.boot', name: 'spring-boot-loader', version: springboot_version)
 
     compile (group: "rome", name: "rome", version: "1.0")
@@ -63,6 +63,8 @@ dependencies {
         exclude (module: "slf4j-log4j12")
     }
     compile (group: "org.reflections", name: "reflections", version: "0.9.9")
+
+    providedRuntime (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springboot_version)
 
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
     testCompile (group: "junit", name: "junit-dep", version: "4.9")
