@@ -18,7 +18,7 @@ public class ServletConfig {
 	}
 
 	@Bean
-	public DispatcherServlet dispatcherServlet(){
+	public DispatcherServlet dispatcherServlet() {
 		return new Redirect404DispatcherServlet();
 	}
 

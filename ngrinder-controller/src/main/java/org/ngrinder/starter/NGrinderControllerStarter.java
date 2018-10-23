@@ -14,29 +14,21 @@
 package org.ngrinder.starter;
 
 import com.beust.jcommander.*;
-import org.apache.catalina.Context;
-import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.webresources.StandardRoot;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.config.ServletFilterConfig;
 import org.ngrinder.infra.config.SpringConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.*;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -50,8 +42,9 @@ import java.util.Objects;
 
 import static net.grinder.util.NoOp.noOp;
 
+
 @SpringBootApplication
-@ImportResource("classpath:applicationContext.xml")
+@EnableCaching
 @Import({SpringConfig.class, ServletFilterConfig.class})
 @ComponentScan(
 	basePackages = {"org.ngrinder"},
@@ -61,9 +54,6 @@ import static net.grinder.util.NoOp.noOp;
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NGrinderControllerStarter.class);
-
-	@Autowired
-	private static Config config;
 
 	@Parameters(separators = "= ")
 	enum ClusterMode {
@@ -236,7 +226,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	}
 
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server);
 		commander.setAcceptUnknownOptions(true);
@@ -275,14 +265,15 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
 		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
 		System.getProperties().putAll(server.params);
-		SpringApplication.run(NGrinderControllerStarter.class, args);
 		cleanupPreviouslyUnpackedFolders();
+		SpringApplication.run(NGrinderControllerStarter.class, args);
 	}
 
 	private static String getRunningCommand() {
 		return "java -jar " + new File(getWarName()).getName();
 	}
 
+	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(NGrinderControllerStarter.class);
 	}
@@ -304,33 +295,4 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		}
 	}
 
-	@Override
-	public void onStartup(ServletContext servletContext)
-		throws ServletException {
-		servletContext.setInitParameter(
-			"spring.profiles.default", "production");
-		servletContext.addListener(new ContextLoaderListener());
-		servletContext.addListener(new HttpSessionEventPublisher());
-		super.onStartup(servletContext);
-	}
-
-	@Bean
-	public EmbeddedServletContainerFactory servletContainer() {
-		return new TomcatEmbeddedServletContainerFactory() {
-			@Override
-			protected void postProcessContext(Context context) {
-				/*
-				 * This is the custom class loader to remove duplicated hazelcast ServiceLoader issue.
-				 *
-				 * @see https://github.com/hazelcast/hazelcast/issues/2395#issuecomment-245461396
-				 */
-				WebappLoader loader = new WebappLoader(context.getParentClassLoader());
-				loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
-				loader.setDelegate(true);
-				context.setLoader(loader);
-				StandardRoot standardRoot = new StandardRoot(context);
-				context.setResources(standardRoot);
-			}
-		};
-	}
 }
