@@ -15,7 +15,6 @@ package org.ngrinder.perftest.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
 import org.apache.commons.io.FilenameUtils;
@@ -45,6 +44,7 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,6 +81,7 @@ import static org.ngrinder.common.util.Preconditions.*;
  * @author JunHo Yoon
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
+@Profile("production")
 @Controller
 @RequestMapping("/perftest")
 public class PerfTestController extends BaseController {
