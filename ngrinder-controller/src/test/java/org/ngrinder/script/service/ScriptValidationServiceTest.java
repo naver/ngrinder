@@ -13,17 +13,7 @@
  */
 package org.ngrinder.script.service;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
-
-import java.io.File;
-import java.io.IOException;
-
-import net.grinder.engine.common.EngineException;
-import net.grinder.util.Directory.DirectoryException;
 import net.grinder.util.thread.Condition;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -40,6 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 
 public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTest {
 	private static final Logger m_logger = LoggerFactory.getLogger(ScriptValidationServiceTest.class);
@@ -76,12 +73,12 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	}
 
 	@After
-	public void after() throws IOException {
+	public void after() {
 		FileUtils.deleteQuietly(repoDir);
 	}
 
 	@Test
-	public void testValidation() throws EngineException, DirectoryException, IOException {
+	public void testValidation() throws IOException {
 		File file = new ClassPathResource("/validation/script_1time.py").getFile();
 		Condition m_eventSync = new Condition();
 		File log = validationService.doValidate(file.getParentFile(), file, m_eventSync, false, GRINDER_SECURITY_LEVEL_NORMAL, "");
@@ -90,7 +87,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 
 
 	@Test(timeout = 30000)
-	public void testInfiniteScriptValidation() throws EngineException, DirectoryException, IOException {
+	public void testInfiniteScriptValidation() throws IOException {
 		String script = IOUtils.toString(new ClassPathResource("/validation/script_loop.py").getInputStream());
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script.py");
@@ -99,7 +96,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	}
 
 	@Test
-	public void testNormalScriptValidation() throws EngineException, DirectoryException, IOException {
+	public void testNormalScriptValidation() throws IOException {
 		String script = IOUtils.toString(new ClassPathResource("/validation/script_1time.py").getInputStream());
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script2.py");
@@ -110,7 +107,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	}
 
 	@Test
-	public void testScriptValidationWithSvnScript() throws EngineException, DirectoryException, IOException {
+	public void testScriptValidationWithSvnScript() throws IOException {
 		String script = IOUtils.toString(new ClassPathResource("/validation/script_1time.py").getInputStream());
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script2.py");
