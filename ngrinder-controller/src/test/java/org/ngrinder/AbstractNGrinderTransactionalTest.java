@@ -16,20 +16,24 @@ package org.ngrinder;
 import org.junit.Before;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.model.User;
+import org.ngrinder.starter.NGrinderControllerStarter;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -40,7 +44,7 @@ import javax.sql.DataSource;
  * @author Mavlarn
  */
 @ActiveProfiles("unit-test")
-@ContextConfiguration({"classpath:applicationContext.xml"})
+@SpringBootTest(classes = NGrinderControllerStarter.class)
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
 		ControllerConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
@@ -56,7 +60,9 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 
 	@Before
 	public void beforeSetSecurity() {
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
+		final List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority("A"));
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null, authorities);
 		SecurityContextImpl context = new SecurityContextImpl();
 		context.setAuthentication(token);
 		SecurityContextHolder.setContext(context);
@@ -93,5 +99,4 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 			LOG.error("error:", e);
 		}
 	}
-
 }

@@ -13,15 +13,12 @@
  */
 package org.ngrinder.perftest.service;
 
-import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -35,9 +32,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableAspectJAutoProxy
 public class MockPerfTestServiceConfig implements ApplicationContextAware {
-
-	@Autowired
-	private Config config;
 
 	private ApplicationContext applicationContext;
 
