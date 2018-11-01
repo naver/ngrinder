@@ -13,13 +13,15 @@
  */
 package org.ngrinder.user.service;
 
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.dao.SaltSource;
+import org.springframework.security.authentication.dao.ReflectionSaltSource;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -42,13 +44,16 @@ public class MockUserContext extends UserContext {
 	protected UserRepository userRepository;
 
 	@Autowired
-	private ShaPasswordEncoder passwordEncoder;
-
-	@Autowired
-	private SaltSource saltSource;
+	private Config config;
 
 	@PostConstruct
 	public void init() {
+		ReflectionSaltSource saltSource = new ReflectionSaltSource();
+		saltSource.setUserPropertyToUse("username");
+
+		boolean useEnhancedEncoding = config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256);
+		ShaPasswordEncoder passwordEncoder = useEnhancedEncoding ? new ShaPasswordEncoder(256) : new ShaPasswordEncoder();
+
 		User user = userRepository.findOneByUserId(TEST_USER_ID);
 		if (user == null) {
 			user = new User();

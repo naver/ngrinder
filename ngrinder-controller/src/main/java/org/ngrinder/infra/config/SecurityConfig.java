@@ -86,13 +86,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 *         returns default {@link ShaPasswordEncoder}
 	 */
 	@Bean(name = "shaPasswordEncoder")
-	public ShaPasswordEncoder sharPasswordEncoder() {
+	public ShaPasswordEncoder shaPasswordEncoder() {
 		boolean useEnhancedEncoding = config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256);
 		return useEnhancedEncoding ? new ShaPasswordEncoder(256) : new ShaPasswordEncoder();
 	}
 
 	@Bean
-	public SaltSource reflectionSaltSource(){
+	public SaltSource reflectionSaltSource() {
 		ReflectionSaltSource reflectionSaltSource = new ReflectionSaltSource();
 		reflectionSaltSource.setUserPropertyToUse("username");
 		return reflectionSaltSource;

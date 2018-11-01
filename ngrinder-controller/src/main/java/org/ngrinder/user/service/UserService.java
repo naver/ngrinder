@@ -33,6 +33,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,9 +67,11 @@ public class UserService extends AbstractUserService {
 	@Autowired
 	private FileEntryService scriptService;
 
+	@Lazy
 	@Autowired
 	private SaltSource saltSource;
 
+	@Lazy
 	@Autowired
 	private ShaPasswordEncoder passwordEncoder;
 
