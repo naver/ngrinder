@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.service;
 
-import junit.framework.Assert;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -24,8 +23,9 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.model.User;
+import org.ngrinder.packages.AgentPackageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
@@ -60,6 +60,10 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private LocalAgentService localAgentService;
+
+	@Autowired
+	@Qualifier("agentPackageHandler")
+	private AgentPackageHandler agentPackageHandler;
 
 	@Autowired
 	private Config config;
@@ -126,7 +130,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		URL[] urls = loader.getURLs();
 		URL[] allLib = cast(ArrayUtils.addAll(urls, ls));
 		URLClassLoader child = new URLClassLoader(allLib, this.getClass().getClassLoader());
-		File agentUpgrade = agentPackageService.createAgentPackage(child, null, null, 10000, null);
+		File agentUpgrade = agentPackageService.createPackage(agentPackageHandler, child, null, null, 10000, null);
 		FileUtils.deleteQuietly(agentUpgrade);
 	}
 

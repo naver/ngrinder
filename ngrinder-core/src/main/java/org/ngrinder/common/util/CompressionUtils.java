@@ -488,18 +488,17 @@ public abstract class CompressionUtils {
 	 * @param mode        mode for this entry
 	 * @throws IOException thrown when having IO problem.
 	 */
-	public static void addByteToTar(TarArchiveOutputStream tarStream, byte[] data, String path,
-									long size, int mode) throws IOException {
+	public static void addByteToTar(TarArchiveOutputStream tarArchiveOutputStream, byte[] data, String path, long size, int mode) throws IOException {
 		TarArchiveEntry entry = new TarArchiveEntry(path);
 		entry.setSize(size);
 		entry.setMode(mode);
 		try {
-			tarStream.putArchiveEntry(entry);
-			tarStream.write(data);
+			tarArchiveOutputStream.putArchiveEntry(entry);
+			tarArchiveOutputStream.write(data);
 		} catch (IOException e) {
 			throw processException("Error while adding File to Tar file", e);
 		} finally {
-			tarStream.closeArchiveEntry();
+			tarArchiveOutputStream.closeArchiveEntry();
 		}
 	}
 
