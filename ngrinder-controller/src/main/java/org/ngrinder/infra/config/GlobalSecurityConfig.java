@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class GlobalSecurityConfig extends GlobalMethodSecurityConfiguration {
 
 	@Override

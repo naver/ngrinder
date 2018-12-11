@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.Properties;
 
 @Configuration
-@EnableWebMvc
 @ComponentScan(
 	basePackages = {"org.ngrinder"},
 	useDefaultFilters = false,
@@ -40,7 +38,7 @@ import java.util.Properties;
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
-	LocaleChangeInterceptor localeChangeInterceptor;
+	private LocaleChangeInterceptor localeChangeInterceptor;
 
 	@Autowired
 	private ResourceProperties resourceProperties = new ResourceProperties();
