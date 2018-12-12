@@ -37,14 +37,20 @@ import java.util.Properties;
 )
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
+	@Value("${ngrinder.version}")
+	private String ngrinderVersion;
+
+	@Value("${server.multipart.max-upload-size}")
+	private int multipartMaxUploadSize;
+
+	@Value("${server.default-encoding}")
+	private String defaultEncoding;
+
 	@Autowired
 	private LocaleChangeInterceptor localeChangeInterceptor;
 
 	@Autowired
 	private ResourceProperties resourceProperties = new ResourceProperties();
-
-	@Value("${ngrinder.version}")
-	private String ngrinderVersion;
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -99,8 +105,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public MultipartResolver multipartResolver() {
 		CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
-		commonsMultipartResolver.setMaxUploadSize(50000000);
-		commonsMultipartResolver.setDefaultEncoding("utf-8");
+		commonsMultipartResolver.setMaxUploadSize(multipartMaxUploadSize);
+		commonsMultipartResolver.setDefaultEncoding(defaultEncoding);
 		return commonsMultipartResolver;
 	}
 
@@ -116,7 +122,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		properties.put("nGrinderVersion" , ngrinderVersion);
 		resolver.setExposeContextBeansAsAttributes(false);
 		resolver.setAttributes(properties);
-		resolver.setContentType("text/html; charset=UTF-8");
+		resolver.setContentType("text/html; charset=" + defaultEncoding);
 		resolver.setExposeSpringMacroHelpers(true);
 		resolver.setCache(false);
 		return resolver;
@@ -128,7 +134,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		FreeMarkerConfigurer configurer = new NGrinderFreeMarkerConfigure();
 		configurer.setTemplateLoaderPath("classpath:/templates/ftl/");
 		configurer.setPreferFileSystemAccess(false);
-		configurer.setDefaultEncoding("UTF-8");
+		configurer.setDefaultEncoding(defaultEncoding);
 		return configurer;
 	}
 
