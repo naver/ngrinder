@@ -47,14 +47,16 @@ public class PropertiesWrapper {
 
 	public boolean exist(String key) {
 		String value = this.properties.getProperty(key);
-		if (value == null) {
-			List<String> keys = propertiesKeyMapper.getKeys(key);
-			if (keys != null && !keys.isEmpty()) {
-				for (String each : keys) {
-					value = this.properties.getProperty(each);
-					if (value != null) {
-						return true;
-					}
+		if (value != null) {
+			return true;
+		}
+
+		List<String> keys = propertiesKeyMapper.getKeys(key);
+		if (keys != null && !keys.isEmpty()) {
+			for (String each : keys) {
+				value = this.properties.getProperty(each);
+				if (value != null) {
+					return true;
 				}
 			}
 		}
