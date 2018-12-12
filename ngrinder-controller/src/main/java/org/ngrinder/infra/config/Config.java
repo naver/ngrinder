@@ -71,6 +71,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon
  * @since 3.0
  */
+
 @Component
 public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants,
 		ApplicationListener<ContextRefreshedEvent> {
