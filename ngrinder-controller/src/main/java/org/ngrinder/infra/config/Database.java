@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Driver;
 
+import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
+
 /**
  * Database handler for supported databases.
  * <p/>
@@ -56,8 +58,8 @@ public enum Database {
 			if (databaseURL.startsWith("tcp://")) {
 				format = "jdbc:h2:" + databaseURL;
 			}
-			if (databaseProperties.exist("unit-test")) {
-				format = format + ";DB_CLOSE_ON_EXIT=FALSE";
+			if (databaseProperties.exist(PROP_DATABASE_UNIT_TEST)) {
+				format = format + ";LOCK_MODE=0";
 			}
 			dataSource.setUrl(format);
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
