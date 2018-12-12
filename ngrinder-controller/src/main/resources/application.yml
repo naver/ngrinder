@@ -2,8 +2,16 @@ ngrinder:
   version: 3.5.0-SNAPSHOT
 
 server:
+  default-encoding: UTF-8
   session:
     timeout: 10000
+  task:
+    scheduler:
+      pool-size: 100
+    async-executor:
+      pool-size: 10
+  multipart:
+    max-upload-size: 50000000
 
 spring:
   autoconfigure:
