@@ -54,7 +54,7 @@
 		var $domain = $("#domain_input");
 		var domainEmpty = checkEmptyByObj($domain);		
 		if (!domainEmpty) {
-			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,3}$";
+			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 			var str = $domain.val();
 			successDomain = checkStringFormat(str, rule);
 			if (successDomain) {
