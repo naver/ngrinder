@@ -13,18 +13,18 @@
  */
 package org.ngrinder.infra.init;
 
+import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
-import liquibase.database.core.H2ExTypeConverter;
+import liquibase.database.core.BooleanTypeEx;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.database.typeconversion.TypeConverterFactory;
+import liquibase.datatype.DataTypeFactory;
+import liquibase.datatype.core.BooleanType;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.ModifyDataTypeGenerator;
-import liquibase.sqlgenerator.core.RenameColumnGenerator;
+import liquibase.sqlgenerator.core.LockDatabaseChangeLogGenerator;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
@@ -73,17 +73,12 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	 */
 	@PostConstruct
 	public void init() throws Exception {
-		SqlGeneratorFactory.getInstance().register(new LockExDatabaseChangeLogGenerator());
-		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
-		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
+		SqlGeneratorFactory.getInstance().register(new LockDatabaseChangeLogGenerator());
+		DataTypeFactory.getInstance().register(BooleanTypeEx.class);
+		Liquibase liquibase = new Liquibase(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 				.getClassLoader()), getDatabase());
-		// previous RenameColumnGenerator don't support Cubrid,so remove it and add new Generator
-		SqlGeneratorFactory.getInstance().unregister(RenameColumnGenerator.class);
-		SqlGeneratorFactory.getInstance().register(new RenameColumnExGenerator());
-		SqlGeneratorFactory.getInstance().unregister(ModifyDataTypeGenerator.class);
-		SqlGeneratorFactory.getInstance().register(new ModifyDataTypeExGenerator());
 		try {
-			liquibase.update(null);
+			liquibase.update((String) null);
 		} catch (LiquibaseException e) {
 			throw processException("Exception occurs while Liquibase update DB", e);
 		}

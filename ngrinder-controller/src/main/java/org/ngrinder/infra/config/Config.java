@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -42,6 +43,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -52,11 +56,13 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLClassLoader;
 import java.util.Date;
 import java.util.Properties;
 
 import static net.grinder.util.NoOp.noOp;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -65,6 +71,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon
  * @since 3.0
  */
+
 @Component
 public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants,
 		ApplicationListener<ContextRefreshedEvent> {
@@ -94,7 +101,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private SpringContext context;
-	
+
 	@Autowired
 	private ApplicationContext appContext;
 
@@ -151,7 +158,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		updateCacheStatisticsSupports();
 	}
-	
+
 	protected void initDevModeProperties() {
 		if (!isDevMode()) {
 			initLogger(false);
@@ -162,7 +169,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE, "true");
 		}
 	}
-	
+
 	private void addChangeConfigListenerForStatistics() {
 		addSystemConfListener(new PropertyChangeListener() {
 			@Override
@@ -171,8 +178,11 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			}
 		});
 	}
-	
+
 	private void updateCacheStatisticsSupports() {
+		if (appContext == null) {
+			return;
+		}
 		CacheManager cacheManager = appContext.getBean("cacheManager", CacheManager.class);
 		boolean enableStatistics = isEnableStatistics();
 		for (String cacheName : cacheManager.getCacheNames()) {
@@ -274,28 +284,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	protected void setupLogger(boolean verbose) {
 		this.verbose = verbose;
 		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-		final JoranConfigurator configurator = new JoranConfigurator();
-		configurator.setContext(context);
-		context.reset();
-		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		File logbackConf = home.getSubFile("logback.xml");
-		try {
-			if (!logbackConf.exists()) {
-				logbackConf = new ClassPathResource("/logback/logback-ngrinder.xml").getFile();
-				if (exHome.exists() && isClustered()) {
-					context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
-					context.putProperty("SUFFIX", "_" + getRegion());
-				} else {
-					context.putProperty("SUFFIX", "");
-					context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
-				}
-			}
-			configurator.doConfigure(logbackConf);
-		} catch (JoranException e) {
-			CoreLogger.LOGGER.error(e.getMessage(), e);
-		} catch (IOException e) {
-			CoreLogger.LOGGER.error(e.getMessage(), e);
-		}
+		context.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(verbose ? Level.DEBUG : Level.INFO);
 	}
 
 	/**
@@ -305,7 +294,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
-		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile());
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		Resource[] resources = resolver.getResources("classpath*:ngrinder_home_template/*");
+		home.copyFrom(resources);
 	}
 
 	/**
@@ -327,6 +318,16 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			}
 			return new Home(tmpHome);
 		}
+
+		File homeDirectory = new File(getUserHome());
+		return new Home(homeDirectory);
+	}
+
+	public static String getCurrentLibPath() {
+		return ApplicationContext.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	}
+
+	public static String getUserHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
@@ -343,12 +344,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		} else if (StringUtils.startsWith(userHome, "." + File.separator)) {
 			userHome = System.getProperty("user.dir") + File.separator + userHome.substring(2);
 		}
-
-		userHome = FilenameUtils.normalize(userHome);
-		File homeDirectory = new File(userHome);
-		CoreLogger.LOGGER.info("nGrinder home directory:{}.", homeDirectory.getPath());
-
-		return new Home(homeDirectory);
+		return FilenameUtils.normalize(userHome);
 	}
 
 	/**
@@ -554,6 +550,15 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	}
 
 	/**
+	 * Get system security level from system properties.
+	 *
+	 * @return security level.
+	 */
+	public String getSecurityLevel() {
+		return getControllerProperties().getProperty(PROP_CONTROLLER_SECURITY_LEVEL, GRINDER_SECURITY_LEVEL_NORMAL);
+	}
+
+	/**
 	 * Check if it is the demo mode.
 	 *
 	 * @return true if demo mode is enabled.
@@ -731,7 +736,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	public long getInactiveClientTimeOut() {
 		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);
 	}
-	
+
 	public boolean isEnableStatistics() {
 		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_STATISTICS);
 	}

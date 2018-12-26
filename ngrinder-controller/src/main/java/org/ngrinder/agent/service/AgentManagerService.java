@@ -543,7 +543,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 				continue;
 			}
 			String fullRegion = agentInfo.getRegion();
-			if (fullRegion.equals(targetRegion) || fullRegion.equals(myOwnAgent)) {
+			if (StringUtils.equals(fullRegion, targetRegion) || StringUtils.equals(fullRegion, myOwnAgent)) {
 				readyAgentCnt++;
 			}
 		}

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.engine.agent;
 
@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -46,7 +48,12 @@ import static org.ngrinder.common.util.NoOp.noOp;
  */
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
-	public static final int DEFAULT_TIMEOUT = 100;
+	private static final int DEFAULT_TIMEOUT = 100;
+	private File requiredLibraryDirectory;
+
+	public LocalScriptTestDriveService(File requiredLibraryDirectory) {
+		this.requiredLibraryDirectory = requiredLibraryDirectory;
+	}
 
 	/**
 	 * Validate script with 100 sec timeout.
@@ -59,8 +66,8 @@ public class LocalScriptTestDriveService {
 	 * @return File which stores validation result.
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-	                       String hostString) {
-		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, getDefaultTimeout());
+						   String securityLevel, String hostString) {
+		return doValidate(base, script, eventSynchronisation, securityEnabled, securityLevel, hostString, getDefaultTimeout());
 	}
 
 	protected int getDefaultTimeout() {
@@ -80,7 +87,7 @@ public class LocalScriptTestDriveService {
 	 */
 	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-	                       String hostString, final int timeout) {
+						   String securityLevel, String hostString, final int timeout) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -94,23 +101,30 @@ public class LocalScriptTestDriveService {
 			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
-			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
-					NetworkUtils.getLocalHostName());
+			PropertyBuilder builder = new ValidationPropertyBuilder(properties, new Directory(base), securityEnabled, securityLevel, hostString,
+				NetworkUtils.getLocalHostName());
 			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
 			properties.setBoolean("grinder.script.validation", true);
-			String grinderJVMClassPath = classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
-					+ File.pathSeparator + classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER)
-					+ File.pathSeparator + builder.buildCustomClassPath(true);
-			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
-			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);
+			String grinderJVMClassPath = getHomeLibraryPath(classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER))
+				+ File.pathSeparator + getHomeLibraryPath(classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER))
+				+ File.pathSeparator + builder.buildCustomClassPath(true);
+			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath = grinderJVMClassPath.replace(";;", ";"));
+			LOGGER.info("grinder.jvm.classpath : {} ", grinderJVMClassPath);
 			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
 			agentIdentity.setNumber(0);
 			String newClassPath = classPathProcessor.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("validation class path " + newClassPath);
 			Properties systemProperties = new Properties();
-			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
+
+			String path;
+			if (isRunningOnWas()) {
+				path = getHomeLibraryPath(newClassPath);
+			} else {
+				path = runtimeClassPath() + newClassPath;
+			}
+			systemProperties.put("java.class.path", path);
 
 			Directory workingDirectory = new Directory(base);
 			String buildJVMArgumentWithoutMemory = builder.buildJVMArgumentWithoutMemory();
@@ -209,5 +223,27 @@ public class LocalScriptTestDriveService {
 		} finally {
 			IOUtils.closeQuietly(fileWriter);
 		}
+	}
+
+	private String getHomeLibraryPath(String classPath) {
+		StringBuilder homeLibraryPath = new StringBuilder();
+		for (String path : classPath.split(File.pathSeparator)) {
+			homeLibraryPath.append(requiredLibraryDirectory.getAbsolutePath()).append(File.separator).append(FilenameUtils.getName(path)).append(File.pathSeparator);
+		}
+		return homeLibraryPath.toString();
+	}
+
+	private boolean isRunningOnWas() {
+		return ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()[0].getProtocol().equals("jar");
+	}
+
+	private String runtimeClassPath() {
+		StringBuilder runtimeClassPath = new StringBuilder();
+		for (URL url : ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()) {
+			if (url.getPath().contains("ngrinder-runtime") || url.getPath().contains("ngrinder-groovy")) {
+				runtimeClassPath.append(url.getFile()).append(File.pathSeparator);
+			}
+		}
+		return runtimeClassPath.toString();
 	}
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,13 +9,12 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
 import org.apache.commons.io.FilenameUtils;
@@ -25,6 +24,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
@@ -44,6 +44,7 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -80,6 +81,7 @@ import static org.ngrinder.common.util.Preconditions.*;
  * @author JunHo Yoon
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
+@Profile("production")
 @Controller
 @RequestMapping("/perftest")
 public class PerfTestController extends BaseController {
@@ -137,11 +139,11 @@ public class PerfTestController extends BaseController {
 	                     @PageableDefault(page = 0, size = 10) Pageable pageable, ModelMap model) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
 						defaultIfNull(pageable.getSort(),
-						new Sort(Direction.DESC, "lastModifiedDate")));
+						new Sort(Direction.DESC, "id")));
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		if (tests.getNumberOfElements() == 0) {
 			pageable = new PageRequest(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(),
-							new Sort(Direction.DESC, "lastModifiedDate")));
+							new Sort(Direction.DESC, "id")));
 			tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		}
 		annotateDateMarker(tests);
@@ -250,7 +252,9 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
+		if (getConfig().isSecurityEnabled()) {
+			model.addAttribute(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
+		}
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
 				getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
@@ -368,7 +372,7 @@ public class PerfTestController extends BaseController {
 
 		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 				"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
-		if (getConfig().isSecurityEnabled()) {
+		if (getConfig().isSecurityEnabled() && GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL.equals(getConfig().getSecurityLevel())) {
 			checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
 					"targetHosts should be provided when security mode is enabled");
 		}

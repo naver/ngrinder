@@ -6,10 +6,9 @@ import net.grinder.util.NetworkUtils;
 import net.grinder.util.Pair;
 import org.junit.Assume;
 import org.junit.Test;
+import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.logger.CoreLogger;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -35,9 +34,12 @@ public class DynamicCacheConfigTest {
 		};
 		// If
 		Config config = mock(Config.class);
+		PropertiesWrapper propertiesWrapper = mock(PropertiesWrapper.class);
 		String address1 = removeScopedMarkerFromIP(DEFAULT_LOCAL_ADDRESSES.get(0).getHostAddress());
+		when(propertiesWrapper.getProperty(ClusterConstants.PROP_CLUSTER_MODE)).thenReturn("advanced");
 		when(config.getClusterURIs()).thenReturn(new String[]{address1, "210.10.10.1"});
 		when(config.isClustered()).thenReturn(true);
+		when(config.getClusterProperties()).thenReturn(propertiesWrapper);
 		dynamicCacheConfig.setConfig(config);
 		Pair<NetworkUtils.IPPortPair, String> cacheProperties = dynamicCacheConfig.createManualDiscoveryCacheProperties(newArrayList("hello", "world"));
 		NetworkUtils.IPPortPair first = cacheProperties.getFirst();

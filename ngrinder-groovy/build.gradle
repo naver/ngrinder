@@ -1,0 +1,20 @@
+description = "ngrinder-groovy"
+
+configurations {
+    testAgent {
+        transitive = false
+    }
+}
+
+dependencies {
+    compile (project(":ngrinder-runtime"))
+    compile (group: "org.codehaus.groovy", name: "groovy-all", version:"2.2.1")
+
+    testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
+
+    testAgent (group: "net.sf.grinder", name: "grinder-dcr-agent", version: "3.9.1")
+}
+
+test {
+    jvmArgs "-javaagent:${configurations.testAgent.singleFile}"
+}

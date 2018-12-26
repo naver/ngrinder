@@ -13,25 +13,20 @@
  */
 package org.ngrinder.security;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Class description.
@@ -46,9 +41,6 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
     @Autowired
     private NGrinderUserDetailsService userDetailService;
 
-    @Autowired
-    private ShaPasswordEncoder passwordEncoder;
-
     @Test
     public void testAdditionalAuthenticationChecks() {
         UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
@@ -59,12 +51,12 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
         SecurityContextHolder.setContext(context);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
-        try {
-            provider.additionalAuthenticationChecks(user, token);
-            assertTrue(false);
-        } catch (BadCredentialsException e) {
-            assertTrue(true);
-        }
+
+		try {
+			provider.additionalAuthenticationChecks(user, token);
+			fail();
+		} catch (BadCredentialsException ignored) {
+		}
 
         token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
         provider.additionalAuthenticationChecks(user, token);
@@ -72,26 +64,15 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
         context.setAuthentication(oriAuth);
     }
 
-    @Test
-    public void testSetPasswordEncoder() {
-        PlaintextPasswordEncoder plaintextPasswordEncoder = new PlaintextPasswordEncoder();
-        provider.setPasswordEncoder(plaintextPasswordEncoder);
-
-        org.springframework.security.crypto.password.PasswordEncoder enc2 = new StandardPasswordEncoder();
-        provider.setPasswordEncoder(enc2);
-
-        provider.setPasswordEncoder(passwordEncoder);
-    }
-
-    @Test
-    public void testAddNewUserIntoLocal() {
-        SecuredUser secUser = new SecuredUser(getTestUser(), null);
-        provider.addNewUserIntoLocal(secUser);
-        assertThat(secUser.getUser(), is(getTestUser()));
-
-        User tmpUser = new User("tmpUserId", "tmpName", "123", "test.nhn.com", Role.USER);
-        SecuredUser tmpSecUser = new SecuredUser(tmpUser, null);
-        provider.addNewUserIntoLocal(tmpSecUser);
-        assertThat(tmpSecUser.getUser(), is(tmpUser));
-    }
+	@Test
+	public void testAddNewUserIntoLocal() {
+		User user = User.createNew();
+		user.setEmail("aaa@hello.com");
+		user.setUserId("new_user");
+		user.setPassword("new_user");
+		user.setUserName("new_user");
+		provider.addNewUserIntoLocal(new SecuredUser(user, null));
+		UserDetails userDetails = userDetailService.loadUserByUsername(user.getUserId());
+		assertThat(userDetails.getUsername(), equalTo(user.getUserId()));
+	}
 }

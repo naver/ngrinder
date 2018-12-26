@@ -38,6 +38,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  */
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
+	@Autowired
 	private UserContext userContext;
 
 	@Autowired

@@ -2,6 +2,7 @@ controller.verbose,false,verbose
 controller.dev_mode,false,testmode
 controller.demo_mode,false,demo
 controller.security,false,security
+controller.security.level,normal,
 controller.user_password_sha256,false,ngrinder.security.sha256
 controller.usage_report,true,usage.report
 controller.plugin_support,true,pluginsupport

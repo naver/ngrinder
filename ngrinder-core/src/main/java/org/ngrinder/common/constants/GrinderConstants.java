@@ -41,8 +41,11 @@ public interface GrinderConstants {
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 	public static final String GRINDER_PROP_IGNORE_SAMPLE_COUNT = "grinder.ignoreSampleCount";
 	public static final String GRINDER_PROP_SECURITY = "grinder.security";
+	public static final String GRINDER_PROP_SECURITY_LEVEL = "grinder.security.level";
 	public static final String GRINDER_PROP_USER = "grinder.user";
 	public static final String GRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
+	public static final String GRINDER_SECURITY_LEVEL_LIGHT = "light";
+	public static final String GRINDER_SECURITY_LEVEL_NORMAL = "normal";
 	public static final String DEFAULT_GRINDER_PROPERTIES = "grinder.properties";
 
 }
