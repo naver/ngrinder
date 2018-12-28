@@ -26,6 +26,7 @@ public interface CacheConstants {
 	String CACHE_USERS = "users";
 	String CACHE_FILE_ENTRIES = "file_entries";
 
+	String CACHE_USER_ENTITY = "org.ngrinder.model.User";
 	String CACHE_RIGHT_PANEL_ENTRIES = "right_panel_entries";
 	String CACHE_LEFT_PANEL_ENTRIES = "left_panel_entries";
 	String CACHE_CURRENT_PERFTEST_STATISTICS = "current_perftest_statistics";
