@@ -18,6 +18,8 @@ import org.ngrinder.agent.service.ClusteredAgentManagerService;
 
 import java.io.Serializable;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 /**
  * Agent control request b/w controllers in the clustered nGrinder installation.
  *
@@ -53,6 +55,7 @@ public class ClusteredAgentRequest implements Serializable {
 			@Override
 			public void process(ClusteredAgentManagerService agentManagerService,
 			                    AgentControllerIdentityImplementation agentIdentity) {
+				noOp();
 			}
 
 		},
@@ -61,13 +64,6 @@ public class ClusteredAgentRequest implements Serializable {
 			public void process(ClusteredAgentManagerService agentManagerService,
 								AgentControllerIdentityImplementation agentIdentity) {
 				agentManagerService.updateAgent(agentIdentity);
-			}
-		},
-		SHARE_AGENT_SYSTEM_DATA_MODEL {
-			@Override
-			public void process(ClusteredAgentManagerService agentManagerService,
-								AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.addAgentMonitoringTarget(agentIdentity);
 			}
 		};
 
