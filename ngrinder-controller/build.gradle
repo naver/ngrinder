@@ -57,6 +57,8 @@ dependencies {
         exclude (module: "slf4j-log4j12")
     }
     compile (group: "org.reflections", name: "reflections", version: "0.9.9")
+    compile (group: "com.hazelcast", name: "hazelcast", version: hazelcast_version)
+    compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
 
     providedRuntime (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springboot_version)
 
