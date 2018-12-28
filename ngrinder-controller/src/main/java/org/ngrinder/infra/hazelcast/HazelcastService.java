@@ -22,7 +22,6 @@ import java.util.concurrent.Future;
 
 import static org.ngrinder.common.constant.CacheConstants.REGION_ATTR_KEY;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber.TOPIC_NAME;
 
 /**
  * For support data clustering using hazelcast instance.
@@ -75,8 +74,8 @@ public class HazelcastService {
 		return results;
 	}
 
-	public void publish(TopicEvent event) {
-		hazelcastInstance.getTopic(TOPIC_NAME).publish(event);
+	public void publish(String topic, TopicEvent event) {
+		hazelcastInstance.getTopic(topic).publish(event);
 	}
 
 	public void put(String map, Object key, Object value) {

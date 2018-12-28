@@ -131,9 +131,10 @@ public interface IAgentManagerService {
 	 *
 	 * @param ip   agent ip.
 	 * @param name agent name
+	 * @param region region name
 	 * @return {@link SystemDataModel} instance.
 	 */
-	public abstract SystemDataModel getSystemDataModel(String ip, String name);
+	public abstract SystemDataModel getSystemDataModel(String ip, String name, String region);
 
 	/**
 	 * Update agent
