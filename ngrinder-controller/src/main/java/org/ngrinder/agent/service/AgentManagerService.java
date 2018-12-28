@@ -146,7 +146,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		}
 	}
 
-	public String extractRegionFromAgentRegion(String agentRegion) {
+	public String extractRegionKey(String agentRegion) {
 		if (agentRegion != null && agentRegion.contains("_owned_")) {
 			return agentRegion.substring(0, agentRegion.indexOf("_owned_"));
 		}
@@ -440,7 +440,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (java.lang.String, java.lang.String)
 	 */
 	@Override
-	public SystemDataModel getSystemDataModel(String ip, String name) {
+	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
 		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(ip, name);
 		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();
 	}
@@ -531,7 +531,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * Ready agent state count return
 	 *
 	 * @param user The login user
-	 * @param String targetRegion The name of target region
+	 * @param targetRegion targetRegion The name of target region
 	 * @return ready Agent count
 	 */
 	@Override
