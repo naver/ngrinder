@@ -110,20 +110,22 @@ public class StatisticsController extends BaseController implements ControllerCo
 	 * @return Ehcache statistics list, group by cacheName
 	 */
 	private List<Map<String, Object>> getEhcacheStat() {
-		List<Map<String, Object>> stats = new LinkedList<Map<String, Object>>();
+		List<Map<String, Object>> stats = new LinkedList<>();
 		for (String cacheName : cacheManager.getCacheNames()) {
 			Cache cache = cacheManager.getCache(cacheName);
-			net.sf.ehcache.Cache ehcache = (net.sf.ehcache.Cache) cache.getNativeCache();
-			Statistics statistics = ehcache.getStatistics();
-			
-			Map<String, Object> stat = new HashMap<String, Object>();
-			stat.put("cacheName", cacheName);
-			stat.put("size", statistics.getObjectCount());
-			stat.put("heap", statistics.getMemoryStoreObjectCount());
-			stat.put("hit", statistics.getCacheHits());
-			stat.put("miss", statistics.getCacheMisses());
+			if (cache.getNativeCache() instanceof net.sf.ehcache.Cache) {
+				net.sf.ehcache.Cache ehcache = (net.sf.ehcache.Cache) cache.getNativeCache();
+				Statistics statistics = ehcache.getStatistics();
 
-			stats.add(stat);
+				Map<String, Object> stat = new HashMap<>();
+				stat.put("cacheName", cacheName);
+				stat.put("size", statistics.getObjectCount());
+				stat.put("heap", statistics.getMemoryStoreObjectCount());
+				stat.put("hit", statistics.getCacheHits());
+				stat.put("miss", statistics.getCacheMisses());
+
+				stats.add(stat);
+			}
 		}
 		return stats;
 	}

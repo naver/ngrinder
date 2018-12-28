@@ -46,7 +46,7 @@ dependencies {
     compile (group: "org.apache.maven.wagon", name: "wagon-provider-api", version: "2.8")
 
     compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")
-    compile (group: "org.hibernate", name: "hibernate-ehcache", version: "5.0.11.Final")
+    compile (group: "org.hibernate", name: "hibernate-ehcache", version: hibernate_version)
     compile (group: "mysql", name: "mysql-connector-java", version: "5.1.33")
     compile (group: "commons-httpclient", name: "commons-httpclient", version: "3.1")
     compile (group: "com.h2database", name: "h2", version: "1.3.168")

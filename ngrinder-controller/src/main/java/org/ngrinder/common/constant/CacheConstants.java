@@ -25,6 +25,7 @@ public interface CacheConstants {
 
 	String CACHE_USERS = "users";
 	String CACHE_FILE_ENTRIES = "file_entries";
+
 	String CACHE_RIGHT_PANEL_ENTRIES = "right_panel_entries";
 	String CACHE_LEFT_PANEL_ENTRIES = "left_panel_entries";
 	String CACHE_CURRENT_PERFTEST_STATISTICS = "current_perftest_statistics";
@@ -35,6 +36,7 @@ public interface CacheConstants {
 	String AGENT_EXECUTOR_SERVICE_NAME = "agent_executor";
 
 	String AGENT_TOPIC_NAME = "agent_topic";
+	String AGENT_TOPIC_LISTENER_NAME = "agent_topic_listener";
 
 	int REGION_CACHE_TIME_TO_LIVE_SECONDS = 20;
 }

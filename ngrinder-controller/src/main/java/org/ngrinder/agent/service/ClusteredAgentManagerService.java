@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.service;
 
@@ -24,8 +24,11 @@ import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.ClusteredAgentRequest;
-import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.infra.schedule.ScheduledTaskService;
+import org.ngrinder.agent.model.ClusteredAgentRequest.RequestType;
+import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
+import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
+import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -35,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.CacheManager;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -47,9 +48,9 @@ import java.util.Set;
 import static net.grinder.message.console.AgentControllerState.INACTIVE;
 import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.ready;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.*;
+import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_LISTENER_NAME;
+import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_NAME;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -60,16 +61,16 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @author JunHo Yoon
  * @since 3.1
  */
-public class ClusteredAgentManagerService extends AgentManagerService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteredAgentManagerService.class);
-
-	@Autowired
-	CacheManager cacheManager;
-
-	private Cache agentRequestCache;
+public class ClusteredAgentManagerService extends AgentManagerService implements TopicListener<ClusteredAgentRequest> {
+	private final Logger LOGGER = LoggerFactory.getLogger(ClusteredAgentManagerService.class);
 
 	private Cache agentMonitoringTargetsCache;
 
+	@Autowired
+	private TopicSubscriber topicSubscriber;
+
+	@Autowired
+	private HazelcastService hazelcastService;
 
 	@Autowired
 	private RegionService regionService;
@@ -80,40 +81,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	@PostConstruct
 	public void init() {
 		super.init();
-		agentMonitoringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
 		if (getConfig().isClustered()) {
-			agentRequestCache = cacheManager.getCache("agent_request");
-			scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
-				@Override
-				public void run() {
-					List<String> keys = cast(((Ehcache) agentRequestCache.getNativeCache())
-							.getKeysWithExpiryCheck());
-					String region = getConfig().getRegion() + "|";
-					for (String each : keys) {
-						if (each.startsWith(region)) {
-							if (agentRequestCache.get(each) != null) {
-								try {
-									ClusteredAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
-									if (agentRequest.getRequestType() ==
-											ClusteredAgentRequest.RequestType.EXPIRE_LOCAL_CACHE) {
-										expireLocalCache();
-									} else {
-										AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(
-												agentRequest.getAgentIp(), agentRequest.getAgentName());
-										if (agentIdentity != null) {
-											agentRequest.getRequestType().process(ClusteredAgentManagerService.this,
-													agentIdentity);
-										}
-									}
-									agentRequestCache.evict(each);
-								} catch (Exception e) {
-									CoreLogger.LOGGER.error(e.getMessage(), e);
-								}
-							}
-						}
-					}
-				}
-			}, 3000);
+			topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
 		}
 	}
 
@@ -246,7 +215,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public List<AgentInfo> getAllVisible() {
 		return filterOnlyActiveRegion(agentManagerRepository.findAll(visible()));
 	}
-	
+
 	/**
 	 * All ready state agent return
 	 */
@@ -265,7 +234,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					}
 				}));
 	}
-
 
 	/**
 	 * Get the available agent count map in all regions of the user, including
@@ -293,7 +261,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			}
 
 			String fullRegion = agentInfo.getRegion();
-			String region = extractRegionFromAgentRegion(fullRegion);
+			String region = extractRegionKey(fullRegion);
 			if (StringUtils.isBlank(region) || !regions.contains(region)) {
 				continue;
 			}
@@ -321,9 +289,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	protected boolean isCurrentRegion(AgentControllerIdentityImplementation agentIdentity) {
-		return StringUtils.equals(extractRegionFromAgentRegion(agentIdentity.getRegion()), getConfig().getRegion());
+		return StringUtils.equals(extractRegionKey(agentIdentity.getRegion()), getConfig().getRegion());
 	}
-
 
 	private void incrementAgentCount(Map<String, MutableInt> agentMap, String region, String userId) {
 		if (!agentMap.containsKey(region)) {
@@ -337,8 +304,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public AgentInfo approve(Long id, boolean approve) {
 		AgentInfo agent = super.approve(id, approve);
 		if (agent != null) {
-			agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
-					new ClusteredAgentRequest(agent.getIp(), agent.getName(), EXPIRE_LOCAL_CACHE));
+			publishTopic(agent, EXPIRE_LOCAL_CACHE);
 		}
 		return agent;
 	}
@@ -355,34 +321,16 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
-				new ClusteredAgentRequest(agent.getIp(), agent.getName(), STOP_AGENT));
+		publishTopic(agent, STOP_AGENT);
 	}
 
 	/**
-	 * Add the agent system data model share request on cache.
-	 *
-	 * @param id agent id in db.
-	 */
-	@Override
-	public void requestShareAgentSystemDataModel(Long id) {
-		AgentInfo agent = getOne(id);
-		if (agent == null) {
-			return;
-		}
-		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
-				new ClusteredAgentRequest(agent.getIp(), agent.getName(), SHARE_AGENT_SYSTEM_DATA_MODEL));
-	}
-
-	/**
-	 * Get the agent system data model for the given IP. This method is cluster
-	 * aware.
+	 * Get the agent system data model for the given IP. This method is cluster aware.
 	 *
 	 * @param ip   agent ip
 	 * @param name agent name
 	 * @return {@link SystemDataModel} instance.
 	 */
-	@Override
 	public SystemDataModel getSystemDataModel(String ip, String name) {
 		AgentInfo found = agentManagerRepository.findByIpAndHostName(ip, name);
 		String systemStat = (found == null) ? null : found.getSystemStat();
@@ -420,8 +368,12 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createKey(agent),
-				new ClusteredAgentRequest(agent.getIp(), agent.getName(), UPDATE_AGENT));
+		publishTopic(agent, UPDATE_AGENT);
+	}
+
+	private void publishTopic(AgentInfo agent, RequestType requestType) {
+		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(AGENT_TOPIC_LISTENER_NAME,
+			extractRegionKey(agent.getRegion()), new ClusteredAgentRequest(agent.getIp(), agent.getName(), requestType)));
 	}
 
 	/**
@@ -432,8 +384,24 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		super.cleanup();
 		final Set<String> regions = getRegions();
 		for (AgentInfo each : agentManagerRepository.findAll()) {
-			if (!regions.contains(extractRegionFromAgentRegion(each.getRegion()))) {
+			if (!regions.contains(extractRegionKey(each.getRegion()))) {
 				agentManagerRepository.delete(each);
+			}
+		}
+	}
+
+	@Override
+	public void execute(TopicEvent<ClusteredAgentRequest> event) {
+		ClusteredAgentRequest agentRequest = event.getData();
+		if (agentRequest.getRequestType().equals(EXPIRE_LOCAL_CACHE)) {
+			expireLocalCache();
+			return;
+		}
+
+		if (event.getKey().equals(getConfig().getRegion())) {
+			AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(agentRequest.getAgentIp(), agentRequest.getAgentName());
+			if (agentIdentity != null) {
+				agentRequest.getRequestType().process(ClusteredAgentManagerService.this, agentIdentity);
 			}
 		}
 	}

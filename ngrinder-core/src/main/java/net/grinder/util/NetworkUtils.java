@@ -16,6 +16,7 @@ package net.grinder.util;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.python.google.common.net.InetAddresses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -484,6 +485,29 @@ public abstract class NetworkUtils {
 			LOGGER.error("Error while resolving non look back local addresses.", e);
 		}
 		return addresses;
+	}
+
+	public static String selectLocalIp(List<String> ips) {
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface iface = interfaces.nextElement();
+				if (iface.isLoopback() || !iface.isUp())
+					continue;
+
+				Enumeration<InetAddress> addresses = iface.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					InetAddress addr = addresses.nextElement();
+					String hostAddress = addr.getHostAddress();
+					if (ips.contains(hostAddress)) {
+						return hostAddress;
+					}
+				}
+			}
+		} catch (SocketException e) {
+			throw new NGrinderRuntimeException("error while resolving current ip", e);
+		}
+		throw new NGrinderRuntimeException("the ip address set doesn't contain current ips");
 	}
 
 	public static List<String> getDnsServers() throws NamingException {
