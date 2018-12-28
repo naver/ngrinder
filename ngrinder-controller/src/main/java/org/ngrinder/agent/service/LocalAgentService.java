@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_LOCAL_AGENTS;
 
 @Component
 public class LocalAgentService {
@@ -50,7 +51,7 @@ public class LocalAgentService {
 		region = config.getRegion();
 	}
 
-	@Cacheable("local_agents")
+	@Cacheable(CACHE_LOCAL_AGENTS)
 	public List<AgentInfo> getLocalAgents() {
 		LOGGER.debug("Local Cache is Updated.");
 		if (clustered) {
@@ -86,7 +87,7 @@ public class LocalAgentService {
 		runnable.run();
 	}
 
-	@CacheEvict("local_agents")
+	@CacheEvict(CACHE_LOCAL_AGENTS)
 	public void expireCache() {
 
 	}
