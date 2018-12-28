@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -171,7 +170,7 @@ public class BaseController implements WebConstants {
 
 
 	@ModelAttribute("visibleRegions")
-	public ArrayList<String> availRegions() {
+	public List<String> availRegions() {
 		return regionService.getAllVisibleRegionNames();
 	}
 

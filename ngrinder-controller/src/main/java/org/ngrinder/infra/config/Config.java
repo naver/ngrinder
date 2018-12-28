@@ -187,7 +187,9 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		boolean enableStatistics = isEnableStatistics();
 		for (String cacheName : cacheManager.getCacheNames()) {
 			Cache cache = cacheManager.getCache(cacheName);
-			((net.sf.ehcache.Cache) cache.getNativeCache()).setStatisticsEnabled(enableStatistics);
+			if (cache.getNativeCache() instanceof net.sf.ehcache.Cache) {
+				((net.sf.ehcache.Cache) cache.getNativeCache()).setStatisticsEnabled(enableStatistics);
+			}
 		}
 	}
 
