@@ -167,17 +167,17 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the current performance of the given agent.
 	 *
-	 * @param id   agent id
-	 * @param ip   agent ip
+	 * @param ip agent ip
 	 * @param name agent name
+	 * @param region agent region
+	 *
 	 * @return json message
 	 */
 
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/api/{id}/state")
-	public HttpEntity<String> getState(@PathVariable Long id, @RequestParam String ip, @RequestParam String name) {
-		agentManagerService.requestShareAgentSystemDataModel(id);
-		return toJsonHttpEntity(agentManagerService.getSystemDataModel(ip, name));
+	@RequestMapping("/api/state")
+	public HttpEntity<String> getState(@RequestParam String ip, @RequestParam String name, @RequestParam String region) {
+		return toJsonHttpEntity(agentManagerService.getSystemDataModel(ip, name, region));
 	}
 
 	/**

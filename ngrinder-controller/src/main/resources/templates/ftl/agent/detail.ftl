@@ -129,8 +129,8 @@
     });
 
     function getState() {
-        var ajaxObj = new AjaxObj("/agent/api/{agentId}/state");
-        ajaxObj.params = { 'ip': '${(agent.ip)!}', 'name': '${(agent.hostName)!}', 'imgWidth': 700, agentId:${agent.id} };
+        var ajaxObj = new AjaxObj("/agent/api/state");
+        ajaxObj.params = { 'ip': '${(agent.ip)!}', 'name': '${(agent.hostName)!}', 'region': '${(agent.region)!}', 'imgWidth': 700, };
         ajaxObj.success = function (res) {
             cpuUsage.enQueue(res.cpuUsedPercentage);
             memoryUsage.enQueue(res.totalMemory - res.freeMemory);
@@ -140,7 +140,7 @@
         };
 		ajaxObj.error = function() {
 			window.clearInterval(timer)
-		}
+		};
         ajaxObj.call();
     }
 
