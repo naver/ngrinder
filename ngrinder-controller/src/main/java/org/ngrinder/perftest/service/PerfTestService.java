@@ -67,6 +67,7 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constants.MonitorConstants.MONITOR_FILE_PREFIX;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.*;
@@ -1060,7 +1061,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 *
 	 * @return PerfTestStatisticsList PerfTestStatistics list
 	 */
-	@Cacheable("current_perftest_statistics")
+	@Cacheable(CACHE_CURRENT_PERFTEST_STATISTICS)
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();
@@ -1161,7 +1162,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			}
 			json = gson.toJson(systemInfo);
 		}
-		perfTestRepository.updatetMonitorStatus(perfTestId, json);
+		hazelcastService.put(CACHE_MONITORING , perfTestId , json);
 	}
 
 	/**
