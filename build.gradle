@@ -36,6 +36,7 @@ subprojects {
     springboot_version = "1.4.1.RELEASE"
     svnkit_version = "1.8.3-scm1"
     hibernate_version = "5.0.11.Final"
+    hazelcast_version = "3.11.1"
   }
 
   repositories {
