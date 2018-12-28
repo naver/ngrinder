@@ -30,9 +30,11 @@ import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.*;
+import org.ngrinder.perftest.model.SamplingModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -68,6 +70,8 @@ import java.util.*;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_MONITORING;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_SAMPLING;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -110,16 +114,17 @@ public class PerfTestController extends BaseController {
 	@Autowired
 	private RegionService regionService;
 
-	private Gson fileEntryGson;
+	@Autowired
+	private HazelcastService hazelcastService;
+
+	private Gson gson;
 
 	/**
 	 * Initialize.
 	 */
 	@PostConstruct
 	public void init() {
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer());
-		fileEntryGson = gsonBuilder.create();
+		gson = new GsonBuilder().registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer()).create();
 	}
 
 	/**
@@ -612,10 +617,19 @@ public class PerfTestController extends BaseController {
 	public HttpEntity<String> refreshTestRunning(User user, @PathVariable("id") long id) {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
 		Map<String, Object> map = newHashMap();
+
+		SamplingModel samplingModel = hazelcastService.get(CACHE_SAMPLING, test.getId());
+		if (samplingModel != null) {
+			map.put("perf", gson.fromJson(samplingModel.getRunningSample(), HashMap.class));
+			map.put("agent", gson.fromJson(samplingModel.getAgentState(), HashMap.class));
+		}
+
+		String monitoringJson = hazelcastService.get(CACHE_MONITORING, test.getId());
+		if (monitoringJson != null) {
+			map.put("monitor", gson.fromJson(monitoringJson, HashMap.class));
+		}
+
 		map.put("status", test.getStatus());
-		map.put("perf", perfTestService.getStatistics(test));
-		map.put("agent", perfTestService.getAgentStat(test));
-		map.put("monitor", perfTestService.getMonitorStat(test));
 		return toJsonHttpEntity(map);
 	}
 
@@ -736,7 +750,7 @@ public class PerfTestController extends BaseController {
 						return input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT;
 					}
 				}));
-		return toJsonHttpEntity(scripts, fileEntryGson);
+		return toJsonHttpEntity(scripts, gson);
 	}
 
 

@@ -38,10 +38,12 @@ import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.*;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
+import org.ngrinder.perftest.model.SamplingModel;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.script.handler.NullScriptHandler;
 import org.ngrinder.script.handler.ProcessingResultPrintStream;
@@ -115,6 +117,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
+
+	@Autowired
+	private HazelcastService hazelcastService;
 
 	/**
 	 * Get {@link PerfTest} list for the given user.
@@ -282,20 +287,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		}
 		return StringUtils.join(tagStringResult, ",");
 	}
-
-	/**
-	 * Update runtime statistics on {@link PerfTest} having the given id.
-	 *
-	 * @param id            id of {@link PerfTest}
-	 * @param runningSample runningSample json string
-	 * @param agentState    agentState json string
-	 */
-	@Transactional
-	public void updateRuntimeStatistics(Long id, String runningSample, String agentState) {
-		perfTestRepository.updateRuntimeStatistics(id, runningSample, agentState);
-		perfTestRepository.flush();
-	}
-
 
 	/**
 	 * Mark test error on {@link PerfTest} instance.
@@ -816,7 +807,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		String runningSample = getProperSizeRunningSample(singleConsole);
 		String agentState = getProperSizedStatusString(singleConsole);
-		updateRuntimeStatistics(perfTestId, runningSample, agentState);
+		hazelcastService.put(CACHE_SAMPLING, perfTestId, new SamplingModel(runningSample, agentState));
 	}
 
 	private String getProperSizeRunningSample(SingleConsole singleConsole) {
