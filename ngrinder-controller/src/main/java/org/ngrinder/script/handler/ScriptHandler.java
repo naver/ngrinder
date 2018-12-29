@@ -285,9 +285,8 @@ public abstract class ScriptHandler implements ControllerConstants {
 	public String getScriptTemplate(Map<String, Object> values) {
 		try {
 			Configuration freemarkerConfig = new Configuration();
-			ClassPathResource cpr = new ClassPathResource("script_template");
-			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+			freemarkerConfig.setClassForTemplateLoading(this.getClass() , "/script_template");
 			Template template = freemarkerConfig.getTemplate("basic_template_" + getExtension() + ".ftl");
 			StringWriter writer = new StringWriter();
 			template.process(values, writer);

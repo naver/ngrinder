@@ -1,0 +1,36 @@
+rootProject.name = 'ngrinder'
+
+import static groovy.io.FileVisitResult.*
+import static groovy.io.FileType.*
+
+def matchingProjectDIR = ~/^ngrinder-.*/
+def matchingPluginDIR = ~/^ngrinder-plugin-.*/
+
+
+def getProjectName(String dir) {
+    return dir.minus(rootDir.toString() + "/").replaceAll("/", ":")
+}
+
+def preDir = {
+    if (!matchingProjectDIR.matcher(it.name).matches()) {
+        return SKIP_SUBTREE
+    }
+}
+
+rootDir.traverse(type: DIRECTORIES, preDir: preDir) { dir ->
+    def dstr = dir.toString()
+    if (matchingProjectDIR.matcher(dir.name) && new File(dstr + "/build.gradle").exists()) {
+        include getProjectName(dir.name)
+    }
+}
+
+def plugins = []
+rootDir.traverse(type: DIRECTORIES, preDir: preDir) { dir ->
+    def dstr = dir.toString()
+    if (matchingPluginDIR.matcher(dir.name) && new File(dstr + "/build.gradle").exists() && !(new File(dstr + "/ignore").exists())) {
+        plugins.add(":" + getProjectName(dir.name))
+    }
+}
+
+gradle.ext.plugins = plugins
+

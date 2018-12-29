@@ -109,7 +109,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	@Expose
 	@Cloneable
-	@Column(name = "target_hosts")
+	@Column(name = "target_hosts", length = 65535)
 	private String targetHosts;
 
 	/**
@@ -277,7 +277,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "region")
 	private String region;
 
-	@Column(name = "safe_distribution")
+	@Column(name = "safe_distribution", columnDefinition = "char(1)")
 	@Cloneable
 	@Type(type = "true_false")
 	private Boolean safeDistribution;

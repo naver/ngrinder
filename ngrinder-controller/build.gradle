@@ -1,0 +1,89 @@
+description = "ngrinder-controller"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.6.RELEASE")
+    }
+}
+
+apply plugin: "war"
+apply plugin: "org.springframework.boot"
+
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+
+def agentScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/agent"
+def monitorScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/monitor"
+
+dependencies {
+    compile project(":ngrinder-core")
+    compile files("${rootDir}/lib/universal-analytics-java-1.0.jar")
+
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: springboot_version)
+    compile (group: 'org.springframework.boot', name: 'spring-boot-loader', version: springboot_version)
+
+    compile (group: "rome", name: "rome", version: "1.0")
+    compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
+    compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
+    compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version)
+    compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
+    compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
+    compile (group: "net.sf.ehcache", name: "ehcache-core", version: "2.5.1")
+    compile (group: "com.google.guava", name: "guava", version: "12.0")
+    compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
+    compile (group: "org.apache.maven", name: "maven-embedder", version: "3.0.5")
+    compile (group: "org.sonatype.aether", name: "aether-connector-asynchttpclient", version: "1.13.1")
+    compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")
+    compile (group: "org.hibernate", name: "hibernate-ehcache", version: "5.0.11.Final")
+    compile (group: "mysql", name: "mysql-connector-java", version: "5.1.33")
+    compile (group: "commons-httpclient", name: "commons-httpclient", version: "3.1")
+    compile (group: "com.h2database", name: "h2", version: "1.3.168")
+    compile (group: "commons-fileupload", name: "commons-fileupload", version: "1.3.1")
+    compile (group: "commons-dbcp", name: "commons-dbcp", version: "1.4")
+    compile (group: "cglib", name: "cglib", version: "2.2.2")
+    compile (group: "com.google.code.gson", name: "gson", version: "2.2")
+    compile (group: "jaxen", name: "jaxen", version: "1.1.4")
+    compile (group: "com.beust", name: "jcommander", version: "1.32")
+    compile (group: "ro.fortsoft.pf4j", name: "pf4j", version: "0.12.0")
+    compile (group: "commons-collections", name: "commons-collections", version: "3.2.1")
+    compile (group: "com.navercorp.lucy", name: "lucy-xss-servlet", version: "2.0.0")
+    compile (group: "ro.fortsoft.pf4j", name: "pf4j-spring", version: "0.2.0") {
+        exclude (module: "slf4j-log4j12")
+    }
+    compile (group: "org.reflections", name: "reflections", version: "0.9.9")
+
+    providedRuntime (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springboot_version)
+
+    testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
+    testCompile (group: "org.mockito", name: "mockito-core", version: "1.8.5")
+    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springboot_version)
+}
+
+
+bootWar {
+    manifest {
+        attributes "Implementation-Version": project.version, mainClassName: "org.ngrinder.starter.NGrinderControllerStarter"
+    }
+    requiresUnpack "**/*.jar"
+}
+
+task convert_cr_lf {
+    doFirst {
+        ant.fixcrlf(srcDir: agentScriptPath, destDir: agentScriptPath, includes:"**/*.sh" ,eol: "unix")
+        ant.fixcrlf(srcDir: agentScriptPath, destDir: agentScriptPath, includes:"**/*.bat" ,eol: "dos")
+        ant.fixcrlf(srcDir: monitorScriptPath, destDir: monitorScriptPath, includes:"**/*.sh" ,eol: "unix")
+        ant.fixcrlf(srcDir: monitorScriptPath, destDir: monitorScriptPath, includes:"**/*.bat" ,eol: "dos")
+    }
+}
+
+test {
+    jvmArgs "-Xms600m", "-Xmx1024m", "-XX:MaxPermSize=200m"
+}
+
+tasks.bootWar.dependsOn convert_cr_lf

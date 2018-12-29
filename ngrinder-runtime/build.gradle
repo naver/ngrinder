@@ -1,0 +1,19 @@
+description = "ngrinder-runtime"
+dependencies {
+    compile (group: "org.json", name: "json", version:"20090211")
+    compile (group: "dnsjava", name: "dnsjava", version:"2.1.6")
+    compile (group: "commons-io", name: "commons-io", version:"2.2")
+    compile (group: "commons-lang", name: "commons-lang", version:"2.6")
+    compile (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
+    compile (group: "junit", name: "junit-dep", version:"4.8.2")
+    compile (group: "asm", name: "asm", version:"3.3.1")
+    compile (group: "net.sf.grinder", name: "grinder", version:"3.9.1") {
+        exclude (module: "clojure")
+        exclude (module: "jython")
+        exclude (module: "grinder-xmlbeans")
+        exclude (module: "jedit-syntax")
+    }
+
+    testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
+    testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
+}

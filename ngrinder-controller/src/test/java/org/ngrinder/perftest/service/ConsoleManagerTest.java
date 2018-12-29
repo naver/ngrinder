@@ -16,6 +16,7 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.NetworkUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtils;
@@ -35,6 +36,7 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 	private MockConsoleManager manager;
 
 	@Test
+	@Ignore
 	public void testConsoleManager() {
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = manager.getAvailableConsole(
