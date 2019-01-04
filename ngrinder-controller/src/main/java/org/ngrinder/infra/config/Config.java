@@ -13,57 +13,48 @@
  */
 package org.ngrinder.infra.config;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.ClusterConstants;
-import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.constants.InternalConstants;
-import org.ngrinder.common.exception.ConfigurationException;
-import org.ngrinder.common.model.Home;
-import org.ngrinder.common.util.FileWatchdog;
-import org.ngrinder.common.util.PropertiesKeyMapper;
-import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.infra.spring.SpringContext;
-import org.ngrinder.service.AbstractConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.stereotype.Component;
+  import ch.qos.logback.classic.Level;
+  import ch.qos.logback.classic.LoggerContext;
+  import net.grinder.util.ListenerSupport;
+  import net.grinder.util.ListenerSupport.Informer;
+  import org.apache.commons.io.FileUtils;
+  import org.apache.commons.io.FilenameUtils;
+  import org.apache.commons.io.IOUtils;
+  import org.apache.commons.lang.StringUtils;
+  import org.ngrinder.common.constant.ClusterConstants;
+  import org.ngrinder.common.constant.ControllerConstants;
+  import org.ngrinder.common.constants.InternalConstants;
+  import org.ngrinder.common.exception.ConfigurationException;
+  import org.ngrinder.common.model.Home;
+  import org.ngrinder.common.util.FileWatchdog;
+  import org.ngrinder.common.util.PropertiesKeyMapper;
+  import org.ngrinder.common.util.PropertiesWrapper;
+  import org.ngrinder.infra.logger.CoreLogger;
+  import org.ngrinder.infra.spring.SpringContext;
+  import org.ngrinder.service.AbstractConfig;
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
+  import org.springframework.beans.factory.annotation.Autowired;
+  import org.springframework.context.ApplicationContext;
+  import org.springframework.core.io.ClassPathResource;
+  import org.springframework.core.io.Resource;
+  import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+  import org.springframework.core.io.support.ResourcePatternResolver;
+  import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+  import javax.annotation.PostConstruct;
+  import javax.annotation.PreDestroy;
+  import java.beans.PropertyChangeListener;
+  import java.io.File;
+  import java.io.IOException;
+  import java.io.InputStream;
+  import java.util.Date;
+  import java.util.Properties;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLClassLoader;
-import java.util.Date;
-import java.util.Properties;
-
-import static net.grinder.util.NoOp.noOp;
-import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
-import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+  import static net.grinder.util.NoOp.noOp;
+  import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
+  import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
+  import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
@@ -73,8 +64,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 
 @Component
-public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants,
-		ApplicationListener<ContextRefreshedEvent> {
+public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
@@ -101,9 +91,6 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	private SpringContext context;
-
-	@Autowired
-	private ApplicationContext appContext;
 
 	/**
 	 * Make it singleton.
@@ -142,21 +129,11 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			// reloadable.
 			cluster = resolveClusterMode();
 			initDevModeProperties();
-			addChangeConfigListenerForStatistics();
 			loadAnnouncement();
 			loadDatabaseProperties();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
 		}
-	}
-
-	/**
-	 * In order to initialize the cache statistics supports, we have to use this application event.
-	 * Because we should update the cache statistics supports after the CacheManager has been initialized.
-	 */
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		updateCacheStatisticsSupports();
 	}
 
 	protected void initDevModeProperties() {
@@ -167,29 +144,6 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			controllerProperties.addProperty(PROP_CONTROLLER_AGENT_FORCE_UPDATE, "true");
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL, "true");
 			controllerProperties.addProperty(PROP_CONTROLLER_ENABLE_SCRIPT_CONSOLE, "true");
-		}
-	}
-
-	private void addChangeConfigListenerForStatistics() {
-		addSystemConfListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				updateCacheStatisticsSupports();
-			}
-		});
-	}
-
-	private void updateCacheStatisticsSupports() {
-		if (appContext == null) {
-			return;
-		}
-		CacheManager cacheManager = appContext.getBean("cacheManager", CacheManager.class);
-		boolean enableStatistics = isEnableStatistics();
-		for (String cacheName : cacheManager.getCacheNames()) {
-			Cache cache = cacheManager.getCache(cacheName);
-			if (cache.getNativeCache() instanceof net.sf.ehcache.Cache) {
-				((net.sf.ehcache.Cache) cache.getNativeCache()).setStatisticsEnabled(enableStatistics);
-			}
 		}
 	}
 
