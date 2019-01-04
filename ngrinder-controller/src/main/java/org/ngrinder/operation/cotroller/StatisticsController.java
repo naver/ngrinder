@@ -13,28 +13,21 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import net.sf.ehcache.Statistics;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Statistics API Controller
@@ -53,10 +46,7 @@ public class StatisticsController extends BaseController implements ControllerCo
 	private Config config;
 
 	@Autowired
-	private CacheManager cacheManager;
-
-	@Autowired
-	BasicDataSource dataSource;
+	private BasicDataSource dataSource;
 
 	/**
 	 * Get collect current statistics.
@@ -66,7 +56,7 @@ public class StatisticsController extends BaseController implements ControllerCo
 	@ResponseBody
 	@RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
 	public HttpEntity<String> getStatistics() {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 
 		if (!config.isEnableStatistics()) {
 			result.put("success", false);
@@ -74,9 +64,8 @@ public class StatisticsController extends BaseController implements ControllerCo
 			return toJsonHttpEntity(result, gson);
 		}
 
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("jvm", getJVMStat());
-		data.put("ehcache", getEhcacheStat());
 		data.put("dbcp", getDbcpStat());
 
 		result.put("success", true);
@@ -92,7 +81,7 @@ public class StatisticsController extends BaseController implements ControllerCo
 	private Map<String, Long> getJVMStat() {
 		Runtime runtime = Runtime.getRuntime();
 		
-		Map<String, Long> stat = new HashMap<String, Long>();
+		Map<String, Long> stat = new HashMap<>();
 		stat.put("used", runtime.totalMemory() - runtime.freeMemory());
 		stat.put("free", runtime.freeMemory());
 		stat.put("total", runtime.totalMemory());
@@ -100,47 +89,18 @@ public class StatisticsController extends BaseController implements ControllerCo
 		
 		return stat;
 	}
-	
-	/**
-	 * Get all cache statistics.<br>
-	 * size is object count in memory & disk<br>
-	 * heap is object count in memory<br>
-	 * hit & miss is cache hit & miss count
-	 * 
-	 * @return Ehcache statistics list, group by cacheName
-	 */
-	private List<Map<String, Object>> getEhcacheStat() {
-		List<Map<String, Object>> stats = new LinkedList<>();
-		for (String cacheName : cacheManager.getCacheNames()) {
-			Cache cache = cacheManager.getCache(cacheName);
-			if (cache.getNativeCache() instanceof net.sf.ehcache.Cache) {
-				net.sf.ehcache.Cache ehcache = (net.sf.ehcache.Cache) cache.getNativeCache();
-				Statistics statistics = ehcache.getStatistics();
-
-				Map<String, Object> stat = new HashMap<>();
-				stat.put("cacheName", cacheName);
-				stat.put("size", statistics.getObjectCount());
-				stat.put("heap", statistics.getMemoryStoreObjectCount());
-				stat.put("hit", statistics.getCacheHits());
-				stat.put("miss", statistics.getCacheMisses());
-
-				stats.add(stat);
-			}
-		}
-		return stats;
-	}
 
 	/**
 	 * Get current DBCP stat(connection maxidle/idle/active)
 	 * 
-	 * @return 
+	 * @return map for dbcp connection maxidle/idle/active
 	 */
 	private Map<String, Integer> getDbcpStat() {
-		Map<String, Integer> stat = new HashMap<String, Integer>();
+		Map<String, Integer> stat = new HashMap<>();
 		stat.put("maxIdle", dataSource.getMaxIdle());
 		stat.put("idle", dataSource.getNumIdle());
 		stat.put("active", dataSource.getNumActive());
-		
+
 		return stat;
 	}
 
