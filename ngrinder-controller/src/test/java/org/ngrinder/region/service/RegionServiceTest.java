@@ -13,22 +13,12 @@
  */
 package org.ngrinder.region.service;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.config.DynamicCacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
-
-import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_ADDRESSES;
-import static net.grinder.util.NetworkUtils.removeScopedMarkerFromIP;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -48,15 +38,15 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	private RegionService regionService;
 
 	@Test
-	public void testGetRegionsInCluster() {
+	public void testGetAllRegion() {
 		Config spiedConfig = spy(config);
 		when(spiedConfig.isClustered()).thenReturn(true);
-		when(spiedConfig.getRegion()).thenReturn("TEST_REGION");
 
 		setField(regionService, "config", spiedConfig);
 
-		Collection<String> regions = regionService.getAll().keySet();
-		LOG.debug("list:{}", regions);
-		//assertThat(regions.contains("TEST_REGION"), is(true));
+		String currentRegion = config.getRegion();
+
+		assertThat(regionService.getAll().keySet().contains(currentRegion)).isEqualTo(true);
+		assertThat(regionService.getAllVisibleRegionNames().contains(currentRegion)).isEqualTo(true);
 	}
 }
