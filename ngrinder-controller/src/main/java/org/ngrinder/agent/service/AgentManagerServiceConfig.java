@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Profile;
 public class AgentManagerServiceConfig implements ApplicationContextAware {
 
 	@Autowired
-	Config config;
+	protected Config config;
 
 	private ApplicationContext applicationContext;
 

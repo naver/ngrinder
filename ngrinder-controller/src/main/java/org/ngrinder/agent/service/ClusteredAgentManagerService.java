@@ -255,7 +255,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	public AgentInfo approve(Long id, boolean approve) {
 		AgentInfo agent = super.approve(id, approve);
 		if (agent != null) {
-			publishTopic(agent, EXPIRE_LOCAL_CACHE);
+			publishTopic(agent, AGENT_TOPIC_LISTENER_NAME, EXPIRE_LOCAL_CACHE);
 		}
 		return agent;
 	}
@@ -272,7 +272,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 		if (agent == null) {
 			return;
 		}
-		publishTopic(agent, STOP_AGENT);
+		publishTopic(agent, AGENT_TOPIC_LISTENER_NAME, STOP_AGENT);
 	}
 
 	/**
@@ -308,11 +308,11 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 		if (agent == null) {
 			return;
 		}
-		publishTopic(agent, UPDATE_AGENT);
+		publishTopic(agent, AGENT_TOPIC_LISTENER_NAME, UPDATE_AGENT);
 	}
 
-	private void publishTopic(AgentInfo agent, RequestType requestType) {
-		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(AGENT_TOPIC_LISTENER_NAME,
+	protected void publishTopic(AgentInfo agent, String listener, RequestType requestType) {
+		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(listener,
 			extractRegionKey(agent.getRegion()), new ClusteredAgentRequest(agent.getIp(), agent.getName(), requestType)));
 	}
 

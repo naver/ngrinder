@@ -37,7 +37,7 @@ public class HazelcastService {
 	@Qualifier("embeddedHazelcast")
 	private HazelcastInstance hazelcastInstance;
 
-	private Member findClusterMember(String region) {
+	protected Member findClusterMember(String region) {
 		Set<Member> clusterMember = hazelcastInstance.getCluster().getMembers();
 		for (Member member: clusterMember) {
 			if (member.getAttributes().containsKey(REGION_ATTR_KEY) && region.equals(member.getAttributes().get(REGION_ATTR_KEY))) {
