@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
-import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.user.service.UserContext;
@@ -44,13 +43,10 @@ import static org.junit.Assert.assertTrue;
 public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	AgentManagerController agentController;
+	private AgentManagerController agentController;
 
 	@Autowired
-	AgentManagerRepository agentManagerRepository;
-
-	@Autowired
-	AgentManagerService agentService;
+	private AgentManagerRepository agentManagerRepository;
 
 	@Autowired
 	private Config config;
@@ -140,7 +136,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Test
 	public void testGetCurrentMonitorData() {
-		HttpEntity<String> rtnStr = agentController.getState(0L, "127.0.0.1", "127.0.0.1");
+		HttpEntity<String> rtnStr = agentController.getState("127.0.0.1", "127.0.0.1", "");
 		assertTrue(rtnStr.getBody().contains("freeMemory"));
 	}
 

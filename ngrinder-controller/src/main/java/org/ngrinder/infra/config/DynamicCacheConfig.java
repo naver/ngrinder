@@ -197,7 +197,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return config.getClusterURIs();
 	}
 
-	public String getClusterHostName() {
+	private String getClusterHostName() {
 		String hostName = config.getClusterProperties().getProperty(PROP_CLUSTER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
 		try {
 			//noinspection ResultOfMethodCallIgnored
@@ -209,7 +209,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return hostName;
 	}
 
-	int getClusterPort() {
+	private int getClusterPort() {
 		int port = config.getClusterProperties().getPropertyInt(PROP_CLUSTER_PORT);
 		try {
 			final InetAddress byName = InetAddress.getByName(getClusterHostName());
@@ -218,21 +218,6 @@ public class DynamicCacheConfig implements ClusterConstants {
 			LOGGER.error("The cluster port {} is failed to bind. Please check network configuration.", port);
 		}
 		return port;
-	}
-
-	protected List<String> getReplicatedCacheNames(net.sf.ehcache.config.Configuration cacheManagerConfig) {
-		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
-		List<String> replicatedCacheNames = new ArrayList<>();
-		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
-			List<CacheEventListenerFactoryConfiguration> list = cast(eachConfig.getValue()
-					.getCacheEventListenerConfigurations());
-			for (CacheEventListenerFactoryConfiguration each : list) {
-				if (each.getFullyQualifiedClassPath().equals("net.sf.ehcache.distribution.RMICacheReplicatorFactory")) {
-					replicatedCacheNames.add(eachConfig.getKey());
-				}
-			}
-		}
-		return replicatedCacheNames;
 	}
 
 	public Config getConfig() {
