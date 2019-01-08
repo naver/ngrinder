@@ -63,8 +63,6 @@ public class RegionService {
 	@Qualifier("embeddedHazelcast")
 	private HazelcastInstance hazelcastInstance;
 
-	private Cache cache;
-
 	private Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
 		@Override
 		public Map<String, RegionInfo> get() {
@@ -159,19 +157,5 @@ public class RegionService {
 
 	public Config getConfig() {
 		return config;
-	}
-
-	/**
-	 * For unit test
-	 */
-	public void setConfig(Config config) {
-		this.config = config;
-	}
-
-	/**
-	 * For unit test
-	 */
-	public void setCache(Cache cache) {
-		this.cache = cache;
 	}
 }

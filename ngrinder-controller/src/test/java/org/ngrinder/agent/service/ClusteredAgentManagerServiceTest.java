@@ -13,10 +13,7 @@
  */
 package org.ngrinder.agent.service;
 
-import junit.framework.Assert;
-import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
-import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,17 +22,14 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_ADDRESSES;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
@@ -57,14 +51,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Autowired
 	private Config config;
 
-	private CacheManager cacheManager;
-
 	private Config spiedConfig;
-
-	@Autowired
-	private RegionService regionService;
-
-	String curAddress;
 
 	@Before
 	public void before() {
@@ -72,26 +59,13 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		when(spiedConfig.isClustered()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
 
-		curAddress = DEFAULT_LOCAL_ADDRESSES.get(0).getHostAddress();
+		String curAddress = DEFAULT_LOCAL_ADDRESSES.get(0).getHostAddress();
 		when(spiedConfig.getClusterURIs()).thenReturn(new String[]{curAddress, "210.10.10.1"});
 		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig();
 		serviceConfig.config = spiedConfig;
 		serviceConfig.setApplicationContext(applicationContext);
 		agentManagerService = (ClusteredAgentManagerService) serviceConfig.agentManagerService();
 		agentManagerService.setConfig(spiedConfig);
-
-		// set clustered cache manager.
-		MockDynamicCacheConfig cacheConfig = new MockDynamicCacheConfig();
-		cacheConfig.setConfig(spiedConfig);
-		cacheManager = cacheConfig.dynamicCacheManager();
-		((EhCacheCacheManager) cacheManager).afterPropertiesSet();
-		agentManagerService.cacheManager = cacheManager;
-		assertThat(cacheConfig.getConfig(), not(nullValue()));
-		agentManagerService.init();
-		agentManagerService.expireLocalCache();
-		regionService.setCache(cacheManager.getCache("regions"));
-		regionService.setConfig(spiedConfig);
-		regionService.checkRegionUpdate();
 	}
 
 	@Test
