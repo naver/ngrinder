@@ -59,7 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.script.ScriptEngine;
@@ -132,7 +132,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return found {@link PerfTest} list
 	 */
 	public Page<PerfTest> getPagedAll(User user, String query, String tag, String queryFilter, Pageable pageable) {
-		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+		Specification<PerfTest> spec = Specification.where(idEmptyPredicate());
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(createdBy(user));
@@ -161,22 +161,23 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param user user
 	 * @return found {@link PerfTest} list
 	 */
-	List<PerfTest> getAll(User user) {
-		Specifications<PerfTest> spec = Specifications.where(createdBy(user));
+	private List<PerfTest> getAll(User user) {
+		Specification<PerfTest> spec = Specification.where(createdBy(user));
 		return perfTestRepository.findAll(spec);
 	}
 
 
 	@Override
 	public PerfTest getOne(User user, Long id) {
-		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+		Specification<PerfTest> spec = Specification.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(createdBy(user));
 		}
 		spec = spec.and(idEqual(id));
-		return perfTestRepository.findOne(spec);
+
+		return perfTestRepository.findOne(spec).orElse(null);
 	}
 
 	@Override
@@ -184,7 +185,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (ids.length == 0) {
 			return newArrayList();
 		}
-		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+		Specification<PerfTest> spec = Specification.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
@@ -196,7 +197,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	@Override
 	public long count(User user, Status[] statuses) {
-		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+		Specification<PerfTest> spec = Specification.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user != null) {
@@ -213,7 +214,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	@Override
 	public List<PerfTest> getAll(User user, Status[] statuses) {
-		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+		Specification<PerfTest> spec = Specification.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user != null) {
@@ -227,7 +228,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	private List<PerfTest> getAll(User user, String region, Status[] statuses) {
-		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+		Specification<PerfTest> spec = Specification.where(idEmptyPredicate());
 		// User can see only his own test
 		if (user != null) {
 			spec = spec.and(createdBy(user));
@@ -256,8 +257,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		checkNotNull(perfTest);
 		// Merge if necessary
 		if (perfTest.exist()) {
-			PerfTest existingPerfTest = perfTestRepository.findOne(perfTest.getId());
-			perfTest = existingPerfTest.merge(perfTest);
+			Optional<PerfTest> existingPerfTest = perfTestRepository.findOne(idEqual(perfTest.getId()));
+			if (existingPerfTest.isPresent()) {
+				perfTest = existingPerfTest.get().merge(perfTest);
+			}
 		} else {
 			perfTest.clearMessages();
 		}
@@ -386,17 +389,20 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@Transactional
 	@Override
 	public PerfTest getOneWithTag(Long testId) {
-		PerfTest findOne = perfTestRepository.findOne(testId);
-		if (findOne != null) {
-			Hibernate.initialize(findOne.getTags());
+		Optional<PerfTest> findOne = perfTestRepository.findOne(idEqual(testId));
+		PerfTest perfTest = null;
+
+		if (findOne.isPresent()) {
+			perfTest = findOne.get();
+			Hibernate.initialize(perfTest.getTags());
 		}
-		return findOne;
+		return perfTest;
 	}
 
 
 	@Override
 	public PerfTest getOne(Long testId) {
-		return perfTestRepository.findOne(testId);
+		return perfTestRepository.findOne(idEqual(testId)).orElse(null);
 	}
 
 	/**
@@ -1069,9 +1075,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		for (PerfTest each : perfTestList) {
 			each.getTags().clear();
 		}
-		perfTestRepository.save(perfTestList);
+		perfTestRepository.saveAll(perfTestList);
 		perfTestRepository.flush();
-		perfTestRepository.delete(perfTestList);
+		perfTestRepository.deleteAll(perfTestList);
 		perfTestRepository.flush();
 		tagService.deleteTags(user);
 		return perfTestList;
