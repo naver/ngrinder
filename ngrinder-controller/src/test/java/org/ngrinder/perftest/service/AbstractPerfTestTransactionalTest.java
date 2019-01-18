@@ -54,7 +54,7 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 		perfTestRepository.flush();

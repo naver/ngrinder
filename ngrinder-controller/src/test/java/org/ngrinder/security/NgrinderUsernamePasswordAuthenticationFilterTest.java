@@ -13,20 +13,23 @@
  */
 package org.ngrinder.security;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.ngrinder.user.repository.UserSpecification.idEqual;
 
 public class NgrinderUsernamePasswordAuthenticationFilterTest extends AbstractNGrinderTransactionalTest {
 	private MockNgrinderUsernamePasswordAuthenticationFilter filter = new MockNgrinderUsernamePasswordAuthenticationFilter();
@@ -53,9 +56,13 @@ public class NgrinderUsernamePasswordAuthenticationFilterTest extends AbstractNG
 		when(req.getParameter("native_language")).thenReturn("KoreanLang");
 		HttpServletResponse res = mock(HttpServletResponse.class);
 		filter.attemptAuthentication(req, res);
-		User findOne = userRepository.findOne(getTestUser().getId());
-		assertThat(findOne.getUserLanguage(), is("KoreanLang"));
-		assertThat(findOne.getTimeZone(), is("Korean"));
+		Optional<User> findOne = userRepository.findOne(idEqual(getTestUser().getId()));
+		if (!findOne.isPresent()) {
+			fail();
+		}
+		User user = findOne.get();
+		assertThat(user.getUserLanguage(), is("KoreanLang"));
+		assertThat(user.getTimeZone(), is("Korean"));
 
 	}
 }

@@ -51,7 +51,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.deleteAll();
 		perfTestRepository.flush();
 		tagRepository.deleteAll();

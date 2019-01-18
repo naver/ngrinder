@@ -42,6 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Pageable.unpaged;
 
 /**
  * {@link PerfTestService} test.
@@ -71,16 +72,16 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTest candidate = testService.getNextRunnablePerfTestPerfTestCandidate();
 		assertThat(candidate, nullValue());
 
-		Pageable pageable = new PageRequest(0, 10);
+		Pageable pageable = PageRequest.of(0, 10);
 		Page<PerfTest> testList = testService.getPagedAll(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
 		testList = testService.getPagedAll(getTestUser(), null, null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
 
 		// test with no paging
-		testList = testService.getPagedAll(getTestUser(), null, null, null, null);
+		testList = testService.getPagedAll(getTestUser(), null, null, null, unpaged());
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPagedAll(getTestUser(), null, null, "F", null);
+		testList = testService.getPagedAll(getTestUser(), null, null, "F", unpaged());
 		assertThat(testList.getContent().size(), is(1));
 
 		List<PerfTest> list = testService.getAllTesting();
