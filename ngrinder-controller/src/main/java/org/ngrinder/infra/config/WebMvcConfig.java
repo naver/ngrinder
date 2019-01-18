@@ -18,7 +18,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -35,7 +35,7 @@ import java.util.Properties;
 	useDefaultFilters = false,
 	includeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = org.springframework.stereotype.Controller.class)}
 )
-public class WebMvcConfig extends WebMvcConfigurerAdapter {
+public class WebMvcConfig implements WebMvcConfigurer {
 
 	@Value("${ngrinder.version}")
 	private String ngrinderVersion;
@@ -57,7 +57,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		argumentResolvers.add(userHandlerMethodArgumentResolver());
 		argumentResolvers.add(remainedPathMethodArgumentResolver());
 		argumentResolvers.add(pageableHandlerMethodArgumentResolver());
-		super.addArgumentResolvers(argumentResolvers);
 	}
 
 	@Bean
@@ -144,8 +143,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 			, "/**/*.jpg" , "/**/*.swf" , "/**/*.csv" , "/**/*.css"
 			, "/**/*.html" , "/**/*.gif" , "/**/*.ico" , "/**/*.woff2"
 			, "/**/*.woff" , "/**/*.ttf"};
-		Integer cachePeriod = this.resourceProperties.getCachePeriod();
-		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations()).setCachePeriod(cachePeriod);
+		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations());
 	}
 
 	public static class NGrinderFreeMarkerConfigure extends FreeMarkerConfigurer {
