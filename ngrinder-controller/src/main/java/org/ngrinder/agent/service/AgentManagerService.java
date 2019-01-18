@@ -38,6 +38,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
 
+import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -378,16 +379,18 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	@Override
 	public AgentInfo getOne(Long id, boolean includeAgentIdentity) {
-		AgentInfo findOne = agentManagerRepository.findOne(id);
-		if (findOne == null) {
+		Optional<AgentInfo> findOne = agentManagerRepository.findOne(idEqual(id));
+		if (!findOne.isPresent()) {
 			return null;
 		}
+
+		AgentInfo agentInfo = findOne.get();
 		if (includeAgentIdentity) {
-			AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIpAndName(findOne.getIp(),
-					findOne.getName());
-			return fillUp(findOne, agentIdentityByIp);
+			AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIpAndName(agentInfo.getIp(),
+				agentInfo.getName());
+			return fillUp(agentInfo, agentIdentityByIp);
 		} else {
-			return findOne;
+			return agentInfo;
 		}
 	}
 
@@ -399,13 +402,17 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	@Transactional
 	public AgentInfo approve(Long id, boolean approve) {
-		AgentInfo found = agentManagerRepository.findOne(id);
-		if (found != null) {
-			found.setApproved(approve);
-			agentManagerRepository.save(found);
+		Optional<AgentInfo> found = agentManagerRepository.findOne(idEqual(id));
+		AgentInfo agentInfo = null;
+
+		if (found.isPresent()) {
+			agentInfo = found.get();
+			agentInfo.setApproved(approve);
+			agentManagerRepository.save(agentInfo);
 			expireLocalCache();
 		}
-		return found;
+
+		return agentInfo;
 	}
 
 	/**

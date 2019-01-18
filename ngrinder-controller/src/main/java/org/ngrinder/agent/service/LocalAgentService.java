@@ -68,16 +68,16 @@ public class LocalAgentService {
 							 List<AgentInfo> stateUpdatedAgents,
 							 List<AgentInfo> removedAgents) {
 		if (CollectionUtils.isNotEmpty(newAgents)) {
-			agentManagerRepository.save(newAgents);
+			agentManagerRepository.saveAll(newAgents);
 		}
 		if (CollectionUtils.isNotEmpty(updatedAgents)) {
-			agentManagerRepository.save(updatedAgents);
+			agentManagerRepository.saveAll(updatedAgents);
 		}
 		for (AgentInfo each : stateUpdatedAgents) {
 			agentManagerRepository.updateState(each.getId(), each.getState());
 		}
 		if (CollectionUtils.isNotEmpty(removedAgents)) {
-			agentManagerRepository.delete(removedAgents);
+			agentManagerRepository.deleteAll(removedAgents);
 		}
 		agentManagerRepository.flush();
 	}

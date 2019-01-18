@@ -13,16 +13,11 @@
  */
 package org.ngrinder.agent.repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import net.grinder.message.console.AgentControllerState;
-
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.*;
 
 /**
  * Agent Manager JPA Specification.
@@ -97,6 +92,21 @@ public abstract class AgentManagerSpecification {
 				Expression<AgentControllerState> status = root.get("state").as(
 					AgentControllerState.class);
 				return cb.and(cb.equal(status, AgentControllerState.READY));
+			}
+		};
+	}
+
+	/**
+	 * Get the {@link Specification} checking if the {@link AgentInfo} has the given ID.
+	 *
+	 * @param id agent id
+	 * @return {@link Specification}
+	 */
+	public static Specification<AgentInfo> idEqual(final Long id) {
+		return new Specification<AgentInfo>() {
+			@Override
+			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return cb.equal(root.get("id"), id);
 			}
 		};
 	}
