@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -51,7 +51,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
-		if (StringUtils.isEmpty(password) || !((ShaPasswordEncoder) encoder).isPasswordValid(encPass, password, salt)) {
+		if (StringUtils.isEmpty(password) || !((ShaPasswordEncoder) encoder).matches(String.valueOf(salt), password, encPass)) {
 			LOG.debug("Authentication failed: password does not match stored value");
 
 			throw new BadCredentialsException(messages.getMessage(
