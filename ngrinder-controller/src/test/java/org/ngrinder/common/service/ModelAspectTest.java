@@ -13,16 +13,6 @@
  */
 package org.ngrinder.common.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.sql.Date;
-
 import org.aspectj.lang.JoinPoint;
 import org.junit.Assume;
 import org.junit.Test;
@@ -30,6 +20,12 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 

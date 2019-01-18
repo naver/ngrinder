@@ -13,13 +13,6 @@
  */
 package org.ngrinder.perftest.repository;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -27,6 +20,16 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
 
 public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 
@@ -42,7 +45,7 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 		perfTestRepository.flush();
@@ -82,8 +85,12 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 			}
 		});
 		entity = perfTestRepository.save(entity);
-		PerfTest findOne = perfTestRepository.findOne(entity.getId());
-		SortedSet<Tag> tags = findOne.getTags();
+		Optional<PerfTest> findOne = perfTestRepository.findOne(idEqual(entity.getId()));
+		if (!findOne.isPresent()) {
+			fail();
+		}
+		PerfTest perfTest = findOne.get();
+		SortedSet<Tag> tags = perfTest.getTags();
 		assertThat(tags.first(), is(new Tag("hello")));
 		assertThat(tags.last(), is(new Tag("world")));
 	}
