@@ -13,11 +13,6 @@
  */
 package org.ngrinder.infra.init;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.model.PerfTest;
@@ -26,6 +21,11 @@ import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DBInitTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 	@Autowired
@@ -46,7 +46,7 @@ public class DBInitTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 		tagRepository.deleteAll();
