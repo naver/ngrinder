@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import static org.ngrinder.user.repository.UserSpecification.idEqual;
+
 /**
  * Aspect to inject the created/modified user and date to the model.
  *
@@ -67,12 +69,15 @@ public class ModelAspect {
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
 				User currentUser = userContext.getCurrentUser();
-				model.setLastModifiedUser(userRepository.findOne(currentUser.getId()));
+				Long currentUserId = currentUser.getId();
+
+				model.setLastModifiedUser(userRepository.findOne(idEqual(currentUserId))
+					.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + currentUserId)));
 
 				if (!model.exist() || model.getCreatedUser() == null) {
 					model.setCreatedDate(lastModifiedDate);
-					User factualUser = currentUser.getFactualUser();
-					model.setCreatedUser(userRepository.findOne(factualUser.getId()));
+					model.setCreatedUser(userRepository.findOne(idEqual(currentUserId))
+						.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + currentUserId)));
 				}
 			}
 		}
