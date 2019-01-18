@@ -16,17 +16,14 @@ package org.ngrinder.starter;
 import com.beust.jcommander.*;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.config.ServletFilterConfig;
-import org.ngrinder.infra.config.SpringConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -43,7 +40,6 @@ import static net.grinder.util.NoOp.noOp;
 
 
 @SpringBootApplication
-@Import({SpringConfig.class, ServletFilterConfig.class})
 @ComponentScan(
 	basePackages = {"org.ngrinder"},
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = org.springframework.stereotype.Controller.class)}
