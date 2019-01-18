@@ -22,7 +22,6 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.AbstractUserService;
 import org.ngrinder.user.controller.UserController;
 import org.ngrinder.user.repository.UserRepository;
@@ -38,8 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,10 +67,6 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private FileEntryService scriptService;
-
-	@Lazy
-	@Autowired
-	private SaltSource saltSource;
 
 	@Lazy
 	@Autowired
@@ -128,8 +122,7 @@ public class UserService extends AbstractUserService {
 	 */
 	public void encodePassword(User user) {
 		if (StringUtils.isNotBlank(user.getPassword())) {
-			SecuredUser securedUser = new SecuredUser(user, null);
-			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
+			String encodePassword = passwordEncoder.encode(user.getUserId(), user.getPassword());
 			user.setPassword(encodePassword);
 		}
 	}

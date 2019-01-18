@@ -14,7 +14,6 @@
 package org.ngrinder.infra.config;
 
 import com.google.common.collect.Maps;
-import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.security.*;
 import org.ngrinder.user.repository.UserRepository;
@@ -25,15 +24,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.*;
-import org.springframework.security.authentication.dao.ReflectionSaltSource;
-import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.*;
@@ -49,6 +46,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256;
 
 /**
  * Some User want to have more secured password. Provide the enhanced pw with sha256 if a user
@@ -82,20 +81,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/**
 	 * Provide the appropriate shaPasswordEncoder depending on the ngrinder.security.sha256 config.
 	 *
-	 * @return {@link ShaPasswordEncoder} with 256 if ngrinder.security.sha256=true. Otherwise
-	 *         returns default {@link ShaPasswordEncoder}
+	 * @return ShaPasswordEncoder with "SHA-256" algorithm if ngrinder.security.sha256=true. Otherwise
+	 *         returns with "SHA-1"
 	 */
-	@Bean(name = "shaPasswordEncoder")
-	public ShaPasswordEncoder shaPasswordEncoder() {
-		boolean useEnhancedEncoding = config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256);
-		return useEnhancedEncoding ? new ShaPasswordEncoder(256) : new ShaPasswordEncoder();
-	}
-
+	@SuppressWarnings("deprecation")
 	@Bean
-	public SaltSource reflectionSaltSource() {
-		ReflectionSaltSource reflectionSaltSource = new ReflectionSaltSource();
-		reflectionSaltSource.setUserPropertyToUse("username");
-		return reflectionSaltSource;
+	public ShaPasswordEncoder shaPasswordEncoder() {
+		boolean useEnhancedEncoding = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_USER_PASSWORD_SHA256);
+		return useEnhancedEncoding ? new ShaPasswordEncoder("SHA-256") : new ShaPasswordEncoder("SHA-1");
 	}
 
 	/**
