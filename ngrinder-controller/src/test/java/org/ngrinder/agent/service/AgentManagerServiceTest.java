@@ -35,10 +35,11 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -115,7 +116,11 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		localAgentService.expireCache();
 		agentManagerService.checkAgentState();
 
-		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
+		Optional<AgentInfo> findOne = agentRepository.findOne(idEqual(agentInfo.getId()));
+		if (!findOne.isPresent()) {
+			fail();
+		}
+		AgentInfo agentInDB = findOne.get();
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
 		assertThat(agentInDB.getName(), is(agentInfo.getName()));
 		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));

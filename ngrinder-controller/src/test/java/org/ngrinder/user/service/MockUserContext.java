@@ -17,12 +17,10 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.dao.ReflectionSaltSource;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,6 +35,7 @@ import javax.annotation.PostConstruct;
 @Component
 public class MockUserContext extends UserContext {
 	public static final String TEST_USER_ID = "TEST_USER";
+	public static final String TEST_USER_PASSWORD = "123";
 	public static final String TEST_USER_TIMEZONE_US = "America/New_York";
 	public static final String TEST_USER_TIMEZONE_ZH = "Asia/Shanghai";
 
@@ -48,11 +47,8 @@ public class MockUserContext extends UserContext {
 
 	@PostConstruct
 	public void init() {
-		ReflectionSaltSource saltSource = new ReflectionSaltSource();
-		saltSource.setUserPropertyToUse("username");
-
 		boolean useEnhancedEncoding = config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256);
-		ShaPasswordEncoder passwordEncoder = useEnhancedEncoding ? new ShaPasswordEncoder(256) : new ShaPasswordEncoder();
+		ShaPasswordEncoder passwordEncoder =  useEnhancedEncoding ? new ShaPasswordEncoder("SHA-256") : new ShaPasswordEncoder("SHA-1");
 
 		User user = userRepository.findOneByUserId(TEST_USER_ID);
 		if (user == null) {
@@ -60,11 +56,9 @@ public class MockUserContext extends UserContext {
 			user.setUserId(TEST_USER_ID);
 			user.setUserName("TEST_USER");
 			user.setEmail("TEST_USER@nhn.com");
-			user.setPassword("123");
 			user.setRole(Role.USER);
 
-			SecuredUser securedUser = new SecuredUser(user, null);
-			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
+			String encodePassword = passwordEncoder.encode(TEST_USER_ID, TEST_USER_PASSWORD);
 			user.setPassword(encodePassword);
 
 			userRepository.save(user);
