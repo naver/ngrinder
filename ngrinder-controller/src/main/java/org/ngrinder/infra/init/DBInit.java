@@ -18,11 +18,9 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,9 +45,6 @@ public class DBInit {
 	private Config config;
 
 	@Autowired
-	private SaltSource saltSource;
-
-	@Autowired
 	private ShaPasswordEncoder passwordEncoder;
 
 	@Autowired
@@ -72,10 +67,8 @@ public class DBInit {
 			if (admin == null) {
 				createUser("admin", "admin", Role.ADMIN, "admin", "admin@nhn.com");
 			} else {
-				SecuredUser securedUser = new SecuredUser(admin, null);
-				Object salt = saltSource.getSalt(securedUser);
 				admin.setRole(Role.ADMIN);
-				admin.setPassword(passwordEncoder.encodePassword("admin", salt));
+				admin.setPassword(passwordEncoder.encode("admin", "admin"));
 				userRepository.saveAndFlush(admin);
 			}
 		}
@@ -94,9 +87,7 @@ public class DBInit {
 		if (userRepository.findOneByUserId(userId) == null) {
 			User user = new User();
 			user.setUserId(userId);
-			SecuredUser securedUser = new SecuredUser(user, null);
-			Object salt = saltSource.getSalt(securedUser);
-			user.setPassword(passwordEncoder.encodePassword(password, salt));
+			user.setPassword(passwordEncoder.encode(user.getUserId(), password));
 			user.setRole(role);
 			user.setUserName(userName);
 			user.setEmail(email);
