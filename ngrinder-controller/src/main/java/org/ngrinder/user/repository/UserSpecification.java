@@ -18,6 +18,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -58,6 +59,21 @@ public abstract class UserSpecification {
 			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
 				String pattern = ("%" + query + "%").toLowerCase();
 				return cb.like(cb.lower(root.get("email").as(String.class)), pattern);
+			}
+		};
+	}
+
+	/**
+	 * Get the {@link Specification} checking if the {@link User} has the given ID.
+	 *
+	 * @param id User id
+	 * @return {@link Specification}
+	 */
+	public static Specification<User> idEqual(final Long id) {
+		return new Specification<User>() {
+			@Override
+			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return cb.equal(root.get("id"), id);
 			}
 		};
 	}
