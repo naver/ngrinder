@@ -3,8 +3,9 @@ ngrinder:
 
 server:
   default-encoding: UTF-8
-  session:
-    timeout: 10000
+  servlet:
+    session:
+      timeout: 10000m
   task:
     scheduler:
       pool-size: 100
@@ -17,7 +18,9 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
-      - org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
       - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
   profiles:
     active: production
+  main:
+    allow-bean-definition-overriding: true
