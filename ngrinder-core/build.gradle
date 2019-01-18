@@ -1,4 +1,4 @@
-sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 description = "ngrinder-core"
 dependencies {
     compile files("${rootDir}/lib/sigar-native-1.0.jar")
@@ -10,7 +10,7 @@ dependencies {
     compile (group: "javax.servlet", name: "javax.servlet-api", version:"3.1.0")
     compile (group: "commons-collections", name: "commons-collections", version:"3.2.1")
     compile (group: "org.python", name: "jython-standalone", version:"2.5.3")
-    compile (group: "com.google.code.gson", name: "gson", version:"2.2")
+    compile (group: "com.google.code.gson", name: "gson", version: gson_version)
     compile (group: "net.java.dev.jna", name: "jna", version:"3.4.0")
     compile (group: "org.apache.commons", name: "commons-compress", version:"1.4.1")
     compile (group: "com.beust", name: "jcommander", version:"1.32")
@@ -21,7 +21,7 @@ dependencies {
     compile (group: 'org.jboss.spec.javax.transaction', name: 'jboss-transaction-api_1.2_spec', version: '1.0.1.Final')
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
-    testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
+    testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 }
 
 task makeAgentDependencies {

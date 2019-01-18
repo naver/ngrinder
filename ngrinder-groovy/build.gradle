@@ -10,7 +10,7 @@ dependencies {
     compile (project(":ngrinder-runtime"))
     compile (group: "org.codehaus.groovy", name: "groovy-all", version:"2.2.1")
 
-    testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
+    testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 
     testAgent (group: "net.sf.grinder", name: "grinder-dcr-agent", version: "3.9.1")
 }

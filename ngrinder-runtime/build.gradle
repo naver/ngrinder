@@ -15,5 +15,5 @@ dependencies {
     }
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
-    testCompile (group: "org.mockito", name: "mockito-core", version:"1.8.5")
+    testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 }
