@@ -51,7 +51,7 @@ public class StatisticsController extends BaseController implements ControllerCo
 	/**
 	 * Get collect current statistics.
 	 * 
-	 * @return json string, for jvm/ehcache/dbcp statistics
+	 * @return json string, for jvm/dbcp statistics
 	 */
 	@ResponseBody
 	@RequestMapping(value = {"", "/"}, method = RequestMethod.GET)

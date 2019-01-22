@@ -14,6 +14,7 @@
 package org.ngrinder.starter;
 
 import com.beust.jcommander.*;
+import com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
@@ -25,16 +26,15 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
+import javax.cache.Caching;
+import javax.cache.spi.CachingProvider;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.ProtectionDomain;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static net.grinder.util.NoOp.noOp;
 
@@ -48,6 +48,10 @@ import static net.grinder.util.NoOp.noOp;
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NGrinderControllerStarter.class);
+
+	static {
+		removeCacheProviderExceptCaffeineCacheProvider();
+	}
 
 	@Parameters(separators = "= ")
 	enum ClusterMode {
@@ -219,7 +223,6 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		return warName;
 	}
 
-
 	public static void main(String[] args) {
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server);
@@ -257,7 +260,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		}
 		final List<String> unknownOptions = commander.getUnknownOptions();
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
-		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
+		clusterMode.parseArgs(unknownOptions.toArray(new String[0]));
 		System.getProperties().putAll(server.params);
 		cleanupPreviouslyUnpackedFolders();
 		SpringApplication.run(NGrinderControllerStarter.class, args);
@@ -270,6 +273,19 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(NGrinderControllerStarter.class);
+	}
+
+	/**
+	 * remove all cache provider except caffeine cache provider for using JCacheRegionFactory in hibernate second level cache.
+	 */
+	public static void removeCacheProviderExceptCaffeineCacheProvider() {
+		Iterator<CachingProvider> iterator = Caching.getCachingProviders().iterator();
+		while (iterator.hasNext()) {
+			CachingProvider cachingProvider = iterator.next();
+			if (!(cachingProvider instanceof CaffeineCachingProvider)) {
+				iterator.remove();
+			}
+		}
 	}
 
 	private static void cleanupPreviouslyUnpackedFolders() {
