@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -20,37 +21,32 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import com.hazelcast.spring.context.SpringManagedContext;
 import net.grinder.util.NetworkUtils;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
 import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.Cache;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.CompositeCacheManager;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static com.hazelcast.config.MaxSizeConfig.MaxSizePolicy.PER_NODE;
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static net.grinder.util.NetworkUtils.selectLocalIp;
-import static net.sf.ehcache.CacheManager.create;
-import static net.sf.ehcache.config.ConfigurationFactory.parseConfiguration;
 import static org.ngrinder.common.constant.CacheConstants.*;
-import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.infra.config.DynamicCacheConfig.CacheConfigHolder.Mode.DIST;
 import static org.ngrinder.infra.config.DynamicCacheConfig.CacheConfigHolder.Mode.DIST_AND_LOCAL;
 import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
 
 /**
- * Dynamic cache configuration. This get the control of EhCache configuration from Spring. Depending
- * on the system.conf, it creates local cache or dist cache.
+ * Dynamic cache configuration. it creates local cache or dist cache.
  *
  * @author Mavlarn
  * @author JunHo Yoon
@@ -62,26 +58,24 @@ public class DynamicCacheConfig implements ClusterConstants {
 	@Autowired
 	private Config config;
 
-	private final int DAY = 24 * 60 * 60;
-	private final int HOUR = 60 * 60;
-	private final int MIN = 60;
+	private static final int DAY = 24 * 60 * 60;
+	private static final int HOUR = 60 * 60;
+	private static final int MIN = 60;
 
 	@Bean
 	public org.springframework.cache.CacheManager cacheManager() {
 		return new CompositeCacheManager(createLocalCacheManager(), createDistCacheManager());
 	}
 
-	private EhCacheCacheManager createLocalCacheManager() {
-		EhCacheCacheManager localCacheManager = new EhCacheCacheManager();
-		net.sf.ehcache.config.Configuration cacheManagerConfig;
-		try (InputStream inputStream = new ClassPathResource("ehcache.xml").getInputStream()) {
-			cacheManagerConfig = parseConfiguration(inputStream);
-			cacheManagerConfig.setName("localCacheManager");
-			localCacheManager.setCacheManager(create(cacheManagerConfig));
-		} catch (Exception e) {
-			LOGGER.error("Error while setting up local cache", e);
+	private SimpleCacheManager createLocalCacheManager() {
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		List<Cache> caches = new ArrayList<>();
+		for (Map.Entry<String, Caffeine<Object, Object>> each : cacheConfigMap().getCaffeineCacheConfig().entrySet()) {
+			caches.add(new CaffeineCache(each.getKey(), each.getValue().build()));
 		}
-		return localCacheManager;
+		cacheManager.setCaches(caches);
+		cacheManager.initializeCaches();
+		return cacheManager;
 	}
 
 	private HazelcastCacheManager createDistCacheManager() {
@@ -155,11 +149,17 @@ public class DynamicCacheConfig implements ClusterConstants {
 	@Bean
 	public CacheConfigHolder cacheConfigMap() {
 		CacheConfigHolder cm = new CacheConfigHolder();
-		cm.addDistCache(CACHE_SAMPLING, 15, 15 , DIST , 0 , 0);
-		cm.addDistCache(CACHE_MONITORING, 15, 15, DIST , 0 , 0);
+		cm.addDistCache(CACHE_SAMPLING, 15, 15, DIST, 0, 0);
+		cm.addDistCache(CACHE_MONITORING, 15, 15, DIST, 0, 0);
 
-		cm.addDistCache(CACHE_USERS, 30, 100 , DIST_AND_LOCAL , 30 , 100);
-		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 100 , DIST_AND_LOCAL, 1 * HOUR + 40 * MIN, 100);
+		cm.addDistCache(CACHE_USERS, 30, 100, DIST_AND_LOCAL, 30, 100);
+		cm.addDistCache(CACHE_HIBERNATE_2ND_LEVEL, 30, 100, DIST_AND_LOCAL, 30, 100);
+		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 100, DIST_AND_LOCAL, 1 * HOUR + 40 * MIN, 100);
+
+		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 2);
+		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 2);
+		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
+		cm.addLocalCache(CACHE_LOCAL_AGENTS, 1 * HOUR, 1);
 		return cm;
 	}
 
@@ -170,6 +170,13 @@ public class DynamicCacheConfig implements ClusterConstants {
 		}
 
 		private final Map<String, MapConfig> hazelcastCacheConfigs = new ConcurrentHashMap<>();
+		private final Map<String, Caffeine<Object, Object>> caffeineCacheConfig = new ConcurrentHashMap<>();
+
+		void addLocalCache(String cacheName, int timeout, int count) {
+			Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
+				.maximumSize(count).expireAfterWrite(timeout, TimeUnit.SECONDS);
+			caffeineCacheConfig.put(cacheName, cacheBuilder);
+		}
 
 		void addDistCache(String cacheName, int timeout, int count, Mode mode, int nearCacheTimeout, int nearCacheCount) {
 			MapConfig mapConfig = new MapConfig(cacheName);
@@ -186,6 +193,10 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 		Map<String, MapConfig> getHazelcastCacheConfigs() {
 			return hazelcastCacheConfigs;
+		}
+
+		Map<String, Caffeine<Object, Object>> getCaffeineCacheConfig() {
+			return caffeineCacheConfig;
 		}
 	}
 

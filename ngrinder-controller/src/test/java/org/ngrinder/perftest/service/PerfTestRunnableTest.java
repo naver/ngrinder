@@ -13,15 +13,12 @@
  */
 package org.ngrinder.perftest.service;
 
-import com.google.common.collect.Lists;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
-import net.grinder.message.console.AgentControllerState;
 import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.fest.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.service.AgentManagerService;
