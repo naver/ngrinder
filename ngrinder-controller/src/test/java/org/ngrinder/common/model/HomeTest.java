@@ -14,13 +14,9 @@
 package org.ngrinder.common.model;
 
 import org.junit.Test;
-import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.starter.NGrinderControllerStarter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.io.File;
 
@@ -33,9 +29,7 @@ import static org.junit.Assert.assertThat;
  * @author JunHo Yoon
  * 
  */
-@ActiveProfiles("unit-test")
-@SpringBootTest(classes = NGrinderControllerStarter.class)
-public class HomeTest extends AbstractJUnit4SpringContextTests implements ControllerConstants {
+public class HomeTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private Config config;

@@ -35,6 +35,8 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.ngrinder.starter.NGrinderControllerStarter.removeCacheProviderExceptCaffeineCacheProvider;
+
 
 /**
  * This class is used as base class for test case,and it will initialize the DB
@@ -51,6 +53,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 
 	static {
 		System.setProperty("unit-test", "true");
+		removeCacheProviderExceptCaffeineCacheProvider();
 	}
 
 	@Autowired
