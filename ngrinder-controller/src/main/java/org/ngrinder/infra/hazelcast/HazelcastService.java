@@ -82,6 +82,10 @@ public class HazelcastService {
 		hazelcastInstance.getMap(map).put(key, value);
 	}
 
+	public void delete(String map, Object key) {
+		hazelcastInstance.getMap(map).delete(key);
+	}
+
 	public <K, V> V get(String map, K key) {
 		IMap<K, V> distMap = hazelcastInstance.getMap(map);
 		checkNotNull(distMap, "Cache(" + map +") is not exist");
