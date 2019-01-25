@@ -63,17 +63,6 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
 
 	/**
-	 * Update the monitor statistics on the perf test having the given {@link PerfTest} id.
-	 *
-	 * @param id            {@link PerfTest} id
-	 * @param monitorStatus monitor status json string
-	 * @return the count of updated row
-	 */
-	@Modifying
-	@Query("update PerfTest p set p.monitorState=?2 where p.id=?1")
-	int updatetMonitorStatus(Long id, String monitorStatus);
-
-	/**
 	 * Find all {@link PerfTest}s created between the given start and end date and having the the given region.
 	 *
 	 * @param start  time
