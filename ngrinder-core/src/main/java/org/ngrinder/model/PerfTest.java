@@ -295,15 +295,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
-	@Column(name = "running_sample", length = 9990)
-	private String runningSample;
-
-	@Column(name = "agent_stat", length = 9990)
-	private String agentState;
-
-	@Column(name = "monitor_stat", length = 2000)
-	private String monitorState;
-
 	@Expose
 	@Cloneable
 	@Column(name = "sampling_interval")
@@ -805,31 +796,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setSafeDistribution(Boolean safeDistribution) {
 		this.safeDistribution = safeDistribution;
-	}
-
-	public String getRunningSample() {
-		return runningSample;
-	}
-
-
-	public void setRunningSample(String runningSample) {
-		this.runningSample = runningSample;
-	}
-
-	public String getAgentState() {
-		return agentState;
-	}
-
-	public void setAgentState(String agentStatus) {
-		this.agentState = agentStatus;
-	}
-
-	public String getMonitorState() {
-		return monitorState;
-	}
-
-	public void setMonitorState(String monitorStatus) {
-		this.monitorState = monitorStatus;
 	}
 
 	public Integer getSamplingInterval() {
