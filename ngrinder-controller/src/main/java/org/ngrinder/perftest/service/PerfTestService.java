@@ -927,14 +927,15 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	/**
-	 * Check if the given perfTest has too many errors. (20%)
+	 * Check if the given perfTest has too many errors. (30%)
 	 *
 	 * @param perfTest perftest
 	 * @return true if too many errors.
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean hasTooManyError(PerfTest perfTest) {
-		Map<String, Object> result = getStatistics(perfTest);
+		SamplingModel samplingModel = hazelcastService.get(CACHE_SAMPLING, perfTest.getId());
+		Map<String, Object> result = gson.fromJson(samplingModel.getRunningSample(), HashMap.class);
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
 		long errors = MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue();
