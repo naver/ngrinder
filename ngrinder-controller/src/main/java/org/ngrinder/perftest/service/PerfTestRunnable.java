@@ -27,6 +27,7 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
@@ -48,6 +49,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_MONITORING;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_SAMPLING;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.model.Status.*;
@@ -86,6 +89,9 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	@Autowired
 	private ScheduledTaskService scheduledTaskService;
+
+	@Autowired
+	private HazelcastService hazelcastService;
 
 	private Runnable startRunnable;
 
@@ -441,7 +447,8 @@ public class PerfTestRunnable implements ControllerConstants {
 	 */
 	private void cleanUp(PerfTest perfTest) {
 		perfTestService.cleanUpDistFolder(perfTest);
-		perfTestService.cleanUpRuntimeOnlyData(perfTest);
+		hazelcastService.delete(CACHE_MONITORING, perfTest.getId());
+		hazelcastService.delete(CACHE_SAMPLING, perfTest.getId());
 	}
 
 	/**
