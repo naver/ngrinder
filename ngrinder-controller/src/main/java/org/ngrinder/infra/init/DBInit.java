@@ -13,7 +13,6 @@
  */
 package org.ngrinder.infra.init;
 
-import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -21,11 +20,13 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
+
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ADMIN_PASSWORD_RESET;
+import static org.ngrinder.model.Role.*;
 
 /**
  * Database Initialization.
@@ -36,7 +37,7 @@ import java.util.Date;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Service
+@Component
 public class DBInit {
 	@Autowired
 	private UserRepository userRepository;
@@ -54,20 +55,18 @@ public class DBInit {
 	 * Initialize DB.
 	 */
 	@PostConstruct
-	@Transactional
 	public void init() {
 		createDefaultUserIfNecessary();
 		resetAdminPasswordIfNecessary();
 	}
 
 	private void resetAdminPasswordIfNecessary() {
-		if (config.getControllerProperties().getPropertyBoolean(ControllerConstants
-				.PROP_CONTROLLER_ADMIN_PASSWORD_RESET)) {
-			final User admin = userRepository.findOneByUserId("admin");
+		if (config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ADMIN_PASSWORD_RESET)) {
+			User admin = userRepository.findOneByUserId("admin");
 			if (admin == null) {
-				createUser("admin", "admin", Role.ADMIN, "admin", "admin@nhn.com");
+				createUser("admin", "admin", ADMIN, "admin", "admin@nhn.com");
 			} else {
-				admin.setRole(Role.ADMIN);
+				admin.setRole(ADMIN);
 				admin.setPassword(passwordEncoder.encode("admin", "admin"));
 				userRepository.saveAndFlush(admin);
 			}
@@ -109,10 +108,10 @@ public class DBInit {
 	private void createDefaultUserIfNecessary() {
 		// If there is no users.. make admin and user and U, S, A roles.
 		if (userRepository.count() < 2) {
-			createUser("admin", "admin", Role.ADMIN, "admin", "admin@nhn.com");
-			createUser("user", "user", Role.USER, "user", "user@nhn.com");
-			createUser("superuser", "superuser", Role.SUPER_USER, "superuser", "superuser@nhn.com");
-			createUser("system", "system", Role.SYSTEM_USER, "system", "system@nhn.com");
+			createUser("admin", "admin", ADMIN, "admin", "admin@nhn.com");
+			createUser("user", "user", USER, "user", "user@nhn.com");
+			createUser("superuser", "superuser", SUPER_USER, "superuser", "superuser@nhn.com");
+			createUser("system", "system", SYSTEM_USER, "system", "system@nhn.com");
 		}
 	}
 }
