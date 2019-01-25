@@ -867,30 +867,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		return json;
 	}
 
-	/**
-	 * get test running statistic data from cache. If there is no cache data, will return empty statistic data.
-	 *
-	 * @param perfTest perfTest
-	 * @return test running statistic data
-	 */
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getStatistics(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getRunningSample(), HashMap.class);
-	}
-
-
 	private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-	/**
-	 * Get agent info from saved file.
-	 *
-	 * @param perfTest perftest
-	 * @return agent info map
-	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public Map<String, HashMap> getAgentStat(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getAgentState(), HashMap.class);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -1123,18 +1100,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	/**
-	 * Clean up the data which is used in runtime only.
-	 *
-	 * @param perfTest perfTest
-	 */
-	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
-		perfTest.setRunningSample("");
-		perfTest.setAgentState("");
-		perfTest.setMonitorState("");
-		save(perfTest);
-	}
-
-	/**
 	 * Put the given {@link org.ngrinder.monitor.share.domain.SystemInfo} maps into the given perftest entity.
 	 *
 	 * @param perfTestId  id of perf test
@@ -1155,17 +1120,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			json = gson.toJson(systemInfo);
 		}
 		hazelcastService.put(CACHE_MONITORING , perfTestId , json);
-	}
-
-	/**
-	 * Get monitor status map for the given perfTest.
-	 *
-	 * @param perfTest perf test
-	 * @return map of monitor name and monitor status.
-	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getMonitorState(), HashMap.class);
 	}
 
 	/**
