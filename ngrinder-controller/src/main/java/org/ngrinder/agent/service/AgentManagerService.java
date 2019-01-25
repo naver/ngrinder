@@ -408,7 +408,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		if (found.isPresent()) {
 			agentInfo = found.get();
 			agentInfo.setApproved(approve);
-			agentManagerRepository.save(agentInfo);
 			expireLocalCache();
 		}
 

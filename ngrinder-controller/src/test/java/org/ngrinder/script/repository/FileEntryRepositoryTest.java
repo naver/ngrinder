@@ -115,7 +115,7 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 		// commit again
 		repo.save(getTestUser(), fileEntry, null);
-		findAll = repo.findAll(getTestUser(), "hello.zip", null);
+		repo.findAll(getTestUser(), "hello.zip", null);
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}
 

@@ -258,15 +258,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		// Merge if necessary
 		if (perfTest.exist()) {
 			Optional<PerfTest> existingPerfTest = perfTestRepository.findOne(idEqual(perfTest.getId()));
-			if (existingPerfTest.isPresent()) {
-				perfTest = existingPerfTest.get().merge(perfTest);
-			}
+			existingPerfTest.ifPresent(perfTest1 -> perfTest1.merge(perfTest));
 		} else {
 			perfTest.clearMessages();
+			perfTestRepository.saveAndFlush(perfTest);
 		}
-		return perfTestRepository.saveAndFlush(perfTest);
+		return perfTest;
 	}
-
 
 	private void attachFileRevision(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
@@ -809,7 +807,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param singleConsole single console.
 	 * @param perfTestId    perfTest Id
 	 */
-	@Transactional
 	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		String runningSample = getProperSizeRunningSample(singleConsole);
 		String agentState = getProperSizedStatusString(singleConsole);
@@ -1111,7 +1108,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param perfTestId  id of perf test
 	 * @param systemInfos systemDataModel map
 	 */
-	@Transactional
 	public void updateMonitorStat(Long perfTestId, Map<String, SystemDataModel> systemInfos) {
 		String json = gson.toJson(systemInfos);
 		if (json.length() >= 2000) {
