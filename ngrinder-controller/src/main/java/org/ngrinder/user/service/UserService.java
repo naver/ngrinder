@@ -95,7 +95,7 @@ public class UserService extends AbstractUserService {
 	 * @return user
 	 */
 	@Transactional
-	@Cacheable(CACHE_USERS)
+	@Cacheable(value = CACHE_USERS, key = "#userId")
 	@Override
 	public User getOne(String userId) {
 		return userRepository.findOneByUserId(userId);
