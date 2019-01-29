@@ -887,7 +887,7 @@ public class PerfTestController extends BaseController {
 	@RequestMapping(value = {"/api/last", "/api", "/api/"}, method = RequestMethod.GET)
 	public HttpEntity<String> getAll(User user, @RequestParam(value = "page", defaultValue = "0") int page,
 	                                 @RequestParam(value = "size", defaultValue = "1") int size) {
-		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+		PageRequest pageRequest = PageRequest.of(page, size, new Sort(Direction.DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPagedAll(user, null, null, null, pageRequest);
 		return toJsonHttpEntity(testList.getContent());
 	}

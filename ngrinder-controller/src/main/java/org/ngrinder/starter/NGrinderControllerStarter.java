@@ -14,7 +14,6 @@
 package org.ngrinder.starter;
 
 import com.beust.jcommander.*;
-import com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
@@ -26,15 +25,15 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
-import javax.cache.Caching;
-import javax.cache.spi.CachingProvider;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.ProtectionDomain;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static net.grinder.util.NoOp.noOp;
 
@@ -48,10 +47,6 @@ import static net.grinder.util.NoOp.noOp;
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NGrinderControllerStarter.class);
-
-	static {
-		removeCacheProviderExceptCaffeineCacheProvider();
-	}
 
 	@Parameters(separators = "= ")
 	enum ClusterMode {
@@ -275,26 +270,9 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		return application.sources(NGrinderControllerStarter.class);
 	}
 
-	/**
-	 * remove all cache provider except caffeine cache provider for using JCacheRegionFactory in hibernate second level cache.
-	 */
-	public static void removeCacheProviderExceptCaffeineCacheProvider() {
-		Iterator<CachingProvider> iterator = Caching.getCachingProviders().iterator();
-		while (iterator.hasNext()) {
-			CachingProvider cachingProvider = iterator.next();
-			if (!(cachingProvider instanceof CaffeineCachingProvider)) {
-				iterator.remove();
-			}
-		}
-	}
-
 	private static void cleanupPreviouslyUnpackedFolders() {
-		File[] previouslyUnpackedFolder = FileUtils.getTempDirectory().listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.startsWith("ngrinder-controller") && !Config.getCurrentLibPath().contains(name);
-			}
-		});
+		File[] previouslyUnpackedFolder = FileUtils.getTempDirectory()
+			.listFiles((dir, name) -> name.startsWith("ngrinder-controller") && !Config.getCurrentLibPath().contains(name));
 
 		for (File file : Objects.requireNonNull(previouslyUnpackedFolder)) {
 			try {
