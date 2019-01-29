@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationListener=org.ngrinder.infra.spring.listener.ApplicationPreparedListener
