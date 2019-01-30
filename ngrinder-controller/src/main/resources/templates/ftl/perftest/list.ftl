@@ -316,7 +316,6 @@ $(document).ready(function () {
 		bootbox.confirm("<@spring.message "perfTest.message.delete.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
 			if (result) {
 				deleteTests(id);
-				setTimeout(getList(), 1000);
 			}
 		});
 	});
