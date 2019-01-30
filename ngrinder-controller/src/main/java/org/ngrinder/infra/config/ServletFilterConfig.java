@@ -1,6 +1,7 @@
 package org.ngrinder.infra.config;
 
 import com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,20 +11,20 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 
+import javax.servlet.Filter;
+
 @Configuration
+@SuppressWarnings("unchecked")
 public class ServletFilterConfig {
-	@Bean
-	public FilterRegistrationBean characterEncodingFilterRRegisterBean() {
-		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-		registrationBean.setFilter(characterEncodingFilter());
-		registrationBean.setOrder(1);
-		return registrationBean;
-	}
+
+	@Value("${server.default-encoding}")
+	private String defaultEncoding;
 
 	@Bean
-	public CharacterEncodingFilter characterEncodingFilter(){
+	public Filter characterEncodingFilter() {
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-		characterEncodingFilter.setEncoding("UTF-8");
+		characterEncodingFilter.setForceEncoding(true);
+		characterEncodingFilter.setEncoding(defaultEncoding);
 		return characterEncodingFilter;
 	}
 
@@ -32,7 +33,7 @@ public class ServletFilterConfig {
 		FilterRegistrationBean xssEscapeServletFilter = new FilterRegistrationBean(new XssEscapeServletFilter());
 		String[] urlMappings = {"/login/*", "/perftest/*", "/user/*", "/script/*"};
 		xssEscapeServletFilter.addUrlPatterns(urlMappings);
-		xssEscapeServletFilter.setOrder(2);
+		xssEscapeServletFilter.setOrder(1);
 		return xssEscapeServletFilter;
 	}
 
@@ -40,7 +41,7 @@ public class ServletFilterConfig {
 	public FilterRegistrationBean httpPutFormContentFilter() {
 		FilterRegistrationBean httpPutFormContentFilter = new FilterRegistrationBean(new HttpPutFormContentFilter());
 		httpPutFormContentFilter.addUrlPatterns("/*");
-		httpPutFormContentFilter.setOrder(3);
+		httpPutFormContentFilter.setOrder(2);
 		return httpPutFormContentFilter;
 	}
 
@@ -48,7 +49,7 @@ public class ServletFilterConfig {
 	public FilterRegistrationBean springOpenEntityManagerInViewFilter() {
 		FilterRegistrationBean springOpenEntityManagerInViewFilter = new FilterRegistrationBean(new OpenEntityManagerInViewFilter());
 		springOpenEntityManagerInViewFilter.addUrlPatterns("/*");
-		springOpenEntityManagerInViewFilter.setOrder(4);
+		springOpenEntityManagerInViewFilter.setOrder(3);
 		return springOpenEntityManagerInViewFilter;
 	}
 
@@ -56,7 +57,7 @@ public class ServletFilterConfig {
 	public FilterRegistrationBean hiddenHttpMethodFilter() {
 		FilterRegistrationBean hiddenHttpMethodFilter = new FilterRegistrationBean(new HiddenHttpMethodFilter());
 		hiddenHttpMethodFilter.addUrlPatterns("/*");
-		hiddenHttpMethodFilter.setOrder(5);
+		hiddenHttpMethodFilter.setOrder(4);
 		return hiddenHttpMethodFilter;
 	}
 
@@ -65,7 +66,7 @@ public class ServletFilterConfig {
 		FilterRegistrationBean pluggableServletFilter = new FilterRegistrationBean(new DelegatingFilterProxy());
 		pluggableServletFilter.addUrlPatterns("/*");
 		pluggableServletFilter.setName("pluggableServletFilter");
-		pluggableServletFilter.setOrder(6);
+		pluggableServletFilter.setOrder(5);
 		return pluggableServletFilter;
 	}
 }
