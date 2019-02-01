@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.5.0" id="28" dbms="h2">
+		<comment>Add default value to timestamp data type.</comment>
+		<modifyDataType tableName="NUSER" columnName="created_date" newDataType="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"/>
+		<modifyDataType tableName="NUSER" columnName="last_modified_date" newDataType="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"/>
+
+		<modifyDataType tableName="PERF_TEST" columnName="created_date" newDataType="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"/>
+		<modifyDataType tableName="PERF_TEST" columnName="last_modified_date" newDataType="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"/>
+
+		<modifyDataType tableName="TAG" columnName="created_date" newDataType="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"/>
+		<modifyDataType tableName="TAG" columnName="last_modified_date" newDataType="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"/>
+	</changeSet>
+</databaseChangeLog>
