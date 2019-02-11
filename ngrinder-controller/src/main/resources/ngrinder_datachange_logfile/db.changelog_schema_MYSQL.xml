@@ -5,8 +5,9 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
    
 	<changeSet author="initialDB" id="2" dbms="mysql">
-        <comment>DB initialization.</comment>
+        <comment>DB(MySQL) initialization.</comment>
 	    <sql>
+
 			create table if not exists AGENT (
 				id bigint auto_increment unique,
 				approved char(1) not null,
@@ -50,7 +51,7 @@
 				distribution_path varchar(255),
 				duration bigint,
 				errors bigint,
-				finish_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				finish_time timestamp NULL DEFAULT NULL,
 				ignore_sample_count int,
 				ramp_up_init_count int,
 				ramp_up_init_sleep_time int,
@@ -63,11 +64,11 @@
 				processes int,
 				progress_message text,
 				run_count int,
-				scheduled_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				scheduled_time timestamp NULL DEFAULT NULL,
 				script_name varchar(255),
 				script_revision bigint,
 				send_mail char(1),
-				start_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				start_time timestamp NULL DEFAULT NULL,
 				status varchar(255),
 				stop_request char(1),
 				tag_string varchar(255),
