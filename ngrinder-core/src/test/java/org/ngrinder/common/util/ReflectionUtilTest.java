@@ -13,11 +13,16 @@
  */
 package org.ngrinder.common.util;
 
+import org.junit.Test;
+import org.ngrinder.model.BaseEntity;
+import org.ngrinder.model.BaseModel;
+import org.ngrinder.model.User;
+
+import java.lang.reflect.Field;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-import org.ngrinder.model.User;
 
 /**
  * Class description.
@@ -37,5 +42,12 @@ public class ReflectionUtilTest {
 		testUser.setUserId("TMP_UID");
 		String rtnUid = (String) ReflectionUtils.getFieldValue(testUser, "userId");
 		assertThat(rtnUid, is("TMP_UID"));
+	}
+
+	@Test
+	public void testGetDeclaredFieldsIncludingParent() {
+		List<Field> fields = ReflectionUtils.getDeclaredFieldsIncludingParent(User.class);
+		int UserObjectDeclaredFields = User.class.getDeclaredFields().length + BaseModel.class.getDeclaredFields().length + BaseEntity.class.getDeclaredFields().length;
+		assertThat(fields.size(), is(UserObjectDeclaredFields));
 	}
 }

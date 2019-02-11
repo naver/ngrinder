@@ -16,11 +16,13 @@ package org.ngrinder.model;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.ngrinder.common.util.ReflectionUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
@@ -79,7 +81,7 @@ public class BaseEntity<M> implements Serializable {
 	public M merge(M source) {
 		Field forDisplay = null;
 		try {
-			Field[] fields = getClass().getDeclaredFields();
+			List<Field> fields = ReflectionUtils.getDeclaredFieldsIncludingParent(getClass());
 			// Iterate over all the attributes
 			for (Field each : fields) {
 				if (each.isSynthetic()) {
