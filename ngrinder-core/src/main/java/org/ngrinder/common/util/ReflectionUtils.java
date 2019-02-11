@@ -19,6 +19,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
@@ -33,6 +38,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public abstract class ReflectionUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtils.class);
+	private static final Map<Class, List<Field>> fieldCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Get object field value, bypassing getter method.
@@ -75,6 +81,24 @@ public abstract class ReflectionUtils {
 		if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
 			field.setAccessible(true);
 		}
+	}
+
+	public static List<Field> getDeclaredFieldsIncludingParent(Class<?> current) {
+
+		if (fieldCache.containsKey(current)) {
+			return fieldCache.get(current);
+		}
+
+		List<Field> fields = new ArrayList<>();
+		fieldCache.put(current, fields);
+
+		while (current != null) {
+			List<Field> declared = Arrays.asList(current.getDeclaredFields());
+			fields.addAll(declared);
+			current = current.getSuperclass();
+		}
+
+		return fields;
 	}
 
 }
