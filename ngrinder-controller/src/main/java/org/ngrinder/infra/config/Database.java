@@ -14,12 +14,15 @@
 package org.ngrinder.infra.config;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.hibernate.dialect.*;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.H2ExDialect;
+import org.hibernate.dialect.MYSQLExDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Driver;
+import java.util.TimeZone;
 
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
 
@@ -36,11 +39,14 @@ public enum Database {
 	/**
 	 * MYSQL.
 	 */
-	mysql(com.mysql.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8&%s") {
+	mysql(com.mysql.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8&serverTimezone=%s&%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
-				databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION)));
+			String databaseUrlOption = databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION);
+			dataSource.setUrl(String.format(getUrlTemplate(),
+				databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
+				TimeZone.getDefault().getID(),
+				databaseUrlOption == null ? "" : databaseUrlOption));
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
 			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
