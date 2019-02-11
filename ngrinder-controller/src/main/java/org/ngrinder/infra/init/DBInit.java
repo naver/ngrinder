@@ -100,7 +100,13 @@ public class DBInit {
 			user.setRole(role);
 			user.setUserName(userName);
 			user.setEmail(email);
-			user.setCreatedDate(new Date());
+
+			Date now = new Date();
+			user.setCreatedDate(now);
+			user.setLastModifiedDate(now);
+			user.setCreatedUser(user);
+			user.setLastModifiedUser(user);
+
 			user = userRepository.save(user);
 			fileEntryService.prepare(user);
 		}
