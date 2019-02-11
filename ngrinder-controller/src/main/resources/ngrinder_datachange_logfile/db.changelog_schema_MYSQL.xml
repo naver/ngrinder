@@ -113,20 +113,6 @@
 				primary key (id)
 			);
 
-			create table if not exists SYSTEM_MONITOR (
-				id bigint auto_increment unique,
-				collect_time bigint,
-				cpu_used_percentage float,
-				free_memory bigint,
-				ip varchar(255),
-				monitor_key varchar(255),
-				message varchar(255),
-				port int not null,
-				system varchar(255),
-				total_memory bigint,
-				primary key (id)
-			);
-
 			create table if not exists SHARED_USER (
 				owner_id bigint not null,
 				follow_id bigint not null,
@@ -140,9 +126,6 @@
 			create index scheduled_time_index on PERF_TEST (scheduled_time);
 			create index last_modified_user_index on TAG (last_modified_user);
 			create index created_user_index on TAG (created_user);
-			create index monitor_key_index on SYSTEM_MONITOR (monitor_key);
-			create index collect_time_index on SYSTEM_MONITOR (collect_time);
-			create index ip_index on SYSTEM_MONITOR (ip);
 			create index perf_test_status_index on PERF_TEST (status);
 	    </sql>
     </changeSet>
