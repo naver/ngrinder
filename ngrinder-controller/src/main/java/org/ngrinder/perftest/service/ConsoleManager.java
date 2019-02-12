@@ -16,7 +16,7 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
-import org.h2.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
