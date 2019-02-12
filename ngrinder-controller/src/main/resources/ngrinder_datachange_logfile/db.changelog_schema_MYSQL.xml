@@ -23,8 +23,8 @@
 
 			create table if not exists NUSER (
 				id bigint auto_increment unique,
-				created_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				last_modified_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				created_date timestamp NULL DEFAULT NULL,
+				last_modified_date timestamp NULL DEFAULT NULL,
 				authentication_provider_class varchar(255),
 				description varchar(255),
 				email varchar(255),
@@ -44,8 +44,8 @@
 
 			create table if not exists PERF_TEST (
 				id bigint auto_increment unique,
-				created_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				last_modified_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				created_date timestamp NULL DEFAULT NULL,
+				last_modified_date timestamp NULL DEFAULT NULL,
 				agent_count int,
 				description text,
 				distribution_path varchar(255),
@@ -105,8 +105,8 @@
 
 			create table if not exists TAG (
 				id bigint auto_increment unique,
-				created_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				last_modified_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				created_date timestamp NULL DEFAULT NULL,
+				last_modified_date timestamp NULL DEFAULT NULL,
 				tagValue varchar(255),
 				created_user bigint,
 				last_modified_user bigint,
