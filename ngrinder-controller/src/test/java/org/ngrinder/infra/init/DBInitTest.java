@@ -61,6 +61,6 @@ public class DBInitTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 		// Two users should be exist
 		assertThat(users.size(), is(4));
 		assertThat(users.get(0).getUserId(), is("admin"));
-		assertThat(users.get(1).getUserId(), is("user"));
+		assertThat(users.get(1).getUserId(), is("superuser"));
 	}
 }
