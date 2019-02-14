@@ -34,7 +34,6 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.*;
-import org.ngrinder.script.handler.ScriptHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,9 +206,8 @@ public class PerfTestRunnable implements ControllerConstants {
 	public void doTest(final PerfTest perfTest) {
 		SingleConsole singleConsole = null;
 		try {
+			GrinderProperties grinderProperties = perfTestService.prepareTest(perfTest);
 			singleConsole = startConsole(perfTest);
-			ScriptHandler prepareDistribution = perfTestService.prepareDistribution(perfTest);
-			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, checkCancellation(singleConsole));
 

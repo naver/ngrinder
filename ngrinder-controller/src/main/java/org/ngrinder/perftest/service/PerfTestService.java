@@ -663,6 +663,19 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		return handler;
 	}
 
+	public GrinderProperties prepareTest(PerfTest perfTest) {
+		cleanupPerftestDistibutionFolder(perfTest);
+		ScriptHandler prepareDistribution = prepareDistribution(perfTest);
+		return getGrinderProperties(perfTest, prepareDistribution);
+	}
+
+	private void cleanupPerftestDistibutionFolder(PerfTest perfTest) {
+		File distributedFolder = config.getHome().getDistributedFolderName(perfTest.getId().toString());
+		if (distributedFolder.exists()) {
+			FileUtils.deleteQuietly(distributedFolder);
+		}
+	}
+
 	/**
 	 * Get the process and thread policy java script.
 	 *
