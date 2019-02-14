@@ -294,7 +294,7 @@ public class Home {
 		return mkDir(file);
 	}
 
-	File getDistributedFolderName(String id) {
+	public File getDistributedFolderName(String id) {
 		int numericId = 0;
 		try {
 			numericId = (Integer.parseInt(id) / 1000) * 1000;
