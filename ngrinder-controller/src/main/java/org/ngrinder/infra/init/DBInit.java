@@ -64,7 +64,7 @@ public class DBInit {
 		if (config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ADMIN_PASSWORD_RESET)) {
 			User admin = userRepository.findOneByUserId("admin");
 			if (admin == null) {
-				createUser("admin", "admin", ADMIN, "admin", "admin@nhn.com");
+				createUser("admin", "admin", ADMIN, "admin", "ngrinder-admin@naver.com");
 			} else {
 				admin.setRole(ADMIN);
 				admin.setPassword(passwordEncoder.encode("admin", "admin"));
@@ -108,10 +108,10 @@ public class DBInit {
 	private void createDefaultUserIfNecessary() {
 		// If there is no users.. make admin and user and U, S, A roles.
 		if (userRepository.count() < 2) {
-			createUser("admin", "admin", ADMIN, "admin", "admin@nhn.com");
-			createUser("user", "user", USER, "user", "user@nhn.com");
-			createUser("superuser", "superuser", SUPER_USER, "superuser", "superuser@nhn.com");
-			createUser("system", "system", SYSTEM_USER, "system", "system@nhn.com");
+			createUser("admin", "admin", ADMIN, "admin", "ngrinder-admin@naver.com");
+			createUser("superuser", "superuser", SUPER_USER, "superuser", "ngrinder-superuser@naver.com");
+			createUser("system", "system", SYSTEM_USER, "system", "ngrinder-system@naver.com");
+			createUser("user", "user", USER, "user", "user@naver.com");
 		}
 	}
 }
