@@ -69,8 +69,8 @@ import java.util.*;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_MONITORING;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_SAMPLING;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -615,13 +615,13 @@ public class PerfTestController extends BaseController {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
 		Map<String, Object> map = newHashMap();
 
-		SamplingModel samplingModel = hazelcastService.get(CACHE_SAMPLING, test.getId());
+		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, test.getId());
 		if (samplingModel != null) {
 			map.put("perf", gson.fromJson(samplingModel.getRunningSample(), HashMap.class));
 			map.put("agent", gson.fromJson(samplingModel.getAgentState(), HashMap.class));
 		}
 
-		String monitoringJson = hazelcastService.get(CACHE_MONITORING, test.getId());
+		String monitoringJson = hazelcastService.get(DIST_MAP_NAME_MONITORING, test.getId());
 		if (monitoringJson != null) {
 			map.put("monitor", gson.fromJson(monitoringJson, HashMap.class));
 		}

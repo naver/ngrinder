@@ -41,8 +41,6 @@ import static com.hazelcast.config.MaxSizeConfig.MaxSizePolicy.PER_NODE;
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static net.grinder.util.NetworkUtils.selectLocalIp;
 import static org.ngrinder.common.constant.CacheConstants.*;
-import static org.ngrinder.infra.config.DynamicCacheConfig.CacheConfigHolder.Mode.DIST;
-import static org.ngrinder.infra.config.DynamicCacheConfig.CacheConfigHolder.Mode.DIST_AND_LOCAL;
 import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
 
 /**
@@ -149,11 +147,11 @@ public class DynamicCacheConfig implements ClusterConstants {
 	@Bean
 	public CacheConfigHolder cacheConfigMap() {
 		CacheConfigHolder cm = new CacheConfigHolder();
-		cm.addDistCache(CACHE_SAMPLING, 15, 15, DIST, 0, 0);
-		cm.addDistCache(CACHE_MONITORING, 15, 15, DIST, 0, 0);
+		cm.addDistMap(DIST_MAP_NAME_SAMPLING, 15, 20);
+		cm.addDistMap(DIST_MAP_NAME_MONITORING, 15, 20);
 
-		cm.addDistCache(CACHE_USERS, 30, 100, DIST_AND_LOCAL, 30, 100);
-		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 100, DIST_AND_LOCAL, 1 * HOUR + 40 * MIN, 100);
+		cm.addDistCache(CACHE_USERS, 30, 100, 30, 100);
+		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 100, 1 * HOUR + 40 * MIN, 100);
 
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 2);
 		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 2);
@@ -163,11 +161,6 @@ public class DynamicCacheConfig implements ClusterConstants {
 	}
 
 	static class CacheConfigHolder {
-		enum Mode {
-			DIST,
-			DIST_AND_LOCAL,
-		}
-
 		private final Map<String, MapConfig> hazelcastCacheConfigs = new ConcurrentHashMap<>();
 		private final Map<String, Caffeine<Object, Object>> caffeineCacheConfig = new ConcurrentHashMap<>();
 
@@ -177,16 +170,23 @@ public class DynamicCacheConfig implements ClusterConstants {
 			caffeineCacheConfig.put(cacheName, cacheBuilder);
 		}
 
-		void addDistCache(String cacheName, int timeout, int count, Mode mode, int nearCacheTimeout, int nearCacheCount) {
+		void addDistCache(String cacheName, int timeout, int count, int nearCacheTimeout, int nearCacheCount) {
 			MapConfig mapConfig = new MapConfig(cacheName);
 			mapConfig.setTimeToLiveSeconds(timeout);
 			mapConfig.setMaxSizeConfig(new MaxSizeConfig(count, PER_NODE));
-			if (DIST_AND_LOCAL.equals(mode)) {
-				NearCacheConfig nearCacheConfig = new NearCacheConfig(cacheName);
-				nearCacheConfig.setTimeToLiveSeconds(nearCacheTimeout);
-				nearCacheConfig.setMaxSize(nearCacheCount);
-				mapConfig.setNearCacheConfig(nearCacheConfig);
-			}
+
+			NearCacheConfig nearCacheConfig = new NearCacheConfig(cacheName);
+			nearCacheConfig.setTimeToLiveSeconds(nearCacheTimeout);
+			nearCacheConfig.setMaxSize(nearCacheCount);
+			mapConfig.setNearCacheConfig(nearCacheConfig);
+
+			hazelcastCacheConfigs.put(cacheName, mapConfig);
+		}
+
+		void addDistMap(String cacheName, int timeout, int count) {
+			MapConfig mapConfig = new MapConfig(cacheName);
+			mapConfig.setTimeToLiveSeconds(timeout);
+			mapConfig.setMaxSizeConfig(new MaxSizeConfig(count, PER_NODE));
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
 		}
 

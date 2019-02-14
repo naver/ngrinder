@@ -823,7 +823,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		String runningSample = getProperSizeRunningSample(singleConsole);
 		String agentState = getProperSizedStatusString(singleConsole);
-		hazelcastService.put(CACHE_SAMPLING, perfTestId, new SamplingModel(runningSample, agentState));
+		hazelcastService.put(DIST_MAP_NAME_SAMPLING, perfTestId, new SamplingModel(runningSample, agentState));
 	}
 
 	private String getProperSizeRunningSample(SingleConsole singleConsole) {
@@ -927,7 +927,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean hasTooManyError(PerfTest perfTest) {
-		SamplingModel samplingModel = hazelcastService.get(CACHE_SAMPLING, perfTest.getId());
+		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, perfTest.getId());
 		Map<String, Object> result = gson.fromJson(samplingModel.getRunningSample(), HashMap.class);
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
@@ -1134,7 +1134,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			}
 			json = gson.toJson(systemInfo);
 		}
-		hazelcastService.put(CACHE_MONITORING , perfTestId , json);
+		hazelcastService.put(DIST_MAP_NAME_MONITORING , perfTestId , json);
 	}
 
 	/**

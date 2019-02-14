@@ -48,8 +48,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_MONITORING;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_SAMPLING;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.model.Status.*;
@@ -445,8 +445,8 @@ public class PerfTestRunnable implements ControllerConstants {
 	 */
 	private void cleanUp(PerfTest perfTest) {
 		perfTestService.cleanUpDistFolder(perfTest);
-		hazelcastService.delete(CACHE_MONITORING, perfTest.getId());
-		hazelcastService.delete(CACHE_SAMPLING, perfTest.getId());
+		hazelcastService.delete(DIST_MAP_NAME_MONITORING, perfTest.getId());
+		hazelcastService.delete(DIST_MAP_NAME_SAMPLING, perfTest.getId());
 	}
 
 	/**
