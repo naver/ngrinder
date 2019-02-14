@@ -47,7 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_HIBERNATE_2ND_LEVEL;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
 
 /**
  * The Class UserService.
@@ -85,7 +85,7 @@ public class UserService extends AbstractUserService {
 	@PostConstruct
 	public void init() {
 		userCache = cacheManager.getCache(CACHE_USERS);
-		userModelCache = cacheManager.getCache(CACHE_HIBERNATE_2ND_LEVEL);
+		userModelCache = cacheManager.getCache(CACHE_USER_ENTITY);
 	}
 
 	/**
