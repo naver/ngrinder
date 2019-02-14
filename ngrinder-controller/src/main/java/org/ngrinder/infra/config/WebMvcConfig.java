@@ -143,7 +143,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			, "/**/*.jpg" , "/**/*.swf" , "/**/*.csv" , "/**/*.css"
 			, "/**/*.html" , "/**/*.gif" , "/**/*.ico" , "/**/*.woff2"
 			, "/**/*.woff" , "/**/*.ttf"};
-		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations());
+		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations()).setCachePeriod(3600);
 	}
 
 	public static class NGrinderFreeMarkerConfigure extends FreeMarkerConfigurer {
