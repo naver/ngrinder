@@ -153,7 +153,6 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addDistCache(CACHE_MONITORING, 15, 15, DIST, 0, 0);
 
 		cm.addDistCache(CACHE_USERS, 30, 100, DIST_AND_LOCAL, 30, 100);
-		cm.addDistCache(CACHE_HIBERNATE_2ND_LEVEL, 30, 100, DIST_AND_LOCAL, 30, 100);
 		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 100, DIST_AND_LOCAL, 1 * HOUR + 40 * MIN, 100);
 
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 2);
