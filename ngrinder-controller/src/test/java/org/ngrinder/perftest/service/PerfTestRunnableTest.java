@@ -121,6 +121,9 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		perfTest.setScriptName("/hello/world.py");
 		assertThat(perfTest, not(nullValue()));
 
+		// Distribute files
+		GrinderProperties grinderProperties = perfTestService.prepareTest(perfTest);
+
 		// Start console
 		SingleConsole singleConsole = perfTestRunnable.startConsole(perfTest);
 		assertThat(singleConsole, not(nullValue()));
@@ -128,11 +131,8 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 		// Start agents
 		perfTest.setAgentCount(1);
-		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 
-		// Distribute files
-		perfTestService.prepareDistribution(perfTest);
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 		sleep(3000);
 		perfTestRunnable.distributeFileOn(perfTest, singleConsole);
