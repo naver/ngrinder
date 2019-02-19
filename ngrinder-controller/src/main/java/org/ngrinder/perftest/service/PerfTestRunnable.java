@@ -266,7 +266,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
-		final long safeThreadHold = getSafeTransmissionThreshold();
+		final long safeThreshold = getSafeTransmissionThreshold();
 
 		listener.add(new SingleConsole.FileDistributionListener() {
 			@Override
@@ -281,9 +281,9 @@ public class PerfTestRunnable implements ControllerConstants {
 					return safe;
 				}
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
-				if (sizeOfDirectory > safeThreadHold) {
+				if (sizeOfDirectory > safeThreshold) {
 					perfTestService.markProgress(perfTest, "The total size of distributed files is over "
-							+ UnitUtils.byteCountToDisplaySize(safeThreadHold) + "B.\n- Safe file distribution mode is enabled by force.");
+							+ UnitUtils.byteCountToDisplaySize(safeThreshold) + "B.\n- Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;
