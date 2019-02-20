@@ -99,7 +99,6 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 		if (isClustered() && getClusterURIs() != null && getClusterURIs().length > 0) {
 			JoinConfig join = networkConfig.getJoin();
-			join.getAwsConfig().setEnabled(false);
 			join.getMulticastConfig().setEnabled(false);
 			TcpIpConfig tcpIpConfig = join.getTcpIpConfig();
 			tcpIpConfig.setEnabled(true);
@@ -107,9 +106,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 			networkConfig.setPublicAddress(selectLocalIp(Arrays.asList(getClusterURIs())));
 		} else {
 			JoinConfig join = networkConfig.getJoin();
-			join.getAwsConfig().setEnabled(false);
-			join.getTcpIpConfig().setEnabled(false);
-			join.getMulticastConfig().setEnabled(true);
+			join.getMulticastConfig().setEnabled(false);
 		}
 
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
