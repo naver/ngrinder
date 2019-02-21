@@ -240,7 +240,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		if (!server.contextPath.startsWith("/")) {
 			server.contextPath = "/" + server.contextPath;
 		}
-		System.setProperty("server.contextPath", server.contextPath);
+		System.setProperty("server.servlet.context-path", server.contextPath);
 
 		if (server.help) {
 			commander.usage();
