@@ -37,6 +37,7 @@ subprojects {
     hazelcast_version = "3.11.1"
     gson_version = "2.8.0"
     mockito_version = "2.15.0"
+    handlebars_version = "4.0.5"
   }
 
   repositories {
