@@ -54,7 +54,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		User testUserError = Mockito.spy(testUser2);
 		Mockito.when(testUserError.getRole()).thenReturn(Role.SYSTEM_USER);
 		viewName = homeController.home(testUserError, "Test Error message!", null, model, res, req);
-		assertThat(viewName, is("login"));
+		assertThat(viewName, is("app"));
 
 	}
 
