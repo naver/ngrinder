@@ -1,0 +1,27 @@
+apply plugin: "com.moowork.node"
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.moowork.gradle:gradle-node-plugin:0.13"
+    }
+}
+
+node {
+    version = "8.9.0"
+    // Enabled the automatic download. False is the default (for now).
+    download = true
+}
+
+task webpack(dependsOn: "npmInstall", type: NodeTask) {
+    script = file("node_modules/webpack/bin/webpack")
+}
+
+task watch(type: NodeTask) {
+    script = file("node_modules/webpack/bin/webpack")
+    args = ["-w"]
+}
