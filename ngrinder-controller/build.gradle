@@ -35,6 +35,8 @@ dependencies {
     compile (group: "org.springframework.boot", name: "spring-boot-starter-data-jpa")
     compile (group: "org.springframework.boot", name: "spring-boot-starter-cache")
 
+    compile (group: "com.github.jknack", name: "handlebars-springmvc", version: handlebars_version)
+    compile (group: "com.github.jknack", name: "handlebars-helpers", version: handlebars_version)
     compile (group: "rome", name: "rome", version: "1.0")
     compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
     compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
@@ -99,3 +101,5 @@ test {
 }
 
 tasks.bootWar.dependsOn convert_cr_lf
+
+tasks.processResources.dependsOn tasks.getByPath(":ngrinder-frontend:webpack")
