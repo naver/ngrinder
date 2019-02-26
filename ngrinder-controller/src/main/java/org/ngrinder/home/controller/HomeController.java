@@ -131,7 +131,7 @@ public class HomeController extends BaseController implements ControllerConstant
 				addCommonLoginAttribute(model);
 				role = user.getRole();
 			} catch (AuthenticationCredentialsNotFoundException e) {
-				return "login";
+				return "app";
 			}
 			setPanelEntries(model);
 			model.addAttribute("handlers", scriptHandlerFactory.getVisibleHandlers());
@@ -143,7 +143,7 @@ public class HomeController extends BaseController implements ControllerConstant
 				return "index";
 			} else {
 				LOG.info("Invalid user role:{}", role.getFullName());
-				return "login";
+				return "app";
 			}
 		} catch (Exception e) {
 			// Make the home reliable...
@@ -165,8 +165,6 @@ public class HomeController extends BaseController implements ControllerConstant
 						getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL)));
 		model.addAttribute("see_more_resources_url", getConfig().getControllerProperties().getProperty
 				(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL));
-
-
 	}
 
 	private List<PanelEntry> getRightPanelEntries() {
@@ -259,7 +257,7 @@ public class HomeController extends BaseController implements ControllerConstant
 			getCurrentUser();
 		} catch (Exception e) {
 			CoreLogger.LOGGER.info("Login Failure " + e.getMessage());
-			return "login";
+			return "app";
 		}
 		model.clear();
 		return "redirect:/";
@@ -305,5 +303,4 @@ public class HomeController extends BaseController implements ControllerConstant
 		}
 		return home(user, null, null, model, response, request);
 	}
-
 }
