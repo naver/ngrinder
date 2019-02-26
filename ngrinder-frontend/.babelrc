@@ -1,0 +1,15 @@
+{
+  "presets": [
+    ["es2015", { "modules": false }],
+    ["env", { "modules": false }],
+    "stage-2"
+  ],
+  "plugins": ["syntax-dynamic-import", "transform-runtime" , "transform-decorators-legacy",
+    ["component", [
+    {
+      "libraryName": "element-ui",
+      "styleLibraryName": "theme-chalk"
+    }
+  ]]],
+  "comments": true
+}
