@@ -1,5 +1,6 @@
 package org.ngrinder.infra.config;
 
+import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
 import org.ngrinder.infra.spring.ApiExceptionHandlerResolver;
 import org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver;
 import org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver;
@@ -21,13 +22,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import javax.servlet.ServletContext;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 @Configuration
 @ComponentScan(
@@ -36,9 +32,6 @@ import java.util.Properties;
 	includeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = org.springframework.stereotype.Controller.class)}
 )
 public class WebMvcConfig implements WebMvcConfigurer {
-
-	@Value("${ngrinder.version}")
-	private String ngrinderVersion;
 
 	@Value("${server.multipart.max-upload-size}")
 	private int multipartMaxUploadSize;
@@ -110,31 +103,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public ViewResolver freemarkerResolver() {
-		FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-		resolver.setOrder(1);
-		resolver.setViewClass(org.springframework.web.servlet.view.freemarker.FreeMarkerView.class);
-		resolver.setPrefix("");
-		resolver.setSuffix(".ftl");
-		resolver.setRequestContextAttribute("req");
-		Properties properties = new Properties();
-		properties.put("nGrinderVersion" , ngrinderVersion);
-		resolver.setExposeContextBeansAsAttributes(false);
-		resolver.setAttributes(properties);
-		resolver.setContentType("text/html; charset=" + defaultEncoding);
-		resolver.setExposeSpringMacroHelpers(true);
-		resolver.setCache(false);
-		return resolver;
-	}
-
-	@Bean
-	@Autowired
-	public FreeMarkerConfigurer freemarkerConfig(ServletContext servletContext) {
-		FreeMarkerConfigurer configurer = new NGrinderFreeMarkerConfigure();
-		configurer.setTemplateLoaderPath("classpath:/templates/ftl/");
-		configurer.setPreferFileSystemAccess(false);
-		configurer.setDefaultEncoding(defaultEncoding);
-		return configurer;
+	public ViewResolver viewResolver() {
+		HandlebarsViewResolver viewResolver = new HandlebarsViewResolver();
+		viewResolver.setOrder(1);
+		viewResolver.setPrefix("classpath:/templates/");
+		viewResolver.setSuffix(".html");
+		viewResolver.setExposeContextBeansAsAttributes(false);
+		viewResolver.setContentType("text/html; charset=" + defaultEncoding);
+		viewResolver.setCache(false);
+		return viewResolver;
 	}
 
 	@Override
@@ -144,15 +121,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			, "/**/*.html" , "/**/*.gif" , "/**/*.ico" , "/**/*.woff2"
 			, "/**/*.woff" , "/**/*.ttf"};
 		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations()).setCachePeriod(3600);
-	}
-
-	public static class NGrinderFreeMarkerConfigure extends FreeMarkerConfigurer {
-		@Override
-		public void setServletContext(ServletContext servletContext) {
-			super.setServletContext(servletContext);
-			List<String> freeMarkerTlds = new ArrayList<String>();
-			freeMarkerTlds.add("security.tld");
-			this.getTaglibFactory().setClasspathTlds(freeMarkerTlds);
-		}
 	}
 }
