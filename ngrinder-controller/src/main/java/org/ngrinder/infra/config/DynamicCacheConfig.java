@@ -169,25 +169,26 @@ public class DynamicCacheConfig implements ClusterConstants {
 		}
 
 		void addDistCache(String cacheName, int timeout, int count, int nearCacheTimeout, int nearCacheCount) {
-			MapConfig mapConfig = new MapConfig(cacheName);
-			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
-			mapConfig.setTimeToLiveSeconds(timeout);
-			mapConfig.setMaxSizeConfig(new MaxSizeConfig(count, PER_NODE));
+			MapConfig mapConfig = createDistMapConfig(cacheName, timeout, count);
 
 			NearCacheConfig nearCacheConfig = new NearCacheConfig(cacheName);
 			nearCacheConfig.setTimeToLiveSeconds(nearCacheTimeout);
-			nearCacheConfig.setMaxSize(nearCacheCount);
+			nearCacheConfig.getEvictionConfig().setSize(nearCacheCount);
 			mapConfig.setNearCacheConfig(nearCacheConfig);
 
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
 		}
 
 		void addDistMap(String cacheName, int timeout, int count) {
+			hazelcastCacheConfigs.put(cacheName, createDistMapConfig(cacheName, timeout, count));
+		}
+
+		private MapConfig createDistMapConfig(String cacheName, int timeout, int count) {
 			MapConfig mapConfig = new MapConfig(cacheName);
 			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
 			mapConfig.setTimeToLiveSeconds(timeout);
-			mapConfig.setMaxSizeConfig(new MaxSizeConfig(count, PER_NODE));
-			hazelcastCacheConfigs.put(cacheName, mapConfig);
+			mapConfig.getMaxSizeConfig().setSize(count).setMaxSizePolicy(PER_NODE);
+			return mapConfig;
 		}
 
 		Map<String, MapConfig> getHazelcastCacheConfigs() {
