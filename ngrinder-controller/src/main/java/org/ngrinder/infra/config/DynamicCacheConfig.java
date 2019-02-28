@@ -18,6 +18,7 @@ import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ITopic;
+import com.hazelcast.spi.merge.LatestUpdateMergePolicy;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import com.hazelcast.spring.context.SpringManagedContext;
 import net.grinder.util.NetworkUtils;
@@ -169,6 +170,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 		void addDistCache(String cacheName, int timeout, int count, int nearCacheTimeout, int nearCacheCount) {
 			MapConfig mapConfig = new MapConfig(cacheName);
+			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
 			mapConfig.setTimeToLiveSeconds(timeout);
 			mapConfig.setMaxSizeConfig(new MaxSizeConfig(count, PER_NODE));
 
@@ -182,6 +184,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 		void addDistMap(String cacheName, int timeout, int count) {
 			MapConfig mapConfig = new MapConfig(cacheName);
+			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
 			mapConfig.setTimeToLiveSeconds(timeout);
 			mapConfig.setMaxSizeConfig(new MaxSizeConfig(count, PER_NODE));
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
