@@ -591,7 +591,7 @@ public class PerfTestController extends BaseController {
 				// Limit log view to 1MB
 				outputStream.println(" Only the last 1MB of a log shows.\n");
 				outputStream.println("==========================================================================\n\n");
-				LogCompressUtils.decompress(fileInputStream, outputStream, 1 * 1024 * 1204);
+				LogCompressUtils.decompress(fileInputStream, outputStream, 1 * 1024 * 1024);
 			} else {
 				IOUtils.copy(fileInputStream, outputStream);
 			}
