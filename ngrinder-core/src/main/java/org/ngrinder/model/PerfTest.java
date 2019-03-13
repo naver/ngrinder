@@ -345,7 +345,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 
 	public String getTestIdentifier() {
-		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
+		return "perftest_" + getId() + "_" + super.getLastModifiedUser().getUserId();
 	}
 
 	/**
@@ -822,5 +822,15 @@ public class PerfTest extends BaseModel<PerfTest> {
 		}
 		this.useRampUp = getSafe(this.useRampUp);
 		this.safeDistribution = getSafe(this.safeDistribution);
+	}
+
+	@Override
+	public User getCreatedUser() {
+		return super.getCreatedUser().getUserBaseInfo();
+	}
+
+	@Override
+	public User getLastModifiedUser() {
+		return super.getLastModifiedUser().getUserBaseInfo();
 	}
 }
