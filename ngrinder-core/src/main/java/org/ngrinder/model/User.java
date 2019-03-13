@@ -13,6 +13,7 @@
  */
 package org.ngrinder.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -282,7 +283,7 @@ public class User extends BaseModel<User> {
 		this.userLanguage = userLanguage;
 	}
 
-	public boolean isExternal() {
+	public Boolean isExternal() {
 		return external;
 	}
 
@@ -330,8 +331,21 @@ public class User extends BaseModel<User> {
 		this.follower = follower;
 	}
 
+	@JsonIgnore
 	public User getFactualUser() {
 		return ownerUser == null ? this : ownerUser;
+	}
+
+	@Override
+	@JsonIgnore
+	public User getCreatedUser() {
+		return super.getCreatedUser();
+	}
+
+	@Override
+	@JsonIgnore
+	public User getLastModifiedUser() {
+		return super.getLastModifiedUser();
 	}
 
 	/**
@@ -341,6 +355,7 @@ public class User extends BaseModel<User> {
 	 */
 	// It will throw StackOverflowException if return User that contains owners and followers value
 	// in getCurrentPerfTestStatistics() method.so just return base User info
+	@JsonIgnore
 	public User getUserBaseInfo() {
 		User userInfo = new User();
 		userInfo.setId(this.getId());

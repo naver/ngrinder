@@ -18,6 +18,8 @@ dependencies {
     compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)
     compile (group: "org.slf4j", name: "jcl-over-slf4j", version: slf4j_version)
     compile (group: 'org.hibernate', name: 'hibernate-core', version: hibernate_version)
+    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version)
+
     compile (group: 'org.jboss.spec.javax.transaction', name: 'jboss-transaction-api_1.2_spec', version: '1.0.1.Final')
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
