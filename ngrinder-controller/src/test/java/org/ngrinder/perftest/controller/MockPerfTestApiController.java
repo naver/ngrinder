@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 @Profile("unit-test")
 @Component
-public class MockPerfTestController extends PerfTestController {
+public class MockPerfTestApiController extends PerfTestApiController {
 
 	@Autowired
 	private UserContext userContext;
