@@ -13,8 +13,6 @@
  */
 package org.ngrinder.operation;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
@@ -23,7 +21,8 @@ import org.ngrinder.operation.cotroller.LogMonitorController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
+
+import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -66,10 +65,7 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 	}
 
 	private String getLastMessage() {
-		HttpEntity<String> lastLog = logMonitorController.getLast();
-		JsonParser parser = new JsonParser();
-		JsonElement parse = parser.parse(lastLog.getBody());
-		String message = parse.getAsJsonObject().get("log").getAsString();
-		return message;
+		Map<String, Object> lastLog = logMonitorController.getLast();
+		return lastLog.get("log").toString();
 	}
 }

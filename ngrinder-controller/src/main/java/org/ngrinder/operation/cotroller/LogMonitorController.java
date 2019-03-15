@@ -16,16 +16,17 @@ package org.ngrinder.operation.cotroller;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.ngrinder.common.controller.BaseController;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.util.Map;
 
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
@@ -136,9 +137,10 @@ public class LogMonitorController extends BaseController {
 	 *
 	 * @return log json
 	 */
+	@ResponseBody
 	@RequestMapping("/last")
-	public HttpEntity<String> getLast() {
-		return toJsonHttpEntity(buildMap("index", count, "modification", modification, "log", stringBuffer));
+	public Map<String, Object> getLast() {
+		return buildMap("index", count, "modification", modification, "log", stringBuffer);
 	}
 
 	/**
@@ -147,11 +149,12 @@ public class LogMonitorController extends BaseController {
 	 * @param verbose true if verbose mode
 	 * @return success message if successful
 	 */
+	@ResponseBody
 	@RequestMapping("/verbose")
-	public HttpEntity<String> enableVerbose(@RequestParam(value = "verbose", defaultValue = "false") Boolean verbose) {
+	public String enableVerbose(@RequestParam(value = "verbose", defaultValue = "false") Boolean verbose) {
 		getConfig().initLogger(verbose);
 		initTailer();
-		return toJsonHttpEntity(buildMap("success", true));
+		return returnSuccess();
 	}
 
 }
