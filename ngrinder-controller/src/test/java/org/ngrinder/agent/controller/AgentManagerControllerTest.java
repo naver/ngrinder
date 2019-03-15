@@ -15,7 +15,6 @@ package org.ngrinder.agent.controller;
 
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +22,9 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.ModelMap;
@@ -35,15 +34,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private AgentManagerController agentController;
+	private AgentManagerController agentManagerController;
+
+	@Autowired
+	private AgentManagerApiController agentManagerApiController;
 
 	@Autowired
 	private AgentManagerRepository agentManagerRepository;
@@ -72,7 +74,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 
 		ModelMap model = new ModelMap();
-		agentController.getAll(userContext.getCurrentUser(), "", model);
+		agentManagerController.getAll(userContext.getCurrentUser(), "", model);
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -93,7 +95,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 
 		model.clear();
-		agentController.getAll(userContext.getCurrentUser(), "", model);
+		agentManagerController.getAll(userContext.getCurrentUser(), "", model);
 		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
 	}
 
@@ -108,7 +110,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		ModelMap model = new ModelMap();
 		// test get agent
-		agentController.getOne(agent.getId(), model);
+		agentManagerController.getOne(agent.getId(), model);
 		AgentInfo agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.getName(), is(agent.getName()));
 		assertThat(agentInDB.getIp(), is(agent.getIp()));
@@ -116,38 +118,36 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		// test approve agent
 		model.clear();
-		agentController.approve(agentInDB.getId());
-		agentController.getOne(agent.getId(), model);
+		agentManagerApiController.approve(agentInDB.getId());
+		agentManagerController.getOne(agent.getId(), model);
 		agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.isApproved(), is(true));
 
 		// test un-approve
 		model.clear();
-		agentController.disapprove(agentInDB.getId());
-		agentController.getOne(agent.getId(), model);
+		agentManagerApiController.disapprove(agentInDB.getId());
+		agentManagerController.getOne(agent.getId(), model);
 		agentInDB = (AgentInfo) model.get("agent");
 		assertThat(agentInDB.isApproved(), is(false));
 	}
 
 	@Test
 	public void testStopAgent() {
-		agentController.stop("0");
+		agentManagerApiController.stop("0");
 	}
 
 	@Test
 	public void testGetCurrentMonitorData() {
-		HttpEntity<String> rtnStr = agentController.getState("127.0.0.1", "127.0.0.1", "");
-		assertTrue(rtnStr.getBody().contains("freeMemory"));
+		SystemDataModel systemDataModel = agentManagerApiController.getState("127.0.0.1", "127.0.0.1", "");
+		assertThat(0L, is(systemDataModel.getFreeMemory()));
+
 	}
 
 	@Test
-	public void testGetAvailableAgentCount() throws Exception {
+	public void testGetAvailableAgentCount() {
 		String targetRegion = "test";
-		HttpEntity<String> returnHttpEntity = agentController.getAvailableAgentCount(getTestUser(),
-			targetRegion);
-		String result = returnHttpEntity.getBody();
-		JSONObject obj = new JSONObject(result);
-		assertThat(0, is(obj.get("availableAgentCount")));
+		Map<String, Object> result = agentManagerApiController.getAvailableAgentCount(getTestUser(), targetRegion);
+		assertThat(0, is(result.get("availableAgentCount")));
 	}
 	
 }

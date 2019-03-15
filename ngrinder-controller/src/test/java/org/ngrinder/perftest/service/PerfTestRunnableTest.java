@@ -99,7 +99,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	}
 
 	@Test
-	public void testDoTest() throws IOException {
+	public void testDoTest() {
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.doStart();
 		sleep(10000);
@@ -115,7 +115,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	boolean ended = false;
 
 	@Test
-	public void testStartConsole() throws IOException {
+	public void testStartConsole() {
 		// Get perf test
 		PerfTest perfTest = perfTestService.getNextRunnablePerfTestPerfTestCandidate();
 		perfTest.setScriptName("/hello/world.py");
