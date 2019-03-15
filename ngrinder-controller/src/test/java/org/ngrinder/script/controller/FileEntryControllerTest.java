@@ -49,6 +49,9 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 	private FileEntryController scriptController;
 
 	@Autowired
+	private FileEntryApiController scriptApiController;
+
+	@Autowired
 	private MockFileEntityRepository fileEntityRepository;
 
 	@Autowired
@@ -81,7 +84,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.save(getTestUser(), script, null, "", false, model);
-		scriptController.validate(getTestUser(), script, "test.com");
+		scriptApiController.validate(getTestUser(), script, "test.com");
 		// save and get
 		model.clear();
 		scriptController.getOne(getTestUser(), script.getPath(), -1L, model);
@@ -96,7 +99,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.search(getTestUser(), "test", model);
 
 		model.clear();
-		scriptController.delete(getTestUser(), path, "new_file.py");
+		scriptApiController.delete(getTestUser(), path, "new_file.py");
 		scriptController.getAll(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>) model.get("files");
 		assertThat(scriptList.size(), is(0));
@@ -131,7 +134,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		model.clear();
 		// delete both files
-		scriptController.delete(getTestUser(), path, "file-for-search.py,new-file-for-search.py");
+		scriptApiController.delete(getTestUser(), path, "file-for-search.py,new-file-for-search.py");
 		scriptController.getAll(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>) model.get("files");
 		assertThat(scriptList.size(), is(0));

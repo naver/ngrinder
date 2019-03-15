@@ -18,10 +18,6 @@ import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.common.util.EncodingUtils;
-import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -32,39 +28,29 @@ import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.script.service.ScriptValidationService;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.sort;
 import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
-import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * FileEntry manipulation controller.
@@ -74,21 +60,12 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @Controller
 @RequestMapping("/script")
-public class FileEntryController extends BaseController {
+public class FileEntryController extends FileEntryBaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryController.class);
 
 	@Autowired
-	private FileEntryService fileEntryService;
-
-	@Autowired
-	private ScriptValidationService scriptValidationService;
-
-	@Autowired
 	private ScriptHandlerFactory handlerFactory;
-
-	@Autowired
-	HttpContainerContext httpContainerContext;
 
 	/**
 	 * Get the list of file entries for the given user.
@@ -105,52 +82,6 @@ public class FileEntryController extends BaseController {
 		model.addAttribute("svnUrl", getSvnUrlBreadcrumbs(user, path));
 		model.addAttribute("handlers", handlerFactory.getVisibleHandlers());
 		return "script/list";
-	}
-
-	/**
-	 * Get the SVN url BreadCrumbs HTML string.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return generated HTML
-	 */
-	public String getSvnUrlBreadcrumbs(User user, String path) {
-		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = StringUtils.split(path, '/');
-		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder returnHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
-				.append(contextPath).append("/svn/").append(user.getUserId()).append("</a>");
-		for (String each : parts) {
-			returnHtml.append("/");
-			accumulatedPart.append("/").append(each);
-			returnHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
-		}
-		return returnHtml.toString();
-	}
-
-
-	/**
-	 * Get the script path BreadCrumbs HTML string.
-	 *
-	 * @param path path
-	 * @return generated HTML
-	 */
-	public String getScriptPathBreadcrumbs(String path) {
-		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = StringUtils.split(path, '/');
-		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder returnHtml = new StringBuilder();
-		for (int i = 0; i < parts.length; i++) {
-			String each = parts[i];
-			accumulatedPart.append("/").append(each);
-			if (i != parts.length - 1) {
-				returnHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each)
-						.append("</a>").append("/");
-			} else {
-				returnHtml.append(each);
-			}
-		}
-		return returnHtml.toString();
 	}
 
 	/**
@@ -377,159 +308,5 @@ public class FileEntryController extends BaseController {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
 			throw processException("Error while getting file content:" + e.getMessage(), e);
 		}
-	}
-
-	private void upload(User user, String path, String description, MultipartFile file) throws IOException {
-		FileEntry fileEntry = new FileEntry();
-		fileEntry.setContentBytes(file.getBytes());
-		fileEntry.setDescription(description);
-		fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path, file.getOriginalFilename())));
-		fileEntryService.save(user, fileEntry);
-	}
-
-	/**
-	 * Delete files on the given path.
-	 *
-	 * @param user        user
-	 * @param path        base path
-	 * @param filesString file list delimited by ","
-	 * @return json string
-	 */
-	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
-	@ResponseBody
-	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString) {
-		String[] files = filesString.split(",");
-		fileEntryService.delete(user, path, files);
-		Map<String, Object> rtnMap = new HashMap<String, Object>(1);
-		rtnMap.put(JSON_SUCCESS, true);
-		return toJson(rtnMap);
-	}
-
-	/**
-	 * Create the given file.
-	 *
-	 * @param user      user
-	 * @param fileEntry file entry
-	 * @return success json string
-	 */
-	@RestAPI
-	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
-	public HttpEntity<String> create(User user, FileEntry fileEntry) {
-		fileEntryService.save(user, fileEntry);
-		return successJsonHttpEntity();
-	}
-
-	/**
-	 * Create the given file.
-	 *
-	 * @param user        user
-	 * @param path        path
-	 * @param description description
-	 * @param file        multi part file
-	 * @return success json string
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api/**", params = "action=upload", method = RequestMethod.POST)
-	public HttpEntity<String> uploadForAPI(User user, @RemainedPath String path,
-	                                       @RequestParam("description") String description,
-	                                       @RequestParam("uploadFile") MultipartFile file) throws IOException {
-		upload(user, path, description, file);
-		return successJsonHttpEntity();
-	}
-
-	/**
-	 * Check the file by given path.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return json string
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api/**", params = "action=view", method = RequestMethod.GET)
-	public HttpEntity<String> viewOne(User user, @RemainedPath String path) {
-		FileEntry fileEntry = fileEntryService.getOne(user, path, -1L);
-		return toJsonHttpEntity(checkNotNull(fileEntry
-				, "%s file is not viewable", path));
-	}
-
-	/**
-	 * Get all files which belongs to given user.
-	 *
-	 * @param user user
-	 * @return json string
-	 */
-	@RestAPI
-	@RequestMapping(value = {"/api/**", "/api/", "/api"}, params = "action=all", method = RequestMethod.GET)
-	public HttpEntity<String> getAll(User user) {
-		return toJsonHttpEntity(fileEntryService.getAll(user));
-	}
-
-	/**
-	 * Get all files which belongs to given user and path.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return json string
-	 */
-	@RestAPI
-	@RequestMapping(value = {"/api/**", "/api/", "/api"}, method = RequestMethod.GET)
-	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
-		return toJsonHttpEntity(getAllFiles(user, path));
-	}
-
-	private List<FileEntry> getAllFiles(User user, String path) {
-		final String trimmedPath = StringUtils.trimToEmpty(path);
-		List<FileEntry> files = newArrayList(filter(fileEntryService.getAll(user),
-				new Predicate<FileEntry>() {
-					@Override
-					public boolean apply(@Nullable FileEntry input) {
-						return input != null && trimPathSeparatorBothSides(getPath(input.getPath())).equals(trimmedPath);
-					}
-				}));
-		sort(files, new Comparator<FileEntry>() {
-			@Override
-			public int compare(FileEntry o1, FileEntry o2) {
-				if (o1.getFileType() == FileType.DIR && o2.getFileType() != FileType.DIR) {
-					return -1;
-				}
-				return (o1.getFileName().compareTo(o2.getFileName()));
-			}
-
-		});
-		for (FileEntry each : files) {
-			each.setPath(removePrependedSlash(each.getPath()));
-		}
-		return files;
-	}
-
-	/**
-	 * Delete file by given user and path.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return json string
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api/**", method = RequestMethod.DELETE)
-	public HttpEntity<String> deleteOne(User user, @RemainedPath String path) {
-		fileEntryService.delete(user, path);
-		return successJsonHttpEntity();
-	}
-
-
-	/**
-	 * Validate the script.
-	 *
-	 * @param user       current user
-	 * @param fileEntry  fileEntry
-	 * @param hostString hostString
-	 * @return validation Result string
-	 */
-	@RequestMapping(value = "/api/validate", method = RequestMethod.POST)
-	@RestAPI
-	public HttpEntity<String> validate(User user, FileEntry fileEntry,
-	                                   @RequestParam(value = "hostString", required = false) String hostString) {
-		fileEntry.setCreatedUser(user);
-		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
 	}
 }
