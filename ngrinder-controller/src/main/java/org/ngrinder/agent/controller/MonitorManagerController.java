@@ -20,14 +20,18 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
+import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -38,6 +42,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 @Controller
 @RequestMapping("/monitor")
 public class MonitorManagerController extends BaseController {
+
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
@@ -49,7 +54,6 @@ public class MonitorManagerController extends BaseController {
 	 * @return monitor/info
 	 */
 	@RequestMapping("/info")
-
 	public String getMonitor(ModelMap model, @RequestParam String ip) {
 		String[] addresses = StringUtils.split(ip, ":");
 		if (addresses.length > 0) {
@@ -65,17 +69,13 @@ public class MonitorManagerController extends BaseController {
 	 * @param ip target host IP
 	 * @return json message containing the target's monitoring data.
 	 */
-	@RequestMapping("/state")
 	@RestAPI
-	public HttpEntity<String> getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
-		Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
-			@Override
-			public SystemInfo call() {
-				return monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort());
-			}
-		});
-		SystemInfo systemInfo = checkNotNull(submit.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
-		return toJsonHttpEntity(new SystemDataModel(systemInfo, "UNKNOWN"));
+	@ResponseBody
+	@RequestMapping("/state")
+	public SystemDataModel getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
+		Future<SystemInfo> submit = newCachedThreadPool().submit(() -> monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort()));
+		SystemInfo systemInfo = checkNotNull(submit.get(2, SECONDS), "Monitoring data is not available.");
+		return new SystemDataModel(systemInfo, "UNKNOWN");
 	}
 
 	/**
@@ -84,10 +84,10 @@ public class MonitorManagerController extends BaseController {
 	 * @param ip target host IP
 	 * @return success if succeeded.
 	 */
+	@ResponseBody
 	@RequestMapping("/close")
-	public HttpEntity<String> closeMonitorConnection(@RequestParam String ip) {
+	public String closeMonitorConnection(@RequestParam String ip) {
 		monitorInfoStore.close(ip);
-		return successJsonHttpEntity();
+		return returnSuccess();
 	}
-
 }
