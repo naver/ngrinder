@@ -38,7 +38,7 @@ public class MessageConfig {
 		CookieLocaleResolver localeResolver = new CookieLocaleResolver();
 		Locale defaultLocale = new Locale("en_US");
 		localeResolver.setDefaultLocale(defaultLocale);
-		localeResolver.setCookieName("nhnuserlocale");
+		localeResolver.setCookieName("naveruserlocale");
 		return localeResolver;
 	}
 
