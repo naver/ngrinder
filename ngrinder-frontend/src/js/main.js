@@ -6,6 +6,7 @@ import moment from 'moment';
 import axios from 'axios';
 
 //import Login from 'Login.vue';
+import Event from 'bus-event.js';
 
 axios.interceptors.request.use(config => {
     if (typeof config.params === 'undefined') {
@@ -28,6 +29,9 @@ Vue.use(VueMoment, {
 });
 
 Vue.prototype.$http = axios;
+Vue.prototype.$EventBus = new Vue();
+Vue.prototype.$Event = Event;
+Vue.prototype.initEventBus = () => Vue.prototype.$EventBus = new Vue();
 
 Vue.directive('focus', {
     inserted: function (el) {
