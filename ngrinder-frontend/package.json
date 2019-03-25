@@ -49,6 +49,10 @@
     "vuejs-paginate": "^2.0.1",
     "vuex": "^3.0.0",
     "jstz": "^2.1.1"
+    "i18next": "^15.0.5",
+    "i18next-browser-languagedetector": "^3.0.1",
+    "i18next-localstorage-cache": "^1.1.1",
+    "jquery-i18next": "^1.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
