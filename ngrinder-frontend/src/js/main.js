@@ -5,8 +5,8 @@ import VueMoment from 'vue-moment';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
+import VueSession from 'vue-session';
 
-//import Login from 'Login.vue';
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
 import { mapState } from 'vuex';
@@ -26,6 +26,7 @@ axios.interceptors.request.use(config => {
 });
 
 Vue.use(Vuex);
+Vue.use(VueSession);
 Vue.use(VueRouter);
 Vue.use(VeeValidate);
 Vue.use(VueMoment, {
