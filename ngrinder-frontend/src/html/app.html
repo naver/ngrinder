@@ -15,8 +15,17 @@
 </div>
 
 <script>
-    window.nGrinderConfig = {
-        nGrinderVersion: "{{ nGrinderVersion }}",
+    window.ngrinder = {
+        version: "{{ version }}",
+        currentUser: {
+            name: "{{ currentUser.userName }}",
+            id: "{{ currentUser.userId }}",
+            email: "{{ currentUser.email }}",
+            role: "{{ currentUser.role.shortName }}",
+        },
+        config: {
+            clustered: ("{{ clustered }}" === 'true')
+        },
     }
 </script>
 
