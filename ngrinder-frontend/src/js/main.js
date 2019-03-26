@@ -9,6 +9,7 @@ import VueSession from 'vue-session';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
+import Home from 'Home.vue';
 import { mapState } from 'vuex';
 
 axios.interceptors.request.use(config => {
@@ -47,6 +48,8 @@ Vue.directive('focus', {
 const store = require('./store/vuex-store').default;
 
 const routes = [
+    {path: '/', component: Home, name: 'home'},
+    {path: '/home', component: Home, alias: '/'},
     {path: '/login', component: Login, name: 'login'},
 ];
 
