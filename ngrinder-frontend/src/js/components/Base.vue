@@ -1,28 +1,31 @@
 <script>
     import Component from 'vue-class-component';
     import Vue from 'vue';
-    import { mapState } from 'vuex';
-    import GlobalAttributes from 'global-attributes';
     import I18n from '../i18n.js';
+    import { mapState } from 'vuex';
 
     @Component({
         computed: {
             ...mapState([
-                'nGrinderVersion',
+                'version',
+                'config',
+                'currentUser',
             ]),
-        }
+        },
     })
     export default class Base extends Vue {
-        mounted() {
-            this.initGlobalAttribtues();
-        }
-
         i18n(key, args) {
             return I18n.i18n(key, args);
         }
 
-        initGlobalAttribtues() {
-            this.$store.commit('nGrinderVersion', GlobalAttributes.get('nGrinderVersion'));
+        setAttributes(context, data, keys) {
+            keys.forEach((key) => {
+                context[key] = data[key];
+            });
+        }
+
+        exist(value) {
+            return typeof value !== 'undefined';
         }
     }
 </script>
