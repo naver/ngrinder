@@ -9,6 +9,7 @@ import axios from 'axios';
 //import Login from 'Login.vue';
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
+import { mapState } from 'vuex';
 
 axios.interceptors.request.use(config => {
     if (typeof config.params === 'undefined') {
@@ -54,6 +55,17 @@ const router = new VueRouter({
 });
 
 new Vue({
+    beforeMount: function() {
+        this.$store.commit('version', window.ngrinder.version);
+        this.$store.commit('config', window.ngrinder.config);
+        this.$store.commit('currentUser', window.ngrinder.currentUser);
+    },
+    computed: {
+        ...mapState([
+            'version',
+            'currentUser',
+        ]),
+    },
     store,
     router,
 }).$mount('#app');

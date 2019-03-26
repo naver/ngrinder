@@ -2,11 +2,19 @@ import Vuex from 'vuex';
 
 export default new Vuex.Store({
     state: {
-        nGrinderVersion: '',
+        version: '',
+        currentUser: {},
+        config: {},
     },
     mutations: {
-        nGrinderVersion (state, version) {
-            state.nGrinderVersion = version;
+        version (state, version) {
+            state.version = version;
+        },
+        config (state, config) {
+            state.config = config;
+        },
+        currentUser (state, user) {
+            state.currentUser = user;
         },
     },
 });

@@ -1,7 +1,7 @@
 <template>
     <div id="foot_div">
         <div class="credit">
-            <a href="https://naver.github.io/ngrinder" target="_blank" v-text="`nGrinder v${nGrinderVersion}`"></a>
+            <a href="https://naver.github.io/ngrinder" target="_blank" v-text="`nGrinder v${version}`"></a>
         </div>
     </div>
 </template>
@@ -12,7 +12,7 @@
     @Component({
         name: 'copyright',
         props: {
-            nGrinderVersion: {
+            version: {
                 type: String,
                 required: true,
             },
