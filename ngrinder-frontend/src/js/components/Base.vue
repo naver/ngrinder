@@ -28,5 +28,33 @@
 </script>
 
 <style lang="less">
+    #ngrinder-main-content-wrapper {
+        .clickable {
+            cursor: pointer;
+        }
 
+        .pagination {
+            float: right;
+            margin: 0;
+        }
+
+        .popover {
+            width: auto;
+            min-width: 200px;
+            max-width: 600px;
+            max-height: 500px;
+        }
+
+        .display-inline {
+            display: inline;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .popover {
+            width: 300px;
+        }
+    }
 </style>
