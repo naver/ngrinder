@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
 import VueMoment from 'vue-moment';
+import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
 
@@ -24,6 +25,7 @@ axios.interceptors.request.use(config => {
 
 Vue.use(Vuex);
 Vue.use(VueRouter);
+Vue.use(VeeValidate);
 Vue.use(VueMoment, {
     moment,
 });
