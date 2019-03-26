@@ -19,10 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.ThreadUtils;
-import org.ngrinder.home.model.PanelEntry;
-import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
@@ -41,11 +38,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -62,49 +60,12 @@ public class HomeController extends BaseController implements ControllerConstant
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
 	@Autowired
-	private HomeService homeService;
-
-	@Autowired
 	private RegionService regionService;
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
-			+ "Australia|Europe|Indian|Pacific)/.*";
-
-	private List<TimeZone> timeZones = null;
-
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
-
 	private static Gson rawObjectJsonSerializer = new GsonBuilder().setPrettyPrinting().create();
-
-	/**
-	 * Initialize {@link HomeController}.
-	 */
-	@PostConstruct
-	public void init() {
-		timeZones = new ArrayList<TimeZone>();
-		final String[] timeZoneIds = TimeZone.getAvailableIDs();
-		for (final String id : timeZoneIds) {
-			if (id.matches(TIMEZONE_ID_PREFIXES) && !TimeZone.getTimeZone(id).getDisplayName().contains("GMT")) {
-				timeZones.add(TimeZone.getTimeZone(id));
-			}
-		}
-		Collections.sort(timeZones, new Comparator<TimeZone>() {
-			public int compare(final TimeZone a, final TimeZone b) {
-				return a.getID().compareTo(b.getID());
-			}
-		});
-		scheduledTaskService.runAsync(new Runnable() {
-			@Override
-			public void run() {
-				getLeftPanelEntries();
-				getRightPanelEntries();
-			}
-		});
-	}
 
 	/**
 	 * Return nGrinder index page.
@@ -127,20 +88,17 @@ public class HomeController extends BaseController implements ControllerConstant
 				recordReferrer(region);
 				// set local language
 				setLanguage(getCurrentUser().getUserLanguage(), response, request);
-				addTimezoneLoginAttribute(model);
-				addCommonLoginAttribute(model);
 				role = user.getRole();
 			} catch (AuthenticationCredentialsNotFoundException e) {
 				return "app";
 			}
-			setPanelEntries(model);
 			model.addAttribute("handlers", scriptHandlerFactory.getVisibleHandlers());
 
 			if (StringUtils.isNotBlank(exception)) {
 				model.addAttribute("exception", exception);
 			}
 			if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
-				return "index";
+				return "app";
 			} else {
 				LOG.info("Invalid user role:{}", role.getFullName());
 				return "app";
@@ -148,44 +106,8 @@ public class HomeController extends BaseController implements ControllerConstant
 		} catch (Exception e) {
 			// Make the home reliable...
 			model.addAttribute("exception", e.getMessage());
-			return "index";
+			return "app";
 		}
-	}
-
-	private void setPanelEntries(ModelMap model) {
-		model.addAttribute("left_panel_entries", getLeftPanelEntries());
-		model.addAttribute("right_panel_entries", getRightPanelEntries());
-		model.addAttribute(
-				"ask_question_url",
-				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL,
-						getMessages(PROP_CONTROLLER_FRONT_PAGE_ASK_QUESTION_URL)));
-		model.addAttribute(
-				"see_more_question_url",
-				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL,
-						getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL)));
-		model.addAttribute("see_more_resources_url", getConfig().getControllerProperties().getProperty
-				(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL));
-	}
-
-	private List<PanelEntry> getRightPanelEntries() {
-		if (getConfig().getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_FRONT_PAGE_ENABLED)) {
-			// Get nGrinder Resource RSS
-			String rightPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_RSS);
-			return homeService.getRightPanelEntries(rightPanelRssURL);
-		}
-		return Collections.emptyList();
-	}
-
-	private List<PanelEntry> getLeftPanelEntries() {
-		if (getConfig().getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_FRONT_PAGE_ENABLED)) {
-			// Make the i18n applied QnA panel. Depending on the user language, show the different QnA panel.
-			String leftPanelRssURLKey = getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS);
-			// Make admin configure the QnA panel.
-			String leftPanelRssURL = getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_QNA_RSS,
-					leftPanelRssURLKey);
-			return homeService.getLeftPanelEntries(leftPanelRssURL);
-		}
-		return Collections.emptyList();
 	}
 
 	private void recordReferrer(String region) {
@@ -251,8 +173,6 @@ public class HomeController extends BaseController implements ControllerConstant
 	 */
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
-		addTimezoneLoginAttribute(model);
-		addCommonLoginAttribute(model);
 		try {
 			getCurrentUser();
 		} catch (Exception e) {
@@ -260,19 +180,7 @@ public class HomeController extends BaseController implements ControllerConstant
 			return "app";
 		}
 		model.clear();
-		return "redirect:/";
-	}
-
-	private void addCommonLoginAttribute(ModelMap model) {
-		model.addAttribute("signUpEnabled", getConfig().isSignUpEnabled());
-		final String defaultLang = getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG);
-		model.addAttribute("defaultLang", defaultLang);
-	}
-
-	private void addTimezoneLoginAttribute(ModelMap model) {
-		TimeZone defaultTime = TimeZone.getDefault();
-		model.addAttribute("timezones", timeZones);
-		model.addAttribute("defaultTime", defaultTime.getID());
+		return "app";
 	}
 
 	/**

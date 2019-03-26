@@ -49,7 +49,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		testUser2.setUserLanguage("EN");
 		ModelMap model = new ModelMap();
 		String viewName = homeController.home(testUser2, null, null, model, res, req);
-		assertThat(viewName, is("index"));
+		assertThat(viewName, is("app"));
 
 		User testUserError = Mockito.spy(testUser2);
 		Mockito.when(testUserError.getRole()).thenReturn(Role.SYSTEM_USER);
@@ -70,7 +70,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testLogin() {
 		ModelMap model = new ModelMap();
 		String viewName = homeController.login(model);
-		assertThat(viewName, is("redirect:/"));
+		assertThat(viewName, is("app"));
 	}
 
 
@@ -83,7 +83,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		RedirectAttributesModelMap model = new RedirectAttributesModelMap();
 		viewName = homeController.second(getTestUser(), model, res, req);
-		assertThat(viewName, is("index"));
+		assertThat(viewName, is("app"));
 	}
 
 }

@@ -1,14 +1,6 @@
 package org.ngrinder.common.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Collection utilities for object creation.
@@ -131,6 +123,57 @@ public abstract class CollectionUtils {
 		map.put(key1, value1);
 		map.put(key2, value2);
 		map.put(key3, value3);
+		return map;
+	}
+
+	/**
+	 * Build Map with 4 pairs.
+	 *
+	 * @param <K>    key type
+	 * @param <V>    value type
+	 * @param key1   key
+	 * @param value1 value
+	 * @param key2   key
+	 * @param value2 value
+	 * @param key3   key
+	 * @param value3 value
+	 * @param key4   key
+	 * @param value4 value
+	 * @return create map
+	 */
+	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2, K key3, V value3, K key4, V value4) {
+		Map<K, V> map = new HashMap<>(4);
+		map.put(key1, value1);
+		map.put(key2, value2);
+		map.put(key3, value3);
+		map.put(key4, value4);
+		return map;
+	}
+
+	/**
+	 * Build Map with 5 pairs.
+	 *
+	 * @param <K>    key type
+	 * @param <V>    value type
+	 * @param key1   key
+	 * @param value1 value
+	 * @param key2   key
+	 * @param value2 value
+	 * @param key3   key
+	 * @param value3 value
+	 * @param key4   key
+	 * @param value4 value
+	 * @param key5   key
+	 * @param value5 value
+	 * @return create map
+	 */
+	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2, K key3, V value3, K key4, V value4, K key5, V value5) {
+		Map<K, V> map = new HashMap<>(5);
+		map.put(key1, value1);
+		map.put(key2, value2);
+		map.put(key3, value3);
+		map.put(key4, value4);
+		map.put(key5, value5);
 		return map;
 	}
 

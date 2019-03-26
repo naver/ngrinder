@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.ngrinder.common.util.Preconditions.checkTrue;
@@ -86,15 +87,13 @@ public class UserSignUpController extends UserController {
 	 * Save a user.
 	 *
 	 * @param newUser user to be added.
-	 * @param model   model
 	 * @return "redirect:/"
 	 */
-	@RequestMapping("/save")
-	public String save(@ModelAttribute("user") User newUser, ModelMap model) {
+	@PostMapping("/save")
+	public String save(@ModelAttribute("user") User newUser) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		newUser.setRole(Role.USER);
 		userService.createUser(newUser);
-		model.clear();
 		return "redirect:/";
 	}
 

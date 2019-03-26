@@ -49,7 +49,7 @@
     "vuejs-paginate": "^2.0.1",
     "vee-validate": "^2.2.0",
     "vuex": "^3.0.0",
-    "jstz": "^2.1.1"
+    "jstz": "^2.1.1",
     "i18next": "^15.0.5",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-localstorage-cache": "^1.1.1",

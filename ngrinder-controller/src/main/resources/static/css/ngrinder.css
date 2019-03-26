@@ -1,9 +1,5 @@
 @charset "utf-8";
 
-html,body {
-	height: 100%;
-}
-
 body > .container {
 	margin-top: 0
 }
@@ -20,7 +16,6 @@ thead tr th {
 #wrap {
     min-height: 100%;
     height: auto !important;
-    height: 100%;
     margin: 0 auto -40px;
 }
 #foot_div {
@@ -48,7 +43,7 @@ h1, h2, h3, h4  {
 
 .checkbox {
 	min-height:15px;
-	padding-left:0px;
+	padding-left:0;
 }
 .form-horizontal .control-label {
 	color: #666666;
@@ -307,15 +302,14 @@ legend a {
 	line-height: 12px;
 	margin-bottom:-10px;
 	width:330px;
-    padding-left: 0px;
+    padding-left: 0;
     margin-top: 2px;
 }
 
 .small-error-box span.help-inline {
     height: 15px;
-    padding-left:0px;
+    padding-left:0;
 }
-
 
 hr.small {
 	margin : 4px;
