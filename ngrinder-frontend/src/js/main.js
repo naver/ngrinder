@@ -10,6 +10,10 @@ import VueSession from 'vue-session';
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
 import Home from 'Home.vue';
+
+import Copyright from 'common/Copyright.vue';
+import Navigator from 'common/navigator/Navigator.vue';
+
 import { mapState } from 'vuex';
 
 axios.interceptors.request.use(config => {
@@ -40,9 +44,7 @@ Vue.prototype.$Event = Event;
 Vue.prototype.initEventBus = () => Vue.prototype.$EventBus = new Vue();
 
 Vue.directive('focus', {
-    inserted: function (el) {
-        el.focus()
-    }
+    inserted: el => el.focus(),
 });
 
 const store = require('./store/vuex-store').default;
@@ -59,6 +61,10 @@ const router = new VueRouter({
 });
 
 new Vue({
+    components: {
+        Copyright,
+        Navigator,
+    },
     beforeMount: function() {
         this.$store.commit('version', window.ngrinder.version);
         this.$store.commit('config', window.ngrinder.config);
