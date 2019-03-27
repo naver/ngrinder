@@ -4,7 +4,7 @@
             <div class="alert alert-block">
                 <div class="page-header">
                     <span>
-                        <span v-if="hasNew" class="label label-important" v-text="'new'"></span>
+                        <span v-if="config.hasNewAnnouncement" class="label label-important" v-text="'new'"></span>
                         <span class="announcement-title" v-text="i18n('announcement.title')"></span>
                         <span class="clickable pull-right" id="hide-announcement" @click.prevent="toggleDisplay">
                             <i id="announcement-icon" :class="{'icon-plus': hide, 'icon-minus': !hide}"></i>
@@ -30,7 +30,6 @@
         ANNOUNCEMENT_HIDE_SESSION_KEY = "announcement_hide";
 
         announcement = '';
-        hasNew = false;
         hide = false;
 
         created() {
