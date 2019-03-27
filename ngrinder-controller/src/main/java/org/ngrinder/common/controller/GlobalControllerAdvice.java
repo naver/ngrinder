@@ -1,6 +1,7 @@
 package org.ngrinder.common.controller;
 
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,9 @@ public class GlobalControllerAdvice {
 	private UserContext userContext;
 
 	@Autowired
+	private AnnouncementService announcementService;
+
+	@Autowired
 	private Config config;
 
 	@ModelAttribute
@@ -27,6 +31,7 @@ public class GlobalControllerAdvice {
 		model.addAttribute("version", version);
 		model.addAttribute("clustered", config.isClustered());
 		model.addAttribute("helpUrl", config.getHelpUrl());
+		model.addAttribute("hasNewAnnouncement", announcementService.isNew());
 		try {
 			model.addAttribute("currentUser", userContext.getCurrentUser());
 		} catch (Exception e) {
