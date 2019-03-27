@@ -26,6 +26,7 @@ public class GlobalControllerAdvice {
     public void globalAttributes(Model model) {
 		model.addAttribute("version", version);
 		model.addAttribute("clustered", config.isClustered());
+		model.addAttribute("helpUrl", config.getHelpUrl());
 		try {
 			model.addAttribute("currentUser", userContext.getCurrentUser());
 		} catch (Exception e) {
