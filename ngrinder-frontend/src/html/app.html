@@ -2,7 +2,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-<link rel="shortcut icon" type="image/png" href="/img/favicon.png"/>
 
 <link href="/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="/css/ngrinder.css" rel="stylesheet"/>
@@ -10,7 +9,9 @@
 
 <div id="app">
     <div id="ngrinder-main-content-wrapper">
+        <navigator v-if="currentUser.role"></navigator>
         <router-view></router-view>
+        <copyright :version="version"></copyright>
     </div>
 </div>
 
@@ -30,11 +31,10 @@
     }
 </script>
 
-<script type="text/javascript" src="/js/app.js"></script>
 <script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/js/jquery.number.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/js/bootbox.min.js"></script>
 <script type="text/javascript" src="/js/utils.js"></script>
 <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="/js/intro.min.js"></script>
+<script type="text/javascript" src="/js/app.js"></script>

@@ -36,7 +36,6 @@
                     </div>
                 </fieldset>
             </form>
-            <copyright :nGrinderVersion="nGrinderVersion"></copyright>
         </div>
     </div>
 </template>
@@ -44,14 +43,13 @@
 <script>
     import Component from 'vue-class-component';
     import Base from 'Base.vue';
-    import Copyright from './common/Copyright.vue';
     import vueHeadful from 'vue-headful';
     import jstz from 'jstz';
     import SignUpModal from './user/modal/SignUpModal.vue'
 
     @Component({
         name: 'login',
-        components: { Copyright, vueHeadful, SignUpModal },
+        components: { vueHeadful, SignUpModal },
     })
     export default class Login extends Base {
         userLanguage = 'en';
@@ -60,6 +58,9 @@
         signUpEnabled = false;
 
         created() {
+            // just for enable cache
+            this.$http.get('home/api/panel');
+
             this.getConfig();
             this.getTimezones();
         }
