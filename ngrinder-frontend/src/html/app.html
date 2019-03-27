@@ -24,7 +24,8 @@
             role: "{{ currentUser.role.shortName }}",
         },
         config: {
-            clustered: ("{{ clustered }}" === 'true')
+            clustered: ("{{ clustered }}" === 'true'),
+            helpUrl: "{{ helpUrl }}",
         },
     }
 </script>
