@@ -88,7 +88,7 @@
                     url: this.quickStartUrl,
                     scriptType: this.scriptType,
                 }).then(res => {
-                    // DOTO go to perftest detail.
+                    // TODO Go to perftest detail page.
                 }).catch(error => console.error(error));
             });
         }

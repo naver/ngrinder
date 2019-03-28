@@ -227,24 +227,7 @@ public class PerfTestController extends BaseController {
 		Collections.sort(regions);
 		return regions;
 	}
-
-
-	/**
-	 * Search tags based on the given query.
-	 *
-	 * @param user  user to search
-	 * @param query query string
-	 * @return found tag list in json
-	 */
-	@RequestMapping("/search_tag")
-	public HttpEntity<String> searchTag(User user, @RequestParam(required = false) String query) {
-		List<String> allStrings = tagService.getAllTagStrings(user, query);
-		if (StringUtils.isNotBlank(query)) {
-			allStrings.add(query);
-		}
-		return toJsonHttpEntity(allStrings);
-	}
-
+	
 	/**
 	 * Add the various default configuration values on the model.
 	 *

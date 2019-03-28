@@ -58,6 +58,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 	private MockPerfTestController controller;
 
 	@Autowired
+	private PerfTestApiController perfTestApiController;
+
+	@Autowired
 	private Config config;
 
 	@Autowired
@@ -353,10 +356,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 
 	@Test
 	public void testSearchTag() {
-		HttpEntity<String> rtn = controller.searchTag(getAdminUser(), "");
-		assertThat(rtn.getBody(), notNullValue());
-		rtn = controller.searchTag(getAdminUser(), "test");
-		assertThat(rtn.getBody(), notNullValue());
+		List<String> rtn = perfTestApiController.searchTag(getAdminUser(), "");
+		assertThat(rtn, notNullValue());
+		rtn = perfTestApiController.searchTag(getAdminUser(), "test");
+		assertThat(rtn, notNullValue());
 	}
 
 }
