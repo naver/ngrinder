@@ -41,6 +41,10 @@
             margin: 0;
         }
 
+        button, select, a, i {
+            outline: none;
+        }
+
         .popover {
             width: auto;
             min-width: 200px;
