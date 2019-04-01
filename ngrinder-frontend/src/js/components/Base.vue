@@ -65,5 +65,9 @@
         .popover {
             width: 300px;
         }
+
+        .no-padding {
+            padding: 0;
+        }
     }
 </style>

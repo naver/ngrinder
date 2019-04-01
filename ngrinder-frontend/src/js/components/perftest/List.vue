@@ -69,64 +69,67 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="test in tests" :id="`tr${test.id}`">
-                    <td class="center">
-                        <input type="checkbox" v-model="selectedTests" class="perf_test checkbox" :value="test.id" :disabled="!test.deletable">
-                    </td>
-                    <td class="center">
-                        <div class="ball" data-html="true" data-toggle="popover" :title="test.status"
-                             :data-content="`${test.progressMessage}<br><b>${test.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
-                        <img class="status" :src="`/img/ball/${test.iconName}`">
-                        </div>
-                    </td>
-                    <td class="ellipsis">
-                        <div class="ellipsis" :title="test.testName" data-toggle="popover" data-html="true" :data-content="getTestNamePopoverContent(test).replace(/\n/g, '<br>')">
-                            <a :href="`/perftest/${test.id}`" target="_self" v-text="test.testName"></a>
-                        </div>
-                    </td>
-                    <td class="ellipsis">
-                        <div class="ellipsis" data-toggle="popover" data-html="true"
-                            :data-content="`${test.scriptName}<br> - ${i18n('script.list.revision')} : ${(test.scriptRevision)}`"
-                            :title="i18n('perfTest.list.scriptName')">
-                            <a v-if="isAdmin" :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}&ownerId=${(test.createdUserId)}`" v-text="test.scriptName"></a>
-                            <a v-else :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}`" v-text="test.scriptName"></a>
-                        </div>
-                    </td>
-                    <td>
-                       <div class="ellipsis" data-toggle="popover" :title="i18n('perfTest.list.participants')" data-html="true"
-                            :data-content="getOwnerPopoverContent(test).replace(/\n/g, '<br>')">
-                            <span v-if="isAdmin" v-text="test.createdUserName"></span>
-                            <span v-else v-text="test.lastModifiedUserName"></span>
-                        </div>
-                    </td>
-                    <td v-if="config.clustered" class="ellipsis" :title="i18n('common.region')" data-html="true">
-                        <span v-text="test.region"></span>
-                    </td>
-                    <td>
-                        <span v-if="test.startTime">{{ test.startTime | dateFormat('YYYY-MM-DD HH:mm') }}</span>
-                    </td>
-                    <td>
-                        <div v-if="test.threshold === THRESHOLD_TYPE_DURATION" :title="i18n('perfTest.list.duration')" v-text="test.duration"></div>
-                        <div v-else v-text="test.runCount" :title="i18n('perfTest.list.runCount')"></div>
-                    </td>
-                    <td>
-                        <span v-if="exist(test.tps)" v-text="test.tps.toFixed(1)"></span>
-                    </td>
-                    <td>
-                        <span v-if="exist(test.meanTestTime)" v-text="test.meanTestTime.toFixed(1)"></span>
-                    </td>
-                    <td>
-                        <div class="ellipsis" data-toggle="popover" data-html="true" data-placement="top" v-text="getErrorRate(test.tests, test.errors)"></div>
-                    </td>
-                    <td>
-                        <div class="ellipsis" data-toggle="popover" data-html="true" data-placement="left" v-text="(test.vuserPerAgent) * (test.agentCount)"></div>
-                    </td>
-                    <td class="center">
-                        <i v-if="test.reportable" @click="showChart" :title="i18n('perfTest.action.showChart')" class="icon-download test-display pointer-cursor"></i>
-                        <i v-if="test.deletable" @click="deleteTests(test.id)" :title="i18n('common.button.delete')" class="icon-remove test-remove pointer-cursor"></i>
-                        <i v-if="test.stoppable" @click="stopTest(test.id)" :title="i18n('common.button.stop')" class="icon-stop test-stop pointer-cursor"></i>
-                    </td>
-                </tr>
+                <template v-for="(test, index) in tests">
+                    <tr>
+                        <td class="center">
+                            <input type="checkbox" v-model="selectedTests" class="perf_test checkbox" :value="test.id" :disabled="!test.deletable">
+                        </td>
+                        <td class="center">
+                            <div class="ball" data-html="true" data-toggle="popover" :title="test.status"
+                                 :data-content="`${test.progressMessage}<br><b>${test.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
+                            <img class="status" :src="`/img/ball/${test.iconName}`">
+                            </div>
+                        </td>
+                        <td class="ellipsis">
+                            <div class="ellipsis" :title="test.testName" data-toggle="popover" data-html="true" :data-content="getTestNamePopoverContent(test).replace(/\n/g, '<br>')">
+                                <a :href="`/perftest/${test.id}`" target="_self" v-text="test.testName"></a>
+                            </div>
+                        </td>
+                        <td class="ellipsis">
+                            <div class="ellipsis" data-toggle="popover" data-html="true"
+                                :data-content="`${test.scriptName}<br> - ${i18n('script.list.revision')} : ${(test.scriptRevision)}`"
+                                :title="i18n('perfTest.list.scriptName')">
+                                <a v-if="isAdmin" :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}&ownerId=${(test.createdUserId)}`" v-text="test.scriptName"></a>
+                                <a v-else :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}`" v-text="test.scriptName"></a>
+                            </div>
+                        </td>
+                        <td>
+                           <div class="ellipsis" data-toggle="popover" :title="i18n('perfTest.list.participants')" data-html="true"
+                                :data-content="getOwnerPopoverContent(test).replace(/\n/g, '<br>')">
+                                <span v-if="isAdmin" v-text="test.createdUserName"></span>
+                                <span v-else v-text="test.lastModifiedUserName"></span>
+                            </div>
+                        </td>
+                        <td v-if="config.clustered" class="ellipsis" :title="i18n('common.region')" data-html="true">
+                            <span v-text="test.region"></span>
+                        </td>
+                        <td>
+                            <span v-if="test.startTime">{{ test.startTime | dateFormat('YYYY-MM-DD HH:mm') }}</span>
+                        </td>
+                        <td>
+                            <div v-if="test.threshold === THRESHOLD_TYPE_DURATION" :title="i18n('perfTest.list.duration')" v-text="test.duration"></div>
+                            <div v-else v-text="test.runCount" :title="i18n('perfTest.list.runCount')"></div>
+                        </td>
+                        <td>
+                            <span v-if="exist(test.tps)" v-text="test.tps.toFixed(1)"></span>
+                        </td>
+                        <td>
+                            <span v-if="exist(test.meanTestTime)" v-text="test.meanTestTime.toFixed(1)"></span>
+                        </td>
+                        <td>
+                            <div class="ellipsis" data-toggle="popover" data-html="true" data-placement="top" v-text="getErrorRate(test.tests, test.errors)"></div>
+                        </td>
+                        <td>
+                            <div class="ellipsis" data-toggle="popover" data-html="true" data-placement="left" v-text="(test.vuserPerAgent) * (test.agentCount)"></div>
+                        </td>
+                        <td class="center">
+                            <i v-if="test.reportable" @click="showChart(index)" :title="i18n('perfTest.action.showChart')" class="icon-download test-display pointer-cursor"></i>
+                            <i v-if="test.deletable" @click="deleteTests(test.id)" :title="i18n('common.button.delete')" class="icon-remove test-remove pointer-cursor"></i>
+                            <i v-if="test.stoppable" @click="stopTest(test.id)" :title="i18n('common.button.stop')" class="icon-stop test-stop pointer-cursor"></i>
+                        </td>
+                    </tr>
+                    <small-chart ref="smallChart" :perfTestId="test.id"></small-chart>
+                </template>
             </tbody>
         </table>
         <intro-button></intro-button>
@@ -150,11 +153,12 @@
     import Base from '../Base.vue';
     import SearchBar from './Searchbar.vue';
     import IntroButton from '../common/IntroButton.vue';
+    import SmallChart from './SmallChart.vue'
     import Paginate from 'vuejs-paginate'
 
     @Component({
         name: 'perftestList',
-        components: { IntroButton, vueHeadful, SearchBar, Paginate },
+        components: { IntroButton, vueHeadful, SearchBar, SmallChart, Paginate },
     })
     export default class PerfTestList extends Base {
         THRESHOLD_TYPE_DURATION = 'D';
@@ -289,8 +293,8 @@
             });
         }
 
-        showChart() {
-            // TODO
+        showChart(index) {
+            this.$refs.smallChart[index].toggleDisplay();
         }
     }
 </script>
