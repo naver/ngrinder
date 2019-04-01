@@ -18,14 +18,16 @@
             return I18n.i18n(key, args);
         }
 
-        setAttributes(context, data, keys) {
-            keys.forEach((key) => {
-                context[key] = data[key];
-            });
-        }
-
         exist(value) {
             return typeof value !== 'undefined';
+        }
+
+        get isAdmin() {
+            return this.currentUser.role === 'A';
+        }
+
+        get isAdminOrSuperUser() {
+            return this.currentUser.role === 'A' || this.currentUser.role === 'S';
         }
     }
 </script>
