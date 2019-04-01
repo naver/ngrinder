@@ -22,6 +22,7 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
+import org.ngrinder.perftest.controller.PerfTestApiController;
 import org.ngrinder.perftest.controller.PerfTestController;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepository;
@@ -50,6 +51,9 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 
 	@Autowired
 	public PerfTestController perfTestController;
+
+	@Autowired
+	private PerfTestApiController perfTestApiController;
 
 	private PerfTest perfTest = null;
 
@@ -100,7 +104,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 				SampleModelImplementationEx sampleModelMock = mock(SampleModelImplementationEx.class);
 				singleConsole.setSampleModel(sampleModelMock);
 				assertThat(singleConsole, notNullValue());
-				perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
+				perfTestApiController.stop(getTestUser(), String.valueOf(perfTest.getId()));
 			}
 		}, substep);
 		perfTestRunnable.doStart();
@@ -116,7 +120,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 		// Given the testing perftest
 		perfTest = createPerfTest("test1", Status.TESTING, null);
 		// When the stop is requested
-		perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
+		perfTestApiController.stop(getTestUser(), String.valueOf(perfTest.getId()));
 		perfTestRunnable.doFinish();
 		// Then it should be canceled.
 		assertThat(perfTestService.getOne(perfTest.getId()).getStatus(), is(Status.CANCELED));
