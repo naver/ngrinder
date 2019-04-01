@@ -10,6 +10,7 @@ import VueSession from 'vue-session';
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
 import Home from 'Home.vue';
+import PerfTestList from 'perftest/List.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -47,12 +48,19 @@ Vue.directive('focus', {
     inserted: el => el.focus(),
 });
 
+Vue.filter('dateFormat', function(value, format) {
+    if (value) {
+        return moment(new Date(value)).format(format);
+    }
+});
+
 const store = require('./store/vuex-store').default;
 
 const routes = [
     {path: '/', component: Home, name: 'home'},
     {path: '/home', component: Home, alias: '/'},
     {path: '/login', component: Login, name: 'login'},
+    {path: '/perftest', component: PerfTestList, name: 'perftestList'},
 ];
 
 const router = new VueRouter({
