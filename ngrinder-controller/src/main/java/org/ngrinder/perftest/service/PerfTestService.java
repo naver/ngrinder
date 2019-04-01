@@ -77,6 +77,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
 
@@ -147,7 +148,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			spec = spec.and(statusSetEqual(Status.TESTING));
 		} else if ("S".equals(queryFilter)) {
 			spec = spec.and(statusSetEqual(Status.READY));
-			spec = spec.and(scheduledTimeNotEmptyPredicate());
+		} else if ("RS".equals(queryFilter) || "SR".equals(queryFilter)) {
+			spec = spec.and(statusSetEqual(Status.TESTING, Status.READY));
 		}
 		if (StringUtils.isNotBlank(query)) {
 			spec = spec.and(likeTestNameOrDescription(query));
@@ -311,7 +313,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@Transactional
 	public PerfTest markAbnormalTermination(PerfTest perfTest, String reason) {
 		// Leave last status as test error cause
-		perfTest.setTestErrorCause(perfTest.getStatus());
+		perfTest.setTestErrorCause(cast(perfTest.getStatus()));
 		return markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, reason);
 	}
 
