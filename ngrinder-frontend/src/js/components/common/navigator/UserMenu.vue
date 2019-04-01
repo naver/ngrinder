@@ -70,15 +70,7 @@
     @Component({
         name: 'userMenu',
     })
-    export default class UserMenu extends Base {
-        get isAdmin() {
-            return this.currentUser.role === 'A';
-        }
-
-        get isAdminOrSuperUser() {
-            return this.currentUser.role === 'A' || this.currentUser.role === 'S';
-        }
-    }
+    export default class UserMenu extends Base {}
 </script>
 
 <style lang="less" scoped>
