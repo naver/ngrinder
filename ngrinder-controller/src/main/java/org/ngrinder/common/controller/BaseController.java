@@ -20,6 +20,7 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.region.service.RegionService;
@@ -39,9 +40,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -54,7 +53,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 public class BaseController implements WebConstants {
 	private static String successJson;
 	private static String errorJson;
-	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(PerfTest.class, new PerfTest.PerfTestSerializer()).setPrettyPrinting().create();
 
 	@Autowired
 	private MessageSource messageSource;
@@ -103,6 +102,19 @@ public class BaseController implements WebConstants {
 		if (iterator.hasNext()) {
 			Sort.Order sortProp = iterator.next();
 			model.addAttribute("sort", sortProp.getProperty() + "," + sortProp.getDirection());
+		}
+	}
+
+	@SuppressWarnings("unckeced")
+	protected void putPageIntoModelMap(Map<String, Object> result, Pageable pageable) {
+		Map<String, Object> page = new HashMap<>();
+		page.put("pageNumber", pageable.getPageNumber());
+		page.put("pageSize", pageable.getPageSize());
+		result.put("page", page);
+		final Iterator<Sort.Order> iterator = pageable.getSort().iterator();
+		if (iterator.hasNext()) {
+			Sort.Order sortProp = iterator.next();
+			result.put("sort", sortProp.getProperty() + "," + sortProp.getDirection());
 		}
 	}
 

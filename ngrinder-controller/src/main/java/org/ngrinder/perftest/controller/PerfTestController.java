@@ -27,7 +27,6 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
@@ -49,10 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -75,6 +72,7 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.*;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Performance Test Controller.
@@ -127,54 +125,10 @@ public class PerfTestController extends BaseController {
 
 	/**
 	 * Get the perf test lists.
-	 *
-	 * @param user        user
-	 * @param query       query string to search the perf test
-	 * @param tag         tag
-	 * @param queryFilter "F" means get only finished, "S" means get only scheduled tests.
-	 * @param pageable    page
-	 * @param model       modelMap
-	 * @return perftest/list
 	 */
 	@RequestMapping({"/list", "/", ""})
-	public String getAll(User user, @RequestParam(required = false) String query,
-	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
-	                     @PageableDefault(page = 0, size = 10) Pageable pageable, ModelMap model) {
-		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-			pageable.getSort().isUnsorted() ? new Sort(Direction.DESC, "id") : pageable.getSort());
-		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
-		if (tests.getNumberOfElements() == 0) {
-			pageable = PageRequest.of(0, pageable.getPageSize(),
-				pageable.getSort().isUnsorted() ? new Sort(Direction.DESC, "id") : pageable.getSort());
-			tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
-		}
-		annotateDateMarker(tests);
-		model.addAttribute("tag", tag);
-		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
-		model.addAttribute("testListPage", tests);
-		model.addAttribute("queryFilter", queryFilter);
-		model.addAttribute("query", query);
-		putPageIntoModelMap(model, pageable);
-		return "perftest/list";
-	}
-
-	private void annotateDateMarker(Page<PerfTest> tests) {
-		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
-		Calendar userToday = Calendar.getInstance(userTZ);
-		Calendar userYesterday = Calendar.getInstance(userTZ);
-		userYesterday.add(Calendar.DATE, -1);
-		for (PerfTest test : tests) {
-			Calendar localedModified = Calendar.getInstance(userTZ);
-			localedModified.setTime(DateUtils.convertToUserDate(getCurrentUser().getTimeZone(),
-					test.getLastModifiedDate()));
-			if (org.apache.commons.lang.time.DateUtils.isSameDay(userToday, localedModified)) {
-				test.setDateString("today");
-			} else if (org.apache.commons.lang.time.DateUtils.isSameDay(userYesterday, localedModified)) {
-				test.setDateString("yesterday");
-			} else {
-				test.setDateString("earlier");
-			}
-		}
+	public String getAll() {
+		return "app";
 	}
 
 	/**
@@ -227,7 +181,28 @@ public class PerfTestController extends BaseController {
 		Collections.sort(regions);
 		return regions;
 	}
-	
+
+
+	public void addDefaultAttributeOnModel(Map<String, Object> model) {
+		model.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
+		model.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		model.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		if (getConfig().isSecurityEnabled()) {
+			model.put(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
+		}
+		model.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
+		model.put(PARAM_SAFE_FILE_DISTRIBUTION,
+			getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
+		String timeZone = getCurrentUser().getTimeZone();
+		int offset;
+		if (StringUtils.isNotBlank(timeZone)) {
+			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
+		} else {
+			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+		}
+		model.put(PARAM_TIMEZONE_OFFSET, offset);
+	}
+
 	/**
 	 * Add the various default configuration values on the model.
 	 *
@@ -255,30 +230,29 @@ public class PerfTestController extends BaseController {
 
 	/**
 	 * Get the perf test creation form for quickStart.
-	 *
-	 * @param user       user
-	 * @param urlString  URL string to be tested.
-	 * @param scriptType scriptType
-	 * @param model      model
-	 * @return perftest/detail
 	 */
-	@RequestMapping("/quickstart")
-	public String getQuickStart(User user,
-	                            @RequestParam(value = "url", required = true) String urlString,
-	                            @RequestParam(value = "scriptType", required = true) String scriptType,
-	                            ModelMap model) {
+	@RestAPI
+	@ResponseBody
+	@PostMapping("/quickstart")
+	public Map<String, Object> getQuickStart(User user, @RequestBody Map<String, Object> params) {
+		String urlString = cast(params.get("url"));
+		String scriptType = cast(params.get("scriptType"));
+
 		URL url = checkValidURL(urlString);
-		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
-				scriptHandlerFactory.getHandler(scriptType));
-		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
-		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
-		model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
+		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString, scriptHandlerFactory.getHandler(scriptType));
+
+		Map<String, Object> model = new HashMap<>();
+		model.put(PARAM_QUICK_SCRIPT, newEntry.getPath());
+		model.put(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
+		// TODO seialize perftest.
+		// model.put(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
 		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
+		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
 		addDefaultAttributeOnModel(model);
-		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		return "perftest/detail";
+		model.put(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
+
+		return model;
 	}
 
 	/**
@@ -414,39 +388,6 @@ public class PerfTestController extends BaseController {
 			statuses.add(result);
 		}
 		return statuses;
-	}
-
-
-	/**
-	 * Delete the perf tests having given IDs.
-	 *
-	 * @param user user
-	 * @param ids  comma operated IDs
-	 * @return success json messages if succeeded.
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		for (String idStr : StringUtils.split(ids, ",")) {
-			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
-		}
-		return successJsonHttpEntity();
-	}
-
-	/**
-	 * Stop the perf tests having given IDs.
-	 *
-	 * @param user user
-	 * @param ids  comma separated perf test IDs
-	 * @return success json if succeeded.
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api", params = "action=stop", method = RequestMethod.PUT)
-	public HttpEntity<String> stop(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		for (String idStr : StringUtils.split(ids, ",")) {
-			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));
-		}
-		return successJsonHttpEntity();
 	}
 
 	/**

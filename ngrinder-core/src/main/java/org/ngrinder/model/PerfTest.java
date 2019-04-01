@@ -13,6 +13,7 @@
  */
 package org.ngrinder.model;
 
+import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
@@ -256,6 +257,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "progress_message", length = MAX_STRING_SIZE)
 	private String progressMessage;
 
+	@Expose
 	@Column(name = "last_progress_message", length = MAX_STRING_SIZE)
 	private String lastProgressMessage;
 
@@ -653,7 +655,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtils.ms2Time(this.duration);
 	}
 
-
 	/**
 	 * Get Running time in HH:MM:SS style.
 	 *
@@ -815,6 +816,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.param = param;
 	}
 
+	public StatusCategory getStatusCategory() {
+		return status.getCategory();
+	}
+
 	public void prepare(boolean isClone) {
 		if (isClone) {
 			this.setId(null);
@@ -822,5 +827,23 @@ public class PerfTest extends BaseModel<PerfTest> {
 		}
 		this.useRampUp = getSafe(this.useRampUp);
 		this.safeDistribution = getSafe(this.safeDistribution);
+	}
+
+	public static class PerfTestSerializer implements JsonSerializer<PerfTest> {
+		private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+		@Override
+		public JsonElement serialize(PerfTest perfTest, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
+			JsonObject jsonObject = (JsonObject) gson.toJsonTree(perfTest);
+			jsonObject.addProperty("iconName", perfTest.getStatusCategory().getIconName());
+			jsonObject.addProperty("deletable", perfTest.getStatusCategory().isDeletable());
+			jsonObject.addProperty("reportable", perfTest.getStatusCategory().isReportable());
+			jsonObject.addProperty("stoppable", perfTest.getStatusCategory().isStoppable());
+			jsonObject.addProperty("createdUserName", perfTest.getCreatedUser().getUserName());
+			jsonObject.addProperty("createdUserId", perfTest.getLastModifiedUser().getUserId());
+			jsonObject.addProperty("lastModifiedUserName", perfTest.getLastModifiedUser().getUserName());
+			jsonObject.addProperty("lastModifiedUserId", perfTest.getLastModifiedUser().getUserId());
+			jsonObject.addProperty("duration", perfTest.getDurationStr());
+			return jsonObject;
+		}
 	}
 }

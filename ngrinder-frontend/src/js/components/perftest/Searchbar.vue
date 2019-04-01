@@ -3,7 +3,7 @@
         <div class="left-float">
             <div data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
                 <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 150px"
-                         :placeHolder="i18n('perfTest.action.selectATag')" @change="$emit('changeTag')">
+                         :placeHolder="i18n('perfTest.action.selectATag')" @change="$emit('change-tag')">
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
@@ -26,7 +26,7 @@
                :data-intro="i18n('intro.list.create')" v-text="i18n('perfTest.action.createTest')">
                 <i class="glyphicon glyphicon-file icon-white"></i>
             </a>
-            <a @click="$emit('delete-tests')" class="pointer-cursor btn btn-danger" id="delete_btn" data-position="top"
+            <a @click="$emit('delete-selected-tests')" class="pointer-cursor btn btn-danger" id="delete_btn" data-position="top"
                data-step="2" :data-intro="i18n('intro.list.delete')" v-text="i18n('perfTest.action.deleteSelectedTest')">
                 <i class="glyphicon glyphicon-remove icon-white"></i>
             </a>
