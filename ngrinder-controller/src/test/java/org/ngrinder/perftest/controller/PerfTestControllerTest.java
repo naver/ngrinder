@@ -30,7 +30,6 @@ import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -294,7 +293,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		controller.getReport(model, test.getId());
 
 		model.clear();
-		controller.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
+		perfTestApiController.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
 
 		model.clear();
 		controller.getReportSection(getTestUser(), model, test.getId(), 700);
