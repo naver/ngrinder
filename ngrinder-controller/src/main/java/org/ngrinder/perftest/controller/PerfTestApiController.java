@@ -26,6 +26,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.model.FileEntry;
+import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +39,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 /**
  * Performance Test api Controller.
@@ -147,6 +150,40 @@ public class PerfTestApiController extends BaseController {
 			allStrings.add(query);
 		}
 		return allStrings;
+	}
+
+	/**
+	 * Get the detailed report graph data for the given perf test id.
+	 * This method returns the appropriate points based on the given imgWidth.
+	 *
+	 * @param id       test id
+	 * @param dataType which data
+	 * @param imgWidth imageWidth
+	 * @return json string.
+	 */
+	@RestAPI
+	@GetMapping({"/{id}/perf", "/{id}/graph"})
+	public Map<String, Object> getPerfGraph(@PathVariable("id") long id,
+											@RequestParam(defaultValue = "") String dataType,
+											@RequestParam(defaultValue = "false") boolean onlyTotal,
+											@RequestParam int imgWidth) {
+		String[] dataTypes = checkNotEmpty(StringUtils.split(dataType, ","), "dataType argument should be provided");
+		return getPerfGraphData(id, dataTypes, onlyTotal, imgWidth);
+	}
+
+	private Map<String, Object> getPerfGraphData(Long id, String[] dataTypes, boolean onlyTotal, int imgWidth) {
+		final PerfTest test = perfTestService.getOne(id);
+		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
+		Map<String, Object> resultMap = Maps.newHashMap();
+		for (String each : dataTypes) {
+			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(id, each, onlyTotal, interval);
+			Map<String, Object> dataMap = Maps.newHashMap();
+			dataMap.put("labels", tpsResult.getFirst());
+			dataMap.put("data", tpsResult.getSecond());
+			resultMap.put(StringUtils.replaceChars(each, "()", ""), dataMap);
+		}
+		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
+		return resultMap;
 	}
 
 	private Pair<Page<PerfTest>, Pageable> getPerfTests(User user, String query, String tag, String queryFilter, Pageable pageableParam) {
