@@ -151,7 +151,7 @@ public class PerfTestController extends BaseController {
 	 * @return perftest/detail
 	 */
 	@RequestMapping("/{id}")
-	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
+	public String getOne(User user, @PathVariable Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
 			test = getOneWithPermissionCheck(user, id, true);
@@ -172,7 +172,7 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
 		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
-		return "perftest/detail";
+		return "app";
 	}
 
 	private ArrayList<String> getRegions(Map<String, MutableInt> agentCountMap) {
@@ -341,24 +341,6 @@ public class PerfTestController extends BaseController {
 				"vuserPerAgent should be equal to (processes * threads)");
 	}
 
-	/**
-	 * Leave the comment on the perf test.
-	 *
-	 * @param id          testId
-	 * @param user        user
-	 * @param testComment test comment
-	 * @param tagString   tagString
-	 * @return JSON
-	 */
-	@RequestMapping(value = "/{id}/leave_comment", method = RequestMethod.POST)
-	@ResponseBody
-	public String leaveComment(User user, @PathVariable("id") Long id, @RequestParam("testComment") String testComment,
-	                           @RequestParam(value = "tagString", required = false) String tagString) {
-		perfTestService.addCommentOn(user, id, testComment, tagString);
-		return returnSuccess();
-	}
-
-
 	private Long[] convertString2Long(String ids) {
 		String[] numbers = StringUtils.split(ids, ",");
 		Long[] id = new Long[numbers.length];
@@ -418,29 +400,6 @@ public class PerfTestController extends BaseController {
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		model.addAttribute(PARAM_TEST, test);
 		return "perftest/running";
-	}
-
-
-	/**
-	 * Get the basic report content in perftest configuration page.
-	 * <p/>
-	 * This method returns the appropriate points based on the given imgWidth.
-	 *
-	 * @param user     user
-	 * @param model    model
-	 * @param id       test id
-	 * @param imgWidth image width
-	 * @return perftest/basic_report
-	 */
-	@RequestMapping(value = "{id}/basic_report")
-	public String getReportSection(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
-		PerfTest test = getOneWithPermissionCheck(user, id, false);
-		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
-		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
-		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
-		model.addAttribute(PARAM_TEST, test);
-		model.addAttribute(PARAM_TPS, perfTestService.getSingleReportDataAsJson(id, "TPS", interval));
-		return "perftest/basic_report";
 	}
 
 	/**
@@ -785,8 +744,8 @@ public class PerfTestController extends BaseController {
 	 * @return json message containing test info.
 	 */
 	@RestAPI
-	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
-	public HttpEntity<String> getOne(User user, @PathVariable("id") Long id) {
+	@GetMapping(value = "/api/{id}")
+	public HttpEntity<String> getOne(User user, @PathVariable Long id) {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "PerfTest %s does not exists", id);
 		return toJsonHttpEntity(test);
 	}
