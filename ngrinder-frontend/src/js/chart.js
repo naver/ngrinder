@@ -25,9 +25,9 @@ export default class Chart {
         if (this.yAxisFormatter === formatPercentage) {
             this.yLimit = 100;
         }
-        interval = interval || 1;
+        this.interval = interval || 1;
         this.xAxisFormatter = this.opts.xAxisFormatter || ((format, value) => {
-                return this.formatTimeForXaxis(parseInt((value - 1) * interval));
+                return this.formatTimeForXaxis(parseInt((value - 1) * this.interval));
             });
         this.gridPadding = this.opts.gridPadding || {top: 20, right: 20, bottom: 35, left: 60};
         this.numXTicks = this.opts.numXTicks || 10;
