@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +144,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		assertThat(preId, not(cloneTest.getId()));
 
 		// test leave comment
-		controller.leaveComment(getTestUser(), cloneTest.getId(), "TestComment", "");
+		Map<String, Object> params = new HashMap<>();
+		params.put("testComment", "TestComment");
+		params.put("tagString", "");
+		perfTestApiController.leaveComment(getTestUser(), cloneTest.getId(), params);
 		model.clear();
 		controller.getOne(getTestUser(), cloneTest.getId(), model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
@@ -296,7 +300,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		perfTestApiController.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
 
 		model.clear();
-		controller.getReportSection(getTestUser(), model, test.getId(), 700);
+		perfTestApiController.getReportSection(getTestUser(), test.getId(), 700);
 	}
 
 	@Test

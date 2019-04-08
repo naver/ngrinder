@@ -2,8 +2,8 @@
     <div class="well form-inline search-bar no-margin">
         <div class="left-float">
             <div data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
-                <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 150px"
-                         :placeHolder="i18n('perfTest.action.selectATag')" @change="$emit('change-tag')">
+                <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 150px" type="select"
+                         :option="{placeholder: i18n('perfTest.action.selectATag'), allowClear: true}" @change="$emit('change-tag')">
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
@@ -34,9 +34,9 @@
     </div>
 </template>
 <script>
-    import Base from '../Base.vue';
+    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
-    import Select2 from '../common/Select2.vue';
+    import Select2 from '../../common/Select2.vue';
 
     @Component({
         name: 'searchBar',

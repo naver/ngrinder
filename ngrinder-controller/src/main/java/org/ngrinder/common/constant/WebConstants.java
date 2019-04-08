@@ -26,7 +26,7 @@ public interface WebConstants {
 
 	// parameter constant, for parameter from page, and for key in map
 
-	public static final String PARAM_TPS = "TPS";
+	public static final String PARAM_TPS = "tps";
 	public static final String PARAM_STATUS_AGENT_PORT = "port";
 
 	public static final String PARAM_TEST = "test";

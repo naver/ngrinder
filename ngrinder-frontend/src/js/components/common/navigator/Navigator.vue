@@ -15,7 +15,7 @@
                     </ul>
                     <ul class="nav navbar-nav pull-right">
                         <template v-if="config.clustered">
-                            <li style="padding-top:5px">
+                            <li class="cluster-icon-container">
                                 <img src="/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode">
                             </li>
                             <li class="divider-vertical"></li>
@@ -56,6 +56,12 @@
 
         .navbar-inner {
             filter: none;
+        }
+
+        li {
+            &.cluster-icon-container {
+                padding-top: 5px;
+            }
         }
     }
 </style>
