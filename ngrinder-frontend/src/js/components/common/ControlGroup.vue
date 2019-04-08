@@ -18,7 +18,6 @@
         props: {
             name: {
                 type: String,
-                required: true,
             },
             labelMessageKey: {
                 type: String,
