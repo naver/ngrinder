@@ -15,9 +15,9 @@
 </template>
 
 <script>
-    import Base from '../Base.vue';
+    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
-    import Chart from '../../chart.js';
+    import Chart from '../../../chart.js';
 
     @Component({
         name: 'smallChart',
@@ -94,7 +94,7 @@
 </style>
 
 <style lang="less">
-    @import '../../../plugins/jqplot/css/jquery.jqplot.min.css';
+    @import '../../../../plugins/jqplot/css/jquery.jqplot.min.css';
 
     .small-chart-container {
         .jqplot-table-legend {
