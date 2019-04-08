@@ -10,7 +10,8 @@ import VueSession from 'vue-session';
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
 import Home from 'Home.vue';
-import PerfTestList from 'perftest/List.vue';
+import PerfTestList from 'perftest/list/List.vue';
+import PerfTestDetail from 'perftest/detail/Detail.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -60,7 +61,8 @@ const routes = [
     {path: '/', component: Home, name: 'home'},
     {path: '/home', component: Home, alias: '/'},
     {path: '/login', component: Login, name: 'login'},
-    {path: '/perftest', component: PerfTestList, name: 'perftestList'},
+    {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
+    {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail'},
 ];
 
 const router = new VueRouter({

@@ -842,7 +842,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 			jsonObject.addProperty("createdUserId", perfTest.getLastModifiedUser().getUserId());
 			jsonObject.addProperty("lastModifiedUserName", perfTest.getLastModifiedUser().getUserName());
 			jsonObject.addProperty("lastModifiedUserId", perfTest.getLastModifiedUser().getUserId());
+			jsonObject.addProperty("springMessageKey", perfTest.getStatus().getSpringMessageKey());
 			jsonObject.addProperty("duration", perfTest.getDurationStr());
+			jsonObject.addProperty("runtime", perfTest.getRuntimeStr());
 			return jsonObject;
 		}
 	}

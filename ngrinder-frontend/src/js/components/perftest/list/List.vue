@@ -82,7 +82,7 @@
                         </td>
                         <td class="ellipsis">
                             <div class="ellipsis" :title="test.testName" data-toggle="popover" data-html="true" :data-content="getTestNamePopoverContent(test).replace(/\n/g, '<br>')">
-                                <a :href="`/perftest/${test.id}`" target="_self" v-text="test.testName"></a>
+                                <a @click.prevent="$router.push(`/perftest/${test.id}`)" target="_self" class="clickable" v-text="test.testName"></a>
                             </div>
                         </td>
                         <td class="ellipsis">
@@ -150,14 +150,14 @@
 <script>
     import Component from 'vue-class-component';
     import vueHeadful from 'vue-headful';
-    import Base from '../Base.vue';
+    import Base from '../../Base.vue';
     import SearchBar from './Searchbar.vue';
-    import IntroButton from '../common/IntroButton.vue';
+    import IntroButton from '../../common/IntroButton.vue';
     import SmallChart from './SmallChart.vue'
     import Paginate from 'vuejs-paginate'
 
     @Component({
-        name: 'perftestList',
+        name: 'perfTestList',
         components: { IntroButton, vueHeadful, SearchBar, SmallChart, Paginate },
     })
     export default class PerfTestList extends Base {
@@ -176,6 +176,7 @@
 
         mounted() {
             this.getPerfTest();
+            this.updateStatuses();
         }
 
         changeSelectAll(event) {
@@ -295,6 +296,10 @@
 
         showChart(index) {
             this.$refs.smallChart[index].toggleDisplay();
+        }
+
+        updateStatuses() {
+            // TODO update list state every 2 seconds.
         }
     }
 </script>

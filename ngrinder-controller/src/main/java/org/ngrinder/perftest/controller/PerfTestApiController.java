@@ -22,6 +22,7 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -40,7 +41,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Performance Test api Controller.
@@ -169,6 +172,54 @@ public class PerfTestApiController extends BaseController {
 											@RequestParam int imgWidth) {
 		String[] dataTypes = checkNotEmpty(StringUtils.split(dataType, ","), "dataType argument should be provided");
 		return getPerfGraphData(id, dataTypes, onlyTotal, imgWidth);
+	}
+
+	/**
+	 * Get the basic report content in perftest configuration page.
+	 * <p/>
+	 * This method returns the appropriate points based on the given imgWidth.
+	 *
+	 * @param user     user
+	 * @param id       test id
+	 * @param imgWidth image width
+	 */
+	@RestAPI
+	@GetMapping("/{id}/basic_report")
+	public HttpEntity<String> getReportSection(User user, @PathVariable long id, @RequestParam int imgWidth) {
+		Map<String, Object> model = new HashMap<>();
+		PerfTest test = getOneWithPermissionCheck(user, id, false);
+		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
+		model.put(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
+		model.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
+		model.put(PARAM_TEST, test);
+		model.put(PARAM_TPS, perfTestService.getSingleReportDataAsJson(id, "TPS", interval));
+		return toJsonHttpEntity(model);
+	}
+
+	/**
+	 * Leave the comment on the perf test.
+	 *
+	 * @param id          testId
+	 * @param user        user
+	 * @param params	  {testComment, tagString}
+	 * @return JSON
+	 */
+	@RestAPI
+	@PostMapping("/{id}/leave_comment")
+	public String leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
+		perfTestService.addCommentOn(user, id, cast(params.get("testComment")), cast(params.get("tagString")));
+		return returnSuccess();
+	}
+
+	private PerfTest getOneWithPermissionCheck(User user, Long id, boolean withTag) {
+		PerfTest perfTest = withTag ? perfTestService.getOneWithTag(id) : perfTestService.getOne(id);
+		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
+			return perfTest;
+		}
+		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
+			throw processException("User " + user.getUserId() + " has no right on PerfTest " + id);
+		}
+		return perfTest;
 	}
 
 	private Map<String, Object> getPerfGraphData(Long id, String[] dataTypes, boolean onlyTotal, int imgWidth) {
