@@ -23,6 +23,12 @@
             id: "{{ currentUser.userId }}",
             email: "{{ currentUser.email }}",
             role: "{{ currentUser.role.shortName }}",
+            factualUser: {
+                name: "{{ currentUser.factualUser.userName }}",
+                id: "{{ currentUser.factualUser.userId }}",
+                email: "{{ currentUser.factualUser.email }}",
+                role:  "{{ currentUser.role.shortName }}",
+            },
         },
         config: {
             clustered: ("{{ clustered }}" === 'true'),
