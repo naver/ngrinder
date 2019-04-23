@@ -16,19 +16,24 @@
     @Component({
         name: 'controlGroup',
         props: {
-            name: {
-                type: String,
-            },
             labelMessageKey: {
                 type: String,
                 required: true,
             },
-            required: {
-                type: Boolean,
+            radio: {
+                type: [Object, Boolean],
+                default: false,
             },
-            error: {
-                type: Boolean,
-            },
+            value: String,
+            labelStyle: String,
+            controlsStyle: String,
+            labelHelpMessageKey: String,
+            required: Boolean,
+            dataStep: [Number, String],
+            dataIntro: String,
+            error: Boolean,
+            name: String,
+            id: String,
         },
     })
     export default class ControlGroup extends Base {
