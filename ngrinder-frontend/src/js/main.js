@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
-import VueMoment from 'vue-moment';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
@@ -36,14 +35,16 @@ Vue.use(Vuex);
 Vue.use(VueSession);
 Vue.use(VueRouter);
 Vue.use(VeeValidate);
-Vue.use(VueMoment, {
-    moment,
-});
 
+Vue.prototype.$moment = moment;
 Vue.prototype.$http = axios;
 Vue.prototype.$EventBus = new Vue();
 Vue.prototype.$Event = Event;
 Vue.prototype.initEventBus = () => Vue.prototype.$EventBus = new Vue();
+
+Vue.prototype.$watchAll = function(props, callback) {
+    props.forEach(prop => this.$watch(prop, callback));
+};
 
 Vue.directive('focus', {
     inserted: el => el.focus(),

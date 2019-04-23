@@ -59,26 +59,6 @@
             padding:5px 20px;
             margin-bottom:0;
 
-            .fade-enter-active, .fade-leave-active {
-                transition-duration: .3s;
-                transition-timing-function: ease-in;
-            }
-
-            .fade-leave-active {
-                transition-duration: .3s;
-                transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-            }
-
-            .fade-enter, .fade-leave-to {
-                max-height: 0;
-                overflow: hidden;
-            }
-
-            .fade-enter-to, .fade-leave {
-                max-height: 100%;
-                overflow: hidden;
-            }
-
             .page-header {
                 margin:0;
                 padding-bottom:2px;
@@ -89,6 +69,10 @@
                     font-size: 15px;
                 }
             }
+        }
+
+        #announcement-content {
+            margin-top: 10px;
         }
     }
 </style>
