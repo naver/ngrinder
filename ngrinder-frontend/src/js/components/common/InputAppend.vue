@@ -1,5 +1,5 @@
 <template>
-    <div class="input-group">
+    <div class="input-group input-append">
         <input :type="inputType"
                v-validate="validationRules"
                data-toggle="popover" :name="name" :id="name"
@@ -8,11 +8,16 @@
                :data-content="dataContent ? dataContent : i18n(`${this.message}.help`)"
                :title='i18n(message)'
                :value="value"
-               :class="inputClass"
                @input="$emit('input', $event.target.value)"
+               @change="$emit('change')"
+               @focus="$emit('focus')"
                @keyup="checkValidation"
                aria-describedby="basic-addon2"/>
-        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)"></div>
+        <span v-if="append !== null" class="add-on">
+            <span v-text="i18n(appendPrefix)"></span>
+            <span v-html="append"></span>
+        </span>
+        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </div>
 </template>
 
@@ -24,7 +29,7 @@
         name: 'inputAppend',
         props: {
             value: {
-                type: String,
+                type: [String, Number],
                 required: true,
             },
             name: {
@@ -43,16 +48,14 @@
                 type: String,
                 default: 'text',
             },
-            inputClass: {
-                type: String,
-                default: 'span4'
+            append: {
+                type: [String, Number],
+                default: null,
             },
-            dataContent: {
-                type: String,
-            },
-            validationRules: {
-                type: Object,
-            },
+            dataContent: String,
+            validationRules: Object,
+            appendPrefix: String,
+            errStyle: String,
         },
     })
     export default class InputAppend extends Base {
@@ -61,7 +64,7 @@
         }
 
         checkValidation() {
-            this.$validator.validateAll().then(result => this.$emit('validationResult', !result));
+            this.$validator.validateAll().then(result => {this.$emit('validationResult', !result)});
         }
 
         get inputType() {
@@ -79,11 +82,11 @@
     .input-group {
         input {
             height: 30px;
+            width: 74px;
         }
 
         .validation-message {
             margin-top: 2px;
-            color: #b94a48;
         }
     }
 </style>
