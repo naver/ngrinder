@@ -18,17 +18,26 @@ import com.google.gson.GsonBuilder;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.mutable.MutableInt;
+import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Role;
-import org.ngrinder.model.User;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.*;
+import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.region.service.RegionService;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,9 +49,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.*;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -50,6 +63,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  *
  * @since 3.5.0
  */
+@Profile("production")
 @RestController
 @RequestMapping("/perftest/api")
 public class PerfTestApiController extends BaseController {
@@ -60,6 +74,21 @@ public class PerfTestApiController extends BaseController {
 	@Autowired
 	private TagService tagService;
 
+	@Autowired
+	private AgentManager agentManager;
+
+	@Autowired
+	private RegionService regionService;
+
+	@Autowired
+	private AgentManagerService agentManagerService;
+
+	@Autowired
+	private FileEntryService fileEntryService;
+
+	@Autowired
+	private UserService userService;
+
 	private Gson fileEntryGson;
 
 	/**
@@ -67,9 +96,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@PostConstruct
 	public void init() {
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer());
-		fileEntryGson = gsonBuilder.create();
+		fileEntryGson = new GsonBuilder().registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer()).create();
 	}
 
 	/**
@@ -175,6 +202,54 @@ public class PerfTestApiController extends BaseController {
 	}
 
 	/**
+	 * Get resources and lib file list from the same folder with the given script path.
+	 *
+	 * @param user       user
+	 * @param scriptPath script path
+	 * @param ownerId    ownerId
+	 * @return json string representing resources and libs.
+	 */
+	@RestAPI
+	@GetMapping("/resource")
+	public Map<String, Object> getResources(User user, @RequestParam String scriptPath, @RequestParam(required = false) String ownerId) {
+		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
+			user = userService.getOne(ownerId);
+		}
+		FileEntry fileEntry = fileEntryService.getOne(user, scriptPath);
+		String targetHosts = "";
+		List<String> fileStringList = newArrayList();
+		if (fileEntry != null) {
+			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user, fileEntry, -1L);
+			for (FileEntry each : fileList) {
+				fileStringList.add(each.getPath());
+			}
+			targetHosts = filterHostString(fileEntry.getProperties().get("targetHosts"));
+		}
+
+		return buildMap("targetHosts", trimToEmpty(targetHosts), "resources", fileStringList);
+	}
+
+	/**
+	 * Get all available scripts in JSON format for the current factual user.
+	 *
+	 * @param user    user
+	 * @param ownerId owner id
+	 * @return JSON containing script's list.
+	 */
+	@RestAPI
+	@RequestMapping("/script")
+	public HttpEntity<String> getScripts(User user, @RequestParam(required = false) String ownerId) {
+		if (StringUtils.isNotEmpty(ownerId)) {
+			user = userService.getOne(ownerId);
+		}
+		List<FileEntry> scripts = fileEntryService.getAll(user)
+			.stream()
+			.filter(input -> input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT)
+			.collect(Collectors.toList());
+		return toJsonHttpEntity(scripts, fileEntryGson);
+	}
+
+	/**
 	 * Get the basic report content in perftest configuration page.
 	 * <p/>
 	 * This method returns the appropriate points based on the given imgWidth.
@@ -193,6 +268,66 @@ public class PerfTestApiController extends BaseController {
 		model.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.put(PARAM_TEST, test);
 		model.put(PARAM_TPS, perfTestService.getSingleReportDataAsJson(id, "TPS", interval));
+		return toJsonHttpEntity(model);
+	}
+
+	/**
+	 * Create a new test or cloneTo a current test.
+	 *
+	 * @param user     user
+	 * @param perfTest {@link PerfTest}
+	 * @param isClone  true if cloneTo
+	 * @return redirect:/perftest/list
+	 */
+	@RestAPI
+	@PostMapping("/new")
+	public String saveOne(User user, PerfTest perfTest, @RequestParam(defaultValue = "false") boolean isClone) {
+		validate(user, null, perfTest);
+
+		// Point to the head revision
+		perfTest.setTestName(StringUtils.trimToEmpty(perfTest.getTestName()));
+		perfTest.setScriptRevision(-1L);
+		perfTest.prepare(isClone);
+		perfTest = perfTestService.save(user, perfTest);
+
+		if (perfTest.getStatus() == Status.SAVED || perfTest.getScheduledTime() != null) {
+			return "list";
+		} else {
+			return perfTest.getId().toString();
+		}
+	}
+
+	/**
+	 * Get the perf test detail on the given perf test id.
+	 *
+	 * @param user  user
+	 * @param id    perf test id
+	 * @return perftest/detail
+	 */
+	@RestAPI
+	@GetMapping("/{id}")
+	public HttpEntity<String> getOne(User user, @PathVariable Long id) {
+		Map<String, Object> model = new HashMap<>();
+		PerfTest test = null;
+		if (id != null) {
+			test = getOneWithPermissionCheck(user, id, true);
+		}
+
+		if (test == null) {
+			test = new PerfTest(user);
+			test.init();
+		}
+
+		model.put(PARAM_TEST, test);
+		// Retrieve the agent count map based on create user, if the test is
+		// created by the others.
+		user = test.getCreatedUser() != null ? test.getCreatedUser() : user;
+
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		model.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
+		model.put(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
+		addDefaultAttributeOnModel(model);
 		return toJsonHttpEntity(model);
 	}
 
@@ -249,6 +384,47 @@ public class PerfTestApiController extends BaseController {
 		return Pair.of(tests, pageable);
 	}
 
+	/**
+	 * Filter out please_modify_this.com from hosts string.
+	 *
+	 * @param originalString original string
+	 * @return filtered string
+	 */
+	private String filterHostString(String originalString) {
+		List<String> hosts = newArrayList();
+		for (String each : StringUtils.split(StringUtils.trimToEmpty(originalString), ",")) {
+			if (!each.contains("please_modify_this.com")) {
+				hosts.add(each);
+			}
+		}
+		return StringUtils.join(hosts, ",");
+	}
+
+	/**
+	 * Add the various default configuration values on the model.
+	 *
+	 * @param model model to which put the default values
+	 */
+	private void addDefaultAttributeOnModel(Map<String, Object> model) {
+		model.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
+		model.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		model.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		if (getConfig().isSecurityEnabled()) {
+			model.put(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
+		}
+		model.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
+		model.put(PARAM_SAFE_FILE_DISTRIBUTION,
+			getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
+		String timeZone = getCurrentUser().getTimeZone();
+		int offset;
+		if (StringUtils.isNotBlank(timeZone)) {
+			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
+		} else {
+			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+		}
+		model.put(PARAM_TIMEZONE_OFFSET, offset);
+	}
+
 	private void annotateDateMarker(Page<PerfTest> tests) {
 		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
 		Calendar userToday = Calendar.getInstance(userTZ);
@@ -266,6 +442,49 @@ public class PerfTestApiController extends BaseController {
 				test.setDateString("earlier");
 			}
 		}
+	}
+
+	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
+		if (oldOne == null) {
+			oldOne = new PerfTest();
+			oldOne.init();
+		}
+		newOne = oldOne.merge(newOne);
+		checkNotEmpty(newOne.getTestName(), "testName should be provided");
+		checkArgument(newOne.getStatus().equals(Status.READY) || newOne.getStatus().equals(Status.SAVED),
+			"status only allows SAVE or READY");
+		if (newOne.isThresholdRunCount()) {
+			final Integer runCount = newOne.getRunCount();
+			checkArgument(runCount > 0 && runCount <= agentManager
+					.getMaxRunCount(),
+				"runCount should be equal to or less than %s", agentManager.getMaxRunCount());
+		} else {
+			final Long duration = newOne.getDuration();
+			checkArgument(duration > 0 && duration <= (((long) agentManager.getMaxRunHour()) *
+					3600000L),
+				"duration should be equal to or less than %s", agentManager.getMaxRunHour());
+		}
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		MutableInt agentCountObj = agentCountMap.get(isClustered() ? newOne.getRegion() : Config.NONE_REGION);
+		checkNotNull(agentCountObj, "region should be within current region list");
+		int agentMaxCount = agentCountObj.intValue();
+		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
+			agentMaxCount);
+		if (newOne.getStatus().equals(Status.READY)) {
+			checkArgument(newOne.getAgentCount() >= 1, "agentCount should be more than 1 when it's READY status.");
+		}
+
+		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+			"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
+		if (getConfig().isSecurityEnabled() && GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL.equals(getConfig().getSecurityLevel())) {
+			checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
+				"targetHosts should be provided when security mode is enabled");
+		}
+		if (newOne.getStatus() != Status.SAVED) {
+			checkArgument(StringUtils.isNotBlank(newOne.getScriptName()), "scriptName should be provided.");
+		}
+		checkArgument(newOne.getVuserPerAgent() == newOne.getProcesses() * newOne.getThreads(),
+			"vuserPerAgent should be equal to (processes * threads)");
 	}
 
 }
