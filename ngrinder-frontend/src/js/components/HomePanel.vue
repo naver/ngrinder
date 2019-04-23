@@ -53,18 +53,10 @@
                 type: Number,
                 default: 6,
             },
-            seeMoreQuestionUrl: {
-                type: String,
-            },
-            askQuestionUrl: {
-                type: String,
-            },
-            introJsDataIntro: {
-                type: String,
-            },
-            introJsDataSetp: {
-                type: Number,
-            },
+            seeMoreQuestionUrl: String,
+            askQuestionUrl: String,
+            introJsDataIntro: String,
+            introJsDataSetp: Number,
         },
     })
     export default class HomePanel extends Base {}
