@@ -88,4 +88,4 @@ new Vue({
     },
     store,
     router,
-}).$mount('#app');
+}).$mount('#ngrinder');
