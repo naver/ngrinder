@@ -1,8 +1,15 @@
 <template>
-    <select v-if="type === 'select'" :style="customStyle">
-        <slot></slot>
-    </select>
-    <input v-else value=" " :style="customStyle">
+    <span v-if="type === 'select'">
+        <select ref="select2"
+                :style="customStyle"
+                :name="name"
+                v-model="value"
+                v-validate="validationRules">
+            <slot></slot>
+        </select>
+        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" errStyle="errStyle"></div>
+    </span>
+    <input v-else ref="select2" value=" " :style="customStyle" :name="name">
 </template>
 
 <script>
@@ -18,15 +25,16 @@
             },
             type: {
                 type: String,
-                required: true,
-            },
-            customStyle: {
-                type: String,
+                default: 'select',
             },
             option: {
                 type: Object,
                 default: {},
             },
+            name: String,
+            customStyle: String,
+            validationRules: Object,
+            errStyle: String,
         },
         name: 'select2',
     })
@@ -37,10 +45,22 @@
 
         init() {
             const component = this;
-            $(this.$el).select2(this.option, []).change(function () {
+            $(this.$refs.select2)
+                .select2(this.option, [])
+                .change(function () {
+                    component.checkValidation();
                     component.$emit('input', this.value);
                     component.$emit('change');
                 });
+        }
+
+        checkValidation() {
+            this.$validator.validateAll().then(result => {this.$emit('validationResult', !result)});
+        }
+
+        // for only type 'select'
+        getSelectedOptionValidate() {
+            return this.$refs.select2.options[this.$refs.select2.options.selectedIndex].dataset.validate;
         }
     }
 
