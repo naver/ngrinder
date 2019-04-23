@@ -45,8 +45,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -61,7 +63,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 	private MockPerfTestController controller;
 
 	@Autowired
-	private PerfTestApiController perfTestApiController;
+	private MockPerfTestApiController perfTestApiController;
 
 	@Autowired
 	private Config config;
@@ -76,28 +78,24 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 	private ObjectMapper objectMapper;
 
 	@Before
-	public void beforeCleanUp() throws IOException {
+	public void beforeCleanUp() {
 		clearAllPerfTest();
 	}
 
 	@Test
 	public void testGetPerfTestDetail() {
-		ModelMap model = new ModelMap();
-		controller.getOne(getTestUser(), null, model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
-		model.clear();
+		HttpEntity<String> response = perfTestApiController.getOne(getTestUser(), null);
+		assertTrue(requireNonNull(response.getBody()).contains("test"));
 
-		controller.getOne(getTestUser(), 0L, model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
-		model.clear();
+		response = perfTestApiController.getOne(getTestUser(), 0L);
+		assertTrue(requireNonNull(response.getBody()).contains("test"));
 		long invalidId = 123123123123L;
-		controller.getOne(getTestUser(), invalidId, model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
+		response = perfTestApiController.getOne(getTestUser(), invalidId);
+		assertTrue(requireNonNull(response.getBody()).contains("test"));
 
 		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
-		model.clear();
-		controller.getOne(getTestUser(), createPerfTest.getId(), model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
+		response = perfTestApiController.getOne(getTestUser(), createPerfTest.getId());
+		assertTrue(requireNonNull(response.getBody()).contains("test"));
 
 	}
 
@@ -107,27 +105,30 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		FileUtils.deleteQuietly(file);
 		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		controller.getResources(getTestUser(), "filefilter.txt", null);
+		perfTestApiController.getResources(getTestUser(), "filefilter.txt", null);
 	}
 
 	@Test
 	public void testDeleteTests() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
-		ModelMap model = new ModelMap();
 		perfTestApiController.delete(getTestUser(), String.valueOf(test.getId()));
-		model.clear();
+
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
+
+		HttpEntity<String> response = perfTestApiController.getOne(getTestUser(), test1.getId());
+		assertTrue(requireNonNull(response.getBody()).contains("id"));
+		response = perfTestApiController.getOne(getTestUser(), test2.getId());
+		assertTrue(requireNonNull(response.getBody()).contains("id"));
+
 		String delIds = "" + test1.getId() + "," + test2.getId();
 		perfTestApiController.delete(getTestUser(), delIds);
 
-		model.clear();
-		controller.getOne(getTestUser(), test1.getId(), model);
-		assertThat(((PerfTest) model.get(PARAM_TEST)).getId(), nullValue());
-		model.clear();
-		controller.getOne(getTestUser(), test2.getId(), model);
-		assertThat(((PerfTest) model.get(PARAM_TEST)).getId(), nullValue());
+		response = perfTestApiController.getOne(getTestUser(), test1.getId());
+		assertFalse(requireNonNull(response.getBody()).contains("id"));
+		response = perfTestApiController.getOne(getTestUser(), test2.getId());
+		assertFalse(requireNonNull(response.getBody()).contains("id"));
 	}
 
 	@Test
@@ -139,8 +140,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		PerfTest cloneTest = newPerfTest(testName, Status.READY, null);
 		cloneTest.setId(test.getId()); // set cloned test's ID as previous test
 
-		ModelMap model = new ModelMap();
-		controller.saveOne(getTestUser(), cloneTest, true, model);
+		perfTestApiController.saveOne(getTestUser(), cloneTest, true);
 		assertThat(preId, not(cloneTest.getId()));
 
 		// test leave comment
@@ -148,10 +148,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		params.put("testComment", "TestComment");
 		params.put("tagString", "");
 		perfTestApiController.leaveComment(getTestUser(), cloneTest.getId(), params);
-		model.clear();
-		controller.getOne(getTestUser(), cloneTest.getId(), model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB.getTestComment(), is("TestComment"));
+		HttpEntity<String> response = perfTestApiController.getOne(getTestUser(), cloneTest.getId());
+		assertTrue(requireNonNull(response.getBody()).contains("TestComment"));
 
 		// test stop test
 		cloneTest.setStatus(Status.TESTING);
@@ -187,28 +185,25 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		newTest.setRegion(config.getRegion());
 		newTest.setAgentCount(1);
 
-		ModelMap model = new ModelMap();
-		controller.saveOne(getTestUser(), newTest, false, model);
-		controller.getOne(getTestUser(), newTest.getId(), model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB.getTestName(), is(newName));
-		assertThat(testInDB.getId(), is(test.getId()));
+		perfTestApiController.saveOne(getTestUser(), newTest, false);
+		HttpEntity<String> response = perfTestApiController.getOne(getTestUser(), newTest.getId());
+		assertTrue(requireNonNull(response.getBody()).contains(newName));
+		assertTrue(requireNonNull(response.getBody()).contains(test.getId().toString()));
 
-		model.clear();
 		newTest.setStatus(Status.READY);
-		controller.saveOne(getTestUser(), newTest, false, model);
-		controller.getOne(getTestUser(), newTest.getId(), model);
-		testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB.getTestName(), is(newName));
-		assertThat(testInDB.getId(), is(test.getId()));
+		perfTestApiController.saveOne(getTestUser(), newTest, false);
+		response = perfTestApiController.getOne(getTestUser(), newTest.getId());
+		assertTrue(requireNonNull(response.getBody()).contains(newName));
+		assertTrue(requireNonNull(response.getBody()).contains(test.getId().toString()));
 
 		// test status id "START_TESTING", can not be saved.
 		newTest.setStatus(Status.START_TESTING);
 		try {
 			newTest.setStatus(Status.START_TESTING);
-			controller.saveOne(getTestUser(), newTest, false, model);
+			perfTestApiController.saveOne(getTestUser(), newTest, false);
 			fail("test status id START_TESTING, can not be saved");
 		} catch (IllegalArgumentException e) {
+			noOp();
 		}
 	}
 
@@ -264,7 +259,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 
 		// test no permission for other user
 		try {
-			controller.getOne(otherTestUser, test.getId());
+			perfTestApiController.getOne(otherTestUser, test.getId());
 			assertTrue(false);
 		} catch (NGrinderRuntimeException e) {
 			assertTrue(true);
