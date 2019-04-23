@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 
+import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -61,6 +62,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	public PerfTest(User createdUser) {
 		this.setCreatedUser(createdUser);
+		this.setLastModifiedUser(createdUser);
 	}
 
 	@Expose
@@ -829,6 +831,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.safeDistribution = getSafe(this.safeDistribution);
 	}
 
+	// TODO Gson will be removed.
 	public static class PerfTestSerializer implements JsonSerializer<PerfTest> {
 		private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 		@Override
@@ -838,13 +841,15 @@ public class PerfTest extends BaseModel<PerfTest> {
 			jsonObject.addProperty("deletable", perfTest.getStatusCategory().isDeletable());
 			jsonObject.addProperty("reportable", perfTest.getStatusCategory().isReportable());
 			jsonObject.addProperty("stoppable", perfTest.getStatusCategory().isStoppable());
+			jsonObject.addProperty("category", perfTest.getStatusCategory().toString());
+
 			jsonObject.addProperty("createdUserName", perfTest.getCreatedUser().getUserName());
 			jsonObject.addProperty("createdUserId", perfTest.getLastModifiedUser().getUserId());
 			jsonObject.addProperty("lastModifiedUserName", perfTest.getLastModifiedUser().getUserName());
 			jsonObject.addProperty("lastModifiedUserId", perfTest.getLastModifiedUser().getUserId());
 			jsonObject.addProperty("springMessageKey", perfTest.getStatus().getSpringMessageKey());
-			jsonObject.addProperty("duration", perfTest.getDurationStr());
-			jsonObject.addProperty("runtime", perfTest.getRuntimeStr());
+			jsonObject.addProperty("duration", defaultIfNull(perfTest.getDurationStr(), "").toString());
+			jsonObject.addProperty("runtime", defaultIfNull(perfTest.getRuntimeStr(), "").toString());
 			return jsonObject;
 		}
 	}

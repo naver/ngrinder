@@ -35,10 +35,8 @@ import org.ngrinder.model.*;
 import org.ngrinder.perftest.model.SamplingModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
-import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
@@ -61,9 +59,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.*;
 
-import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
@@ -97,9 +93,6 @@ public class PerfTestController extends BaseController {
 	private AgentManagerService agentManagerService;
 
 	@Autowired
-	private TagService tagService;
-
-	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
 	@Autowired
@@ -131,46 +124,19 @@ public class PerfTestController extends BaseController {
 
 	/**
 	 * Open the new perf test creation form.
-	 *
-	 * @param user  user
-	 * @param model model
-	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/new")
-	public String openForm(User user, ModelMap model) {
-		return getOne(user, null, model);
+	public String openForm() {
+		return "app";
 	}
 
 	/**
-	 * Get the perf test detail on the given perf test id.
+	 * perf test detail on the given perf test id.
 	 *
-	 * @param user  user
-	 * @param id    perf test id
-	 * @param model model
-	 * @return perftest/detail
+	 * @param id perf test id
 	 */
 	@RequestMapping("/{id}")
-	public String getOne(User user, @PathVariable Long id, ModelMap model) {
-		PerfTest test = null;
-		if (id != null) {
-			test = getOneWithPermissionCheck(user, id, true);
-		}
-
-		if (test == null) {
-			test = new PerfTest(user);
-			test.init();
-		}
-
-		model.addAttribute(PARAM_TEST, test);
-		// Retrieve the agent count map based on create user, if the test is
-		// created by the others.
-		user = test.getCreatedUser() != null ? test.getCreatedUser() : user;
-
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.addAttribute(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
-		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		addDefaultAttributeOnModel(model);
+	public String detail(@PathVariable Long id) {
 		return "app";
 	}
 
@@ -269,33 +235,6 @@ public class PerfTestController extends BaseController {
 		return test;
 	}
 
-	/**
-	 * Create a new test or cloneTo a current test.
-	 *
-	 * @param user     user
-	 * @param perfTest {@link PerfTest}
-	 * @param isClone  true if cloneTo
-	 * @param model    model
-	 * @return redirect:/perftest/list
-	 */
-	@RequestMapping(value = "/new", method = RequestMethod.POST)
-	public String saveOne(User user, PerfTest perfTest,
-	                      @RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone, ModelMap model) {
-
-		validate(user, null, perfTest);
-		// Point to the head revision
-		perfTest.setTestName(StringUtils.trimToEmpty(perfTest.getTestName()));
-		perfTest.setScriptRevision(-1L);
-		perfTest.prepare(isClone);
-		perfTest = perfTestService.save(user, perfTest);
-		model.clear();
-		if (perfTest.getStatus() == Status.SAVED || perfTest.getScheduledTime() != null) {
-			return "redirect:/perftest/list";
-		} else {
-			return "redirect:/perftest/" + perfTest.getId();
-		}
-	}
-
 	@SuppressWarnings("ConstantConditions")
 	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
 		if (oldOne == null) {
@@ -368,22 +307,6 @@ public class PerfTestController extends BaseController {
 			statuses.add(result);
 		}
 		return statuses;
-	}
-
-	/**
-	 * Filter out please_modify_this.com from hosts string.
-	 *
-	 * @param originalString original string
-	 * @return filtered string
-	 */
-	private String filterHostString(String originalString) {
-		List<String> hosts = newArrayList();
-		for (String each : StringUtils.split(StringUtils.trimToEmpty(originalString), ",")) {
-			if (!each.contains("please_modify_this.com")) {
-				hosts.add(each);
-			}
-		}
-		return StringUtils.join(hosts, ",");
 	}
 
 	/**
@@ -592,59 +515,6 @@ public class PerfTestController extends BaseController {
 	}
 
 	/**
-	 * Get all available scripts in JSON format for the current factual user.
-	 *
-	 * @param user    user
-	 * @param ownerId owner id
-	 * @return JSON containing script's list.
-	 */
-	@RestAPI
-	@RequestMapping("/api/script")
-	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId) {
-		if (StringUtils.isNotEmpty(ownerId)) {
-			user = userService.getOne(ownerId);
-		}
-		List<FileEntry> scripts = newArrayList(filter(fileEntryService.getAll(user),
-				new com.google.common.base.Predicate<FileEntry>() {
-					@Override
-					public boolean apply(FileEntry input) {
-						return input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT;
-					}
-				}));
-		return toJsonHttpEntity(scripts, gson);
-	}
-
-
-	/**
-	 * Get resources and lib file list from the same folder with the given script path.
-	 *
-	 * @param user       user
-	 * @param scriptPath script path
-	 * @param ownerId    ownerId
-	 * @return json string representing resources and libs.
-	 */
-	@RequestMapping("/api/resource")
-	public HttpEntity<String> getResources(User user, @RequestParam String scriptPath,
-	                                       @RequestParam(required = false) String ownerId) {
-		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
-			user = userService.getOne(ownerId);
-		}
-		FileEntry fileEntry = fileEntryService.getOne(user, scriptPath);
-		String targetHosts = "";
-		List<String> fileStringList = newArrayList();
-		if (fileEntry != null) {
-			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user, fileEntry, -1L);
-			for (FileEntry each : fileList) {
-				fileStringList.add(each.getPath());
-			}
-			targetHosts = filterHostString(fileEntry.getProperties().get("targetHosts"));
-		}
-
-		return toJsonHttpEntity(buildMap("targetHosts", trimToEmpty(targetHosts), "resources", fileStringList));
-	}
-
-
-	/**
 	 * Get the status of the given perf test.
 	 *
 	 * @param user user
@@ -742,12 +612,14 @@ public class PerfTestController extends BaseController {
 	 * @param id   perftest id
 	 * @return json message containing test info.
 	 */
-	@RestAPI
+
+	// TODO
+/*	@RestAPI
 	@GetMapping(value = "/api/{id}")
 	public HttpEntity<String> getOne(User user, @PathVariable Long id) {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "PerfTest %s does not exists", id);
 		return toJsonHttpEntity(test);
-	}
+	}*/
 
 	/**
 	 * Create the given perf test.

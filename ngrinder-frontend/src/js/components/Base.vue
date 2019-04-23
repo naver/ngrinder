@@ -38,6 +38,11 @@
             cursor: pointer;
         }
 
+        .validation-message {
+            font-size: 12px;
+            color: #b94a48;
+        }
+
         .pagination {
             float: right;
             margin: 0;
@@ -63,11 +68,55 @@
         }
 
         .popover {
-            width: 300px;
+            width: auto;
+            min-width: 300px;
+            max-width: 600px;
+            max-height: 500px;
         }
 
         .no-padding {
             padding: 0;
+        }
+
+        .fade-enter-active {
+            transition-duration: 1s;
+            transition-timing-function: ease-in;
+        }
+
+        .fade-leave-active {
+            transition-duration: .4s;
+            transition-timing-function: ease-out;
+        }
+
+        .fade-leave-to, .fade-enter {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .fade-enter-to, .fade-leave {
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        .error {
+            .select2-choice {
+                border-color: #b94a48;
+                span {
+                    color: #b94a48;
+                }
+            }
+        }
+
+        .span4-5 {
+            width: 340px;
+        }
+
+        .span3-4 {
+            width: 260px;
+        }
+
+        .span2-3 {
+            width: 180px;
         }
     }
 </style>

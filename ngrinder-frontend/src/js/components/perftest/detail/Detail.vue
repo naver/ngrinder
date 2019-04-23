@@ -1,10 +1,10 @@
 <template>
     <div v-if="dataLoadFinished" class="perftest-detail-container">
         <div class="container">
-            <form id="test_config_form" name="test_config_form" action="/perftest/new">
+            <form id="test_config_form" name="test_config_form" action="/perftest/new" ref="configForm">
                 <div class="well">
-                    <input type="hidden" id="test_id" name="id" :value="test.id">
-                    <div class="form-horizontal" id="query_div">
+                    <input type="hidden" name="id" :value="test.id">
+                    <div class="form-horizontal info">
                         <fieldset>
                             <div class="control-group">
                                 <div class="row">
@@ -15,7 +15,7 @@
                                     </div>
                                     <div class="span3-4 tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                         <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                            <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 175px" type="input"
+                                            <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 175px" type="input" name="tagString"
                                                      :option="{tokenSeparators: [',', ' '], tags:[''], placeholder: i18n('perfTest.config.tagInput'),
                                                       maximumSelectionSize: 5, initSelection: initSelection, query: select2Query}"></select2>
                                         </control-group>
@@ -32,10 +32,9 @@
                                     <div class="span2-3 start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
                                         <div class="control-group">
                                             <input type="hidden" name="isClone" :value="isClone"/>
-                                            <button type="submit" class="btn btn-success" id="save_test_btn" :disabled="disabled" @click.prevent="clonePerftest">
-                                                {{ isClone ? i18n('perfTest.action.clone') : i18n('common.button.save') }}
-                                            </button>
-                                            <button type="button" class="btn btn-primary" id="save_schedule_btn" :disabled="disabled" v-text="saveScheduleBtnTitle"></button>
+                                            <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest"
+                                                    v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></button>
+                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart" v-text="saveScheduleBtnTitle"></button>
                                         </div>
                                     </div>
                                 </div>
@@ -50,33 +49,35 @@
                     </div>
                 </div>
 
-               <div class="pull-right">
+                <div class="pull-right">
                     <a :href="`/user/switch?to=${test.createdUserId}`" v-text="switchUserTitle"></a>
                 </div>
 
                 <div class="tabbable tab-container">
                     <ul class="nav nav-tabs" id="homeTab">
                         <li>
-                            <a href="#test_config_section" data-toggle="tab" v-text="i18n('perfTest.config.testConfiguration')"></a>
+                            <a v-show="tab.display.config" href="#test-config-section" data-toggle="tab" ref="configTab" v-text="i18n('perfTest.config.testConfiguration')"></a>
                         </li>
                         <li>
-                            <a href="#running_section" data-toggle="tab" v-text="i18n('perfTest.running.title')"></a>
+                            <a v-show="tab.display.running" href="#running-section" data-toggle="tab" v-text="i18n('perfTest.running.title')"></a>
                         </li>
                         <li>
-                            <a href="#report_section" data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
+                            <a v-show="tab.display.report" href="#report-section" data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                         </li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane" id="test_config_section">
-                            <config></config>
+                        <div class="tab-pane" id="test-config-section">
+                            <config ref="config"></config>
                         </div>
-                        <div class="tab-pane" id="report_section">
-                            <report></report>
-                        </div>
-                        <div class="tab-pane" id="running_section">
+                        <div class="tab-pane" id="running-section">
                             <running></running>
                         </div>
+                        <div class="tab-pane" id="report-section">
+                            <report></report>
+                        </div>
                     </div>
+                    <input v-if="scheduledTime" type="hidden" name="scheduledTime" :value="scheduledTime">
+                    <input type="hidden" name="status" value="SAVED">
                 </div>
             </form>
             <intro-button></intro-button>
@@ -86,10 +87,10 @@
 <script>
     import Base from '../../Base.vue';
     import Component from 'vue-class-component';
-    import ControlGroup from '../../common/ControlGroup.vue';
     import Config from './Config.vue';
     import Report from './Report.vue';
     import Running from './Running.vue';
+    import ControlGroup from '../../common/ControlGroup.vue';
     import IntroButton from '../../common/IntroButton.vue';
     import Select2 from '../../common/Select2.vue';
 
@@ -98,20 +99,51 @@
         components: { ControlGroup, Config, Report, Running, IntroButton, Select2 },
     })
     export default class PerfTestDetail extends Base {
-
         test = {};
         selectedTag = '';
         dataLoadFinished = false;
+        scheduledTime = 0;
+
+        tab = {
+            display: {
+                running: false,
+                report: false,
+                config: false,
+            },
+        };
 
         created() {
             this.$http.get(`/perftest/api/${this.$route.params.id}`).then(res => {
-                this.test = res.data;
-                this.selectedTag = res.data.tagString;
+                this.test = res.data.test;
+                this.selectedTag = this.test.tagString;
+                this.updateTabDisplay();
                 this.dataLoadFinished = true;
                 this.$nextTick(() => {
-                    this.$refs.reportTab.click();
+                    $(this.$refs.configTab).on('shown.bs.tab', () => {
+                        this.$EventBus.$emit(this.$Event.UPDATE_RAMPUP_CHART);
+                    });
+
+                    if (this.tab.display.report) {
+                        this.$refs.reportTab.click();
+                        return;
+                    }
+                    this.$refs.configTab.click();
                 });
             }).catch((error) => console.log(error));
+        }
+
+        updateTabDisplay() {
+            this.tab.display.config = true;
+            if (this.test.category === "TESTING") {
+                this.tab.display.running = true;
+                this.tab.display.report = false;
+                return;
+            }
+
+            if (this.test.category === "FINISHED" || this.test.category === "STOP" || this.test.category === "ERROR") {
+                this.tab.display.report = true;
+                this.tab.display.running = false;
+            }
         }
 
         initSelection(element, callback) {
@@ -127,7 +159,7 @@
 
         select2Query(query) {
             let data = {
-                results: []
+                results: [],
             };
 
             this.$http.get('/perftest/api/search_tag', {
@@ -141,6 +173,22 @@
         }
 
         clonePerftest() {
+            this.$refs.configTab.click();
+            if (this.$refs.config.hasValidationError()) {
+                return;
+            }
+
+            this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize(),
+            ).then(res => {
+                if (res.data === 'list') {
+                    this.$router.push('/perftest');
+                } else {
+                    this.$router.push(`/perftest/${res.data}`);
+                }
+            }).catch((error) => console.log(error));
+        }
+
+        saveAndStart() {
             // TODO
         }
 
@@ -164,8 +212,10 @@
 
 <style lang="less">
     .perftest-detail-container {
-        .control-label {
-            width: 95px;
+        .info {
+            .control-label {
+                width: 95px;
+            }
         }
 
         .controls {
@@ -217,8 +267,10 @@
         }
 
         .tab-container {
-            ul#homeTab {
-                margin-bottom: 5px;
+            ul {
+                &#homeTab {
+                    margin-bottom: 5px;
+                }
             }
         }
 
@@ -229,150 +281,119 @@
                 margin-left: 120px;
             }
         }
+
+        .control-label {
+            input {
+                vertical-align: top;
+                margin-left: 2px
+            }
+        }
+
+        li {
+            &.monitor-state {
+                height: 10px;
+            }
+        }
+
+        .controls {
+            code {
+                vertical-align: middle;
+            }
+
+            .span3 {
+                margin-left: 0;
+            }
+        }
+
+        .datepicker {
+            z-index:1151;
+        }
+
+        div {
+            &.chart {
+                border: 1px solid #878988;
+                margin-bottom: 12px;
+            }
+        }
+
+        div.modal-body div.chart {
+            border:1px solid #878988;
+            height:250px;
+            min-width:500px;
+            margin-bottom:12px;
+            padding:5px
+        }
+
+        .table {
+            thead {
+                th {
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        .jqplot-yaxis {
+            margin-right: 20px;
+        }
+
+        .jqplot-xaxis {
+            margin-top: 5px;
+        }
+
+        .rampup-chart {
+            width: 400px;
+            height: 300px
+        }
+
+        i {
+            &.collapse{
+                background: url('/img/icon_collapse.png') no-repeat;
+                display: inline-block;
+                height: 16px;
+                width: 16px;
+                line-height: 16px;
+                vertical-align: text-top;
+            }
+        }
+
+        #test_name + span {
+            float: left;
+        }
+
+        .form-horizontal {
+            .control-group {
+                margin-bottom:10px;
+            }
+        }
+
+        .control-group.success td > label[for="test_name"] {
+            color: #468847;
+        }
+
+        .control-group.error td > label[for="test_name"] {
+            color: #B94A48;
+        }
+
+        #script_control.error {
+            .select2-choice {
+                border-color: #B94A48;
+                color: #B94A48;
+            }
+        }
+
+        #script_control.success {
+            .select2-choice {
+                border-color: #468847;
+                color: #468847;
+            }
+        }
+
+        legend {
+            padding-top: 10px;
+            &.region {
+                margin-left:-40px;
+            }
+        }
     }
 
-    .popover {
-        width: auto;
-        min-width: 200px;
-        max-width: 600px;
-        max-height: 500px;
-    }
-
-    .select-item {
-        width: 60px;
-    }
-
-    .control-label input {
-        vertical-align: top;
-        margin-left: 2px
-    }
-
-    li.monitor-state {
-        height: 10px;
-    }
-    .controls code {
-        vertical-align: middle;
-    }
-
-    .datepicker {
-        z-index:1151;
-    }
-
-    div.chart {
-        border: 1px solid #878988;
-        margin-bottom: 12px;
-    }
-
-    div.modal-body div.chart {
-        border:1px solid #878988;
-        height:250px;
-        min-width:500px;
-        margin-bottom:12px;
-        padding:5px
-    }
-
-    .table thead th {
-        vertical-align: middle;
-    }
-
-    .jqplot-yaxis {
-        margin-right: 20px;
-    }
-
-    .jqplot-xaxis {
-        margin-top: 5px;
-    }
-
-    .rampup-chart {
-        width: 400px;
-        height: 300px
-    }
-
-    div.div-host {
-        border: 1px solid #D6D6D6;
-        height: 50px;
-        margin-bottom: 8px;
-        overflow-y: scroll;
-        border-radius: 3px 3px 3px 3px;
-    }
-
-    div.div-host .host {
-        color: #666666;
-        display: inline-block;
-        margin-left: 7px;
-        margin-top: 2px;
-        margin-bottom: 2px;
-    }
-
-    .add-host-btn {
-        margin-top:27px;
-        margin-left:287px;
-        position:absolute
-    }
-
-    i.expand {
-        background: url('${req.getContextPath()}/img/icon_expand.png') no-repeat;
-        display: inline-block;
-        height: 16px;
-        width: 16px;
-        line-height: 16px;
-        vertical-align: text-top;
-    }
-
-    i.collapse{
-        background: url('${req.getContextPath()}/img/icon_collapse.png') no-repeat;
-        display: inline-block;
-        height: 16px;
-        width: 16px;
-        line-height: 16px;
-        vertical-align: text-top;
-    }
-
-    #test_name + span {
-        float: left;
-    }
-
-    .form-horizontal .control-group {
-        margin-bottom:10px;
-    }
-
-    .controls .span3 {
-        margin-left: 0;
-    }
-
-    .control-group.success td > label[for="test_name"] {
-        color: #468847;
-    }
-
-    .control-group.error td > label[for="test_name"] {
-        color: #B94A48;
-    }
-
-    #script_control.error .select2-choice {
-        border-color: #B94A48;
-        color: #B94A48;
-    }
-
-    #script_control.success .select2-choice {
-        border-color: #468847;
-        color: #468847;
-    }
-
-    legend {
-        padding-top: 10px;
-    }
-
-    label.region {
-        margin-left:-40px;
-    }
-
-    .span4-5 {
-        width: 340px;
-    }
-    .span3-4 {
-        width: 260px;
-    }
-    .span2-3 {
-        width: 180px;
-    }
 </style>

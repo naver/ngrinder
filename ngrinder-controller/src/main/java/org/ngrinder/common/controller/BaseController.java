@@ -53,7 +53,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 public class BaseController implements WebConstants {
 	private static String successJson;
 	private static String errorJson;
-	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(PerfTest.class, new PerfTest.PerfTestSerializer()).setPrettyPrinting().create();
+	private static Gson gson = new GsonBuilder().registerTypeAdapter(PerfTest.class, new PerfTest.PerfTestSerializer()).setPrettyPrinting().create();
 
 	@Autowired
 	private MessageSource messageSource;
