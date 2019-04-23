@@ -1,9 +1,27 @@
 <template>
-    <div class="control-group" :class="{error: hasError}">
-        <label class="control-label" :for="name">
-            <span v-show="required" class="required-mark" v-text="'*'"></span><span v-html="i18n(labelMessageKey)"></span>
+    <div id="control-group" class="control-group" :class="{error: hasError}"
+         :data-step="dataStep" :data-intro="dataIntro" data-html="true">
+        <label class="control-label" :for="id ? id : name" :style="labelStyle">
+            <input v-if="radio"
+                   type="radio"
+                   :id="id"
+                   :value="radio.radioValue"
+                   :name="name"
+                   @input="$emit('input', $event.target.value)"
+                   @change="$emit('change')"
+                   :checked="radio.checked">
+            <span v-show="required" class="required-mark" v-text="'*'"></span>
+            <span v-text="i18n(labelMessageKey)"></span>
+            <span v-if="labelHelpMessageKey"
+                  data-toggle="popover"
+                  data-html="true"
+                  :data-content="i18n(`${labelHelpMessageKey}.help`)"
+                  :title="i18n(labelHelpMessageKey)"
+                  data-placement='top'>
+				<i class="icon-question-sign" style="vertical-align: middle;"></i>
+			</span>
         </label>
-        <div class="controls">
+        <div class="controls" :style="controlsStyle">
             <slot></slot>
         </div>
     </div>
@@ -38,6 +56,11 @@
     })
     export default class ControlGroup extends Base {
         hasError = false;
+
+        updated() {
+            $('[data-toggle="popover"]').popover('destroy');
+            $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#control-group'});
+        }
 
         handleError(result) {
             this.hasError = result;
