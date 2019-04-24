@@ -326,7 +326,6 @@
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '.config-container'});
                 this.$refs.rampUp.updateRampUpChart();
                 this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount, this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
-                this.checkValidation();
             });
         }
 
@@ -431,10 +430,6 @@
                 this.test.duration = `00:${this.test.duration}`;
             }
             this.setDuration();
-        }
-
-        checkValidation() {
-            this.validationGroup.forEach(validation => validation.checkValidation());
         }
 
         hasValidationError() {
