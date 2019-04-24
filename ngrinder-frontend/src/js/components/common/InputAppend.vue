@@ -23,7 +23,9 @@
 
 <script>
     import Base from '../Base.vue';
+    import ValidationMixin from './mixin/ValidationMixin.vue';
     import Component from 'vue-class-component';
+    import { Mixins } from 'vue-mixin-decorator';
 
     @Component({
         name: 'inputAppend',
@@ -58,13 +60,9 @@
             errStyle: String,
         },
     })
-    export default class InputAppend extends Base {
+    export default class InputAppend extends Mixins(Base, ValidationMixin) {
         mounted() {
             this.$EventBus.$on(this.$Event.SIGN_UP_FORM_VALIDATION_CHECK, () => this.checkValidation());
-        }
-
-        checkValidation() {
-            this.$validator.validateAll().then(result => {this.$emit('validationResult', !result)});
         }
 
         get inputType() {

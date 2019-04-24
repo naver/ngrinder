@@ -15,6 +15,8 @@
 <script>
     import Vue from 'vue';
     import Component from 'vue-class-component';
+    import ValidationMixin from './mixin/ValidationMixin.vue';
+    import { Mixins } from 'vue-mixin-decorator';
     import '../../../plugins/select2/select2.min';
 
     @Component({
@@ -38,7 +40,7 @@
         },
         name: 'select2',
     })
-    export default class Select2 extends Vue {
+    export default class Select2 extends Mixins(Vue, ValidationMixin) {
         mounted() {
             this.init();
         }
@@ -52,10 +54,6 @@
                     component.$emit('input', this.value);
                     component.$emit('change');
                 });
-        }
-
-        checkValidation() {
-            this.$validator.validateAll().then(result => {this.$emit('validationResult', !result)});
         }
 
         // for only type 'select'

@@ -78,7 +78,7 @@
         }
 
         quickStart() {
-            this.$validator.validateAll().then(result => {
+            this.$validator.validate('url').then(result => {
                 if (!result) {
                     this.$nextTick(() => this.$refs.inputQuickStartUrl.focus());
                     return;
