@@ -174,18 +174,21 @@
 
         clonePerftest() {
             this.$refs.configTab.click();
-            if (this.$refs.config.hasValidationError()) {
-                return;
-            }
 
-            this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize(),
-            ).then(res => {
-                if (res.data === 'list') {
-                    this.$router.push('/perftest');
-                } else {
-                    this.$router.push(`/perftest/${res.data}`);
+            let validationPromise = [];
+            this.$refs.config.validationGroup.forEach(validation => validationPromise.push(validation.getCheckValidationPromise()));
+
+            Promise.all(validationPromise).then(() => {
+                if (!this.$refs.config.hasValidationError()) {
+                    this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
+                        if (res.data === 'list') {
+                            this.$router.push('/perftest');
+                        } else {
+                            this.$router.push(`/perftest/${res.data}`);
+                        }
+                    }).catch((error) => console.log(error));
                 }
-            }).catch((error) => console.log(error));
+            });
         }
 
         saveAndStart() {
