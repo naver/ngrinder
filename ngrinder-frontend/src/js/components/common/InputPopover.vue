@@ -21,7 +21,9 @@
 
 <script>
     import Base from '../Base.vue';
+    import ValidationMixin from './mixin/ValidationMixin.vue';
     import Component from 'vue-class-component';
+    import { Mixins } from 'vue-mixin-decorator';
 
     @Component({
         name: 'inputPopover',
@@ -47,11 +49,7 @@
             validationRules: Object,
         },
     })
-    export default class InputPopover extends Base {
-        checkValidation() {
-            this.$validator.validateAll().then(result => this.$emit('validationResult', !result));
-        }
-    }
+    export default class InputPopover extends Mixins(Base, ValidationMixin) {}
 </script>
 
 <style lang="less" scoped>
