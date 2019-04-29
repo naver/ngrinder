@@ -62,11 +62,14 @@
                 </td>
             </tr>
         </table>
+        <create-script-modal :currentPath="currentPath"></create-script-modal>
     </div>
 </template>
 <script>
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
+
+    import CreateScriptModal from './modal/CreateScriptModal.vue';
 
     @Component({
         name: 'searchBar',
@@ -79,7 +82,8 @@
                 type: Array,
                 required: true,
             },
-        }
+        },
+        components: { CreateScriptModal, },
     })
     export default class SearchBar extends Base {
         handlers = [];
