@@ -63,6 +63,8 @@
             </tr>
         </table>
         <create-script-modal :currentPath="currentPath"></create-script-modal>
+        <create-folder-modal :currentPath="currentPath"></create-folder-modal>
+        <upload-file-modal :currentPath="currentPath"></upload-file-modal>
     </div>
 </template>
 <script>
@@ -70,6 +72,8 @@
     import Base from '../Base.vue';
 
     import CreateScriptModal from './modal/CreateScriptModal.vue';
+    import CreateFolderModal from './modal/CreateFolderModal.vue';
+    import UploadFileModal from './modal/UploadFileModal.vue';
 
     @Component({
         name: 'searchBar',
@@ -83,7 +87,7 @@
                 required: true,
             },
         },
-        components: { CreateScriptModal, },
+        components: { CreateScriptModal, CreateFolderModal, UploadFileModal},
     })
     export default class SearchBar extends Base {
         handlers = [];
