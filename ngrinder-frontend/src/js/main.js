@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { mapState } from 'vuex';
 import VueRouter from 'vue-router';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
@@ -11,11 +11,10 @@ import Login from 'Login.vue';
 import Home from 'Home.vue';
 import PerfTestList from 'perftest/list/List.vue';
 import PerfTestDetail from 'perftest/detail/Detail.vue';
+import ScriptList from 'script/List.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
-
-import { mapState } from 'vuex';
 
 axios.interceptors.request.use(config => {
     if (typeof config.params === 'undefined') {
@@ -50,7 +49,7 @@ Vue.directive('focus', {
     inserted: el => el.focus(),
 });
 
-Vue.filter('dateFormat', function(value, format) {
+Vue.filter('dateFormat', function (value, format) {
     if (value) {
         return moment(new Date(value)).format(format);
     }
@@ -64,6 +63,7 @@ const routes = [
     {path: '/login', component: Login, name: 'login'},
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail'},
+    {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/search', '/script/list/(.*)?']},
 ];
 
 const router = new VueRouter({
