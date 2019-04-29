@@ -1,7 +1,7 @@
 <template>
     <div id="login-container">
         <vue-headful title="Login"/>
-        <sign-up-modal ref="signUpModal"></sign-up-modal>
+        <sign-up-modal :id="'sign-up-modal'" ref="signUpModal"></sign-up-modal>
         <div class="logo">
             <img src="/img/logo_ngrinder_a.png" width="400" alt="nGrinder logo">
         </div>
@@ -32,7 +32,7 @@
                         </select>
                     </div>
                     <div v-if="signUpEnabled" class="prompt">
-                        <a @click="$EventBus.$emit($Event.RESET_SIGN_UP_MODAL)" data-toggle="modal" data-target="#sign_up_modal" id="sign_up" class="pointer-cursor">Sign Up</a>
+                        <a @click="$EventBus.$emit($Event.RESET_SIGN_UP_MODAL)" data-toggle="modal" data-target="#sign-up-modal" id="sign_up" class="pointer-cursor">Sign Up</a>
                     </div>
                 </fieldset>
             </form>
