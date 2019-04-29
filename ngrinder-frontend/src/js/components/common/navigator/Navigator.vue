@@ -12,6 +12,9 @@
                         <li id="nav_test" class="clickable">
                             <a @click.prevent="$router.push('/perftest')" v-text="i18n('navigator.perfTest')"></a>
                         </li>
+                        <li class="clickable">
+                            <a @click.prevent="$router.push('/script')" v-text="i18n('navigator.script')"></a>
+                        </li>
                     </ul>
                     <ul class="nav navbar-nav pull-right">
                         <template v-if="config.clustered">
