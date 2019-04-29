@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" id="add-host-modal">
+    <div class="modal fade" :id="id">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
+    import ModalBase from '../../common/modal/ModalBase.vue';
     import Component from 'vue-class-component';
     import ControlGroup from '../../common/ControlGroup.vue';
 
@@ -62,7 +62,7 @@
         name: 'hostModal',
         components: {ControlGroup},
     })
-    export default class HostModal extends Base {
+    export default class HostModal extends ModalBase {
         host = '';
         ip = '';
 
@@ -81,7 +81,7 @@
 
             this.$validator.validateAll().then(result => {
                 if (result) {
-                    $(this.$el).modal('hide');
+                    this.hide();
 
                     let host = this.host;
 

@@ -191,7 +191,7 @@
             </div>
         </div>
         <ramp-up ref="rampUp" :test="test" :rampUpTypes="rampUpTypes"></ramp-up>
-        <host-modal @add-host="addHost"></host-modal>
+        <host-modal :id="'add-host-modal'" @add-host="addHost"></host-modal>
     </div>
 </template>
 
