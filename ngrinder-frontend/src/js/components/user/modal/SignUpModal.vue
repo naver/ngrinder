@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" id="sign_up_modal">
+    <div class="modal fade" :id="id">
         <div class="modal-dialog" role="document">
             <div class="modal-content sign-up">
                 <div class="modal-header">
@@ -15,8 +15,8 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import ModalBase from '../../common/modal/ModalBase.vue';
     import UserInfo from '../UserInfo.vue'
     import { Validator } from 'vee-validate'
 
@@ -24,7 +24,7 @@
         name: 'signUpModal',
         components: { UserInfo },
     })
-    export default class SignUpModal extends Base {
+    export default class SignUpModal extends ModalBase {
 
         mounted() {
             this.setCustomValidationRules();
@@ -83,7 +83,7 @@
 </script>
 
 <style lang="less" scoped>
-    #sign_up_modal {
+    #sign-up-modal {
 
         display: none;
 
