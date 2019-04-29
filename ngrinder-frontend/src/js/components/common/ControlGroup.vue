@@ -1,5 +1,5 @@
 <template>
-    <div id="control-group" class="control-group" :class="{error: hasError}"
+    <div id="control-group" class="control-group" :class="{error: hasError, success: success}"
          :data-step="dataStep" :data-intro="dataIntro" data-html="true">
         <label class="control-label" :for="id ? id : name" :style="labelStyle">
             <input v-if="radio"
@@ -56,6 +56,7 @@
     })
     export default class ControlGroup extends Base {
         hasError = false;
+        success = false;
 
         updated() {
             $('[data-toggle="popover"]').popover('destroy');
