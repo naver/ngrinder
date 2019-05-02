@@ -276,7 +276,7 @@
 				monitorStatusString = monitorStatusString + "/" +
 						" RX-" + formatNetwork(null, value.receivedPerSec) +
 						" TX-" + formatNetwork(null, value.sentPerSec) +
-						"</dv></li>";
+						"</div></li>";
 			}
 		});
 		monitorStatusString += "</ul>";
