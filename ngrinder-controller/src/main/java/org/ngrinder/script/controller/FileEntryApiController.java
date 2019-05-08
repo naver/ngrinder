@@ -210,7 +210,6 @@ public class FileEntryApiController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
-
 	/**
 	 * Get the details of given path.
 	 *
