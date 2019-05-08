@@ -43,12 +43,20 @@
                     <i v-else class="icon-briefcase"></i>
                 </td>
                 <td class="ellipsis">
-                    <a v-if="isEditable(script.fileType , script.path)" :href="`/script/detail/${script.path}`"
-                       target="_self" :title="script.path" v-text="script.fileName"></a>
-                    <router-link v-else-if="script.fileType === 'DIR'" :to="`/script/list/${script.path}`"
-                                 target="_self" :title="script.path" v-text="script.fileName"></router-link>
-                    <a v-else :href="`/script/download/${script.path}`" target="_blank" :title="script.path"
-                       v-text="script.fileName"></a>
+                    <router-link v-if="isEditable(script.fileType, script.path)"
+                                 :to="`/script/detail/${script.path}`"
+                                 :title="script.path" target="_self"
+                                 v-text="script.fileName">
+                    </router-link>
+                    <router-link v-else-if="script.fileType === 'DIR'"
+                                 :to="`/script/list/${script.path}`"
+                                 :title="script.path" target="_self"
+                                 v-text="script.fileName">
+                    </router-link>
+                    <a v-else :href="`/script/download/${script.path}`"
+                       target="_blank" :title="script.path"
+                       v-text="script.fileName">
+                    </a>
                 </td>
                 <td class="ellipsis" :title="script.description" v-text="script.description"></td>
                 <td><span v-if="!!script.lastModifiedDate">{{ script.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span></td>
