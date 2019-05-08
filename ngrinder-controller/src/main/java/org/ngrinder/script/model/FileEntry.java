@@ -13,8 +13,10 @@
  */
 package org.ngrinder.script.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -62,7 +64,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	@Expose
 	private String encoding;
 
-	@JsonIgnore
 	private byte[] contentBytes;
 
 	@Expose
