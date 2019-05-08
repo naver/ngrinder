@@ -101,6 +101,7 @@
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import ScriptOption from './ScriptOption.vue';
+    import querystring from 'querystring'
 
     @Component({
         name: 'createScriptModal',
