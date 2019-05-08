@@ -12,6 +12,7 @@ import Home from 'Home.vue';
 import PerfTestList from 'perftest/list/List.vue';
 import PerfTestDetail from 'perftest/detail/Detail.vue';
 import ScriptList from 'script/List.vue';
+import ScriptEditor from 'script/Editor.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -64,6 +65,8 @@ const routes = [
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail'},
     {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/search', '/script/list/(.*)?']},
+    {path: '/script/new', component: ScriptEditor, name: 'scriptEditor', props: true},
+    {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditorDetail'},
 ];
 
 const router = new VueRouter({
