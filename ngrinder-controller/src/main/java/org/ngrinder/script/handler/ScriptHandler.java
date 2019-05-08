@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,10 +9,14 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.handler;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -28,10 +32,10 @@ import org.ngrinder.script.repository.FileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -322,5 +326,21 @@ public abstract class ScriptHandler implements ControllerConstants {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(PathUtils.join(basePath, "TestRunner." + getExtension()));
 		return fileEntry;
+	}
+
+	public static class ScriptHandlerSerializer implements JsonSerializer<ScriptHandler> {
+		@Override
+		public JsonElement serialize(ScriptHandler scriptHandler, Type typeOfSrc, JsonSerializationContext context) {
+			JsonObject root = new JsonObject();
+			root.addProperty("codemirrorKey", scriptHandler.getCodemirrorKey());
+			root.addProperty("title", scriptHandler.getTitle());
+			root.addProperty("extension", scriptHandler.getExtension());
+			root.addProperty("key", scriptHandler.getKey());
+
+			root.addProperty("projectHandler", scriptHandler.isProjectHandler());
+			root.addProperty("validatable", scriptHandler.isValidatable());
+
+			return root;
+		}
 	}
 }

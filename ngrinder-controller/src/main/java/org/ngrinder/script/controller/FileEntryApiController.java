@@ -13,17 +13,17 @@
  */
 package org.ngrinder.script.controller;
 
-import static java.util.stream.Collectors.*;
-import static org.apache.commons.io.FilenameUtils.*;
-import static org.ngrinder.common.util.EncodingUtils.*;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.FilenameUtils.getPath;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.PathUtils.*;
+import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
+import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,9 +34,8 @@ import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
-import org.ngrinder.script.handler.ProjectHandler;
-import org.ngrinder.script.handler.ScriptHandler;
-import org.ngrinder.script.handler.ScriptHandlerFactory;
+import org.ngrinder.script.handler.*;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
@@ -46,9 +45,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.google.common.collect.ImmutableMap;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * FileEntry manipulation API controller.
@@ -79,6 +81,19 @@ public class FileEntryApiController extends BaseController {
 
 	@Autowired
 	private ScriptValidationService scriptValidationService;
+
+	private Gson gson;
+
+	@PostConstruct
+	public void init() {
+		gson = new GsonBuilder()
+			.registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer())
+			.registerTypeAdapter(ScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
+			.registerTypeAdapter(GroovyScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
+			.registerTypeAdapter(JythonScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
+			.registerTypeAdapter(NullScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
+			.create();
+	}
 
 	/**
 	 * Get all files which belongs to given user and path.
@@ -166,12 +181,12 @@ public class FileEntryApiController extends BaseController {
 	 * @return response map
 	 */
 	@PostMapping(value = "/new/**", params = "type=script")
-	public Map<String, Object> createForm(User user, @RemainedPath String path,
-	                                      @RequestParam(value = "testUrl", required = false) String testUrl,
-	                                      @RequestParam("fileName") String fileName,
-	                                      @RequestParam(value = "scriptType", required = false) String scriptType,
-	                                      @RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
-	                                      @RequestParam(value = "options", required = false) String options) {
+	public HttpEntity<String> createForm(User user, @RemainedPath String path,
+										 @RequestParam(value = "testUrl", required = false) String testUrl,
+										 @RequestParam("fileName") String fileName,
+										 @RequestParam(value = "scriptType", required = false) String scriptType,
+										 @RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
+										 @RequestParam(value = "options", required = false) String options) {
 		fileName = StringUtils.trimToEmpty(fileName);
 		String name = "Test1";
 		if (StringUtils.isEmpty(testUrl)) {
@@ -184,13 +199,13 @@ public class FileEntryApiController extends BaseController {
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResources, options);
-				return ImmutableMap.of(
+				return toJsonHttpEntity(buildMap(
 					"message", fileName + " project is created.",
-					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName);
+					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName));
 			} else {
-				return ImmutableMap.of(
+				return toJsonHttpEntity(buildMap(
 					"message", fileName + " is already existing. Please choose the different name",
-					"path", "/script/list/" + encodePathWithUTF8(path) + "/");
+					"path", "/script/list/" + encodePathWithUTF8(path) + "/"));
 			}
 
 		} else {
@@ -202,11 +217,12 @@ public class FileEntryApiController extends BaseController {
 			}
 		}
 
-		return ImmutableMap.of(
+		return toJsonHttpEntity(buildMap(
 			"breadcrumbPath", getScriptPathBreadcrumbs(PathUtils.join(path, fileName)),
 			"scriptHandler", scriptHandler,
 			"createLibAndResource", createLibAndResources,
-			"file", entry);
+			"file", entry
+		), gson);
 	}
 
 	/**
@@ -382,5 +398,61 @@ public class FileEntryApiController extends BaseController {
 									   @RequestParam(value = "hostString", required = false) String hostString) {
 		fileEntry.setCreatedUser(user);
 		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
+	}
+
+	/**
+	 * Save a fileEntry and return to the the path.
+	 *
+	 * @param user                 current user
+	 * @param fileEntry            file to be saved
+	 * @param targetHosts          target host parameter
+	 * @param validated            validated the script or not, 1 is validated, 0 is not.
+	 * @param createLibAndResource true if lib and resources should be created as well.
+	 * @return basePath
+	 */
+	@RestAPI
+	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
+	public String save(User user, FileEntry fileEntry,
+					   @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
+					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
+		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
+			Map<String, String> map = buildMap(
+				"validated", validated,
+				"targetHosts", StringUtils.trim(targetHosts)
+			);
+			fileEntry.setProperties(map);
+		}
+		fileEntryService.save(user, fileEntry);
+
+		String basePath = getPath(fileEntry.getPath());
+		if (createLibAndResource) {
+			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
+			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
+		}
+		return encodePathWithUTF8(basePath);
+	}
+
+	/**
+	 * Get the details of given path.
+	 *
+	 * @param user     user
+	 * @param path     user
+	 * @param revision revision. -1 if HEAD
+	 * @return detail view properties
+	 */
+	@RequestMapping(value = "/detail/**")
+	public HttpEntity<String> getOne(User user, @RemainedPath String path, @RequestParam(value = "r", required = false) Long revision) {
+		FileEntry script = fileEntryService.getOne(user, path, revision);
+		if (script == null || !script.getFileType().isEditable()) {
+			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
+			return errorJsonHttpEntity();
+		}
+
+		return toJsonHttpEntity(buildMap(
+			"file", script,
+			"breadcrumbPath", getScriptPathBreadcrumbs(path),
+			"scriptHandler", fileEntryService.getScriptHandler(script),
+			"ownerId", user.getUserId()
+		), gson);
 	}
 }

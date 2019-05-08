@@ -31,7 +31,6 @@
     "vue-headful": "^2.0.1",
     "vue-chartjs": "^3.3.1",
     "vue-clipboard2": "0.0.8",
-    "vue-codemirror": "^4.0.3",
     "vue-context-menu": "^2.0.6",
     "vue-form-wizard": "^0.8.4",
     "vue-localstorage": "^0.6.2",

@@ -150,22 +150,22 @@
                     this.fileName = this.fileName + extension;
                 }
 
-                this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
-                    "fileName", this.fileName,
-                    "scriptType", this.scriptHandler.key,
-                    "method", this.method,
-                    "testUrl", this.testUrl,
-                    "createLibAndResource", this.createLibAndResource,
-                    "options", JSON.stringify(this.$refs.scriptOption.toJson)
-                ), {
-                    params: { "type": 'script' }
-                }).then(res => {
-                    console.log(res.data);
-                    this.$router.push({
-                        name: 'scriptEditor',
-                        params: res.data
-                    })
-                }).catch(err => console.log(err.data));
+                const newScriptPromise =
+                    this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
+                        "fileName", this.fileName,
+                        "scriptType", this.scriptHandler.key,
+                        "method", this.method,
+                        "testUrl", this.testUrl,
+                        "createLibAndResource", this.createLibAndResource,
+                        "options", JSON.stringify(this.$refs.scriptOption.toJson)
+                    ), {
+                        params: { "type": 'script' }
+                    }).then(res => res.data);
+
+                this.$router.push({
+                    name: 'scriptEditor',
+                    params: { newScriptPromise: newScriptPromise }
+                })
             }
         }
 

@@ -104,6 +104,8 @@
 
 <style lang="less" scoped>
     #add-host-modal {
+        display: none;
+
         .validation-message {
             margin-left: 5px;
         }
