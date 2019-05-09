@@ -150,22 +150,24 @@
                     this.fileName = this.fileName + extension;
                 }
 
-                const newScriptPromise =
-                    this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
-                        "fileName", this.fileName,
-                        "scriptType", this.scriptHandler.key,
-                        "method", this.method,
-                        "testUrl", this.testUrl,
-                        "createLibAndResource", this.createLibAndResource,
-                        "options", JSON.stringify(this.$refs.scriptOption.toJson)
-                    ), {
-                        params: { "type": 'script' }
-                    }).then(res => res.data);
-
-                this.$router.push({
-                    name: 'scriptEditor',
-                    params: { newScriptPromise: newScriptPromise }
+                this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
+                    "fileName", this.fileName,
+                    "scriptType", this.scriptHandler.key,
+                    "method", this.method,
+                    "testUrl", this.testUrl,
+                    "createLibAndResource", this.createLibAndResource,
+                    "options", JSON.stringify(this.$refs.scriptOption.toJson)
+                ), {
+                    params: { "type": 'script' }
                 })
+                .then(res => {
+                    if (res.data.message) {
+                        alert(res.data.message);
+                        this.$router.push(res.data.path);
+                    } else {
+                        this.$router.push(resolve('/script/detail', res.data.file.path));
+                    }
+                });
             }
         }
 
@@ -204,6 +206,13 @@
         }
 
         return formData;
+    }
+
+    const resolve = (source, relative) => {
+        const removeAppendedSlash = path => path.startsWith('/') ? path.slice(1) : path;
+        const removePrependedSlash = path => path.endsWith('/') ? path.slice(0, path.length - 1) : path;
+
+        return removePrependedSlash(source) + '/' + removeAppendedSlash(relative);
     }
 </script>
 
