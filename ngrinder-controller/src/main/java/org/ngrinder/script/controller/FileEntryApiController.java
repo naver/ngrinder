@@ -13,17 +13,16 @@
  */
 package org.ngrinder.script.controller;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,9 +46,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -82,19 +79,6 @@ public class FileEntryApiController extends BaseController {
 	@Autowired
 	private ScriptValidationService scriptValidationService;
 
-	private Gson gson;
-
-	@PostConstruct
-	public void init() {
-		gson = new GsonBuilder()
-			.registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer())
-			.registerTypeAdapter(ScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
-			.registerTypeAdapter(GroovyScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
-			.registerTypeAdapter(JythonScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
-			.registerTypeAdapter(NullScriptHandler.class, new ScriptHandler.ScriptHandlerSerializer())
-			.create();
-	}
-
 	/**
 	 * Get all files which belongs to given user and path.
 	 *
@@ -104,18 +88,16 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/list/**")
-	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
+	public List<FileEntry> getAll(User user, @RemainedPath String path) {
 		final String trimmedPath = StringUtils.trimToEmpty(path);
 
-		List<FileEntry> files = fileEntryService.getAll(user)
+		return fileEntryService.getAll(user)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(fileEntry -> trimPathSeparatorBothSides(getPath(fileEntry.getPath())).equals(trimmedPath))
 			.sorted(DIRECTORY_PRIORITY_FILE_ENTRY_COMPARATOR)
 			.peek(fileEntry -> fileEntry.setPath(removePrependedSlash(fileEntry.getPath())))
 			.collect(toList());
-
-		return toJsonHttpEntity(files);
 	}
 
 	/**
@@ -156,16 +138,15 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/search")
-	public HttpEntity<String> search(User user, @RequestParam(required = true, value = "query") final String query) {
+	public List<FileEntry> search(User user, @RequestParam(required = true, value = "query") final String query) {
 		final String trimmedQuery = StringUtils.trimToEmpty(query);
-		List<FileEntry> files = fileEntryService.getAll(user)
+
+		return fileEntryService.getAll(user)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(fileEntry -> fileEntry.getFileType() != FileType.DIR)
 			.filter(fileEntry -> StringUtils.containsIgnoreCase(new File(fileEntry.getPath()).getName(), trimmedQuery))
 			.collect(toList());
-
-		return toJsonHttpEntity(files);
 	}
 
 
@@ -181,7 +162,7 @@ public class FileEntryApiController extends BaseController {
 	 * @return response map
 	 */
 	@PostMapping(value = "/new/**", params = "type=script")
-	public HttpEntity<String> createForm(User user, @RemainedPath String path,
+	public Map<String, Object> createScript(User user, @RemainedPath String path,
 										 @RequestParam(value = "testUrl", required = false) String testUrl,
 										 @RequestParam("fileName") String fileName,
 										 @RequestParam(value = "scriptType", required = false) String scriptType,
@@ -199,13 +180,13 @@ public class FileEntryApiController extends BaseController {
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResources, options);
-				return toJsonHttpEntity(buildMap(
+				return of(
 					"message", fileName + " project is created.",
-					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName));
+					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName);
 			} else {
-				return toJsonHttpEntity(buildMap(
+				return of(
 					"message", fileName + " is already existing. Please choose the different name",
-					"path", "/script/list/" + encodePathWithUTF8(path) + "/"));
+					"path", "/script/list/" + encodePathWithUTF8(path) + "/");
 			}
 
 		} else {
@@ -217,12 +198,9 @@ public class FileEntryApiController extends BaseController {
 			}
 		}
 
-		return toJsonHttpEntity(buildMap(
-			"breadcrumbPath", getScriptPathBreadcrumbs(PathUtils.join(path, fileName)),
-			"scriptHandler", scriptHandler,
-			"createLibAndResource", createLibAndResources,
-			"file", entry
-		), gson);
+		proxy(this).save(user, entry, null, "0", createLibAndResources);
+
+		return of("file", entry);
 	}
 
 	/**
@@ -416,9 +394,9 @@ public class FileEntryApiController extends BaseController {
 					   @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
 					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
-			Map<String, String> map = buildMap(
+			Map<String, String> map = of(
 				"validated", validated,
-				"targetHosts", StringUtils.trim(targetHosts)
+				"targetHosts", StringUtils.trimToEmpty(targetHosts)
 			);
 			fileEntry.setProperties(map);
 		}
@@ -441,18 +419,18 @@ public class FileEntryApiController extends BaseController {
 	 * @return detail view properties
 	 */
 	@RequestMapping(value = "/detail/**")
-	public HttpEntity<String> getOne(User user, @RemainedPath String path, @RequestParam(value = "r", required = false) Long revision) {
+	public Map<String, Object> getOne(User user, @RemainedPath String path, @RequestParam(value = "r", required = false) Long revision) {
 		FileEntry script = fileEntryService.getOne(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
-			return errorJsonHttpEntity();
+			return of();
 		}
 
-		return toJsonHttpEntity(buildMap(
+		return of(
 			"file", script,
 			"breadcrumbPath", getScriptPathBreadcrumbs(path),
 			"scriptHandler", fileEntryService.getScriptHandler(script),
 			"ownerId", user.getUserId()
-		), gson);
+		);
 	}
 }

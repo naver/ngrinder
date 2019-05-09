@@ -13,10 +13,7 @@
  */
 package org.ngrinder.script.handler;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -35,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -111,6 +107,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	protected abstract Integer order();
 
 	@SuppressWarnings("SpellCheckingInspection")
+	@JsonProperty
 	public boolean isValidatable() {
 		return true;
 	}
@@ -122,6 +119,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 
 	@SuppressWarnings("UnusedDeclaration")
+	@JsonProperty
 	public boolean isProjectHandler() {
 		return (this instanceof ProjectHandler);
 	}
@@ -326,21 +324,5 @@ public abstract class ScriptHandler implements ControllerConstants {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(PathUtils.join(basePath, "TestRunner." + getExtension()));
 		return fileEntry;
-	}
-
-	public static class ScriptHandlerSerializer implements JsonSerializer<ScriptHandler> {
-		@Override
-		public JsonElement serialize(ScriptHandler scriptHandler, Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject root = new JsonObject();
-			root.addProperty("codemirrorKey", scriptHandler.getCodemirrorKey());
-			root.addProperty("title", scriptHandler.getTitle());
-			root.addProperty("extension", scriptHandler.getExtension());
-			root.addProperty("key", scriptHandler.getKey());
-
-			root.addProperty("projectHandler", scriptHandler.isProjectHandler());
-			root.addProperty("validatable", scriptHandler.isValidatable());
-
-			return root;
-		}
 	}
 }
