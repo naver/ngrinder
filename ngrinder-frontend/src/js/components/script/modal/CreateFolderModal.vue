@@ -66,7 +66,6 @@
             this.$http.post(`/script/api/new/${this.currentPath}`, null, {
                 params: {
                     type: 'folder',
-                    user: this.currentUser,
                     folderName: this.folderName,
                 }
             })

@@ -31,8 +31,8 @@
                         <a class="btn pull-right btn-mini add-host-btn" data-toggle="modal"
                            href="#add-host-modal" v-text="i18n('perfTest.config.add')">
                         </a>
-                        <div class="div-host"
-                             rel="popover"
+                        <div class="div-host" rel="popover"
+                             id="host-div"
                              :title="i18n('perfTest.config.targetHost')"
                              :data-content="i18n('perfTest.config.targetHost.help')"
                              data-html="true"
@@ -52,7 +52,7 @@
             </div>
         </div>
         <textarea id="codemirror-content"></textarea>
-        <div class="pull-right tip" rel="popover" title="Tip" data-html="true" data-placement="left" :data-content="
+        <div class="pull-right tip" id="tip" rel="popover" title="Tip" data-html="true" data-placement="left" :data-content="
             'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
             'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
             'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
@@ -69,7 +69,7 @@
             <pre class="prettyprint pre-scrollable validation-result"
                  :class="{ expanded: validationResultExpanded }"
                  v-text="validationResult"></pre>
-            <div class="pull-right expand-btn-container" rel="popover">
+            <div class="pull-right expand-btn-container">
                 <a class="pointer-cursor" id="expand-btn" v-on:click="expand">
                     <code v-text="validationResultExpanded ? '-' : '+'"></code>
                 </a>
@@ -95,17 +95,14 @@
 
     @Component({
         name: 'scriptEditor',
-        props: {
-            newScriptPromise: {
-                type: Promise,
-                required: false,
-            }
-        },
         components: { HostModal, ControlGroup, Messages, },
     })
     export default class Editor extends Base {
 
-        file = {};
+        file = {
+            description: '',
+            validated: false,
+        };
         breadcrumbPath = '';
         scriptHandler = {};
 
@@ -124,53 +121,24 @@
         validationResult = '';
 
         mounted() {
-            if (this.isNewScript) {
-                this.initNewScript();
-            } else {
-                this.initScriptDetail();
-            }
-        }
+            this.initScriptDetail();
 
-        get isNewScript() {
-            return this.$route.path.startsWith('/script/new');
-        }
-
-        initNewScript() {
-            if (!this.newScriptPromise) {
-                alert('New script error');
-                this.$router.push('/script');
-                return;
-            }
-
-            this.newScriptPromise.then(data => {
-                this.file = data.file;
-                this.breadcrumbPath = data.breadcrumbPath;
-                this.scriptHandler = data.scriptHandler;
-                this.createLibAndResource = data.createLibAndResource;
-
-                this.file.revision = this.file.revision || 0;
-                this.file.lastRevision = this.file.lastRevision || 0;
-                this.scriptHandler.validatable = this.scriptHandler.validatable || false;
-
-                this.initCodeMirror();
-            }).catch(err => {
-                console.error(err);
-                this.$router.push('/script')
-            });
+            $('#host-div').popover({trigger: 'hover'});
+            $('#tip').popover({trigger: 'hover'});
         }
 
         initScriptDetail() {
             const path = this.$route.path.replace('/script/detail/', '');
             this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
             .then(res => {
-                console.log(res.data);
+                Object.assign(this.file, res.data.file);
+                Object.assign(this.breadcrumbPath, res.data.breadcrumbPath);
+                Object.assign(this.scriptHandler, res.data.scriptHandler);
 
-                this.file = res.data.file;
-                this.breadcrumbPath = res.data.breadcrumbPath;
-                this.scriptHandler = res.data.scriptHandler;
                 this.validated = this.file.validated;
+
+                this.initCodeMirror();
             })
-            .then(() => this.initCodeMirror())
         }
 
         initCodeMirror() {
@@ -241,7 +209,6 @@
 
             this.$http.post('/script/api/save', formData)
             .then(res => {
-                console.log(res);
                 window.onbeforeunload = null;
                 this.$router.push(`/script/list/${res.data}`);
             })
