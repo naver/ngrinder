@@ -68,7 +68,7 @@
     </div>
 </template>
 <script>
-    import Component from 'vue-class-component';
+    import { Component, Watch } from 'vue-property-decorator';
     import Base from '../Base.vue';
 
     import CreateScriptModal from './modal/CreateScriptModal.vue';
@@ -90,23 +90,13 @@
         components: { CreateScriptModal, CreateFolderModal, UploadFileModal},
     })
     export default class SearchBar extends Base {
-        handlers = [];
         query = '';
         svnUrl = '';
 
         mounted() {
             this.query = this.$route.query.query;
 
-            if (!this.query) {
-                this.$http.get("/script/api/svnUrl", {
-                    params: {
-                        user: this.currentUser,
-                        path: this.currentPath,
-                    }
-                }).then(res => {
-                    this.svnUrl = res.data;
-                });
-            }
+            this.initSvnUrl();
 
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
@@ -119,6 +109,19 @@
 
                 $('#folderName').popover({trigger: 'focus'});
             });
+        }
+
+        initSvnUrl() {
+            if (!this.query) {
+                this.$http.get("/script/api/svnUrl", {
+                    params: {
+                        user: this.currentUser,
+                        path: this.currentPath,
+                    }
+                }).then(res => {
+                    this.svnUrl = res.data;
+                });
+            }
         }
 
         deleteFile() {
@@ -140,6 +143,11 @@
                     .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
                 });
             }
+        }
+
+        @Watch('scripts')
+        onRefresh() {
+            this.initSvnUrl();
         }
     }
 </script>
