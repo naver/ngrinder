@@ -88,32 +88,41 @@
         selectAll = false;
 
         mounted() {
-            this.refreshScriptList();
+            if (this.$route.name === 'scriptSearch') {
+                this.searchScript();
+            } else {
+                this.refreshScriptList();
+            }
+
             this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
         }
 
         refreshScriptList() {
-            this.$http.get(`/script/api/list/${this.currentPath}`, {
-                params: {
-                    user: this.currentUser
-                }
-            }).then(res => {
-                this.scripts.splice(0);
-                this.scripts.push(
-                    ...res.data
-                    .map(script => {
-                        script.checked = false;
-                        return script
-                    })
-                    .map(script => {
-                        script.fileName = this.getFileName(script.path);
-                        return script
-                    }));
-                this.selectAll = false;
+            this.$http.get(`/script/api/list/${this.currentPath}`)
+            .then(res => this.refresh(res.data));
+        }
+
+        searchScript() {
+            this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
+            .then(res => this.refresh(res.data));
+        }
+
+        refresh(scripts) {
+            const list = scripts.map(script => {
+                script.checked = false;
+                script.fileName = this.getFileName(script.path);
+                return script;
             });
+
+            this.scripts.splice(0);
+            this.scripts.push(...list);
+            this.selectAll = false;
         }
 
         get currentPath() {
+            if (this.$route.name === 'scriptSearch') {
+                return '';
+            }
             return removePrependedSlash(this.$route.path).replace('/script', '').replace('/list', '').replace('/', '');
         }
 
@@ -125,8 +134,14 @@
         }
 
         @Watch('$route')
-        watchRoute() {
-            this.refreshScriptList();
+        watchRoute(newValue, oldValue) {
+            if (newValue.name === 'scriptList' && newValue.path !== oldValue.path) {
+                this.refreshScriptList();
+            }
+
+            if (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query) {
+                this.searchScript();
+            }
         }
 
         changeSelectAll(event) {
