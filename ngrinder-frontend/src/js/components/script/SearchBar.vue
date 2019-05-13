@@ -10,13 +10,13 @@
                         </colgroup>
                         <tr>
                             <td>
-                                <input type="text" class="search-query span3" placeholder="Keywords" v-model="query">
-                                <button type="submit" class="btn">
+                                <input type="text" class="search-query span3" placeholder="Keywords" v-model="query" @keyup.enter="search">
+                                <button class="btn" @click="search">
                                     <i class="icon-search"></i><span v-text="i18n('common.button.search')"></span>
                                 </button>
                             </td>
                             <td>
-                                <div v-show="!query" id="svn-url" class="input-prepend"
+                                <div v-show="$route.query.query === undefined" id="svn-url" class="input-prepend"
                                      data-toggle="popover" :data-content="i18n('script.message.svn')" data-html="true"
                                      title="Subversion" data-placement="bottom">
                                     <span class="add-on" style="cursor:default">SVN</span>
@@ -36,7 +36,7 @@
                         </colgroup>
                         <tr>
                             <td>
-                                <template v-if="!query">
+                                <template v-if="$route.query.query === undefined">
                                     <a class="btn btn-primary" data-toggle="modal" data-target="#create-script-modal">
                                         <i class="icon-file icon-white"></i>
                                         <span v-text="i18n('script.action.createScript')"></span>
@@ -145,9 +145,25 @@
             }
         }
 
+        search() {
+            this.$router.push({ path: '/script/search', query: { query: this.query } });
+        }
+
         @Watch('scripts')
         onRefresh() {
             this.initSvnUrl();
+        }
+
+        @Watch('query')
+        onQueryChanged() {
+            if (this.$route.name === 'scriptSearch') {
+                this.$router.replace({
+                    query: {
+                        ...this.$route.query,
+                        query: this.query
+                    }
+                })
+            }
         }
     }
 </script>
