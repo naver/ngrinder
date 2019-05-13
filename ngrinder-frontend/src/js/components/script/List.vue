@@ -18,7 +18,7 @@
             </colgroup>
             <thead>
             <tr>
-                <th><input type="checkbox" class="checkbox" value=""></th>
+                <th><input type="checkbox" class="checkbox" v-model="selectAll" @change="changeSelectAll"></th>
                 <th class="no-click">
                     <router-link :to="baseDirectory" target="_self">
                         <img src="/img/up_folder.png"/>
@@ -81,10 +81,11 @@
 
     @Component({
         name: 'scriptList',
-        components: {VueHeadful, SearchBar},
+        components: { VueHeadful, SearchBar },
     })
     export default class ScriptList extends Base {
         scripts = [];
+        selectAll = false;
 
         mounted() {
             this.refreshScriptList();
@@ -99,7 +100,8 @@
             }).then(res => {
                 this.scripts.splice(0);
                 this.scripts.push(
-                    ...res.data.map(script => {
+                    ...res.data
+                    .map(script => {
                         script.checked = false;
                         return script
                     })
@@ -107,6 +109,7 @@
                         script.fileName = this.getFileName(script.path);
                         return script
                     }));
+                this.selectAll = false;
             });
         }
 
@@ -124,6 +127,14 @@
         @Watch('$route')
         watchRoute() {
             this.refreshScriptList();
+        }
+
+        changeSelectAll(event) {
+            if (event.target.checked) {
+                this.scripts.forEach(script => script.checked = true);
+            } else {
+                this.scripts.forEach(script => script.checked = false);
+            }
         }
 
         downloadScript(path) {

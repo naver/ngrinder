@@ -132,9 +132,9 @@
             this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
             .then(res => {
                 Object.assign(this.file, res.data.file);
-                Object.assign(this.breadcrumbPath, res.data.breadcrumbPath);
                 Object.assign(this.scriptHandler, res.data.scriptHandler);
 
+                this.breadcrumbPath = res.data.breadcrumbPath;
                 this.validated = this.file.validated;
 
                 this.initCodeMirror();

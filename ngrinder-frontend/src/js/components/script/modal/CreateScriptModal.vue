@@ -29,11 +29,8 @@
                                         v-text="handler.title">
                                 </option>
                             </select>
-                            <input type="text"
-                                   name="fileName"
-                                   id="fileName"
-                                   class="span5"
-                                   :title="i18n('script.info.name')"
+                            <input type="text" id="fileName" name="fileName"
+                                   class="span5" :title="i18n('script.info.name')"
                                    data-toggle="popover"
                                    data-placement="right"
                                    :data-content="i18n('script.info.name.help')"
@@ -47,17 +44,14 @@
                                 <option value="GET" selected="selected">GET</option>
                                 <option value="POST">POST</option>
                             </select>
-                            <input type="text"
-                                   name="testUrl"
-                                   id="testUrl"
-                                   class="span5"
-                                   :title="i18n('home.tip.url.title')"
+                            <input type="text" id="testUrl" name="testUrl"
+                                   class="span5" :title="i18n('home.tip.url.title')"
                                    data-toggle="popover"
                                    data-placement="bottom"
                                    :data-content="i18n('home.tip.url.content')"
                                    v-model="testUrl"
                                    :placeholder="i18n('home.placeholder.url')"
-                                   v-validate="{url: {require_protocol: true}, required: true}"
+                                   v-validate="scriptHandler.projectHandler ? null : {url: {require_protocol: true}, required: true}"
                                    ref="testUrl"/>
                         </control-group>
 
@@ -149,26 +143,26 @@
                 if (this.fileName.toLowerCase().lastIndexOf(extension) === -1) {
                     this.fileName = this.fileName + extension;
                 }
-
-                this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
-                    "fileName", this.fileName,
-                    "scriptType", this.scriptHandler.key,
-                    "method", this.method,
-                    "testUrl", this.testUrl,
-                    "createLibAndResource", this.createLibAndResource,
-                    "options", JSON.stringify(this.$refs.scriptOption.toJson)
-                ), {
-                    params: { "type": 'script' }
-                })
-                .then(res => {
-                    if (res.data.message) {
-                        alert(res.data.message);
-                        this.$router.push(res.data.path);
-                    } else {
-                        this.$router.push(resolve('/script/detail', res.data.file.path));
-                    }
-                });
             }
+
+            this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
+                "fileName", this.fileName,
+                "scriptType", this.scriptHandler.key,
+                "method", this.method,
+                "testUrl", this.testUrl,
+                "createLibAndResource", this.createLibAndResource,
+                "options", JSON.stringify(this.$refs.scriptOption.toJson)
+            ), {
+                params: { "type": 'script' }
+            })
+            .then(res => {
+                if (res.data.message) {
+                    console.log(res.data.message);
+                    this.$router.push(res.data.path);
+                } else {
+                    this.$router.push(resolve('/script/detail', res.data.file.path));
+                }
+            });
         }
 
         validFields() {
