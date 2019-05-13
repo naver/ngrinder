@@ -64,9 +64,9 @@ const routes = [
     {path: '/login', component: Login, name: 'login'},
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail'},
-    {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/search', '/script/list/(.*)?']},
-    {path: '/script/new', component: ScriptEditor, name: 'scriptEditor', props: true},
-    {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditorDetail'},
+    {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/list/(.*)?']},
+    {path: '/script/search', component: ScriptList, name: 'scriptSearch'},
+    {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditor'},
 ];
 
 const router = new VueRouter({
