@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		// assertThat(versionList.size(), is(2));
 		scriptController.search(getTestUser(), "test");
 
-		scriptController.delete(getTestUser(), path, "new_file.py");
+		scriptController.delete(getTestUser(), Arrays.asList(path + "/new_file.py"));
 		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
 		assertThat(scriptList.size(), is(0));
 	}
@@ -121,7 +122,7 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		assertThat(searchResult.size(), is(2));
 
 		// delete both files
-		scriptController.delete(getTestUser(), path, "file-for-search.py,new-file-for-search.py");
+		scriptController.delete(getTestUser(), Arrays.asList(path + "/file-for-search.py", path + "/new-file-for-search.py"));
 		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
 		assertThat(scriptList.size(), is(0));
 	}
