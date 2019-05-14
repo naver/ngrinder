@@ -16,7 +16,7 @@
                                 </button>
                             </td>
                             <td>
-                                <div v-show="$route.query.query === undefined" id="svn-url" class="input-prepend"
+                                <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend"
                                      data-toggle="popover" :data-content="i18n('script.message.svn')" data-html="true"
                                      title="Subversion" data-placement="bottom">
                                     <span class="add-on" style="cursor:default">SVN</span>
@@ -36,7 +36,7 @@
                         </colgroup>
                         <tr>
                             <td>
-                                <template v-if="$route.query.query === undefined">
+                                <template v-if="$route.name !== 'scriptSearch'">
                                     <a class="btn btn-primary" data-toggle="modal" data-target="#create-script-modal">
                                         <i class="icon-file icon-white"></i>
                                         <span v-text="i18n('script.action.createScript')"></span>
@@ -112,10 +112,9 @@
         }
 
         initSvnUrl() {
-            if (!this.query) {
+            if (!this.$route.query.query) {
                 this.$http.get("/script/api/svnUrl", {
                     params: {
-                        user: this.currentUser,
                         path: this.currentPath,
                     }
                 }).then(res => {
@@ -129,19 +128,18 @@
             if (checkedScripts.length === 0) {
                 bootbox.alert(this.i18n("script.message.delete.alert"), this.i18n("common.button.ok"));
             } else {
-                bootbox.confirm(this.i18n("script.message.delete.confirm"), this.i18n("common.button.cancel"), this.i18n("common.button.ok"), result => {
-                    if (!result) {
-                        return;
-                    }
-
-                    const scriptsString = checkedScripts.map(file => file.fileName).join(",");
-                    this.$http.post(`/script/api/delete/${this.currentPath}`, null, {
-                        params: {
-                            filesString: scriptsString
+                bootbox.confirm(
+                    this.i18n("script.message.delete.confirm"),
+                    this.i18n("common.button.cancel"),
+                    this.i18n("common.button.ok"),
+                    result => {
+                        if (!result) {
+                            return;
                         }
-                    })
-                    .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
-                });
+
+                        this.$http.post(`/script/api/delete`, checkedScripts.map(file => file.path))
+                        .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
+                    });
             }
         }
 
