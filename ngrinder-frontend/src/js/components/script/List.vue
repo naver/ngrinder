@@ -88,35 +88,36 @@
         selectAll = false;
 
         mounted() {
-            if (this.$route.name === 'scriptSearch') {
-                this.searchScript();
-            } else {
-                this.refreshScriptList();
-            }
-
+            this.refreshScriptList();
             this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
         }
 
         refreshScriptList() {
-            this.$http.get(`/script/api/list/${this.currentPath}`)
-            .then(res => this.refresh(res.data));
+            if (this.$route.name === 'scriptSearch') {
+                this.searchScripts().then(res => refresh(res.data));
+            } else {
+                this.getAllScripts().then(res => refresh(res.data));
+            }
+
+            const refresh = scripts => {
+                const list = scripts.map(script => {
+                    script.checked = false;
+                    script.fileName = this.getFileName(script.path);
+                    return script;
+                });
+
+                this.scripts.splice(0);
+                this.scripts.push(...list);
+                this.selectAll = false;
+            }
         }
 
-        searchScript() {
-            this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
-            .then(res => this.refresh(res.data));
+        getAllScripts() {
+            return this.$http.get(`/script/api/list/${this.currentPath}`);
         }
 
-        refresh(scripts) {
-            const list = scripts.map(script => {
-                script.checked = false;
-                script.fileName = this.getFileName(script.path);
-                return script;
-            });
-
-            this.scripts.splice(0);
-            this.scripts.push(...list);
-            this.selectAll = false;
+        searchScripts() {
+            return this.$http.get(`/script/api/search?query=${this.$route.query.query}`);
         }
 
         get currentPath() {
@@ -135,12 +136,9 @@
 
         @Watch('$route')
         watchRoute(newValue, oldValue) {
-            if (newValue.name === 'scriptList' && newValue.path !== oldValue.path) {
+            if ((newValue.name === 'scriptList' && newValue.path !== oldValue.path)
+                || (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query)) {
                 this.refreshScriptList();
-            }
-
-            if (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query) {
-                this.searchScript();
             }
         }
 

@@ -244,18 +244,13 @@ public class FileEntryApiController extends BaseController {
 	 * Delete files on the given path.
 	 *
 	 * @param user        user
-	 * @param path        base path
-	 * @param filesString file list delimited by ","
+	 * @param paths 	list of file paths to be deleted
 	 * @return json string
 	 */
-	@PostMapping(value = "/delete/**")
-	@ResponseBody
-	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString) {
-		String[] files = filesString.split(",");
-		fileEntryService.delete(user, path, files);
-		Map<String, Object> rtnMap = new HashMap<>(1);
-		rtnMap.put(JSON_SUCCESS, true);
-		return toJson(rtnMap);
+	@PostMapping(value = "/delete")
+	public Map<String, String> delete(User user, @RequestBody List<String> paths) {
+		fileEntryService.delete(user, paths);
+		return of();
 	}
 
 
