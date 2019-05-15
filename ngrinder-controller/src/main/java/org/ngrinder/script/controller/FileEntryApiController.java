@@ -16,7 +16,7 @@ package org.ngrinder.script.controller;
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
-import static org.ngrinder.common.util.AopUtils.proxy;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
@@ -25,7 +25,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
@@ -33,7 +32,9 @@ import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
-import org.ngrinder.script.handler.*;
+import org.ngrinder.script.handler.ProjectHandler;
+import org.ngrinder.script.handler.ScriptHandler;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
@@ -46,8 +47,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * FileEntry manipulation API controller.
@@ -89,7 +94,7 @@ public class FileEntryApiController extends BaseController {
 	@RestAPI
 	@GetMapping("/list/**")
 	public List<FileEntry> getAll(User user, @RemainedPath String path) {
-		final String trimmedPath = StringUtils.trimToEmpty(path);
+		String trimmedPath = trimToEmpty(path);
 
 		return fileEntryService.getAll(user)
 			.stream()
@@ -109,9 +114,9 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/svnUrl")
-	public String getSvnUrlBreadcrumbs(User user, String path) {
+	public String getSvnUrlBreadcrumbs(User user, @RequestParam String path) {
 		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = StringUtils.split(path, '/');
+		String[] parts = split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
 		StringBuilder returnHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
 			.append(contextPath).append("/svn/").append(user.getUserId()).append("</a>");
@@ -138,14 +143,14 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/search")
-	public List<FileEntry> search(User user, @RequestParam(required = true, value = "query") final String query) {
-		final String trimmedQuery = StringUtils.trimToEmpty(query);
+	public List<FileEntry> search(User user, @RequestParam String query) {
+		String trimmedQuery = trimToEmpty(query);
 
 		return fileEntryService.getAll(user)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(fileEntry -> fileEntry.getFileType() != FileType.DIR)
-			.filter(fileEntry -> StringUtils.containsIgnoreCase(new File(fileEntry.getPath()).getName(), trimmedQuery))
+			.filter(fileEntry -> containsIgnoreCase(new File(fileEntry.getPath()).getName(), trimmedQuery))
 			.collect(toList());
 	}
 
@@ -158,20 +163,21 @@ public class FileEntryApiController extends BaseController {
 	 * @param testUrl               url which the script may use
 	 * @param fileName              fileName
 	 * @param scriptType            Type of script. optional
-	 * @param createLibAndResources true if libs and resources should be created as well.
+	 * @param createLibAndResource true if libs and resources should be created as well.
 	 * @return response map
 	 */
 	@PostMapping(value = "/new/**", params = "type=script")
-	public Map<String, Object> createScript(User user, @RemainedPath String path,
-										 @RequestParam(value = "testUrl", required = false) String testUrl,
-										 @RequestParam("fileName") String fileName,
-										 @RequestParam(value = "scriptType", required = false) String scriptType,
-										 @RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
-										 @RequestParam(value = "options", required = false) String options) {
-		fileName = StringUtils.trimToEmpty(fileName);
+	public Map<String, Object> createScript(User user,
+											@RemainedPath String path,
+											@RequestParam("fileName") String fileName,
+											@RequestParam(required = false) String testUrl,
+											@RequestParam(required = false) String options,
+											@RequestParam(required = false) String scriptType,
+											@RequestParam(defaultValue = "false") boolean createLibAndResource) {
+		fileName = trimToEmpty(fileName);
 		String name = "Test1";
-		if (StringUtils.isEmpty(testUrl)) {
-			testUrl = StringUtils.defaultIfBlank(testUrl, "http://please_modify_this.com");
+		if (isEmpty(testUrl)) {
+			testUrl = defaultIfBlank(testUrl, "http://please_modify_this.com");
 		} else {
 			name = UrlUtils.getHost(testUrl);
 		}
@@ -179,7 +185,7 @@ public class FileEntryApiController extends BaseController {
 		FileEntry entry;
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
-				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResources, options);
+				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResource, options);
 				return of(
 					"message", fileName + " project is created.",
 					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName);
@@ -194,11 +200,11 @@ public class FileEntryApiController extends BaseController {
 			if (fileEntryService.hasFileEntry(user, fullPath)) {
 				entry = fileEntryService.getOne(user, fullPath);
 			} else {
-				entry = fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResources, options);
+				entry = fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResource, options);
 			}
 		}
 
-		proxy(this).save(user, entry, null, "0", createLibAndResources);
+		save(user, entry, null, "0", createLibAndResource);
 
 		return of("file", entry);
 	}
@@ -211,8 +217,10 @@ public class FileEntryApiController extends BaseController {
 	 * @param folderName folderName
 	 */
 	@PostMapping(value = "/new/**", params = "type=folder")
-	public HttpEntity<String> addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName) {
-		fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
+	public HttpEntity<String> addFolder(User user,
+										@RemainedPath String path,
+										@RequestParam String folderName) {
+		fileEntryService.addFolder(user, path, trimToEmpty(folderName), "");
 		return successJsonHttpEntity();
 	}
 
@@ -224,7 +232,7 @@ public class FileEntryApiController extends BaseController {
 	 */
 	public String getScriptPathBreadcrumbs(String path) {
 		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = StringUtils.split(path, '/');
+		String[] parts = split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
 		StringBuilder returnHtml = new StringBuilder();
 		for (int i = 0; i < parts.length; i++) {
@@ -263,8 +271,10 @@ public class FileEntryApiController extends BaseController {
 	 * @param file        multi part file
 	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
-	public HttpEntity<String> uploadFile(User user, @RemainedPath String path, @RequestParam("description") String description,
-						 @RequestParam("uploadFile") MultipartFile file) {
+	public HttpEntity<String> uploadFile(User user,
+										 @RemainedPath String path,
+										 @RequestParam String description,
+										 @RequestParam("uploadFile") MultipartFile file) {
 		try {
 			description = XssPreventer.escape(description);
 			upload(user, path, description, file);
@@ -309,8 +319,9 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@PostMapping(value = "/**", params = "action=upload")
-	public HttpEntity<String> uploadForAPI(User user, @RemainedPath String path,
-										   @RequestParam("description") String description,
+	public HttpEntity<String> uploadForAPI(User user,
+										   @RemainedPath String path,
+										   @RequestParam String description,
 										   @RequestParam("uploadFile") MultipartFile file) throws IOException {
 		upload(user, path, description, file);
 		return successJsonHttpEntity();
@@ -368,7 +379,7 @@ public class FileEntryApiController extends BaseController {
 	@RestAPI
 	@PostMapping("/validate")
 	public HttpEntity<String> validate(User user, FileEntry fileEntry,
-									   @RequestParam(value = "hostString", required = false) String hostString) {
+									   @RequestParam(required = false) String hostString) {
 		fileEntry.setCreatedUser(user);
 		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
 	}
@@ -386,12 +397,13 @@ public class FileEntryApiController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String save(User user, FileEntry fileEntry,
-					   @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
+					   @RequestParam String targetHosts,
+					   @RequestParam(defaultValue = "0") String validated,
 					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
 			Map<String, String> map = of(
 				"validated", validated,
-				"targetHosts", StringUtils.trimToEmpty(targetHosts)
+				"targetHosts", trimToEmpty(targetHosts)
 			);
 			fileEntry.setProperties(map);
 		}
@@ -414,7 +426,9 @@ public class FileEntryApiController extends BaseController {
 	 * @return detail view properties
 	 */
 	@RequestMapping(value = "/detail/**")
-	public Map<String, Object> getOne(User user, @RemainedPath String path, @RequestParam(value = "r", required = false) Long revision) {
+	public Map<String, Object> getOne(User user,
+									  @RemainedPath String path,
+									  @RequestParam(value = "r", required = false) Long revision) {
 		FileEntry script = fileEntryService.getOne(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);

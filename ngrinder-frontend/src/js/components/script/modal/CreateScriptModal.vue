@@ -147,11 +147,10 @@
 
             this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
                 "fileName", this.fileName,
-                "scriptType", this.scriptHandler.key,
-                "method", this.method,
                 "testUrl", this.testUrl,
-                "createLibAndResource", this.createLibAndResource,
-                "options", JSON.stringify(this.$refs.scriptOption.toJson)
+                "options", JSON.stringify(this.$refs.scriptOption.toJson),
+                "scriptType", this.scriptHandler.key,
+                "createLibAndResource", this.createLibAndResource
             ), {
                 params: { "type": 'script' }
             })
