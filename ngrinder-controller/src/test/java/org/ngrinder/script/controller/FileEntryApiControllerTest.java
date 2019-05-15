@@ -78,7 +78,7 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		String path = "test1-path";
 		scriptController.addFolder(getTestUser(), "", path);
 		// create
-		response = scriptController.createScript(getTestUser(), path, "test.com", "new_file.py", "jython", false, null);
+		response = scriptController.createScript(getTestUser(), path, "new_file.py", "test.com", null, "jython", false);
 		FileEntry script = (FileEntry) response.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.save(getTestUser(), script, null, "", false);
@@ -108,7 +108,7 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		// add folder
 		scriptController.addFolder(getTestUser(), "", path);
 		// create
-		response = scriptController.createScript(getTestUser(), path, "test.com", "file-for-search.py", "jython", false, null);
+		response = scriptController.createScript(getTestUser(), path, "file-for-search.py", "test.com", null, "jython", false);
 		FileEntry script = (FileEntry) response.get("file");
 		scriptController.save(getTestUser(), script, null, "", false);
 
@@ -146,13 +146,13 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		String path = "download-path";
 		String fileName = "download_file.py";
 		scriptController.addFolder(getTestUser(), "", path);
-		Map<String, Object> responseMap = scriptController.createScript(getTestUser(), path, "test.com", fileName, "jython", false, null);
+		Map<String, Object> responseMap = scriptController.createScript(getTestUser(), path, fileName, "test.com", null, "jython", false);
 
 		FileEntry script = (FileEntry) responseMap.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.save(getTestUser(), script, null, "", false);
 
-		scriptController.createScript(getTestUser(), path, "", fileName, "", false, null);
+		scriptController.createScript(getTestUser(), path, fileName, "", null, "", false);
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		path = path + "/" + fileName;
