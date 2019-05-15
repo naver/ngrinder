@@ -94,9 +94,11 @@
 
         refreshScriptList() {
             if (this.$route.name === 'scriptSearch') {
-                this.searchScripts().then(res => refresh(res.data));
+                this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
+                    .then(res => refresh(res.data));
             } else {
-                this.getAllScripts().then(res => refresh(res.data));
+                this.$http.get(`/script/api/list/${this.currentPath}`)
+                    .then(res => refresh(res.data));
             }
 
             const refresh = scripts => {
@@ -110,14 +112,6 @@
                 this.scripts.push(...list);
                 this.selectAll = false;
             }
-        }
-
-        getAllScripts() {
-            return this.$http.get(`/script/api/list/${this.currentPath}`);
-        }
-
-        searchScripts() {
-            return this.$http.get(`/script/api/search?query=${this.$route.query.query}`);
         }
 
         get currentPath() {
