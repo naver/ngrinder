@@ -80,7 +80,6 @@
                     'content-type': 'multipart/form-data'
                 },
                 params: {
-                    user: this.currentUser,
                     description: this.description,
                 }
             })

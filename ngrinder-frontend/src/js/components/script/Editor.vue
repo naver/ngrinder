@@ -120,6 +120,8 @@
         validationResultExpanded = false;
         validationResult = '';
 
+        saved = false;
+
         mounted() {
             this.initScriptDetail();
 
@@ -133,6 +135,8 @@
             .then(res => {
                 Object.assign(this.file, res.data.file);
                 Object.assign(this.scriptHandler, res.data.scriptHandler);
+
+                this.file.properties.targetHosts.split(',').filter(s => s).forEach(host => this.addHost(host));
 
                 this.breadcrumbPath = res.data.breadcrumbPath;
                 this.validated = this.file.validated;
@@ -185,8 +189,6 @@
             const formData = new FormData();
             formData.append('content', newContent);
 
-            window.onbeforeunload = undefined;
-
             if (this.file.revision > 0 && this.file.lastRevision > 0 && this.file.revision < this.file.lastRevision) {
                 bootbox.confirm(
                     this.i18n('script.editor.message.overWriteNewer'),
@@ -199,17 +201,16 @@
         }
 
         saveScript() {
-            const formData = new FormData();
-            formData.append('path', this.file.path);
-            formData.append('description', this.file.description ? this.file.description : '');
-            formData.append('createLibAndResource', this.createLibAndResource);
-            formData.append('validated', this.validated);
-            formData.append('content', this.editor.getValue());
-            formData.append('targetHosts', this.targetHosts.join(','));
-
-            this.$http.post('/script/api/save', formData)
+            this.$http.post('/script/api/save', formDataOf(
+                'path', this.file.path,
+                'description', this.file.description ? this.file.description : '',
+                'content', this.editor.getValue(),
+                'validated', this.validated,
+                'createLibAndResource', this.createLibAndResource,
+                'targetHosts', this.targetHosts.join(',')
+            ))
             .then(res => {
-                window.onbeforeunload = null;
+                this.saved = true;
                 this.$router.push(`/script/list/${res.data}`);
             })
             .catch(err => console.error(err))
@@ -250,7 +251,6 @@
         }
 
         addHost(host) {
-            console.log(host);
             this.targetHostSet.add(host);
             this.targetHostsChangeTracker += 1;
         }
@@ -292,7 +292,7 @@
         }
 
         beforeRouteLeave(to, from, next) {
-            if (this.changed()) {
+            if (!this.saved && this.changed()) {
                 bootbox.confirm(
                     this.i18n('script.editor.message.exitWithoutSave'),
                     this.i18n('common.button.cancel'),
