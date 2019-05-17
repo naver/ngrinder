@@ -64,6 +64,7 @@ const routes = [
     {path: '/home', component: Home, alias: '/'},
     {path: '/login', component: Login, name: 'login'},
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
+    {path: '/perftest/new', component: PerfTestDetail, name: 'createNewPerftest'},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail'},
     {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/search', '/script/list/(.*)?']},
 ];
