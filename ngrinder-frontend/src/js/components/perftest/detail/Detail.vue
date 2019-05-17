@@ -9,8 +9,13 @@
                             <div class="control-group">
                                 <div class="row">
                                     <div class="span4-5" data-step="1" :data-intro="i18n('intro.detail.testName')">
-                                        <control-group name="testName" labelMessageKey="perfTest.config.testName">
-                                            <input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" :value="test.testName"/>
+                                        <control-group ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
+                                            <input class="required span3 left-float" name="testName"
+                                                   maxlength="80" size="30" type="text"
+                                                   @keyup="checkTestNameValidation"
+                                                   v-validate="{ required: true }"
+                                                   v-model="test.testName"/>
+                                            <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
                                         </control-group>
                                     </div>
                                     <div class="span3-4 tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
@@ -111,6 +116,14 @@
                 config: false,
             },
         };
+
+        checkTestNameValidation() {
+            this.$validator.validate('testName').then(result => {
+                this.$refs.testNameControlGroup.hasError = !result;
+            }).catch(() => {
+                this.$refs.testNameControlGroup.hasError = false;
+            });
+        }
 
         created() {
             this.$http.get(`/perftest/api/${this.$route.params.id}`).then(res => {
