@@ -181,19 +181,6 @@ public class AgentManagerController extends BaseController {
 	}
 
 	/**
-	 * Get the current all agents state.
-	 *
-	 * @return json message
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
-	@RequestMapping(value = {"/api/states/", "/api/states"}, method = RequestMethod.GET)
-	public HttpEntity<String> getStates() {
-		List<AgentInfo> agents = agentManagerService.getAllVisible();
-		return toJsonHttpEntity(getAgentStatus(agents));
-	}
-
-	/**
 	 * Get all agents from database.
 	 *
 	 * @return json message
@@ -307,19 +294,6 @@ public class AgentManagerController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
-	private List<Map<String, Object>> getAgentStatus(List<AgentInfo> agents) {
-		List<Map<String, Object>> statuses = newArrayList(agents.size());
-		for (AgentInfo each : agents) {
-			Map<String, Object> result = newHashMap();
-			result.put("id", each.getId());
-			result.put("port", each.getPort());
-			result.put("icon", each.getState().getCategory().getIconName());
-			result.put("state", each.getState());
-			statuses.add(result);
-		}
-		return statuses;
-	}
-	
 	/**
 	 * Get the number of available agents.
 	 * 
