@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoadFinished" class="row config config-container">
+    <div v-if="dataLoadFinished" id="config-container" class="row config">
         <div class="span6" :data-hello="false">
             <fieldset>
                 <legend><span v-text="i18n('perfTest.config.basicConfiguration')"></span></legend>
@@ -77,7 +77,7 @@
                 </control-group>
 
                 <control-group labelMessageKey="perfTest.config.scriptResources">
-                    <div class="div-resources" id="script_resources">
+                    <div class="div-resources">
                         <div class="resource" v-for="resource in resources" v-text="resource"></div>
                     </div>
                 </control-group>
@@ -141,7 +141,7 @@
                 </div>
 
                 <transition name="fade">
-                    <div id="detail_config_section" v-show="display.detailConfig">
+                    <div id="advanced-config" v-show="display.detailConfig">
                         <div class="row">
                             <div class="span3">
                                 <control-group name="samplingInterval" labelMessageKey="perfTest.config.samplingInterval">
@@ -181,7 +181,7 @@
                                                    dataPlacement="top"
                                                    v-model="test.param"
                                                    message="perfTest.config.param"
-                                                   customStyle="width: 125px">
+                                                   customStyle="width: 125px;">
                                     </input-popover>
                                 </control-group>
                             </div>
@@ -319,14 +319,14 @@
                 },
             }).then(res => {
                 this.resources = res.data.resources;
-            }).catch((error) => console.log(error));
+            }).catch((error) => console.error(error));
         }
 
         finishDataLoad() {
             this.dataLoadFinished = true;
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
-                $('[data-toggle="popover"]').popover({trigger: 'hover', container: '.config-container'});
+                $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
                 this.$refs.rampUp.updateRampUpChart();
                 this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount, this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
             });
@@ -371,14 +371,14 @@
                 getMessage: this.i18n('perfTest.message.script'),
                 validate: () => {
                     if (this.$refs.scriptName) {
-                        return this.$refs.scriptName.getSelectedOptionValidate() !== "-1";
+                        return this.$refs.scriptName.getSelectedOptionValidate() !== '-1';
                     }
                     return true;
                 },
             });
         }
 
-        // duration format: "00:00:00"
+        // duration format: '00:00:00'
         setDuration() {
             let durationTokens = this.test.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
@@ -483,16 +483,20 @@
 </script>
 
 <style lang="less">
-    #detail_config_section {
+    #advanced-config {
         .validation-message {
             margin-left: -85px;
             margin-top: 5px;
+        }
+
+        div.row {
+            width: 500px;
         }
     }
 </style>
 
 <style lang="less" scoped>
-    .config-container {
+    #config-container {
         .detail-config-btn-container {
             span {
                 margin-right: 10px;
