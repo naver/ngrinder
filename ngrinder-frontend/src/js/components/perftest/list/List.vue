@@ -75,7 +75,10 @@
                             <input type="checkbox" v-model="selectedTests" class="perf_test checkbox" :value="test.id" :disabled="!test.deletable">
                         </td>
                         <td class="center">
-                            <div class="ball" data-html="true" data-toggle="popover" :title="test.status"
+                            <div class="ball" data-html="true"
+                                 data-toggle="popover"
+                                 :id="`ball_${test.id}`"
+                                 :title="test.status"
                                  :data-content="`${test.progressMessage}<br><b>${test.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
                             <img class="status" :src="`/img/ball/${test.iconName}`">
                             </div>
@@ -148,7 +151,7 @@
 </template>
 
 <script>
-    import Component from 'vue-class-component';
+    import { Component, Watch } from 'vue-property-decorator';
     import vueHeadful from 'vue-headful';
     import Base from '../../Base.vue';
     import SearchBar from './Searchbar.vue';
@@ -169,14 +172,28 @@
         runningSummary = `0 ${this.i18n("perfTest.list.runningSummary")}`;
         totalElements = 0;
         tests = [];
+        testIds = [];
         selectAll = false;
         selectedTests = [];
         queryFilter = new Set();
         selectedTag = '';
 
+        updateStatusTimeoutId = 0;
+
         mounted() {
             this.getPerfTest();
-            this.updateStatuses();
+            this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
+        }
+
+        beforeDestroy() {
+            clearTimeout(this.updateStatusTimeoutId);
+        }
+
+        @Watch('tests')
+        watchTests() {
+            this.testIds = [];
+            this.tests.forEach(test => this.testIds.push(test.id));
+
         }
 
         changeSelectAll(event) {
@@ -271,6 +288,7 @@
                     }).then(res => {
                         if (res.data.success) {
                             this.getPerfTest();
+                            this.selectAll = false;
                             alert(this.i18n('perfTest.message.delete.success'));
                         }
                     }).catch(() => alert(this.i18n('perfTest.message.delete.error')));
@@ -301,6 +319,28 @@
         createPerftest() {
             this.$router.push('/perftest/new');
         }
+
+        updatePerftestStatus() {
+            this.$http.get('/perftest/api/status', {
+                params: {
+                    ids: this.testIds.join(','),
+                },
+            }).then(res => {
+                const status = res.data.status.reverse();
+                this.testIds.forEach((id, index) => {
+                    this.tests[index].iconName = status[index].icon;
+                    this.tests[index].reportable = status[index].reportable;
+                    this.tests[index].deletable = status[index].deletable;
+                    this.tests[index].stoppable = status[index].stoppable;
+                    this.tests[index].status = status[index].status_id;
+                    this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n("perfTest.list.runningSummary")}`;
+
+                    const $ball = $(`#ball_${this.tests[index].id}`);
+                    $ball.attr('data-original-title', status[index].name);
+                    $ball.data('popover').options.content = status[index].message;
+                });
+                this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
+            }).catch(error => console.error(error));
         }
     }
 </script>
