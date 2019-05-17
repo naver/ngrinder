@@ -16,6 +16,8 @@ import ScriptList from 'script/List.vue';
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
 
+import 'moment-duration-format';
+
 axios.interceptors.request.use(config => {
     if (typeof config.params === 'undefined') {
         config.params = {};

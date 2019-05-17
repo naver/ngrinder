@@ -107,5 +107,13 @@
         .validation-message {
             margin-left: 5px;
         }
+
+        &.fade div {
+            display: none;
+        }
+
+        &.in div {
+            display: block;
+        }
     }
 </style>

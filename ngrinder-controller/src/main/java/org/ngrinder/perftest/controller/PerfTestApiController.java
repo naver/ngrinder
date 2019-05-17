@@ -26,7 +26,9 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.*;
+import org.ngrinder.perftest.model.SamplingModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -53,7 +55,10 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.*;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -88,6 +93,9 @@ public class PerfTestApiController extends BaseController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private HazelcastService hazelcastService;
 
 	private Gson fileEntryGson;
 
@@ -142,7 +150,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@DeleteMapping
-	public String delete(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
+	public String delete(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -158,11 +166,54 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@PutMapping(params = "action=stop")
-	public String stop(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
+	public String stop(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));
 		}
 		return returnSuccess();
+	}
+
+	/**
+	 * Stop the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perf test id
+	 * @return json success message if succeeded
+	 */
+	@RestAPI
+	@PutMapping(value = "/{id}", params = "action=stop")
+	public String stop(User user, @PathVariable Long id) {
+		perfTestService.stop(user, id);
+		return returnSuccess();
+	}
+
+	/**
+	 * Get the status of the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perftest id
+	 * @return JSON message containing perf test status
+	 */
+	@RestAPI
+	@GetMapping("/{id}/status")
+	public HttpEntity<String> getStatus(User user, @PathVariable Long id) {
+		List<PerfTest> perfTests = perfTestService.getAll(user, new Long[]{id});
+		return toJsonHttpEntity(buildMap("status", getStatus(perfTests)));
+	}
+
+	/**
+	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
+	 *
+	 * @param user user
+	 * @param ids  comma separated perf test list
+	 * @return JSON message containing perf test status
+	 */
+	@RestAPI
+	@GetMapping("/status")
+	public HttpEntity<String> getStatuses(User user, @RequestParam(defaultValue = "") String ids) {
+		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
+		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
+			getStatus(perfTests)));
 	}
 
 	/**
@@ -193,7 +244,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping({"/{id}/perf", "/{id}/graph"})
-	public Map<String, Object> getPerfGraph(@PathVariable("id") long id,
+	public Map<String, Object> getPerfGraph(@PathVariable long id,
 											@RequestParam(defaultValue = "") String dataType,
 											@RequestParam(defaultValue = "false") boolean onlyTotal,
 											@RequestParam int imgWidth) {
@@ -271,6 +322,12 @@ public class PerfTestApiController extends BaseController {
 		return toJsonHttpEntity(model);
 	}
 
+	@RestAPI
+	@GetMapping("/{id}/logs")
+	public List<String> getLogs(@PathVariable long id) {
+		return perfTestService.getLogFiles(id);
+	}
+
 	/**
 	 * Create a new test or cloneTo a current test.
 	 *
@@ -305,8 +362,8 @@ public class PerfTestApiController extends BaseController {
 	 * @return perftest/detail
 	 */
 	@RestAPI
-	@GetMapping("/{id}")
-	public HttpEntity<String> getOne(User user, @PathVariable Long id) {
+	@GetMapping({"/{id}", "/create"})
+	public HttpEntity<String> getOne(User user, @PathVariable(required = false) Long id) {
 		Map<String, Object> model = new HashMap<>();
 		PerfTest test = null;
 		if (id != null) {
@@ -332,6 +389,35 @@ public class PerfTestApiController extends BaseController {
 	}
 
 	/**
+	 * Get the running perf test info having the given id.
+	 *
+	 * @param user user
+	 * @param id   test id
+	 * @return JSON message	containing test,agent and monitor status.
+	 */
+	@RequestMapping(value = "/{id}/sample")
+	@RestAPI
+	public HttpEntity<String> refreshTestRunning(User user, @PathVariable long id) {
+		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
+		Map<String, Object> map = newHashMap();
+
+		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, test.getId());
+		if (samplingModel != null) {
+			map.put("perf", fileEntryGson.fromJson(samplingModel.getRunningSample(), HashMap.class));
+			map.put("agent", fileEntryGson.fromJson(samplingModel.getAgentState(), HashMap.class));
+		}
+
+		String monitoringJson = hazelcastService.get(DIST_MAP_NAME_MONITORING, test.getId());
+		if (monitoringJson != null) {
+			map.put("monitor", fileEntryGson.fromJson(monitoringJson, HashMap.class));
+		}
+
+		map.put("status", test.getStatus());
+		return toJsonHttpEntity(map);
+	}
+
+
+	/**
 	 * Leave the comment on the perf test.
 	 *
 	 * @param id          testId
@@ -344,6 +430,16 @@ public class PerfTestApiController extends BaseController {
 	public String leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
 		perfTestService.addCommentOn(user, id, cast(params.get("testComment")), cast(params.get("tagString")));
 		return returnSuccess();
+	}
+
+	private Long[] convertString2Long(String ids) {
+		String[] numbers = StringUtils.split(ids, ",");
+		Long[] id = new Long[numbers.length];
+		int i = 0;
+		for (String each : numbers) {
+			id[i++] = NumberUtils.toLong(each, 0);
+		}
+		return id;
 	}
 
 	private PerfTest getOneWithPermissionCheck(User user, Long id, boolean withTag) {
@@ -442,6 +538,26 @@ public class PerfTestApiController extends BaseController {
 				test.setDateString("earlier");
 			}
 		}
+	}
+
+	private List<Map<String, Object>> getStatus(List<PerfTest> perfTests) {
+		List<Map<String, Object>> statuses = newArrayList();
+		for (PerfTest each : perfTests) {
+			Map<String, Object> result = newHashMap();
+			result.put("id", each.getId());
+			result.put("status_id", each.getStatus());
+			result.put("status_type", each.getStatus());
+			result.put("name", getMessages(each.getStatus().getSpringMessageKey()));
+			result.put("icon", each.getStatus().getIconName());
+			result.put("message",
+				StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage() + "</b>\n"
+					+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
+			result.put("deletable", each.getStatus().isDeletable());
+			result.put("stoppable", each.getStatus().isStoppable());
+			result.put("reportable", each.getStatus().isReportable());
+			statuses.add(result);
+		}
+		return statuses;
 	}
 
 	private void validate(User user, PerfTest oldOne, PerfTest newOne) {

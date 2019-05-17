@@ -22,6 +22,31 @@
             return typeof value !== 'undefined';
         }
 
+        getShortenString(str, start, end) {
+            if (typeof(start) === 'undefined') {
+                start = 0;
+            }
+            if (typeof(end) === 'undefined') {
+                end = 20;
+            }
+            if (str.length >= end) {
+                str = str.substr(start, end - 4);
+                str += '...';
+            }
+            return str;
+        }
+
+        formatNetwork(format, value) {
+            value = value || 0;
+            if (value < 1024) {
+                return `${value.toFixed(1)}B `;
+            } else if (value < 1048576) { //1024 * 1024
+                return `${(value / 1024).toFixed(1)}K `;
+            } else {
+                return `${(value / 1048576).toFixed(2)}M `;
+            }
+        }
+
         get isAdmin() {
             return this.currentUser.role === 'A';
         }
@@ -52,13 +77,6 @@
             outline: none;
         }
 
-        .popover {
-            width: auto;
-            min-width: 200px;
-            max-width: 600px;
-            max-height: 500px;
-        }
-
         .display-inline {
             display: inline;
         }
@@ -72,6 +90,10 @@
             min-width: 300px;
             max-width: 600px;
             max-height: 500px;
+
+            .popover-content {
+                line-height: 18px;
+            }
         }
 
         .no-padding {
@@ -106,7 +128,6 @@
                 }
             }
         }
-
         .span4-5 {
             width: 340px;
         }
@@ -117,6 +138,18 @@
 
         .span2-3 {
             width: 180px;
+        }
+    }
+
+    div{
+        &.datepicker {
+            z-index: 1200;
+        }
+    }
+
+    @media only screen and (max-height: 800px) {
+        body {
+            margin-bottom: 45px;
         }
     }
 </style>
