@@ -49,7 +49,6 @@ public class MonitorManagerController extends BaseController {
 	 * @return monitor/info
 	 */
 	@RequestMapping("/info")
-
 	public String getMonitor(ModelMap model, @RequestParam String ip) {
 		String[] addresses = StringUtils.split(ip, ":");
 		if (addresses.length > 0) {
@@ -57,25 +56,6 @@ public class MonitorManagerController extends BaseController {
 		}
 		model.put("targetIP", ip);
 		return "monitor/info";
-	}
-
-	/**
-	 * Get the target's monitored data by the given IP.
-	 *
-	 * @param ip target host IP
-	 * @return json message containing the target's monitoring data.
-	 */
-	@RequestMapping("/state")
-	@RestAPI
-	public HttpEntity<String> getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
-		Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
-			@Override
-			public SystemInfo call() {
-				return monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort());
-			}
-		});
-		SystemInfo systemInfo = checkNotNull(submit.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
-		return toJsonHttpEntity(new SystemDataModel(systemInfo, "UNKNOWN"));
 	}
 
 	/**
