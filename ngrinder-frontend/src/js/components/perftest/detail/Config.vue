@@ -65,7 +65,7 @@
 
                 <control-group labelMessageKey="perfTest.config.script" ref="scriptNameControlGroup">
                     <select2 v-model="test.scriptName" name="scriptName" ref="scriptName" customStyle="width: 275px;" :option="{placeholder: i18n('perfTest.config.scriptInput')}"
-                             :validationRules="{ scriptValidation: true }" @validationResult="$refs.scriptNameControlGroup.handleError($event)" errStyle="position: absolute;">
+                             :validationRules="{ required: true, scriptValidation: true }" @validationResult="$refs.scriptNameControlGroup.handleError($event)" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts" :data-validate="script.validated" v-text="script.pathInShort" :value="script.path"></option>
                     </select2>
