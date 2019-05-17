@@ -6,7 +6,7 @@
             <code id="current_running_status" v-text="runningSummary"></code>
         </div>
 
-        <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter"
+        <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter" @create="createPerftest"
                     @search="getPerfTest" @change-tag="getPerfTest" @delete-selected-tests="deleteTests(selectedTests.toString())"></search-bar>
 
         <table class="table table-striped table-bordered ellipsis" id="test_table">
@@ -298,8 +298,9 @@
             this.$refs.smallChart[index].toggleDisplay();
         }
 
-        updateStatuses() {
-            // TODO update list state every 2 seconds.
+        createPerftest() {
+            this.$router.push('/perftest/new');
+        }
         }
     }
 </script>
