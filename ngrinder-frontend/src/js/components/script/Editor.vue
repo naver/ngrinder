@@ -37,21 +37,26 @@
                              :data-content="i18n('perfTest.config.targetHost.help')"
                              data-html="true"
                              data-placement="bottom">
-                            <p class="host" v-for="host in targetHosts">
-                                <a href="#target_info_modal" data-toggle="modal"
-                                   @click="showHostInfo(host)"
-                                   v-text="host">
-                                </a>
-                                <a class="pointer-cursor">
-                                    <i class="icon-remove-circle" @click="removeHost(host)"></i>
-                                </a>
-                            </p>
+                            <template v-for="host in targetHosts">
+                                <p class="host">
+                                    <a href="#target_info_modal" data-toggle="modal"
+                                       @click="showHostInfo(host)"
+                                       v-text="host">
+                                    </a>
+                                    <a class="pointer-cursor">
+                                        <i class="icon-remove-circle" @click="removeHost(host)"></i>
+                                    </a>
+                                </p>
+                                <br>
+                            </template>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <textarea id="codemirror-content"></textarea>
+        <code-mirror ref="editor"
+                     :value="this.file.content"
+                     :options="cmOptions"></code-mirror>
         <div class="pull-right tip" id="tip" rel="popover" title="Tip" data-html="true" data-placement="left" :data-content="
             'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
             'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
@@ -86,21 +91,20 @@
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
-    import CodeMirror from '../../common/codemirror';
     import Messages from '../common/Messages.vue';
-
-    import { isFullScreen, setFullScreen } from '../../../plugins/codemirror/util/fullscreen'
+    import CodeMirror from '../common/CodeMirror.vue';
 
     Component.registerHooks(['beforeRouteLeave',]);
 
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, ControlGroup, Messages, },
+        components: { HostModal, ControlGroup, Messages, CodeMirror },
     })
     export default class Editor extends Base {
 
         file = {
             description: '',
+            content: '',
             validated: false,
         };
         breadcrumbPath = '';
@@ -112,7 +116,6 @@
         targetHostsChangeTracker = 1;
         targetHostSet = new Set();
 
-        editor = null;
         editorSize = 0;
 
         validated = false;
@@ -121,6 +124,8 @@
         validationResult = '';
 
         saved = false;
+
+        cmOptions = {};
 
         mounted() {
             this.initScriptDetail();
@@ -133,6 +138,8 @@
             const path = this.$route.path.replace('/script/detail/', '');
             this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
             .then(res => {
+                res.data.file.content.replace(/&para/g, '&amp;para');
+
                 Object.assign(this.file, res.data.file);
                 Object.assign(this.scriptHandler, res.data.scriptHandler);
 
@@ -146,42 +153,12 @@
         }
 
         initCodeMirror() {
-            const editor = CodeMirror.fromTextArea(document.getElementById("codemirror-content"), {
-                mode: this.scriptHandler.codemirrorKey,
-                theme: "eclipse",
-                lineNumbers: true,
-                lineWrapping: true,
-                indentUnit: 4,
-                tabSize: 4,
-                indentWithTabs: true,
-                smartIndent: false,
-                extraKeys: {
-                    "F11": function (cm) {
-                        setFullScreen(cm, !isFullScreen(cm));
-                    },
-                    "Esc": function (cm) {
-                        if (isFullScreen(cm)) setFullScreen(cm, false);
-                    },
-                    Tab: "indentMore"
-                },
-                onCursorActivity: function () {
-                    editor.setLineClass(hlLine, null, null);
-                    hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-                },
-            });
-            let hlLine = editor.setLineClass(0, "activeline");
-
-            this.editor = editor;
-            this.editor.setValue(this.file.content);
-            this.initEditorSize();
-        }
-
-        initEditorSize() {
-            this.editorSize = this.$refs.container.clientHeight - this.$refs.top.clientHeight - this.$refs.sampleLink.clientHeight;
+            this.cmOptions = { mode: this.scriptHandler.codemirrorKey };
+            this.editorSize = 500;
         }
 
         save() {
-            const newContent = this.editor.getValue();
+            const newContent = this.$refs.editor.getValue();
             if (this.file.content !== newContent) {
                 this.validated = false;
             }
@@ -204,7 +181,7 @@
             this.$http.post('/script/api/save', formDataOf(
                 'path', this.file.path,
                 'description', this.file.description ? this.file.description : '',
-                'content', this.editor.getValue(),
+                'content', this.$refs.editor.getValue(),
                 'validated', this.validated,
                 'createLibAndResource', this.createLibAndResource,
                 'targetHosts', this.targetHosts.join(',')
@@ -227,7 +204,7 @@
 
             const formData = formDataOf(
                 'path', this.file.path,
-                'content', this.editor.getValue(),
+                'content', this.$refs.editor.getValue(),
                 'hostString', this.targetHosts.join(',')
             );
             if (this.isAdminOrSuperUser && this.ownerId) {
@@ -271,7 +248,7 @@
             if (!newValue) {
                 return;
             }
-            this.editor.setSize(null, newValue);
+            this.$refs.editor.setSize(null, newValue);
         }
 
         expand() {
@@ -284,11 +261,7 @@
         }
 
         changed() {
-            if (!this.editor || !this.file) {
-                return false;
-            }
-
-            return this.editor.getValue() !== this.file.content;
+            return this.$refs.editor.getValue() !== this.file.content;
         }
 
         beforeRouteLeave(to, from, next) {
@@ -426,10 +399,4 @@
         width: 164px;
         height: 30px;
     }
-</style>
-
-<style>
-    @import "../../../plugins/codemirror/codemirror.css";
-    @import "../../../plugins/codemirror/eclipse.css";
-    @import "../../../plugins/codemirror/util/dialog.css";
 </style>
