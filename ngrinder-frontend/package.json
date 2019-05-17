@@ -55,7 +55,8 @@
     "i18next": "^15.0.5",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-localstorage-cache": "^1.1.1",
-    "jquery-i18next": "^1.2.1"
+    "jquery-i18next": "^1.2.1",
+    "vue-codemirror": "^4.0.6"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
