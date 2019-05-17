@@ -59,10 +59,6 @@
                 this.userTags = res.data;
             }).catch(error => console.error(error));
         }
-
-        createTest() {
-            // TODO Require perftest detail page
-        }
     }
 </script>
 <style lang="less" scoped>
