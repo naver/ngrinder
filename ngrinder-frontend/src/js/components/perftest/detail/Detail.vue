@@ -26,13 +26,12 @@
                                         </control-group>
                                     </div>
                                     <div class="span1 status-image-container">
-                                        <img id="test_status_img" class="ball"
-                                             :src="`/img/ball/${test.iconName}`"
-                                             data-toggle="popover"
+                                        <img id="test-status-img" class="ball"
                                              data-html="true"
-                                             :data-content="`${test.progressMessage}<br><b>${test.lastProgressMessage}</b>`.replace(/\n/g, '<br>')"
+                                             data-toggle="popover"
+                                             data-placement="bottom"
                                              :title="i18n(test.springMessageKey)"
-                                             data-placement="bottom"/>
+                                             :src="perftestStatus.iconPath"/>
                                     </div>
                                     <div class="span2-3 start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
                                         <div class="control-group">
@@ -118,10 +117,20 @@
             lastProgressMessage: '',
             springMessageKey: '',
         };
+
+        perftestStatus = {
+            message: '',
+            iconPath: '',
+        };
+
         selectedTag = '';
         dataLoadFinished = false;
         scheduledTime = 0;
         timezoneOffset = 0;
+
+        currentRefreshStatusTimeoutId = 0;
+
+        $testStatusImage = null;
 
         tab = {
             display: {
@@ -146,34 +155,77 @@
                 Object.assign(this.test, res.data.test);
                 this.timezoneOffset = res.data.timezone_offset;
                 this.selectedTag = this.test.tagString;
+                this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
                 this.dataLoadFinished = true;
                 this.updateTabDisplay();
                 this.$nextTick(() => {
-                    $(this.$refs.configTab).on('shown.bs.tab', () => {
-                        this.$EventBus.$emit(this.$Event.UPDATE_RAMPUP_CHART);
-                    });
-
-                    if (this.tab.display.report) {
-                        this.$refs.reportTab.click();
-                        return;
+                    if (this.test.category === 'TESTING') {
+                        this.$refs.running.startSamplingInterval();
                     }
-                    this.$refs.configTab.click();
+                    this.$testStatusImage = $('#test-status-img');
+                    this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
+                    this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
                 });
+            }).catch((error) => console.err(error));
+        }
+
+        beforeDestroy() {
+            window.clearTimeout(this.currentRefreshStatusTimeoutId);
+            window.clearInterval(this.$refs.running.samplingIntervalId);
+        }
+        refreshPerftestStatus() {
+            if (!this.test.id || !this.isUpdatableStatus()) {
+                return;
+            }
+
+            this.$http.get(`/perftest/api/${this.test.id}/status`).then(res => {
+                const status = res.data.status[0];
+
+                if (this.test.status !== status.status_id) {
+                    this.test.status = status.status_id;
+                    this.updateStatus(status.status_id, status.status_type, status.name, status.icon, status.deletable, status.stoppable, status.message);
+                }
+                if (this.test.category !== status.status_type) {
+                    this.test.category = status.status_type;
+                    this.updateTabDisplay();
+                }
+                this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
             }).catch((error) => console.log(error));
+        }
+
+        updateStatus(id, statusType, name, icon, deletable, stoppable, message) {
+            if (!this.isUpdatableStatus()) {
+                window.clearInterval(this.$refs.running.samplingIntervalId);
+            }
+
+            this.$testStatusImage.attr('data-original-title', name);
+            this.$testStatusImage.attr('data-content', message);
+
+            if (this.perftestStatus.iconPath !== `/img/ball/${icon}`) {
+                this.perftestStatus.iconPath = `/img/ball/${icon}`;
+            }
         }
 
         updateTabDisplay() {
             this.tab.display.config = true;
-            if (this.test.category === "TESTING") {
+            if (this.test.category === 'TESTING') {
                 this.tab.display.running = true;
                 this.tab.display.report = false;
+                this.$nextTick(() => this.$refs.runningTab.click());
                 return;
             }
 
-            if (this.test.category === "FINISHED" || this.test.category === "STOP" || this.test.category === "ERROR") {
+            if (!this.isUpdatableStatus()) {
                 this.tab.display.report = true;
                 this.tab.display.running = false;
+                this.$nextTick(() => this.$refs.reportTab.click());
+                return;
             }
+            this.$nextTick(() => this.$refs.configTab.click());
+        }
+
+        isUpdatableStatus() {
+            return !(this.test.category === 'FINISHED' || this.test.category === 'STOP' || this.test.category === 'ERROR' || this.test.category === 'CANCELED');
         }
 
         initSelection(element, callback) {
