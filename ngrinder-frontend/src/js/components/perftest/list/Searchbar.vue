@@ -22,11 +22,11 @@
         </div>
 
         <div class="right-float">
-            <a class="btn btn-primary" v-on:click="createTest" id="create_btn" data-position="left" data-step="1"
+            <a class="btn btn-primary" @click="$emit('create')" data-position="left" data-step="1"
                :data-intro="i18n('intro.list.create')" v-text="i18n('perfTest.action.createTest')">
                 <i class="glyphicon glyphicon-file icon-white"></i>
             </a>
-            <a @click="$emit('delete-selected-tests')" class="pointer-cursor btn btn-danger" id="delete_btn" data-position="top"
+            <a @click="$emit('delete-selected-tests')" class="pointer-cursor btn btn-danger" data-position="top"
                data-step="2" :data-intro="i18n('intro.list.delete')" v-text="i18n('perfTest.action.deleteSelectedTest')">
                 <i class="glyphicon glyphicon-remove icon-white"></i>
             </a>
