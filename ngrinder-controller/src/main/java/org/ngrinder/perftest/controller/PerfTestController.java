@@ -13,8 +13,6 @@
  */
 package org.ngrinder.perftest.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.grinder.util.LogCompressUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -28,18 +26,14 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.*;
-import org.ngrinder.perftest.model.SamplingModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -51,7 +45,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -60,8 +53,6 @@ import java.net.URL;
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
-import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -94,25 +85,6 @@ public class PerfTestController extends BaseController {
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private RegionService regionService;
-
-	@Autowired
-	private HazelcastService hazelcastService;
-
-	private Gson gson;
-
-	/**
-	 * Initialize.
-	 */
-	@PostConstruct
-	public void init() {
-		gson = new GsonBuilder().registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer()).create();
-	}
 
 	/**
 	 * Get the perf test lists.
@@ -279,16 +251,6 @@ public class PerfTestController extends BaseController {
 				"vuserPerAgent should be equal to (processes * threads)");
 	}
 
-	private Long[] convertString2Long(String ids) {
-		String[] numbers = StringUtils.split(ids, ",");
-		Long[] id = new Long[numbers.length];
-		int i = 0;
-		for (String each : numbers) {
-			id[i++] = NumberUtils.toLong(each, 0);
-		}
-		return id;
-	}
-
 	private List<Map<String, Object>> getStatus(List<PerfTest> perfTests) {
 		List<Map<String, Object>> statuses = newArrayList();
 		for (PerfTest each : perfTests) {
@@ -390,34 +352,6 @@ public class PerfTestController extends BaseController {
 	}
 
 	/**
-	 * Get the running perf test info having the given id.
-	 *
-	 * @param user user
-	 * @param id   test id
-	 * @return JSON message	containing test,agent and monitor status.
-	 */
-	@RequestMapping(value = "/{id}/api/sample")
-	@RestAPI
-	public HttpEntity<String> refreshTestRunning(User user, @PathVariable("id") long id) {
-		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
-		Map<String, Object> map = newHashMap();
-
-		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, test.getId());
-		if (samplingModel != null) {
-			map.put("perf", gson.fromJson(samplingModel.getRunningSample(), HashMap.class));
-			map.put("agent", gson.fromJson(samplingModel.getAgentState(), HashMap.class));
-		}
-
-		String monitoringJson = hazelcastService.get(DIST_MAP_NAME_MONITORING, test.getId());
-		if (monitoringJson != null) {
-			map.put("monitor", gson.fromJson(monitoringJson, HashMap.class));
-		}
-
-		map.put("status", test.getStatus());
-		return toJsonHttpEntity(map);
-	}
-
-	/**
 	 * Get the detailed perf test report.
 	 *
 	 * @param model model
@@ -496,36 +430,6 @@ public class PerfTestController extends BaseController {
 		PerfTest perfTest = perfTestService.getOne(id);
 		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest.getSamplingInterval() : 1)));
 		return sysMonitorMap;
-	}
-
-
-	/**
-	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
-	 *
-	 * @param user user
-	 * @param ids  comma separated perf test list
-	 * @return JSON message containing perf test status
-	 */
-	@RestAPI
-	@RequestMapping("/api/status")
-	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
-		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
-				getStatus(perfTests)));
-	}
-
-	/**
-	 * Get the status of the given perf test.
-	 *
-	 * @param user user
-	 * @param id   perftest id
-	 * @return JSON message containing perf test status
-	 */
-	@RestAPI
-	@RequestMapping("/api/{id}/status")
-	public HttpEntity<String> getStatus(User user, @PathVariable("id") Long id) {
-		List<PerfTest> perfTests = perfTestService.getAll(user, new Long[]{id});
-		return toJsonHttpEntity(buildMap("status", getStatus(perfTests)));
 	}
 
 	/**
@@ -674,21 +578,6 @@ public class PerfTestController extends BaseController {
 		validate(user, existingPerfTest, perfTest);
 		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
-
-	/**
-	 * Stop the given perf test.
-	 *
-	 * @param user user
-	 * @param id   perf test id
-	 * @return json success message if succeeded
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api/{id}", params = "action=stop", method = RequestMethod.PUT)
-	public HttpEntity<String> stop(User user, @PathVariable("id") Long id) {
-		perfTestService.stop(user, id);
-		return successJsonHttpEntity();
-	}
-
 
 	/**
 	 * Update the given perf test's status.

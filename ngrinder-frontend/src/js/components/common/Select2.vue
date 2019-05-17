@@ -50,9 +50,9 @@
             $(this.$refs.select2)
                 .select2(this.option, [])
                 .change(function () {
-                    component.checkValidation();
                     component.$emit('input', this.value);
                     component.$emit('change');
+                    component.$nextTick(() => component.checkValidation());
                 });
         }
 
