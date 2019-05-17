@@ -1,7 +1,7 @@
 <template>
     <div v-if="dataLoadFinished" class="perftest-detail-container">
         <div class="container">
-            <form id="test_config_form" name="test_config_form" action="/perftest/new" ref="configForm">
+            <form ref="configForm">
                 <div class="well">
                     <input type="hidden" name="id" :value="test.id">
                     <div class="form-horizontal info">
@@ -82,11 +82,12 @@
                         </div>
                     </div>
                     <input v-if="scheduledTime" type="hidden" name="scheduledTime" :value="scheduledTime">
-                    <input type="hidden" name="status" value="SAVED">
+                    <input type="hidden" name="status" :value="test.status">
                 </div>
             </form>
             <intro-button></intro-button>
         </div>
+        <schedule-modal ref="scheduleModal" :id="'schedule-modal'" @runNow="runNow" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
 </template>
 <script>
@@ -98,16 +99,29 @@
     import ControlGroup from '../../common/ControlGroup.vue';
     import IntroButton from '../../common/IntroButton.vue';
     import Select2 from '../../common/Select2.vue';
+    import ScheduleModal from '../modal/ScheduleModal.vue';
 
     @Component({
         name: 'perfTestDetail',
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2 },
+        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
     })
     export default class PerfTestDetail extends Base {
-        test = {};
+        data = {};
+        test = {
+            id: '',
+            status: '',
+            iconName: '',
+            testName: '',
+            progressMessage: '',
+            description: '',
+            createdUserId: '',
+            lastProgressMessage: '',
+            springMessageKey: '',
+        };
         selectedTag = '';
         dataLoadFinished = false;
         scheduledTime = 0;
+        timezoneOffset = 0;
 
         tab = {
             display: {
@@ -169,7 +183,7 @@
                     data.push({id: tag, text: tag});
                 }
             });
-            element.val("");
+            element.val('');
             callback(data);
         }
 
@@ -189,26 +203,64 @@
         }
 
         clonePerftest() {
-            this.$refs.configTab.click();
+            this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
+            let agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
+            agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
-            let validationPromise = [];
-            this.$refs.config.validationGroup.forEach(validation => validationPromise.push(validation.getCheckValidationPromise()));
-
-            Promise.all(validationPromise).then(() => {
-                if (!this.$refs.config.hasValidationError()) {
-                    this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
-                        if (res.data === 'list') {
-                            this.$router.push('/perftest');
-                        } else {
-                            this.$router.push(`/perftest/${res.data}`);
-                        }
-                    }).catch((error) => console.log(error));
+            Promise.all(this.getValidationPromise()).then(() => {
+                if (!this.$refs.config.hasValidationError() && !this.errors.any()) {
+                    this.test.status = 'SAVED';
+                    this.$nextTick(() => {
+                        this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
+                            if (res.data === 'list') {
+                                this.$router.push('/perftest');
+                            } else {
+                                this.$router.push(`/perftest/${res.data}`);
+                            }
+                        }).catch((error) => console.log(error));
+                    });
+                } else {
+                    this.$refs.configTab.click();
                 }
             });
         }
 
         saveAndStart() {
-            // TODO
+            this.$set(this.$refs.config.agentCountValidationRules, 'min_value', 1);
+            let agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
+            agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
+
+            Promise.all(this.getValidationPromise()).then(() => {
+                if (!this.$refs.config.hasValidationError() && !this.errors.any()) {
+                    this.$refs.scheduleModal.show();
+                } else {
+                    this.$refs.configTab.click();
+                }
+            });
+        }
+
+        getValidationPromise() {
+            let validationPromise = [new Promise(resolve => { this.$validator.validate('testName').then(result => {
+                this.$refs.testNameControlGroup.hasError = !result;
+                resolve();
+            }).catch(() => {
+                this.$refs.testNameControlGroup.hasError = false;
+                resolve();
+            })})];
+            this.$refs.config.validationGroup.forEach(validation => validationPromise.push(validation.getCheckValidationPromise()));
+            return validationPromise;
+        }
+
+        runNow() {
+            this.$refs.scheduleModal.hide();
+            this.test.status = 'READY';
+            this.scheduledTime = null;
+
+            this.$nextTick(() => {
+                this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize())
+                    .then(res => this.$router.push(`/perftest/${res.data}`))
+                    .catch((error) => console.log(error));
+            });
         }
 
         get saveScheduleBtnTitle() {

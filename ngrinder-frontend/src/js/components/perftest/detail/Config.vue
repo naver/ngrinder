@@ -11,7 +11,7 @@
                             <input-append name="agentCount" ref="agentCount"
                                           v-model="test.agentCount"
                                           @validationResult="$refs.agentCountControlGroup.handleError($event)"
-                                          :validationRules="{ required: true, agentCountValidation: true }"
+                                          :validationRules="agentCountValidationRules"
                                           errStyle="position: absolute; margin: 0;"
                                           appendPrefix="perfTest.config.max"
                                           :append="maxAgentCount"
@@ -272,6 +272,7 @@
             sec: 0,
         };
 
+        agentCountValidationRules = { required: true, agentCountValidation: true,};
         validationGroup = [];
 
         created() {
