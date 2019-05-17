@@ -72,10 +72,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="test-config-section">
-                            <config ref="config"></config>
+                            <config ref="config" :data="data"></config>
                         </div>
                         <div class="tab-pane" id="running-section">
-                            <running></running>
+                            <running ref="running" :test="test"></running>
                         </div>
                         <div class="tab-pane" id="report-section">
                             <report></report>
@@ -126,11 +126,14 @@
         }
 
         created() {
-            this.$http.get(`/perftest/api/${this.$route.params.id}`).then(res => {
-                this.test = res.data.test;
+            const apiPath = this.$route.params.id ? `/perftest/api/${this.$route.params.id}` : '/perftest/api/create';
+            this.$http.get(apiPath).then(res => {
+                Object.assign(this.data, res.data);
+                Object.assign(this.test, res.data.test);
+                this.timezoneOffset = res.data.timezone_offset;
                 this.selectedTag = this.test.tagString;
-                this.updateTabDisplay();
                 this.dataLoadFinished = true;
+                this.updateTabDisplay();
                 this.$nextTick(() => {
                     $(this.$refs.configTab).on('shown.bs.tab', () => {
                         this.$EventBus.$emit(this.$Event.UPDATE_RAMPUP_CHART);

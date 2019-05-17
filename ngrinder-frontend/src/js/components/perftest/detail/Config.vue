@@ -211,6 +211,12 @@
     @Component({
         name: 'config',
         components: { ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
+        props: {
+            data: {
+                type: Object,
+                required: true,
+            },
+        },
     })
     export default class Config extends Base {
         MAX_PROCESS_COUNT_PER_AGENT = 10;
@@ -218,6 +224,7 @@
         TEST_THRESHOLD_RUNCOUNT = 'R';
 
         test = {
+            testName: '',
             agentCount: 0,
             rampUpInitCount: 0,
             rampUpStep: 0,
@@ -268,29 +275,25 @@
         validationGroup = [];
 
         created() {
-            Promise.all([
-                this.$http.get(`/perftest/api/${this.$route.params.id}`),
-                this.$http.get('/perftest/api/script'),
-            ]).then(res => {
-                this.test = res[0].data.test;
-                this.regionAgentCountMap = res[0].data.regionAgentCountMap;
-                this.rampUpTypes = res[0].data.availRampUpType;
-                this.testConfig.maxRunCount = res[0].data.maxRunCount;
-                this.testConfig.maxRunHour = res[0].data.maxRunHour;
-                this.testConfig.maxVuserPerAgent = res[0].data.maxVuserPerAgent;
+            this.test = this.data.test;
+            this.regionAgentCountMap = this.data.regionAgentCountMap;
+            this.rampUpTypes = this.data.availRampUpType;
+            this.testConfig.maxRunCount = this.data.maxRunCount;
+            this.testConfig.maxRunHour = this.data.maxRunHour;
+            this.testConfig.maxVuserPerAgent = this.data.maxVuserPerAgent;
 
+            this.$http.get('/perftest/api/script').then(res => {
                 if (this.config.clustered) {
                     // TODO
                 } else {
                     this.changeMaxAgentCount("NONE");
                 }
-
-                this.setScripts(res[1].data, this.test.scriptName);
+                this.setScripts(res.data, this.test.scriptName);
                 this.setDuration();
                 this.setTargetHost(this.test.targetHosts);
                 this.getScriptResource();
                 this.finishDataLoad();
-            });
+            }).catch(error => console.error(error));
         }
 
         mounted() {
