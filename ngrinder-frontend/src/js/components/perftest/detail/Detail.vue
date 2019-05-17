@@ -63,7 +63,7 @@
                             <a v-show="tab.display.config" href="#test-config-section" data-toggle="tab" ref="configTab" v-text="i18n('perfTest.config.testConfiguration')"></a>
                         </li>
                         <li>
-                            <a v-show="tab.display.running" href="#running-section" data-toggle="tab" v-text="i18n('perfTest.running.title')"></a>
+                            <a v-show="tab.display.running" href="#running-section" data-toggle="tab" ref="runningTab" v-text="i18n('perfTest.running.title')"></a>
                         </li>
                         <li>
                             <a v-show="tab.display.report" href="#report-section" data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
@@ -77,7 +77,7 @@
                             <running ref="running" :test="test"></running>
                         </div>
                         <div class="tab-pane" id="report-section">
-                            <report></report>
+                            <report ref="report"></report>
                         </div>
                     </div>
                     <input v-if="scheduledTime" type="hidden" name="scheduledTime" :value="scheduledTime">
@@ -165,6 +165,7 @@
                     this.$testStatusImage = $('#test-status-img');
                     this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
                     this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
+                    this.setTabEvent();
                 });
             }).catch((error) => console.err(error));
         }
@@ -173,6 +174,23 @@
             window.clearTimeout(this.currentRefreshStatusTimeoutId);
             window.clearInterval(this.$refs.running.samplingIntervalId);
         }
+
+        setTabEvent() {
+            $(this.$refs.configTab).on('shown.bs.tab', () => {
+                this.$refs.config.$refs.rampUp.updateRampUpChart();
+                this.$refs.config.$refs.durationSlider.refresh();
+            });
+
+            $(this.$refs.runningTab).on('shown.bs.tab', () => {
+                this.$refs.running.tpsChart.plot();
+                if (this.$refs.running.samplingIntervalId === -1) {
+                    this.$refs.running.startSamplingInterval();
+                }
+            });
+
+            $(this.$refs.reportTab).on('shown.bs.tab', () => this.$refs.report.fetchReportData());
+        }
+
         refreshPerftestStatus() {
             if (!this.test.id || !this.isUpdatableStatus()) {
                 return;

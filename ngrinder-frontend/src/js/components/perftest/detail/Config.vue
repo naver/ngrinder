@@ -117,7 +117,7 @@
                     <code>HH:MM:SS</code>
                     <input type="hidden" id="duration" name="duration" :value="durationSeconds * 1000"/>
                     <input type="hidden" id="duration_hour" name="durationHour" value="0"/>
-                    <vue-slider @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
+                    <vue-slider ref="durationSlider" @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
                 </control-group>
 
                 <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
