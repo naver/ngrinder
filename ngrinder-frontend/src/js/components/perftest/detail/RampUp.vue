@@ -88,12 +88,7 @@
         enableRampUp = false;
 
         mounted() {
-            this.$EventBus.$on(this.$Event.UPDATE_RAMPUP_CHART, this.updateRampUpChart);
             this.$watchAll(['test.rampUpStep', 'test.rampUpInitCount', 'test.rampUpInitSleepTime', 'test.rampUpIncrementInterval'], this.updateRampUpChart);
-        }
-
-        destroyed() {
-            this.initEventBus();
         }
 
         @Watch('enableRampUp')
@@ -200,7 +195,7 @@
             if (parseInt(intervalTime / 1000) === (intervalTime / 1000)) {
                 pointCutter = 0;
             }
-            this.plotObj = $.jqplot("ramp-up-chart", [data], {
+            this.plotObj = $.jqplot('ramp-up-chart', [data], {
                 axesDefaults: {
                     tickRenderer: $.jqplot.AxisTickRenderer,
                     tickOptions: {
