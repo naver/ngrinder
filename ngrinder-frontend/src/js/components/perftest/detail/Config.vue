@@ -94,7 +94,7 @@
                          :data-content="i18n('perfTest.config.targetHost.help')">
                         <span v-for="host in targetHosts">
                             <p class="host">
-                                <a href="#target_info_modal" data-toggle="modal" v-text="host"></a>
+                                <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
                                 <a class="pointer-cursor"><i class="icon-remove-circle" @click="removeHost(host)"></i></a>
                             </p>
                             <br style="line-height: 0">
@@ -192,6 +192,7 @@
         </div>
         <ramp-up ref="rampUp" :test="test" :rampUpTypes="rampUpTypes"></ramp-up>
         <host-modal :id="'add-host-modal'" @add-host="addHost"></host-modal>
+        <target-host-info-modal ref="targetHostInfoModal" :id="'target-info-modal'" :ip="targetHostIp"></target-host-info-modal>
     </div>
 </template>
 
@@ -205,18 +206,19 @@
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
     import VueSlider from 'vue-slider-component';
+    import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
     import { Component, Watch } from 'vue-property-decorator';
     import { Validator } from 'vee-validate';
 
     @Component({
         name: 'config',
-        components: { ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
         props: {
             data: {
                 type: Object,
                 required: true,
             },
         },
+        components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
     })
     export default class Config extends Base {
         MAX_PROCESS_COUNT_PER_AGENT = 10;
@@ -255,6 +257,7 @@
 
         // to use Set object reactively in vue
         targetHostsChangeTracker = 1;
+        targetHostIp = '';
         targetHost = new Set();
 
         maxAgentCount = 0;
@@ -308,12 +311,18 @@
 
         setScripts(scripts, selectedScript) {
             if (!scripts.some(script => script.pathInShort === selectedScript)) {
-                scripts.push({pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1});
+                if (selectedScript) {
+                    scripts.push({pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1});
+                }
             }
             this.scripts = scripts;
         }
 
         getScriptResource() {
+            if (!this.test.scriptName) {
+                return;
+            }
+
             this.$http.get('/perftest/api/resource', {
                 params: {
                     scriptPath: this.test.scriptName,
@@ -448,6 +457,9 @@
         }
 
         setTargetHost(targetHost) {
+            if (!targetHost) {
+                return;
+            }
             targetHost.split(',').forEach(host => this.targetHost.add(host));
             this.targetHostsChangeTracker += 1;
         }
@@ -455,6 +467,12 @@
         removeHost(host) {
             this.targetHost.delete(host);
             this.targetHostsChangeTracker += 1;
+        }
+
+        showTargetHostInfoModal(host) {
+            const hostToken = host.split(':');
+            this.targetHostIp = hostToken[1] ? hostToken[1] : hostToken[0];
+            this.$refs.targetHostInfoModal.show();
         }
 
         getAdjustedProcessCount(vuser) {
