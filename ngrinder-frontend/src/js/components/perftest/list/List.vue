@@ -296,14 +296,10 @@
             });
         }
 
-        stopTest(ids) {
+        stopTest(id) {
             bootbox.confirm(this.i18n('perfTest.message.stop.confirm'), this.i18n('common.button.cancel'), this.i18n('common.button.ok'), result => {
                 if (result) {
-                    this.$http.put('/perftest/api?action=stop', {
-                        params: {
-                            ids: ids,
-                        },
-                    }).then(res => {
+                    this.$http.put(`/perftest/api/${id}?action=stop`).then(res => {
                         if (res.data.success) {
                             alert(this.i18n('perfTest.message.stop.success'));
                         }
