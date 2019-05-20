@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.operation.cotroller;
 
@@ -17,6 +17,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -32,9 +33,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -91,16 +93,23 @@ public class ScriptConsoleController extends BaseController implements Applicati
 	@Autowired
 	private CacheManager cacheManager;
 
+	@GetMapping({"", "/"})
+	public String scriptConsole() {
+		return "app";
+	}
 
 	/**
 	 * Run the given script. The run result is stored in "result" of the given model.
 	 *
 	 * @param script script
-	 * @param model  model
-	 * @return operation/script_console
+	 * @return script run result
 	 */
-	@RequestMapping("")
-	public String run(@RequestParam(value = "script", defaultValue = "") String script, Model model) {
+	@GetMapping({"/api/run", "/api/run/"})
+	@RestAPI
+	@ResponseBody
+	public String run(@RequestParam(defaultValue = "") String script) {
+		String result = null;
+
 		if (StringUtils.isNotBlank(script)) {
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("Groovy");
 			engine.put("applicationContext", this.applicationContext);
@@ -121,15 +130,13 @@ public class ScriptConsoleController extends BaseController implements Applicati
 			engine.getContext().setWriter(writer);
 			engine.getContext().setErrorWriter(writer);
 			try {
-				Object result = engine.eval(script);
-				result = out.toString() + "\n" + ObjectUtils.defaultIfNull(result, "");
-				model.addAttribute("result", result);
+				Object evalResult = engine.eval(script);
+				result = out.toString() + "\n" + ObjectUtils.defaultIfNull(evalResult, "");
 			} catch (ScriptException e) {
-				model.addAttribute("result", out.toString() + "\n" + e.getMessage());
+				result = out.toString() + "\n" + e.getMessage();
 			}
 		}
-		model.addAttribute("script", script);
-		return "operation/script_console";
+		return result;
 	}
 
 
