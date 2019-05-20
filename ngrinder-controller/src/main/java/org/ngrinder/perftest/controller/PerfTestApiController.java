@@ -546,7 +546,7 @@ public class PerfTestApiController extends BaseController {
 			Map<String, Object> result = newHashMap();
 			result.put("id", each.getId());
 			result.put("status_id", each.getStatus());
-			result.put("status_type", each.getStatus());
+			result.put("status_type", each.getStatus().getCategory());
 			result.put("name", getMessages(each.getStatus().getSpringMessageKey()));
 			result.put("icon", each.getStatus().getIconName());
 			result.put("message",

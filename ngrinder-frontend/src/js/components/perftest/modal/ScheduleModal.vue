@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="form-horizontal">
                         <fieldset>
-                            <div class="control-group">
+                            <div class="control-group" :class="{'error': !validation}">
                                 <label class="control-label" v-text="i18n('perfTest.running.schedule')"></label>
                                 <div class="controls form-inline">
                                     <input type="text" class="input span2" ref="scheduledDate" :value="schedule.date">&nbsp;
@@ -20,7 +20,7 @@
                                         <option v-for="(val, min) in 60" :value="min" v-text="min < 10 ? `0${min}` : min"></option>
                                     </select>
                                     <code>HH:MM</code>
-                                    <div class="help-inline"></div>
+                                    <div v-show="!validation" class="help-inline" v-text="i18n('perfTest.message.scheduleDate.error')"></div>
                                 </div>
                             </div>
                         </fieldset>
@@ -56,6 +56,8 @@
             minute: 0,
         };
 
+        validation = true;
+
         mounted() {
             this.initScheduleDate();
         }
@@ -68,7 +70,7 @@
 
             this.schedule.hour = date.getHours();
             this.schedule.minute = date.getMinutes();
-            this.schedule.date = `${year}-${(month < 10 ? '0' + month : month)}-${(day < 10 ? '0' + day : day)}`;
+            this.schedule.date = `${year}-${(month < 10 ? `0${month}` : month)}-${(day < 10 ? `0${day}` : day)}`;
 
             $(this.$refs.scheduledDate).val(this.schedule.date);
             $(this.$refs.scheduledDate).datepicker({
@@ -88,7 +90,13 @@
         }
 
         runSchedule() {
-            // TODO
+            let scheduledTime = new Date(`${this.schedule.date} ${this.schedule.hour}:${this.schedule.minute}:0`.replace(/-/g, '/'));
+            scheduledTime = this.getBrowserTimeApplyingTimezone(scheduledTime.getTime());
+            this.validation = new Date() <= scheduledTime;
+            if (!this.validation) {
+                return;
+            }
+            this.$emit('runSchedule', scheduledTime);
         }
     }
 </script>
