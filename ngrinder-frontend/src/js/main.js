@@ -16,6 +16,7 @@ import PerfTestDetailReport from 'perftest/report/DetailReport.vue';
 import ScriptList from 'script/List.vue';
 import ScriptEditor from 'script/Editor.vue';
 import ScriptConsole from 'operation/ScriptConsole.vue';
+import SystemConfig from 'operation/SystemConfig.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -80,6 +81,7 @@ const routes = [
     {path: '/script/new', component: ScriptEditor, name: 'scriptEditor', props: true},
     {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditorDetail'},
     {path: '/operation/script_console', component: ScriptConsole, name: 'scriptConsole'},
+    {path: '/operation/system_config', component: SystemConfig, name: 'systemConfig'},
 ];
 
 const router = new VueRouter({

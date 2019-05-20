@@ -70,6 +70,10 @@
             }, 3000);
         }
 
+        showSuccessMsg(msg) {
+            this.showMsg("alert-success", msg);
+        }
+
         showErrorMsg(msg) {
             this.showErrMsgDiv = false;
             this.errMessage = msg;
