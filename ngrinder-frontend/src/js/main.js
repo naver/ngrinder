@@ -15,6 +15,7 @@ import PerfTestDetail from 'perftest/detail/Detail.vue';
 import PerfTestDetailReport from 'perftest/report/DetailReport.vue';
 import ScriptList from 'script/List.vue';
 import ScriptEditor from 'script/Editor.vue';
+import ScriptConsole from 'operation/ScriptConsole.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -78,6 +79,7 @@ const routes = [
     {path: '/script/search', component: ScriptList, name: 'scriptSearch'},
     {path: '/script/new', component: ScriptEditor, name: 'scriptEditor', props: true},
     {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditorDetail'},
+    {path: '/operation/script_console', component: ScriptConsole, name: 'scriptConsole'},
 ];
 
 const router = new VueRouter({
