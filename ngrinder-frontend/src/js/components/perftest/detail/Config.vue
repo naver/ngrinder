@@ -22,7 +22,7 @@
 
                     <div v-if="config.clustered" class="span2">
                         <control-group labelMessageKey="perfTest.config.region">
-                            <select id="region" name="region" class="pull-right required" style="width: 110px">
+                            <select id="region" name="region" class="pull-right required">
                                 <option value=""></option>
                                 <option v-for="region in regions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select>
@@ -43,14 +43,13 @@
                     </input-append>
                     <i class="pointer-cursor expand" @click="display.vuserPanel = !display.vuserPanel"></i>
                     <div class="pull-right">
-                        <span class="badge badge-info pull-right"
-                              style="padding: 7px 20px 7px 20px; -webkit-border-radius: 20px; border-radius: 20px; -moz-border-radius: 20px">
-                            <span id="vuser_label" v-text="i18n('perfTest.config.availVuser')"></span>
-                            <span id="total_vuser" v-text="totalVuser"></span>
+                        <span class="badge badge-info pull-right">
+                            <span v-text="i18n('perfTest.config.availVuser')"></span>
+                            <span v-text="totalVuser"></span>
                         </span>
                     </div>
                     <transition name="fade">
-                        <div v-show="display.vuserPanel" style="margin-top: 5px">
+                        <div v-show="display.vuserPanel" id="vuser-panel">
                             <input-prepend name="processes" v-model="test.processes"
                                            @change="changeProcessThreadCount"
                                            message="perfTest.config.process" extraCss="control-group">
@@ -132,7 +131,7 @@
                     </input-append>
                 </control-group>
 
-                <div class="row accordion-heading detail-config-btn-container" style="margin-top: -20px">
+                <div class="row accordion-heading detail-config-btn-container">
                     <span class="pull-right">
                         <a @click.prevent="display.detailConfig = !display.detailConfig"
                            class="pointer-cursor" v-text="i18n('perfTest.config.showAdvancedConfig')"></a>
@@ -516,7 +515,24 @@
 
 <style lang="less" scoped>
     #config-container {
+        .badge-info {
+            padding: 7px 20px 7px 20px;
+            border-radius: 20px;
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
+        }
+
+        #region {
+            width: 110px;
+        }
+
+        #vuser-panel {
+            margin-top: 5px;
+        }
+
         .detail-config-btn-container {
+            margin-top: -20px;
+
             span {
                 margin-right: 10px;
             }
@@ -590,9 +606,9 @@
         }
 
         .add-host-btn {
-            margin-top:27px;
-            margin-left:287px;
-            position:absolute
+            margin-top: 27px;
+            margin-left: 287px;
+            position: absolute;
         }
 
         .control-group {
