@@ -86,7 +86,7 @@
             </form>
             <intro-button></intro-button>
         </div>
-        <schedule-modal ref="scheduleModal" :id="'schedule-modal'" @runNow="runNow" :timezoneOffset="timezoneOffset"></schedule-modal>
+        <schedule-modal ref="scheduleModal" :id="'schedule-modal'" @runSchedule="run" @runNow="run(null)" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
 </template>
 <script>
@@ -321,10 +321,10 @@
             return validationPromise;
         }
 
-        runNow() {
+        run(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status = 'READY';
-            this.scheduledTime = null;
+            this.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize())
