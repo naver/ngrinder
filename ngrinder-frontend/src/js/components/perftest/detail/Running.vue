@@ -22,7 +22,7 @@
 				        </span>
                     </control-group><hr>
 
-                    <control-group labelMessageKey="perfTest.config.targetHost">
+                    <control-group labelMessageKey="perfTest.config.targetHost" labelStyle="width: 120px;">
                         <template v-if="test.targetHosts" v-for="host in test.targetHosts.split(',')">
                             <span v-text="host.trim()"></span><br/>
                         </template>
