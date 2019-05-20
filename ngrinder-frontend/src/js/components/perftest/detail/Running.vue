@@ -4,7 +4,7 @@
             <fieldSet>
                 <legend v-text="i18n('perfTest.running.summaryTitle')"></legend>
             </fieldSet>
-            <div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
+            <div class="content-left form-horizontal form-horizontal-3">
                 <fieldset>
                     <control-group labelMessageKey="perfTest.running.totalVusers">
                         <strong v-text="test.vuserPerAgent * test.agentCount"></strong>
@@ -243,6 +243,10 @@
         #running-tps-chart {
             width: 530px;
             height: 300px;
+        }
+
+        .content-left {
+            margin-top: 10px;
         }
 
         #agent-state, #monitor-state {
