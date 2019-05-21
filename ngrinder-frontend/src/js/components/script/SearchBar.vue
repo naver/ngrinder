@@ -151,18 +151,6 @@
         onRefresh() {
             this.initSvnUrl();
         }
-
-        @Watch('query')
-        onQueryChanged() {
-            if (this.$route.name === 'scriptSearch') {
-                this.$router.replace({
-                    query: {
-                        ...this.$route.query,
-                        query: this.query
-                    }
-                })
-            }
-        }
     }
 </script>
 
