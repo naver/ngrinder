@@ -42,10 +42,6 @@
         alertMessage = '';
         errMessage = '';
 
-        mounted() {
-            $('#message-container').appendTo("body");
-        }
-
         close() {
             this.showErrMsgDiv = false;
             this.errMessage = '';

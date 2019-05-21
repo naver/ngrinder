@@ -13,6 +13,10 @@
  */
 package org.ngrinder.user.controller;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.util.Preconditions.*;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
@@ -42,13 +46,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.util.Preconditions.*;
 
 /**
  * User management controller.
@@ -70,21 +69,24 @@ public class UserController extends BaseController {
 	public static final Sort DEFAULT_SORT = new Sort(Direction.ASC, "userName");
 
 	/**
-	 * Get user list on the given role.
+	 * Get user list page.
 	 *
-	 * @param model    model
-	 * @param role     role
-	 * @param pageable page info
-	 * @param keywords search keyword.
-	 * @return user/userList
+	 * @return app
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"", "/"})
-	public String getAll(ModelMap model, @RequestParam(required = false) Role role,
-						 @PageableDefault(page = 0, size = 10) Pageable pageable,
-	                     @RequestParam(required = false) String keywords) {
-		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
-		Pageable defaultPageable = new PageRequest(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
+	public String userList() {
+		return "app";
+	}
+
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping({"/api/list", "/api/list/"})
+	@ResponseBody
+	public Page<User> getAll(@RequestParam(required = false) Role role,
+							   @PageableDefault(page = 0, size = 10) Pageable pageable,
+							   @RequestParam(required = false) String keywords) {
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
+		Pageable defaultPageable = PageRequest.of(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
 		Page<User> pagedUser;
 		if (StringUtils.isEmpty(keywords)) {
 			pagedUser = userService.getPagedAll(role, pageable);
@@ -96,16 +98,17 @@ public class UserController extends BaseController {
 			if (pagedUser.getNumberOfElements() == 0) {
 				pagedUser = userService.getPagedAll(keywords, defaultPageable);
 			}
-			model.put("keywords", keywords);
 		}
 
+		return pagedUser;
+	}
 
-		model.addAttribute("users", pagedUser);
-		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
-		model.addAttribute("roleSet", roleSet);
-		model.addAttribute("role", role);
-		putPageIntoModelMap(model, pageable);
-		return "user/list";
+
+	@PreAuthorize("hasAnyRole('A')")
+	@GetMapping({"/api/role", "/api/role/"})
+	@ResponseBody
+	public EnumSet<Role> roleSet() {
+		return EnumSet.allOf(Role.class);
 	}
 
 
@@ -210,21 +213,19 @@ public class UserController extends BaseController {
 	/**
 	 * Delete users.
 	 *
-	 * @param model   model
 	 * @param userIds comma separated user ids.
 	 * @return "redirect:/user/"
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/delete")
-	public String delete(User user, @RequestParam String userIds, ModelMap model) {
+	@DeleteMapping({"/api", "/api/"})
+	public HttpEntity<String> deleteUsers(User user, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
-		for (String eachId : Arrays.asList(ids)) {
+		for (String eachId : ids) {
 			if (!user.getUserId().equals(eachId)) {
 				userService.delete(eachId);
 			}
 		}
-		model.clear();
-		return "redirect:/user/";
+		return successJsonHttpEntity();
 	}
 
 	/**

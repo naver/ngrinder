@@ -26,6 +26,7 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.ui.ModelMap;
 
 import java.util.Date;
+import java.util.List;
 
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -54,13 +56,13 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = PageRequest.of(1, 10);
 
 		ModelMap model = new ModelMap();
-		userController.getAll(model, null, page, null);
+		userController.getAll(null, page, null);
 
 		model.clear();
-		userController.getAll(model, Role.ADMIN, page, null);
+		userController.getAll(Role.ADMIN, page, null);
 
 		model.clear();
-		userController.getAll(model, null, page, "user");
+		userController.getAll(null, page, "user");
 
 	}
 
@@ -143,39 +145,31 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#delete(org.springframework.ui.ModelMap, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#delete(org.ngrinder.model.User user, java.lang.String)}
 	 * .
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDelete() {
-		ModelMap model = new ModelMap();
 		// save new user for test
 		saveTestUser("NewUserId1", "NewUserName1");
 		saveTestUser("NewUserId2", "NewUserName2");
 		saveTestUser("NewUserId3", "NewUserName3");
 
-		Pageable page = new PageRequest(0, 10);
+		Pageable page = PageRequest.of(0, 10);
 
 		// search
-		userController.getAll(model, null, page, "NewUserName");
-		PageImpl userList = (PageImpl<User>) model.get("users");
+		Page<User> userList = userController.getAll(null, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(3));
 
 		// test to delete one
-		model.clear();
-		userController.delete(testUser, "NewUserId1", model);
-		model.clear();
-		userController.getAll(model, Role.USER, page, "NewUserName");
-		userList = (PageImpl<User>) model.get("users");
+		userController.delete(testUser, "NewUserId1");
+		userList = userController.getAll(Role.USER, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(2));
 
 		// test to delete more
-		model.clear();
-		userController.delete(testUser, "NewUserId2,NewUserId3", model);
-		model.clear();
-		userController.getAll(model, Role.USER, page, "NewUserName");
-		userList = (PageImpl<User>) model.get("users");
+		userController.deleteUsers(testUser, "NewUserId2,NewUserId3");
+		userList = userController.getAll(Role.USER, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(0));
 	}
 
