@@ -31,7 +31,9 @@
             },
             option: {
                 type: Object,
-                default: {},
+                default: () => {
+                    return {};
+                },
             },
             name: String,
             customStyle: String,
