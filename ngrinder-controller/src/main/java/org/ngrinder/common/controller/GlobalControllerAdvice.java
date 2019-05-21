@@ -2,6 +2,7 @@ package org.ngrinder.common.controller;
 
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.operation.service.AnnouncementService;
+import org.ngrinder.region.service.RegionService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +25,16 @@ public class GlobalControllerAdvice {
 	private AnnouncementService announcementService;
 
 	@Autowired
+	private RegionService regionService;
+
+	@Autowired
 	private Config config;
 
 	@ModelAttribute
     public void globalAttributes(Model model) {
 		model.addAttribute("version", version);
 		model.addAttribute("clustered", config.isClustered());
+		model.addAttribute("visibleRegions", regionService.getAllVisibleRegionNames());
 		model.addAttribute("helpUrl", config.getHelpUrl());
 		model.addAttribute("hasNewAnnouncement", announcementService.isNew());
 		try {
