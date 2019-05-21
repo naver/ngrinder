@@ -21,11 +21,10 @@
                     </div>
 
                     <div v-if="config.clustered" class="span2">
-                        <control-group labelMessageKey="perfTest.config.region">
-                            <select id="region" name="region" class="pull-right required">
-                                <option value=""></option>
-                                <option v-for="region in regions" :value="region" :selected="region === test.region" v-text="region"></option>
-                            </select>
+                        <control-group labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
+                            <select2 id="region" name="region" v-model="test.region" @change="changeMaxAgentCount" class="pull-right required" customStyle="width: 110px;">
+                                <option v-for="region in config.visibleRegions" :value="region" :selected="region === test.region" v-text="region"></option>
+                            </select2>
                         </control-group>
                     </div>
                 </div>
@@ -234,6 +233,7 @@
             param: '',
             ignoreSampleCount: 0,
             runCount: 0,
+            region: '',
             processes: 0,
             threads: 0,
             vuserPerAgent: 0,
@@ -249,7 +249,6 @@
         scripts = [];
         resources = [];
 
-        regions = [];
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
         rampUpTypes = [];
         regionAgentCountMap = {};
@@ -286,11 +285,10 @@
             this.testConfig.maxVuserPerAgent = this.data.maxVuserPerAgent;
 
             this.$http.get('/perftest/api/script').then(res => {
-                if (this.config.clustered) {
-                    // TODO
-                } else {
-                    this.changeMaxAgentCount("NONE");
+                if (!this.config.clustered) {
+                    this.test.region = 'NONE';
                 }
+                this.changeMaxAgentCount();
                 this.setScripts(res.data, this.test.scriptName);
                 this.setDuration();
                 this.setTargetHost(this.test.targetHosts);
@@ -304,8 +302,12 @@
             this.setCustomValidationMessages();
         }
 
-        changeMaxAgentCount(region) {
-            this.maxAgentCount = this.regionAgentCountMap[region].value;
+        changeMaxAgentCount() {
+            if (this.test.region && this.regionAgentCountMap[this.test.region]) {
+                this.maxAgentCount = this.regionAgentCountMap[this.test.region].value;
+                return;
+            }
+            this.maxAgentCount = 0;
         }
 
         setScripts(scripts, selectedScript) {
