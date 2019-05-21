@@ -12,6 +12,7 @@ dependencies {
     compile (group: "org.python", name: "jython-standalone", version:"2.5.3")
     compile (group: "com.google.code.gson", name: "gson", version: gson_version)
     compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
     compile (group: "net.java.dev.jna", name: "jna", version:"3.4.0")
     compile (group: "org.apache.commons", name: "commons-compress", version:"1.4.1")
     compile (group: "com.beust", name: "jcommander", version:"1.32")
