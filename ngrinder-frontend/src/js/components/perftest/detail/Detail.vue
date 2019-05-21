@@ -152,10 +152,13 @@
             const apiPath = this.$route.params.id ? `/perftest/api/${this.$route.params.id}` : '/perftest/api/create';
             this.$http.get(apiPath).then(res => {
                 Object.assign(this.data, res.data);
-                Object.assign(this.test, res.data.test);
+                this.test = res.data.test;
                 this.timezoneOffset = res.data.timezone_offset;
                 this.selectedTag = this.test.tagString;
                 this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
+                if (this.config.clustered && this.test.region === 'NONE') {
+                    this.test.region = '';
+                }
                 this.dataLoadFinished = true;
                 this.updateTabDisplay();
                 this.$nextTick(() => {
