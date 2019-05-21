@@ -16,6 +16,7 @@
 </div>
 
 <script>
+    const visibleRegions = "{{ visibleRegions }}";
     window.ngrinder = {
         version: "{{ version }}",
         currentUser: {
@@ -31,6 +32,7 @@
             },
         },
         config: {
+            visibleRegions: visibleRegions.substr(1, visibleRegions.length -2).split(','),
             clustered: ("{{ clustered }}" === 'true'),
             helpUrl: "{{ helpUrl }}",
             hasNewAnnouncement: ("{{ hasNewAnnouncement }}" === 'true'),
