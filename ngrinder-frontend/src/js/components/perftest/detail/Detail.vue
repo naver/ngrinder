@@ -167,7 +167,7 @@
                     this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
                     this.setTabEvent();
                 });
-            }).catch((error) => console.err(error));
+            }).catch((error) => console.error(error));
         }
 
         beforeDestroy() {
