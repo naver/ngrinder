@@ -59,6 +59,7 @@ dependencies {
     compile (group: "cglib", name: "cglib", version: "2.2.2")
     compile (group: "com.google.code.gson", name: "gson", version: gson_version)
     compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
     compile (group: "jaxen", name: "jaxen", version: "1.1.4")
     compile (group: "com.beust", name: "jcommander", version: "1.32")
     compile (group: "ro.fortsoft.pf4j", name: "pf4j", version: "0.12.0")
