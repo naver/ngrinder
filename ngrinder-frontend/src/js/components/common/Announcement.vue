@@ -35,18 +35,28 @@
         created() {
             this.getAnnouncement();
             this.hide = this.$session.has(this.ANNOUNCEMENT_HIDE_SESSION_KEY) ? this.$session.get(this.ANNOUNCEMENT_HIDE_SESSION_KEY) : false;
+
+            this.$EventBus.$on(this.$Event.CHANGE_ANNOUNCEMENT, newContent => {
+                this.setAnnouncement(newContent);
+                if (this.hide) {
+                    this.toggleDisplay();
+                }
+            });
         }
 
         getAnnouncement() {
-            this.$http.get('/announcement/api', {
-            }).then(res => {
-                this.announcement = res.data;
-            }).catch(error => console.error(error));
+            this.$http.get('/announcement/api')
+            .then(res => this.setAnnouncement(res.data))
+            .catch(err => console.error(err));
         }
 
         toggleDisplay() {
             this.hide = !this.hide;
             this.$session.set(this.ANNOUNCEMENT_HIDE_SESSION_KEY, this.hide);
+        }
+
+        setAnnouncement(announcement) {
+            this.announcement = announcement.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
         }
     }
 </script>
