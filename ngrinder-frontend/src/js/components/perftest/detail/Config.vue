@@ -12,7 +12,7 @@
                                           v-model="test.agentCount"
                                           @validationResult="$refs.agentCountControlGroup.handleError($event)"
                                           :validationRules="agentCountValidationRules"
-                                          errStyle="position: absolute; margin: 0;"
+                                          errStyle="width: 145px; word-break: break-all; white-space: normal;"
                                           appendPrefix="perfTest.config.max"
                                           :append="maxAgentCount"
                                           message="perfTest.config.agent">
@@ -21,8 +21,9 @@
                     </div>
 
                     <div v-if="config.clustered" class="span2">
-                        <control-group labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
-                            <select2 id="region" name="region" v-model="test.region" @change="changeMaxAgentCount" class="pull-right required" customStyle="width: 110px;">
+                        <control-group ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
+                            <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount" class="pull-right required" customStyle="width: 110px;"
+                                     :validationRules="{ required: true }" @validationResult="$refs.regionControlGroup.handleError($event)">
                                 <option v-for="region in config.visibleRegions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select2>
                         </control-group>
@@ -339,7 +340,8 @@
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
                 this.$refs.rampUp.updateRampUpChart();
-                this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount, this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
+                this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount
+                    , this.$refs.param, this.$refs.runCount, this.$refs.scriptName, this.$refs.region];
             });
         }
 
