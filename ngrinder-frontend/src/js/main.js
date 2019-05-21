@@ -17,6 +17,7 @@ import ScriptList from 'script/List.vue';
 import ScriptEditor from 'script/Editor.vue';
 import ScriptConsole from 'operation/ScriptConsole.vue';
 import SystemConfig from 'operation/SystemConfig.vue';
+import Announcement from 'operation/Announcement.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -82,6 +83,7 @@ const routes = [
     {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditorDetail'},
     {path: '/operation/script_console', component: ScriptConsole, name: 'scriptConsole'},
     {path: '/operation/system_config', component: SystemConfig, name: 'systemConfig'},
+    {path: '/operation/announcement', component: Announcement, name: 'announcement'},
 ];
 
 const router = new VueRouter({
