@@ -13,6 +13,7 @@
  */
 package org.ngrinder.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -94,11 +95,13 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User ownerUser;
 
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
 		inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), // LF
 		inverseJoinColumns = @JoinColumn(name = "owner_id"))
@@ -283,7 +286,7 @@ public class User extends BaseModel<User> {
 	}
 
 	public boolean isExternal() {
-		return external;
+		return getSafe(external);
 	}
 
 	public void setExternal(boolean external) {
@@ -330,6 +333,7 @@ public class User extends BaseModel<User> {
 		this.follower = follower;
 	}
 
+	@JsonIgnore
 	public User getFactualUser() {
 		return ownerUser == null ? this : ownerUser;
 	}
@@ -341,6 +345,7 @@ public class User extends BaseModel<User> {
 	 */
 	// It will throw StackOverflowException if return User that contains owners and followers value
 	// in getCurrentPerfTestStatistics() method.so just return base User info
+	@JsonIgnore
 	public User getUserBaseInfo() {
 		User userInfo = new User();
 		userInfo.setId(this.getId());
