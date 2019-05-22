@@ -24,7 +24,7 @@
                             <li class="divider-vertical"></li>
                         </template>
 
-                        <user-menu></user-menu>
+                        <user-menu @showUserSwitchModal="$refs.userSwitchModal.show()"></user-menu>
 
                         <li class="divider-vertical"></li>
                         <li><a :href="config.helpUrl" target="_blank" v-text="i18n('navigator.help')"></a></li>
@@ -33,18 +33,20 @@
             </div>
         </div>
         <announcement></announcement>
+        <user-switch-modal ref="userSwitchModal" id="user-switch-modal"></user-switch-modal>
     </div>
 </template>
 
 <script>
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
-    import Announcement from '../Announcement.vue'
-    import UserMenu from './UserMenu.vue'
+    import Announcement from '../Announcement.vue';
+    import UserMenu from './UserMenu.vue';
+    import UserSwitchModal from './modal/UserSwitchModal.vue';
 
     @Component({
         name: 'navigator',
-        components: { Announcement, UserMenu },
+        components: { Announcement, UserMenu, UserSwitchModal },
     })
     export default class Navigator extends Base {}
 </script>

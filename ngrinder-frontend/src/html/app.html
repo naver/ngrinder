@@ -34,6 +34,7 @@
         config: {
             visibleRegions: visibleRegions.substr(1, visibleRegions.length -2).split(','),
             clustered: ("{{ clustered }}" === 'true'),
+            userSwitchMode: !!("{{ currentUser.ownerUser }}"),
             helpUrl: "{{ helpUrl }}",
             hasNewAnnouncement: ("{{ hasNewAnnouncement }}" === 'true'),
         },

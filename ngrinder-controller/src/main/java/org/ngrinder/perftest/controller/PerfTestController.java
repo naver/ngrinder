@@ -90,7 +90,7 @@ public class PerfTestController extends BaseController {
 	 * Get the perf test lists.
 	 */
 	@RequestMapping({"/list", "/", ""})
-	public String getAll() {
+	public String getAll(User user) {
 		return "app";
 	}
 
