@@ -23,7 +23,6 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -230,72 +229,24 @@ public class UserController extends BaseController {
 		return "redirect:/user/";
 	}
 
-
-	/**
-	 * Get the follower list.
-	 *
-	 * @param user     current user
-	 * @param keywords search keyword.
-	 * @return json message
-	 */
-	@RestAPI
-	@RequestMapping("/api/switch_options")
-	public HttpEntity<String> switchOptions(User user,
-	                                        @RequestParam(required = true) final String keywords) {
-		return toJsonHttpEntity(getSwitchableUsers(user, keywords));
-	}
-
-	/**
-	 * Get the follower list.
-	 *
-	 * @param user  current user
-	 * @param model model
-	 * @return json message
-	 */
-	@RequestMapping("/switch_options")
-	public String switchOptions(User user,
-	                            ModelMap model) {
-		model.addAttribute("switchableUsers", getSwitchableUsers(user, ""));
-		return "user/switch_options";
-	}
-
-
-	private List<UserSearchResult> getSwitchableUsers(User user, String keywords) {
-		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
-			List<UserSearchResult> result = newArrayList();
-			for (User each : userService.getPagedAll(keywords, new PageRequest(0, 10))) {
-				result.add(new UserSearchResult(each));
-			}
-			return result;
-		} else {
-			return userService.getSharedUser(user);
-		}
-
-	}
-
-
 	/**
 	 * Switch user identity.
 	 *
-	 * @param model    model
 	 * @param to       the user to whom a user will switch
 	 * @param response response
 	 * @return redirect:/perftest/
 	 */
 	@RequestMapping("/switch")
-	public String switchUser(@RequestParam(required = false, defaultValue = "") String to,
-	                         HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+	public String switchUser(@RequestParam(defaultValue = "") String to,
+	                         HttpServletRequest request, HttpServletResponse response) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
 		if (StringUtils.isEmpty(to)) {
 			cookie.setMaxAge(0);
 		}
-
 		response.addCookie(cookie);
-		model.clear();
-		final String referer = request.getHeader("referer");
-		return "redirect:" + StringUtils.defaultIfBlank(referer, "/");
+		return "redirect:" + StringUtils.defaultIfBlank(request.getHeader("referer"), "/");
 	}
 
 	/**

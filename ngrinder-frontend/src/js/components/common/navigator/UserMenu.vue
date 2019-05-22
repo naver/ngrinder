@@ -1,18 +1,19 @@
 <template>
     <li class="dropdown">
         <a data-toggle="dropdown" class="dropdown-toggle clickable">
-            <span v-text="currentUser.name"></span>
+            <span v-if="config.userSwitchMode" v-text="`${currentUser.name}(${currentUser.factualUser.name})`"></span>
+            <span v-else v-text="currentUser.name"></span>
             <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-            <li>
+            <li v-if="config.userSwitchMode">
                 <a href="/user/switch?to=" v-text="i18n('common.button.return')"></a>
             </li>
-            <li>
+            <li v-show="!config.userSwitchMode">
                 <a id="user_profile_menu" class="clickable" v-text="i18n('navigator.dropDown.profile')"></a>
             </li>
-            <li>
-                <a id="switch_user_menu" class="clickable" v-text="i18n('navigator.dropDown.switchUser')"></a>
+            <li v-show="!config.userSwitchMode">
+                <a @click.prevent="$emit('showUserSwitchModal')" class="clickable" v-text="i18n('navigator.dropDown.switchUser')"></a>
             </li>
             <li class="divider"></li>
             <template v-if="isAdmin">
