@@ -97,7 +97,7 @@
                 this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
                     .then(res => refresh(res.data));
             } else {
-                this.$http.get(`/script/api/list/${this.currentPath}`)
+                this.$http.get(`/script/api/${this.currentPath}`)
                     .then(res => refresh(res.data));
             }
 
