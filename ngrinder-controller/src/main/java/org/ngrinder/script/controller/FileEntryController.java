@@ -78,7 +78,7 @@ public class FileEntryController extends BaseController {
 	 * @param path     user
 	 * @param response response
 	 */
-	@RequestMapping("/download/**")
+	@GetMapping("/download/**")
 	public void download(User user, @RemainedPath String path, HttpServletResponse response) {
 		FileEntry fileEntry = fileEntryService.getOne(user, path);
 		if (fileEntry == null) {

@@ -16,6 +16,8 @@ package org.ngrinder.script.controller;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Class description.
@@ -95,7 +95,8 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		scriptController.search(getTestUser(), "test");
 
 		scriptController.delete(getTestUser(), Arrays.asList(path + "/new_file.py"));
-		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
+		Type listType = new TypeToken<ArrayList<FileEntry>>(){}.getType();
+		List<FileEntry> scriptList = new Gson().fromJson(scriptController.getAll(getTestUser(), path).getBody(), listType);
 		assertThat(scriptList.size(), is(0));
 	}
 
@@ -123,7 +124,8 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 
 		// delete both files
 		scriptController.delete(getTestUser(), Arrays.asList(path + "/file-for-search.py", path + "/new-file-for-search.py"));
-		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
+		Type listType = new TypeToken<ArrayList<FileEntry>>(){}.getType();
+		List<FileEntry> scriptList = new Gson().fromJson(scriptController.getAll(getTestUser(), path).getBody(), listType);
 		assertThat(scriptList.size(), is(0));
 	}
 

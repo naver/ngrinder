@@ -85,34 +85,12 @@ public class FileEntryApiController extends BaseController {
 	private ScriptValidationService scriptValidationService;
 
 	/**
-	 * Get all files which belongs to given user and path.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return json string
-	 */
-	@RestAPI
-	@GetMapping("/list/**")
-	public List<FileEntry> getAll(User user, @RemainedPath String path) {
-		String trimmedPath = trimToEmpty(path);
-
-		return fileEntryService.getAll(user)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(fileEntry -> trimPathSeparatorBothSides(getPath(fileEntry.getPath())).equals(trimmedPath))
-			.sorted(DIRECTORY_PRIORITY_FILE_ENTRY_COMPARATOR)
-			.peek(fileEntry -> fileEntry.setPath(removePrependedSlash(fileEntry.getPath())))
-			.collect(toList());
-	}
-
-	/**
 	 * Get the SVN url BreadCrumbs HTML string.
 	 *
 	 * @param user user
 	 * @param path path
 	 * @return generated HTML
 	 */
-	@RestAPI
 	@GetMapping("/svnUrl")
 	public String getSvnUrlBreadcrumbs(User user, @RequestParam String path) {
 		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
@@ -128,7 +106,6 @@ public class FileEntryApiController extends BaseController {
 		return returnHtml.toString();
 	}
 
-	@RestAPI
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
 		return handlerFactory.getVisibleHandlers();
@@ -141,7 +118,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param query query string
 	 * @return list of filtered files
 	 */
-	@RestAPI
 	@GetMapping("/search")
 	public List<FileEntry> search(User user, @RequestParam String query) {
 		String trimmedQuery = trimToEmpty(query);
@@ -154,6 +130,38 @@ public class FileEntryApiController extends BaseController {
 			.collect(toList());
 	}
 
+
+	/**
+	 * Save a fileEntry and return to the the path.
+	 *
+	 * @param user                 current user
+	 * @param fileEntry            file to be saved
+	 * @param targetHosts          target host parameter
+	 * @param validated            validated the script or not, 1 is validated, 0 is not.
+	 * @param createLibAndResource true if lib and resources should be created as well.
+	 * @return basePath
+	 */
+	@PostMapping("/save/**")
+	public String save(User user, FileEntry fileEntry,
+					   @RequestParam String targetHosts,
+					   @RequestParam(defaultValue = "0") String validated,
+					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
+		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
+			Map<String, String> map = of(
+				"validated", validated,
+				"targetHosts", trimToEmpty(targetHosts)
+			);
+			fileEntry.setProperties(map);
+		}
+		fileEntryService.save(user, fileEntry);
+
+		String basePath = getPath(fileEntry.getPath());
+		if (createLibAndResource) {
+			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
+			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
+		}
+		return encodePathWithUTF8(basePath);
+	}
 
 	/**
 	 * Provide new file creation form data.
@@ -224,6 +232,33 @@ public class FileEntryApiController extends BaseController {
 		return successJsonHttpEntity();
 	}
 
+
+	/**
+	 * Get the details of given path.
+	 *
+	 * @param user     user
+	 * @param path     user
+	 * @param revision revision. -1 if HEAD
+	 * @return detail view properties
+	 */
+	@GetMapping("/detail/**")
+	public Map<String, Object> getOne(User user,
+									  @RemainedPath String path,
+									  @RequestParam(value = "r", required = false) Long revision) {
+		FileEntry script = fileEntryService.getOne(user, path, revision);
+		if (script == null || !script.getFileType().isEditable()) {
+			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
+			return of();
+		}
+
+		return of(
+			"file", script,
+			"breadcrumbPath", getScriptPathBreadcrumbs(path),
+			"scriptHandler", fileEntryService.getScriptHandler(script),
+			"ownerId", user.getUserId()
+		);
+	}
+
 	/**
 	 * Get the script path BreadCrumbs HTML string.
 	 *
@@ -255,7 +290,7 @@ public class FileEntryApiController extends BaseController {
 	 * @param paths 	list of file paths to be deleted
 	 * @return json string
 	 */
-	@PostMapping(value = "/delete")
+	@PostMapping("/delete")
 	public Map<String, String> delete(User user, @RequestBody List<String> paths) {
 		fileEntryService.delete(user, paths);
 		return of();
@@ -270,7 +305,7 @@ public class FileEntryApiController extends BaseController {
 	 * @param description description
 	 * @param file        multi part file
 	 */
-	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
+	@PostMapping("/upload/**")
 	public HttpEntity<String> uploadFile(User user,
 										 @RemainedPath String path,
 										 @RequestParam String description,
@@ -302,7 +337,7 @@ public class FileEntryApiController extends BaseController {
 	 * @return success json string
 	 */
 	@RestAPI
-	@PostMapping(value = {"/", ""})
+	@PostMapping({"/", ""})
 	public HttpEntity<String> create(User user, FileEntry fileEntry) {
 		fileEntryService.save(user, fileEntry);
 		return successJsonHttpEntity();
@@ -355,6 +390,29 @@ public class FileEntryApiController extends BaseController {
 	}
 
 	/**
+	 * Get all files which belongs to given user and path.
+	 *
+	 * @param user user
+	 * @param path path
+	 * @return json string
+	 */
+	@RestAPI
+	@GetMapping({"/**", "/", ""})
+	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
+		String trimmedPath = trimToEmpty(path);
+
+		return toJsonHttpEntity(
+			fileEntryService.getAll(user)
+				.stream()
+				.filter(Objects::nonNull)
+				.filter(fileEntry -> trimPathSeparatorBothSides(getPath(fileEntry.getPath())).equals(trimmedPath))
+				.sorted(DIRECTORY_PRIORITY_FILE_ENTRY_COMPARATOR)
+				.peek(fileEntry -> fileEntry.setPath(removePrependedSlash(fileEntry.getPath())))
+				.collect(toList())
+		);
+	}
+
+	/**
 	 * Delete file by given user and path.
 	 *
 	 * @param user user
@@ -382,64 +440,5 @@ public class FileEntryApiController extends BaseController {
 									   @RequestParam(required = false) String hostString) {
 		fileEntry.setCreatedUser(user);
 		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
-	}
-
-	/**
-	 * Save a fileEntry and return to the the path.
-	 *
-	 * @param user                 current user
-	 * @param fileEntry            file to be saved
-	 * @param targetHosts          target host parameter
-	 * @param validated            validated the script or not, 1 is validated, 0 is not.
-	 * @param createLibAndResource true if lib and resources should be created as well.
-	 * @return basePath
-	 */
-	@RestAPI
-	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String save(User user, FileEntry fileEntry,
-					   @RequestParam String targetHosts,
-					   @RequestParam(defaultValue = "0") String validated,
-					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
-		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
-			Map<String, String> map = of(
-				"validated", validated,
-				"targetHosts", trimToEmpty(targetHosts)
-			);
-			fileEntry.setProperties(map);
-		}
-		fileEntryService.save(user, fileEntry);
-
-		String basePath = getPath(fileEntry.getPath());
-		if (createLibAndResource) {
-			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
-			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
-		}
-		return encodePathWithUTF8(basePath);
-	}
-
-	/**
-	 * Get the details of given path.
-	 *
-	 * @param user     user
-	 * @param path     user
-	 * @param revision revision. -1 if HEAD
-	 * @return detail view properties
-	 */
-	@RequestMapping(value = "/detail/**")
-	public Map<String, Object> getOne(User user,
-									  @RemainedPath String path,
-									  @RequestParam(value = "r", required = false) Long revision) {
-		FileEntry script = fileEntryService.getOne(user, path, revision);
-		if (script == null || !script.getFileType().isEditable()) {
-			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
-			return of();
-		}
-
-		return of(
-			"file", script,
-			"breadcrumbPath", getScriptPathBreadcrumbs(path),
-			"scriptHandler", fileEntryService.getScriptHandler(script),
-			"ownerId", user.getUserId()
-		);
 	}
 }
