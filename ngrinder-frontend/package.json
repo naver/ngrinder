@@ -44,6 +44,7 @@
     "vue-uuid": "^1.0.0",
     "vue2-timepicker": "^0.1.4",
     "vuebar": "0.0.20",
+    "vue-filter-number-format": "^1.0.3",
     "vuedraggable": "^2.15.0",
     "vuejs-paginate": "^2.0.1",
     "jqplot": "^1.0.9",

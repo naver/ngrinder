@@ -46,7 +46,7 @@
                 <fieldSet>
                     <legend>
                         <span v-text="i18n('perfTest.report.tpsGraph')"></span>
-                        <a @click="detailReport" class="btn btn-primary pull-right" v-text="i18n('perfTest.report.detailedReport')"></a>
+                        <a @click="$router.push(`/perftest/${report.test.id}/detail_report`)" class="btn btn-primary pull-right" v-text="i18n('perfTest.report.detailedReport')"></a>
                     </legend>
                 </fieldSet>
                 <div id="tps-chart" class="chart"></div>
@@ -114,10 +114,6 @@
 
         created() {
             this.fetchReportData();
-        }
-
-        detailReport() {
-            // TODO
         }
 
         fetchReportData() {

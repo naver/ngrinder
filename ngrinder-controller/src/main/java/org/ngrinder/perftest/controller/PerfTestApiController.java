@@ -416,6 +416,14 @@ public class PerfTestApiController extends BaseController {
 		return toJsonHttpEntity(map);
 	}
 
+	@RestAPI
+	@GetMapping("/{id}/detail_report")
+	public HttpEntity<String> getReport(@PathVariable long id) {
+		Map<String, Object> model = newHashMap();
+		model.put("test", perfTestService.getOne(id));
+		model.put("plugins", perfTestService.getAvailableReportPlugins(id));
+		return toJsonHttpEntity(model);
+	}
 
 	/**
 	 * Leave the comment on the perf test.
