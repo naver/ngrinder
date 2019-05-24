@@ -291,8 +291,8 @@ public class PerfTestController extends BaseController {
 	 * @param id       test id
 	 * @param response response
 	 */
-	@RequestMapping(value = "/{id}/download_csv")
-	public void downloadCSV(User user, @PathVariable("id") long id, HttpServletResponse response) {
+	@GetMapping("/{id}/download_csv")
+	public void downloadCSV(User user, @PathVariable long id, HttpServletResponse response) {
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getCsvReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
