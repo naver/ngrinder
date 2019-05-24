@@ -5,12 +5,14 @@ import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
 import VueSession from 'vue-session';
+import numFormat from 'vue-filter-number-format';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
 import Home from 'Home.vue';
 import PerfTestList from 'perftest/list/List.vue';
 import PerfTestDetail from 'perftest/detail/Detail.vue';
+import PerfTestDetailReport from 'perftest/report/DetailReport.vue';
 import ScriptList from 'script/List.vue';
 
 import Copyright from 'common/Copyright.vue';
@@ -51,6 +53,7 @@ Vue.directive('focus', {
     inserted: el => el.focus(),
 });
 
+Vue.filter('numFormat', numFormat);
 Vue.filter('dateFormat', function (value, format) {
     if (value) {
         return moment(new Date(value)).format(format);
@@ -67,6 +70,8 @@ const routes = [
     {path: '/perftest/list', redirect: '/perftest'},
     {path: '/perftest/new', component: PerfTestDetail, name: 'createNewPerftest'},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail'},
+    {path: '/perftest/:id/detail_report', component: PerfTestDetailReport, name: 'perfTestDetailReport'},
+    {path: '/perftest/:id/report', redirect: '/perftest/:id/detail_report'}, // backward compatibility
     {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/search', '/script/list/(.*)?']},
 ];
 

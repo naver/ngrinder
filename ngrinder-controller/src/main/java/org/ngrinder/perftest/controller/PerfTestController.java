@@ -17,7 +17,6 @@ import net.grinder.util.LogCompressUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -53,7 +52,6 @@ import java.net.URL;
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.*;
@@ -354,16 +352,11 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the detailed perf test report.
 	 *
-	 * @param model model
-	 * @param id    test id
 	 * @return perftest/detail_report
 	 */
-	@SuppressWarnings("MVCPathVariableInspection")
-	@RequestMapping(value = {"/{id}/detail_report", /** for backward compatibility */"/{id}/report"})
-	public String getReport(ModelMap model, @PathVariable("id") long id) {
-		model.addAttribute("test", perfTestService.getOne(id));
-		model.addAttribute("plugins", perfTestService.getAvailableReportPlugins(id));
-		return "perftest/detail_report";
+	@GetMapping(value = {"/{id}/detail_report", /** for backward compatibility */"/{id}/report"})
+	public String getReport(@PathVariable long id) {
+		return "app";
 	}
 
 	/**
