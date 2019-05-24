@@ -115,6 +115,11 @@
                             <td colspan="3" v-text="test.testComment.replace(/\n/g, '<br>')"></td>
                         </tr>
                     </table>
+                    <div>
+                        <keep-alive>
+                            <component :is="currentMenu" v-bind="{id: id}"></component>
+                        </keep-alive>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,17 +131,26 @@
     import vueHeadful from 'vue-headful';
     import Component from 'vue-class-component';
     import ControlGroup from '../../common/ControlGroup.vue';
+    import PerfTest from './menu/PerfTest.vue';
 
     @Component({
         name: 'detailReport',
         components: { ControlGroup, vueHeadful },
+        props: {
+            id: {
+                type: String,
+                required: true,
+            },
+        },
     })
     export default class DetailReport extends Base {
         test = {};
         plugins = [];
 
+        currentMenu = PerfTest;
+
         created() {
-            this.$http.get(`/perftest/api/${this.$route.params.id}/detail_report`).then(res => {
+            this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
             }).catch((error) => console.error(error));
