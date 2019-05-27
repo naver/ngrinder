@@ -64,13 +64,13 @@
                     </table>
                     <div class="well">
                         <ul class="nav nav-list">
-                            <li class="active pointer-cursor perf nav-header">
-                                <a @click="showPerftestMenu" class="pointer-cursor" v-text="i18n('perfTest.report.performanceReport')"></a>
+                            <li class="active pointer-cursor perf nav-header" ref="perftestNavMenu">
+                                <a @click="showPerftestMenu($event)" class="pointer-cursor" v-text="i18n('perfTest.report.performanceReport')"></a>
                             </li>
 
                             <li class="nav-header" v-text="i18n('perfTest.report.targetHost')"></li>
                             <li v-for="ip in test.targetHosts.split(',')" class="monitor pointer-cursor" :ip="ip">
-                                <a @click="showMonitorMenu(ip)" class="pointer-cursor" v-text="ip"></a>
+                                <a @click="showMonitorMenu($event, ip)" class="pointer-cursor" v-text="ip"></a>
                             </li>
 
                             <li  class="nav-header" v-text="i18n('perfTest.report.plugins')"></li>
@@ -116,7 +116,7 @@
                         </tr>
                     </table>
                     <div>
-                        <component :key="key" :is="currentMenu" v-bind="props"></component>
+                        <component :key="key" :is="currentMenuComponent" v-bind="props"></component>
                     </div>
                 </div>
             </div>
@@ -148,33 +148,56 @@
             targetHosts: '',
         };
         plugins = [];
-        currentMenu = PerfTest;
+        currentActiveNavMenu = null;
+        currentMenuComponent = PerfTest;
 
         // for rerendering
         key = 1;
 
         created() {
-            this.showPerftestMenu();
+            this.props.id = this.id;
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
             }).catch((error) => console.error(error));
         }
 
-        showMonitorMenu(ip) {
+        mounted() {
+            this.currentActiveNavMenu = this.$refs.perftestNavMenu;
+        }
+
+        showMonitorMenu($event, ip) {
+            if (!this.switchActiveNavMenu($event.target.parentElement)) {
+                return;
+            }
+
             this.props = {
                 id: this.id,
                 targetIP: ip,
             };
-            this.currentMenu = Monitor;
+            this.currentMenuComponent = Monitor;
             this.key++;
         }
 
-        showPerftestMenu() {
+        showPerftestMenu($event) {
+            if (!this.switchActiveNavMenu($event.target.parentElement)) {
+                return;
+            }
+
             this.props = {
                 id: this.id,
             };
-            this.currentMenu = PerfTest;
+            this.currentMenuComponent = PerfTest;
+        }
+
+        switchActiveNavMenu(target) {
+            if (this.currentActiveNavMenu === target) {
+                return false;
+            }
+            target.classList.add('active');
+            this.currentActiveNavMenu.classList.remove('active');
+            this.currentActiveNavMenu = target;
+            return true;
         }
     }
 </script>
