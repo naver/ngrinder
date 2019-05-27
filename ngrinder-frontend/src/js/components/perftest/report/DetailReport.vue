@@ -65,12 +65,12 @@
                     <div class="well">
                         <ul class="nav nav-list">
                             <li class="active pointer-cursor perf nav-header">
-                                <a class="pointer-cursor" v-text="i18n('perfTest.report.performanceReport')"></a>
+                                <a @click="showPerftestMenu" class="pointer-cursor" v-text="i18n('perfTest.report.performanceReport')"></a>
                             </li>
-                            <li class="nav-header" v-text="i18n('perfTest.report.targetHost')"></li>
 
-                            <li v-for="ip in test.targetHostIP" class="monitor pointer-cursor" :ip="ip">
-                                <a class="pointer-cursor" v-text="ip"></a>
+                            <li class="nav-header" v-text="i18n('perfTest.report.targetHost')"></li>
+                            <li v-for="ip in test.targetHosts.split(',')" class="monitor pointer-cursor" :ip="ip">
+                                <a @click="showMonitorMenu(ip)" class="pointer-cursor" v-text="ip"></a>
                             </li>
 
                             <li  class="nav-header" v-text="i18n('perfTest.report.plugins')"></li>
@@ -116,9 +116,7 @@
                         </tr>
                     </table>
                     <div>
-                        <keep-alive>
-                            <component :is="currentMenu" v-bind="{id: id}"></component>
-                        </keep-alive>
+                        <component :key="key" :is="currentMenu" v-bind="props"></component>
                     </div>
                 </div>
             </div>
@@ -132,6 +130,7 @@
     import Component from 'vue-class-component';
     import ControlGroup from '../../common/ControlGroup.vue';
     import PerfTest from './menu/PerfTest.vue';
+    import Monitor from './menu/Monitor.vue';
 
     @Component({
         name: 'detailReport',
@@ -144,16 +143,38 @@
         },
     })
     export default class DetailReport extends Base {
-        test = {};
+        props = {};
+        test = {
+            targetHosts: '',
+        };
         plugins = [];
-
         currentMenu = PerfTest;
 
+        // for rerendering
+        key = 1;
+
         created() {
+            this.showPerftestMenu();
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
             }).catch((error) => console.error(error));
+        }
+
+        showMonitorMenu(ip) {
+            this.props = {
+                id: this.id,
+                targetIP: ip,
+            };
+            this.currentMenu = Monitor;
+            this.key++;
+        }
+
+        showPerftestMenu() {
+            this.props = {
+                id: this.id,
+            };
+            this.currentMenu = PerfTest;
         }
     }
 </script>
