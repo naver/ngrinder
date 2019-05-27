@@ -202,6 +202,21 @@ public class PerfTestApiController extends BaseController {
 	}
 
 	/**
+	 * Get the monitor data of the target having the given IP.
+	 *
+	 * @param id       test Id
+	 * @param targetIP targetIP
+	 * @param imgWidth image width
+	 * @return json message
+	 */
+	@RestAPI
+	@GetMapping("/api/{id}/monitor")
+	public Map<String, String> getMonitorGraph(@PathVariable long id,
+											   @RequestParam String targetIP, @RequestParam int imgWidth) {
+		return getMonitorGraphData(id, targetIP, imgWidth);
+	}
+
+	/**
 	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
 	 *
 	 * @param user user
@@ -438,6 +453,14 @@ public class PerfTestApiController extends BaseController {
 	public String leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
 		perfTestService.addCommentOn(user, id, cast(params.get("testComment")), cast(params.get("tagString")));
 		return returnSuccess();
+	}
+
+	private Map<String, String> getMonitorGraphData(long id, String targetIP, int imgWidth) {
+		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
+		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
+		PerfTest perfTest = perfTestService.getOne(id);
+		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest.getSamplingInterval() : 1)));
+		return sysMonitorMap;
 	}
 
 	private Long[] convertString2Long(String ids) {
