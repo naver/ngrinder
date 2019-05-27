@@ -416,15 +416,6 @@ public class PerfTestController extends BaseController {
 		return perfTest;
 	}
 
-
-	private Map<String, String> getMonitorGraphData(long id, String targetIP, int imgWidth) {
-		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
-		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
-		PerfTest perfTest = perfTestService.getOne(id);
-		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest.getSamplingInterval() : 1)));
-		return sysMonitorMap;
-	}
-
 	/**
 	 * Get the logs of the given perf test.
 	 *
@@ -438,21 +429,6 @@ public class PerfTestController extends BaseController {
 		// Check permission
 		getOneWithPermissionCheck(user, id, false);
 		return toJsonHttpEntity(perfTestService.getLogFiles(id));
-	}
-
-	/**
-	 * Get the monitor data of the target having the given IP.
-	 *
-	 * @param id       test Id
-	 * @param targetIP targetIP
-	 * @param imgWidth image width
-	 * @return json message
-	 */
-	@RestAPI
-	@RequestMapping("/api/{id}/monitor")
-	public HttpEntity<String> getMonitorGraph(@PathVariable("id") long id,
-	                                          @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
-		return toJsonHttpEntity(getMonitorGraphData(id, targetIP, imgWidth));
 	}
 
 	/**
