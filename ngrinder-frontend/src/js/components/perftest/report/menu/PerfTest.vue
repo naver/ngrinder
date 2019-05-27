@@ -41,8 +41,10 @@
 
 <script>
     import Base from '../../../Base.vue';
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
-    import Chart from '../../../../chart.js';
+    import MenuChartMixin from './MenuChartMixin.vue';
+
 
     @Component({
         name: 'perfTest',
@@ -53,7 +55,7 @@
             },
         },
     })
-    export default class PerfTest extends Base {
+    export default class PerfTest extends Mixins(Base, MenuChartMixin) {
 
         optionalChart = {
             meantimeToFirstByte: true,
@@ -64,41 +66,25 @@
             this.$http.get(`/perftest/api/${this.id}/perf`, {
                 params: {
                     dataType : 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined,Vuser',
-                    imgWidth : parseInt($(this.$refs.tpsChart).width()),
+                    imgWidth : parseInt(this.$refs.tpsChart.offsetWidth),
                 },
             }).then(res => {
                 const interval = res.data.chartInterval;
-                this.drawChart('tps-chart', res.data.TPS.data, interval, res.data.TPS.labels);
-                this.drawChart('mean-time-chart', res.data.Mean_Test_Time_ms.data, interval, res.data.Mean_Test_Time_ms.labels);
-                this.drawChart('vuser-chart', res.data.Vuser.data, interval, res.data.Vuser.labels);
-                this.drawChart('error-chart', res.data.Errors.data, interval, res.data.Errors.labels);
+                this.drawChart('tps-chart', res.data.TPS.data, interval, { labels: res.data.TPS.labels });
+                this.drawChart('mean-time-chart', res.data.Mean_Test_Time_ms.data, interval, { labels: res.data.Mean_Test_Time_ms.labels });
+                this.drawChart('vuser-chart', res.data.Vuser.data, interval, { labels: res.data.Vuser.labels });
+                this.drawChart('error-chart', res.data.Errors.data, interval, { labels: res.data.Errors.labels });
 
-                if (!this.drawOptionalChart('min-time-first-byte-chart', res.data.Mean_time_to_first_byte.data,
-                    interval, res.data.Mean_time_to_first_byte.labels)) {
-                    this.optionalChart.meantimeToFirstByte = false;
-                }
+                this.drawOptionalChart('min-time-first-byte-chart', res.data.Mean_time_to_first_byte.data, interval,
+                    { labels: res.data.Mean_time_to_first_byte.labels }, { displayFlags: this.optionalChart, key: 'meantimeToFirstByte' });
+                this.drawOptionalChart('user-defined-chart', res.data.User_defined.data, interval,
+                    { labels: res.data.User_defined.labels }, { displayFlags: this.optionalChart, key: 'userDefinedChart' });
 
-                if (!this.drawOptionalChart('user-defined-chart', res.data.User_defined.data, interval, res.data.User_defined.labels)) {
-                    this.optionalChart.userDefinedChart = false;
-                }
-
-                Chart.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
+                this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
             }).catch((error) => console.error(error));
 
             $('[data-toggle="popover"]').popover('destroy');
             $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#tps-title'});
-        }
-
-        drawChart(id, data, interval, labels) {
-            new Chart(id, data, interval, { labels: labels }).plot();
-        }
-
-        drawOptionalChart(id, data, interval, labels) {
-            if (data !== undefined && data.length !== 0) {
-                this.drawChart(id, data, interval, labels);
-                return true;
-            }
-            return false;
         }
 
         downloadCSV() {
