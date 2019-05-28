@@ -47,23 +47,6 @@ public class UserSignUpController extends UserController {
 	private Config config;
 
 	/**
-	 * New user sign up form login page.
-	 *
-	 * @param model mode
-	 * @return "user/sign_up_modal"
-	 */
-	@RequestMapping("/new")
-	public String openForm(ModelMap model) {
-		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
-		super.openForm(null, model);
-		model.addAttribute("allowShareChange", false);
-		model.addAttribute("showPasswordByDefault", true);
-		model.addAttribute("newUser", true);
-		return "user/sign_up_modal";
-	}
-
-
-	/**
 	 * To block security issue.
 	 *
 	 * @deprecated
