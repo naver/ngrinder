@@ -10,7 +10,7 @@
                 <a href="/user/switch?to=" v-text="i18n('common.button.return')"></a>
             </li>
             <li v-show="!config.userSwitchMode">
-                <a id="user_profile_menu" class="clickable" v-text="i18n('navigator.dropDown.profile')"></a>
+                <a @click.prevent="$emit('showUserProfileModal')" class="clickable" v-text="i18n('navigator.dropDown.profile')"></a>
             </li>
             <li v-show="!config.userSwitchMode">
                 <a @click.prevent="$emit('showUserSwitchModal')" class="clickable" v-text="i18n('navigator.dropDown.switchUser')"></a>
@@ -84,7 +84,3 @@
     })
     export default class UserMenu extends Base {}
 </script>
-
-<style lang="less" scoped>
-
-</style>
