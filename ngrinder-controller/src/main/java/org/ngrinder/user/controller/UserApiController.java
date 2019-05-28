@@ -1,7 +1,9 @@
 package org.ngrinder.user.controller;
 
+import com.google.common.collect.Lists;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -13,13 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 @RestController
 @RequestMapping("/user/api")
 public class UserApiController extends BaseController {
+
+	@Autowired
+	protected Config config;
 
 	@Autowired
 	private UserService userService;
@@ -35,6 +44,41 @@ public class UserApiController extends BaseController {
 	@GetMapping("/switch_options")
 	public HttpEntity<String> switchOptions(User user, @RequestParam(defaultValue = "") final String keywords) {
 		return toJsonHttpEntity(getSwitchableUsers(user, keywords));
+	}
+
+	/**
+	 * Get the current user profile.
+	 *
+	 * @param user  current user
+	 */
+	@RestAPI
+	@GetMapping("/profile")
+	public HttpEntity<String> getOne(User user) {
+		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
+		Map<String, Object> model = new HashMap<>();
+		User one = userService.getOneWithFollowers(user.getUserId());
+		model.put("user", one);
+		model.put("allowPasswordChange", !config.isDemo());
+		model.put("allowRoleChange", false);
+		model.put("showPasswordByDefault", false);
+		attachCommonAttribute(one, model);
+		return toJsonHttpEntity(model);
+	}
+
+	/**
+	 * Get user list that current user will be shared, excluding current user.
+	 *
+	 * @param user  current user
+	 * @param model model
+	 */
+	private void attachCommonAttribute(User user, Map<String, Object> model) {
+		List<User> list = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
+		// TODO handle this when remove Gson.
+		// prevent stack overflow when serialize user list.
+		user.setFollowers(null);
+		model.put("followers", list.stream().map(UserController.UserSearchResult::new).collect(Collectors.toList()));
+		model.put("allowShareChange", true);
+		model.put("userSecurityEnabled", config.isUserSecurityEnabled());
 	}
 
 	private List<UserController.UserSearchResult> getSwitchableUsers(User user, String keywords) {
