@@ -8,7 +8,7 @@
                               :readonly="type === 'save'"
                               :validationRules="{ required: true, userIdExist: true, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
                               message="user.info.userId"/>
-                <input type="hidden" id="id" name="id" :value="user.id"/>
+                <input type="hidden" name="id" :value="user.id"/>
             </control-group>
 
             <control-group name="userName" labelMessageKey="user.info.name" ref="userNameControlGroup" required>
@@ -36,13 +36,14 @@
             </control-group>
 
             <control-group name="description" labelMessageKey="common.label.description">
-                <textarea cols="30" id="description" name="description"
+                <textarea cols="30" name="description"
                           rows="3" title="Description" class="tx_area span4"
                           v-model="user.description"></textarea>
             </control-group>
 
             <control-group name="mobilePhone" labelMessageKey="user.info.phone" ref="mobilePhoneControlGroup">
                 <input-append name="mobilePhone" ref="mobilePhone"
+                              errStyle="width: 285px; white-space: normal;"
                               v-model="user.mobilePhone"
                               @validationResult="$refs.mobilePhoneControlGroup.handleError($event)"
                               :validationRules="{ regex: /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/ }"
@@ -50,7 +51,7 @@
             </control-group>
 
             <control-group v-if="info.allowShareChange" labelMessageKey="user.share.title">
-                <select2 v-model="followersStr" type="input" name="followersStr" :option="followerSelect2Option" customStyle="width: 285px;"></select2>
+                <select2 v-model="user.followersStr" type="input" name="followersStr" :option="followerSelect2Option" customStyle="width: 285px;"></select2>
             </control-group>
 
             <template v-if="info.allowPasswordChange">
@@ -79,7 +80,7 @@
 
             <div class="control-group">
                 <div class="controls pull-right">
-                    <a class="btn btn-success" id="save_user_btn" @click="save" v-text="i18n('user.info.button.saveUser')"></a>
+                    <a class="btn btn-success save-user-btn" @click="save" v-text="i18n('user.info.button.saveUser')"></a>
                 </div>
             </div>
         </fieldset>
@@ -117,6 +118,7 @@
             mobilePhone: '',
             password: '',
             confirmPassword: '',
+            followersStr: '',
         };
 
         displayPasswordField = true;
@@ -125,6 +127,9 @@
         formUrl = '/user/save';
 
         created() {
+            this.setCustomValidationRules();
+            this.setCustomValidationMessages();
+
             delete this.info.user.password;
             Object.assign(this.user, this.info.user);
 
@@ -159,8 +164,6 @@
         }
 
         mounted() {
-            this.setCustomValidationRules();
-            this.setCustomValidationMessages();
             $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#user_form'});
             this.$EventBus.$on(this.$Event.RESET_SIGN_UP_MODAL, this.reset);
         }
@@ -273,7 +276,7 @@
         }
 
         .controls {
-            #save_user_btn {
+            .save-user-btn {
                 margin-top: 20px;
             }
         }
