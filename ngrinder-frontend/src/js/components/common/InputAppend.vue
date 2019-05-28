@@ -1,6 +1,7 @@
 <template>
     <div class="input-group input-append">
         <input :type="inputType"
+               :readonly="readonly"
                v-validate="validationRules"
                data-toggle="popover" :name="name" :id="name"
                data-html="true"
@@ -53,6 +54,10 @@
             append: {
                 type: [String, Number],
                 default: null,
+            },
+            readonly: {
+                type: Boolean,
+                default: false,
             },
             dataContent: String,
             validationRules: Object,

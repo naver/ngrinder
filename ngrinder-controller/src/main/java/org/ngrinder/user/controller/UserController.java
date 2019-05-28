@@ -174,13 +174,12 @@ public class UserController extends BaseController {
 	 * Save or Update user detail info.
 	 *
 	 * @param user        current user
-	 * @param model       model
 	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public String save(User user, @ModelAttribute("user") User updatedUser, ModelMap model) {
+	public String save(User user, @ModelAttribute User updatedUser) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -193,7 +192,6 @@ public class UserController extends BaseController {
 					updatedUser);
 		}
 		save(updatedUser);
-		model.clear();
 		if (user.getId().equals(updatedUser.getId())) {
 			return "redirect:/";
 		} else {
