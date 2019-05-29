@@ -137,11 +137,7 @@
         }
 
         changeSelectAll(event) {
-            if (event.target.checked) {
-                this.scripts.forEach(script => script.checked = true);
-            } else {
-                this.scripts.forEach(script => script.checked = false);
-            }
+            this.scripts.forEach(script => script.checked = event.target.checked);
         }
 
         downloadScript(path) {
