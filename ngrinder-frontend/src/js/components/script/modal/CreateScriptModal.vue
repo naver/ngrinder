@@ -118,7 +118,6 @@
         scriptHandler = {};
         method = 'GET';
         testUrl = '';
-        options = [];
         createLibAndResource = false;
 
         showScriptOption = false;
@@ -162,6 +161,18 @@
                     this.$router.push(resolve('/script/detail', res.data.file.path));
                 }
             });
+
+            this.resetFields();
+        }
+
+        resetFields() {
+            this.fileName = '';
+            this.scriptHandler = this.handlers[0];
+            this.method = 'GET';
+            this.testUrl = '';
+            this.createLibAndResource = false;
+            this.$refs.testUrlControlGroup.success = false;
+            this.$refs.fileNameControlGroup.success = false;
         }
 
         validFields() {
