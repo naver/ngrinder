@@ -237,6 +237,7 @@ public class UserController extends BaseController {
 	@RequestMapping("/switch")
 	public String switchUser(@RequestParam(defaultValue = "") String to,
 	                         HttpServletRequest request, HttpServletResponse response) {
+		userService.evictUserCacheById(to);
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
