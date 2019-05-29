@@ -72,11 +72,16 @@ public class UserApiController extends BaseController {
 	 * @param model model
 	 */
 	private void attachCommonAttribute(User user, Map<String, Object> model) {
-		List<User> list = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
+		List<User> followers = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
+		List<User> owners = user.getOwners() == null ? Lists.newArrayList() : user.getOwners();
+
 		// TODO handle this when remove Gson.
 		// prevent stack overflow when serialize user list.
 		user.setFollowers(null);
-		model.put("followers", list.stream().map(UserController.UserSearchResult::new).collect(Collectors.toList()));
+		user.setOwners(null);
+
+		model.put("followers", followers.stream().map(UserController.UserSearchResult::new).collect(Collectors.toList()));
+		model.put("owners", owners.stream().map(UserController.UserSearchResult::new).collect(Collectors.toList()));
 		model.put("allowShareChange", true);
 		model.put("userSecurityEnabled", config.isUserSecurityEnabled());
 	}
