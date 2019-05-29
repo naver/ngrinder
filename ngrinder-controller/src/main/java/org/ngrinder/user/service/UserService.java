@@ -288,7 +288,6 @@ public class UserService extends AbstractUserService {
 		return saveWithoutPasswordEncoding(user);
 	}
 
-
 	@Transactional
 	public List<UserController.UserSearchResult> getSharedUser(User user) {
 		List<UserController.UserSearchResult> result = new ArrayList<UserController.UserSearchResult>();
@@ -297,5 +296,9 @@ public class UserService extends AbstractUserService {
 			result.add(new UserController.UserSearchResult(each));
 		}
 		return result;
+	}
+
+	public void evictUserCacheById(String id) {
+		userCache.evict(id);
 	}
 }
