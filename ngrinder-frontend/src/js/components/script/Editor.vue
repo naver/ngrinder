@@ -155,6 +155,7 @@
         initCodeMirror() {
             this.cmOptions = { mode: this.scriptHandler.codemirrorKey };
             this.editorSize = 500;
+            this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
 
         save() {
