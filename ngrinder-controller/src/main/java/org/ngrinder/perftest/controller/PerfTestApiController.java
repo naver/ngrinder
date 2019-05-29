@@ -210,7 +210,7 @@ public class PerfTestApiController extends BaseController {
 	 * @return json message
 	 */
 	@RestAPI
-	@GetMapping("/api/{id}/monitor")
+	@GetMapping("/{id}/monitor")
 	public Map<String, String> getMonitorGraph(@PathVariable long id,
 											   @RequestParam String targetIP, @RequestParam int imgWidth) {
 		return getMonitorGraphData(id, targetIP, imgWidth);
