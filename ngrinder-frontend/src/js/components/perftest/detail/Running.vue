@@ -48,7 +48,7 @@
                     </div>
                     <div class="control-group">
                         <div id="monitor-state">
-                            <ul v-for="(monitor, name) in currentMonitor">
+                            <ul v-for="(monitor, name) in monitorState">
                                 <li>
                                     <div class="ellipsis">
                                         <span><b v-text="getShortenString(name)"></b></span>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="control-group">
                         <div id="agent-state">
-                            <ul v-for="(agent, name) in currentAgent">
+                            <ul v-for="(agent, name) in agentState">
                                 <li>
                                     <div class="ellipsis">
                                         <span><b v-text="getShortenString(name)"></b></span>
@@ -131,8 +131,8 @@
         lastSampleStatistics = [];
         cumulativeStatistics = [];
         totalStatistics = { Tests: 0, Errors: 0, };
-        currentAgent = {};
-        currentMonitor = {};
+        agentState = {};
+        monitorState = {};
         samplingIntervalId = -1;
         runningProcess = 0;
         runningThread = 0;
@@ -167,8 +167,8 @@
                     this.tpsQueue.enQueue(perfTestSample.tpsChartData);
                     this.tpsChart.plot();
                 }
-                this.currentAgent = res.data.agent || {};
-                this.currentMonitor = res.data.monitor || {};
+                this.agentState = res.data.agent || {};
+                this.monitorState = res.data.monitor || {};
             }).catch((error) => console.log(error));
         }
 
@@ -185,10 +185,12 @@
         }
 
         // monitor or agent state
-        getPackageState(pack) {
-            let packageState = `CPU-${this.formatPercentage(null, pack.cpuUsedPercentage)} MEM-${this.formatPercentage(null, ((pack.totalMemory - pack.freeMemory) / pack.totalMemory) * 100)}`;
-            if (pack.receivedPerSec !== 0 || pack.sentPerSec !== 0) {
-                packageState += ` RX-${this.formatNetwork(null, pack.receivedPerSec)} TX-${this.formatNetwork(null, pack.sentPerSec)}`
+        getPackageState(targetPackage) {
+            let packageState = `CPU-${this.formatPercentage(null, targetPackage.cpuUsedPercentage)}
+            MEM-${this.formatPercentage(null, ((targetPackage.totalMemory - targetPackage.freeMemory) / targetPackage.totalMemory) * 100)}`;
+
+            if (targetPackage.receivedPerSec !== 0 || targetPackage.sentPerSec !== 0) {
+                packageState += ` RX-${this.formatNetwork(null, targetPackage.receivedPerSec)} TX-${this.formatNetwork(null, targetPackage.sentPerSec)}`
             }
             return packageState;
         }
