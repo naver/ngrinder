@@ -193,7 +193,6 @@
         watchTests() {
             this.testIds = [];
             this.tests.forEach(test => this.testIds.push(test.id));
-
         }
 
         changeSelectAll(event) {
