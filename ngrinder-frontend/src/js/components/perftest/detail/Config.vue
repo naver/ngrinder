@@ -1,6 +1,6 @@
 <template>
     <div v-if="dataLoadFinished" id="config-container" class="row config">
-        <div class="span6" :data-hello="false">
+        <div class="span6">
             <fieldset>
                 <legend><span v-text="i18n('perfTest.config.basicConfiguration')"></span></legend>
             </fieldset>
@@ -102,33 +102,35 @@
                 </control-group>
                 <hr>
 
-                <control-group :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
-                    <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration">
-                        <option v-for="(v, h) in 8" :value="h" v-text="h"></option>
-                    </select> :
-                    <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration">
-                        <option v-for="(v, m) in 60" :value="m" v-text="m < 10 ? `0${m}` : m"></option>
-                    </select> :
-                    <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration">
-                        <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
-                    </select> &nbsp;&nbsp;
-                    <code>HH:MM:SS</code>
-                    <input type="hidden" id="duration" name="duration" :value="durationSeconds * 1000"/>
-                    <input type="hidden" id="duration_hour" name="durationHour" value="0"/>
-                    <vue-slider ref="durationSlider" @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
-                </control-group>
+                <div class="threshold-container">
+                    <control-group :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
+                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration">
+                            <option v-for="(v, h) in 8" :value="h" v-text="h"></option>
+                        </select> :
+                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration">
+                            <option v-for="(v, m) in 60" :value="m" v-text="m < 10 ? `0${m}` : m"></option>
+                        </select> :
+                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration">
+                            <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
+                        </select> &nbsp;&nbsp;
+                        <code>HH:MM:SS</code>
+                        <input type="hidden" name="duration" :value="durationSeconds * 1000"/>
+                        <input type="hidden" name="durationHour" value="0"/>
+                        <vue-slider ref="durationSlider" @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
+                    </control-group>
 
-                <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
-                    <input-append name="runCount" ref="runCount"
-                                  appendPrefix="perfTest.config.max"
-                                  :append="testConfig.maxRunCount"
-                                  @validationResult="$refs.runCountControlGroup.handleError($event)"
-                                  :validationRules="{ required: true, max_value: testConfig.maxRunCount, min_value: 0 }"
-                                  v-model="test.runCount"
-                                  @focus="test.threshold = TEST_THRESHOLD_RUNCOUNT"
-                                  message="perfTest.config.runCount">
-                    </input-append>
-                </control-group>
+                    <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
+                        <input-append name="runCount" ref="runCount"
+                                      appendPrefix="perfTest.config.max"
+                                      :append="testConfig.maxRunCount"
+                                      @validationResult="$refs.runCountControlGroup.handleError($event)"
+                                      :validationRules="{ required: true, max_value: testConfig.maxRunCount, min_value: 0 }"
+                                      v-model="test.runCount"
+                                      @focus="test.threshold = TEST_THRESHOLD_RUNCOUNT"
+                                      message="perfTest.config.runCount">
+                        </input-append>
+                    </control-group>
+                </div>
 
                 <div class="row accordion-heading detail-config-btn-container">
                     <span class="pull-right">
@@ -543,6 +545,10 @@
             span {
                 margin-right: 10px;
             }
+        }
+
+        .threshold-container {
+            margin-left: 2px;
         }
 
         .btn-script-revision {

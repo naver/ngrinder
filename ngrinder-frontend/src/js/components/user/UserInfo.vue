@@ -105,7 +105,7 @@
             type: {
                 type: String,
                 default: 'save',
-            }
+            },
         },
         components: { ControlGroup, InputAppend, Select2 },
     })
