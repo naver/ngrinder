@@ -86,7 +86,7 @@
             </form>
             <intro-button></intro-button>
         </div>
-        <schedule-modal ref="scheduleModal" :id="'schedule-modal'" @runSchedule="run" @runNow="run(null)" :timezoneOffset="timezoneOffset"></schedule-modal>
+        <schedule-modal ref="scheduleModal" :id="'schedule-modal'" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
 </template>
 <script>
@@ -324,7 +324,7 @@
             return validationPromise;
         }
 
-        run(scheduledTime) {
+        runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status = 'READY';
             this.scheduledTime = scheduledTime;
