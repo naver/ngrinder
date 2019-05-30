@@ -254,8 +254,7 @@ public class FileEntryApiController extends BaseController {
 		return of(
 			"file", script,
 			"breadcrumbPath", getScriptPathBreadcrumbs(path),
-			"scriptHandler", fileEntryService.getScriptHandler(script),
-			"ownerId", user.getUserId()
+			"scriptHandler", fileEntryService.getScriptHandler(script)
 		);
 	}
 

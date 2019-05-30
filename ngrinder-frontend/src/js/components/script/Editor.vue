@@ -93,6 +93,7 @@
     import HostModal from '../perftest/modal/HostModal.vue';
     import Messages from '../common/Messages.vue';
     import CodeMirror from '../common/CodeMirror.vue';
+    import querystring from 'querystring';
 
     Component.registerHooks(['beforeRouteLeave',]);
 
@@ -179,14 +180,16 @@
         }
 
         saveScript() {
-            this.$http.post('/script/api/save', formDataOf(
-                'path', this.file.path,
-                'description', this.file.description ? this.file.description : '',
-                'content', this.$refs.editor.getValue(),
-                'validated', this.validated,
-                'createLibAndResource', this.createLibAndResource,
-                'targetHosts', this.targetHosts.join(',')
-            ))
+            const params = querystring.stringify({
+                path: this.file.path,
+                description: this.file.description ? this.file.description : '',
+                content: this.$refs.editor.getValue(),
+                validated: this.validated,
+                createLibAndResource: this.createLibAndResource,
+                targetHosts: this.targetHosts.join(',')
+            });
+
+            this.$http.post('/script/api/save', params)
             .then(res => {
                 this.saved = true;
                 this.$router.push(`/script/list/${res.data}`);
@@ -203,16 +206,13 @@
 
             this.$refs.messages.showProgressBar(this.i18n('script.editor.message.validate'));
 
-            const formData = formDataOf(
-                'path', this.file.path,
-                'content', this.$refs.editor.getValue(),
-                'hostString', this.targetHosts.join(',')
-            );
-            if (this.isAdminOrSuperUser && this.ownerId) {
-                formData.append('ownerId', this.ownerId);
-            }
+            const params = querystring.stringify({
+                path: this.file.path,
+                content: this.$refs.editor.getValue(),
+                hostString: this.targetHosts.join(','),
+            });
 
-            this.$http.post('/script/api/validate', formData)
+            this.$http.post('/script/api/validate', params)
             .then(res => {
                 this.validationResult = res.data;
                 this.validated = true;
