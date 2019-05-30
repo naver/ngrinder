@@ -96,6 +96,12 @@
 
     @Component({
         name: 'report',
+        props: {
+            id: {
+                type: String,
+                default: '',
+            },
+        },
         components: { ControlGroup },
     })
     export default class Report extends Base {
@@ -117,11 +123,11 @@
         }
 
         fetchReportData() {
-            if (!this.$route.params.id) {
+            if (!this.id) {
                 return;
             }
 
-            this.$http.get(`/perftest/api/${this.$route.params.id}/basic_report?imgWidth=600`)
+            this.$http.get(`/perftest/api/${this.id}/basic_report?imgWidth=600`)
                 .then(res => {
                     this.logs = res.data.logs;
                     Object.assign(this.report.test, res.data.test);
@@ -137,7 +143,7 @@
         }
 
         leaveComment() {
-            this.$http.post(`/perftest/api/${this.$route.params.id}/leave_comment`, {
+            this.$http.post(`/perftest/api/${this.id}/leave_comment`, {
                 testComment: this.report.test.testComment,
                 tagString: this.$parent.selectedTag,
             }).then(res => {

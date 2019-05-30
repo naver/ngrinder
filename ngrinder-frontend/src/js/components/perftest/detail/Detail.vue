@@ -77,7 +77,7 @@
                             <running ref="running" :test="test"></running>
                         </div>
                         <div class="tab-pane" id="report-section">
-                            <report ref="report"></report>
+                            <report :id="id" ref="report"></report>
                         </div>
                     </div>
                     <input v-if="scheduledTime" type="hidden" name="scheduledTime" :value="scheduledTime">
@@ -102,6 +102,12 @@
 
     @Component({
         name: 'perfTestDetail',
+        props: {
+            id: {
+                type: String,
+                default: '',
+            },
+        },
         components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
     })
     export default class PerfTestDetail extends Base {
@@ -149,7 +155,7 @@
         }
 
         created() {
-            const apiPath = this.$route.params.id ? `/perftest/api/${this.$route.params.id}` : '/perftest/api/create';
+            const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
             this.$http.get(apiPath).then(res => {
                 Object.assign(this.data, res.data);
                 this.test = res.data.test;
