@@ -116,7 +116,7 @@
                         </tr>
                     </table>
                     <div>
-                        <component :key="key" :is="currentMenuComponent" v-bind="props"></component>
+                        <component :key="props.targetIP" :is="currentMenuComponent" v-bind="props"></component>
                     </div>
                 </div>
             </div>
@@ -151,9 +151,6 @@
         currentActiveNavMenu = null;
         currentMenuComponent = PerfTest;
 
-        // for rerendering
-        key = 1;
-
         created() {
             this.props.id = this.id;
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
@@ -176,7 +173,6 @@
                 targetIP: ip,
             };
             this.currentMenuComponent = Monitor;
-            this.key++;
         }
 
         showPerftestMenu($event) {
