@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary" v-text="i18n('perfTest.running.runNow')" @click="$emit('runNow')"></a>
+                    <a class="btn btn-primary" v-text="i18n('perfTest.running.runNow')" @click="$emit('run')"></a>
                     <a class="btn btn-primary" v-text="i18n('perfTest.running.schedule')" @click="runSchedule"></a>
                 </div>
             </div>
@@ -96,7 +96,7 @@
             if (!this.validation) {
                 return;
             }
-            this.$emit('runSchedule', scheduledTime);
+            this.$emit('run', scheduledTime);
         }
     }
 </script>
