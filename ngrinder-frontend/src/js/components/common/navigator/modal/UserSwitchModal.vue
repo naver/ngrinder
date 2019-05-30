@@ -1,5 +1,5 @@
 <template>
-    <div class="modal hide fade" :id="id" role="dialog">
+    <div class="modal hide fade" id="user-switch-modal" role="dialog">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         </div>
@@ -53,7 +53,6 @@
                     formatResult: data => data.text,
                 };
             } else {
-                // TODO require profile menu for test.
                 this.$http.get('/user/api/switch_options')
                     .then(res => this.switchableUsers = res.data)
                     .catch((error) => console.log(error));
