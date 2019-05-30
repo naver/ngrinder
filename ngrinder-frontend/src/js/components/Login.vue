@@ -77,7 +77,7 @@
         }
 
         showSignUpModal() {
-            this.$EventBus.$emit(this.$Event.RESET_SIGN_UP_MODAL);
+            this.$refs.signUpModal.$refs.userInfo.reset();
             this.$refs.signUpModal.show();
         }
     }
