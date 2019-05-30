@@ -9,8 +9,7 @@
         </select>
         <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" errStyle="errStyle"></div>
     </span>
-    <input v-else-if="type === 'input'" ref="select2" value=" " :style="customStyle" :name="name">
-    <div v-else ref="select2" :style="customStyle" :name="name"></div>
+    <input v-else ref="select2" value=" " :style="customStyle" :name="name">
 </template>
 
 <script>

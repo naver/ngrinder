@@ -7,7 +7,7 @@
             <div class="form-horizontal modal-content">
                 <fieldset>
                     <control-group labelMessageKey="user.switch.title">
-                        <select2 v-if="isAdmin" :option="option" type="div" v-model="switchTargetUser" @change="switchUser"></select2>
+                        <select2 v-if="isAdmin" :option="option" type="input" v-model="switchTargetUser" @change="switchUser"></select2>
                         <select2 v-else v-model="switchTargetUser" @change="switchUser">
                             <option value=""></option>
                             <option v-for="user in switchableUsers" :value="user.id" v-text="user.text"></option>
