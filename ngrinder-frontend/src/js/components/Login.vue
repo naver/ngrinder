@@ -1,7 +1,7 @@
 <template>
     <div id="login-container">
         <vue-headful title="Login"/>
-        <sign-up-modal :id="'sign-up-modal'" ref="signUpModal"></sign-up-modal>
+        <sign-up-modal ref="signUpModal"></sign-up-modal>
         <div class="logo">
             <img src="/img/logo_ngrinder_a.png" width="400" alt="nGrinder logo">
         </div>
@@ -32,7 +32,7 @@
                         </select>
                     </div>
                     <div v-if="signUpEnabled" class="prompt">
-                        <a @click="$EventBus.$emit($Event.RESET_SIGN_UP_MODAL)" data-toggle="modal" data-target="#sign-up-modal" id="sign_up" class="pointer-cursor">Sign Up</a>
+                        <a @click="showSignUpModal" class="pointer-cursor sign-up-btn">Sign Up</a>
                     </div>
                 </fieldset>
             </form>
@@ -76,6 +76,11 @@
                 this.userLanguage = res.data.userLanguage;
                 this.signUpEnabled = res.data.signUpEnabled;
             }).catch(error => console.error(error));
+        }
+
+        showSignUpModal() {
+            this.$EventBus.$emit(this.$Event.RESET_SIGN_UP_MODAL);
+            this.$refs.signUpModal.show();
         }
     }
 </script>
@@ -142,7 +147,7 @@
                         width: 240px;
                     }
 
-                    #sign_up {
+                    .sign-up-btn {
                         margin-left: 200px;
                     }
 

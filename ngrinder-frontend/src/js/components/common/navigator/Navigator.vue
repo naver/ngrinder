@@ -35,8 +35,8 @@
             </div>
         </div>
         <announcement></announcement>
-        <user-switch-modal ref="userSwitchModal" id="user-switch-modal"></user-switch-modal>
-        <user-profile-modal ref="userProfileModal" id="user-profile-modal"></user-profile-modal>
+        <user-switch-modal ref="userSwitchModal"></user-switch-modal>
+        <user-profile-modal ref="userProfileModal"></user-profile-modal>
     </div>
 </template>
 
