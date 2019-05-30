@@ -144,15 +144,16 @@
                 }
             }
 
-            this.$http.post(`/script/api/new/${this.currentPath}`, formDataOf(
-                "fileName", this.fileName,
-                "testUrl", this.testUrl,
-                "options", JSON.stringify(this.$refs.scriptOption.toJson),
-                "scriptType", this.scriptHandler.key,
-                "createLibAndResource", this.createLibAndResource
-            ), {
-                params: { "type": 'script' }
-            })
+            const params = querystring.stringify({
+                fileName: this.fileName,
+                testUrl: this.testUrl,
+                options: JSON.stringify(this.$refs.scriptOption.toJson),
+                scriptType: this.scriptHandler.key,
+                createLibAndResource: this.createLibAndResource,
+                type: 'script',
+            });
+
+            this.$http.post(`/script/api/new/${this.currentPath}`, params)
             .then(res => {
                 if (res.data.message) {
                     console.log(res.data.message);
@@ -196,20 +197,6 @@
             this.$refs.fileNameControlGroup.hasError = !!errors.first('fileName');
             this.$refs.testUrlControlGroup.hasError = !!errors.first('testUrl');
         }
-    }
-
-    function formDataOf() {
-        if (arguments.length % 2 !== 0) {
-            console.error('Form data must be consist of key value pairs');
-            return null;
-        }
-
-        const formData = new FormData();
-        for (let i = 0; i < arguments.length; i += 2) {
-            formData.append(arguments[i], arguments[i + 1]);
-        }
-
-        return formData;
     }
 
     const resolve = (source, relative) => {
