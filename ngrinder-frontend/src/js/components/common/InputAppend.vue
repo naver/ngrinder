@@ -66,16 +66,9 @@
         },
     })
     export default class InputAppend extends Mixins(Base, ValidationMixin) {
-        mounted() {
-            this.$EventBus.$on(this.$Event.SIGN_UP_FORM_VALIDATION_CHECK, () => this.checkValidation());
-        }
 
         get inputType() {
             return this.type ? this.type : 'text';
-        }
-
-        destroyed() {
-            this.initEventBus();
         }
     }
 
