@@ -7,9 +7,7 @@
     @Component({
         computed: {
             ...mapState([
-                'version',
-                'config',
-                'currentUser',
+                'ngrinder',
             ]),
         },
     })
@@ -48,11 +46,11 @@
         }
 
         get isAdmin() {
-            return this.currentUser.role === 'A';
+            return this.ngrinder.currentUser.role === 'A';
         }
 
         get isAdminOrSuperUser() {
-            return this.currentUser.role === 'A' || this.currentUser.role === 'S';
+            return this.ngrinder.currentUser.role === 'A' || this.ngrinder.currentUser.role === 'S';
         }
     }
 </script>

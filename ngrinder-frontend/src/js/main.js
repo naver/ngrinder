@@ -86,14 +86,11 @@ new Vue({
         Navigator,
     },
     beforeMount: function() {
-        this.$store.commit('version', window.ngrinder.version);
-        this.$store.commit('config', window.ngrinder.config);
-        this.$store.commit('currentUser', window.ngrinder.currentUser);
+        this.$store.commit('ngrinder', window.ngrinder);
     },
     computed: {
         ...mapState([
-            'version',
-            'currentUser',
+            'ngrinder',
         ]),
     },
     store,

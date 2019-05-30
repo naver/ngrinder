@@ -17,7 +17,7 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav pull-right">
-                        <template v-if="config.clustered">
+                        <template v-if="ngrinder.config.clustered">
                             <li class="cluster-icon-container">
                                 <img src="/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode">
                             </li>
@@ -29,7 +29,7 @@
                         </user-menu>
 
                         <li class="divider-vertical"></li>
-                        <li><a :href="config.helpUrl" target="_blank" v-text="i18n('navigator.help')"></a></li>
+                        <li><a :href="ngrinder.config.helpUrl" target="_blank" v-text="i18n('navigator.help')"></a></li>
                     </ul>
                 </div>
             </div>

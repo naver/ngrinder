@@ -9,9 +9,9 @@
 
 <div id="ngrinder">
     <div id="ngrinder-main-content-wrapper">
-        <navigator v-if="currentUser.role"></navigator>
+        <navigator v-if="ngrinder.currentUser.role"></navigator>
         <router-view :key="$route.fullPath"></router-view>
-        <copyright :version="version"></copyright>
+        <copyright :version="ngrinder.version"></copyright>
     </div>
 </div>
 
