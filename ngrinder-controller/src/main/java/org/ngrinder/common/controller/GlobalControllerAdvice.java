@@ -36,6 +36,7 @@ public class GlobalControllerAdvice {
 		model.addAttribute("clustered", config.isClustered());
 		model.addAttribute("visibleRegions", regionService.getAllVisibleRegionNames());
 		model.addAttribute("helpUrl", config.getHelpUrl());
+		model.addAttribute("signUpEnabled", config.isSignUpEnabled());
 		model.addAttribute("hasNewAnnouncement", announcementService.isNew());
 		try {
 			model.addAttribute("currentUser", userContext.getCurrentUser());

@@ -1,7 +1,7 @@
 <template>
     <div id="login-container">
         <vue-headful title="Login"/>
-        <sign-up-modal ref="signUpModal"></sign-up-modal>
+        <sign-up-modal v-if="ngrinder.config.signUpEnabled" ref="signUpModal"></sign-up-modal>
         <div class="logo">
             <img src="/img/logo_ngrinder_a.png" width="400" alt="nGrinder logo">
         </div>
@@ -31,7 +31,7 @@
                             <option v-for="timezone in timezones" :value="timezone" v-text="timezone"></option>
                         </select>
                     </div>
-                    <div v-if="signUpEnabled" class="prompt">
+                    <div v-if="ngrinder.config.signUpEnabled" class="prompt">
                         <a @click="showSignUpModal" class="pointer-cursor sign-up-btn">Sign Up</a>
                     </div>
                 </fieldset>
@@ -55,7 +55,6 @@
         userLanguage = 'en';
         userTimezone = jstz.determine().name();
         timezones = [];
-        signUpEnabled = false;
 
         created() {
             // just for enable cache
@@ -74,7 +73,6 @@
         getConfig() {
             this.$http.get('home/api/config').then(res => {
                 this.userLanguage = res.data.userLanguage;
-                this.signUpEnabled = res.data.signUpEnabled;
             }).catch(error => console.error(error));
         }
 
