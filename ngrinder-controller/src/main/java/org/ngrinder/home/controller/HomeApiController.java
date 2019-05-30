@@ -80,8 +80,7 @@ public class HomeApiController extends BaseController {
 			"seeMoreQuestionUrl", getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL,
 				getMessages(PROP_CONTROLLER_FRONT_PAGE_QNA_MORE_URL)),
 			"seeMoreResourcesUrl", getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL),
-			"userLanguage", getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG),
-			"signUpEnabled", getConfig().isSignUpEnabled());
+			"userLanguage", getConfig().getControllerProperties().getProperty(ControllerConstants.PROP_CONTROLLER_DEFAULT_LANG));
 	}
 
 	private List<PanelEntry> getRightPanelEntries() {
