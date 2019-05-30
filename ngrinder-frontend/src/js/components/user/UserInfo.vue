@@ -129,6 +129,8 @@
         followerSelect2Option = {};
         formUrl = '/user/save';
 
+        validationGroup = [];
+
         created() {
             delete this.userProps.password;
             Object.assign(this.user, this.userProps);
@@ -166,12 +168,9 @@
         }
 
         mounted() {
+            this.validationGroup = [this.$refs.userId, this.$refs.userName, this.$refs.email,
+                this.$refs.mobilePhone, this.$refs.password, this.$refs.confirmPassword];
             $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#user_form'});
-            this.$EventBus.$on(this.$Event.RESET_SIGN_UP_MODAL, this.reset);
-        }
-
-        destroyed() {
-            this.initEventBus();
         }
 
         initSelection(element, callback) {
@@ -187,7 +186,7 @@
             for (let prop in this.user) {
                 this.user[prop] = '';
             }
-            this.$nextTick(() => this.$EventBus.$emit(this.$Event.SIGN_UP_FORM_VALIDATION_CHECK));
+            this.$nextTick(() => this.validationGroup.forEach(validation => validation.checkValidation()));
         }
 
         save() {
@@ -198,12 +197,7 @@
         }
 
         hasValidationError() {
-            return this.$refs.userId.errors.any()
-                || this.$refs.userName.errors.any()
-                || this.$refs.email.errors.any()
-                || this.$refs.mobilePhone.errors.any()
-                || this.$refs.password.errors.any()
-                || this.$refs.confirmPassword.errors.any();
+            return this.validationGroup.some(validation => validation.errors.any());
         }
 
         setCustomValidationRules() {
