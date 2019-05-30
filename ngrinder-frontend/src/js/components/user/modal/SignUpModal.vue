@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoadFinished" class="modal fade" :id="id">
+    <div v-if="dataLoadFinished" class="modal fade" id="sign-up-modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content sign-up">
                 <div class="modal-header">
@@ -39,7 +39,6 @@
 
 <style lang="less" scoped>
     #sign-up-modal {
-
         display: none;
 
         .modal.fade.in {

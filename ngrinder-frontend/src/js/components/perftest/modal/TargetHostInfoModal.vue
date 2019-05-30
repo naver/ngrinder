@@ -1,5 +1,6 @@
 <template>
-    <div ref="targetInfoModal" class="modal hide fade" :id="id" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div ref="targetHostInfoModal" class="modal hide fade" id="target-host-info-modal"
+         tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
         </div>
@@ -56,7 +57,7 @@
         }
 
         setEvent() {
-            $(this.$refs.targetInfoModal).on('shown.bs.modal', () => {
+            $(this.$refs.targetHostInfoModal).on('shown.bs.modal', () => {
                 if (this.currentHostIp !== this.ip) {
                     this.currentHostIp = this.ip;
                     this.cpu.queue.clear();
@@ -71,7 +72,7 @@
                 this.currentIntervalId = setInterval(this.getState, this.INTERVAL * 1000);
             });
 
-            $(this.$refs.targetInfoModal).on('hide.bs.modal', () => clearInterval(this.currentIntervalId));
+            $(this.$refs.targetHostInfoModal).on('hide.bs.modal', () => clearInterval(this.currentIntervalId));
         }
 
         getState() {
@@ -110,7 +111,7 @@
 </script>
 
 <style lang="less" scoped>
-    #target-info-modal {
+    #target-host-info-modal {
         width: 580px;
 
         .modal-body {

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoadFinished" class="modal fade" :id="id" role="dialog">
+    <div v-if="dataLoadFinished" id="user-profile-modal" class="modal fade" role="dialog">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h4 class="modal-title" v-text="i18n('navigator.dropDown.profile.title')"></h4>

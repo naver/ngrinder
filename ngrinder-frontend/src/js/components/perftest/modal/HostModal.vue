@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" :id="id">
+    <div class="modal fade" id="add-host-modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

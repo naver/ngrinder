@@ -4,20 +4,14 @@
 
     @Component({
         name: 'modalBase',
-        props: {
-            id: {
-                type: String,
-                required: true,
-            },
-        },
     })
     export default class ModalBase extends Base {
         hide() {
-            $(`#${this.id}`).modal('hide');
+            $(this.$el).modal('hide');
         }
 
-        show(id) {
-            $(`#${this.id}`).modal('show');
+        show() {
+            $(this.$el).modal('show');
         }
     }
 </script>

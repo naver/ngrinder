@@ -82,8 +82,7 @@
                 </control-group>
 
                 <control-group labelMessageKey="perfTest.config.targetHost">
-                    <a class="btn pull-right btn-mini add-host-btn" data-toggle="modal"
-                       href="#add-host-modal" v-text="i18n('perfTest.config.add')">
+                    <a class="btn pull-right btn-mini add-host-btn" @click.prevent="$refs.addHostModal.show" v-text="i18n('perfTest.config.add')">
                     </a>
                     <div class="div-host"
                          data-toggle="popover"
@@ -190,8 +189,8 @@
             </div>
         </div>
         <ramp-up ref="rampUp" :test="test" :rampUpTypes="rampUpTypes"></ramp-up>
-        <host-modal :id="'add-host-modal'" @add-host="addHost"></host-modal>
-        <target-host-info-modal ref="targetHostInfoModal" :id="'target-info-modal'" :ip="targetHostIp"></target-host-info-modal>
+        <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
+        <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
     </div>
 </template>
 
