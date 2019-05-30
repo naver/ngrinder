@@ -39,6 +39,7 @@
 
     import ControlGroup from '../../common/ControlGroup.vue';
     import { Validator } from 'vee-validate';
+    import querystring from 'querystring';
 
     @Component({
         name: "createFolderModal",
@@ -63,12 +64,11 @@
                 return;
             }
 
-            this.$http.post(`/script/api/new/${this.currentPath}`, null, {
-                params: {
-                    type: 'folder',
-                    folderName: this.folderName,
-                }
-            })
+            const params = querystring.stringify({
+                type: 'folder',
+                folderName: this.folderName,
+            });
+            this.$http.post(`/script/api/new/${this.currentPath}`, params)
             .then(() => {
                 $(this.$refs.createFolderModal).modal('hide');
                 this.folderName = '';
