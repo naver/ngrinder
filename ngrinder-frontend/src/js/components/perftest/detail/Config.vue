@@ -339,8 +339,12 @@
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
                 this.$refs.rampUp.updateRampUpChart();
-                this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount
-                    , this.$refs.param, this.$refs.runCount, this.$refs.scriptName, this.$refs.region];
+                this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount,
+                    this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
+
+                if (this.config.clustered) {
+                    this.validationGroup.push(this.$refs.region);
+                }
             });
         }
 
