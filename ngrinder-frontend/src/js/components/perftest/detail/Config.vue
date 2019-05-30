@@ -20,11 +20,11 @@
                         </control-group>
                     </div>
 
-                    <div v-if="config.clustered" class="span2">
+                    <div v-if="ngrinder.config.clustered" class="span2">
                         <control-group ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount" class="pull-right required" customStyle="width: 110px;"
                                      :validationRules="{ required: true }" @validationResult="$refs.regionControlGroup.handleError($event)">
-                                <option v-for="region in config.visibleRegions" :value="region" :selected="region === test.region" v-text="region"></option>
+                                <option v-for="region in ngrinder.config.visibleRegions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select2>
                         </control-group>
                     </div>
@@ -287,7 +287,7 @@
             this.testConfig.maxVuserPerAgent = this.data.maxVuserPerAgent;
 
             this.$http.get('/perftest/api/script').then(res => {
-                if (!this.config.clustered) {
+                if (!this.ngrinder.config.clustered) {
                     this.test.region = 'NONE';
                 }
                 this.changeMaxAgentCount();
@@ -344,7 +344,7 @@
                 this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount,
                     this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
 
-                if (this.config.clustered) {
+                if (this.ngrinder.config.clustered) {
                     this.validationGroup.push(this.$refs.region);
                 }
             });
