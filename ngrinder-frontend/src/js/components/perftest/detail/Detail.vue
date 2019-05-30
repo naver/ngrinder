@@ -162,7 +162,7 @@
                 this.timezoneOffset = res.data.timezone_offset;
                 this.selectedTag = this.test.tagString;
                 this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
-                if (this.config.clustered && this.test.region === 'NONE') {
+                if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                     this.test.region = '';
                 }
                 this.dataLoadFinished = true;
@@ -351,11 +351,11 @@
         }
 
         get isClone() {
-            return this.test.status !== 'SAVED' || this.test.createdUserId !== this.currentUser.factualUser.id;
+            return this.test.status !== 'SAVED' || this.test.createdUserId !== this.ngrinder.currentUser.factualUser.id;
         }
 
         get disabled() {
-            return this.test.createdUserId !== this.currentUser.factualUser.id;
+            return this.test.createdUserId !== this.ngrinder.currentUser.factualUser.id;
         }
     }
 </script>

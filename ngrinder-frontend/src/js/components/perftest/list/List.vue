@@ -16,7 +16,7 @@
                 <col>
                 <col>
                 <col width="70">
-                <col v-if="config.clustered" width="70">
+                <col v-if="ngrinder.config.clustered" width="70">
                 <col width="120">
                 <col width="80">
                 <col width="65">
@@ -43,7 +43,7 @@
                         <span v-if="isAdmin" v-text="i18n('perfTest.list.owner')"></span>
                         <span v-else v-text="i18n('perfTest.list.modifier.oneLine')"></span>
                     </th>
-                    <th v-if="config.clustered" id="region">
+                    <th v-if="ngrinder.config.clustered" id="region">
                         <span v-text="i18n('common.region')"></span>
                     </th>
                     <th id="start_time">
@@ -103,7 +103,7 @@
                                 <span v-else v-text="test.lastModifiedUserName"></span>
                             </div>
                         </td>
-                        <td v-if="config.clustered" class="ellipsis" :title="i18n('common.region')" data-html="true">
+                        <td v-if="ngrinder.config.clustered" class="ellipsis" :title="i18n('common.region')" data-html="true">
                             <span v-text="test.region"></span>
                         </td>
                         <td>
