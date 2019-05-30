@@ -5,7 +5,7 @@
             <h4 class="modal-title" v-text="i18n('navigator.dropDown.profile.title')"></h4>
         </div>
         <div class="modal-body">
-            <user-info :info="info" ref="userInfo"></user-info>
+            <user-info :userProps="user" :config="config" ref="userInfo"></user-info>
         </div>
     </div>
 </template>
@@ -20,12 +20,22 @@
         components: { UserInfo },
     })
     export default class UserProfileModal extends ModalBase {
-        info = {};
+        user = {};
+        config = {};
         dataLoadFinished = false;
 
         created() {
             this.$http.get('/user/api/profile').then(res => {
-                this.info = res.data;
+                this.user = res.data.user;
+                this.config = {
+                    allowPasswordChange: res.data.allowPasswordChange,
+                    allowRoleChange: res.data.allowRoleChange,
+                    allowShareChange: res.data.allowShareChange,
+                    followers: res.data.followers,
+                    owners: res.data.owners,
+                    showPasswordByDefault: res.data.showPasswordByDefault,
+                    userSecurityEnabled: res.data.userSecurityEnabled,
+                };
                 this.dataLoadFinished = true;
             }).catch((error) => console.error(error));
         }

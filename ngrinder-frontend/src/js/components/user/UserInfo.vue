@@ -19,9 +19,9 @@
                               message="user.info.name"/>
             </control-group>
 
-            <control-group v-if="info.allowRoleChange" name="role" labelMessageKey="user.info.role">
+            <control-group v-if="config.allowRoleChange" name="role" labelMessageKey="user.info.role">
                 <select v-model="user.role" name="role">
-                    <option v-for="role in info.roleSet" :value="role"
+                    <option v-for="role in config.roleSet" :value="role"
                             v-text="role.fullName" :selected="user.role === role">
                     </option>
                 </select>
@@ -50,29 +50,29 @@
                               message="user.info.phone"/>
             </control-group>
 
-            <control-group v-if="info.allowShareChange" labelMessageKey="user.share.title">
+            <control-group v-if="config.allowShareChange" labelMessageKey="user.share.title">
                 <select2 v-model="user.followersStr" type="input" name="followersStr" :option="followerSelect2Option" customStyle="width: 285px;"></select2>
             </control-group>
 
-            <template v-if="info.allowPasswordChange">
-                <div v-if="!info.showPasswordByDefault" class="accordion-heading">
-                    <a @click="displayPasswordField = !displayPasswordField" class="pointer-cursor" v-text="i18n('user.info.button.changePwd')"></a>
-                </div>
+            <div v-if="!config.showPasswordByDefault" class="accordion-heading">
+                <a @click="displayPasswordField = !displayPasswordField" class="pointer-cursor" v-text="i18n('user.info.button.changePwd')"></a>
+            </div>
 
+            <template v-if="config.allowPasswordChange">
                 <div v-show="displayPasswordField" class="accordion-inner password-container">
-                    <control-group name="password" labelMessageKey="user.info.pwd" ref="passwordControlGroup" :required="info.showPasswordByDefault">
+                    <control-group name="password" labelMessageKey="user.info.pwd" ref="passwordControlGroup" :required="config.showPasswordByDefault">
                         <input-append name="password" ref="password"
                                       v-model="user.password"
                                       @validationResult="$refs.passwordControlGroup.handleError($event)"
-                                      :validationRules="{ required: info.showPasswordByDefault, lengthRange: [6, 15] }"
+                                      :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15] }"
                                       type="password" message="user.info.pwd"/>
                     </control-group>
 
-                    <control-group name="confirmPassword" labelMessageKey="user.info.cpwd" ref="confirmPasswordControlGroup" :required="info.showPasswordByDefault">
+                    <control-group name="confirmPassword" labelMessageKey="user.info.cpwd" ref="confirmPasswordControlGroup" :required="config.showPasswordByDefault">
                         <input-append name="confirmPassword" ref="confirmPassword"
                                       v-model="user.confirmPassword"
                                       @validationResult="$refs.confirmPasswordControlGroup.handleError($event)"
-                                      :validationRules="{ required: info.showPasswordByDefault, lengthRange: [6, 15], confirmed: user.password}"
+                                      :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15], confirmed: user.password}"
                                       type="password" message="user.info.cpwd"/>
                     </control-group>
                 </div>
@@ -98,9 +98,13 @@
     @Component({
         name: 'userInfo',
         props: {
-            info: {
+            userProps: {
                 type: Object,
-                default: () => { return {}; },
+                required: true,
+            },
+            config: {
+                type: Object,
+                required: true,
             },
             type: {
                 type: String,
@@ -123,23 +127,21 @@
 
         displayPasswordField = true;
         followerSelect2Option = {};
-
         formUrl = '/user/save';
 
         created() {
+            delete this.userProps.password;
+            Object.assign(this.user, this.userProps);
+            this.displayPasswordField = this.config.showPasswordByDefault;
+
             this.setCustomValidationRules();
             this.setCustomValidationMessages();
-
-            delete this.info.user.password;
-            Object.assign(this.user, this.info.user);
-
-            this.displayPasswordField = this.info.showPasswordByDefault;
 
             if (this.type === 'signUp') {
                 this.formUrl = '/sign_up/save';
             }
 
-            if (this.info.allowShareChange) {
+            if (this.config.allowShareChange) {
                 this.followerSelect2Option = {
                     multiple: true,
                     minimumInputLength: 3,
@@ -174,8 +176,8 @@
 
         initSelection(element, callback) {
             let data = [];
-            if (this.info.followers) {
-                this.info.followers.forEach(follower => data.push({id: follower.id, text: follower.text}));
+            if (this.config.followers) {
+                this.config.followers.forEach(follower => data.push({id: follower.id, text: follower.text}));
             }
             element.val('');
             callback(data);

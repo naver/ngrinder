@@ -7,7 +7,7 @@
                     <h4 class="modal-title" v-text="i18n('user.signup.header')"></h4>
                 </div>
                 <div class="modal-body">
-                    <user-info :type="'signUp'" :info="info" ref="userInfo"></user-info>
+                    <user-info :type="'signUp'" :userProps="user" :config="config" ref="userInfo"></user-info>
                 </div>
             </div>
         </div>
@@ -24,12 +24,23 @@
         components: { UserInfo },
     })
     export default class SignUpModal extends ModalBase {
-        info = {};
+        user = {};
+        config = {};
         dataLoadFinished = false;
 
         created() {
             this.$http.get('/sign_up/api/new').then(res => {
-                this.info = res.data;
+                this.user = res.data.user;
+                this.config = {
+                    newUser: res.data.newUser,
+                    roleSet: res.data.roleSet,
+                    allowPasswordChange: res.data.allowPasswordChange,
+                    allowRoleChange: res.data.allowRoleChange,
+                    allowShareChange: res.data.allowShareChange,
+                    allowUserIdChange: res.data.allowUserIdChange,
+                    showPasswordByDefault: res.data.showPasswordByDefault,
+                    userSecurityEnabled: res.data.userSecurityEnabled,
+                };
                 this.dataLoadFinished = true;
             }).catch((error) => console.error(error));
         }

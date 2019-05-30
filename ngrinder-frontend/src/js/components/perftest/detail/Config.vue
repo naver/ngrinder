@@ -34,11 +34,11 @@
                     <input-append name="vuserPerAgent" ref="vuserPerAgent"
                                   v-model="test.vuserPerAgent"
                                   @validationResult="$refs.vuserPerAgentControlGroup.handleError($event)"
-                                  :validationRules="{ required: true, max_value: testConfig.maxVuserPerAgent, min_value: 1 }"
+                                  :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                   @change="changeVuserPerAgent"
                                   errStyle="margin: 0; width: 140px;"
                                   appendPrefix="perfTest.config.max"
-                                  :append="testConfig.maxVuserPerAgent"
+                                  :append="config.maxVuserPerAgent"
                                   message="perfTest.config.vuserPerAgent">
                     </input-append>
                     <i class="pointer-cursor expand" @click="display.vuserPanel = !display.vuserPanel"></i>
@@ -122,9 +122,9 @@
                     <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
-                                      :append="testConfig.maxRunCount"
+                                      :append="config.maxRunCount"
                                       @validationResult="$refs.runCountControlGroup.handleError($event)"
-                                      :validationRules="{ required: true, max_value: testConfig.maxRunCount, min_value: 0 }"
+                                      :validationRules="{ required: true, max_value: config.maxRunCount, min_value: 0 }"
                                       v-model="test.runCount"
                                       @focus="test.threshold = TEST_THRESHOLD_RUNCOUNT"
                                       message="perfTest.config.runCount">
@@ -190,7 +190,7 @@
                 </transition>
             </div>
         </div>
-        <ramp-up ref="rampUp" :test="test" :rampUpTypes="rampUpTypes"></ramp-up>
+        <ramp-up ref="rampUp" :test="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
     </div>
@@ -213,7 +213,11 @@
     @Component({
         name: 'config',
         props: {
-            data: {
+            testProps: {
+                type: Object,
+                required: true,
+            },
+            config: {
                 type: Object,
                 required: true,
             },
@@ -242,17 +246,10 @@
             samplingInterval: 2,
         };
 
-        testConfig = {
-            maxRunCount: 10000,
-            maxRunHour: 8,
-            maxVuserPerAgent: 3000,
-        };
-
         scripts = [];
         resources = [];
 
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
-        rampUpTypes = [];
         regionAgentCountMap = {};
 
         // to use Set object reactively in vue
@@ -279,13 +276,7 @@
         validationGroup = [];
 
         created() {
-            this.test = this.data.test;
-            this.regionAgentCountMap = this.data.regionAgentCountMap;
-            this.rampUpTypes = this.data.availRampUpType;
-            this.testConfig.maxRunCount = this.data.maxRunCount;
-            this.testConfig.maxRunHour = this.data.maxRunHour;
-            this.testConfig.maxVuserPerAgent = this.data.maxVuserPerAgent;
-
+            this.test = this.testProps;
             this.$http.get('/perftest/api/script').then(res => {
                 if (!this.ngrinder.config.clustered) {
                     this.test.region = 'NONE';
@@ -305,8 +296,8 @@
         }
 
         changeMaxAgentCount() {
-            if (this.test.region && this.regionAgentCountMap[this.test.region]) {
-                this.maxAgentCount = this.regionAgentCountMap[this.test.region].value;
+            if (this.test.region && this.config.regionAgentCountMap[this.test.region]) {
+                this.maxAgentCount = this.config.regionAgentCountMap[this.test.region].value;
                 return;
             }
             this.maxAgentCount = 0;

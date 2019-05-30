@@ -71,10 +71,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="test-config-section">
-                            <config ref="config" :data="data"></config>
+                            <config ref="config" :testProps="test" :config="config"></config>
                         </div>
                         <div class="tab-pane" id="running-section">
-                            <running ref="running" :test="test"></running>
+                            <running ref="running" :testProps="test"></running>
                         </div>
                         <div class="tab-pane" id="report-section">
                             <report :id="id" ref="report"></report>
@@ -111,7 +111,7 @@
         components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
     })
     export default class PerfTestDetail extends Base {
-        data = {};
+        config = {};
         test = {
             id: '',
             status: '',
@@ -157,7 +157,13 @@
         created() {
             const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
             this.$http.get(apiPath).then(res => {
-                Object.assign(this.data, res.data);
+                this.config = {
+                    regionAgentCountMap: res.data.regionAgentCountMap,
+                    rampUpTypes: res.data.availRampUpType,
+                    maxRunCount: res.data.maxRunCount,
+                    maxRunHour: res.data.maxRunHour,
+                    maxVuserPerAgent: res.data.maxVuserPerAgent,
+                };
                 this.test = res.data.test;
                 this.timezoneOffset = res.data.timezone_offset;
                 this.selectedTag = this.test.tagString;
