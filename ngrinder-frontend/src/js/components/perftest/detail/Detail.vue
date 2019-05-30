@@ -86,7 +86,7 @@
             </form>
             <intro-button></intro-button>
         </div>
-        <schedule-modal ref="scheduleModal" :id="'schedule-modal'" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
+        <schedule-modal ref="scheduleModal" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
 </template>
 <script>
