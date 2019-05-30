@@ -16,28 +16,28 @@
 </div>
 
 <script>
-    const visibleRegions = "{{ visibleRegions }}";
+    const visibleRegions = '{{ visibleRegions }}';
     window.ngrinder = {
-        version: "{{ version }}",
+        version: '{{ version }}',
         currentUser: {
-            name: "{{ currentUser.userName }}",
-            id: "{{ currentUser.userId }}",
-            email: "{{ currentUser.email }}",
-            role: "{{ currentUser.role.shortName }}",
+            name: '{{ currentUser.userName }}',
+            id: '{{ currentUser.userId }}',
+            email: '{{ currentUser.email }}',
+            role: '{{ currentUser.role.shortName }}',
             factualUser: {
-                name: "{{ currentUser.factualUser.userName }}",
-                id: "{{ currentUser.factualUser.userId }}",
-                email: "{{ currentUser.factualUser.email }}",
-                role:  "{{ currentUser.role.shortName }}",
+                name: '{{ currentUser.factualUser.userName }}',
+                id: '{{ currentUser.factualUser.userId }}',
+                email: '{{ currentUser.factualUser.email }}',
+                role:  '{{ currentUser.role.shortName }}',
             },
         },
         config: {
-            signUpEnabled : ("{{ signUpEnabled }}" === 'true'),
+            signUpEnabled : ('{{ signUpEnabled }}' === 'true'),
             visibleRegions: visibleRegions.substr(1, visibleRegions.length -2).split(','),
-            clustered: ("{{ clustered }}" === 'true'),
-            userSwitchMode: !!("{{ currentUser.ownerUser }}"),
-            helpUrl: "{{ helpUrl }}",
-            hasNewAnnouncement: ("{{ hasNewAnnouncement }}" === 'true'),
+            clustered: ('{{ clustered }}' === 'true'),
+            userSwitchMode: !!('{{ currentUser.ownerUser }}'),
+            helpUrl: '{{ helpUrl }}',
+            hasNewAnnouncement: ('{{ hasNewAnnouncement }}' === 'true'),
         },
     }
 </script>
