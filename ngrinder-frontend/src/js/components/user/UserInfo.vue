@@ -6,7 +6,7 @@
                               v-model="user.userId"
                               @validationResult="$refs.userIdControlGroup.handleError($event)"
                               :readonly="type === 'save'"
-                              :validationRules="{ required: true, userIdExist: true, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
+                              :validationRules="{ required: true, userIdExist: ngrinder.config.signUpEnabled, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
                               message="user.info.userId"/>
                 <input type="hidden" name="id" :value="user.id"/>
             </control-group>
