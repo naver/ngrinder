@@ -50,6 +50,10 @@
         scriptType = '';
 
         created() {
+            if (this.$route.query.type === '404') {
+                // TODO to replace message component.
+                alert('Requested URL does not exist');
+            }
             this.getHandlers();
             this.getPanel();
             this.getConfig();

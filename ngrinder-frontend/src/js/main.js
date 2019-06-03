@@ -65,6 +65,7 @@ const store = require('./store/vuex-store').default;
 const routes = [
     {path: '/', component: Home, name: 'home'},
     {path: '/home', component: Home, alias: '/'},
+    {path: '/doError', component: Home, alias: '/'},
     {path: '/login', component: Login, name: 'login'},
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
     {path: '/perftest/list', redirect: '/perftest'},

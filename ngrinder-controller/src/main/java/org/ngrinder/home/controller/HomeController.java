@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -197,18 +196,10 @@ public class HomeController extends BaseController implements ControllerConstant
 	/**
 	 * Error redirection as a second phase.
 	 *
-	 * @param user     user
-	 * @param model    model
-	 * @param response response
-	 * @param request  request
-	 * @return "index"
+	 * @return "app"
 	 */
 	@RequestMapping(value = "/doError")
-	public String second(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
-		String parameter = request.getParameter("type");
-		if ("404".equals(parameter)) {
-			model.addAttribute("exception", processException("Requested URL does not exist"));
-		}
-		return home(user, null, null, model, response, request);
+	public String doError(User user) {
+		return "app";
 	}
 }
