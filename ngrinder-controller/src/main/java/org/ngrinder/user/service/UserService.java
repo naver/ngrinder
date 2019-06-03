@@ -15,6 +15,7 @@ package org.ngrinder.user.service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.hibernate.Hibernate.initialize;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
 
@@ -98,7 +100,11 @@ public class UserService extends AbstractUserService {
 	@Cacheable(value = CACHE_USERS, key = "#userId")
 	@Override
 	public User getOne(String userId) {
-		return userRepository.findOneByUserId(userId);
+		User user  = userRepository.findOneByUserId(userId);
+		if (user != null) {
+			initialize(user.getFollowers());
+		}
+		return user;
 	}
 
 	/**
