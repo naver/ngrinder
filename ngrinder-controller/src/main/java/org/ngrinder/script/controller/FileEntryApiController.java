@@ -84,28 +84,6 @@ public class FileEntryApiController extends BaseController {
 	@Autowired
 	private ScriptValidationService scriptValidationService;
 
-	/**
-	 * Get the SVN url BreadCrumbs HTML string.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return generated HTML
-	 */
-	@GetMapping("/svnUrl")
-	public String getSvnUrlBreadcrumbs(User user, @RequestParam String path) {
-		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = split(path, '/');
-		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder returnHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
-			.append(contextPath).append("/svn/").append(user.getUserId()).append("</a>");
-		for (String each : parts) {
-			returnHtml.append("/");
-			accumulatedPart.append("/").append(each);
-			returnHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
-		}
-		return returnHtml.toString();
-	}
-
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
 		return handlerFactory.getVisibleHandlers();
@@ -253,33 +231,8 @@ public class FileEntryApiController extends BaseController {
 
 		return of(
 			"file", script,
-			"breadcrumbPath", getScriptPathBreadcrumbs(path),
 			"scriptHandler", fileEntryService.getScriptHandler(script)
 		);
-	}
-
-	/**
-	 * Get the script path BreadCrumbs HTML string.
-	 *
-	 * @param path path
-	 * @return generated HTML
-	 */
-	public String getScriptPathBreadcrumbs(String path) {
-		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = split(path, '/');
-		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder returnHtml = new StringBuilder();
-		for (int i = 0; i < parts.length; i++) {
-			String each = parts[i];
-			accumulatedPart.append("/").append(each);
-			if (i != parts.length - 1) {
-				returnHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each)
-					.append("</a>").append("/");
-			} else {
-				returnHtml.append(each);
-			}
-		}
-		return returnHtml.toString();
 	}
 
 	/**
