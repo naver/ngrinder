@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <div class="pull-right">
+                <div v-if="isAdmin" class="pull-right">
                     <a :href="`/user/switch?to=${test.createdUserId}`" v-text="switchUserTitle"></a>
                 </div>
 
