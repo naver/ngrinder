@@ -7,7 +7,14 @@
                         <label class="control-label" v-text="i18n('script.info.name')"></label>
                     </div>
                     <div>
-                        <span class="input-large uneditable-input span6" v-html="breadcrumbPath"></span>
+                        <span class="input-large uneditable-input span6">
+                            <template v-if="basePath !== ''"
+                                      v-for="(each, index) in basePath.split('/')"><!--
+                                --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
+                                                v-text="each"></router-link><!--
+                                -->/<!--
+                            --></template><span v-text="file.fileName"></span>
+                        </span>
                     </div>
                     <div>
                         <template v-if="scriptHandler && scriptHandler.validatable">
@@ -104,11 +111,11 @@
     export default class Editor extends Base {
 
         file = {
+            fileName: '',
             description: '',
             content: '',
             validated: false,
         };
-        breadcrumbPath = '';
         scriptHandler = {};
 
         createLibAndResource = false;
@@ -135,6 +142,16 @@
             $('#tip').popover({trigger: 'hover'});
         }
 
+        get basePath() {
+            const getBaseDirectory = s => s.substring(0, s.lastIndexOf('/'));
+
+            return getBaseDirectory(this.$route.path.replace('/script/detail/', ''));
+        }
+
+        get breadcrumbPathUrl() {
+            return ['/script/list', ...this.basePath.split('/')];
+        }
+
         initScriptDetail() {
             const path = this.$route.path.replace('/script/detail/', '');
             this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
@@ -146,7 +163,6 @@
 
                 this.file.properties.targetHosts.split(',').filter(s => s).forEach(host => this.addHost(host));
 
-                this.breadcrumbPath = res.data.breadcrumbPath;
                 this.validated = this.file.validated;
 
                 this.initCodeMirror();
@@ -164,9 +180,6 @@
             if (this.file.content !== newContent) {
                 this.validated = false;
             }
-
-            const formData = new FormData();
-            formData.append('content', newContent);
 
             if (this.file.revision > 0 && this.file.lastRevision > 0 && this.file.revision < this.file.lastRevision) {
                 bootbox.confirm(
@@ -294,20 +307,6 @@
 
             return this.i18n('script.editor.message.exitWithoutSave');
         }
-    }
-
-    function formDataOf() {
-        if (arguments.length % 2 !== 0) {
-            console.error('Form data must be consist of key value pairs');
-            return null;
-        }
-
-        const formData = new FormData();
-        for (let i = 0; i < arguments.length; i += 2) {
-            formData.append(arguments[i], arguments[i + 1]);
-        }
-
-        return formData;
     }
 
     function noop() {
