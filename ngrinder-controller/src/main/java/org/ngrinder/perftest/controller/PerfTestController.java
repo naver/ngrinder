@@ -106,7 +106,7 @@ public class PerfTestController extends BaseController {
 	 * @param id perf test id
 	 */
 	@RequestMapping("/{id}")
-	public String detail(@PathVariable Long id) {
+	public String detail(User user, @PathVariable Long id) {
 		return "app";
 	}
 
