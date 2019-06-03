@@ -19,8 +19,16 @@
                                 <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend"
                                      data-toggle="popover" :data-content="i18n('script.message.svn')" data-html="true"
                                      title="Subversion" data-placement="bottom">
-                                    <span class="add-on" style="cursor:default">SVN</span>
-                                    <span class="input-xlarge uneditable-input span7" v-html="svnUrl"></span>
+                                    <span class="add-on">SVN</span>
+                                    <span class="input-xlarge uneditable-input span7 svn-url">
+                                        <router-link v-text="basePath" to="/script/list"></router-link><!--
+                                        --><template v-if="currentPath !== ''"
+                                                     v-for="(each, index) in currentPath.split('/')"><!--
+                                            -->/<!--
+                                            --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
+                                                            v-text="each"></router-link>
+                                        </template>
+                                    </span>
                                 </div>
                             </td>
                         </tr>
@@ -29,7 +37,7 @@
             </tr>
             <tr>
                 <td>
-                    <table style="width:100%; margin-top:5px">
+                    <table class="search-bar-buttons">
                         <colgroup>
                             <col width="600px"/>
                             <col width="340px"/>
@@ -68,7 +76,7 @@
     </div>
 </template>
 <script>
-    import { Component, Watch } from 'vue-property-decorator';
+    import Component from 'vue-class-component';
     import Base from '../Base.vue';
 
     import CreateScriptModal from './modal/CreateScriptModal.vue';
@@ -91,12 +99,10 @@
     })
     export default class SearchBar extends Base {
         query = '';
-        svnUrl = '';
+        basePath = `${window.location.hostname}:${window.location.port}/svn/${ngrinder.currentUser.id}`;
 
         mounted() {
             this.query = this.$route.query.query;
-
-            this.initSvnUrl();
 
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
@@ -109,18 +115,6 @@
 
                 $('#folderName').popover({trigger: 'focus'});
             });
-        }
-
-        initSvnUrl() {
-            if (!this.$route.query.query) {
-                this.$http.get("/script/api/svnUrl", {
-                    params: {
-                        path: this.currentPath,
-                    }
-                }).then(res => {
-                    this.svnUrl = res.data;
-                });
-            }
         }
 
         deleteFile() {
@@ -147,9 +141,8 @@
             this.$router.push({ path: '/script/search', query: { query: this.query } });
         }
 
-        @Watch('scripts')
-        onRefresh() {
-            this.initSvnUrl();
+        get breadcrumbPathUrl() {
+            return ['/script/list', ...this.currentPath.split('/')];
         }
     }
 </script>
@@ -162,5 +155,14 @@
 
     .uneditable-input {
         cursor: text;
+    }
+
+    .add-on {
+        cursor: default;
+    }
+
+    .search-bar-buttons{
+        width:100%;
+        margin-top:5px;
     }
 </style>
