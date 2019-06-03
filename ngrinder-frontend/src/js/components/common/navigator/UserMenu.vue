@@ -52,9 +52,6 @@
                 <li class="divider"></li>
                 <li><a href="/user/" v-text="i18n('navigator.dropDown.userManagement')"></a></li>
                 <li><a href="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></a></li>
-                <li v-if="!ngrinder.config.clustered">
-                    <a href="/operation/log" v-text="i18n('navigator.dropDown.logMonitoring')"></a>
-                </li>
                 <li>
                     <a href="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></a>
                 </li>
