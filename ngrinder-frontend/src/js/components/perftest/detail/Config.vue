@@ -344,15 +344,7 @@
         setCustomValidationMessages() {
             const dictionary = {
                 required: () => this.i18n('common.message.validate.empty'),
-                regex: (name) => {
-                    if (name === 'domain') {
-                        return this.i18n('perfTest.config.addHost.inputTargetDomain');
-                    }
-                    if (name === 'ip') {
-                        return this.i18n('perfTest.config.addHost.inputTargetIp');
-                    }
-                    return this.i18n('perfTest.message.param');
-                },
+                regex: () => this.i18n('perfTest.message.param'),
             };
 
             const messages = {

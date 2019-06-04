@@ -35,8 +35,8 @@
                                   v-model="file.description"></textarea>
                     </div>
                     <div>
-                        <a class="btn pull-right btn-mini add-host-btn" data-toggle="modal"
-                           href="#add-host-modal" v-text="i18n('perfTest.config.add')">
+                        <a class="btn pull-right btn-mini add-host-btn"
+                           @click.prevent="$refs.addHostModal.show" v-text="i18n('perfTest.config.add')">
                         </a>
                         <div class="div-host" rel="popover"
                              id="host-div"
@@ -44,18 +44,13 @@
                              :data-content="i18n('perfTest.config.targetHost.help')"
                              data-html="true"
                              data-placement="bottom">
-                            <template v-for="host in targetHosts">
+                            <span v-for="host in targetHosts">
                                 <p class="host">
-                                    <a href="#target_info_modal" data-toggle="modal"
-                                       @click="showHostInfo(host)"
-                                       v-text="host">
-                                    </a>
-                                    <a class="pointer-cursor">
-                                        <i class="icon-remove-circle" @click="removeHost(host)"></i>
-                                    </a>
+                                    <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
+                                    <a class="pointer-cursor"><i class="icon-remove-circle" @click="removeHost(host)"></i></a>
                                 </p>
                                 <br>
-                            </template>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -87,8 +82,8 @@
                 </a>
             </div>
         </div>
-        <host-modal @add-host="addHost"></host-modal>
-        <!-- TODO: Implement monitor -->
+        <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
+        <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
         <messages ref="messages"></messages>
     </div>
 </template>
@@ -98,6 +93,7 @@
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
+    import TargetHostInfoModal from '../perftest/modal/TargetHostInfoModal.vue';
     import Messages from '../common/Messages.vue';
     import CodeMirror from '../common/CodeMirror.vue';
     import querystring from 'querystring';
@@ -106,7 +102,7 @@
 
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, ControlGroup, Messages, CodeMirror },
+        components: { HostModal, TargetHostInfoModal, ControlGroup, Messages, CodeMirror },
     })
     export default class Editor extends Base {
 
@@ -123,6 +119,7 @@
         // to use Set object reactively in vue
         targetHostsChangeTracker = 1;
         targetHostSet = new Set();
+        targetHostIp = '';
 
         editorSize = 0;
 
@@ -251,10 +248,10 @@
             this.targetHostsChangeTracker += 1;
         }
 
-        showHostInfo(host) {    // TODO: Implement monitor
-            this.$http.get(`/monitor/api/info?ip=${$.trim(host)}`)
-            .then(res => console.log(res))
-            .catch(err => console.log(this.i18n("common.error.error")));
+        showTargetHostInfoModal(host) {
+            const hostToken = host.split(':');
+            this.targetHostIp = hostToken[1] ? hostToken[1] : hostToken[0];
+            this.$refs.targetHostInfoModal.show();
         }
 
         @Watch('editorSize')
