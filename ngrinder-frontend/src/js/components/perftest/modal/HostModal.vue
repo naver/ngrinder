@@ -57,6 +57,7 @@
     import ModalBase from '../../common/modal/ModalBase.vue';
     import Component from 'vue-class-component';
     import ControlGroup from '../../common/ControlGroup.vue';
+    import { Validator } from 'vee-validate';
 
     @Component({
         name: 'hostModal',
@@ -67,6 +68,8 @@
         ip = '';
 
         mounted() {
+            this.setCustomValidationMessages();
+
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#add-host-modal'});
@@ -99,6 +102,33 @@
             this.host = '';
             this.ip = '';
         }
+
+        setCustomValidationMessages() {
+            const dictionary = {
+                regex: name => {
+                    if (name === 'domain') {
+                        return this.i18n('perfTest.config.addHost.inputTargetDomain');
+                    }
+                    if (name === 'ip') {
+                        return this.i18n('perfTest.config.addHost.inputTargetIp');
+                    }
+                },
+            };
+
+            const messages = {
+                en: {
+                    messages: dictionary,
+                },
+                kr: {
+                    messages: dictionary,
+                },
+                cn: {
+                    messages: dictionary,
+                },
+            };
+
+            Validator.localize(messages);
+        }
     }
 </script>
 
@@ -117,5 +147,9 @@
         &.in div {
             display: block;
         }
+    }
+
+    input[type="text"] {
+        height: 30px;
     }
 </style>
