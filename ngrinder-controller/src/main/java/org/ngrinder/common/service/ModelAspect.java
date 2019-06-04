@@ -68,16 +68,18 @@ public class ModelAspect {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
+
 				User currentUser = userContext.getCurrentUser();
-				Long currentUserId = currentUser.getId();
+				long currentUserId = currentUser.getId();
 
 				model.setLastModifiedUser(userRepository.findOne(idEqual(currentUserId))
 					.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + currentUserId)));
 
 				if (!model.exist() || model.getCreatedUser() == null) {
+					long factualUserId = currentUser.getFactualUser().getId();
 					model.setCreatedDate(lastModifiedDate);
-					model.setCreatedUser(userRepository.findOne(idEqual(currentUserId))
-						.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + currentUserId)));
+					model.setCreatedUser(userRepository.findOne(idEqual(factualUserId))
+						.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + factualUserId)));
 				}
 			}
 		}
