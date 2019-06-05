@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,11 +9,17 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.user.controller;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.controller.BaseController;
@@ -28,15 +34,15 @@ import org.springframework.ui.ModelMap;
 
 import java.util.Date;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private UserController userController;
 
+	@Autowired
+	private UserApiController userApiController;
+
+	private Gson gson = new Gson();
 	/**
 	 * Test method for
 	 * {@link org.ngrinder.user.controller.UserController#getAll(org.springframework.ui.ModelMap, org.ngrinder.model.Role,
@@ -45,7 +51,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testGetAll() {
-		Pageable page = new PageRequest(1, 10);
+		Pageable page = PageRequest.of(1, 10);
 
 		ModelMap model = new ModelMap();
 		userController.getAll(model, null, page, null);
@@ -75,39 +81,38 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	/**
 	 * Test method for
 	 * {@link org.ngrinder.user.controller.UserController#save(org.ngrinder.model.User,
-	 * org.ngrinder.model.User, org.springframework.ui.ModelMap)}
+	 * org.ngrinder.model.User)}
 	 * .
 	 */
 	@Test
-	public void testSave() {
+	public void testSave() {		// TODO: Resolve lazy initialize exception
 		// test update
-		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
-		userController.save(currUser, currUser, model);
-		userController.getOne(currUser.getUserId(), model);
-		User user = (User) model.get("user");
-		assertThat(user.getUserName(), is("new name"));
+		currUser.setOwners(null);
+		userController.save(currUser, currUser);
+		String userJson = userController.getOne(currUser.getUserId()).getBody();
+		User user = gson.fromJson(userJson, User.class);
+		assertThat(userJson, containsString("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 
 		User admin = getAdminUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
-		userController.save(admin, temp, model);
+		userController.save(admin, temp);
 		temp = new User("temp2", "temp2", "temp2", "temp@nhn.com", Role.USER);
-		userController.save(admin, temp, model);
-		model.clear();
+		userController.save(admin, temp);
+
 		currUser.setFollowersStr("temp1, temp2");
-		userController.save(currUser, currUser, model);
-		userController.getOne(currUser.getUserId(), model);
-		user = (User) model.get("user");
+		userController.save(currUser, currUser);
+		userJson = userController.getOne(currUser.getUserId()).getBody();
+		user = gson.fromJson(userJson, User.class);
 		assertThat(user.getFollowers().size(), is(2));
 		assertThat(user.getFollowers().get(0).getUserId(), is("temp1"));
 	}
 
 	@Test
-	public void testUpdate() {
+	public void testUpdate() {		// TODO: Resolve lazy initialize exception
 		// test update the role of current user.
-		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		assertThat(currUser.getRole(), is(Role.USER)); // current test user is "USER"
 
@@ -116,10 +121,10 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
-		userController.save(currUser, updatedUser, model);
+		userController.save(currUser, updatedUser);
 
-		userController.getOne(currUser.getUserId(), model);
-		User user = (User) model.get("user");
+		String userJson = userController.getOne(currUser.getUserId()).getBody();
+		User user = gson.fromJson(userJson, User.class);
 		assertThat(user.getUserName(), is(currUser.getUserName()));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 		assertThat(user.getRole(), is(Role.USER));
@@ -133,8 +138,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedUser(getTestUser());
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
-		ModelMap model = new ModelMap();
-		userController.save(getAdminUser(), newUser, model);
+		userController.save(getAdminUser(), newUser);
 	}
 
 	/**
@@ -199,15 +203,14 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testSwitchOptions() {
-		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
 		User admin = getAdminUser();
-		userController.save(admin, temp, model);
+		userController.save(admin, temp);
 		currUser.setOwners(Lists.newArrayList(temp));
 		currUser.setOwnerUser(temp);
-		userController.save(currUser, currUser, model);
-		HttpEntity<String> shareUsersStr = userController.switchOptions(currUser, "");
+		userController.save(currUser, currUser);
+		HttpEntity<String> shareUsersStr = userApiController.switchOptions(currUser, "");
 		assertTrue(shareUsersStr.getBody().contains("id"));
 	}
 }
