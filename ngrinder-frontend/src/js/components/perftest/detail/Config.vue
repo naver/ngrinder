@@ -283,7 +283,7 @@
                 }
                 this.changeMaxAgentCount();
                 this.setScripts(res.data, this.test.scriptName);
-                this.setDuration();
+                this.initDurationFromDurationStr();
                 this.setTargetHost(this.test.targetHosts);
                 this.getScriptResource();
                 this.finishDataLoad();
@@ -379,13 +379,12 @@
             });
         }
 
-        // duration format: '00:00:00'
-        setDuration() {
+        // duration string format: '00:00:00'
+        initDurationFromDurationStr() {
             let durationTokens = this.test.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
             this.duration.min = parseInt(durationTokens[1]);
             this.duration.sec = parseInt(durationTokens[2]);
-            this.changeDuration();
         }
 
         @Watch('test.threshold')
@@ -433,7 +432,8 @@
             if (duration < 60) {
                 this.test.duration = `00:${this.test.duration}`;
             }
-            this.setDuration();
+            this.initDurationFromDurationStr();
+            this.changeDuration();
         }
 
         hasValidationError() {
