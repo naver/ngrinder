@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.home.controller;
 
@@ -26,7 +26,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -79,10 +78,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		String viewName = homeController.error404(new ModelMap());
 		assertThat(viewName, startsWith("redirect:/doError"));
 
-		MockHttpServletResponse res = new MockHttpServletResponse();
-		MockHttpServletRequest req = new MockHttpServletRequest();
-		RedirectAttributesModelMap model = new RedirectAttributesModelMap();
-		viewName = homeController.second(getTestUser(), model, res, req);
+		viewName = homeController.doError(getTestUser());
 		assertThat(viewName, is("app"));
 	}
 

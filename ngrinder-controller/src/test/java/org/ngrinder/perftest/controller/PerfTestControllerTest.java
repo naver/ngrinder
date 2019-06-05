@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.controller;
 
@@ -289,7 +289,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
-		controller.getReport(model, test.getId());
+		controller.getReport(test.getId());
 
 		model.clear();
 		perfTestApiController.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
@@ -302,10 +302,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 	public void testGetMonitorData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
-		controller.getMonitorGraph(test.getId(), "127.0.0.1", 0);
+		perfTestApiController.getMonitorGraph(test.getId(), "127.0.0.1", 0);
 
 		long testId = 123456L;
-		controller.getMonitorGraph(testId, "127.0.0.1", 700);
+		perfTestApiController.getMonitorGraph(testId, "127.0.0.1", 700);
 	}
 
 	@Test
@@ -330,7 +330,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		test.setPort(11011);
 		try {
-			controller.refreshTestRunning(getTestUser(), test.getId());
+			perfTestApiController.refreshTestRunning(getTestUser(), test.getId());
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
@@ -344,7 +344,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
 
 		String ids = test.getId() + "," + test2.getId();
-		HttpEntity<String> rtnJson = controller.getStatuses(getTestUser(), ids);
+		HttpEntity<String> rtnJson = perfTestApiController.getStatuses(getTestUser(), ids);
 		assertThat(rtnJson.getBody(), notNullValue());
 	}
 

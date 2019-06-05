@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.controller;
 
@@ -23,9 +23,12 @@ public class MonitorManagerControllerTest extends AbstractAgentReadyTest {
 	@Autowired
 	MonitorManagerController monitorManagerController;
 
+	@Autowired
+	MonitorManagerApiController monitorManagerApiController;
+
 	@Test
 	public void testGetMonitorData() throws Exception {
-		monitorManagerController.getRealTimeMonitorData("127.0.0.1");
+		monitorManagerApiController.getRealTimeMonitorData("127.0.0.1");
 		monitorManagerController.closeMonitorConnection("127.0.0.1");
 	}
 
