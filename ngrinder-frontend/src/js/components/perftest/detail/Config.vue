@@ -90,15 +90,15 @@
                          data-html="true"
                          :title="i18n('perfTest.config.targetHost')"
                          :data-content="i18n('perfTest.config.targetHost.help')">
-                        <span v-for="host in targetHosts">
+                        <span v-for="(host, index) in targetHost">
                             <p class="host">
                                 <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                <a class="pointer-cursor"><i class="icon-remove-circle" @click="removeHost(host)"></i></a>
+                                <a class="pointer-cursor"><i class="icon-remove-circle" @click="targetHost.splice(index, 1)"></i></a>
                             </p>
                             <br style="line-height: 0">
                         </span>
                     </div>
-                    <input type="hidden" name="targetHosts" :value="targetHosts.join(',')">
+                    <input type="hidden" name="targetHosts" :value="targetHost.join(',')">
                 </control-group>
                 <hr>
 
@@ -252,10 +252,8 @@
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
         regionAgentCountMap = {};
 
-        // to use Set object reactively in vue
-        targetHostsChangeTracker = 1;
         targetHostIp = '';
-        targetHost = new Set();
+        targetHost = [];
 
         maxAgentCount = 0;
         durationSeconds = 0;
@@ -442,22 +440,18 @@
             return error;
         }
 
-        addHost(host) {
-            this.targetHost.add(host);
-            this.targetHostsChangeTracker += 1;
+        addHost(newHost) {
+            if (this.targetHosts.some(host => host === newHost)) {
+                return;
+            }
+            this.targetHost.push(newHost);
         }
 
         setTargetHost(targetHost) {
             if (!targetHost) {
                 return;
             }
-            targetHost.split(',').forEach(host => this.targetHost.add(host));
-            this.targetHostsChangeTracker += 1;
-        }
-
-        removeHost(host) {
-            this.targetHost.delete(host);
-            this.targetHostsChangeTracker += 1;
+            targetHost.split(',').forEach(host => this.targetHost.push(host));
         }
 
         showTargetHostInfoModal(host) {
@@ -484,10 +478,6 @@
 
         get totalVuser() {
             return this.test.agentCount * this.test.vuserPerAgent;
-        }
-
-        get targetHosts() {
-            return this.targetHostsChangeTracker && Array.from(this.targetHost);
         }
     }
 </script>
