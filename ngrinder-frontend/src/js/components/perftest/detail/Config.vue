@@ -225,7 +225,6 @@
         components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
     })
     export default class Config extends Base {
-        MAX_PROCESS_COUNT_PER_AGENT = 10;
         TEST_THRESHOLD_DURATION = 'D';
         TEST_THRESHOLD_RUNCOUNT = 'R';
 
@@ -397,8 +396,8 @@
         }
 
         changeVuserPerAgent() {
-            this.test.processes = this.getAdjustedProcessCount(this.test.vuserPerAgent);
-            this.test.threads = parseInt(this.test.vuserPerAgent / this.test.processes);
+            this.test.processes = getProcessCount(this.test.vuserPerAgent);
+            this.test.threads = getThreadCount(this.test.vuserPerAgent);
             this.updateVuserPerAgent();
 
             if (this.$refs.rampUp.enableRampUp) {
@@ -458,22 +457,6 @@
             const hostToken = host.split(':');
             this.targetHostIp = hostToken[1] ? hostToken[1] : hostToken[0];
             this.$refs.targetHostInfoModal.show();
-        }
-
-        getAdjustedProcessCount(vuser) {
-            if (vuser < 2) {
-                return 1;
-            }
-
-            let processCount = 2;
-            if (vuser > 80) {
-                processCount = parseInt(vuser / 40) + 1;
-            }
-
-            if (processCount > this.MAX_PROCESS_COUNT_PER_AGENT) {
-                processCount = this.MAX_PROCESS_COUNT_PER_AGENT;
-            }
-            return processCount;
         }
 
         get totalVuser() {
