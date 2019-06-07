@@ -126,7 +126,7 @@
                                       @validationResult="$refs.runCountControlGroup.handleError($event)"
                                       :validationRules="{ required: true, max_value: config.maxRunCount, min_value: 0 }"
                                       v-model="test.runCount"
-                                      @focus="test.threshold = TEST_THRESHOLD_RUNCOUNT"
+                                      @focus="test.threshold = 'R'"
                                       message="perfTest.config.runCount">
                         </input-append>
                     </control-group>
@@ -225,9 +225,6 @@
         components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
     })
     export default class Config extends Base {
-        TEST_THRESHOLD_DURATION = 'D';
-        TEST_THRESHOLD_RUNCOUNT = 'R';
-
         test = {
             testName: '',
             agentCount: 0,
@@ -417,7 +414,7 @@
         }
 
         changeDuration() {
-            this.test.threshold = this.TEST_THRESHOLD_DURATION;
+            this.test.threshold = 'D';
             this.durationSeconds = this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec;
         }
 
