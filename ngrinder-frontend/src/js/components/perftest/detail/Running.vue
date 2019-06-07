@@ -11,7 +11,7 @@
                         <span class="badge badge-info pull-right">
                             <span v-text="i18n('perfTest.running.running')"></span>
                             <span v-text="runningThread"></span>
-				        </span>
+                        </span>
                     </control-group>
 
                     <control-group labelMessageKey="perfTest.running.totalProcesses">
@@ -19,7 +19,7 @@
                         <span class="badge badge-info pull-right">
                             <span v-text="i18n('perfTest.running.running')"></span>
                             <span v-text="runningProcess"></span>
-				        </span>
+                        </span>
                     </control-group><hr>
 
                     <control-group labelMessageKey="perfTest.config.targetHost" labelStyle="width: 120px;">
@@ -111,8 +111,8 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import SamplingTable from './SamplingTable.vue';
     import Chart from '../../../chart.js';
@@ -126,12 +126,12 @@
                 required: true,
             },
         },
-        components: { ControlGroup, SamplingTable },
+        components: {ControlGroup, SamplingTable},
     })
     export default class Running extends Base {
         lastSampleStatistics = [];
         cumulativeStatistics = [];
-        totalStatistics = { Tests: 0, Errors: 0, };
+        totalStatistics = {Tests: 0, Errors: 0};
         agentState = {};
         monitorState = {};
         samplingIntervalId = -1;
@@ -160,7 +160,7 @@
                 return;
             }
             this.$http.get(`/perftest/api/${this.test.id}/sample`).then(res => {
-                let perfTestSample = res.data['perf'];
+                const perfTestSample = res.data.perf;
                 if (perfTestSample) {
                     this.lastSampleStatistics = perfTestSample.lastSampleStatistics;
                     this.cumulativeStatistics = perfTestSample.cumulativeStatistics;
@@ -173,11 +173,11 @@
                 }
                 this.agentState = res.data.agent || {};
                 this.monitorState = res.data.monitor || {};
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
 
         stopRunningTest() {
-            bootbox.confirm(this.i18n('perfTest.message.stop.confirm'), this.i18n('common.button.cancel'), this.i18n('common.button.ok'), (result) => {
+            bootbox.confirm(this.i18n('perfTest.message.stop.confirm'), this.i18n('common.button.cancel'), this.i18n('common.button.ok'), result => {
                 if (result) {
                     this.$http.put(`/perftest/api/${this.test.id}?action=stop`).then(res => {
                         if (res.data.success) {
@@ -194,7 +194,7 @@
             MEM-${this.formatPercentage(null, ((targetPackage.totalMemory - targetPackage.freeMemory) / targetPackage.totalMemory) * 100)}`;
 
             if (targetPackage.receivedPerSec !== 0 || targetPackage.sentPerSec !== 0) {
-                packageState += ` RX-${this.formatNetwork(null, targetPackage.receivedPerSec)} TX-${this.formatNetwork(null, targetPackage.sentPerSec)}`
+                packageState += ` RX-${this.formatNetwork(null, targetPackage.receivedPerSec)} TX-${this.formatNetwork(null, targetPackage.sentPerSec)}`;
             }
             return packageState;
         }
@@ -225,9 +225,9 @@
             value = value || 0;
             if (value < 1024) {
                 return `${value.toFixed(1)}B `;
-            } else if (value < 1048576) { //1024 * 1024
+            } else if (value < 1048576) { // 1024 * 1024
                 return `${(value / 1024).toFixed(1)}K `;
-            } else if (value < 1073741824) { //1024 * 1024 * 1024
+            } else if (value < 1073741824) { // 1024 * 1024 * 1024
                 return `${(value / 1048576).toFixed(2)}M `;
             } else {
                 return `${(value / 1073741824).toFixed(3)}G `;

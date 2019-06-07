@@ -90,8 +90,8 @@
     </div>
 </template>
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
     import Config from './Config.vue';
     import Report from './Report.vue';
     import Running from './Running.vue';
@@ -108,7 +108,7 @@
                 default: '',
             },
         },
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
+        components: {ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal},
     })
     export default class PerfTestDetail extends Base {
         config = {};
@@ -180,7 +180,7 @@
                     this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
                     this.setTabEvent();
                 });
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
         }
 
         beforeDestroy() {
@@ -221,7 +221,7 @@
                     this.updateTabDisplay();
                 }
                 this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
 
         updateStatus(id, statusType, name, icon, deletable, stoppable, message) {
@@ -260,8 +260,8 @@
         }
 
         initSelection(element, callback) {
-            let data = [];
-            this.test.tagString.split(',').forEach((tag) => {
+            const data = [];
+            this.test.tagString.split(',').forEach(tag => {
                 if (tag) {
                     data.push({id: tag, text: tag});
                 }
@@ -271,7 +271,7 @@
         }
 
         select2Query(query) {
-            let data = {
+            const data = {
                 results: [],
             };
 
@@ -280,14 +280,14 @@
                     query: query.term,
                 },
             }).then(res => {
-                res.data.forEach((tag) => data.results.push({id: tag, text: tag}));
+                res.data.forEach(tag => data.results.push({id: tag, text: tag}));
                 query.callback(data);
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
 
         clonePerftest() {
             this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
-            let agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
+            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
             agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
             Promise.all(this.getValidationPromise()).then(() => {
@@ -300,7 +300,7 @@
                             } else {
                                 this.$router.push(`/perftest/${res.data}`);
                             }
-                        }).catch((error) => console.log(error));
+                        }).catch(error => console.log(error));
                     });
                 } else {
                     this.$refs.configTab.click();
@@ -310,7 +310,7 @@
 
         saveAndStart() {
             this.$set(this.$refs.config.agentCountValidationRules, 'min_value', 1);
-            let agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
+            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
             agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
             Promise.all(this.getValidationPromise()).then(() => {
@@ -323,13 +323,15 @@
         }
 
         getValidationPromise() {
-            let validationPromise = [new Promise(resolve => { this.$validator.validate('testName').then(result => {
-                this.$refs.testNameControlGroup.hasError = !result;
-                resolve();
-            }).catch(() => {
-                this.$refs.testNameControlGroup.hasError = false;
-                resolve();
-            })})];
+            const validationPromise = [new Promise(resolve => {
+                this.$validator.validate('testName').then(result => {
+                    this.$refs.testNameControlGroup.hasError = !result;
+                    resolve();
+                }).catch(() => {
+                    this.$refs.testNameControlGroup.hasError = false;
+                    resolve();
+                });
+            })];
             this.$refs.config.validationGroup.forEach(validation => validationPromise.push(validation.getCheckValidationPromise()));
             return validationPromise;
         }
@@ -342,7 +344,7 @@
             this.$nextTick(() => {
                 this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize())
                     .then(res => this.$router.push(`/perftest/${res.data}`))
-                    .catch((error) => console.log(error));
+                    .catch(error => console.log(error));
             });
         }
 

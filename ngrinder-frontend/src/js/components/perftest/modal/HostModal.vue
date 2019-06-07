@@ -54,8 +54,8 @@
 </template>
 
 <script>
-    import ModalBase from '../../common/modal/ModalBase.vue';
     import Component from 'vue-class-component';
+    import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import { Validator } from 'vee-validate';
 

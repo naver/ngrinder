@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { mapState } from 'vuex';
+import Vuex, {mapState} from 'vuex';
 import VueRouter from 'vue-router';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
@@ -59,10 +59,11 @@ Vue.directive('focus', {
 });
 
 Vue.filter('numFormat', numFormat);
-Vue.filter('dateFormat', function (value, format) {
+Vue.filter('dateFormat', (value, format) => {
     if (value) {
         return moment(new Date(value)).format(format);
     }
+    return '';
 });
 
 const store = require('./store/vuex-store').default;
