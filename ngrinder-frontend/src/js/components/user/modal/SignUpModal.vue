@@ -21,7 +21,7 @@
 
     @Component({
         name: 'signUpModal',
-        components: { UserInfo },
+        components: {UserInfo},
     })
     export default class SignUpModal extends ModalBase {
         user = {};
@@ -42,7 +42,7 @@
                     userSecurityEnabled: res.data.userSecurityEnabled,
                 };
                 this.dataLoadFinished = true;
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
         }
 
         reset() {

@@ -55,10 +55,7 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
-    import InputLabel from "../../common/InputLabel.vue";
-    import { Component, Watch } from 'vue-property-decorator';
-
+    import {Component, Watch} from 'vue-property-decorator';
     import 'jqplot/jquery.jqplot.min.js';
     import 'jqplot/jqplot.cursor.js';
     import 'jqplot/jqplot.donutRenderer.js';
@@ -69,9 +66,12 @@
     import '../../../../plugins/jqplot/jqplot.categoryAxisRenderer.js';
     import '../../../../plugins/jqplot/jqplot.enhancedLegendRenderer.js';
 
+    import Base from '../../Base.vue';
+    import InputLabel from '../../common/InputLabel.vue';
+
     @Component({
         name: 'rampUp',
-        components: { InputLabel },
+        components: {InputLabel},
         props: {
             test: {
                 type: Object,
@@ -80,7 +80,7 @@
             rampUpTypes: {
                 type: Array,
                 required: true,
-            }
+            },
         },
     })
     export default class RampUp extends Base {
@@ -93,7 +93,7 @@
 
         @Watch('enableRampUp')
         watchEnableRampUp(val) {
-            this.$refs.rampUpConfig.forEach((component) => component.readonly = !val);
+            this.$refs.rampUpConfig.forEach(component => component.readonly = !val);
             this.updateRampUpChart();
         }
 
@@ -105,7 +105,7 @@
             let base;
             let factor;
 
-            if (this.test.rampUpType === "PROCESS") {
+            if (this.test.rampUpType === 'PROCESS') {
                 base = this.test.processes;
                 factor = this.test.threads;
             } else {
@@ -165,16 +165,16 @@
                     seriesArray.push([curX, curY]);
                 }
 
-                $("#ramp-up-chart").empty();
+                $('#ramp-up-chart').empty();
 
-                let maxX = seriesArray[seriesArray.length - 1][0];
-                let maxY = seriesArray[seriesArray.length - 1][1];
+                const maxX = seriesArray[seriesArray.length - 1][0];
+                const maxY = seriesArray[seriesArray.length - 1][1];
                 this.drawRampUp(seriesArray, internalTime, maxX, maxY);
             } else {
                 let curX = 0;
                 for (let step = 0; step <= steps; step++) {
                     seriesArray.push([curX + 0.01, destination]);
-                    curX = curX + internalTime;
+                    curX += internalTime;
                     seriesArray.push([curX, destination]);
                 }
 
@@ -182,15 +182,15 @@
                     this.plotObj.series[0].data = seriesArray;
                     this.plotObj.replot();
                 } else {
-                    let maxX = seriesArray[seriesArray.length - 1][0];
-                    let maxY = seriesArray[seriesArray.length - 1][1];
+                    const maxX = seriesArray[seriesArray.length - 1][0];
+                    const maxY = seriesArray[seriesArray.length - 1][1];
                     this.drawRampUp(seriesArray, internalTime, maxX, maxY);
                 }
             }
         }
 
         drawRampUp(data, intervalTime, maxX, maxY) {
-            let numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
+            const numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
             let pointCutter = 1;
             if (parseInt(intervalTime / 1000) === (intervalTime / 1000)) {
                 pointCutter = 0;
@@ -214,7 +214,7 @@
                         numberTicks: numTicks,
                         tickOptions: {
                             show: true,
-                            formatter: function (format, value) {
+                            formatter: (format, value) => {
                                 value = value || 0;
                                 return (value / 1000).toFixed(pointCutter);
                             },
@@ -227,7 +227,7 @@
                         numberTicks: numTicks - 1,
                         tickOptions: {
                             show: true,
-                            formatter: function (format, value) {
+                            formatter: (format, value) => {
                                 value = value || 0;
                                 return (value).toFixed(0);
                             },
@@ -238,7 +238,7 @@
         }
 
         isPlotTargetExist() {
-            return $("#ramp-up-chart").length !== 0;
+            return $('#ramp-up-chart').length !== 0;
         }
     }
 </script>

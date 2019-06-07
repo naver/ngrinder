@@ -40,9 +40,9 @@
 </template>
 
 <script>
-    import Base from '../../../Base.vue';
-    import { Mixins } from 'vue-mixin-decorator';
+    import {Mixins} from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
+    import Base from '../../../Base.vue';
     import MenuChartMixin from './MenuChartMixin.vue';
 
 
@@ -56,7 +56,6 @@
         },
     })
     export default class PerfTest extends Mixins(Base, MenuChartMixin) {
-
         optionalChart = {
             meantimeToFirstByte: true,
             userDefinedChart: true,
@@ -65,30 +64,30 @@
         mounted() {
             this.$http.get(`/perftest/api/${this.id}/perf`, {
                 params: {
-                    dataType : 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined,Vuser',
-                    imgWidth : parseInt(this.$refs.tpsChart.offsetWidth),
+                    dataType: 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined,Vuser',
+                    imgWidth: parseInt(this.$refs.tpsChart.offsetWidth),
                 },
             }).then(res => {
                 const interval = res.data.chartInterval;
-                this.drawChart('tps-chart', res.data.TPS.data, interval, { labels: res.data.TPS.labels });
-                this.drawChart('mean-time-chart', res.data.Mean_Test_Time_ms.data, interval, { labels: res.data.Mean_Test_Time_ms.labels });
-                this.drawChart('vuser-chart', res.data.Vuser.data, interval, { labels: res.data.Vuser.labels });
-                this.drawChart('error-chart', res.data.Errors.data, interval, { labels: res.data.Errors.labels });
+                this.drawChart('tps-chart', res.data.TPS.data, interval, {labels: res.data.TPS.labels});
+                this.drawChart('mean-time-chart', res.data.Mean_Test_Time_ms.data, interval, {labels: res.data.Mean_Test_Time_ms.labels});
+                this.drawChart('vuser-chart', res.data.Vuser.data, interval, {labels: res.data.Vuser.labels});
+                this.drawChart('error-chart', res.data.Errors.data, interval, {labels: res.data.Errors.labels});
 
                 this.drawOptionalChart('min-time-first-byte-chart', res.data.Mean_time_to_first_byte.data, interval,
-                    { labels: res.data.Mean_time_to_first_byte.labels }, { displayFlags: this.optionalChart, key: 'meantimeToFirstByte' });
+                    {labels: res.data.Mean_time_to_first_byte.labels}, {displayFlags: this.optionalChart, key: 'meantimeToFirstByte'});
                 this.drawOptionalChart('user-defined-chart', res.data.User_defined.data, interval,
-                    { labels: res.data.User_defined.labels }, { displayFlags: this.optionalChart, key: 'userDefinedChart' });
+                    {labels: res.data.User_defined.labels}, {displayFlags: this.optionalChart, key: 'userDefinedChart'});
 
                 this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
 
             $('[data-toggle="popover"]').popover('destroy');
             $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#tps-title'});
         }
 
         downloadCSV() {
-            this.$http.get(`/perftest/${this.id}/download_csv`).catch((error) => console.error(error));
+            this.$http.get(`/perftest/${this.id}/download_csv`).catch(error => console.error(error));
         }
     }
 </script>

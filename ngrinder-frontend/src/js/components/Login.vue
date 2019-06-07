@@ -45,11 +45,11 @@
     import Base from 'Base.vue';
     import vueHeadful from 'vue-headful';
     import jstz from 'jstz';
-    import SignUpModal from './user/modal/SignUpModal.vue'
+    import SignUpModal from './user/modal/SignUpModal.vue';
 
     @Component({
         name: 'login',
-        components: { vueHeadful, SignUpModal },
+        components: {vueHeadful, SignUpModal},
     })
     export default class Login extends Base {
         userLanguage = 'en';
