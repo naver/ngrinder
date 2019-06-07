@@ -63,10 +63,10 @@
         }
 
         initScheduleDate() {
-            let date = this.getBrowserTimeApplyingTimezone();
-            let year = date.getFullYear();
-            let month = date.getMonth() + 1;
-            let day = date.getDate();
+            const date = this.getBrowserTimeApplyingTimezone();
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
 
             this.schedule.hour = date.getHours();
             this.schedule.minute = date.getMinutes();
@@ -74,7 +74,7 @@
 
             $(this.$refs.scheduledDate).val(this.schedule.date);
             $(this.$refs.scheduledDate).datepicker({
-                format : 'yyyy-mm-dd',
+                format: 'yyyy-mm-dd',
             });
         }
 

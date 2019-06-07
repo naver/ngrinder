@@ -1,5 +1,5 @@
 <script>
-    import { Mixin } from 'vue-mixin-decorator'
+    import { Mixin } from 'vue-mixin-decorator';
     import Chart from '../../../../chart.js';
 
     @Mixin
@@ -17,7 +17,7 @@
 
             try {
                 displayOpts.displayFlags[displayOpts.key] = false;
-            } catch(e) {
+            } catch (e) {
                 // nOop
             }
         }

@@ -34,13 +34,13 @@
     </div>
 </template>
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
 
     @Component({
         name: 'searchBar',
-        components: { Select2 }
+        components: {Select2},
     })
     export default class SearchBar extends Base {
         searchText = '';

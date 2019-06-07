@@ -88,12 +88,12 @@
 </template>
 
 <script>
-    import Base from '../Base.vue';
+    import {Validator} from 'vee-validate';
     import Component from 'vue-class-component';
-    import ControlGroup from '../common/ControlGroup.vue'
-    import InputAppend from '../common/InputAppend.vue'
+    import Base from '../Base.vue';
+    import ControlGroup from '../common/ControlGroup.vue';
+    import InputAppend from '../common/InputAppend.vue';
     import Select2 from '../common/Select2.vue';
-    import { Validator } from 'vee-validate'
 
     @Component({
         name: 'userInfo',
@@ -111,7 +111,7 @@
                 default: 'save',
             },
         },
-        components: { ControlGroup, InputAppend, Select2 },
+        components: {ControlGroup, InputAppend, Select2},
     })
     export default class UserInfo extends Base {
         user = {
@@ -150,20 +150,16 @@
                     ajax: {
                         url: '/user/api/search',
                         dataType: 'json',
-                        data: (term, page) => {
-                            return {
+                        data: (term, page) => ({
                                 keywords: term,
                                 pageNumber: page,
                                 pageSize: 10,
-                            }
-                        },
-                        results: (data) => {
-                            return { results: data };
-                        },
+                        }),
+                        results: data => ({results: data}),
                     },
                     initSelection: this.initSelection,
-                    formatSelection: (data) => data.text,
-                }
+                    formatSelection: data => data.text,
+                };
             }
         }
 
@@ -174,7 +170,7 @@
         }
 
         initSelection(element, callback) {
-            let data = [];
+            const data = [];
             if (this.config.followers) {
                 this.config.followers.forEach(follower => data.push({id: follower.id, text: follower.text}));
             }
@@ -183,7 +179,7 @@
         }
 
         reset() {
-            for (let prop in this.user) {
+            for (const prop in this.user) {
                 this.user[prop] = '';
             }
             this.$nextTick(() => this.validationGroup.forEach(validation => validation.checkValidation()));
@@ -228,7 +224,7 @@
         setCustomValidationMessages() {
             const dictionary = {
                 required: () => this.i18n('common.message.validate.empty'),
-                regex: (name) => name === 'userId' ? this.i18n('user.info.userId.help') : this.i18n('user.info.phone.help'),
+                regex: name => (name === 'userId' ? this.i18n('user.info.userId.help') : this.i18n('user.info.phone.help')),
                 email: () => this.i18n('user.info.email.help'),
                 max: (name, val) => this.i18n('common.message.validate.maxLength', {maxLength: val[0]}),
             };
