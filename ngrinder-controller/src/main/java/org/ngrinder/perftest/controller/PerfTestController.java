@@ -184,7 +184,6 @@ public class PerfTestController extends BaseController {
 		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
 		addDefaultAttributeOnModel(model);
-		model.put(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 
 		return model;
 	}
