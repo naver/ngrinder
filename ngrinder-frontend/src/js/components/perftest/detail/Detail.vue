@@ -20,7 +20,7 @@
                                     </div>
                                     <div class="span3-4 tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                         <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                            <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 175px" type="input" name="tagString"
+                                            <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 175px" type="input" name="tagString"
                                                      :option="{tokenSeparators: [',', ' '], tags:[''], placeholder: i18n('perfTest.config.tagInput'),
                                                       maximumSelectionSize: 5, initSelection: initSelection, query: select2Query}"></select2>
                                         </control-group>
@@ -129,7 +129,6 @@
             iconPath: '',
         };
 
-        selectedTag = '';
         dataLoadFinished = false;
         scheduledTime = 0;
         timezoneOffset = 0;
@@ -166,7 +165,6 @@
                 };
                 this.test = res.data.test;
                 this.timezoneOffset = res.data.timezone_offset;
-                this.selectedTag = this.test.tagString;
                 this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
                 if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                     this.test.region = '';
@@ -263,7 +261,7 @@
 
         initSelection(element, callback) {
             let data = [];
-            this.selectedTag.split(',').forEach((tag) => {
+            this.test.tagString.split(',').forEach((tag) => {
                 if (tag) {
                     data.push({id: tag, text: tag});
                 }
