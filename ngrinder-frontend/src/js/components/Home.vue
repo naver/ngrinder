@@ -11,7 +11,7 @@
                             <option v-for="handler in handlers" :value="handler.key" v-text="handler.title"></option>
                         </select>
                         <button id="start_test_btn" class="btn btn-primary" data-step="4"
-                                :data-intro="i18n('intro.index.create')" @click.prevent="quickStart" v-on:change="" v-text="i18n('home.button.startTest')">
+                                :data-intro="i18n('intro.index.create')" @click.prevent="quickStart" v-text="i18n('home.button.startTest')">
                         </button>
                     </div>
                 </form>
@@ -36,7 +36,7 @@
 
     @Component({
         name: 'home',
-        components: { IntroButton, vueHeadful, HomePanel },
+        components: {IntroButton, vueHeadful, HomePanel},
     })
     export default class Index extends Base {
         leftPanelEntries = [];
@@ -96,7 +96,6 @@
                 }).catch(error => console.error(error));
             });
         }
-
     }
 </script>
 

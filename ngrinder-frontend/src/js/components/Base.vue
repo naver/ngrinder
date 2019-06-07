@@ -1,14 +1,14 @@
 <script>
     import Component from 'vue-class-component';
     import Vue from 'vue';
+    import {mapState} from 'vuex';
     import I18n from '../i18n.js';
-    import { mapState } from 'vuex';
 
     @Component({
         computed: {
-            ...mapState([
-                'ngrinder',
-            ]),
+            ...mapState(
+                ['ngrinder'],
+            ),
         },
     })
     export default class Base extends Vue {
@@ -38,7 +38,7 @@
             value = value || 0;
             if (value < 1024) {
                 return `${value.toFixed(1)}B `;
-            } else if (value < 1048576) { //1024 * 1024
+            } else if (value < 1048576) { // 1024 * 1024
                 return `${(value / 1024).toFixed(1)}K `;
             } else {
                 return `${(value / 1048576).toFixed(2)}M `;

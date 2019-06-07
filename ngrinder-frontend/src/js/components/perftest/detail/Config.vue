@@ -197,6 +197,9 @@
 </template>
 
 <script>
+    import {Validator} from 'vee-validate';
+    import {Component, Watch} from 'vue-property-decorator';
+    import VueSlider from 'vue-slider-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
@@ -205,10 +208,7 @@
     import InputPopover from '../../common/InputPopover.vue';
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
-    import VueSlider from 'vue-slider-component';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
-    import { Component, Watch } from 'vue-property-decorator';
-    import { Validator } from 'vee-validate';
 
     @Component({
         name: 'config',
@@ -222,20 +222,20 @@
                 required: true,
             },
         },
-        components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
+        components: {TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp},
     })
     export default class Config extends Base {
         test = {
+            param: '',
+            region: '',
             testName: '',
             agentCount: 0,
             rampUpInitCount: 0,
             rampUpStep: 0,
             rampUpInitSleepTime: 0,
             rampUpIncrementInterval: 0,
-            param: '',
             ignoreSampleCount: 0,
             runCount: 0,
-            region: '',
             processes: 0,
             threads: 0,
             vuserPerAgent: 0,
@@ -266,7 +266,7 @@
             sec: 0,
         };
 
-        agentCountValidationRules = { required: true, agentCountValidation: true,};
+        agentCountValidationRules = {required: true, agentCountValidation: true};
         validationGroup = [];
 
         created() {
@@ -317,7 +317,7 @@
                 },
             }).then(res => {
                 this.resources = res.data.resources;
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
         }
 
         finishDataLoad() {
@@ -338,7 +338,15 @@
         setCustomValidationMessages() {
             const dictionary = {
                 required: () => this.i18n('common.message.validate.empty'),
-                regex: () => this.i18n('perfTest.message.param'),
+                regex: name => {
+                    if (name === 'domain') {
+                        return this.i18n('perfTest.config.addHost.inputTargetDomain');
+                    }
+                    if (name === 'ip') {
+                        return this.i18n('perfTest.config.addHost.inputTargetIp');
+                    }
+                    return this.i18n('perfTest.message.param');
+                },
             };
 
             const messages = {
@@ -375,7 +383,7 @@
 
         // duration string format: '00:00:00'
         initDurationFromDurationStr() {
-            let durationTokens = this.test.duration.split(':');
+            const durationTokens = this.test.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
             this.duration.min = parseInt(durationTokens[1]);
             this.duration.sec = parseInt(durationTokens[2]);
@@ -431,9 +439,7 @@
         }
 
         hasValidationError() {
-            let error = false;
-            this.validationGroup.forEach(validation => error = error || validation.errors.any());
-            return error;
+            return this.validationGroup.some(validation => validation.errors.any());
         }
 
         addHost(newHost) {

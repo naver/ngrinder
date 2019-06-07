@@ -5,7 +5,7 @@ export default new Vuex.Store({
         ngrinder: {},
     },
     mutations: {
-        ngrinder (state, ngrinder) {
+        ngrinder(state, ngrinder) {
             state.ngrinder = ngrinder;
         },
     },

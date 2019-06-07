@@ -20,10 +20,10 @@
 </template>
 
 <script>
+    import Component from 'vue-class-component';
+    import {Mixins} from 'vue-mixin-decorator';
     import Base from '../Base.vue';
     import ValidationMixin from './mixin/ValidationMixin.vue';
-    import Component from 'vue-class-component';
-    import { Mixins } from 'vue-mixin-decorator';
 
     @Component({
         name: 'inputPopover',
