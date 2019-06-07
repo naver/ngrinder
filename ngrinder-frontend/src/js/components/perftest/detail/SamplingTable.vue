@@ -38,8 +38,8 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
 
     @Component({
         name: 'samplingTable',

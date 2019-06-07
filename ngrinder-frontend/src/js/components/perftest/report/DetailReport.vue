@@ -125,16 +125,16 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
     import vueHeadful from 'vue-headful';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import PerfTest from './menu/PerfTest.vue';
     import Monitor from './menu/Monitor.vue';
 
     @Component({
         name: 'detailReport',
-        components: { ControlGroup, vueHeadful },
+        components: {ControlGroup, vueHeadful},
         props: {
             id: {
                 type: String,
@@ -156,7 +156,7 @@
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
         }
 
         mounted() {

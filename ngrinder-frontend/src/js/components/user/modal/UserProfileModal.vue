@@ -17,7 +17,7 @@
 
     @Component({
         name: 'userProfileModal',
-        components: { UserInfo },
+        components: {UserInfo},
     })
     export default class UserProfileModal extends ModalBase {
         user = {};
@@ -37,7 +37,7 @@
                     userSecurityEnabled: res.data.userSecurityEnabled,
                 };
                 this.dataLoadFinished = true;
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
         }
     }
 

@@ -151,17 +151,17 @@
 </template>
 
 <script>
-    import { Component, Watch } from 'vue-property-decorator';
+    import {Component, Watch} from 'vue-property-decorator';
+    import Paginate from 'vuejs-paginate';
     import vueHeadful from 'vue-headful';
     import Base from '../../Base.vue';
     import SearchBar from './Searchbar.vue';
     import IntroButton from '../../common/IntroButton.vue';
-    import SmallChart from './SmallChart.vue'
-    import Paginate from 'vuejs-paginate'
+    import SmallChart from './SmallChart.vue';
 
     @Component({
         name: 'perfTestList',
-        components: { IntroButton, vueHeadful, SearchBar, SmallChart, Paginate },
+        components: {IntroButton, vueHeadful, SearchBar, SmallChart, Paginate},
     })
     export default class PerfTestList extends Base {
         THRESHOLD_TYPE_DURATION = 'D';
@@ -169,7 +169,7 @@
 
         totalActivationPageCount = 1;
         currentPage = 0;
-        runningSummary = `0 ${this.i18n("perfTest.list.runningSummary")}`;
+        runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
         totalElements = 0;
         tests = [];
         testIds = [];
@@ -256,7 +256,7 @@
             if (!tests && !errors) {
                 return '';
             }
-            return `${(errors/(tests + errors) * 100).toFixed(1)}%`;
+            return `${(errors / (tests + errors) * 100).toFixed(1)}%`;
         }
 
         changeActivationPage(page) {
@@ -282,7 +282,7 @@
                 if (result && ids) {
                     this.$http.delete('/perftest/api', {
                         params: {
-                            ids: ids,
+                            ids,
                         },
                     }).then(res => {
                         if (res.data.success) {
@@ -328,7 +328,7 @@
                     this.tests[index].deletable = status[index].deletable;
                     this.tests[index].stoppable = status[index].stoppable;
                     this.tests[index].status = status[index].status_id;
-                    this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n("perfTest.list.runningSummary")}`;
+                    this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
 
                     const $ball = $(`#ball_${this.tests[index].id}`);
                     $ball.attr('data-original-title', status[index].name);
