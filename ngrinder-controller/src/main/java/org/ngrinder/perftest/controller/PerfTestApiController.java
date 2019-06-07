@@ -398,7 +398,6 @@ public class PerfTestApiController extends BaseController {
 		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
 		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
-		model.put(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
 		return toJsonHttpEntity(model);
 	}
