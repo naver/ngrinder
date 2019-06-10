@@ -11,7 +11,12 @@
         }
 
         show() {
+            this.reset();
             $(this.$el).modal('show');
+        }
+
+        reset() {
+            // Implement in child class
         }
     }
 </script>

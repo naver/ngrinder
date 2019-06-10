@@ -32,7 +32,7 @@
                         </select>
                     </div>
                     <div v-if="ngrinder.config.signUpEnabled" class="prompt">
-                        <a @click="showSignUpModal" class="pointer-cursor sign-up-btn">Sign Up</a>
+                        <a @click="$refs.signUpModal.show()" class="pointer-cursor sign-up-btn">Sign Up</a>
                     </div>
                 </fieldset>
             </form>
@@ -74,11 +74,6 @@
             this.$http.get('home/api/config').then(res => {
                 this.userLanguage = res.data.userLanguage;
             }).catch(error => console.error(error));
-        }
-
-        showSignUpModal() {
-            this.$refs.signUpModal.$refs.userInfo.reset();
-            this.$refs.signUpModal.show();
         }
     }
 </script>
