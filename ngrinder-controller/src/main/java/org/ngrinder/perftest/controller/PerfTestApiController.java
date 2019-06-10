@@ -33,6 +33,7 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.region.service.RegionService;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
@@ -50,6 +51,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,6 +98,9 @@ public class PerfTestApiController extends BaseController {
 
 	@Autowired
 	private HazelcastService hazelcastService;
+
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
 
 	private Gson fileEntryGson;
 
@@ -454,6 +459,46 @@ public class PerfTestApiController extends BaseController {
 		return returnSuccess();
 	}
 
+	/**
+	 * Get the perf test creation form for quickStart.
+	 */
+	@PostMapping("/quickstart")
+	public HttpEntity<String> getQuickStart(User user, @RequestBody Map<String, Object> params) {
+		String urlString = cast(params.get("url"));
+		String scriptType = cast(params.get("scriptType"));
+
+		URL url = checkValidURL(urlString);
+		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString, scriptHandlerFactory.getHandler(scriptType));
+
+		Map<String, Object> model = new HashMap<>();
+		PerfTest perfTest = createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost());
+		perfTest.setScriptName(newEntry.getPath());
+		perfTest.setScriptRevision(newEntry.getRevision());
+		model.put(PARAM_TEST, perfTest);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
+		addDefaultAttributeOnModel(model);
+
+		return toJsonHttpEntity(model);
+	}
+
+	/**
+	 * Create a new test from quick start mode.
+	 *
+	 * @param user       user
+	 * @param testName   test name
+	 * @param targetHost target host
+	 * @return test    {@link PerfTest}
+	 */
+	private PerfTest createPerfTestFromQuickStart(User user, String testName, String targetHost) {
+		PerfTest test = new PerfTest(user);
+		test.init();
+		test.setTestName(testName);
+		test.setTargetHosts(targetHost);
+		return test;
+	}
+
 	private Map<String, String> getMonitorGraphData(long id, String targetIP, int imgWidth) {
 		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
@@ -481,6 +526,12 @@ public class PerfTestApiController extends BaseController {
 			throw processException("User " + user.getUserId() + " has no right on PerfTest " + id);
 		}
 		return perfTest;
+	}
+
+	private ArrayList<String> getRegions(Map<String, MutableInt> agentCountMap) {
+		ArrayList<String> regions = new ArrayList<>(agentCountMap.keySet());
+		Collections.sort(regions);
+		return regions;
 	}
 
 	private Map<String, Object> getPerfGraphData(Long id, String[] dataTypes, boolean onlyTotal, int imgWidth) {

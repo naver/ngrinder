@@ -107,6 +107,8 @@
                 type: String,
                 default: '',
             },
+            url: String,
+            scriptType: String,
         },
         components: {ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal},
     })
@@ -154,33 +156,46 @@
         }
 
         created() {
-            const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
-            this.$http.get(apiPath).then(res => {
-                this.config = {
-                    regionAgentCountMap: res.data.regionAgentCountMap,
-                    rampUpTypes: res.data.availRampUpType,
-                    maxRunCount: res.data.maxRunCount,
-                    maxRunHour: res.data.maxRunHour,
-                    maxVuserPerAgent: res.data.maxVuserPerAgent,
-                };
-                this.test = res.data.test;
-                this.timezoneOffset = res.data.timezone_offset;
-                this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
-                if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
-                    this.test.region = '';
+            if (this.$route.name === 'quickStart') {
+                this.$http.post('/perftest/api/quickstart', {
+                    url: this.url,
+                    scriptType: this.scriptType,
+                }).then(res => {
+                    this.initPerfTestDetail(res);
+                }).catch(error => console.error(error));
+            } else {
+                const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
+                this.$http.get(apiPath).then(res => {
+                    this.initPerfTestDetail(res);
+                }).catch(error => console.error(error));
+            }
+        }
+
+        initPerfTestDetail(res) {
+            this.config = {
+                regionAgentCountMap: res.data.regionAgentCountMap,
+                rampUpTypes: res.data.availRampUpType,
+                maxRunCount: res.data.maxRunCount,
+                maxRunHour: res.data.maxRunHour,
+                maxVuserPerAgent: res.data.maxVuserPerAgent,
+            };
+            this.test = res.data.test;
+            this.timezoneOffset = res.data.timezone_offset;
+            this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
+            if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
+                this.test.region = '';
+            }
+            this.dataLoadFinished = true;
+            this.updateTabDisplay();
+            this.$nextTick(() => {
+                if (this.test.category === 'TESTING') {
+                    this.$refs.running.startSamplingInterval();
                 }
-                this.dataLoadFinished = true;
-                this.updateTabDisplay();
-                this.$nextTick(() => {
-                    if (this.test.category === 'TESTING') {
-                        this.$refs.running.startSamplingInterval();
-                    }
-                    this.$testStatusImage = $('#test-status-img');
-                    this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
-                    this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
-                    this.setTabEvent();
-                });
-            }).catch(error => console.error(error));
+                this.$testStatusImage = $('#test-status-img');
+                this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
+                this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
+                this.setTabEvent();
+            });
         }
 
         beforeDestroy() {
