@@ -1,29 +1,25 @@
 <template>
-    <div>
-        <div class="container">
-            <vue-headful title="Home"/>
-            <div class="hero-unit main-banner" data-step="1" :data-intro="i18n('intro.index.quick.start')">
-                <form name="quick_start" id="quick_start" action="/perftest/quickstart" method="post">
-                    <div class="quick-start" :data-original-title="i18n('home.tip.url.title')" :data-content="i18n('home.tip.url.content')" data-placement="bottom" rel="popover">
-                        <input v-focus type="text" name="url" id="url" class="span6" v-validate="{url: {require_protocol: true}, required: true}" ref="inputQuickStartUrl"
-                               :class="{error: errors.any()}" :placeholder="i18n('home.placeholder.url')" data-step="2" :data-intro="i18n('intro.index.test.url')" v-model="quickStartUrl"/>
-                        <select class="select-item span2" id="script_type" v-model="scriptType" name="scriptType" data-step="3" :data-intro="i18n('intro.index.select.language')">
-                            <option v-for="handler in handlers" :value="handler.key" v-text="handler.title"></option>
-                        </select>
-                        <button id="start_test_btn" class="btn btn-primary" data-step="4"
-                                :data-intro="i18n('intro.index.create')" @click.prevent="quickStart" v-text="i18n('home.button.startTest')">
-                        </button>
-                    </div>
-                </form>
+    <div class="container">
+        <vue-headful title="Home"/>
+        <div class="hero-unit main-banner" data-step="1" :data-intro="i18n('intro.index.quick.start')">
+            <div class="quick-start" :data-original-title="i18n('home.tip.url.title')" :data-content="i18n('home.tip.url.content')" data-placement="bottom" rel="popover">
+                <input v-focus type="text" name="url" class="span6" v-validate="{url: {require_protocol: true}, required: true}" ref="inputQuickStartUrl"
+                       :class="{error: errors.any()}" :placeholder="i18n('home.placeholder.url')" data-step="2" :data-intro="i18n('intro.index.test.url')" v-model="quickStartUrl"/>
+                <select class="select-item span2" v-model="scriptType" name="scriptType" data-step="3" :data-intro="i18n('intro.index.select.language')">
+                    <option v-for="handler in handlers" :value="handler.key" v-text="handler.title"></option>
+                </select>
+                <button id="start_test_btn" class="btn btn-primary" data-step="4"
+                        :data-intro="i18n('intro.index.create')" @click.prevent="quickStart" v-text="i18n('home.button.startTest')">
+                </button>
             </div>
-            <div class="row">
-                <home-panel :title="i18n('home.qa.title')" :entries="leftPanelEntries" :introJsDataSetp="5" :introJsDataIntro="i18n('intro.index.qna')"
-                            :seeMoreQuestionUrl="seeMoreQuestionUrl" :askQuestionUrl="askQuestionUrl"></home-panel>
-                <home-panel :title="i18n('home.resources.title')" :entries="rightPanelEntries" :introJsDataSetp="6" :introJsDataIntro="i18n('intro.index.resource')"
-                            :seeMoreQuestionUrl="seeMoreQuestionUrl"></home-panel>
-            </div>
-            <intro-button></intro-button>
         </div>
+        <div class="row">
+            <home-panel :title="i18n('home.qa.title')" :entries="leftPanelEntries" :introJsDataSetp="5" :introJsDataIntro="i18n('intro.index.qna')"
+                        :seeMoreQuestionUrl="seeMoreQuestionUrl" :askQuestionUrl="askQuestionUrl"></home-panel>
+            <home-panel :title="i18n('home.resources.title')" :entries="rightPanelEntries" :introJsDataSetp="6" :introJsDataIntro="i18n('intro.index.resource')"
+                        :seeMoreQuestionUrl="seeMoreQuestionUrl"></home-panel>
+        </div>
+        <intro-button></intro-button>
     </div>
 </template>
 
@@ -87,13 +83,11 @@
                     this.$nextTick(() => this.$refs.inputQuickStartUrl.focus());
                     return;
                 }
-
-                this.$http.post('/perftest/quickstart', {
-                    url: this.quickStartUrl,
+                const params = {
                     scriptType: this.scriptType,
-                }).then(res => {
-                    // TODO Go to perftest detail page.
-                }).catch(error => console.error(error));
+                    url: this.quickStartUrl,
+                };
+                this.$router.push({name: 'quickStart', params});
             });
         }
     }

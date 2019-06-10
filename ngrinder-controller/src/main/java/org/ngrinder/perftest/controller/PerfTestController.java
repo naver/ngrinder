@@ -30,8 +30,6 @@ import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.*;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.script.handler.ScriptHandlerFactory;
-import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -48,14 +46,14 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.*;
-import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Performance Test Controller.
@@ -80,9 +78,6 @@ public class PerfTestController extends BaseController {
 
 	@Autowired
 	private AgentManagerService agentManagerService;
-
-	@Autowired
-	private ScriptHandlerFactory scriptHandlerFactory;
 
 	/**
 	 * Get the perf test lists.
@@ -109,13 +104,6 @@ public class PerfTestController extends BaseController {
 	public String detail(User user, @PathVariable Long id) {
 		return "app";
 	}
-
-	private ArrayList<String> getRegions(Map<String, MutableInt> agentCountMap) {
-		ArrayList<String> regions = new ArrayList<String>(agentCountMap.keySet());
-		Collections.sort(regions);
-		return regions;
-	}
-
 
 	public void addDefaultAttributeOnModel(Map<String, Object> model) {
 		model.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
@@ -160,48 +148,6 @@ public class PerfTestController extends BaseController {
 			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
 		}
 		model.addAttribute(PARAM_TIMEZONE_OFFSET, offset);
-	}
-
-	/**
-	 * Get the perf test creation form for quickStart.
-	 */
-	@RestAPI
-	@ResponseBody
-	@PostMapping("/quickstart")
-	public Map<String, Object> getQuickStart(User user, @RequestBody Map<String, Object> params) {
-		String urlString = cast(params.get("url"));
-		String scriptType = cast(params.get("scriptType"));
-
-		URL url = checkValidURL(urlString);
-		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString, scriptHandlerFactory.getHandler(scriptType));
-
-		Map<String, Object> model = new HashMap<>();
-		model.put(PARAM_QUICK_SCRIPT, newEntry.getPath());
-		model.put(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
-		// TODO seialize perftest.
-		// model.put(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
-		addDefaultAttributeOnModel(model);
-
-		return model;
-	}
-
-	/**
-	 * Create a new test from quick start mode.
-	 *
-	 * @param user       user
-	 * @param testName   test name
-	 * @param targetHost target host
-	 * @return test    {@link PerfTest}
-	 */
-	private PerfTest createPerfTestFromQuickStart(User user, String testName, String targetHost) {
-		PerfTest test = new PerfTest(user);
-		test.init();
-		test.setTestName(testName);
-		test.setTargetHosts(targetHost);
-		return test;
 	}
 
 	@SuppressWarnings("ConstantConditions")

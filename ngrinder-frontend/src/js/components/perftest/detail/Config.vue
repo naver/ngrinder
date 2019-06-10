@@ -104,13 +104,13 @@
 
                 <div class="threshold-container">
                     <control-group :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
-                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration">
+                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration(true)">
                             <option v-for="(v, h) in 8" :value="h" v-text="h"></option>
                         </select> :
-                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration">
+                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration(true)">
                             <option v-for="(v, m) in 60" :value="m" v-text="m < 10 ? `0${m}` : m"></option>
                         </select> :
-                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration">
+                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration(true)">
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
                         </select> &nbsp;&nbsp;
                         <code>HH:MM:SS</code>
@@ -278,6 +278,7 @@
                 this.changeMaxAgentCount();
                 this.setScripts(res.data, this.test.scriptName);
                 this.initDurationFromDurationStr();
+                this.changeDuration(false);
                 this.setTargetHost(this.test.targetHosts);
                 this.getScriptResource();
                 this.finishDataLoad();
@@ -421,8 +422,10 @@
             this.test.vuserPerAgent = this.test.processes * this.test.threads;
         }
 
-        changeDuration() {
-            this.test.threshold = 'D';
+        changeDuration(focus) {
+            if (focus) {
+                this.test.threshold = 'D';
+            }
             this.durationSeconds = this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec;
         }
 
@@ -435,7 +438,7 @@
                 this.test.duration = `00:${this.test.duration}`;
             }
             this.initDurationFromDurationStr();
-            this.changeDuration();
+            this.changeDuration(true);
         }
 
         hasValidationError() {
