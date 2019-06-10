@@ -124,7 +124,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Type(type = "true_false")
 	private Boolean sendMail;
 
-
 	/**
 	 * Use rampUp or not.
 	 */
@@ -150,7 +149,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "ramp_up_type")
 	@Enumerated(EnumType.STRING)
 	private RampUp rampUpType;
-
 
 	/**
 	 * The threshold code, R for run count; D for duration.
