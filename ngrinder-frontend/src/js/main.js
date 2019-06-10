@@ -76,6 +76,7 @@ const routes = [
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
     {path: '/perftest/list', redirect: '/perftest'},
     {path: '/perftest/new', component: PerfTestDetail, name: 'createNewPerftest'},
+    {path: '/perftest/quickstart', component: PerfTestDetail, name: 'quickStart', props: true},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail', props: true},
     {path: '/perftest/:id/detail_report', component: PerfTestDetailReport, name: 'perfTestDetailReport', props: true},
     {path: '/perftest/:id/report', redirect: '/perftest/:id/detail_report'}, // backward compatibility
