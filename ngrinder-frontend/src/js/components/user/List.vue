@@ -17,7 +17,7 @@
             </a>
             <span class="pull-right">
                 <a class="btn" data-toggle="modal" data-target="#sign_up_modal"
-                   @click="$EventBus.$emit($Event.RESET_SIGN_UP_MODAL)">
+                   @click="$refs.signUpModal.show()">
                     <i class="icon-user"></i><span v-text="i18n('user.list.button.create')"></span>
                 </a>
                 <a class="btn btn-danger" @click="deleteCheckedUsers">
@@ -91,7 +91,7 @@
                 :next-text="`${i18n('common.paging.next')} →`">
             </paginate>
         </div>
-        <sign-up-modal></sign-up-modal>
+        <sign-up-modal ref="signUpModal"></sign-up-modal>
     </div>
 </template>
 

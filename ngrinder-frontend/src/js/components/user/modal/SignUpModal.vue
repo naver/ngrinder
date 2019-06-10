@@ -44,6 +44,10 @@
                 this.dataLoadFinished = true;
             }).catch((error) => console.error(error));
         }
+
+        reset() {
+            this.$refs.userInfo.reset();
+        }
     }
 
 </script>
