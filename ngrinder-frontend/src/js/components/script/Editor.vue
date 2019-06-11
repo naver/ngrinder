@@ -183,7 +183,11 @@
                     this.i18n('script.editor.message.overWriteNewer'),
                     this.i18n('common.button.cancel'),
                     this.i18n('common.button.ok'),
-                    result => result ? this.saveScript() : noop())
+                    result => {
+                        if (result) {
+                            this.saveScript();
+                        }
+                    });
             } else {
                 this.saveScript();
             }
@@ -265,9 +269,9 @@
         expand() {
             this.validationResultExpanded = !this.validationResultExpanded;
             if (this.validationResultExpanded) {
-                this.editorSize = this.editorSize - 200;
+                this.editorSize -= 200;
             } else {
-                this.editorSize = this.editorSize + 200;
+                this.editorSize += 200;
             }
         }
 
@@ -304,9 +308,6 @@
 
             return this.i18n('script.editor.message.exitWithoutSave');
         }
-    }
-
-    function noop() {
     }
 </script>
 
