@@ -152,18 +152,22 @@
         initScriptDetail() {
             const path = this.$route.path.replace('/script/detail/', '');
             this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
-            .then(res => {
-                res.data.file.content.replace(/&para/g, '&amp;para');
+                .then(res => {
+                    if (!res.data.file) {
+                        this.$router.push({ path: '/script/' });
+                    }
 
-                Object.assign(this.file, res.data.file);
-                Object.assign(this.scriptHandler, res.data.scriptHandler);
+                    res.data.file.content.replace(/&para/g, '&amp;para');
 
-                this.file.properties.targetHosts.split(',').filter(s => s).forEach(host => this.addHost(host));
+                    Object.assign(this.file, res.data.file);
+                    Object.assign(this.scriptHandler, res.data.scriptHandler);
 
-                this.validated = this.file.validated;
+                    this.file.properties.targetHosts.split(',').filter(s => s).forEach(host => this.addHost(host));
 
-                this.initCodeMirror();
-            })
+                    this.validated = this.file.validated;
+
+                    this.initCodeMirror();
+                });
         }
 
         initCodeMirror() {
