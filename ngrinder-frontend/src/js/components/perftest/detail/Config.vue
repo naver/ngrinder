@@ -103,7 +103,8 @@
                 <hr>
 
                 <div class="threshold-container">
-                    <control-group :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
+                    <control-group :class="{error: errors.has('duration')}" :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold"
+                                   ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
                         <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration(true)">
                             <option v-for="(v, h) in 8" :value="h" v-text="h"></option>
                         </select> :
@@ -114,9 +115,9 @@
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
                         </select> &nbsp;&nbsp;
                         <code>HH:MM:SS</code>
-                        <input type="hidden" name="duration" :value="durationSeconds * 1000"/>
-                        <input type="hidden" name="durationHour" value="0"/>
+                        <input v-validate="{min_value: test.threshold === 'D' ? 1 : 0}" type="hidden" name="duration" v-model="durationMilliSeconds"/>
                         <vue-slider ref="durationSlider" @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
+                        <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
 
                     <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
@@ -124,7 +125,7 @@
                                       appendPrefix="perfTest.config.max"
                                       :append="config.maxRunCount"
                                       @validationResult="$refs.runCountControlGroup.handleError($event)"
-                                      :validationRules="{ required: true, max_value: config.maxRunCount, min_value: 0 }"
+                                      :validationRules="{required: true, max_value: config.maxRunCount, min_value: test.threshold === 'R' ? 1 : 0}"
                                       v-model="test.runCount"
                                       @focus="test.threshold = 'R'"
                                       message="perfTest.config.runCount">
@@ -199,6 +200,7 @@
 <script>
     import {Validator} from 'vee-validate';
     import {Component, Watch} from 'vue-property-decorator';
+    import {Mixins} from 'vue-mixin-decorator';
     import VueSlider from 'vue-slider-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
@@ -206,6 +208,7 @@
     import InputAppend from '../../common/InputAppend.vue';
     import InputPrepend from '../../common/InputPrepend.vue';
     import InputPopover from '../../common/InputPopover.vue';
+    import ValidationMixin from '../../common/mixin/ValidationMixin.vue';
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
@@ -224,7 +227,7 @@
         },
         components: {TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp},
     })
-    export default class Config extends Base {
+    export default class Config extends Mixins(Base, ValidationMixin) {
         test = {
             param: '',
             region: '',
@@ -327,7 +330,7 @@
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
                 this.$refs.rampUp.updateRampUpChart();
-                this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount,
+                this.validationGroup = [this, this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount,
                     this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
 
                 if (this.ngrinder.config.clustered) {
@@ -467,6 +470,10 @@
 
         get totalVuser() {
             return this.test.agentCount * this.test.vuserPerAgent;
+        }
+
+        get durationMilliSeconds() {
+            return this.durationSeconds * 1000;
         }
     }
 </script>
