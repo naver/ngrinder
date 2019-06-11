@@ -7,7 +7,7 @@
                 v-validate="validationRules">
             <slot></slot>
         </select>
-        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" errStyle="errStyle"></div>
+        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </span>
     <input v-else ref="select2" value=" " :style="customStyle" :name="name">
 </template>
