@@ -10,17 +10,25 @@
                         </colgroup>
                         <tr>
                             <td>
-                                <input type="text" class="search-query span3" placeholder="Keywords" v-model="query">
-                                <button type="submit" class="btn">
+                                <input type="text" class="search-query span3" placeholder="Keywords" v-model="query" @keyup.enter="search">
+                                <button class="btn" @click="search">
                                     <i class="icon-search"></i><span v-text="i18n('common.button.search')"></span>
                                 </button>
                             </td>
                             <td>
-                                <div v-show="!query" id="svn-url" class="input-prepend"
+                                <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend"
                                      data-toggle="popover" :data-content="i18n('script.message.svn')" data-html="true"
                                      title="Subversion" data-placement="bottom">
-                                    <span class="add-on" style="cursor:default">SVN</span>
-                                    <span class="input-xlarge uneditable-input span7" v-html="svnUrl"></span>
+                                    <span class="add-on">SVN</span>
+                                    <span class="input-xlarge uneditable-input span7 svn-url">
+                                        <router-link v-text="basePath" to="/script/list"></router-link><!--
+                                        --><template v-if="currentPath !== ''"
+                                                     v-for="(each, index) in currentPath.split('/')"><!--
+                                            -->/<!--
+                                            --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
+                                                            v-text="each"></router-link>
+                                        </template>
+                                    </span>
                                 </div>
                             </td>
                         </tr>
@@ -29,14 +37,14 @@
             </tr>
             <tr>
                 <td>
-                    <table style="width:100%; margin-top:5px">
+                    <table class="search-bar-buttons">
                         <colgroup>
                             <col width="600px"/>
                             <col width="340px"/>
                         </colgroup>
                         <tr>
                             <td>
-                                <template v-if="!query">
+                                <template v-if="$route.name !== 'scriptSearch'">
                                     <a class="btn btn-primary" data-toggle="modal" data-target="#create-script-modal">
                                         <i class="icon-file icon-white"></i>
                                         <span v-text="i18n('script.action.createScript')"></span>
@@ -90,23 +98,11 @@
         components: { CreateScriptModal, CreateFolderModal, UploadFileModal},
     })
     export default class SearchBar extends Base {
-        handlers = [];
         query = '';
-        svnUrl = '';
+        basePath = `${window.location.hostname}:${window.location.port}/svn/${ngrinder.currentUser.id}`;
 
         mounted() {
             this.query = this.$route.query.query;
-
-            if (!this.query) {
-                this.$http.get("/script/api/svnUrl", {
-                    params: {
-                        user: this.currentUser,
-                        path: this.currentPath,
-                    }
-                }).then(res => {
-                    this.svnUrl = res.data;
-                });
-            }
 
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
@@ -126,20 +122,27 @@
             if (checkedScripts.length === 0) {
                 bootbox.alert(this.i18n("script.message.delete.alert"), this.i18n("common.button.ok"));
             } else {
-                bootbox.confirm(this.i18n("script.message.delete.confirm"), this.i18n("common.button.cancel"), this.i18n("common.button.ok"), result => {
-                    if (!result) {
-                        return;
-                    }
-
-                    const scriptsString = checkedScripts.map(file => file.fileName).join(",");
-                    this.$http.post(`/script/api/delete/${this.currentPath}`, null, {
-                        params: {
-                            filesString: scriptsString
+                bootbox.confirm(
+                    this.i18n("script.message.delete.confirm"),
+                    this.i18n("common.button.cancel"),
+                    this.i18n("common.button.ok"),
+                    result => {
+                        if (!result) {
+                            return;
                         }
-                    })
-                    .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
-                });
+
+                        this.$http.post(`/script/api/delete`, checkedScripts.map(file => file.path))
+                        .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
+                    });
             }
+        }
+
+        search() {
+            this.$router.push({ path: '/script/search', query: { query: this.query } });
+        }
+
+        get breadcrumbPathUrl() {
+            return ['/script/list', ...this.currentPath.split('/')];
         }
     }
 </script>
@@ -152,5 +155,14 @@
 
     .uneditable-input {
         cursor: text;
+    }
+
+    .add-on {
+        cursor: default;
+    }
+
+    .search-bar-buttons{
+        width:100%;
+        margin-top:5px;
     }
 </style>

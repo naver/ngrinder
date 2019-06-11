@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.model;
 
@@ -119,7 +119,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.ngrinder.script.model.IFileEntry#getContent()
 	 */
 	@Override
@@ -233,7 +233,13 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 			JsonObject root = new JsonObject();
 			root.addProperty("path", FilenameUtils.separatorsToUnix(fileEntry.getPath()));
 			root.addProperty("pathInShort", FilenameUtils.separatorsToUnix(fileEntry.getPathInShort()));
+
 			root.addProperty("revision", fileEntry.getRevision());
+			root.addProperty("lastRevision", fileEntry.getLastRevision());
+
+			root.addProperty("content", fileEntry.getContent());
+			root.addProperty("description", fileEntry.getDescription());
+
 			String validateKey = MapUtils.getString(fileEntry.getProperties(), "validated", "0");
 			if (NumberUtils.isNumber(validateKey)) {
 				root.addProperty("validated", NumberUtils.createInteger(validateKey));

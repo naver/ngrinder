@@ -50,17 +50,17 @@
             </li>
             <template v-if="isAdmin">
                 <li class="divider"></li>
-                <li><a href="/user/" v-text="i18n('navigator.dropDown.userManagement')"></a></li>
+                <li><router-link to="/user" v-text="i18n('navigator.dropDown.userManagement')"></router-link></li>
                 <li><a href="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></a></li>
                 <li>
-                    <a href="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></a>
+                    <router-link to="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></router-link>
                 </li>
-                <li><a href="/operation/system_config" v-text="i18n('navigator.dropDown.systemConfig')"></a></li>
+                <li><router-link to="/operation/system_config" v-text="i18n('navigator.dropDown.systemConfig')"></router-link></li>
             </template>
             <template v-if="isAdminOrSuperUser">
                 <li class="divider"></li>
                 <li>
-                    <a href="/operation/announcement" v-text="i18n('navigator.dropDown.announcement')"></a>
+                    <router-link to="/operation/announcement" v-text="i18n('navigator.dropDown.announcement')"></router-link>
                 </li>
             </template>
             <li class="divider"></li>

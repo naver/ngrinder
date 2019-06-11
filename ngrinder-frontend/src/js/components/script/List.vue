@@ -18,7 +18,7 @@
             </colgroup>
             <thead>
             <tr>
-                <th><input type="checkbox" class="checkbox" value=""></th>
+                <th><input type="checkbox" class="checkbox" v-model="selectAll" @change="changeSelectAll"></th>
                 <th class="no-click">
                     <router-link :to="baseDirectory" target="_self">
                         <img src="/img/up_folder.png"/>
@@ -43,12 +43,20 @@
                     <i v-else class="icon-briefcase"></i>
                 </td>
                 <td class="ellipsis">
-                    <a v-if="isEditable(script.fileType , script.path)" :href="`/script/detail/${script.path}`"
-                       target="_self" :title="script.path" v-text="script.fileName"></a>
-                    <router-link v-else-if="script.fileType === 'DIR'" :to="`/script/list/${script.path}`"
-                                 target="_self" :title="script.path" v-text="script.fileName"></router-link>
-                    <a v-else :href="`/script/download/${script.path}`" target="_blank" :title="script.path"
-                       v-text="script.fileName"></a>
+                    <router-link v-if="isEditable(script.fileType, script.path)"
+                                 :to="`/script/detail/${script.path}`"
+                                 :title="script.path" target="_self"
+                                 v-text="script.fileName">
+                    </router-link>
+                    <router-link v-else-if="script.fileType === 'DIR'"
+                                 :to="`/script/list/${script.path}`"
+                                 :title="script.path" target="_self"
+                                 v-text="script.fileName">
+                    </router-link>
+                    <a v-else :href="`/script/download/${script.path}`"
+                       target="_blank" :title="script.path"
+                       v-text="script.fileName">
+                    </a>
                 </td>
                 <td class="ellipsis" :title="script.description" v-text="script.description"></td>
                 <td><span v-if="!!script.lastModifiedDate">{{ script.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span></td>
@@ -73,10 +81,11 @@
 
     @Component({
         name: 'scriptList',
-        components: {VueHeadful, SearchBar},
+        components: { VueHeadful, SearchBar },
     })
     export default class ScriptList extends Base {
         scripts = [];
+        selectAll = false;
 
         mounted() {
             this.refreshScriptList();
@@ -84,25 +93,31 @@
         }
 
         refreshScriptList() {
-            this.$http.get(`/script/api/list/${this.currentPath}`, {
-                params: {
-                    user: this.currentUser
-                }
-            }).then(res => {
+            if (this.$route.name === 'scriptSearch') {
+                this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
+                    .then(res => refresh(res.data));
+            } else {
+                this.$http.get(`/script/api/${this.currentPath}`)
+                    .then(res => refresh(res.data));
+            }
+
+            const refresh = scripts => {
+                const list = scripts.map(script => {
+                    script.checked = false;
+                    script.fileName = this.getFileName(script.path);
+                    return script;
+                });
+
                 this.scripts.splice(0);
-                this.scripts.push(
-                    ...res.data.map(script => {
-                        script.checked = false;
-                        return script
-                    })
-                    .map(script => {
-                        script.fileName = this.getFileName(script.path);
-                        return script
-                    }));
-            });
+                this.scripts.push(...list);
+                this.selectAll = false;
+            }
         }
 
         get currentPath() {
+            if (this.$route.name === 'scriptSearch') {
+                return '';
+            }
             return removePrependedSlash(this.$route.path).replace('/script', '').replace('/list', '').replace('/', '');
         }
 
@@ -114,8 +129,15 @@
         }
 
         @Watch('$route')
-        watchRoute() {
-            this.refreshScriptList();
+        watchRoute(newValue, oldValue) {
+            if ((newValue.name === 'scriptList' && newValue.path !== oldValue.path)
+                || (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query)) {
+                this.refreshScriptList();
+            }
+        }
+
+        changeSelectAll(event) {
+            this.scripts.forEach(script => script.checked = event.target.checked);
         }
 
         downloadScript(path) {

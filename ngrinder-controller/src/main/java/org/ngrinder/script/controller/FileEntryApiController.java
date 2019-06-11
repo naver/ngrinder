@@ -13,20 +13,18 @@
  */
 package org.ngrinder.script.controller;
 
-import static java.util.stream.Collectors.*;
-import static org.apache.commons.io.FilenameUtils.*;
-import static org.ngrinder.common.util.EncodingUtils.*;
+import static com.google.common.collect.ImmutableMap.of;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.FilenameUtils.getPath;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.PathUtils.*;
+import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
+import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
@@ -37,6 +35,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.handler.ProjectHandler;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
@@ -46,9 +45,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.google.common.collect.ImmutableMap;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * FileEntry manipulation API controller.
@@ -80,53 +84,6 @@ public class FileEntryApiController extends BaseController {
 	@Autowired
 	private ScriptValidationService scriptValidationService;
 
-	/**
-	 * Get all files which belongs to given user and path.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return json string
-	 */
-	@RestAPI
-	@GetMapping("/list/**")
-	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
-		final String trimmedPath = StringUtils.trimToEmpty(path);
-
-		List<FileEntry> files = fileEntryService.getAll(user)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(fileEntry -> trimPathSeparatorBothSides(getPath(fileEntry.getPath())).equals(trimmedPath))
-			.sorted(DIRECTORY_PRIORITY_FILE_ENTRY_COMPARATOR)
-			.peek(fileEntry -> fileEntry.setPath(removePrependedSlash(fileEntry.getPath())))
-			.collect(toList());
-
-		return toJsonHttpEntity(files);
-	}
-
-	/**
-	 * Get the SVN url BreadCrumbs HTML string.
-	 *
-	 * @param user user
-	 * @param path path
-	 * @return generated HTML
-	 */
-	@RestAPI
-	@GetMapping("/svnUrl")
-	public String getSvnUrlBreadcrumbs(User user, String path) {
-		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = StringUtils.split(path, '/');
-		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder returnHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
-			.append(contextPath).append("/svn/").append(user.getUserId()).append("</a>");
-		for (String each : parts) {
-			returnHtml.append("/");
-			accumulatedPart.append("/").append(each);
-			returnHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
-		}
-		return returnHtml.toString();
-	}
-
-	@RestAPI
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
 		return handlerFactory.getVisibleHandlers();
@@ -139,20 +96,50 @@ public class FileEntryApiController extends BaseController {
 	 * @param query query string
 	 * @return list of filtered files
 	 */
-	@RestAPI
 	@GetMapping("/search")
-	public HttpEntity<String> search(User user, @RequestParam(required = true, value = "query") final String query) {
-		final String trimmedQuery = StringUtils.trimToEmpty(query);
-		List<FileEntry> files = fileEntryService.getAll(user)
+	public List<FileEntry> search(User user, @RequestParam String query) {
+		String trimmedQuery = trimToEmpty(query);
+
+		return fileEntryService.getAll(user)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(fileEntry -> fileEntry.getFileType() != FileType.DIR)
-			.filter(fileEntry -> StringUtils.containsIgnoreCase(new File(fileEntry.getPath()).getName(), trimmedQuery))
+			.filter(fileEntry -> containsIgnoreCase(new File(fileEntry.getPath()).getName(), trimmedQuery))
 			.collect(toList());
-
-		return toJsonHttpEntity(files);
 	}
 
+
+	/**
+	 * Save a fileEntry and return to the the path.
+	 *
+	 * @param user                 current user
+	 * @param fileEntry            file to be saved
+	 * @param targetHosts          target host parameter
+	 * @param validated            validated the script or not, 1 is validated, 0 is not.
+	 * @param createLibAndResource true if lib and resources should be created as well.
+	 * @return basePath
+	 */
+	@PostMapping("/save/**")
+	public String save(User user, FileEntry fileEntry,
+					   @RequestParam String targetHosts,
+					   @RequestParam(defaultValue = "0") String validated,
+					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
+		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
+			Map<String, String> map = of(
+				"validated", validated,
+				"targetHosts", trimToEmpty(targetHosts)
+			);
+			fileEntry.setProperties(map);
+		}
+		fileEntryService.save(user, fileEntry);
+
+		String basePath = getPath(fileEntry.getPath());
+		if (createLibAndResource) {
+			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
+			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
+		}
+		return encodePathWithUTF8(basePath);
+	}
 
 	/**
 	 * Provide new file creation form data.
@@ -162,20 +149,21 @@ public class FileEntryApiController extends BaseController {
 	 * @param testUrl               url which the script may use
 	 * @param fileName              fileName
 	 * @param scriptType            Type of script. optional
-	 * @param createLibAndResources true if libs and resources should be created as well.
+	 * @param createLibAndResource true if libs and resources should be created as well.
 	 * @return response map
 	 */
 	@PostMapping(value = "/new/**", params = "type=script")
-	public Map<String, Object> createForm(User user, @RemainedPath String path,
-	                                      @RequestParam(value = "testUrl", required = false) String testUrl,
-	                                      @RequestParam("fileName") String fileName,
-	                                      @RequestParam(value = "scriptType", required = false) String scriptType,
-	                                      @RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
-	                                      @RequestParam(value = "options", required = false) String options) {
-		fileName = StringUtils.trimToEmpty(fileName);
+	public Map<String, Object> createScript(User user,
+											@RemainedPath String path,
+											@RequestParam("fileName") String fileName,
+											@RequestParam(required = false) String testUrl,
+											@RequestParam(required = false) String options,
+											@RequestParam(required = false) String scriptType,
+											@RequestParam(defaultValue = "false") boolean createLibAndResource) {
+		fileName = trimToEmpty(fileName);
 		String name = "Test1";
-		if (StringUtils.isEmpty(testUrl)) {
-			testUrl = StringUtils.defaultIfBlank(testUrl, "http://please_modify_this.com");
+		if (isEmpty(testUrl)) {
+			testUrl = defaultIfBlank(testUrl, "http://please_modify_this.com");
 		} else {
 			name = UrlUtils.getHost(testUrl);
 		}
@@ -183,12 +171,12 @@ public class FileEntryApiController extends BaseController {
 		FileEntry entry;
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
-				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResources, options);
-				return ImmutableMap.of(
+				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResource, options);
+				return of(
 					"message", fileName + " project is created.",
 					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName);
 			} else {
-				return ImmutableMap.of(
+				return of(
 					"message", fileName + " is already existing. Please choose the different name",
 					"path", "/script/list/" + encodePathWithUTF8(path) + "/");
 			}
@@ -198,15 +186,13 @@ public class FileEntryApiController extends BaseController {
 			if (fileEntryService.hasFileEntry(user, fullPath)) {
 				entry = fileEntryService.getOne(user, fullPath);
 			} else {
-				entry = fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResources, options);
+				entry = fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResource, options);
 			}
 		}
 
-		return ImmutableMap.of(
-			"breadcrumbPath", getScriptPathBreadcrumbs(PathUtils.join(path, fileName)),
-			"scriptHandler", scriptHandler,
-			"createLibAndResource", createLibAndResources,
-			"file", entry);
+		save(user, entry, null, "0", createLibAndResource);
+
+		return of("file", entry);
 	}
 
 	/**
@@ -217,51 +203,48 @@ public class FileEntryApiController extends BaseController {
 	 * @param folderName folderName
 	 */
 	@PostMapping(value = "/new/**", params = "type=folder")
-	public HttpEntity<String> addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName) {
-		fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
-		return successJsonHttpEntity();
+	public String addFolder(User user,
+							@RemainedPath String path,
+							@RequestParam String folderName) {
+		fileEntryService.addFolder(user, path, trimToEmpty(folderName), "");
+		return returnSuccess();
 	}
 
 	/**
-	 * Get the script path BreadCrumbs HTML string.
+	 * Get the details of given path.
 	 *
-	 * @param path path
-	 * @return generated HTML
+	 * @param user     user
+	 * @param path     user
+	 * @param revision revision. -1 if HEAD
+	 * @return detail view properties
 	 */
-	public String getScriptPathBreadcrumbs(String path) {
-		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
-		String[] parts = StringUtils.split(path, '/');
-		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
-		StringBuilder returnHtml = new StringBuilder();
-		for (int i = 0; i < parts.length; i++) {
-			String each = parts[i];
-			accumulatedPart.append("/").append(each);
-			if (i != parts.length - 1) {
-				returnHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each)
-					.append("</a>").append("/");
-			} else {
-				returnHtml.append(each);
-			}
+	@GetMapping("/detail/**")
+	public Map<String, Object> getOne(User user,
+									  @RemainedPath String path,
+									  @RequestParam(value = "r", required = false) Long revision) {
+		FileEntry script = fileEntryService.getOne(user, path, revision);
+		if (script == null || !script.getFileType().isEditable()) {
+			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
+			return of();
 		}
-		return returnHtml.toString();
+
+		return of(
+			"file", script,
+			"scriptHandler", fileEntryService.getScriptHandler(script)
+		);
 	}
 
 	/**
 	 * Delete files on the given path.
 	 *
 	 * @param user        user
-	 * @param path        base path
-	 * @param filesString file list delimited by ","
+	 * @param paths 	list of file paths to be deleted
 	 * @return json string
 	 */
-	@PostMapping(value = "/delete/**")
-	@ResponseBody
-	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString) {
-		String[] files = filesString.split(",");
-		fileEntryService.delete(user, path, files);
-		Map<String, Object> rtnMap = new HashMap<>(1);
-		rtnMap.put(JSON_SUCCESS, true);
-		return toJson(rtnMap);
+	@PostMapping("/delete")
+	public String delete(User user, @RequestBody List<String> paths) {
+		fileEntryService.delete(user, paths);
+		return returnSuccess();
 	}
 
 
@@ -273,9 +256,11 @@ public class FileEntryApiController extends BaseController {
 	 * @param description description
 	 * @param file        multi part file
 	 */
-	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
-	public HttpEntity<String> uploadFile(User user, @RemainedPath String path, @RequestParam("description") String description,
-						 @RequestParam("uploadFile") MultipartFile file) {
+	@PostMapping("/upload/**")
+	public String uploadFile(User user,
+							 @RemainedPath String path,
+							 @RequestParam String description,
+							 @RequestParam("uploadFile") MultipartFile file) {
 		try {
 			description = XssPreventer.escape(description);
 			upload(user, path, description, file);
@@ -283,7 +268,7 @@ public class FileEntryApiController extends BaseController {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
 			throw processException("Error while getting file content:" + e.getMessage(), e);
 		}
-		return successJsonHttpEntity();
+		return returnSuccess();
 	}
 
 	private void upload(User user, String path, String description, MultipartFile file) throws IOException {
@@ -303,10 +288,10 @@ public class FileEntryApiController extends BaseController {
 	 * @return success json string
 	 */
 	@RestAPI
-	@PostMapping(value = {"/", ""})
-	public HttpEntity<String> create(User user, FileEntry fileEntry) {
+	@PostMapping({"/", ""})
+	public String create(User user, FileEntry fileEntry) {
 		fileEntryService.save(user, fileEntry);
-		return successJsonHttpEntity();
+		return returnSuccess();
 	}
 
 	/**
@@ -320,11 +305,12 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@PostMapping(value = "/**", params = "action=upload")
-	public HttpEntity<String> uploadForAPI(User user, @RemainedPath String path,
-										   @RequestParam("description") String description,
-										   @RequestParam("uploadFile") MultipartFile file) throws IOException {
+	public String uploadForAPI(User user,
+							   @RemainedPath String path,
+							   @RequestParam String description,
+							   @RequestParam("uploadFile") MultipartFile file) throws IOException {
 		upload(user, path, description, file);
-		return successJsonHttpEntity();
+		return returnSuccess();
 	}
 
 	/**
@@ -355,6 +341,29 @@ public class FileEntryApiController extends BaseController {
 	}
 
 	/**
+	 * Get all files which belongs to given user and path.
+	 *
+	 * @param user user
+	 * @param path path
+	 * @return json string
+	 */
+	@RestAPI
+	@GetMapping({"/**", "/", ""})
+	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
+		String trimmedPath = trimToEmpty(path);
+
+		return toJsonHttpEntity(
+			fileEntryService.getAll(user)
+				.stream()
+				.filter(Objects::nonNull)
+				.filter(fileEntry -> trimPathSeparatorBothSides(getPath(fileEntry.getPath())).equals(trimmedPath))
+				.sorted(DIRECTORY_PRIORITY_FILE_ENTRY_COMPARATOR)
+				.peek(fileEntry -> fileEntry.setPath(removePrependedSlash(fileEntry.getPath())))
+				.collect(toList())
+		);
+	}
+
+	/**
 	 * Delete file by given user and path.
 	 *
 	 * @param user user
@@ -363,9 +372,9 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@DeleteMapping("/**")
-	public HttpEntity<String> deleteOne(User user, @RemainedPath String path) {
+	public String deleteOne(User user, @RemainedPath String path) {
 		fileEntryService.delete(user, path);
-		return successJsonHttpEntity();
+		return returnSuccess();
 	}
 
 	/**
@@ -379,7 +388,7 @@ public class FileEntryApiController extends BaseController {
 	@RestAPI
 	@PostMapping("/validate")
 	public HttpEntity<String> validate(User user, FileEntry fileEntry,
-									   @RequestParam(value = "hostString", required = false) String hostString) {
+									   @RequestParam(required = false) String hostString) {
 		fileEntry.setCreatedUser(user);
 		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
 	}

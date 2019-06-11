@@ -9,10 +9,10 @@
                         </a>
                     </div>
                     <ul class="nav navbar-nav">
-                        <li id="nav_test" class="clickable">
+                        <li id="nav_test" class="clickable" :class="{ active : $route.path.startsWith('/perftest') }">
                             <a @click.prevent="$router.push('/perftest')" v-text="i18n('navigator.perfTest')"></a>
                         </li>
-                        <li class="clickable">
+                        <li class="clickable" :class="{ active : $route.path.startsWith('/script') }">
                             <a @click.prevent="$router.push('/script')" v-text="i18n('navigator.script')"></a>
                         </li>
                     </ul>
