@@ -47,12 +47,6 @@
             this.errMessage = '';
         }
 
-        showExceptionMsg() {
-            if (ngrinder.exception) {
-                this.showErrorMsg(ngrinder.exception);
-            }
-        }
-
         showMsg(color, message) {
             this.showMsgDiv = false;
             this.msgClass = color;

@@ -204,7 +204,7 @@
         const removeAppendedSlash = path => path.startsWith('/') ? path.slice(1) : path;
         const removePrependedSlash = path => path.endsWith('/') ? path.slice(0, path.length - 1) : path;
 
-        return removePrependedSlash(source) + '/' + removeAppendedSlash(relative);
+        return `${removePrependedSlash(source)}/${removeAppendedSlash(relative)}`;
     }
 </script>
 
