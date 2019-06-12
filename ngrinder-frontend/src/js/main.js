@@ -23,6 +23,8 @@ import UserList from 'user/List.vue';
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
 
+import VeeValidateInitializer from 'vee-validate-initializer.js'
+
 import 'moment-duration-format';
 
 axios.interceptors.request.use(config => {
@@ -102,6 +104,7 @@ new Vue({
     },
     beforeMount: function() {
         this.$store.commit('ngrinder', window.ngrinder);
+        VeeValidateInitializer.initValidationMessages();
     },
     computed: {
         ...mapState([
