@@ -58,11 +58,6 @@
         hasError = false;
         success = false;
 
-        updated() {
-            $('[data-toggle="popover"]').popover('destroy');
-            $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#control-group'});
-        }
-
         handleError(result) {
             this.hasError = result;
         }
