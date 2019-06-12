@@ -88,7 +88,6 @@
 </template>
 
 <script>
-    import {Validator} from 'vee-validate';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
@@ -137,8 +136,6 @@
             this.displayPasswordField = this.config.showPasswordByDefault;
 
             this.setCustomValidationRules();
-            this.setCustomValidationMessages();
-
             if (this.type === 'signUp') {
                 this.formUrl = '/sign_up/save';
             }
@@ -219,29 +216,6 @@
                     }
                 },
             });
-        }
-
-        setCustomValidationMessages() {
-            const dictionary = {
-                required: () => this.i18n('common.message.validate.empty'),
-                regex: name => (name === 'userId' ? this.i18n('user.info.userId.help') : this.i18n('user.info.phone.help')),
-                email: () => this.i18n('user.info.email.help'),
-                max: (name, val) => this.i18n('common.message.validate.maxLength', {maxLength: val[0]}),
-            };
-
-            const messages = {
-                en: {
-                    messages: dictionary,
-                },
-                kr: {
-                    messages: dictionary,
-                },
-                cn: {
-                    messages: dictionary,
-                },
-            };
-
-            Validator.localize(messages);
         }
     }
 </script>
