@@ -173,7 +173,7 @@
                                 </control-group>
                             </div>
                             <div class="span3">
-                                <control-group name="param" labelMessageKey="perfTest.config.param" controlsStyle="margin-left: 85px;"
+                                <control-group labelMessageKey="perfTest.config.param" controlsStyle="margin-left: 85px;"
                                                labelStyle="width: 70px;" ref="paramControlGroup">
                                     <input-popover name="param"
                                                    ref="param"
@@ -198,7 +198,6 @@
 </template>
 
 <script>
-    import {Validator} from 'vee-validate';
     import {Component, Watch} from 'vue-property-decorator';
     import {Mixins} from 'vue-mixin-decorator';
     import VueSlider from 'vue-slider-component';
@@ -290,7 +289,6 @@
 
         mounted() {
             this.setCustomValidationRules();
-            this.setCustomValidationMessages();
         }
 
         changeMaxAgentCount() {
@@ -337,35 +335,6 @@
                     this.validationGroup.push(this.$refs.region);
                 }
             });
-        }
-
-        setCustomValidationMessages() {
-            const dictionary = {
-                required: () => this.i18n('common.message.validate.empty'),
-                regex: name => {
-                    if (name === 'domain') {
-                        return this.i18n('perfTest.config.addHost.inputTargetDomain');
-                    }
-                    if (name === 'ip') {
-                        return this.i18n('perfTest.config.addHost.inputTargetIp');
-                    }
-                    return this.i18n('perfTest.message.param');
-                },
-            };
-
-            const messages = {
-                en: {
-                    messages: dictionary,
-                },
-                kr: {
-                    messages: dictionary,
-                },
-                cn: {
-                    messages: dictionary,
-                },
-            };
-
-            Validator.localize(messages);
         }
 
         setCustomValidationRules() {

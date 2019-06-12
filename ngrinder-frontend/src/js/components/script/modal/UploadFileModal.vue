@@ -46,7 +46,6 @@
     import Base from '../../Base.vue';
 
     import ControlGroup from '../../common/ControlGroup.vue';
-    import { Validator } from 'vee-validate';
 
 
     @Component({
@@ -60,13 +59,8 @@
         components: { ControlGroup },
     })
     export default class UploadFileModal extends Base {
-
         file = null;
         description = '';
-
-        mounted() {
-            this.setCustomValidationMessages();
-        }
 
         async uploadFile() {
             if (await this.validFields() === false) {
@@ -99,26 +93,6 @@
             }
 
             return this.$validator.validateAll();
-        }
-
-        setCustomValidationMessages() {
-            const dictionary = {
-                required: () => this.i18n('common.message.validate.empty'),
-            };
-
-            const messages = {
-                en: {
-                    messages: dictionary,
-                },
-                kr: {
-                    messages: dictionary,
-                },
-                cn: {
-                    messages: dictionary,
-                },
-            };
-
-            Validator.localize(messages);
         }
 
         @Watch('errors', {deep: true})
