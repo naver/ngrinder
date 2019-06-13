@@ -17,7 +17,7 @@
             </a>
             <span class="pull-right">
                 <a class="btn" data-toggle="modal" data-target="#sign_up_modal"
-                   @click="$refs.signUpModal.show()">
+                   @click="$router.push({ path : '/user/new' })">
                     <i class="icon-user"></i><span v-text="i18n('user.list.button.create')"></span>
                 </a>
                 <a class="btn btn-danger" @click="deleteCheckedUsers">

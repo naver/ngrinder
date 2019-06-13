@@ -66,8 +66,6 @@ public class UserController extends BaseController {
 	@Autowired
 	protected Config config;
 
-	public static final Sort DEFAULT_SORT = new Sort(Direction.ASC, "userName");
-
 	/**
 	 * Get user list page.
 	 *
@@ -79,30 +77,28 @@ public class UserController extends BaseController {
 		return "app";
 	}
 
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping({"/api/list", "/api/list/"})
-	@ResponseBody
-	public Page<User> getAll(@RequestParam(required = false) Role role,
-							   @PageableDefault(page = 0, size = 10) Pageable pageable,
-							   @RequestParam(required = false) String keywords) {
-		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
-		Pageable defaultPageable = PageRequest.of(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
-		Page<User> pagedUser;
-		if (StringUtils.isEmpty(keywords)) {
-			pagedUser = userService.getPagedAll(role, pageable);
-			if (pagedUser.getNumberOfElements() == 0) {
-				pagedUser = userService.getPagedAll(role, defaultPageable);
-			}
-		} else {
-			pagedUser = userService.getPagedAll(keywords, pageable);
-			if (pagedUser.getNumberOfElements() == 0) {
-				pagedUser = userService.getPagedAll(keywords, defaultPageable);
-			}
-		}
-
-		return pagedUser;
+	/**
+	 * Get user creation form page.
+	 *
+	 * @return app
+	 */
+	@RequestMapping("/new")
+	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
+	public String openForm() {
+		return "app";
 	}
 
+	/**
+	 * Get user detail page.
+	 *
+	 * @param userId user to get
+	 * @return app
+	 */
+	@RequestMapping("/{userId}")
+	@PreAuthorize("hasAnyRole('A')")
+	public String userDetail(@PathVariable final String userId) {
+		return "app";
+	}
 
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping({"/api/role", "/api/role/"})
@@ -113,76 +109,16 @@ public class UserController extends BaseController {
 
 
 	/**
-	 * Get user creation form page.
-	 *
-	 * @param user  current user
-	 * @param model mode
-	 * @return "user/detail"
-	 */
-	@RequestMapping("/new")
-	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
-	public String openForm(User user, final ModelMap model) {
-		User one = User.createNew();
-		model.addAttribute("user", one);
-		model.addAttribute("allowUserIdChange", true);
-		model.addAttribute("allowPasswordChange", true);
-		model.addAttribute("allowRoleChange", false);
-		model.addAttribute("newUser", true);
-		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		model.addAttribute("showPasswordByDefault", true);
-		attachCommonAttribute(one, model);
-		return "user/detail";
-	}
-
-	/**
-	 * Get user detail page.
-	 *
-	 * @param model  mode
-	 * @param userId user to get
-	 * @return "user/detail"
-	 */
-	@RequestMapping("/{userId}")
-	@PreAuthorize("hasAnyRole('A')")
-	public String getOne(@PathVariable final String userId, ModelMap model) {
-		User one = userService.getOne(userId);
-		model.addAttribute("user", one);
-		model.addAttribute("allowPasswordChange", true);
-		model.addAttribute("allowRoleChange", true);
-		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		model.addAttribute("showPasswordByDefault", false);
-		attachCommonAttribute(one, model);
-		return "user/detail";
-	}
-
-	/**
-	 * Get the current user profile.
-	 *
-	 * @param user  current user
-	 * @param model model
-	 * @return "user/info"
-	 */
-	@RequestMapping("/profile")
-	public String getOne(User user, ModelMap model) {
-		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User one = userService.getOneWithFollowers(user.getUserId());
-		model.addAttribute("user", one);
-		model.addAttribute("allowPasswordChange", !config.isDemo());
-		model.addAttribute("allowRoleChange", false);
-		model.addAttribute("showPasswordByDefault", false);
-		attachCommonAttribute(one, model);
-		return "user/info";
-	}
-
-	/**
 	 * Save or Update user detail info.
 	 *
 	 * @param user        current user
 	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
-	@RequestMapping("/save")
+	@ResponseBody
+	@RequestMapping("/api/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public String save(User user, @ModelAttribute User updatedUser) {
+	public String save(User user, @RequestBody User updatedUser) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -192,14 +128,10 @@ public class UserController extends BaseController {
 
 			// prevent user to modify with other user id
 			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
-					updatedUser);
+				updatedUser);
 		}
 		save(updatedUser);
-		if (user.getId().equals(updatedUser.getId())) {
-			return "redirect:/";
-		} else {
-			return "redirect:/user/";
-		}
+		return returnSuccess();
 	}
 
 	private User save(User user) {
