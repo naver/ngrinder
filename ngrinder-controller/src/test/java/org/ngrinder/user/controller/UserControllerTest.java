@@ -13,7 +13,6 @@
  */
 package org.ngrinder.user.controller;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +26,6 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -35,6 +33,7 @@ import org.springframework.ui.ModelMap;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -47,7 +46,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	private Gson gson = new Gson();
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#getAll(org.springframework.ui.ModelMap, org.ngrinder.model.Role,
+	 * {@link org.ngrinder.user.controller.UserApiController#getAll(org.ngrinder.model.Role,
 	 * org.springframework.data.domain.Pageable, java.lang.String)}
 	 * .
 	 */
@@ -56,27 +55,25 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = PageRequest.of(1, 10);
 
 		ModelMap model = new ModelMap();
-		userController.getAll(null, page, null);
+		userApiController.getAll(null, page, null);
 
 		model.clear();
-		userController.getAll(Role.ADMIN, page, null);
+		userApiController.getAll(Role.ADMIN, page, null);
 
 		model.clear();
-		userController.getAll(null, page, "user");
+		userApiController.getAll(null, page, "user");
 
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#getOne(org.ngrinder.model.User,
-	 * org.springframework.ui.ModelMap)}
+	 * {@link org.ngrinder.user.controller.UserApiController#getOne(org.ngrinder.model.User)}
 	 * .
 	 */
 	@Test
 	public void testGetOne() {
-		ModelMap model = new ModelMap();
-		userController.getOne(getTestUser().getUserId(), model);
-		User user = (User) model.get("user");
+		Map<String, Object> result = userApiController.getOne(getTestUser().getUserId());
+		User user = (User) result.get("user");
 		assertThat(user.getId(), is(getTestUser().getId()));
 	}
 
@@ -87,15 +84,15 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testSave() {		// TODO: Resolve lazy initialize exception
 		// test update
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
 		currUser.setOwners(null);
 		userController.save(currUser, currUser);
-		String userJson = userController.getOne(currUser.getUserId()).getBody();
-		User user = gson.fromJson(userJson, User.class);
-		assertThat(userJson, containsString("new name"));
+		User user = (User) userApiController.getOne(currUser.getUserId()).get("user");
+		assertThat(user.getUserName(), is("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 
 		User admin = getAdminUser();
@@ -106,10 +103,9 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 		currUser.setFollowersStr("temp1, temp2");
 		userController.save(currUser, currUser);
-		userJson = userController.getOne(currUser.getUserId()).getBody();
-		user = gson.fromJson(userJson, User.class);
-		assertThat(user.getFollowers().size(), is(2));
-		assertThat(user.getFollowers().get(0).getUserId(), is("temp1"));
+		List<UserController.UserSearchResult> followers = (List<UserController.UserSearchResult>) userApiController.getOne(currUser.getUserId()).get("followers");
+		assertThat(followers.size(), is(2));
+		assertThat(followers.get(0).getId(), is("temp1"));
 	}
 
 	@Test
@@ -125,8 +121,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
 		userController.save(currUser, updatedUser);
 
-		String userJson = userController.getOne(currUser.getUserId()).getBody();
-		User user = gson.fromJson(userJson, User.class);
+		User user = (User) userApiController.getOne(currUser.getUserId()).get("user");
 		assertThat(user.getUserName(), is(currUser.getUserName()));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 		assertThat(user.getRole(), is(Role.USER));
@@ -159,17 +154,17 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = PageRequest.of(0, 10);
 
 		// search
-		Page<User> userList = userController.getAll(null, page, "NewUserName");
+		Page<User> userList = userApiController.getAll(null, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(3));
 
 		// test to delete one
 		userController.delete(testUser, "NewUserId1");
-		userList = userController.getAll(Role.USER, page, "NewUserName");
+		userList = userApiController.getAll(Role.USER, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(2));
 
 		// test to delete more
 		userController.deleteUsers(testUser, "NewUserId2,NewUserId3");
-		userList = userController.getAll(Role.USER, page, "NewUserName");
+		userList = userApiController.getAll(Role.USER, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(0));
 	}
 
@@ -190,9 +185,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testProfile() {
-		ModelMap model = new ModelMap();
-		String viewName = userController.getOne(getTestUser(), model);
-		assertThat(viewName, is("user/info"));
+		User user = (User) userApiController.getOne(getTestUser()).get("user");
+		assertThat(user.getUserName(), is("TEST_USER"));
 	}
 
 	@Test

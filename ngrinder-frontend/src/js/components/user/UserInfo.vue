@@ -1,13 +1,12 @@
 <template>
-    <form :action="formUrl" class="form-horizontal form-horizontal-left" id="user_form" name="user_form" method="POST">
+    <form class="form-horizontal form-horizontal-left user-form">
         <fieldset>
             <control-group :class="{error: errors.has('userId')}" name="userId" labelMessageKey="user.info.userId" required>
                 <input-append name="userId" ref="userId"
                               v-model="user.userId"
-                              :readonly="type === 'save'"
+                              :readonly="!config.allowUserIdChange"
                               :validationRules="{ required: true, userIdExist: ngrinder.config.signUpEnabled, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
                               message="user.info.userId"/>
-                <input type="hidden" name="id" :value="user.id"/>
             </control-group>
 
             <control-group :class="{error: errors.has('userName')}" name="userName" labelMessageKey="user.info.name" required>
@@ -123,16 +122,18 @@
 
         displayPasswordField = true;
         followerSelect2Option = {};
-        formUrl = '/user/save';
+        formUrl = '/user/api/save';
 
         created() {
             delete this.userProps.password;
             Object.assign(this.user, this.userProps);
+            this.user.followersStr = this.config.followers.map(user => user.id).join(',');
+
             this.displayPasswordField = this.config.showPasswordByDefault;
 
             this.setCustomValidationRules();
             if (this.type === 'signUp') {
-                this.formUrl = '/sign_up/save';
+                this.formUrl = '/sign_up/api/save';
             }
 
             if (this.config.allowShareChange) {
@@ -179,7 +180,10 @@
             if (this.errors.any()) {
                 return;
             }
-            document.forms.user_form.submit();
+
+            this.$http.post(this.formUrl, this.user)
+                .then(res => this.$emit('saved'))
+                .catch(err => console.error(err));
         }
 
         setCustomValidationRules() {
@@ -210,18 +214,20 @@
 </script>
 
 <style lang="less">
-    #user_form {
-        .input-group {
-            input {
-                width: 286px;
-                border-radius: 4px;
+    #ngrinder {
+        .user-form {
+            .input-group {
+                input {
+                    width: 286px;
+                    border-radius: 4px;
+                }
             }
         }
     }
 </style>
 
 <style lang="less" scoped>
-    #user_form {
+    .user-form {
         textarea {
             resize: none;
         }

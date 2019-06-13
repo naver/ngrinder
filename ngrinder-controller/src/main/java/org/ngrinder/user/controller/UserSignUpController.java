@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,14 +9,15 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.user.controller;
 
 
+import static org.ngrinder.common.util.Preconditions.checkTrue;
+
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
  * User sign up controller.
@@ -64,20 +62,6 @@ public class UserSignUpController extends UserController {
 	 */
 	protected void attachCommonAttribute(User user, ModelMap model) {
 		model.addAttribute("userSecurityEnabled", config.isUserSecurityEnabled());
-	}
-
-	/**
-	 * Save a user.
-	 *
-	 * @param newUser user to be added.
-	 * @return "redirect:/"
-	 */
-	@PostMapping("/save")
-	public String save(@ModelAttribute("user") User newUser) {
-		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
-		newUser.setRole(Role.USER);
-		userService.createUser(newUser);
-		return "redirect:/";
 	}
 
 	/**
