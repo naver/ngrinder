@@ -15,7 +15,6 @@ package org.ngrinder.user.service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;

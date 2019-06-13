@@ -1,31 +1,39 @@
 package org.ngrinder.user.controller;
 
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 @RestController
 @RequestMapping("/user/api")
 public class UserApiController extends BaseController {
+	public static final Sort DEFAULT_SORT = new Sort(Sort.Direction.ASC, "userName");
 
 	@Autowired
 	protected Config config;
@@ -53,7 +61,7 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/profile")
-	public HttpEntity<String> getOne(User user) {
+	public Map<String, Object> getOne(User user) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
 		Map<String, Object> model = new HashMap<>();
 		User one = userService.getOneWithFollowers(user.getUserId());
@@ -62,7 +70,75 @@ public class UserApiController extends BaseController {
 		model.put("allowRoleChange", false);
 		model.put("showPasswordByDefault", false);
 		attachCommonAttribute(one, model);
-		return toJsonHttpEntity(model);
+		return model;
+	}
+
+	/**
+	 * Get user creation form page.
+	 *
+	 * @param user current user
+	 * @return app
+	 */
+	@RequestMapping("/new")
+	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
+	public Map<String, Object> openForm(User user) {
+		User one = User.createNew();
+
+		Map<String, Object> model = new HashMap<>(7);
+		model.put("user", one);
+		model.put("allowUserIdChange", true);
+		model.put("allowPasswordChange", true);
+		model.put("allowRoleChange", false);
+		model.put("roleSet", EnumSet.allOf(Role.class));
+		model.put("showPasswordByDefault", true);
+
+		attachCommonAttribute(one, model);
+		return model;
+	}
+
+	/**
+	 * Get user detail.
+	 *
+	 * @param userId user to get
+	 * @return user details
+	 */
+	@GetMapping("/{userId}/detail")
+	@PreAuthorize("hasAnyRole('A')")
+	public Map<String, Object> getOne(@PathVariable final String userId) {
+		User one = userService.getOneWithFollowers(userId);
+		Map<String, Object> model = buildMap(
+			"user", one,
+			"allowPasswordChange", true,
+			"allowRoleChange", true,
+			"roleSet", EnumSet.allOf(Role.class),
+			"showPasswordByDefault", false
+		);
+		attachCommonAttribute(one, model);
+		return model;
+	}
+
+
+	@PreAuthorize("hasAnyRole('A')")
+	@RequestMapping({"/list", "/list/"})
+	public Page<User> getAll(@RequestParam(required = false) Role role,
+							 @PageableDefault(page = 0, size = 10) Pageable pageable,
+							 @RequestParam(required = false) String keywords) {
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
+		Pageable defaultPageable = PageRequest.of(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
+		Page<User> pagedUser;
+		if (StringUtils.isEmpty(keywords)) {
+			pagedUser = userService.getPagedAll(role, pageable);
+			if (pagedUser.getNumberOfElements() == 0) {
+				pagedUser = userService.getPagedAll(role, defaultPageable);
+			}
+		} else {
+			pagedUser = userService.getPagedAll(keywords, pageable);
+			if (pagedUser.getNumberOfElements() == 0) {
+				pagedUser = userService.getPagedAll(keywords, defaultPageable);
+			}
+		}
+
+		return pagedUser;
 	}
 
 	/**
@@ -80,8 +156,8 @@ public class UserApiController extends BaseController {
 		user.setFollowers(null);
 		user.setOwners(null);
 
-		model.put("followers", followers.stream().map(UserController.UserSearchResult::new).collect(Collectors.toList()));
-		model.put("owners", owners.stream().map(UserController.UserSearchResult::new).collect(Collectors.toList()));
+		model.put("followers", followers.stream().map(UserController.UserSearchResult::new).collect(toList()));
+		model.put("owners", owners.stream().map(UserController.UserSearchResult::new).collect(toList()));
 		model.put("allowShareChange", true);
 		model.put("userSecurityEnabled", config.isUserSecurityEnabled());
 	}

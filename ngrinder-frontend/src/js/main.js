@@ -19,6 +19,7 @@ import ScriptConsole from 'operation/ScriptConsole.vue';
 import SystemConfig from 'operation/SystemConfig.vue';
 import Announcement from 'operation/Announcement.vue';
 import UserList from 'user/List.vue';
+import UserDetail from 'user/UserDetail.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -90,6 +91,8 @@ const routes = [
     {path: '/operation/system_config', component: SystemConfig, name: 'systemConfig'},
     {path: '/operation/announcement', component: Announcement, name: 'announcement'},
     {path: '/user', component: UserList, name: 'userList'},
+    {path: '/user/new', component: UserDetail, name: 'createNewUser'},
+    {path: '/user/:userId', component: UserDetail, name: 'userDetail', props: true},
 ];
 
 const router = new VueRouter({

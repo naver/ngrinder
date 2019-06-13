@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.user.controller;
 
@@ -18,11 +18,10 @@ import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -37,6 +36,9 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
 @RestController
 @RequestMapping("/sign_up/api")
 public class UserSignUpApiController extends UserController {
+
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private Config config;
@@ -60,5 +62,20 @@ public class UserSignUpApiController extends UserController {
 		model.put("showPasswordByDefault", true);
 		model.put("newUser", true);
 		return toJsonHttpEntity(model);
+	}
+
+	/**
+	 * Save a user.
+	 *
+	 * @param newUser user to be added.
+	 * @return success
+	 */
+	@RestAPI
+	@PostMapping("/save")
+	public String save(@RequestBody User newUser) {
+		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
+		newUser.setRole(Role.USER);
+		userService.createUser(newUser);
+		return returnSuccess();
 	}
 }

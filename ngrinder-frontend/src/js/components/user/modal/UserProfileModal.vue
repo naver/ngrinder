@@ -5,7 +5,7 @@
             <h4 class="modal-title" v-text="i18n('navigator.dropDown.profile.title')"></h4>
         </div>
         <div class="modal-body">
-            <user-info :userProps="user" :config="config" ref="userInfo"></user-info>
+            <user-info :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
         </div>
     </div>
 </template>
