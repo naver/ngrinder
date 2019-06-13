@@ -7,7 +7,7 @@
                     <h4 class="modal-title" v-text="i18n('user.signup.header')"></h4>
                 </div>
                 <div class="modal-body">
-                    <user-info :type="'signUp'" :userProps="user" :config="config" ref="userInfo"></user-info>
+                    <user-info :type="'signUp'" :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
                 </div>
             </div>
         </div>

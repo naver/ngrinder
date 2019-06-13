@@ -14,8 +14,14 @@
 package org.ngrinder.model;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
@@ -27,6 +33,7 @@ import java.io.IOException;
  * @since 3.0
  */
 @JsonSerialize(using = Role.Serializer.class)
+@JsonDeserialize(using = Role.Deserializer.class)
 public enum Role {
 	/**
 	 * General user role who can create performance test entry.
@@ -151,15 +158,35 @@ public enum Role {
 		}
 
 		@Override
-		public void serialize(Role value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-			gen.writeStartObject();
-			gen.writeFieldName("name");
-			gen.writeString(value.name());
-			gen.writeFieldName("shortName");
-			gen.writeString(value.shortName);
-			gen.writeFieldName("fullName");
-			gen.writeString(value.fullName);
-			gen.writeEndObject();
+		public void serialize(Role value, JsonGenerator generator, SerializerProvider provider) throws IOException {
+			generator.writeStartObject();
+			generator.writeFieldName("name");
+			generator.writeString(value.name());
+			generator.writeFieldName("shortName");
+			generator.writeString(value.shortName);
+			generator.writeFieldName("fullName");
+			generator.writeString(value.fullName);
+			generator.writeEndObject();
+		}
+	}
+
+	final static class Deserializer extends StdDeserializer<Role> {
+
+		public Deserializer() {
+			super(Role.class);
+		}
+
+		public Deserializer(Class<Role> t) {
+			super(t);
+		}
+
+		@Override
+		public Role deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+			JsonNode node = parser.getCodec().readTree(parser);
+			if (node == null || node.get("name") == null) {
+				return null;
+			}
+			return Role.valueOf(node.get("name").asText());
 		}
 	}
 }

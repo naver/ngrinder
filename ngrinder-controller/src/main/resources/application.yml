@@ -25,3 +25,5 @@ spring:
   profiles:
     active: production
 
+  jackson:
+    default-property-inclusion: non_null
