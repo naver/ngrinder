@@ -13,41 +13,20 @@
  */
 package org.ngrinder.user.controller;
 
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.util.Preconditions.*;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.gson.annotations.Expose;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.Role;
-import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.EnumSet;
-import java.util.List;
 
 /**
  * User management controller.
@@ -100,66 +79,6 @@ public class UserController extends BaseController {
 		return "app";
 	}
 
-	@PreAuthorize("hasAnyRole('A')")
-	@GetMapping({"/api/role", "/api/role/"})
-	@ResponseBody
-	public EnumSet<Role> roleSet() {
-		return EnumSet.allOf(Role.class);
-	}
-
-
-	/**
-	 * Save or Update user detail info.
-	 *
-	 * @param user        current user
-	 * @param updatedUser user to be updated.
-	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
-	 */
-	@ResponseBody
-	@RequestMapping("/api/save")
-	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public String save(User user, @RequestBody User updatedUser) {
-		checkArgument(updatedUser.validate());
-		if (user.getRole() == Role.USER) {
-			// General user can not change their role.
-			User updatedUserInDb = userService.getOne(updatedUser.getUserId());
-			checkNotNull(updatedUserInDb);
-			updatedUser.setRole(updatedUserInDb.getRole());
-
-			// prevent user to modify with other user id
-			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
-				updatedUser);
-		}
-		save(updatedUser);
-		return returnSuccess();
-	}
-
-	private User save(User user) {
-		if (StringUtils.isBlank(user.getPassword())) {
-			return userService.saveWithoutPasswordEncoding(user);
-		} else {
-			return userService.save(user);
-		}
-	}
-
-	/**
-	 * Delete users.
-	 *
-	 * @param userIds comma separated user ids.
-	 * @return "redirect:/user/"
-	 */
-	@PreAuthorize("hasAnyRole('A')")
-	@DeleteMapping({"/api", "/api/"})
-	public HttpEntity<String> deleteUsers(User user, @RequestParam String userIds) {
-		String[] ids = userIds.split(",");
-		for (String eachId : ids) {
-			if (!user.getUserId().equals(eachId)) {
-				userService.delete(eachId);
-			}
-		}
-		return successJsonHttpEntity();
-	}
-
 	/**
 	 * Switch user identity.
 	 *
@@ -179,167 +98,5 @@ public class UserController extends BaseController {
 		}
 		response.addCookie(cookie);
 		return "redirect:" + StringUtils.defaultIfBlank(request.getHeader("referer"), "/");
-	}
-
-	/**
-	 * Get user list that current user will be shared, excluding current user.
-	 *
-	 * @param user  current user
-	 * @param model model
-	 */
-	protected void attachCommonAttribute(User user, ModelMap model) {
-		List list = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
-		model.addAttribute("followers", Lists.transform(list, new Function<User, UserSearchResult>() {
-			public UserSearchResult apply(User user) {
-				return new UserSearchResult(user);
-			}
-		}));
-		model.addAttribute("allowShareChange", true);
-		model.addAttribute("userSecurityEnabled", config.isUserSecurityEnabled());
-	}
-
-	/**
-	 * Check if the given user id already exists.
-	 *
-	 * @param userId userId to be checked
-	 * @return success json if true.
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/api/{userId}/check_duplication")
-	public HttpEntity<String> checkDuplication(@PathVariable String userId) {
-		User user = userService.getOne(userId);
-		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
-	}
-
-	/**
-	 * Get users by the given role.
-	 *
-	 * @param role user role
-	 * @return json message
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
-	public HttpEntity<String> getAll(Role role) {
-		return toJsonHttpEntity(userService.getAll(role));
-	}
-
-	/**
-	 * Get the user by the given user id.
-	 *
-	 * @param userId user id
-	 * @return json message
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/{userId}", method = RequestMethod.GET)
-	public HttpEntity<String> getOne(@PathVariable("userId") String userId) {
-		return toJsonHttpEntity(userService.getOne(userId));
-	}
-
-	/**
-	 * Create an user.
-	 *
-	 * @param newUser new user
-	 * @return json message
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
-	public HttpEntity<String> create(@ModelAttribute("user") User newUser) {
-		checkNull(newUser.getId(), "User DB ID should be null");
-		return toJsonHttpEntity(save(newUser));
-	}
-
-	/**
-	 * Update the user.
-	 *
-	 * @param userId user id
-	 * @param update update user
-	 * @return json message
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/{userId}", method = RequestMethod.PUT)
-	public HttpEntity<String> update(@PathVariable("userId") String userId, User update) {
-		update.setUserId(userId);
-		checkNull(update.getId(), "User DB ID should be null");
-		return toJsonHttpEntity(save(update));
-	}
-
-	/**
-	 * Delete the user by the given userId.
-	 *
-	 * @param userId user id
-	 * @return json message
-	 */
-	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/api/{userId}", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(User user, @PathVariable("userId") String userId) {
-		if (!user.getUserId().equals(userId)) {
-			userService.delete(userId);
-		}
-		return successJsonHttpEntity();
-	}
-
-	/**
-	 * Search user list on the given keyword.
-	 *
-	 * @param pageable page info
-	 * @param keywords search keyword.
-	 * @return json message
-	 */
-	@RestAPI
-	@RequestMapping(value = "/api/search", method = RequestMethod.GET)
-	public HttpEntity<String> search(User user, @PageableDefault Pageable pageable,
-	                                 @RequestParam(required = true) String keywords) {
-		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
-			defaultIfNull(pageable.getSort(),
-				new Sort(Direction.ASC, "userName")));
-		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
-		List<UserSearchResult> result = newArrayList();
-		for (User each : pagedUser) {
-			result.add(new UserSearchResult(each));
-		}
-
-		final String currentUserId = user.getUserId();
-		CollectionUtils.filter(result, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				UserSearchResult each = (UserSearchResult) object;
-				return !(each.getId().equals(currentUserId) || each.getId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
-			}
-		});
-
-		return toJsonHttpEntity(result);
-	}
-
-	public static class UserSearchResult {
-		@Expose
-		final private String id;
-
-		@Expose
-		final private String text;
-
-		public UserSearchResult(User user) {
-			id = user.getUserId();
-			final String email = user.getEmail();
-			final String userName = user.getUserName();
-			if (StringUtils.isEmpty(email)) {
-				this.text = userName + " (" + id + ")";
-			} else {
-				this.text = userName + " (" + email + " / " + id + ")";
-			}
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public String getId() {
-			return id;
-		}
 	}
 }

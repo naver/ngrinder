@@ -23,7 +23,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.AbstractUserService;
-import org.ngrinder.user.controller.UserController;
+import org.ngrinder.user.controller.UserApiController;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,11 +294,11 @@ public class UserService extends AbstractUserService {
 	}
 
 	@Transactional
-	public List<UserController.UserSearchResult> getSharedUser(User user) {
-		List<UserController.UserSearchResult> result = new ArrayList<UserController.UserSearchResult>();
+	public List<UserApiController.UserSearchResult> getSharedUser(User user) {
+		List<UserApiController.UserSearchResult> result = new ArrayList<>();
 		User currUser = getOne(user.getUserId());
 		for (User each : currUser.getOwners()) {
-			result.add(new UserController.UserSearchResult(each));
+			result.add(new UserApiController.UserSearchResult(each));
 		}
 		return result;
 	}
