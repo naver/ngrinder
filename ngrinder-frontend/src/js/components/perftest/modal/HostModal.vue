@@ -12,7 +12,7 @@
                 <div class="modal-body">
                     <div class="form-horizontal form-horizontal-4">
                         <fieldset>
-                            <control-group labelMessageKey="perfTest.config.domain" ref="domainControlGroup" labelStyle="text-align: right; margin-right: 10px;">
+                            <control-group :class="{error: errors.has('domain')}" labelMessageKey="perfTest.config.domain" labelStyle="text-align: right; margin-right: 10px;">
                                 <input type="text"
                                        ref="domainInput"
                                        class="input-medium"
@@ -22,12 +22,11 @@
                                        data-toggle="popover"
                                        data-html="true"
                                        data-placement="right"
-                                       @keyup="$refs.domainControlGroup.handleError(errors.has('domain'))"
                                        :title="i18n('perfTest.config.domain')"
                                        :data-content="i18n('perfTest.config.addHost.inputTargetDomain')">
                                 <span v-show="errors.has('domain')" class="validation-message" v-text="errors.first('domain')"></span>
                             </control-group>
-                            <control-group labelMessageKey="common.IP" ref="ipControlGroup" labelStyle="text-align: right; margin-right: 10px;">
+                            <control-group :class="{error: errors.has('ip')}" labelMessageKey="common.IP" labelStyle="text-align: right; margin-right: 10px;">
                                 <input type="text"
                                        name="ip"
                                        class="input-medium"
@@ -36,7 +35,6 @@
                                        data-toggle="popover"
                                        data-html="true"
                                        data-placement="right"
-                                       @keyup="$refs.ipControlGroup.handleError(errors.has('ip'))"
                                        title="IP"
                                        :data-content="i18n('perfTest.config.addHost.inputTargetIp')">
                                 <span v-show="errors.has('ip')" class="validation-message" v-text="errors.first('ip')"></span>
@@ -61,6 +59,9 @@
     @Component({
         name: 'hostModal',
         components: {ControlGroup},
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class HostModal extends ModalBase {
         host = '';
