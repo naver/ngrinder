@@ -7,10 +7,9 @@
             <div class="form-horizontal form-horizontal-2">
                 <div class="row intro agent-config-container" data-step="4" :data-intro="i18n('intro.config.basic.agent')">
                     <div class="span4">
-                        <control-group labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
+                        <control-group :class="{error: errors.has('agentCount')}" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
                                           v-model="test.agentCount"
-                                          @validationResult="$refs.agentCountControlGroup.handleError($event)"
                                           :validationRules="agentCountValidationRules"
                                           errStyle="width: 145px; word-break: break-all; white-space: normal;"
                                           appendPrefix="perfTest.config.max"
@@ -21,19 +20,18 @@
                     </div>
 
                     <div v-if="ngrinder.config.clustered" class="span2">
-                        <control-group ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
-                            <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount" class="pull-right required" customStyle="width: 110px;"
-                                     :validationRules="{ required: true }" @validationResult="$refs.regionControlGroup.handleError($event)">
+                        <control-group :class="{error: errors.has('region')}" ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
+                            <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
+                                     class="pull-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
                                 <option v-for="region in ngrinder.config.visibleRegions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select2>
                         </control-group>
                     </div>
                 </div>
 
-                <control-group labelMessageKey="perfTest.config.vuserPerAgent" ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
+                <control-group :class="{error: errors.has('vuserPerAgent')}" labelMessageKey="perfTest.config.vuserPerAgent" ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
                     <input-append name="vuserPerAgent" ref="vuserPerAgent"
                                   v-model="test.vuserPerAgent"
-                                  @validationResult="$refs.vuserPerAgentControlGroup.handleError($event)"
                                   :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                   @change="changeVuserPerAgent"
                                   errStyle="margin: 0; width: 140px;"
@@ -62,9 +60,9 @@
                     </transition>
                 </control-group>
 
-                <control-group labelMessageKey="perfTest.config.script" ref="scriptNameControlGroup">
+                <control-group :class="{error: errors.has('scriptName')}" labelMessageKey="perfTest.config.script" ref="scriptNameControlGroup">
                     <select2 v-model="test.scriptName" name="scriptName" ref="scriptName" customStyle="width: 275px;" :option="{placeholder: i18n('perfTest.config.scriptInput')}"
-                             :validationRules="{ required: true, scriptValidation: true }" @validationResult="$refs.scriptNameControlGroup.handleError($event)" errStyle="position: absolute;">
+                             :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts" :data-validate="script.validated" v-text="script.pathInShort" :value="script.path"></option>
                     </select2>
@@ -120,11 +118,10 @@
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
 
-                    <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
+                    <control-group :class="{error: errors.has('runCount')}" :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
                                       :append="config.maxRunCount"
-                                      @validationResult="$refs.runCountControlGroup.handleError($event)"
                                       :validationRules="{required: true, max_value: config.maxRunCount, min_value: test.threshold === 'R' ? 1 : 0}"
                                       v-model="test.runCount"
                                       @focus="test.threshold = 'R'"
@@ -153,10 +150,9 @@
                                 </control-group>
                             </div>
                             <div class="span3">
-                                <control-group name="ignoreSampleCount" ref="ignoreSampleCountControlGroup" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
+                                <control-group :class="{error: errors.has('ignoreSampleCount')}" name="ignoreSampleCount" ref="ignoreSampleCountControlGroup" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
                                     <input-popover v-model="test.ignoreSampleCount"
                                                    ref="ignoreSampleCount"
-                                                   @validationResult="$refs.ignoreSampleCountControlGroup.handleError($event)"
                                                    :validationRules="{ numeric: true }"
                                                    dataPlacement="top"
                                                    errStyle="margin-left: -120px;"
@@ -173,11 +169,10 @@
                                 </control-group>
                             </div>
                             <div class="span3">
-                                <control-group labelMessageKey="perfTest.config.param" controlsStyle="margin-left: 85px;"
-                                               labelStyle="width: 70px;" ref="paramControlGroup">
+                                <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
+                                               controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
                                     <input-popover name="param"
                                                    ref="param"
-                                                   @validationResult="$refs.paramControlGroup.handleError($event)"
                                                    :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }"
                                                    dataPlacement="top"
                                                    v-model="test.param"
@@ -198,8 +193,7 @@
 </template>
 
 <script>
-    import {Component, Watch} from 'vue-property-decorator';
-    import {Mixins} from 'vue-mixin-decorator';
+    import {Component, Watch, Inject} from 'vue-property-decorator';
     import VueSlider from 'vue-slider-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
@@ -207,7 +201,6 @@
     import InputAppend from '../../common/InputAppend.vue';
     import InputPrepend from '../../common/InputPrepend.vue';
     import InputPopover from '../../common/InputPopover.vue';
-    import ValidationMixin from '../../common/mixin/ValidationMixin.vue';
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
@@ -226,7 +219,9 @@
         },
         components: {TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp},
     })
-    export default class Config extends Mixins(Base, ValidationMixin) {
+    export default class Config extends Base {
+        @Inject() $validator;
+
         test = {
             param: '',
             region: '',
@@ -269,7 +264,6 @@
         };
 
         agentCountValidationRules = {required: true, agentCountValidation: true};
-        validationGroup = [];
 
         created() {
             this.test = this.testProps;
@@ -328,12 +322,6 @@
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
                 this.$refs.rampUp.updateRampUpChart();
-                this.validationGroup = [this, this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount,
-                    this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
-
-                if (this.ngrinder.config.clustered) {
-                    this.validationGroup.push(this.$refs.region);
-                }
             });
         }
 
@@ -413,10 +401,6 @@
             this.changeDuration(true);
         }
 
-        hasValidationError() {
-            return this.validationGroup.some(validation => validation.errors.any());
-        }
-
         addHost(newHost) {
             if (this.targetHosts.some(host => host === newHost)) {
                 return;
@@ -492,12 +476,6 @@
         .btn-script-revision {
             position: relative;
             margin-top: 3px;
-        }
-
-        div.error {
-            .btn-script-revision {
-                margin-top: -45px;
-            }
         }
 
         i {
