@@ -10,7 +10,6 @@
                @input="$emit('input', $event.target.value)"
                @change="$emit('change')"
                @focus="$emit('focus')"
-               @keyup="checkValidation"
                aria-describedby="basic-addon2"/>
         <span v-if="append !== null" class="add-on">
             <span v-text="i18n(appendPrefix)"></span>
@@ -21,10 +20,9 @@
 </template>
 
 <script>
+    import {Inject} from 'vue-property-decorator';
     import Base from '../Base.vue';
-    import ValidationMixin from './mixin/ValidationMixin.vue';
     import Component from 'vue-class-component';
-    import { Mixins } from 'vue-mixin-decorator';
 
     @Component({
         name: 'inputAppend',
@@ -58,7 +56,8 @@
             errStyle: String,
         },
     })
-    export default class InputAppend extends Mixins(Base, ValidationMixin) {
+    export default class InputAppend extends Base {
+        @Inject() $validator;
 
         get inputType() {
             return this.type ? this.type : 'text';
@@ -76,6 +75,7 @@
 
         .validation-message {
             margin-top: 2px;
+            white-space: normal;
         }
     }
 </style>
