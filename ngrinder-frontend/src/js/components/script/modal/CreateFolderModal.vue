@@ -35,8 +35,7 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
-    import Base from '../../Base.vue';
-
+    import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import querystring from 'querystring';
 
@@ -53,7 +52,7 @@
             validator: 'new',
         },
     })
-    export default class CreateFolderModal extends Base {
+    export default class CreateFolderModal extends ModalBase {
         folderName = '';
 
         create() {
