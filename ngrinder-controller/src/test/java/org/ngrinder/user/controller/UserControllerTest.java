@@ -18,7 +18,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.controller.BaseController;
@@ -29,7 +28,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
-import org.springframework.ui.ModelMap;
 
 import java.util.Date;
 import java.util.List;
@@ -38,12 +36,8 @@ import java.util.Map;
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private UserController userController;
-
-	@Autowired
 	private UserApiController userApiController;
 
-	private Gson gson = new Gson();
 	/**
 	 * Test method for
 	 * {@link org.ngrinder.user.controller.UserApiController#getAll(org.ngrinder.model.Role,
@@ -54,15 +48,9 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testGetAll() {
 		Pageable page = PageRequest.of(1, 10);
 
-		ModelMap model = new ModelMap();
 		userApiController.getAll(null, page, null);
-
-		model.clear();
 		userApiController.getAll(Role.ADMIN, page, null);
-
-		model.clear();
 		userApiController.getAll(null, page, "user");
-
 	}
 
 	/**
@@ -72,14 +60,14 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testGetOne() {
-		Map<String, Object> result = userApiController.getOne(getTestUser().getUserId());
+		Map<String, Object> result = userApiController.getOneDetail(getTestUser().getUserId());
 		User user = (User) result.get("user");
 		assertThat(user.getId(), is(getTestUser().getId()));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#save(org.ngrinder.model.User,
+	 * {@link org.ngrinder.user.controller.UserApiController#save(org.ngrinder.model.User,
 	 * org.ngrinder.model.User)}
 	 * .
 	 */
@@ -90,20 +78,20 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
 		currUser.setOwners(null);
-		userController.save(currUser, currUser);
-		User user = (User) userApiController.getOne(currUser.getUserId()).get("user");
+		userApiController.save(currUser, currUser);
+		User user = (User) userApiController.getOneDetail(currUser.getUserId()).get("user");
 		assertThat(user.getUserName(), is("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 
 		User admin = getAdminUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
-		userController.save(admin, temp);
+		userApiController.save(admin, temp);
 		temp = new User("temp2", "temp2", "temp2", "temp@nhn.com", Role.USER);
-		userController.save(admin, temp);
+		userApiController.save(admin, temp);
 
 		currUser.setFollowersStr("temp1, temp2");
-		userController.save(currUser, currUser);
-		List<UserController.UserSearchResult> followers = (List<UserController.UserSearchResult>) userApiController.getOne(currUser.getUserId()).get("followers");
+		userApiController.save(currUser, currUser);
+		List<UserApiController.UserSearchResult> followers = (List<UserApiController.UserSearchResult>) userApiController.getOneDetail(currUser.getUserId()).get("followers");
 		assertThat(followers.size(), is(2));
 		assertThat(followers.get(0).getId(), is("temp1"));
 	}
@@ -119,9 +107,9 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
-		userController.save(currUser, updatedUser);
+		userApiController.save(currUser, updatedUser);
 
-		User user = (User) userApiController.getOne(currUser.getUserId()).get("user");
+		User user = (User) userApiController.getOneDetail(currUser.getUserId()).get("user");
 		assertThat(user.getUserName(), is(currUser.getUserName()));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 		assertThat(user.getRole(), is(Role.USER));
@@ -135,12 +123,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedUser(getTestUser());
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
-		userController.save(getAdminUser(), newUser);
+		userApiController.save(getAdminUser(), newUser);
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#delete(org.ngrinder.model.User user, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserApiController#delete(org.ngrinder.model.User user, java.lang.String)}
 	 * .
 	 */
 	@SuppressWarnings("unchecked")
@@ -158,28 +146,28 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		assertThat(userList.getContent().size(), is(3));
 
 		// test to delete one
-		userController.delete(testUser, "NewUserId1");
+		userApiController.delete(testUser, "NewUserId1");
 		userList = userApiController.getAll(Role.USER, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(2));
 
 		// test to delete more
-		userController.deleteUsers(testUser, "NewUserId2,NewUserId3");
+		userApiController.deleteUsers(testUser, "NewUserId2,NewUserId3");
 		userList = userApiController.getAll(Role.USER, page, "NewUserName");
 		assertThat(userList.getContent().size(), is(0));
 	}
 
 	/**
 	 * Test method for
-	 * {@link UserController#checkDuplication(String)}
+	 * {@link UserApiController#checkDuplication(String)}
 	 * .
 	 */
 	@Test
 	public void testDuplication() {
 		BaseController ngrinderBaseController = new BaseController();
-		HttpEntity<String> rtnStr = userController.checkDuplication("not-exist");
+		HttpEntity<String> rtnStr = userApiController.checkDuplication("not-exist");
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
 
-		rtnStr = userController.checkDuplication(getTestUser().getUserId());
+		rtnStr = userApiController.checkDuplication(getTestUser().getUserId());
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnError()));
 	}
 
@@ -194,10 +182,10 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		User currUser = getTestUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
 		User admin = getAdminUser();
-		userController.save(admin, temp);
+		userApiController.save(admin, temp);
 		currUser.setOwners(Lists.newArrayList(temp));
 		currUser.setOwnerUser(temp);
-		userController.save(currUser, currUser);
+		userApiController.save(currUser, currUser);
 		HttpEntity<String> shareUsersStr = userApiController.switchOptions(currUser, "");
 		assertTrue(shareUsersStr.getBody().contains("id"));
 	}
