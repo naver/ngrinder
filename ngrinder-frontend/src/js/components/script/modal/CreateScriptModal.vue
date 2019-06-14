@@ -22,7 +22,7 @@
                 </div>
                 <div class="modal-body" id="create-script-modal-body">
                     <form class="form-horizontal" method="post" target="_self" id="createForm">
-                        <control-group name="fileName" labelMessageKey="script.info.name" ref="fileNameControlGroup">
+                        <control-group :class="{error: errors.has('fileName')}" name="fileName" labelMessageKey="script.info.name" ref="fileNameControlGroup">
                             <select name="scriptType" class="form-control span2" v-model="scriptHandler">
                                 <option v-for="handler in handlers"
                                         :value="handler"
@@ -39,7 +39,7 @@
                                    ref="fileName"/>
                         </control-group>
 
-                        <control-group name="testUrl" labelMessageKey="script.info.url" ref="testUrlControlGroup">
+                        <control-group :class="{error: errors.has('testUrl')}" name="testUrl" labelMessageKey="script.info.url" ref="testUrlControlGroup">
                             <select id="method" name="method" class="form-control span2" v-model="method">
                                 <option value="GET" selected="selected">GET</option>
                                 <option value="POST">POST</option>
@@ -80,7 +80,7 @@
                 <div class="modal-body" id="advanced-option-body">
                     <div class="text-center">
                         <a id="detail_config_section_btn" class="pointer-cursor"
-                           v-on:click="showScriptOption = !showScriptOption"
+                           @click="showScriptOption = !showScriptOption"
                            v-text="i18n('perfTest.config.showAdvancedConfig')"></a>
                     </div>
                     <div :class="{hide: !showScriptOption}" class="well" style="overflow: scroll">
@@ -97,7 +97,7 @@
 </template>
 
 <script>
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component } from 'vue-property-decorator';
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import ScriptOption from './ScriptOption.vue';
@@ -111,7 +111,10 @@
                 required: true,
             },
         },
-        components: {ControlGroup, ScriptOption}
+        components: {ControlGroup, ScriptOption},
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class CreateScriptModal extends Base {
         fileName = '';
@@ -131,12 +134,30 @@
                 });
         }
 
-        async createScript() {
-            if (await this.validFields() === false) {
-                return;
-            }
+        createScript() {
+            this.$validator.validateAll()
+                .then(result => {
+                    if (result) {
+                        $(this.$refs.createScriptModal).modal('hide');
+                        this.requestCreateScript();
+                        this.resetFields();
+                    } else {
+                        this.focusToInvalidField();
+                    }
+                });
+        }
 
-            $(this.$refs.createScriptModal).modal('hide');
+        resetFields() {
+            this.fileName = '';
+            this.scriptHandler = this.handlers[0];
+            this.method = 'GET';
+            this.testUrl = '';
+            this.createLibAndResource = false;
+            this.$refs.testUrlControlGroup.success = false;
+            this.$refs.fileNameControlGroup.success = false;
+        }
+
+        requestCreateScript() {
             if (this.scriptHandler.projectHandler !== true) {
                 // append extension
                 const extension = `.${this.scriptHandler.extension.toLowerCase()}`;
@@ -155,48 +176,23 @@
             });
 
             this.$http.post(`/script/api/new/${this.currentPath}`, params)
-            .then(res => {
-                if (res.data.message) {
-                    console.log(res.data.message);
-                    this.$router.push(res.data.path);
-                } else {
-                    this.$router.push(resolve('/script/detail', res.data.file.path));
-                }
-            });
-
-            this.resetFields();
+                .then(res => {
+                    if (res.data.message) {
+                        this.$router.push(res.data.path);
+                    } else {
+                        this.$router.push(resolve('/script/detail', res.data.file.path));
+                    }
+                });
         }
 
-        resetFields() {
-            this.fileName = '';
-            this.scriptHandler = this.handlers[0];
-            this.method = 'GET';
-            this.testUrl = '';
-            this.createLibAndResource = false;
-            this.$refs.testUrlControlGroup.success = false;
-            this.$refs.fileNameControlGroup.success = false;
-        }
-
-        validFields() {
+        focusToInvalidField() {
             if (this.fields.testUrl.invalid) {
                 $(this.$refs.testUrl).focus();
-            } else {
-                this.$refs.testUrlControlGroup.success = true;
             }
 
             if (this.fields.fileName.invalid) {
                 $(this.$refs.fileName).focus();
-            } else {
-                this.$refs.fileNameControlGroup.success = true;
             }
-
-            return this.$validator.validateAll();
-        }
-
-        @Watch('errors', {deep: true})
-        errorsChanged(errors) {
-            this.$refs.fileNameControlGroup.hasError = !!errors.first('fileName');
-            this.$refs.testUrlControlGroup.hasError = !!errors.first('testUrl');
         }
     }
 
