@@ -22,7 +22,7 @@
                 </div>
                 <div class="modal-body" id="create-script-modal-body">
                     <form class="form-horizontal" method="post" target="_self" id="createForm">
-                        <control-group :class="{error: errors.has('fileName')}" name="fileName" labelMessageKey="script.info.name" ref="fileNameControlGroup">
+                        <control-group :class="{error: errors.has('fileName')}" name="fileName" labelMessageKey="script.info.name">
                             <select name="scriptType" class="form-control span2" v-model="scriptHandler">
                                 <option v-for="handler in handlers"
                                         :value="handler"
@@ -39,7 +39,7 @@
                                    ref="fileName"/>
                         </control-group>
 
-                        <control-group :class="{error: errors.has('testUrl')}" name="testUrl" labelMessageKey="script.info.url" ref="testUrlControlGroup">
+                        <control-group :class="{error: errors.has('testUrl')}" name="testUrl" labelMessageKey="script.info.url">
                             <select id="method" name="method" class="form-control span2" v-model="method">
                                 <option value="GET" selected="selected">GET</option>
                                 <option value="POST">POST</option>
@@ -98,7 +98,7 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
-    import Base from '../../Base.vue';
+    import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import ScriptOption from './ScriptOption.vue';
     import querystring from 'querystring'
@@ -111,12 +111,12 @@
                 required: true,
             },
         },
-        components: {ControlGroup, ScriptOption},
+        components: { ControlGroup, ScriptOption },
         $_veeValidate: {
             validator: 'new',
         },
     })
-    export default class CreateScriptModal extends Base {
+    export default class CreateScriptModal extends ModalBase {
         fileName = '';
         handlers = [];
         scriptHandler = {};
@@ -138,26 +138,22 @@
             this.$validator.validateAll()
                 .then(result => {
                     if (result) {
-                        $(this.$refs.createScriptModal).modal('hide');
-                        this.requestCreateScript();
-                        this.resetFields();
+                        this.sendCreateScriptRequest();
                     } else {
                         this.focusToInvalidField();
                     }
                 });
         }
 
-        resetFields() {
+        reset() {
             this.fileName = '';
             this.scriptHandler = this.handlers[0];
             this.method = 'GET';
             this.testUrl = '';
             this.createLibAndResource = false;
-            this.$refs.testUrlControlGroup.success = false;
-            this.$refs.fileNameControlGroup.success = false;
         }
 
-        requestCreateScript() {
+        sendCreateScriptRequest() {
             if (this.scriptHandler.projectHandler !== true) {
                 // append extension
                 const extension = `.${this.scriptHandler.extension.toLowerCase()}`;
@@ -177,6 +173,7 @@
 
             this.$http.post(`/script/api/new/${this.currentPath}`, params)
                 .then(res => {
+                    this.hide();
                     if (res.data.message) {
                         this.$router.push(res.data.path);
                     } else {
