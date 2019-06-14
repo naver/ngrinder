@@ -9,10 +9,9 @@
                             <div class="control-group">
                                 <div class="row">
                                     <div class="span4-5" data-step="1" :data-intro="i18n('intro.detail.testName')">
-                                        <control-group ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
+                                        <control-group :class="{error: errors.has('testName')}" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
                                             <input class="required span3 left-float" name="testName"
                                                    maxlength="80" size="30" type="text"
-                                                   @keyup="checkTestNameValidation"
                                                    v-validate="{ required: true }"
                                                    v-model="test.testName"/>
                                             <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
@@ -111,6 +110,9 @@
             scriptType: String,
         },
         components: {ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal},
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class PerfTestDetail extends Base {
         config = {};
@@ -146,14 +148,6 @@
                 config: false,
             },
         };
-
-        checkTestNameValidation() {
-            this.$validator.validate('testName').then(result => {
-                this.$refs.testNameControlGroup.hasError = !result;
-            }).catch(() => {
-                this.$refs.testNameControlGroup.hasError = false;
-            });
-        }
 
         created() {
             if (this.$route.name === 'quickStart') {
@@ -305,8 +299,10 @@
             const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
             agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
-            Promise.all(this.getValidationPromise()).then(() => {
-                if (!this.$refs.config.hasValidationError() && !this.errors.any()) {
+            this.$validator.validateAll().then(() => {
+                if (this.errors.any()) {
+                    this.$refs.configTab.click();
+                } else {
                     this.test.status = 'SAVED';
                     this.$nextTick(() => {
                         this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
@@ -317,8 +313,6 @@
                             }
                         }).catch(error => console.log(error));
                     });
-                } else {
-                    this.$refs.configTab.click();
                 }
             });
         }
@@ -328,27 +322,13 @@
             const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
             agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
-            Promise.all(this.getValidationPromise()).then(() => {
-                if (!this.$refs.config.hasValidationError() && !this.errors.any()) {
-                    this.$refs.scheduleModal.show();
-                } else {
+            this.$validator.validateAll().then(() => {
+                if (this.errors.any()) {
                     this.$refs.configTab.click();
+                } else {
+                    this.$refs.scheduleModal.show();
                 }
             });
-        }
-
-        getValidationPromise() {
-            const validationPromise = [new Promise(resolve => {
-                this.$validator.validate('testName').then(result => {
-                    this.$refs.testNameControlGroup.hasError = !result;
-                    resolve();
-                }).catch(() => {
-                    this.$refs.testNameControlGroup.hasError = false;
-                    resolve();
-                });
-            })];
-            this.$refs.config.validationGroup.forEach(validation => validationPromise.push(validation.getCheckValidationPromise()));
-            return validationPromise;
         }
 
         runPerftest(scheduledTime) {

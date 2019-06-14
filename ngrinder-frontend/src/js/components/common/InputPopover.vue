@@ -13,17 +13,15 @@
                :data-placement="dataPlacement"
                :style="customStyle ? customStyle : false"
                :value="value"
-               @keyup="checkValidation"
                @input="$emit('input', $event.target.value)"/>
         <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </div>
 </template>
 
 <script>
+    import {Inject} from 'vue-property-decorator';
     import Component from 'vue-class-component';
-    import {Mixins} from 'vue-mixin-decorator';
     import Base from '../Base.vue';
-    import ValidationMixin from './mixin/ValidationMixin.vue';
 
     @Component({
         name: 'inputPopover',
@@ -49,7 +47,9 @@
             validationRules: Object,
         },
     })
-    export default class InputPopover extends Mixins(Base, ValidationMixin) {}
+    export default class InputPopover extends Base {
+        @Inject() $validator;
+    }
 </script>
 
 <style lang="less" scoped>

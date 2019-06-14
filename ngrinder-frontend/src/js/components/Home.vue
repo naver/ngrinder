@@ -33,6 +33,9 @@
     @Component({
         name: 'home',
         components: {IntroButton, vueHeadful, HomePanel},
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class Index extends Base {
         leftPanelEntries = [];
