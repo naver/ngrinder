@@ -43,7 +43,7 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
-    import Base from '../../Base.vue';
+    import ModalBase from '../../common/modal/ModalBase.vue';
 
     import ControlGroup from '../../common/ControlGroup.vue';
 
@@ -61,7 +61,7 @@
             validator: 'new',
         },
     })
-    export default class UploadFileModal extends Base {
+    export default class UploadFileModal extends ModalBase {
         file = null;
         description = '';
 

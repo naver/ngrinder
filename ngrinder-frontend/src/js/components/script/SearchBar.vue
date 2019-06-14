@@ -45,15 +45,15 @@
                         <tr>
                             <td>
                                 <template v-if="$route.name !== 'scriptSearch'">
-                                    <a class="btn btn-primary" data-toggle="modal" data-target="#create-script-modal">
+                                    <a class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
                                         <i class="icon-file icon-white"></i>
                                         <span v-text="i18n('script.action.createScript')"></span>
                                     </a>
-                                    <a class="btn" data-toggle="modal" data-target="#create-folder-modal">
+                                    <a class="btn" @click.prevent="$refs.createFolderModal.show">
                                         <i class="icon-folder-open"></i>
                                         <span v-text="i18n('script.action.createFolder')"></span>
                                     </a>
-                                    <a class="btn" data-toggle="modal" data-target="#upload-file-modal">
+                                    <a class="btn" @click.prevent="$refs.uploadFileModal.show">
                                         <i class="icon-upload"></i>
                                         <span v-text="i18n('script.action.uploadResources')"></span>
                                     </a>
@@ -70,9 +70,9 @@
                 </td>
             </tr>
         </table>
-        <create-script-modal :currentPath="currentPath"></create-script-modal>
-        <create-folder-modal :currentPath="currentPath"></create-folder-modal>
-        <upload-file-modal :currentPath="currentPath"></upload-file-modal>
+        <create-script-modal ref="createScriptModal" :currentPath="currentPath"></create-script-modal>
+        <create-folder-modal ref="createFolderModal" :currentPath="currentPath"></create-folder-modal>
+        <upload-file-modal ref="uploadFileModal" :currentPath="currentPath"></upload-file-modal>
     </div>
 </template>
 <script>
