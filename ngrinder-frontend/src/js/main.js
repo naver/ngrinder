@@ -44,7 +44,7 @@ axios.interceptors.request.use(config => {
 Vue.use(Vuex);
 Vue.use(VueSession);
 Vue.use(VueRouter);
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, {inject: false});
 
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axios;
