@@ -324,29 +324,35 @@
         }
 
         updatePerftestStatus() {
-            this.$http.get('/perftest/api/status', {
-                params: {
-                    ids: this.autoUpdateTargets.map(test => test.id).join(','),
-                },
-            }).then(res => {
-                const status = res.data.status.reverse();
-                this.autoUpdateTargets.forEach((target, index) => {
-                    if (status[index].reportable) {
-                        this.getPerfTest();
-                    }
-                    this.tests[target.index].iconName = status[index].icon;
-                    this.tests[target.index].reportable = status[index].reportable;
-                    this.tests[target.index].deletable = status[index].deletable;
-                    this.tests[target.index].stoppable = status[index].stoppable;
-                    this.tests[target.index].status = status[index].status_id;
-                    this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
+            const ids = this.autoUpdateTargets.map(test => test.id).join(',');
+            if (ids) {
+                this.$http.get('/perftest/api/status', {
+                    params: {
+                        ids,
+                    },
+                }).then(res => {
+                    const status = res.data.status.reverse();
+                    this.autoUpdateTargets.forEach((target, index) => {
+                        if (status[index].reportable) {
+                            this.getPerfTest();
+                        }
+                        this.tests[target.index].iconName = status[index].icon;
+                        this.tests[target.index].reportable = status[index].reportable;
+                        this.tests[target.index].deletable = status[index].deletable;
+                        this.tests[target.index].stoppable = status[index].stoppable;
+                        this.tests[target.index].status = status[index].status_id;
+                        this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
 
-                    const $ball = $(`#ball_${this.tests[target.index].id}`);
-                    $ball.attr('data-original-title', status[index].name);
-                    $ball.data('popover').options.content = status[index].message;
-                });
+                        const $ball = $(`#ball_${this.tests[target.index].id}`);
+                        $ball.attr('data-original-title', status[index].name);
+                        $ball.data('popover').options.content = status[index].message;
+                    });
+                })
+                .catch(error => console.error(error))
+                .finally(() => this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000));
+            } else {
                 this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
-            }).catch(error => console.error(error));
+            }
         }
     }
 </script>
