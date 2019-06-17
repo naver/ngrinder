@@ -49,12 +49,12 @@
 
 
     @Component({
-        name: "uploadFileModal",
+        name: 'uploadFileModal',
         props: {
             currentPath: {
                 type: String,
                 required: true,
-            }
+            },
         },
         components: { ControlGroup },
         $_veeValidate: {

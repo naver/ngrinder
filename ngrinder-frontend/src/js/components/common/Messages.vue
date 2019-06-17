@@ -24,11 +24,11 @@
 
 
 <script>
-    import Vue from "vue";
+    import Vue from 'vue';
     import Component from 'vue-class-component';
 
     @Component({
-        name: 'messages'
+        name: 'messages',
     })
     export default class Messages extends Vue {
         msgTimeout = {};
@@ -61,7 +61,7 @@
         }
 
         showSuccessMsg(msg) {
-            this.showMsg("alert-success", msg);
+            this.showMsg('alert-success', msg);
         }
 
         showErrorMsg(msg) {

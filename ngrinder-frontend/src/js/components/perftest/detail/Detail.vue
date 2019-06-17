@@ -109,7 +109,7 @@
             url: String,
             scriptType: String,
         },
-        components: {ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal},
+        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
         $_veeValidate: {
             validator: 'new',
         },
@@ -272,7 +272,7 @@
             const data = [];
             this.test.tagString.split(',').forEach(tag => {
                 if (tag) {
-                    data.push({id: tag, text: tag});
+                    data.push({ id: tag, text: tag });
                 }
             });
             element.val('');
@@ -289,15 +289,15 @@
                     query: query.term,
                 },
             }).then(res => {
-                res.data.forEach(tag => data.results.push({id: tag, text: tag}));
+                res.data.forEach(tag => data.results.push({ id: tag, text: tag }));
                 query.callback(data);
             }).catch(error => console.log(error));
         }
 
         clonePerftest() {
             this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
-            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
-            agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
+            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({ name: 'agentCount' });
+            agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
             this.$validator.validateAll().then(() => {
                 if (this.errors.any()) {
@@ -319,8 +319,8 @@
 
         saveAndStart() {
             this.$set(this.$refs.config.agentCountValidationRules, 'min_value', 1);
-            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
-            agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
+            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({ name: 'agentCount' });
+            agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
             this.$validator.validateAll().then(() => {
                 if (this.errors.any()) {
