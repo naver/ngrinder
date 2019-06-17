@@ -1,18 +1,12 @@
 package org.ngrinder.user.controller;
 
 import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.constant.ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
-import static org.ngrinder.common.util.Preconditions.checkNull;
 
-import com.google.common.collect.Lists;
-import com.google.gson.annotations.Expose;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
@@ -55,8 +49,12 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/switch_options")
-	public HttpEntity<String> switchOptions(User user, @RequestParam(defaultValue = "") final String keywords) {
-		return toJsonHttpEntity(getSwitchableUsers(user, keywords));
+	public List<User> switchOptions(User user, @RequestParam(defaultValue = "") final String keywords) {
+		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
+			return userService.getPagedAll(keywords, PageRequest.of(0, 10)).getContent();
+		} else {
+			return userService.getSharedUser(user);
+		}
 	}
 
 	/**
@@ -64,7 +62,6 @@ public class UserApiController extends BaseController {
 	 *
 	 * @param user  current user
 	 */
-	@RestAPI
 	@GetMapping("/profile")
 	public Map<String, Object> getOne(User user) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
@@ -122,7 +119,6 @@ public class UserApiController extends BaseController {
 		return model;
 	}
 
-
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({"/list", "/list/"})
 	public Page<User> getAll(@RequestParam(required = false) Role role,
@@ -153,32 +149,9 @@ public class UserApiController extends BaseController {
 	 * @param model model
 	 */
 	private void attachCommonAttribute(User user, Map<String, Object> model) {
-		List<User> followers = user.getFollowers() == null ? Lists.newArrayList() : user.getFollowers();
-		List<User> owners = user.getOwners() == null ? Lists.newArrayList() : user.getOwners();
-
-		// TODO handle this when remove Gson.
-		// prevent stack overflow when serialize user list.
-		user.setFollowers(null);
-		user.setOwners(null);
-
-		model.put("followers", followers.stream().map(UserSearchResult::new).collect(toList()));
-		model.put("owners", owners.stream().map(UserSearchResult::new).collect(toList()));
 		model.put("allowShareChange", true);
 		model.put("userSecurityEnabled", config.isUserSecurityEnabled());
 	}
-
-	private List<UserSearchResult> getSwitchableUsers(User user, String keywords) {
-		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
-			List<UserSearchResult> result = newArrayList();
-			for (User each : userService.getPagedAll(keywords, PageRequest.of(0, 10))) {
-				result.add(new UserSearchResult(each));
-			}
-			return result;
-		} else {
-			return userService.getSharedUser(user);
-		}
-	}
-
 
 	/**
 	 * Save or Update user detail info.
@@ -187,7 +160,6 @@ public class UserApiController extends BaseController {
 	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
-	@ResponseBody
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
 	public String save(User user, @RequestBody User updatedUser) {
@@ -217,7 +189,6 @@ public class UserApiController extends BaseController {
 
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping({"/role", "/role/"})
-	@ResponseBody
 	public EnumSet<Role> roleSet() {
 		return EnumSet.allOf(Role.class);
 	}
@@ -276,8 +247,8 @@ public class UserApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-	public HttpEntity<String> getOne(@PathVariable("userId") String userId) {
-		return toJsonHttpEntity(userService.getOne(userId));
+	public User getOne(@PathVariable("userId") String userId) {
+		return userService.getOne(userId);
 	}
 
 	/**
@@ -335,53 +306,16 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
-	public HttpEntity<String> search(User user, @PageableDefault Pageable pageable,
-									 @RequestParam(required = true) String keywords) {
-		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
-			defaultIfNull(pageable.getSort(),
-				new Sort(Sort.Direction.ASC, "userName")));
-		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
-		List<UserSearchResult> result = newArrayList();
-		for (User each : pagedUser) {
-			result.add(new UserSearchResult(each));
-		}
-
+	public List<User> search(User user,
+							 @PageableDefault Pageable pageable,
+							 @RequestParam String keywords) {
+		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
+		Page<User> pagedUsers = userService.getPagedAll(keywords, pageable);
 		final String currentUserId = user.getUserId();
-		CollectionUtils.filter(result, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				UserSearchResult each = (UserSearchResult) object;
-				return !(each.getId().equals(currentUserId) || each.getId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
-			}
-		});
 
-		return toJsonHttpEntity(result);
-	}
-
-	public static class UserSearchResult {
-		@Expose
-		final private String id;
-
-		@Expose
-		final private String text;
-
-		public UserSearchResult(User user) {
-			id = user.getUserId();
-			final String email = user.getEmail();
-			final String userName = user.getUserName();
-			if (StringUtils.isEmpty(email)) {
-				this.text = userName + " (" + id + ")";
-			} else {
-				this.text = userName + " (" + email + " / " + id + ")";
-			}
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public String getId() {
-			return id;
-		}
+		return pagedUsers.stream()
+			.filter(each -> !each.getUserId().equals(currentUserId))
+			.filter(each -> !each.getUserId().equals(NGRINDER_INITIAL_ADMIN_USERID))
+			.collect(toList());
 	}
 }
