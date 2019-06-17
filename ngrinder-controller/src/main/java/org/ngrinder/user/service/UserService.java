@@ -15,7 +15,6 @@ package org.ngrinder.user.service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
@@ -24,7 +23,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.AbstractUserService;
-import org.ngrinder.user.controller.UserController;
+import org.ngrinder.user.controller.UserApiController;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -295,13 +294,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	@Transactional
-	public List<UserController.UserSearchResult> getSharedUser(User user) {
-		List<UserController.UserSearchResult> result = new ArrayList<UserController.UserSearchResult>();
+	public List<User> getSharedUser(User user) {
 		User currUser = getOne(user.getUserId());
-		for (User each : currUser.getOwners()) {
-			result.add(new UserController.UserSearchResult(each));
-		}
-		return result;
+		return currUser.getOwners();
 	}
 
 	public void evictUserCacheById(String id) {
