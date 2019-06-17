@@ -102,15 +102,6 @@
     import Base from '../Base.vue';
     import SignUpModal from './modal/SignUpModal.vue';
 
-    const getOrDefault = (value, defaultValue) => {
-        try {
-            return value || defaultValue;
-        } catch (e) {
-            // Do nothing
-        }
-        return defaultValue;
-    };
-
     @Component({
         name: 'userList',
         components: { vueHeadful, SignUpModal, Paginate },
@@ -141,10 +132,10 @@
         }
 
         initByQueryParams() {
-            this.keywords = getOrDefault(this.$route.query.keywords, this.keywords);
-            this.page.number = getOrDefault(this.$route.query.page, this.page.number);
-            this.page.size = getOrDefault(this.$route.query.page, this.page.size);
-            this.sort = getOrDefault(this.$route.query.sort, this.sort);
+            this.keywords = this.$route.query.keywords || this.keywords;
+            this.page.number = this.$route.query.page || this.page.number;
+            this.page.size = this.$route.query.page || this.page.size;
+            this.sort = this.$route.query.sort || this.sort;
         }
 
         loadRoleSet() {
