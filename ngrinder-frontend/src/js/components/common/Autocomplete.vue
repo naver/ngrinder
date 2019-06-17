@@ -3,12 +3,12 @@
 </template>
 
 <script>
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Component, Watch } from 'vue-property-decorator';
     import Base from '../Base.vue';
     import '../../../plugins/autocomplete/jquery-ui.min';
 
     @Component({
-        name: "autocomplete",
+        name: 'autocomplete',
         props: {
             source: {
                 type: Array,
@@ -19,7 +19,7 @@
                 type: Function,
                 required: false,
             },
-        }
+        },
     })
     export default class Autocomplete extends Base {
         value = '';
@@ -35,15 +35,15 @@
                 select: (event, ui) => {
                     this.value = ui.item.value;
 
-                    if (this.select) {  // callback function
+                    if (this.select) { // callback function
                         this.select(event, ui);
                     }
 
                     $(event.target).blur();
-                }
+                },
             }).focus(function() {
-                $(this).autocomplete('search', '')
-            })
+                $(this).autocomplete('search', '');
+            });
         }
 
         @Watch('value')

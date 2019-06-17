@@ -49,7 +49,7 @@
 
     @Component({
         name: 'login',
-        components: {vueHeadful, SignUpModal},
+        components: { vueHeadful, SignUpModal },
     })
     export default class Login extends Base {
         userLanguage = 'en';

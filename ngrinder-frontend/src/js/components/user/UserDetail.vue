@@ -15,16 +15,16 @@
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
     import UserInfo from './UserInfo.vue';
-    import Messages from "../common/Messages.vue";
+    import Messages from '../common/Messages.vue';
 
     @Component({
         name: 'userDetail',
         props: {
             userId: {
                 type: String,
-            }
+            },
         },
-        components: { Messages, UserInfo, }
+        components: { Messages, UserInfo },
     })
     export default class extends Base {
         user = {};
