@@ -5,7 +5,7 @@
                 <input-append name="userId" ref="userId"
                               v-model="user.userId"
                               :readonly="!config.allowUserIdChange"
-                              :validationRules="{ required: true, userIdExist: ngrinder.config.signUpEnabled, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
+                              :validationRules="{ required: true, userIdExist: config.allowUserIdChange, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
                               message="user.info.userId"/>
             </control-group>
 
@@ -86,6 +86,7 @@
     import ControlGroup from '../common/ControlGroup.vue';
     import InputAppend from '../common/InputAppend.vue';
     import Select2 from '../common/Select2.vue';
+    import userDescription from '../common/filter/UserDescriptionFilter';
 
     @Component({
         name: 'userInfo',
@@ -127,7 +128,9 @@
         created() {
             delete this.userProps.password;
             Object.assign(this.user, this.userProps);
-            this.user.followersStr = this.config.followers.map(user => user.id).join(',');
+            if (this.user.followers) {
+                this.user.followersStr = this.user.followers.map(user => user.userId).join(',');
+            }
 
             this.displayPasswordField = this.config.showPasswordByDefault;
 
@@ -148,7 +151,13 @@
                                 pageNumber: page,
                                 pageSize: 10,
                         }),
-                        results: data => ({results: data}),
+                        results: users => {
+                            const select2Data = users.map(user => ({
+                                id: user.userId,
+                                text: userDescription(user),
+                            }));
+                            return { results: select2Data };
+                        },
                     },
                     initSelection: this.initSelection,
                     formatSelection: data => data.text,
@@ -162,8 +171,8 @@
 
         initSelection(element, callback) {
             const data = [];
-            if (this.config.followers) {
-                this.config.followers.forEach(follower => data.push({id: follower.id, text: follower.text}));
+            if (this.user.followers) {
+                this.user.followers.forEach(follower => data.push({ id: follower.userId, text: userDescription(follower) }));
             }
             element.val('');
             callback(data);
@@ -177,13 +186,13 @@
         }
 
         save() {
-            if (this.errors.any()) {
-                return;
-            }
-
-            this.$http.post(this.formUrl, this.user)
-                .then(res => this.$emit('saved'))
-                .catch(err => console.error(err));
+            this.$validator.validateAll().then(result => {
+                if (result) {
+                    this.$http.post(this.formUrl, this.user)
+                        .then(() => this.$emit('saved'))
+                        .catch(err => console.error(err));
+                }
+            });
         }
 
         setCustomValidationRules() {

@@ -31,7 +31,6 @@ import org.springframework.http.HttpEntity;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -60,8 +59,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testGetOne() {
-		Map<String, Object> result = userApiController.getOneDetail(getTestUser().getUserId());
-		User user = (User) result.get("user");
+		User user = userApiController.getOne(getTestUser().getUserId());
 		assertThat(user.getId(), is(getTestUser().getId()));
 	}
 
@@ -73,13 +71,13 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testSave() {		// TODO: Resolve lazy initialize exception
+	public void testSave() {
 		// test update
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
 		currUser.setOwners(null);
 		userApiController.save(currUser, currUser);
-		User user = (User) userApiController.getOneDetail(currUser.getUserId()).get("user");
+		User user = userApiController.getOne(currUser.getUserId());
 		assertThat(user.getUserName(), is("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 
@@ -91,9 +89,9 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 		currUser.setFollowersStr("temp1, temp2");
 		userApiController.save(currUser, currUser);
-		List<UserApiController.UserSearchResult> followers = (List<UserApiController.UserSearchResult>) userApiController.getOneDetail(currUser.getUserId()).get("followers");
-		assertThat(followers.size(), is(2));
-		assertThat(followers.get(0).getId(), is("temp1"));
+		user = userApiController.getOne(currUser.getUserId());
+		assertThat(user.getFollowers().size(), is(2));
+		assertThat(user.getFollowers().get(0).getUserId(), is("temp1"));
 	}
 
 	@Test
@@ -109,7 +107,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
 		userApiController.save(currUser, updatedUser);
 
-		User user = (User) userApiController.getOneDetail(currUser.getUserId()).get("user");
+		User user = userApiController.getOne(currUser.getUserId());
 		assertThat(user.getUserName(), is(currUser.getUserName()));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
 		assertThat(user.getRole(), is(Role.USER));
@@ -186,7 +184,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		currUser.setOwners(Lists.newArrayList(temp));
 		currUser.setOwnerUser(temp);
 		userApiController.save(currUser, currUser);
-		HttpEntity<String> shareUsersStr = userApiController.switchOptions(currUser, "");
-		assertTrue(shareUsersStr.getBody().contains("id"));
+		List<User> shareUsers = userApiController.switchOptions(currUser, "");
+		assertTrue(shareUsers.contains(temp));
 	}
 }

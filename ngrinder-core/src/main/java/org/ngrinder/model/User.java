@@ -13,16 +13,22 @@
  */
 package org.ngrinder.model;
 
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.util.AccessUtils.getSafe;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.util.List;
-
-import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * User managed by nGrinder.
@@ -95,7 +101,7 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User ownerUser;
 
-	@JsonIgnore
+	@JsonSerialize(using = FollowerSerializer.class)
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
 		inverseJoinColumns = @JoinColumn(name = "follow_id"))
@@ -373,5 +379,23 @@ public class User extends BaseModel<User> {
 
 	public void setFollowersStr(String followersStr) {
 		this.followersStr = followersStr;
+	}
+}
+
+class FollowerSerializer extends StdSerializer<List<User>> {
+	public FollowerSerializer() {
+		this(null);
+	}
+
+	public FollowerSerializer(Class<List<User>> t) {
+		super(t);
+	}
+
+	@Override
+	public void serialize(List<User> followers, JsonGenerator generator, SerializerProvider provider) throws IOException {
+		List<User> userBaseInfoList = followers.stream()
+			.map(User::getUserBaseInfo)
+			.collect(toList());
+		generator.writeObject(userBaseInfoList);
 	}
 }
