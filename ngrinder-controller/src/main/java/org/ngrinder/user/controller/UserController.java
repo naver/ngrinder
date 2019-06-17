@@ -13,16 +13,26 @@
  */
 package org.ngrinder.user.controller;
 
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/user")
 public class UserController extends BaseController {
+	private static final Sort DEFAULT_SORT = new Sort(Sort.Direction.ASC, "userName");
 
 	@Autowired
 	private UserService userService;

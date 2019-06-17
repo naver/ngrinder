@@ -6,7 +6,7 @@
                 <button class="btn pull-right" @click="$router.go(-1)" v-text="i18n('common.button.return')"></button>
             </legend>
         </fieldset>
-        <user-info :user-props="user" :config="config" @saved="onSaved"></user-info>
+        <user-info :user-props="user" :config="config" @saved="$router.push({ name: 'userList' })"></user-info>
         <messages ref="messages"></messages>
     </div>
 </template>
@@ -45,8 +45,6 @@
                             allowShareChange: res.data.allowShareChange,
                             showPasswordByDefault: res.data.showPasswordByDefault,
                             userSecurityEnabled: res.data.userSecurityEnabled,
-                            followers: res.data.followers,
-                            owners: res.data.owners,
                         };
                         this.dataLoaded = true;
                     });
@@ -61,20 +59,9 @@
                             allowShareChange: res.data.allowShareChange,
                             showPasswordByDefault: res.data.showPasswordByDefault,
                             userSecurityEnabled: res.data.userSecurityEnabled,
-                            followers: res.data.followers,
-                            owners: res.data.owners,
                         };
                         this.dataLoaded = true;
                     });
-            }
-        }
-
-        onSaved() {
-            if (this.$route.name === 'createNewUser') {
-                this.$refs.messages.showSuccessMsg(`New user is signing up.`);
-                setTimeout(() => this.$router.push({ path: '/user/' }), 1000);
-            } else {
-                this.$router.push({ path: '/user/' });
             }
         }
     }

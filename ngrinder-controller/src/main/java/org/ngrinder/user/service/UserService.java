@@ -294,13 +294,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	@Transactional
-	public List<UserApiController.UserSearchResult> getSharedUser(User user) {
-		List<UserApiController.UserSearchResult> result = new ArrayList<>();
+	public List<User> getSharedUser(User user) {
 		User currUser = getOne(user.getUserId());
-		for (User each : currUser.getOwners()) {
-			result.add(new UserApiController.UserSearchResult(each));
-		}
-		return result;
+		return currUser.getOwners();
 	}
 
 	public void evictUserCacheById(String id) {
