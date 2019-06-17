@@ -352,7 +352,7 @@
         }
 
         get isClone() {
-            return this.test.status !== 'SAVED' || this.test.createdUserId !== this.ngrinder.currentUser.factualUser.id;
+            return this.test.status !== 'SAVED';
         }
 
         get disabled() {
