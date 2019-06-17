@@ -7,10 +7,10 @@
             <div class="form-horizontal modal-content">
                 <fieldset>
                     <control-group labelMessageKey="user.switch.title">
-                        <select2 v-if="isAdmin" :option="option" type="input" v-model="switchTargetUser" @change="switchUser"></select2>
-                        <select2 v-else v-model="switchTargetUser" @change="switchUser">
+                        <select2 v-if="isAdmin" :option="option" type="input" v-model="switchTargetUserId" @change="switchUser"></select2>
+                        <select2 v-else v-model="switchTargetUserId" @change="switchUser">
                             <option value=""></option>
-                            <option v-for="user in switchableUsers" :value="user.id" v-text="user.text"></option>
+                            <option v-for="user in switchableUsers" :value="user.userId">{{ user | userDescription }}</option>
                         </select2>
                     </control-group>
                 </fieldset>
@@ -24,13 +24,16 @@
     import ControlGroup from '../../../common/ControlGroup.vue';
     import Select2 from '../../Select2.vue';
     import Component from 'vue-class-component';
+    import userDescription from '../../filter/UserDescriptionFilter';
+
 
     @Component({
         name: 'userSwitchModal',
         components: { Select2, ControlGroup },
+        filters: { userDescription, },
     })
     export default class UserSwitchModal extends ModalBase {
-        switchTargetUser = '';
+        switchTargetUserId = '';
         switchableUsers = [];
         option = {};
 
@@ -45,8 +48,12 @@
                         data: term => {
                             return { keywords: term };
                         },
-                        results: data => {
-                            return { results: data };
+                        results: users => {
+                            const select2Data = users.map(user => ({
+                                id: user.userId,
+                                text: userDescription(user),
+                            }));
+                            return { results: select2Data };
                         }
                     },
                     formatSelection: data => data.text,
@@ -60,7 +67,7 @@
         }
 
         switchUser() {
-            document.location.href = `/user/switch?to=${this.switchTargetUser}`;
+            document.location.href = `/user/switch?to=${this.switchTargetUserId}`;
         }
     }
 </script>
