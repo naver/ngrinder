@@ -15,7 +15,7 @@
 <script>
     import Vue from 'vue';
     import Component from 'vue-class-component';
-    import {Inject} from 'vue-property-decorator';
+    import { Inject } from 'vue-property-decorator';
     import '../../../plugins/select2/select2.min';
 
     @Component({
@@ -30,9 +30,7 @@
             },
             option: {
                 type: Object,
-                default: () => {
-                    return {};
-                },
+                default: () => ({}),
             },
             name: String,
             customStyle: String,
@@ -49,13 +47,13 @@
         }
 
         init() {
-            const component = this;
+            const self = this;
             $(this.$refs.select2)
                 .select2(this.option, [])
-                .change(function () {
-                    component.$emit('input', this.value);
-                    component.$emit('change');
-                    component.$nextTick(() => component.$validator.validateAll());
+                .change(function() {
+                    self.$emit('input', this.value);
+                    self.$emit('change');
+                    self.$nextTick(() => self.$validator.validateAll());
                 });
         }
 

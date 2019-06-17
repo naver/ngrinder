@@ -17,7 +17,7 @@
 
     @Component({
         name: 'userProfileModal',
-        components: {UserInfo},
+        components: { UserInfo },
     })
     export default class UserProfileModal extends ModalBase {
         user = {};

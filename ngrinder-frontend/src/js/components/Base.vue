@@ -1,7 +1,7 @@
 <script>
     import Component from 'vue-class-component';
     import Vue from 'vue';
-    import {mapState} from 'vuex';
+    import { mapState } from 'vuex';
     import I18n from '../i18n.js';
 
     @Component({

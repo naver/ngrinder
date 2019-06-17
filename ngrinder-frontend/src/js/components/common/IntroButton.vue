@@ -7,9 +7,9 @@
 </template>
 
 <script>
-    import Base from '../Base.vue';
     import Component from 'vue-class-component';
-    import intro from "intro.js";
+    import intro from 'intro.js';
+    import Base from '../Base.vue';
 
     @Component({
         name: 'introButton',

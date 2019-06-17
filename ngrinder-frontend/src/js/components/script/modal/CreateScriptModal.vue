@@ -98,10 +98,16 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
+    import querystring from 'querystring';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import ScriptOption from './ScriptOption.vue';
-    import querystring from 'querystring'
+
+    const resolve = (source, relative) => {
+        const removeAppendedSlash = path => (path.startsWith('/') ? path.slice(1) : path);
+        const removePrependedSlash = path => (path.endsWith('/') ? path.slice(0, path.length - 1) : path);
+        return `${removePrependedSlash(source)}/${removeAppendedSlash(relative)}`;
+    };
 
     @Component({
         name: 'createScriptModal',
@@ -127,7 +133,7 @@
         showScriptOption = false;
 
         mounted() {
-            this.$http.get("/script/api/handlers")
+            this.$http.get('/script/api/handlers')
                 .then(res => {
                     this.handlers = res.data;
                     this.scriptHandler = this.handlers[0];
@@ -191,13 +197,6 @@
                 $(this.$refs.fileName).focus();
             }
         }
-    }
-
-    const resolve = (source, relative) => {
-        const removeAppendedSlash = path => path.startsWith('/') ? path.slice(1) : path;
-        const removePrependedSlash = path => path.endsWith('/') ? path.slice(0, path.length - 1) : path;
-
-        return `${removePrependedSlash(source)}/${removeAppendedSlash(relative)}`;
     }
 </script>
 

@@ -20,9 +20,9 @@
 </template>
 
 <script>
-    import {Inject} from 'vue-property-decorator';
-    import Base from '../Base.vue';
+    import { Inject } from 'vue-property-decorator';
     import Component from 'vue-class-component';
+    import Base from '../Base.vue';
 
     @Component({
         name: 'inputAppend',
