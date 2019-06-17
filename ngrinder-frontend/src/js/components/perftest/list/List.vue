@@ -172,7 +172,7 @@
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
         totalElements = 0;
         tests = [];
-        testIds = [];
+        autoUpdateTargets = [];
         selectAll = false;
         selectedTests = [];
         queryFilter = new Set();
@@ -191,8 +191,16 @@
 
         @Watch('tests')
         watchTests() {
-            this.testIds = [];
-            this.tests.forEach(test => this.testIds.push(test.id));
+            this.autoUpdateTargets = [];
+            this.tests.forEach((test, index) => {
+                if (!this.isFinishedStatusType(test)) {
+                    this.autoUpdateTargets.push({'id': test.id, 'index': index});
+                }
+            });
+        }
+
+        isFinishedStatusType(test) {
+            return test.status === 'FINISHED' || test.status === 'STOP_BY_ERROR' || test.status === 'STOP_ON_ERROR' || test.status === 'CANCELED';
         }
 
         changeSelectAll(event) {
@@ -318,19 +326,22 @@
         updatePerftestStatus() {
             this.$http.get('/perftest/api/status', {
                 params: {
-                    ids: this.testIds.join(','),
+                    ids: this.autoUpdateTargets.map(test => test.id).join(','),
                 },
             }).then(res => {
                 const status = res.data.status.reverse();
-                this.testIds.forEach((id, index) => {
-                    this.tests[index].iconName = status[index].icon;
-                    this.tests[index].reportable = status[index].reportable;
-                    this.tests[index].deletable = status[index].deletable;
-                    this.tests[index].stoppable = status[index].stoppable;
-                    this.tests[index].status = status[index].status_id;
+                this.autoUpdateTargets.forEach((target, index) => {
+                    if (status[index].reportable) {
+                        this.getPerfTest();
+                    }
+                    this.tests[target.index].iconName = status[index].icon;
+                    this.tests[target.index].reportable = status[index].reportable;
+                    this.tests[target.index].deletable = status[index].deletable;
+                    this.tests[target.index].stoppable = status[index].stoppable;
+                    this.tests[target.index].status = status[index].status_id;
                     this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
 
-                    const $ball = $(`#ball_${this.tests[index].id}`);
+                    const $ball = $(`#ball_${this.tests[target.index].id}`);
                     $ball.attr('data-original-title', status[index].name);
                     $ball.data('popover').options.content = status[index].message;
                 });
