@@ -58,7 +58,7 @@
 
     @Component({
         name: 'hostModal',
-        components: {ControlGroup},
+        components: { ControlGroup },
         $_veeValidate: {
             validator: 'new',
         },
@@ -70,7 +70,7 @@
         mounted() {
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
-                $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#add-host-modal'});
+                $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#add-host-modal' });
             });
         }
 

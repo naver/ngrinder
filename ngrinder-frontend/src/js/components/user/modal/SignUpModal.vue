@@ -21,7 +21,7 @@
 
     @Component({
         name: 'signUpModal',
-        components: {UserInfo},
+        components: { UserInfo },
     })
     export default class SignUpModal extends ModalBase {
         user = {};

@@ -3,24 +3,24 @@
 </template>
 
 <script>
-    import Component from 'vue-class-component';
-    import Base from '../Base.vue';
-
-    import { codemirror } from 'vue-codemirror';
-
     import 'codemirror/mode/groovy/groovy.js';
     import 'codemirror/mode/python/python.js';
     import 'codemirror/mode/javascript/javascript.js';
-    import "codemirror/mode/htmlmixed/htmlmixed";
-    import "codemirror/mode/xml/xml";
+    import 'codemirror/mode/htmlmixed/htmlmixed';
+    import 'codemirror/mode/xml/xml';
 
     import 'codemirror/addon/display/fullscreen.js';
     import 'codemirror/addon/dialog/dialog.js';
     import 'codemirror/addon/search/search.js';
     import 'codemirror/addon/selection/active-line.js';
 
+    import Component from 'vue-class-component';
+    import { codemirror } from 'vue-codemirror';
+
+    import Base from '../Base.vue';
+
     @Component({
-        name: "codeMirror",
+        name: 'codeMirror',
         components: { codemirror },
         props: {
             value: {
@@ -31,11 +31,10 @@
             options: {
                 type: Object,
                 required: false,
-            }
-        }
+            },
+        },
     })
     export default class CodeMirror extends Base {
-
         mounted() {
             Object.assign(this.cmOptions, this.options);
         }
@@ -43,7 +42,7 @@
         get cmOptions() {
             return {
                 mode: 'groovy',
-                theme: "eclipse",
+                theme: 'eclipse',
                 line: true,
                 lineNumbers: true,
                 lineWrapping: true,
@@ -55,15 +54,15 @@
                 readOnly: false,
                 styleActiveLine: true,
                 extraKeys: {
-                    "F11": function (cm) {
-                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                    'F11': function(cm) {
+                        cm.setOption('fullScreen', !cm.getOption('fullScreen'));
                     },
-                    "Esc": function (cm) {
-                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                    'Esc': function(cm) {
+                        if (cm.getOption('fullScreen')) cm.setOption('fullScreen', false);
                     },
-                    Tab: "indentMore"
+                    Tab: 'indentMore',
                 },
-                ...this.options
+                ...this.options,
             };
         }
 

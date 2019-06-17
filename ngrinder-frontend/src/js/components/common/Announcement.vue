@@ -27,7 +27,7 @@
         name: 'announcement',
     })
     export default class Announcement extends Base {
-        ANNOUNCEMENT_HIDE_SESSION_KEY = "announcement_hide";
+        ANNOUNCEMENT_HIDE_SESSION_KEY = 'announcement_hide';
 
         announcement = '';
         hide = false;
@@ -56,7 +56,7 @@
         }
 
         setAnnouncement(announcement) {
-            this.announcement = announcement.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+            this.announcement = announcement.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
         }
     }
 </script>

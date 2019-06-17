@@ -41,5 +41,6 @@ module.exports = {
         'no-return-assign': 0,
         'padding-line-between-statements': 'off',
         'quotes': ['error', 'single'],
+        'object-curly-spacing': ['error', 'always'],
     },
 };

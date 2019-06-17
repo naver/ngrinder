@@ -14,28 +14,25 @@
 </template>
 
 <script>
-    import Component from 'vue-class-component';
-    import Base from '../Base.vue';
-    import Messages from '../common/Messages.vue';
-
-    import { codemirror } from 'vue-codemirror';
-
     import 'codemirror/mode/properties/properties.js';
-
     import 'codemirror/addon/display/fullscreen.js';
     import 'codemirror/addon/dialog/dialog.js';
     import 'codemirror/addon/search/search.js';
     import 'codemirror/addon/selection/active-line.js';
 
+    import { codemirror } from 'vue-codemirror';
+    import Component from 'vue-class-component';
+    import Base from '../Base.vue';
+    import Messages from '../common/Messages.vue';
+
     @Component({
-        name: "systemConfig",
-        components: { codemirror, Messages }
+        name: 'systemConfig',
+        components: { codemirror, Messages },
     })
     export default class SystemConfig extends Base {
-
         cmOptions = {
             mode: 'properties',
-            theme: "eclipse",
+            theme: 'eclipse',
             line: true,
             lineNumbers: true,
             lineWrapping: true,
@@ -47,13 +44,13 @@
             readOnly: false,
             styleActiveLine: true,
             extraKeys: {
-                "F11": function (cm) {
-                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                'F11': function(cm) {
+                    cm.setOption('fullScreen', !cm.getOption('fullScreen'));
                 },
-                "Esc": function (cm) {
-                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                'Esc': function(cm) {
+                    if (cm.getOption('fullScreen')) cm.setOption('fullScreen', false);
                 },
-                Tab: "indentMore"
+                Tab: 'indentMore',
             },
         };
 
@@ -70,7 +67,7 @@
             this.$http.get('/operation/system_config/api')
             .then(res => {
                 this.codemirror.setValue(res.data);
-                this.codemirror.clearHistory();     // Prevent to be empty content by undo
+                this.codemirror.clearHistory(); // Prevent to be empty content by undo
             });
         }
 

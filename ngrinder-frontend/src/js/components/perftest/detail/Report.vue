@@ -102,7 +102,7 @@
                 default: '',
             },
         },
-        components: {ControlGroup},
+        components: { ControlGroup },
     })
     export default class Report extends Base {
         report = {
@@ -136,7 +136,7 @@
                     this.dataLoadFinished = true;
                     this.$nextTick(() => {
                         $('[data-toggle="popover"]').popover('destroy');
-                        $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#report-container'});
+                        $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#report-container' });
                         new Chart('tps-chart', [this.report.tps], this.report.interval).plot();
                     });
                 }).catch(error => console.log(error));

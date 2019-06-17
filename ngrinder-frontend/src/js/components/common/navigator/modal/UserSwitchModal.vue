@@ -20,17 +20,17 @@
 </template>
 
 <script>
+    import Component from 'vue-class-component';
     import ModalBase from '../../../common/modal/ModalBase.vue';
     import ControlGroup from '../../../common/ControlGroup.vue';
     import Select2 from '../../Select2.vue';
-    import Component from 'vue-class-component';
     import userDescription from '../../filter/UserDescriptionFilter';
 
 
     @Component({
         name: 'userSwitchModal',
         components: { Select2, ControlGroup },
-        filters: { userDescription, },
+        filters: { userDescription },
     })
     export default class UserSwitchModal extends ModalBase {
         switchTargetUserId = '';
@@ -45,16 +45,14 @@
                         url: '/user/api/switch_options',
                         dataType: 'json',
                         quietMillis: 1000,
-                        data: term => {
-                            return { keywords: term };
-                        },
+                        data: term => ({ keywords: term }),
                         results: users => {
                             const select2Data = users.map(user => ({
                                 id: user.userId,
                                 text: userDescription(user),
                             }));
                             return { results: select2Data };
-                        }
+                        },
                     },
                     formatSelection: data => data.text,
                     formatResult: data => data.text,
@@ -62,7 +60,7 @@
             } else {
                 this.$http.get('/user/api/switch_options')
                     .then(res => this.switchableUsers = res.data)
-                    .catch((error) => console.log(error));
+                    .catch(error => console.log(error));
             }
         }
 

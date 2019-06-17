@@ -126,12 +126,12 @@
                 required: true,
             },
         },
-        components: {ControlGroup, SamplingTable},
+        components: { ControlGroup, SamplingTable },
     })
     export default class Running extends Base {
         lastSampleStatistics = [];
         cumulativeStatistics = [];
-        totalStatistics = {Tests: 0, Errors: 0};
+        totalStatistics = { Tests: 0, Errors: 0 };
         agentState = {};
         monitorState = {};
         samplingIntervalId = -1;

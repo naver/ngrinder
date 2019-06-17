@@ -15,24 +15,21 @@
 </template>
 
 <script>
-    import Component from 'vue-class-component';
-    import Base from '../Base.vue';
-
-    import { codemirror } from 'vue-codemirror';
-
     import 'codemirror/mode/groovy/groovy.js';
-
     import 'codemirror/addon/display/fullscreen.js';
     import 'codemirror/addon/dialog/dialog.js';
     import 'codemirror/addon/search/search.js';
     import 'codemirror/addon/selection/active-line.js';
 
+    import { codemirror } from 'vue-codemirror';
+    import Component from 'vue-class-component';
+    import Base from '../Base.vue';
+
     @Component({
-        name: "scriptConsole",
-        components: { codemirror }
+        name: 'scriptConsole',
+        components: { codemirror },
     })
     export default class ScriptConsole extends Base {
-
         result = 'You can write groovy code to monitor the ngrinder internal state.\n' +
             '\n' +
             'Following variables are available.\n' +
@@ -58,7 +55,7 @@
 
         cmOptions = {
             mode: 'groovy',
-            theme: "eclipse",
+            theme: 'eclipse',
             line: true,
             lineNumbers: true,
             lineWrapping: true,
@@ -70,13 +67,13 @@
             readOnly: false,
             styleActiveLine: true,
             extraKeys: {
-                "F11": function (cm) {
-                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                'F11': function(cm) {
+                    cm.setOption('fullScreen', !cm.getOption('fullScreen'));
                 },
-                "Esc": function (cm) {
-                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                'Esc': function(cm) {
+                    if (cm.getOption('fullScreen')) cm.setOption('fullScreen', false);
                 },
-                Tab: "indentMore"
+                Tab: 'indentMore',
             },
         };
 
@@ -90,7 +87,7 @@
 
         runScript() {
             this.$http.get('/operation/script_console/api/run', {
-                params: { script: this.codemirror.getValue() }
+                params: { script: this.codemirror.getValue() },
             })
             .then(res => this.result = res.data);
         }

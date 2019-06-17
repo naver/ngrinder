@@ -23,12 +23,11 @@
     import CodeMirror from '../common/CodeMirror.vue';
 
     @Component({
-        name: "announcement",
-        components: { CodeMirror, Messages }
+        name: 'announcement',
+        components: { CodeMirror, Messages },
     })
 
     export default class Announcement extends Base {
-
         mounted() {
             this.pullAnnouncement();
             this.$refs.editor.codemirror.setSize(null, 500);
@@ -40,7 +39,7 @@
         }
 
         test() {
-            let content = this.$refs.editor.getValue();
+            const content = this.$refs.editor.getValue();
             if (!content) {
                 return;
             }
@@ -58,7 +57,7 @@
                     this.$refs.messages.showSuccessMsg(this.i18n('common.message.alert.save.success'));
                     this.$EventBus.$emit(this.$Event.CHANGE_ANNOUNCEMENT, this.$refs.editor.getValue());
                 } else {
-                    this.$refs.messages.showErrorMsg(this.i18n('common.message.alert.save.error'))
+                    this.$refs.messages.showErrorMsg(this.i18n('common.message.alert.save.error'));
                 }
             });
         }
