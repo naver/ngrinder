@@ -65,9 +65,9 @@
                 }
 
                 this.cpu.chart = new Chart('cpu-usage-chart', [this.cpu.queue.getArray()]
-                    , this.INTERVAL, { yAxisFormatter: this.formatPercentage }).plot();
+                    , this.INTERVAL, {yAxisFormatter: this.formatPercentage}).plot();
                 this.memory.chart = new Chart('memory-usage-chart', [this.memory.queue.getArray()]
-                    , this.INTERVAL, { yAxisFormatter: this.formatMemory }).plot();
+                    , this.INTERVAL, {yAxisFormatter: this.formatMemory}).plot();
 
                 this.currentIntervalId = setInterval(this.getState, this.INTERVAL * 1000);
             });
@@ -76,7 +76,7 @@
         }
 
         getState() {
-            this.$http.get(`/monitor/api/state`, {
+            this.$http.get('/monitor/api/state', {
                 params: {
                     ip: this.ip,
                 },
@@ -85,14 +85,14 @@
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
                 this.cpu.chart.plot();
                 this.memory.chart.plot();
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
 
         formatMemory(format, value) {
             value = value || 0;
             if (value < 1024) {
                 return `${value.toFixed(1)}K `;
-            } else if (value < 1048576) { //1024 * 1024
+            } else if (value < 1048576) { // 1024 * 1024
                 return `${(value / 1024).toFixed(1)}M `;
             } else {
                 return `${(value / 1048576).toFixed(2)}G `;

@@ -7,7 +7,7 @@
                 v-validate="validationRules">
             <slot></slot>
         </select>
-        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" errStyle="errStyle"></div>
+        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </span>
     <input v-else ref="select2" value=" " :style="customStyle" :name="name">
 </template>
@@ -15,8 +15,7 @@
 <script>
     import Vue from 'vue';
     import Component from 'vue-class-component';
-    import ValidationMixin from './mixin/ValidationMixin.vue';
-    import { Mixins } from 'vue-mixin-decorator';
+    import {Inject} from 'vue-property-decorator';
     import '../../../plugins/select2/select2.min';
 
     @Component({
@@ -42,7 +41,9 @@
         },
         name: 'select2',
     })
-    export default class Select2 extends Mixins(Vue, ValidationMixin) {
+    export default class Select2 extends Vue {
+        @Inject() $validator;
+
         mounted() {
             this.init();
         }
@@ -54,7 +55,7 @@
                 .change(function () {
                     component.$emit('input', this.value);
                     component.$emit('change');
-                    component.$nextTick(() => component.checkValidation());
+                    component.$nextTick(() => component.$validator.validateAll());
                 });
         }
 

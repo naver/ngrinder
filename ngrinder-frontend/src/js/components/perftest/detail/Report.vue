@@ -89,8 +89,8 @@
 </template>
 
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import Chart from '../../../chart.js';
 
@@ -102,7 +102,7 @@
                 default: '',
             },
         },
-        components: { ControlGroup },
+        components: {ControlGroup},
     })
     export default class Report extends Base {
         report = {
@@ -139,7 +139,7 @@
                         $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#report-container'});
                         new Chart('tps-chart', [this.report.tps], this.report.interval).plot();
                     });
-                }).catch((error) => console.log(error));
+                }).catch(error => console.log(error));
         }
 
         leaveComment() {
@@ -150,9 +150,8 @@
                 if (res.data.success) {
                     alert(this.i18n('perfTest.report.message.leaveComment'));
                 }
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
-
     }
 </script>
 

@@ -7,10 +7,9 @@
             <div class="form-horizontal form-horizontal-2">
                 <div class="row intro agent-config-container" data-step="4" :data-intro="i18n('intro.config.basic.agent')">
                     <div class="span4">
-                        <control-group labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
+                        <control-group :class="{error: errors.has('agentCount')}" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
                                           v-model="test.agentCount"
-                                          @validationResult="$refs.agentCountControlGroup.handleError($event)"
                                           :validationRules="agentCountValidationRules"
                                           errStyle="width: 145px; word-break: break-all; white-space: normal;"
                                           appendPrefix="perfTest.config.max"
@@ -21,19 +20,18 @@
                     </div>
 
                     <div v-if="ngrinder.config.clustered" class="span2">
-                        <control-group ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
-                            <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount" class="pull-right required" customStyle="width: 110px;"
-                                     :validationRules="{ required: true }" @validationResult="$refs.regionControlGroup.handleError($event)">
+                        <control-group :class="{error: errors.has('region')}" ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
+                            <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
+                                     class="pull-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
                                 <option v-for="region in ngrinder.config.visibleRegions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select2>
                         </control-group>
                     </div>
                 </div>
 
-                <control-group labelMessageKey="perfTest.config.vuserPerAgent" ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
+                <control-group :class="{error: errors.has('vuserPerAgent')}" labelMessageKey="perfTest.config.vuserPerAgent" ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
                     <input-append name="vuserPerAgent" ref="vuserPerAgent"
                                   v-model="test.vuserPerAgent"
-                                  @validationResult="$refs.vuserPerAgentControlGroup.handleError($event)"
                                   :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                   @change="changeVuserPerAgent"
                                   errStyle="margin: 0; width: 140px;"
@@ -62,9 +60,9 @@
                     </transition>
                 </control-group>
 
-                <control-group labelMessageKey="perfTest.config.script" ref="scriptNameControlGroup">
+                <control-group :class="{error: errors.has('scriptName')}" labelMessageKey="perfTest.config.script" ref="scriptNameControlGroup">
                     <select2 v-model="test.scriptName" name="scriptName" ref="scriptName" customStyle="width: 275px;" :option="{placeholder: i18n('perfTest.config.scriptInput')}"
-                             :validationRules="{ required: true, scriptValidation: true }" @validationResult="$refs.scriptNameControlGroup.handleError($event)" errStyle="position: absolute;">
+                             :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts" :data-validate="script.validated" v-text="script.pathInShort" :value="script.path"></option>
                     </select2>
@@ -90,43 +88,43 @@
                          data-html="true"
                          :title="i18n('perfTest.config.targetHost')"
                          :data-content="i18n('perfTest.config.targetHost.help')">
-                        <span v-for="host in targetHosts">
+                        <span v-for="(host, index) in targetHost">
                             <p class="host">
                                 <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                <a class="pointer-cursor"><i class="icon-remove-circle" @click="removeHost(host)"></i></a>
+                                <a class="pointer-cursor"><i class="icon-remove-circle" @click="targetHost.splice(index, 1)"></i></a>
                             </p>
                             <br style="line-height: 0">
                         </span>
                     </div>
-                    <input type="hidden" name="targetHosts" :value="targetHosts.join(',')">
+                    <input type="hidden" name="targetHosts" :value="targetHost.join(',')">
                 </control-group>
                 <hr>
 
                 <div class="threshold-container">
-                    <control-group :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
-                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration">
+                    <control-group :class="{error: errors.has('duration')}" :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold"
+                                   ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
+                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration(true)">
                             <option v-for="(v, h) in 8" :value="h" v-text="h"></option>
                         </select> :
-                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration">
+                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration(true)">
                             <option v-for="(v, m) in 60" :value="m" v-text="m < 10 ? `0${m}` : m"></option>
                         </select> :
-                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration">
+                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration(true)">
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
                         </select> &nbsp;&nbsp;
                         <code>HH:MM:SS</code>
-                        <input type="hidden" name="duration" :value="durationSeconds * 1000"/>
-                        <input type="hidden" name="durationHour" value="0"/>
+                        <input v-validate="{min_value: test.threshold === 'D' ? 1 : 0}" type="hidden" name="duration" v-model="durationMilliSeconds"/>
                         <vue-slider ref="durationSlider" @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
+                        <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
 
-                    <control-group :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
+                    <control-group :class="{error: errors.has('runCount')}" :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
                                       :append="config.maxRunCount"
-                                      @validationResult="$refs.runCountControlGroup.handleError($event)"
-                                      :validationRules="{ required: true, max_value: config.maxRunCount, min_value: 0 }"
+                                      :validationRules="{required: true, max_value: config.maxRunCount, min_value: test.threshold === 'R' ? 1 : 0}"
                                       v-model="test.runCount"
-                                      @focus="test.threshold = TEST_THRESHOLD_RUNCOUNT"
+                                      @focus="test.threshold = 'R'"
                                       message="perfTest.config.runCount">
                         </input-append>
                     </control-group>
@@ -152,10 +150,9 @@
                                 </control-group>
                             </div>
                             <div class="span3">
-                                <control-group name="ignoreSampleCount" ref="ignoreSampleCountControlGroup" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
+                                <control-group :class="{error: errors.has('ignoreSampleCount')}" name="ignoreSampleCount" ref="ignoreSampleCountControlGroup" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
                                     <input-popover v-model="test.ignoreSampleCount"
                                                    ref="ignoreSampleCount"
-                                                   @validationResult="$refs.ignoreSampleCountControlGroup.handleError($event)"
                                                    :validationRules="{ numeric: true }"
                                                    dataPlacement="top"
                                                    errStyle="margin-left: -120px;"
@@ -172,11 +169,10 @@
                                 </control-group>
                             </div>
                             <div class="span3">
-                                <control-group name="param" labelMessageKey="perfTest.config.param" controlsStyle="margin-left: 85px;"
-                                               labelStyle="width: 70px;" ref="paramControlGroup">
+                                <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
+                                               controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
                                     <input-popover name="param"
                                                    ref="param"
-                                                   @validationResult="$refs.paramControlGroup.handleError($event)"
                                                    :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }"
                                                    dataPlacement="top"
                                                    v-model="test.param"
@@ -197,6 +193,8 @@
 </template>
 
 <script>
+    import {Component, Watch, Inject} from 'vue-property-decorator';
+    import VueSlider from 'vue-slider-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
@@ -205,10 +203,7 @@
     import InputPopover from '../../common/InputPopover.vue';
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
-    import VueSlider from 'vue-slider-component';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
-    import { Component, Watch } from 'vue-property-decorator';
-    import { Validator } from 'vee-validate';
 
     @Component({
         name: 'config',
@@ -222,24 +217,22 @@
                 required: true,
             },
         },
-        components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
+        components: {TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp},
     })
     export default class Config extends Base {
-        MAX_PROCESS_COUNT_PER_AGENT = 10;
-        TEST_THRESHOLD_DURATION = 'D';
-        TEST_THRESHOLD_RUNCOUNT = 'R';
+        @Inject() $validator;
 
         test = {
+            param: '',
+            region: '',
             testName: '',
             agentCount: 0,
             rampUpInitCount: 0,
             rampUpStep: 0,
             rampUpInitSleepTime: 0,
             rampUpIncrementInterval: 0,
-            param: '',
             ignoreSampleCount: 0,
             runCount: 0,
-            region: '',
             processes: 0,
             threads: 0,
             vuserPerAgent: 0,
@@ -252,10 +245,8 @@
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
         regionAgentCountMap = {};
 
-        // to use Set object reactively in vue
-        targetHostsChangeTracker = 1;
         targetHostIp = '';
-        targetHost = new Set();
+        targetHost = [];
 
         maxAgentCount = 0;
         durationSeconds = 0;
@@ -272,8 +263,7 @@
             sec: 0,
         };
 
-        agentCountValidationRules = { required: true, agentCountValidation: true,};
-        validationGroup = [];
+        agentCountValidationRules = {required: true, agentCountValidation: true};
 
         created() {
             this.test = this.testProps;
@@ -283,7 +273,8 @@
                 }
                 this.changeMaxAgentCount();
                 this.setScripts(res.data, this.test.scriptName);
-                this.setDuration();
+                this.initDurationFromDurationStr();
+                this.changeDuration(false);
                 this.setTargetHost(this.test.targetHosts);
                 this.getScriptResource();
                 this.finishDataLoad();
@@ -292,7 +283,6 @@
 
         mounted() {
             this.setCustomValidationRules();
-            this.setCustomValidationMessages();
         }
 
         changeMaxAgentCount() {
@@ -323,7 +313,7 @@
                 },
             }).then(res => {
                 this.resources = res.data.resources;
-            }).catch((error) => console.error(error));
+            }).catch(error => console.error(error));
         }
 
         finishDataLoad() {
@@ -332,34 +322,7 @@
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
                 this.$refs.rampUp.updateRampUpChart();
-                this.validationGroup = [this.$refs.agentCount, this.$refs.vuserPerAgent, this.$refs.ignoreSampleCount,
-                    this.$refs.param, this.$refs.runCount, this.$refs.scriptName];
-
-                if (this.ngrinder.config.clustered) {
-                    this.validationGroup.push(this.$refs.region);
-                }
             });
-        }
-
-        setCustomValidationMessages() {
-            const dictionary = {
-                required: () => this.i18n('common.message.validate.empty'),
-                regex: () => this.i18n('perfTest.message.param'),
-            };
-
-            const messages = {
-                en: {
-                    messages: dictionary,
-                },
-                kr: {
-                    messages: dictionary,
-                },
-                cn: {
-                    messages: dictionary,
-                },
-            };
-
-            Validator.localize(messages);
         }
 
         setCustomValidationRules() {
@@ -379,13 +342,12 @@
             });
         }
 
-        // duration format: '00:00:00'
-        setDuration() {
-            let durationTokens = this.test.duration.split(':');
+        // duration string format: '00:00:00'
+        initDurationFromDurationStr() {
+            const durationTokens = this.test.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
             this.duration.min = parseInt(durationTokens[1]);
             this.duration.sec = parseInt(durationTokens[2]);
-            this.changeDuration();
         }
 
         @Watch('test.threshold')
@@ -400,8 +362,8 @@
         }
 
         changeVuserPerAgent() {
-            this.test.processes = this.getAdjustedProcessCount(this.test.vuserPerAgent);
-            this.test.threads = parseInt(this.test.vuserPerAgent / this.test.processes);
+            this.test.processes = getProcessCount(this.test.vuserPerAgent);
+            this.test.threads = getThreadCount(this.test.vuserPerAgent);
             this.updateVuserPerAgent();
 
             if (this.$refs.rampUp.enableRampUp) {
@@ -420,8 +382,10 @@
             this.test.vuserPerAgent = this.test.processes * this.test.threads;
         }
 
-        changeDuration() {
-            this.test.threshold = this.TEST_THRESHOLD_DURATION;
+        changeDuration(focus) {
+            if (focus) {
+                this.test.threshold = 'D';
+            }
             this.durationSeconds = this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec;
         }
 
@@ -433,31 +397,22 @@
             if (duration < 60) {
                 this.test.duration = `00:${this.test.duration}`;
             }
-            this.setDuration();
+            this.initDurationFromDurationStr();
+            this.changeDuration(true);
         }
 
-        hasValidationError() {
-            let error = false;
-            this.validationGroup.forEach(validation => error = error || validation.errors.any());
-            return error;
-        }
-
-        addHost(host) {
-            this.targetHost.add(host);
-            this.targetHostsChangeTracker += 1;
+        addHost(newHost) {
+            if (this.targetHosts.some(host => host === newHost)) {
+                return;
+            }
+            this.targetHost.push(newHost);
         }
 
         setTargetHost(targetHost) {
             if (!targetHost) {
                 return;
             }
-            targetHost.split(',').forEach(host => this.targetHost.add(host));
-            this.targetHostsChangeTracker += 1;
-        }
-
-        removeHost(host) {
-            this.targetHost.delete(host);
-            this.targetHostsChangeTracker += 1;
+            targetHost.split(',').forEach(host => this.targetHost.push(host));
         }
 
         showTargetHostInfoModal(host) {
@@ -466,28 +421,12 @@
             this.$refs.targetHostInfoModal.show();
         }
 
-        getAdjustedProcessCount(vuser) {
-            if (vuser < 2) {
-                return 1;
-            }
-
-            let processCount = 2;
-            if (vuser > 80) {
-                processCount = parseInt(vuser / 40) + 1;
-            }
-
-            if (processCount > this.MAX_PROCESS_COUNT_PER_AGENT) {
-                processCount = this.MAX_PROCESS_COUNT_PER_AGENT;
-            }
-            return processCount;
-        }
-
         get totalVuser() {
             return this.test.agentCount * this.test.vuserPerAgent;
         }
 
-        get targetHosts() {
-            return this.targetHostsChangeTracker && Array.from(this.targetHost);
+        get durationMilliSeconds() {
+            return this.durationSeconds * 1000;
         }
     }
 </script>
@@ -537,12 +476,6 @@
         .btn-script-revision {
             position: relative;
             margin-top: 3px;
-        }
-
-        div.error {
-            .btn-script-revision {
-                margin-top: -45px;
-            }
         }
 
         i {

@@ -1,18 +1,15 @@
 <template>
     <div class="input-group input-append">
-        <input :type="inputType"
+        <input :id="name"
+               :type="inputType"
                :readonly="readonly"
-               v-validate="validationRules"
-               data-toggle="popover" :name="name" :id="name"
-               data-html="true"
-               :data-placement="dataPlacement"
-               :data-content="dataContent ? dataContent : i18n(`${this.message}.help`)"
+               :name="name"
                :title='i18n(message)'
                :value="value"
+               v-validate="validationRules"
                @input="$emit('input', $event.target.value)"
                @change="$emit('change')"
                @focus="$emit('focus')"
-               @keyup="checkValidation"
                aria-describedby="basic-addon2"/>
         <span v-if="append !== null" class="add-on">
             <span v-text="i18n(appendPrefix)"></span>
@@ -23,10 +20,9 @@
 </template>
 
 <script>
+    import {Inject} from 'vue-property-decorator';
     import Base from '../Base.vue';
-    import ValidationMixin from './mixin/ValidationMixin.vue';
     import Component from 'vue-class-component';
-    import { Mixins } from 'vue-mixin-decorator';
 
     @Component({
         name: 'inputAppend',
@@ -43,10 +39,6 @@
                 type: String,
                 required: true,
             },
-            dataPlacement: {
-                type: String,
-                default: 'bottom',
-            },
             type: {
                 type: String,
                 default: 'text',
@@ -59,13 +51,13 @@
                 type: Boolean,
                 default: false,
             },
-            dataContent: String,
             validationRules: Object,
             appendPrefix: String,
             errStyle: String,
         },
     })
-    export default class InputAppend extends Mixins(Base, ValidationMixin) {
+    export default class InputAppend extends Base {
+        @Inject() $validator;
 
         get inputType() {
             return this.type ? this.type : 'text';
@@ -83,6 +75,7 @@
 
         .validation-message {
             margin-top: 2px;
+            white-space: normal;
         }
     }
 </style>

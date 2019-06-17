@@ -9,10 +9,9 @@
                             <div class="control-group">
                                 <div class="row">
                                     <div class="span4-5" data-step="1" :data-intro="i18n('intro.detail.testName')">
-                                        <control-group ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
+                                        <control-group :class="{error: errors.has('testName')}" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
                                             <input class="required span3 left-float" name="testName"
                                                    maxlength="80" size="30" type="text"
-                                                   @keyup="checkTestNameValidation"
                                                    v-validate="{ required: true }"
                                                    v-model="test.testName"/>
                                             <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
@@ -20,7 +19,7 @@
                                     </div>
                                     <div class="span3-4 tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                         <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                            <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 175px" type="input" name="tagString"
+                                            <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 175px" type="input" name="tagString"
                                                      :option="{tokenSeparators: [',', ' '], tags:[''], placeholder: i18n('perfTest.config.tagInput'),
                                                       maximumSelectionSize: 5, initSelection: initSelection, query: select2Query}"></select2>
                                         </control-group>
@@ -90,8 +89,8 @@
     </div>
 </template>
 <script>
-    import Base from '../../Base.vue';
     import Component from 'vue-class-component';
+    import Base from '../../Base.vue';
     import Config from './Config.vue';
     import Report from './Report.vue';
     import Running from './Running.vue';
@@ -107,8 +106,13 @@
                 type: String,
                 default: '',
             },
+            url: String,
+            scriptType: String,
         },
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
+        components: {ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal},
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class PerfTestDetail extends Base {
         config = {};
@@ -129,7 +133,6 @@
             iconPath: '',
         };
 
-        selectedTag = '';
         dataLoadFinished = false;
         scheduledTime = 0;
         timezoneOffset = 0;
@@ -146,43 +149,47 @@
             },
         };
 
-        checkTestNameValidation() {
-            this.$validator.validate('testName').then(result => {
-                this.$refs.testNameControlGroup.hasError = !result;
-            }).catch(() => {
-                this.$refs.testNameControlGroup.hasError = false;
-            });
+        created() {
+            if (this.$route.name === 'quickStart') {
+                this.$http.post('/perftest/api/quickstart', {
+                    url: this.url,
+                    scriptType: this.scriptType,
+                }).then(res => {
+                    this.initPerfTestDetail(res);
+                }).catch(error => console.error(error));
+            } else {
+                const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
+                this.$http.get(apiPath).then(res => {
+                    this.initPerfTestDetail(res);
+                }).catch(error => console.error(error));
+            }
         }
 
-        created() {
-            const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
-            this.$http.get(apiPath).then(res => {
-                this.config = {
-                    regionAgentCountMap: res.data.regionAgentCountMap,
-                    rampUpTypes: res.data.availRampUpType,
-                    maxRunCount: res.data.maxRunCount,
-                    maxRunHour: res.data.maxRunHour,
-                    maxVuserPerAgent: res.data.maxVuserPerAgent,
-                };
-                this.test = res.data.test;
-                this.timezoneOffset = res.data.timezone_offset;
-                this.selectedTag = this.test.tagString;
-                this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
-                if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
-                    this.test.region = '';
+        initPerfTestDetail(res) {
+            this.config = {
+                regionAgentCountMap: res.data.regionAgentCountMap,
+                rampUpTypes: res.data.availRampUpType,
+                maxRunCount: res.data.maxRunCount,
+                maxRunHour: res.data.maxRunHour,
+                maxVuserPerAgent: res.data.maxVuserPerAgent,
+            };
+            this.test = res.data.test;
+            this.timezoneOffset = res.data.timezone_offset;
+            this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
+            if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
+                this.test.region = '';
+            }
+            this.dataLoadFinished = true;
+            this.updateTabDisplay();
+            this.$nextTick(() => {
+                if (this.test.category === 'TESTING') {
+                    this.$refs.running.startSamplingInterval();
                 }
-                this.dataLoadFinished = true;
-                this.updateTabDisplay();
-                this.$nextTick(() => {
-                    if (this.test.category === 'TESTING') {
-                        this.$refs.running.startSamplingInterval();
-                    }
-                    this.$testStatusImage = $('#test-status-img');
-                    this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
-                    this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
-                    this.setTabEvent();
-                });
-            }).catch((error) => console.error(error));
+                this.$testStatusImage = $('#test-status-img');
+                this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
+                this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
+                this.setTabEvent();
+            });
         }
 
         beforeDestroy() {
@@ -223,7 +230,7 @@
                     this.updateTabDisplay();
                 }
                 this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
 
         updateStatus(id, statusType, name, icon, deletable, stoppable, message) {
@@ -262,8 +269,8 @@
         }
 
         initSelection(element, callback) {
-            let data = [];
-            this.selectedTag.split(',').forEach((tag) => {
+            const data = [];
+            this.test.tagString.split(',').forEach(tag => {
                 if (tag) {
                     data.push({id: tag, text: tag});
                 }
@@ -273,7 +280,7 @@
         }
 
         select2Query(query) {
-            let data = {
+            const data = {
                 results: [],
             };
 
@@ -282,18 +289,20 @@
                     query: query.term,
                 },
             }).then(res => {
-                res.data.forEach((tag) => data.results.push({id: tag, text: tag}));
+                res.data.forEach(tag => data.results.push({id: tag, text: tag}));
                 query.callback(data);
-            }).catch((error) => console.log(error));
+            }).catch(error => console.log(error));
         }
 
         clonePerftest() {
             this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
-            let agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
+            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
             agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
-            Promise.all(this.getValidationPromise()).then(() => {
-                if (!this.$refs.config.hasValidationError() && !this.errors.any()) {
+            this.$validator.validateAll().then(() => {
+                if (this.errors.any()) {
+                    this.$refs.configTab.click();
+                } else {
                     this.test.status = 'SAVED';
                     this.$nextTick(() => {
                         this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
@@ -302,38 +311,24 @@
                             } else {
                                 this.$router.push(`/perftest/${res.data}`);
                             }
-                        }).catch((error) => console.log(error));
+                        }).catch(error => console.log(error));
                     });
-                } else {
-                    this.$refs.configTab.click();
                 }
             });
         }
 
         saveAndStart() {
             this.$set(this.$refs.config.agentCountValidationRules, 'min_value', 1);
-            let agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
+            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({name: 'agentCount'});
             agentCountField.update({rules: this.$refs.config.agentCountValidationRules});
 
-            Promise.all(this.getValidationPromise()).then(() => {
-                if (!this.$refs.config.hasValidationError() && !this.errors.any()) {
-                    this.$refs.scheduleModal.show();
-                } else {
+            this.$validator.validateAll().then(() => {
+                if (this.errors.any()) {
                     this.$refs.configTab.click();
+                } else {
+                    this.$refs.scheduleModal.show();
                 }
             });
-        }
-
-        getValidationPromise() {
-            let validationPromise = [new Promise(resolve => { this.$validator.validate('testName').then(result => {
-                this.$refs.testNameControlGroup.hasError = !result;
-                resolve();
-            }).catch(() => {
-                this.$refs.testNameControlGroup.hasError = false;
-                resolve();
-            })})];
-            this.$refs.config.validationGroup.forEach(validation => validationPromise.push(validation.getCheckValidationPromise()));
-            return validationPromise;
         }
 
         runPerftest(scheduledTime) {
@@ -344,7 +339,7 @@
             this.$nextTick(() => {
                 this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize())
                     .then(res => this.$router.push(`/perftest/${res.data}`))
-                    .catch((error) => console.log(error));
+                    .catch(error => console.log(error));
             });
         }
 

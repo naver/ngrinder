@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { mapState } from 'vuex';
+import Vuex, {mapState} from 'vuex';
 import VueRouter from 'vue-router';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
@@ -23,6 +23,8 @@ import UserList from 'user/List.vue';
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
 
+import VeeValidateInitializer from 'vee-validate-initializer.js'
+
 import 'moment-duration-format';
 
 axios.interceptors.request.use(config => {
@@ -42,7 +44,7 @@ axios.interceptors.request.use(config => {
 Vue.use(Vuex);
 Vue.use(VueSession);
 Vue.use(VueRouter);
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, {inject: false});
 
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axios;
@@ -59,10 +61,11 @@ Vue.directive('focus', {
 });
 
 Vue.filter('numFormat', numFormat);
-Vue.filter('dateFormat', function (value, format) {
+Vue.filter('dateFormat', (value, format) => {
     if (value) {
         return moment(new Date(value)).format(format);
     }
+    return '';
 });
 
 const store = require('./store/vuex-store').default;
@@ -75,6 +78,7 @@ const routes = [
     {path: '/perftest', component: PerfTestList, name: 'perfTestList'},
     {path: '/perftest/list', redirect: '/perftest'},
     {path: '/perftest/new', component: PerfTestDetail, name: 'createNewPerftest'},
+    {path: '/perftest/quickstart', component: PerfTestDetail, name: 'quickStart', props: true},
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail', props: true},
     {path: '/perftest/:id/detail_report', component: PerfTestDetailReport, name: 'perfTestDetailReport', props: true},
     {path: '/perftest/:id/report', redirect: '/perftest/:id/detail_report'}, // backward compatibility
@@ -100,6 +104,7 @@ new Vue({
     },
     beforeMount: function() {
         this.$store.commit('ngrinder', window.ngrinder);
+        VeeValidateInitializer.initValidationMessages();
     },
     computed: {
         ...mapState([

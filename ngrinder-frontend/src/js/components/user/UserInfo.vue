@@ -1,20 +1,18 @@
 <template>
     <form :action="formUrl" class="form-horizontal form-horizontal-left" id="user_form" name="user_form" method="POST">
         <fieldset>
-            <control-group name="userId" labelMessageKey="user.info.userId" ref="userIdControlGroup" required>
+            <control-group :class="{error: errors.has('userId')}" name="userId" labelMessageKey="user.info.userId" required>
                 <input-append name="userId" ref="userId"
                               v-model="user.userId"
-                              @validationResult="$refs.userIdControlGroup.handleError($event)"
                               :readonly="type === 'save'"
                               :validationRules="{ required: true, userIdExist: ngrinder.config.signUpEnabled, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
                               message="user.info.userId"/>
                 <input type="hidden" name="id" :value="user.id"/>
             </control-group>
 
-            <control-group name="userName" labelMessageKey="user.info.name" ref="userNameControlGroup" required>
+            <control-group :class="{error: errors.has('userName')}" name="userName" labelMessageKey="user.info.name" required>
                 <input-append name="userName" ref="userName"
                               v-model="user.userName"
-                              @validationResult="$refs.userNameControlGroup.handleError($event)"
                               :validationRules="{ required: true, max: 20 }"
                               message="user.info.name"/>
             </control-group>
@@ -27,10 +25,9 @@
                 </select>
             </control-group>
 
-            <control-group name="email" labelMessageKey="user.info.email" ref="emailControlGroup">
+            <control-group :class="{error: errors.has('email')}" name="email" labelMessageKey="user.info.email">
                 <input-append name="email" ref="email"
                               v-model="user.email"
-                              @validationResult="$refs.emailControlGroup.handleError($event)"
                               :validationRules="{ email: true }"
                               message="user.info.email"/>
             </control-group>
@@ -41,11 +38,10 @@
                           v-model="user.description"></textarea>
             </control-group>
 
-            <control-group name="mobilePhone" labelMessageKey="user.info.phone" ref="mobilePhoneControlGroup">
+            <control-group :class="{error: errors.has('mobilePhone')}" name="mobilePhone" labelMessageKey="user.info.phone">
                 <input-append name="mobilePhone" ref="mobilePhone"
-                              errStyle="width: 285px; white-space: normal;"
+                              errStyle="width: 285px;"
                               v-model="user.mobilePhone"
-                              @validationResult="$refs.mobilePhoneControlGroup.handleError($event)"
                               :validationRules="{ regex: /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/ }"
                               message="user.info.phone"/>
             </control-group>
@@ -60,18 +56,16 @@
 
             <template v-if="config.allowPasswordChange">
                 <div v-show="displayPasswordField" class="accordion-inner password-container">
-                    <control-group name="password" labelMessageKey="user.info.pwd" ref="passwordControlGroup" :required="config.showPasswordByDefault">
+                    <control-group :class="{error: errors.has('password')}" name="password" labelMessageKey="user.info.pwd" :required="config.showPasswordByDefault">
                         <input-append name="password" ref="password"
                                       v-model="user.password"
-                                      @validationResult="$refs.passwordControlGroup.handleError($event)"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15] }"
                                       type="password" message="user.info.pwd"/>
                     </control-group>
 
-                    <control-group name="confirmPassword" labelMessageKey="user.info.cpwd" ref="confirmPasswordControlGroup" :required="config.showPasswordByDefault">
+                    <control-group :class="{error: errors.has('confirmPassword')}" name="confirmPassword" labelMessageKey="user.info.cpwd" :required="config.showPasswordByDefault">
                         <input-append name="confirmPassword" ref="confirmPassword"
                                       v-model="user.confirmPassword"
-                                      @validationResult="$refs.confirmPasswordControlGroup.handleError($event)"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15], confirmed: user.password}"
                                       type="password" message="user.info.cpwd"/>
                     </control-group>
@@ -88,12 +82,11 @@
 </template>
 
 <script>
-    import Base from '../Base.vue';
     import Component from 'vue-class-component';
-    import ControlGroup from '../common/ControlGroup.vue'
-    import InputAppend from '../common/InputAppend.vue'
+    import Base from '../Base.vue';
+    import ControlGroup from '../common/ControlGroup.vue';
+    import InputAppend from '../common/InputAppend.vue';
     import Select2 from '../common/Select2.vue';
-    import { Validator } from 'vee-validate'
 
     @Component({
         name: 'userInfo',
@@ -111,7 +104,10 @@
                 default: 'save',
             },
         },
-        components: { ControlGroup, InputAppend, Select2 },
+        components: {ControlGroup, InputAppend, Select2},
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class UserInfo extends Base {
         user = {
@@ -129,16 +125,12 @@
         followerSelect2Option = {};
         formUrl = '/user/save';
 
-        validationGroup = [];
-
         created() {
             delete this.userProps.password;
             Object.assign(this.user, this.userProps);
             this.displayPasswordField = this.config.showPasswordByDefault;
 
             this.setCustomValidationRules();
-            this.setCustomValidationMessages();
-
             if (this.type === 'signUp') {
                 this.formUrl = '/sign_up/save';
             }
@@ -150,31 +142,25 @@
                     ajax: {
                         url: '/user/api/search',
                         dataType: 'json',
-                        data: (term, page) => {
-                            return {
+                        data: (term, page) => ({
                                 keywords: term,
                                 pageNumber: page,
                                 pageSize: 10,
-                            }
-                        },
-                        results: (data) => {
-                            return { results: data };
-                        },
+                        }),
+                        results: data => ({results: data}),
                     },
                     initSelection: this.initSelection,
-                    formatSelection: (data) => data.text,
-                }
+                    formatSelection: data => data.text,
+                };
             }
         }
 
         mounted() {
-            this.validationGroup = [this.$refs.userId, this.$refs.userName, this.$refs.email,
-                this.$refs.mobilePhone, this.$refs.password, this.$refs.confirmPassword];
             $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#user_form'});
         }
 
         initSelection(element, callback) {
-            let data = [];
+            const data = [];
             if (this.config.followers) {
                 this.config.followers.forEach(follower => data.push({id: follower.id, text: follower.text}));
             }
@@ -183,21 +169,17 @@
         }
 
         reset() {
-            for (let prop in this.user) {
+            for (const prop in this.user) {
                 this.user[prop] = '';
             }
-            this.$nextTick(() => this.validationGroup.forEach(validation => validation.checkValidation()));
+            this.$nextTick(() => this.$validator.validateAll());
         }
 
         save() {
-            if (this.hasValidationError()) {
+            if (this.errors.any()) {
                 return;
             }
             document.forms.user_form.submit();
-        }
-
-        hasValidationError() {
-            return this.validationGroup.some(validation => validation.errors.any());
         }
 
         setCustomValidationRules() {
@@ -223,29 +205,6 @@
                     }
                 },
             });
-        }
-
-        setCustomValidationMessages() {
-            const dictionary = {
-                required: () => this.i18n('common.message.validate.empty'),
-                regex: (name) => name === 'userId' ? this.i18n('user.info.userId.help') : this.i18n('user.info.phone.help'),
-                email: () => this.i18n('user.info.email.help'),
-                max: (name, val) => this.i18n('common.message.validate.maxLength', {maxLength: val[0]}),
-            };
-
-            const messages = {
-                en: {
-                    messages: dictionary,
-                },
-                kr: {
-                    messages: dictionary,
-                },
-                cn: {
-                    messages: dictionary,
-                },
-            };
-
-            Validator.localize(messages);
         }
     }
 </script>
