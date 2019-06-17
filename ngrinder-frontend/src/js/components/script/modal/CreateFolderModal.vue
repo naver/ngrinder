@@ -35,18 +35,18 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
+    import querystring from 'querystring';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
-    import querystring from 'querystring';
 
     @Component({
-        name: "createFolderModal",
+        name: 'createFolderModal',
         components: { ControlGroup },
         props: {
             currentPath: {
                 type: String,
                 required: true,
-            }
+            },
         },
         $_veeValidate: {
             validator: 'new',

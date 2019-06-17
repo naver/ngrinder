@@ -10,6 +10,7 @@
             </legend>
         </fieldset>
         <div class="form-horizontal form-horizontal-2 ramp-up-config-container">
+            <!--eslint-disable-next-line vue/no-unused-vars-->
             <template v-for="i in 1">
                 <div class="control-group">
                     <div class="row">
@@ -55,7 +56,7 @@
 </template>
 
 <script>
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Component, Watch } from 'vue-property-decorator';
     import 'jqplot/jquery.jqplot.min.js';
     import 'jqplot/jqplot.cursor.js';
     import 'jqplot/jqplot.donutRenderer.js';
@@ -71,7 +72,7 @@
 
     @Component({
         name: 'rampUp',
-        components: {InputLabel},
+        components: { InputLabel },
         props: {
             test: {
                 type: Object,

@@ -79,6 +79,8 @@
     import Base from '../Base.vue';
     import SearchBar from './SearchBar.vue';
 
+    const removePrependedSlash = path => (path.endsWith('/') ? path.slice(0, path.length - 1) : path);
+
     @Component({
         name: 'scriptList',
         components: { VueHeadful, SearchBar },
@@ -93,14 +95,6 @@
         }
 
         refreshScriptList() {
-            if (this.$route.name === 'scriptSearch') {
-                this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
-                    .then(res => refresh(res.data));
-            } else {
-                this.$http.get(`/script/api/${this.currentPath}`)
-                    .then(res => refresh(res.data));
-            }
-
             const refresh = scripts => {
                 const list = scripts.map(script => {
                     script.checked = false;
@@ -111,6 +105,14 @@
                 this.scripts.splice(0);
                 this.scripts.push(...list);
                 this.selectAll = false;
+            };
+
+            if (this.$route.name === 'scriptSearch') {
+                this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
+                    .then(res => refresh(res.data));
+            } else {
+                this.$http.get(`/script/api/${this.currentPath}`)
+                    .then(res => refresh(res.data));
             }
         }
 
@@ -123,15 +125,15 @@
 
         get baseDirectory() {
             if (this.currentPath === '' || this.currentPath.lastIndexOf('/') < 0) {
-                return '/script/list'
+                return '/script/list';
             }
-            return '/script/list/' + this.currentPath.slice(0, this.currentPath.lastIndexOf('/'));
+            return `/script/list/${this.currentPath.slice(0, this.currentPath.lastIndexOf('/'))}`;
         }
 
         @Watch('$route')
         watchRoute(newValue, oldValue) {
-            if ((newValue.name === 'scriptList' && newValue.path !== oldValue.path)
-                || (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query)) {
+            if ((newValue.name === 'scriptList' && newValue.path !== oldValue.path) ||
+                (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query)) {
                 this.refreshScriptList();
             }
         }
@@ -145,7 +147,7 @@
         }
 
         getFileSize(size) {
-            return this.formatNumber(( size / 1024 ), 2);
+            return this.formatNumber((size / 1024), 2);
         }
 
         isEditable(type, path) {
@@ -179,19 +181,17 @@
                 let extensionPos = filepath.lastIndexOf('.');
                 const lastSeparator = this.indexOfLastSeparator(filepath);
                 extensionPos = lastSeparator > extensionPos ? -1 : extensionPos;
-                return extensionPos === -1 ? "" : filepath.substring(extensionPos + 1);
+                return extensionPos === -1 ? '' : filepath.substring(extensionPos + 1);
             }
         }
 
         formatNumber(number, decimal) {
             if (number === 0) return 0;
-            const n = (number + '');
-            const parts = n.toString().split(".");
-            return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + ( parts[1].length > decimal ? parts[1].substring(0, decimal) : parts[1] ) : "");
+            const n = (`${number}`);
+            const parts = n.toString().split('.');
+            return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (parts[1] ? `.${(parts[1].length > decimal ? parts[1].substring(0, decimal) : parts[1])}` : '');
         }
     }
-
-    const removePrependedSlash = path => path.endsWith('/') ? path.slice(0, path.length - 1) : path;
 </script>
 
 <style scoped>

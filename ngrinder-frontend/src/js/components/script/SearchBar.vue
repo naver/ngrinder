@@ -95,43 +95,46 @@
                 required: true,
             },
         },
-        components: { CreateScriptModal, CreateFolderModal, UploadFileModal},
+        components: { CreateScriptModal, CreateFolderModal, UploadFileModal },
     })
     export default class SearchBar extends Base {
         query = '';
-        basePath = `${window.location.hostname}:${window.location.port}/svn/${ngrinder.currentUser.id}`;
+        basePath = '';
+
+        created() {
+            this.basePath = `${window.location.hostname}:${window.location.port}/svn/${this.ngrinder.currentUser.id}`;
+        }
 
         mounted() {
             this.query = this.$route.query.query;
-
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
 
-                $('#svn-url').popover({trigger: 'hover'});
-                $('#script-sample').popover({trigger: 'hover'});
+                $('#svn-url').popover({ trigger: 'hover' });
+                $('#script-sample').popover({ trigger: 'hover' });
 
-                $('#fileName').popover({trigger: 'focus'});
-                $('#testUrl').popover({trigger: 'focus'});
+                $('#fileName').popover({ trigger: 'focus' });
+                $('#testUrl').popover({ trigger: 'focus' });
 
-                $('#folderName').popover({trigger: 'focus'});
+                $('#folderName').popover({ trigger: 'focus' });
             });
         }
 
         deleteFile() {
             const checkedScripts = this.scripts.filter(script => script.checked);
             if (checkedScripts.length === 0) {
-                bootbox.alert(this.i18n("script.message.delete.alert"), this.i18n("common.button.ok"));
+                bootbox.alert(this.i18n('script.message.delete.alert'), this.i18n('common.button.ok'));
             } else {
                 bootbox.confirm(
-                    this.i18n("script.message.delete.confirm"),
-                    this.i18n("common.button.cancel"),
-                    this.i18n("common.button.ok"),
+                    this.i18n('script.message.delete.confirm'),
+                    this.i18n('common.button.cancel'),
+                    this.i18n('common.button.ok'),
                     result => {
                         if (!result) {
                             return;
                         }
 
-                        this.$http.post(`/script/api/delete`, checkedScripts.map(file => file.path))
+                        this.$http.post('/script/api/delete', checkedScripts.map(file => file.path))
                         .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
                     });
             }

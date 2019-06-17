@@ -67,7 +67,7 @@
 <script>
     import { Component, Watch } from 'vue-property-decorator';
     import Base from '../../Base.vue';
-    import Autocomplete from "../../common/Autocomplete.vue";
+    import Autocomplete from '../../common/Autocomplete.vue';
 
     class Pair {
         constructor(name, value) {
@@ -85,14 +85,16 @@
         }
     }
 
+    const objectToJson = obj => JSON.parse(JSON.stringify(obj));
+
     @Component({
         name: 'scriptOption',
-        components: {Autocomplete},
+        components: { Autocomplete },
         props: {
             method: {
                 type: String,
                 required: true,
-            }
+            },
         },
     })
     export default class ScriptOption extends Base {
@@ -115,7 +117,7 @@
 
         @Watch('method')
         methodChanged(newMethod) {
-
+            // eslint-disable-next-line default-case
             switch (newMethod) {
             case 'GET':
                 this.showContentTypeHeader = false;
@@ -130,7 +132,7 @@
             }
         }
 
-        @Watch('contentTypeHeader', {deep: true})
+        @Watch('contentTypeHeader', { deep: true })
         contentTypeHeaderChanged(newContentTypeHeader) {
             if (newContentTypeHeader.value === 'application/json') {
                 this.showRequestBody = true;
@@ -185,8 +187,6 @@
             return json;
         }
     }
-
-    const objectToJson = obj => JSON.parse(JSON.stringify(obj));
 </script>
 
 <style lang="less" scoped>

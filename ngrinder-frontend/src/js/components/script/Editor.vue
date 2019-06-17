@@ -90,22 +90,20 @@
 
 <script>
     import { Component, Watch } from 'vue-property-decorator';
+    import querystring from 'querystring';
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
     import TargetHostInfoModal from '../perftest/modal/TargetHostInfoModal.vue';
     import Messages from '../common/Messages.vue';
     import CodeMirror from '../common/CodeMirror.vue';
-    import querystring from 'querystring';
 
-    Component.registerHooks(['beforeRouteLeave',]);
-
+    Component.registerHooks(['beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
         components: { HostModal, TargetHostInfoModal, ControlGroup, Messages, CodeMirror },
     })
     export default class Editor extends Base {
-
         file = {
             fileName: '',
             description: '',
@@ -135,8 +133,8 @@
         mounted() {
             this.initScriptDetail();
 
-            $('#host-div').popover({trigger: 'hover'});
-            $('#tip').popover({trigger: 'hover'});
+            $('#host-div').popover({ trigger: 'hover' });
+            $('#tip').popover({ trigger: 'hover' });
         }
 
         get basePath() {
@@ -204,7 +202,7 @@
                 content: this.$refs.editor.getValue(),
                 validated: this.validated,
                 createLibAndResource: this.createLibAndResource,
-                targetHosts: this.targetHosts.join(',')
+                targetHosts: this.targetHosts.join(','),
             });
 
             this.$http.post('/script/api/save', params)
@@ -212,7 +210,7 @@
                 this.saved = true;
                 this.$router.push(`/script/list/${res.data}`);
             })
-            .catch(err => console.error(err))
+            .catch(err => console.error(err));
         }
 
         validate() {
@@ -289,7 +287,7 @@
                     this.i18n('script.editor.message.exitWithoutSave'),
                     this.i18n('common.button.cancel'),
                     this.i18n('common.button.ok'),
-                    result => result ? (window.onbeforeunload = null & next()) : next(false)
+                    result => (result ? (window.onbeforeunload = null & next()) : next(false)),
                 );
             } else {
                 window.onbeforeunload = null;
@@ -309,7 +307,6 @@
             if (!this.changed()) {
                 return;
             }
-
             return this.i18n('script.editor.message.exitWithoutSave');
         }
     }

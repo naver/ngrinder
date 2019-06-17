@@ -104,7 +104,7 @@
                 default: 'save',
             },
         },
-        components: {ControlGroup, InputAppend, Select2},
+        components: { ControlGroup, InputAppend, Select2 },
         $_veeValidate: {
             validator: 'new',
         },
@@ -166,7 +166,7 @@
         }
 
         mounted() {
-            $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#user_form'});
+            $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#user_form' });
         }
 
         initSelection(element, callback) {
@@ -202,7 +202,7 @@
             });
 
             this.$validator.extend('lengthRange', {
-                getMessage: (name, val) => this.i18n('common.message.validate.rangeLength', {minLength: val[0], maxLength: val[1]}),
+                getMessage: (name, val) => this.i18n('common.message.validate.rangeLength', { minLength: val[0], maxLength: val[1] }),
                 validate: (value, [min, max]) => Number(min) <= value.length && Number(max) >= value.length,
             });
 

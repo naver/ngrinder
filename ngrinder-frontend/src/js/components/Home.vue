@@ -32,7 +32,7 @@
 
     @Component({
         name: 'home',
-        components: {IntroButton, vueHeadful, HomePanel},
+        components: { IntroButton, vueHeadful, HomePanel },
         $_veeValidate: {
             validator: 'new',
         },
@@ -90,7 +90,7 @@
                     scriptType: this.scriptType,
                     url: this.quickStartUrl,
                 };
-                this.$router.push({name: 'quickStart', params});
+                this.$router.push({ name: 'quickStart', params });
             });
         }
     }

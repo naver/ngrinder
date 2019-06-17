@@ -134,7 +134,7 @@
 
     @Component({
         name: 'detailReport',
-        components: {ControlGroup, vueHeadful},
+        components: { ControlGroup, vueHeadful },
         props: {
             id: {
                 type: String,

@@ -131,7 +131,7 @@
                             <i v-if="test.stoppable" @click="stopTest(test.id)" :title="i18n('common.button.stop')" class="icon-stop test-stop pointer-cursor"></i>
                         </td>
                     </tr>
-                    <small-chart ref="smallChart" :perfTestId="test.id"></small-chart>
+                    <small-chart ref="smallChart" :key="test.id" :perfTestId="test.id"></small-chart>
                 </template>
             </tbody>
         </table>
@@ -151,7 +151,7 @@
 </template>
 
 <script>
-    import {Component, Watch} from 'vue-property-decorator';
+    import { Component, Watch } from 'vue-property-decorator';
     import Paginate from 'vuejs-paginate';
     import vueHeadful from 'vue-headful';
     import Base from '../../Base.vue';
@@ -161,7 +161,7 @@
 
     @Component({
         name: 'perfTestList',
-        components: {IntroButton, vueHeadful, SearchBar, SmallChart, Paginate},
+        components: { IntroButton, vueHeadful, SearchBar, SmallChart, Paginate },
     })
     export default class PerfTestList extends Base {
         THRESHOLD_TYPE_DURATION = 'D';
@@ -245,7 +245,7 @@
 
         initPopover() {
             $('[data-toggle="popover"]').popover('destroy');
-            $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#test_table'});
+            $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#test_table' });
         }
 
         getErrorRate(tests, errors) {

@@ -193,7 +193,7 @@
 </template>
 
 <script>
-    import {Component, Watch, Inject} from 'vue-property-decorator';
+    import { Component, Watch, Inject } from 'vue-property-decorator';
     import VueSlider from 'vue-slider-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
@@ -217,7 +217,7 @@
                 required: true,
             },
         },
-        components: {TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp},
+        components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
     })
     export default class Config extends Base {
         @Inject() $validator;
@@ -263,7 +263,7 @@
             sec: 0,
         };
 
-        agentCountValidationRules = {required: true, agentCountValidation: true};
+        agentCountValidationRules = { required: true, agentCountValidation: true };
 
         created() {
             this.test = this.testProps;
@@ -296,7 +296,7 @@
         setScripts(scripts, selectedScript) {
             if (!scripts.some(script => script.pathInShort === selectedScript)) {
                 if (selectedScript) {
-                    scripts.push({pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1});
+                    scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
                 }
             }
             this.scripts = scripts;
@@ -320,14 +320,14 @@
             this.dataLoadFinished = true;
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
-                $('[data-toggle="popover"]').popover({trigger: 'hover', container: '#config-container'});
+                $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#config-container' });
                 this.$refs.rampUp.updateRampUpChart();
             });
         }
 
         setCustomValidationRules() {
             this.$validator.extend('agentCountValidation', {
-                getMessage: this.i18n('common.message.validate.max', {maxValue: this.maxAgentCount}),
+                getMessage: this.i18n('common.message.validate.max', { maxValue: this.maxAgentCount }),
                 validate: agentCount => agentCount <= this.maxAgentCount,
             });
 

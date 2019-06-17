@@ -97,18 +97,25 @@
 
 <script>
     import { Component, Watch } from 'vue-property-decorator';
-    import Base from '../Base.vue';
     import vueHeadful from 'vue-headful';
     import Paginate from 'vuejs-paginate';
+    import Base from '../Base.vue';
     import SignUpModal from './modal/SignUpModal.vue';
 
+    const getOrDefault = (value, defaultValue) => {
+        try {
+            return value || defaultValue;
+        } catch (e) {
+            // Do nothing
+        }
+        return defaultValue;
+    };
 
     @Component({
-        name: "userList",
-        components: { vueHeadful, SignUpModal, Paginate, },
+        name: 'userList',
+        components: { vueHeadful, SignUpModal, Paginate },
     })
     export default class UserList extends Base {
-
         roles = [{
             name: null,
             fullName: this.i18n('user.left.all'),
@@ -147,7 +154,7 @@
                 if (this.$route.query.role) {
                     this.role = this.roles.find(role => role.name === this.$route.query.role);
                 }
-            })
+            });
         }
 
         loadUsers() {
@@ -158,7 +165,7 @@
                     'page.size': this.page.size,
                     'keywords': this.keywords,
                     'sort': this.sort,
-                }
+                },
             })
             .then(res => {
                 this.users = res.data.content.map(user => {
@@ -169,7 +176,7 @@
                 this.page.totalPages = res.data.totalPages;
 
                 this.selectAll = false;
-            })
+            });
         }
 
         search() {
@@ -181,7 +188,7 @@
                     'page.size': this.page.size,
                     'keywords': this.keywords,
                     'sort': this.sort,
-                }
+                },
             });
 
             this.loadUsers();
@@ -193,7 +200,7 @@
         }
 
         deleteUsers(userIds) {
-            this.$http.delete('/user/api/', { params: { userIds: userIds } })
+            this.$http.delete('/user/api/', { params: { userIds } })
             .then(() => this.loadUsers());
         }
 
@@ -208,8 +215,8 @@
             this.page.number = 1;
             this.$router.replace({
                 query: {
-                    role: this.role.name ? this.role.name : undefined
-                }
+                    role: this.role.name ? this.role.name : undefined,
+                },
             });
             this.loadUsers();
         }
@@ -223,15 +230,6 @@
             return user.userId === 'admin';
         }
     }
-
-    const getOrDefault = (value, defaultValue) => {
-        try {
-            return value ? value : defaultValue;
-        } catch (e) {
-            // Do nothing
-        }
-        return defaultValue;
-    };
 </script>
 
 <style lang="less" scoped>

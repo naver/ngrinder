@@ -40,7 +40,7 @@
 
     @Component({
         name: 'searchBar',
-        components: {Select2},
+        components: { Select2 },
     })
     export default class SearchBar extends Base {
         searchText = '';
