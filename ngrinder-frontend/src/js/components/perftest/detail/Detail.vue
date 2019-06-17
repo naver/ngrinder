@@ -37,7 +37,7 @@
                                             <input type="hidden" name="isClone" :value="isClone"/>
                                             <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest"
                                                     v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></button>
-                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart" v-text="saveScheduleBtnTitle"></button>
+                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart" v-text="saveScheduleBtnTitle()"></button>
                                         </div>
                                     </div>
                                 </div>
@@ -134,6 +134,7 @@
         };
 
         dataLoadFinished = false;
+        isClone = false;
         scheduledTime = 0;
         timezoneOffset = 0;
 
@@ -175,6 +176,7 @@
             };
             this.test = res.data.test;
             this.timezoneOffset = res.data.timezone_offset;
+            this.isClone = this.test.status !== 'SAVED';
             this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
             if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                 this.test.region = '';
@@ -343,16 +345,12 @@
             });
         }
 
-        get saveScheduleBtnTitle() {
+        saveScheduleBtnTitle() {
             return `${this.isClone ? this.i18n('perfTest.action.clone') : this.i18n('common.button.save')} ${this.i18n('perfTest.action.andStart')}`;
         }
 
         get switchUserTitle() {
             return `${this.i18n('perfTest.list.owner')} : ${this.test.createdUserName} (${this.test.createdUserId})`;
-        }
-
-        get isClone() {
-            return this.test.status !== 'SAVED';
         }
 
         get disabled() {
