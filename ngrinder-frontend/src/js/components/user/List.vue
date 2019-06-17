@@ -97,18 +97,16 @@
 
 <script>
     import { Component, Watch } from 'vue-property-decorator';
-    import Base from '../Base.vue';
     import vueHeadful from 'vue-headful';
     import Paginate from 'vuejs-paginate';
+    import Base from '../Base.vue';
     import SignUpModal from './modal/SignUpModal.vue';
 
-
     @Component({
-        name: "userList",
-        components: { vueHeadful, SignUpModal, Paginate, },
+        name: 'userList',
+        components: { vueHeadful, SignUpModal, Paginate },
     })
     export default class UserList extends Base {
-
         roles = [{
             name: null,
             fullName: this.i18n('user.left.all'),
@@ -134,10 +132,10 @@
         }
 
         initByQueryParams() {
-            this.keywords = getOrDefault(this.$route.query.keywords, this.keywords);
-            this.page.number = getOrDefault(this.$route.query.page, this.page.number);
-            this.page.size = getOrDefault(this.$route.query.page, this.page.size);
-            this.sort = getOrDefault(this.$route.query.sort, this.sort);
+            this.keywords = this.$route.query.keywords || this.keywords;
+            this.page.number = this.$route.query.page || this.page.number;
+            this.page.size = this.$route.query.page || this.page.size;
+            this.sort = this.$route.query.sort || this.sort;
         }
 
         loadRoleSet() {
@@ -147,7 +145,7 @@
                 if (this.$route.query.role) {
                     this.role = this.roles.find(role => role.name === this.$route.query.role);
                 }
-            })
+            });
         }
 
         loadUsers() {
@@ -158,7 +156,7 @@
                     'page.size': this.page.size,
                     'keywords': this.keywords,
                     'sort': this.sort,
-                }
+                },
             })
             .then(res => {
                 this.users = res.data.content.map(user => {
@@ -169,7 +167,7 @@
                 this.page.totalPages = res.data.totalPages;
 
                 this.selectAll = false;
-            })
+            });
         }
 
         search() {
@@ -181,7 +179,7 @@
                     'page.size': this.page.size,
                     'keywords': this.keywords,
                     'sort': this.sort,
-                }
+                },
             });
 
             this.loadUsers();
@@ -193,7 +191,7 @@
         }
 
         deleteUsers(userIds) {
-            this.$http.delete('/user/api/', { params: { userIds: userIds } })
+            this.$http.delete('/user/api/', { params: { userIds } })
             .then(() => this.loadUsers());
         }
 
@@ -208,8 +206,8 @@
             this.page.number = 1;
             this.$router.replace({
                 query: {
-                    role: this.role.name ? this.role.name : undefined
-                }
+                    role: this.role.name ? this.role.name : undefined,
+                },
             });
             this.loadUsers();
         }
@@ -223,15 +221,6 @@
             return user.userId === 'admin';
         }
     }
-
-    const getOrDefault = (value, defaultValue) => {
-        try {
-            return value ? value : defaultValue;
-        } catch (e) {
-            // Do nothing
-        }
-        return defaultValue;
-    };
 </script>
 
 <style lang="less" scoped>

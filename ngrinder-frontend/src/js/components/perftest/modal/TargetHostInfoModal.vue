@@ -65,9 +65,9 @@
                 }
 
                 this.cpu.chart = new Chart('cpu-usage-chart', [this.cpu.queue.getArray()]
-                    , this.INTERVAL, {yAxisFormatter: this.formatPercentage}).plot();
+                    , this.INTERVAL, { yAxisFormatter: this.formatPercentage }).plot();
                 this.memory.chart = new Chart('memory-usage-chart', [this.memory.queue.getArray()]
-                    , this.INTERVAL, {yAxisFormatter: this.formatMemory}).plot();
+                    , this.INTERVAL, { yAxisFormatter: this.formatMemory }).plot();
 
                 this.currentIntervalId = setInterval(this.getState, this.INTERVAL * 1000);
             });

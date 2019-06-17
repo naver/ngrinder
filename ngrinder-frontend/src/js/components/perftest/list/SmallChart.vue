@@ -29,7 +29,7 @@
         },
     })
     export default class SmallChart extends Base {
-        CHART_GRID_PADDING = {top: 15, right: 10, bottom: 30, left: 40};
+        CHART_GRID_PADDING = { top: 15, right: 10, bottom: 30, left: 40 };
         CHART_NUM_X_TICKS = 7;
         CHART_LEGEND_MARGIN = 1;
         CHART_LEGEND_LOCATION = 'nw';

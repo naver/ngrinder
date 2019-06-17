@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import {Inject} from 'vue-property-decorator';
+    import { Inject } from 'vue-property-decorator';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
 
