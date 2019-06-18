@@ -52,22 +52,22 @@ public class FileEntryController extends BaseController {
 	HttpContainerContext httpContainerContext;
 
 	@GetMapping({"/list/**", ""})
-	public String getAll() {
+	public String getAll(User user) {
 		return "app";
 	}
 
 	@GetMapping({"/editor", "/new"})
-	public String editor() {
+	public String editor(User user) {
 		return "app";
 	}
 
 	@GetMapping("/search/**")
-	public String search() {
+	public String search(User user) {
 		return "app";
 	}
 
 	@GetMapping("/detail/**")
-	public String getOne() {
+	public String getOne(User user) {
 		return "app";
 	}
 
