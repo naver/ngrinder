@@ -7,7 +7,7 @@
                     <h4 v-text="i18n('script.action.createFolder')"></h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal form-horizontal-4">
+                    <div class="form-horizontal form-horizontal-4">
                         <fieldset>
                             <control-group :class="{error: errors.has('folderName')}" name="folderName" label-message-key="script.info.folderName" ref="folderNameControlGroup">
                                 <input type="text"
@@ -22,7 +22,7 @@
                                 <span v-show="errors.has('folderName')" class="validation-message" v-text="errors.first('folderName')"></span>
                             </control-group>
                         </fieldset>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" v-text="i18n('common.button.create')" @click="create"></button>
