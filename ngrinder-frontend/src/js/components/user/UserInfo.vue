@@ -5,7 +5,7 @@
                 <input-append name="userId" ref="userId"
                               v-model="user.userId"
                               :readonly="!config.allowUserIdChange"
-                              :validationRules="{ required: true, userIdExist: config.allowUserIdChange, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
+                              :validationRules="{ required: true, userIdExist: !!config.allowUserIdChange, regex: /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/ }"
                               message="user.info.userId"/>
             </control-group>
 
