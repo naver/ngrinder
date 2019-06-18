@@ -7,7 +7,7 @@
                     <h4 v-text="i18n('script.action.upload')"></h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal" method="post" target="_self"
+                    <div class="form-horizontal" method="post" target="_self"
                           :action="`/script/upload/${currentPath}`" id="uploadForm"
                           enctype="multipart/form-data">
                         <fieldset>
@@ -28,7 +28,7 @@
                                 </div>
                             </control-group>
                         </fieldset>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" id="upload_file_button" @click="uploadFile"
