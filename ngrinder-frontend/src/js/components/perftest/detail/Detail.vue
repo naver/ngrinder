@@ -202,7 +202,6 @@
         setTabEvent() {
             $(this.$refs.configTab).on('shown.bs.tab', () => {
                 this.$refs.config.$refs.rampUp.updateRampUpChart();
-                this.$refs.config.$refs.durationSlider.refresh();
             });
 
             $(this.$refs.runningTab).on('shown.bs.tab', () => {
