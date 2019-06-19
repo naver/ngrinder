@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 
 	@Autowired
-	private MockPerfTestController controller;
+	private MockPerfTestApiController mockPerfTestApiController;
 
 	@Autowired
 	public MockFileEntityRepository repo;
@@ -63,7 +63,7 @@ public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 		Map<String, Object> params = new HashMap<>();
 		params.put("url", "http://naver.com");
 		params.put("scriptType", "jython");
-		controller.getQuickStart(getTestUser(), params);
+		mockPerfTestApiController.getQuickStart(getTestUser(), params);
 		assertThat(repo.findOne(getTestUser(), "naver.com/TestRunner.py", SVNRevision.HEAD), notNullValue());
 	}
 
