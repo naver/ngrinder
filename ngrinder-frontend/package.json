@@ -49,7 +49,6 @@
     "jqplot": "^1.0.9",
     "vee-validate": "^2.2.0",
     "vuex": "^3.0.0",
-    "vue-slider-component": "^2.8.16",
     "jstz": "^2.1.1",
     "intro.js": "^2.9.3",
     "i18next": "^15.0.5",

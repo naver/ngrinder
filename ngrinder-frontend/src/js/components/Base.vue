@@ -126,6 +126,7 @@
                 }
             }
         }
+
         .span4-5 {
             width: 340px;
         }
@@ -139,7 +140,7 @@
         }
     }
 
-    div{
+    div {
         &.datepicker {
             z-index: 1200;
         }
