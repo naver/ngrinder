@@ -103,18 +103,18 @@
                 <div class="threshold-container">
                     <control-group :class="{error: errors.has('duration')}" :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold"
                                    ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
-                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration(true)">
-                            <option v-for="(v, h) in 8" :value="h" v-text="h"></option>
+                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration({ focus: true, updateSlider: true })">
+                            <option v-for="(v, h) in durationMaxHour" :value="h" v-text="h"></option>
                         </select> :
-                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration(true)">
+                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration({ focus: true, updateSlider: true })">
                             <option v-for="(v, m) in 60" :value="m" v-text="m < 10 ? `0${m}` : m"></option>
                         </select> :
-                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration(true)">
+                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration({ focus: true, updateSlider: true })">
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
                         </select> &nbsp;&nbsp;
                         <code>HH:MM:SS</code>
-                        <input v-validate="{min_value: test.threshold === 'D' ? 1 : 0}" type="hidden" name="duration" v-model="durationMilliSeconds"/>
-                        <vue-slider ref="durationSlider" @callback="changeDurationSlider" v-model="durationSeconds" width="278" :max="28799" tooltip="none"></vue-slider>
+                        <input v-validate="{min_value: test.threshold === 'D' ? 1 : 0}" type="hidden" name="duration" v-model="durationMs"/>
+                        <duration-slider @change="changeDurationSlider" ref="durationSlider" :durationMs="durationMs" :maxRunHour="config.maxRunHour"></duration-slider>
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
 
@@ -194,7 +194,6 @@
 
 <script>
     import { Component, Watch, Inject } from 'vue-property-decorator';
-    import VueSlider from 'vue-slider-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
@@ -204,6 +203,7 @@
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
+    import DurationSlider from './DurationSlider.vue';
 
     @Component({
         name: 'config',
@@ -217,7 +217,7 @@
                 required: true,
             },
         },
-        components: { TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, VueSlider, HostModal, Select2, RampUp },
+        components: { DurationSlider, TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, HostModal, Select2, RampUp },
     })
     export default class Config extends Base {
         @Inject() $validator;
@@ -249,7 +249,7 @@
         targetHost = [];
 
         maxAgentCount = 0;
-        durationSeconds = 0;
+        durationMs = 0;
         dataLoadFinished = false;
 
         display = {
@@ -257,6 +257,7 @@
             detailConfig: false,
         };
 
+        durationMaxHour = 0;
         duration = {
             hour: 0,
             min: 0,
@@ -274,7 +275,7 @@
                 this.changeMaxAgentCount();
                 this.setScripts(res.data, this.test.scriptName);
                 this.initDurationFromDurationStr();
-                this.changeDuration(false);
+                this.changeDuration();
                 this.setTargetHost(this.test.targetHosts);
                 this.getScriptResource();
                 this.finishDataLoad();
@@ -318,6 +319,8 @@
 
         finishDataLoad() {
             this.dataLoadFinished = true;
+            const durationHour = parseInt(this.durationMs / 3600000) + 1;
+            this.durationMaxHour = (durationHour > this.config.maxRunHour) ? durationHour : this.config.maxRunHour;
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover('destroy');
                 $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#config-container' });
@@ -382,23 +385,26 @@
             this.test.vuserPerAgent = this.test.processes * this.test.threads;
         }
 
-        changeDuration(focus) {
-            if (focus) {
+        changeDuration(options) {
+            if (options && options.focus) {
                 this.test.threshold = 'D';
             }
-            this.durationSeconds = this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec;
+            this.durationMs = (this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec) * 1000;
+            if (options && options.updateSlider) {
+                this.$refs.durationSlider.initSliderFromDurationMs(this.durationMs);
+            }
         }
 
-        changeDurationSlider(duration) {
-            this.test.duration = this.$moment.duration(duration, 'seconds').format('hh:mm:ss');
-            if (duration < 3600) {
+        changeDurationSlider(durationSec) {
+            this.test.duration = this.$moment.duration(durationSec, 'seconds').format('hh:mm:ss');
+            if (durationSec < 3600) {
                 this.test.duration = `00:${this.test.duration}`;
             }
-            if (duration < 60) {
+            if (durationSec < 60) {
                 this.test.duration = `00:${this.test.duration}`;
             }
             this.initDurationFromDurationStr();
-            this.changeDuration(true);
+            this.changeDuration({ focus: true });
         }
 
         addHost(newHost) {
@@ -423,10 +429,6 @@
 
         get totalVuser() {
             return this.test.agentCount * this.test.vuserPerAgent;
-        }
-
-        get durationMilliSeconds() {
-            return this.durationSeconds * 1000;
         }
     }
 </script>
