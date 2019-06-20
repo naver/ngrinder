@@ -9,11 +9,11 @@
             </legend>
         </fieldset>
         <codemirror ref="editor" :options="cmOptions"></codemirror>
-        <messages ref="messages"></messages>
     </div>
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import 'codemirror/mode/properties/properties.js';
     import 'codemirror/addon/display/fullscreen.js';
     import 'codemirror/addon/dialog/dialog.js';
@@ -23,13 +23,13 @@
     import { codemirror } from 'vue-codemirror';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
-    import Messages from '../common/Messages.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'systemConfig',
-        components: { codemirror, Messages },
+        components: { codemirror },
     })
-    export default class SystemConfig extends Base {
+    export default class SystemConfig extends Mixins(Base, MessagesMixin) {
         cmOptions = {
             mode: 'properties',
             theme: 'eclipse',
@@ -77,7 +77,7 @@
 
             this.$http.post('/operation/system_config/api', formData)
             .then(() => {
-                this.$refs.messages.showSuccessMsg(this.i18n('perfTest.running.success'));
+                this.showSuccessMsg(this.i18n('perfTest.running.success'));
             });
         }
     }

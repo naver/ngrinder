@@ -56,6 +56,7 @@
     import Component from 'vue-class-component';
     import Base from '../../../Base.vue';
     import MenuChartMixin from './MenuChartMixin.vue';
+    import FormatMixin from '../../mixin/FormatMixin.vue';
 
     @Component({
         name: 'monitor',
@@ -70,7 +71,7 @@
             },
         },
     })
-    export default class Monitor extends Mixins(Base, MenuChartMixin) {
+    export default class Monitor extends Mixins(Base, MenuChartMixin, FormatMixin) {
         optionalChart = {
             cpuUsageChart: true,
             memUsageChart: true,
