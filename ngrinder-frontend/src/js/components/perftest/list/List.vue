@@ -194,7 +194,7 @@
             this.autoUpdateTargets = [];
             this.tests.forEach((test, index) => {
                 if (!this.isFinishedStatusType(test)) {
-                    this.autoUpdateTargets.push({'id': test.id, 'index': index});
+                    this.autoUpdateTargets.push({ 'id': test.id, 'index': index });
                 }
             });
         }

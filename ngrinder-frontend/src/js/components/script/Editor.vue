@@ -84,7 +84,6 @@
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
-        <messages ref="messages"></messages>
     </div>
 </template>
 
@@ -95,13 +94,12 @@
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
     import TargetHostInfoModal from '../perftest/modal/TargetHostInfoModal.vue';
-    import Messages from '../common/Messages.vue';
     import CodeMirror from '../common/CodeMirror.vue';
 
     Component.registerHooks(['beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, TargetHostInfoModal, ControlGroup, Messages, CodeMirror },
+        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror },
     })
     export default class Editor extends Base {
         file = {
@@ -220,7 +218,7 @@
             this.validating = true;
             this.validationResult = '';
 
-            this.$refs.messages.showProgressBar(this.i18n('script.editor.message.validate'));
+            this.messages.showProgressBar(this.i18n('script.editor.message.validate'));
 
             const params = querystring.stringify({
                 path: this.file.path,
@@ -235,7 +233,7 @@
             })
             .catch(() => console.log(this.i18n('script.editor.error.validate')))
             .finally(() => {
-                this.$refs.messages.hideProgressBar();
+                this.messages.hideProgressBar();
                 this.validating = false;
             });
         }

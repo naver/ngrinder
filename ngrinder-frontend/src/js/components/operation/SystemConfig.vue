@@ -9,7 +9,6 @@
             </legend>
         </fieldset>
         <codemirror ref="editor" :options="cmOptions"></codemirror>
-        <messages ref="messages"></messages>
     </div>
 </template>
 
@@ -23,11 +22,10 @@
     import { codemirror } from 'vue-codemirror';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
-    import Messages from '../common/Messages.vue';
 
     @Component({
         name: 'systemConfig',
-        components: { codemirror, Messages },
+        components: { codemirror },
     })
     export default class SystemConfig extends Base {
         cmOptions = {
@@ -77,7 +75,7 @@
 
             this.$http.post('/operation/system_config/api', formData)
             .then(() => {
-                this.$refs.messages.showSuccessMsg(this.i18n('perfTest.running.success'));
+                this.messages.showSuccessMsg(this.i18n('perfTest.running.success'));
             });
         }
     }

@@ -7,7 +7,7 @@
     @Component({
         computed: {
             ...mapState(
-                ['ngrinder'],
+                ['ngrinder', 'messages'],
             ),
         },
     })
