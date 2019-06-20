@@ -84,26 +84,26 @@
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
-        <messages ref="messages"></messages>
     </div>
 </template>
 
 <script>
     import { Component, Watch } from 'vue-property-decorator';
+    import { Mixins } from 'vue-mixin-decorator';
     import querystring from 'querystring';
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
     import TargetHostInfoModal from '../perftest/modal/TargetHostInfoModal.vue';
-    import Messages from '../common/Messages.vue';
     import CodeMirror from '../common/CodeMirror.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     Component.registerHooks(['beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, TargetHostInfoModal, ControlGroup, Messages, CodeMirror },
+        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror },
     })
-    export default class Editor extends Base {
+    export default class Editor extends Mixins(Base, MessagesMixin) {
         file = {
             fileName: '',
             description: '',
@@ -220,7 +220,7 @@
             this.validating = true;
             this.validationResult = '';
 
-            this.$refs.messages.showProgressBar(this.i18n('script.editor.message.validate'));
+            this.showProgressBar(this.i18n('script.editor.message.validate'));
 
             const params = querystring.stringify({
                 path: this.file.path,
@@ -235,7 +235,7 @@
             })
             .catch(() => console.log(this.i18n('script.editor.error.validate')))
             .finally(() => {
-                this.$refs.messages.hideProgressBar();
+                this.hideProgressBar();
                 this.validating = false;
             });
         }
