@@ -38,8 +38,10 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
+    import FormatMixin from '../mixin/FormatMixin.vue';
 
     @Component({
         name: 'samplingTable',
@@ -50,7 +52,7 @@
             },
         },
     })
-    export default class SamplingTable extends Base {}
+    export default class SamplingTable extends Mixins(Base, FormatMixin) {}
 </script>
 
 <style lang="less" scoped>
