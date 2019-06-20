@@ -111,12 +111,14 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import SamplingTable from './SamplingTable.vue';
     import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
+    import FormatMixin from '../mixin/FormatMixin.vue';
 
     @Component({
         name: 'running',
@@ -128,7 +130,7 @@
         },
         components: { ControlGroup, SamplingTable },
     })
-    export default class Running extends Base {
+    export default class Running extends Mixins(Base, FormatMixin) {
         lastSampleStatistics = [];
         cumulativeStatistics = [];
         totalStatistics = { Tests: 0, Errors: 0 };
@@ -199,39 +201,14 @@
             return packageState;
         }
 
-        formatTestTime(s) {
-            if (s < 60) {
-                return ` ${s}s`;
+        getShortenString(str, start, end) {
+            start = start || 0;
+            end = end || 20;
+            if (str.length >= end) {
+                str = str.substr(start, end - 4);
+                str += '...';
             }
-            if (s < 3600) {
-                return ` ${parseInt(s / 60)}m ${(s % 60)}s`;
-            }
-            if (s < 86400) {
-                return ` ${parseInt(s / 3600)}h ${parseInt(s % 3600 / 60)}m ${(s % 3600 % 60)}s`;
-            }
-            return ` ${parseInt(s / 86400)}d ${parseInt(s % 86400 / 3600)}h ${parseInt(s % 86400 % 3600 / 60)}m ${(s % 86400 % 3600 % 60)}s`;
-        }
-
-        formatPercentage(format, value) {
-            value = value || 0;
-            if (value < 10) {
-                return `${value.toFixed(1)}% `;
-            } else {
-                return `${value.toFixed(0)}% `;
-            }
-        }
-
-        formatMemoryInByte(format, value) {
-            value = value || 0;
-            if (value < 1024) {
-                return `${value.toFixed(1)}B `;
-            } else if (value < 1048576) { // 1024 * 1024
-                return `${(value / 1024).toFixed(1)}K `;
-            } else if (value < 1073741824) { // 1024 * 1024 * 1024
-                return `${(value / 1048576).toFixed(2)}M `;
-            } else {
-                return `${(value / 1073741824).toFixed(3)}G `;
-            }
+            return str;
         }
     }
 </script>
