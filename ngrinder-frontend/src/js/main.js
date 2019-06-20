@@ -20,6 +20,7 @@ import SystemConfig from 'operation/SystemConfig.vue';
 import Announcement from 'operation/Announcement.vue';
 import UserList from 'user/List.vue';
 import UserDetail from 'user/UserDetail.vue';
+import AgentList from 'agent/List.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
@@ -94,6 +95,7 @@ const routes = [
     {path: '/user', component: UserList, name: 'userList'},
     {path: '/user/new', component: UserDetail, name: 'createNewUser'},
     {path: '/user/:userId', component: UserDetail, name: 'userDetail', props: true},
+    {path: '/agent', component: AgentList, name: 'agentList'},
 ];
 
 const router = new VueRouter({
