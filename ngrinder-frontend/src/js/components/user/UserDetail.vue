@@ -7,7 +7,6 @@
             </legend>
         </fieldset>
         <user-info :user-props="user" :config="config" @saved="$router.push({ name: 'userList' })"></user-info>
-        <messages ref="messages"></messages>
     </div>
 </template>
 
@@ -15,7 +14,6 @@
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
     import UserInfo from './UserInfo.vue';
-    import Messages from '../common/Messages.vue';
 
     @Component({
         name: 'userDetail',
@@ -24,7 +22,7 @@
                 type: String,
             },
         },
-        components: { Messages, UserInfo },
+        components: { UserInfo },
     })
     export default class extends Base {
         user = {};
