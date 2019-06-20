@@ -23,6 +23,7 @@ import UserDetail from 'user/UserDetail.vue';
 
 import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
+import Messages from 'common/Messages.vue';
 
 import VeeValidateInitializer from 'vee-validate-initializer.js'
 
@@ -104,6 +105,7 @@ new Vue({
     components: {
         Copyright,
         Navigator,
+        Messages,
     },
     beforeMount: function() {
         this.$store.commit('ngrinder', window.ngrinder);
