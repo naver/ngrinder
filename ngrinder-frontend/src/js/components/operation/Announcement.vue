@@ -11,23 +11,23 @@
             </legend>
         </fieldset>
         <code-mirror ref="editor" :options="{ mode: 'text/html' }"></code-mirror>
-        <messages ref="messages"></messages>
     </div>
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
 
-    import Messages from '../common/Messages.vue';
     import CodeMirror from '../common/CodeMirror.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'announcement',
-        components: { CodeMirror, Messages },
+        components: { CodeMirror },
     })
 
-    export default class Announcement extends Base {
+    export default class Announcement extends Mixins(Base, MessagesMixin) {
         mounted() {
             this.pullAnnouncement();
             this.$refs.editor.codemirror.setSize(null, 500);
@@ -54,10 +54,10 @@
             this.$http.post('/operation/announcement/api', formData)
             .then(res => {
                 if (res.data.success) {
-                    this.$refs.messages.showSuccessMsg(this.i18n('common.message.alert.save.success'));
+                    this.showSuccessMsg(this.i18n('common.message.alert.save.success'));
                     this.$EventBus.$emit(this.$Event.CHANGE_ANNOUNCEMENT, this.$refs.editor.getValue());
                 } else {
-                    this.$refs.messages.showErrorMsg(this.i18n('common.message.alert.save.error'));
+                    this.showErrorMsg(this.i18n('common.message.alert.save.error'));
                 }
             });
         }
