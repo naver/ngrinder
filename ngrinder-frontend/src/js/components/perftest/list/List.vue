@@ -114,10 +114,10 @@
                             <div v-else v-text="test.runCount" :title="i18n('perfTest.list.runCount')"></div>
                         </td>
                         <td>
-                            <span v-if="exist(test.tps)" v-text="test.tps.toFixed(1)"></span>
+                            <span v-if="test.tps" v-text="test.tps.toFixed(1)"></span>
                         </td>
                         <td>
-                            <span v-if="exist(test.meanTestTime)" v-text="test.meanTestTime.toFixed(1)"></span>
+                            <span v-if="test.meanTestTime" v-text="test.meanTestTime.toFixed(1)"></span>
                         </td>
                         <td>
                             <div class="ellipsis" data-toggle="popover" data-html="true" data-placement="top" v-text="getErrorRate(test.tests, test.errors)"></div>
@@ -257,7 +257,7 @@
         }
 
         getErrorRate(tests, errors) {
-            if (!this.exist(tests) || !this.exist(errors)) {
+            if (!tests || !errors) {
                 return '';
             }
 
