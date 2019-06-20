@@ -51,7 +51,7 @@
             <template v-if="isAdmin">
                 <li class="divider"></li>
                 <li><router-link to="/user" v-text="i18n('navigator.dropDown.userManagement')"></router-link></li>
-                <li><a href="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></a></li>
+                <li><router-link to="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></router-link></li>
                 <li>
                     <router-link to="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></router-link>
                 </li>
