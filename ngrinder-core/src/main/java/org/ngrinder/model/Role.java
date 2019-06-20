@@ -13,18 +13,11 @@
  */
 package org.ngrinder.model;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Role of the User.
@@ -32,8 +25,7 @@ import java.io.IOException;
  * @author JunHo Yoon
  * @since 3.0
  */
-@JsonSerialize(using = Role.Serializer.class)
-@JsonDeserialize(using = Role.Deserializer.class)
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Role {
 	/**
 	 * General user role who can create performance test entry.
@@ -119,6 +111,11 @@ public enum Role {
 		this.fullName = fullName;
 	}
 
+	@JsonCreator
+	static Role of(@JsonProperty("name") String name) {
+		return Arrays.stream(Role.values()).filter(role -> role.name().equals(name)).findFirst().get();
+	}
+
 	/**
 	 * Get the short name.
 	 *
@@ -147,46 +144,12 @@ public enum Role {
 		return false;
 	}
 
-	final static class Serializer extends StdSerializer<Role> {
-
-		public Serializer() {
-			super(Role.class);
-		}
-
-		public Serializer(Class<Role> t) {
-			super(t);
-		}
-
-		@Override
-		public void serialize(Role value, JsonGenerator generator, SerializerProvider provider) throws IOException {
-			generator.writeStartObject();
-			generator.writeFieldName("name");
-			generator.writeString(value.name());
-			generator.writeFieldName("shortName");
-			generator.writeString(value.shortName);
-			generator.writeFieldName("fullName");
-			generator.writeString(value.fullName);
-			generator.writeEndObject();
-		}
-	}
-
-	final static class Deserializer extends StdDeserializer<Role> {
-
-		public Deserializer() {
-			super(Role.class);
-		}
-
-		public Deserializer(Class<Role> t) {
-			super(t);
-		}
-
-		@Override
-		public Role deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
-			JsonNode node = parser.getCodec().readTree(parser);
-			if (node == null || node.get("name") == null) {
-				return null;
-			}
-			return Role.valueOf(node.get("name").asText());
-		}
+	/**
+	 * Get the enum name.
+	 *
+	 * @return enum name
+	 */
+	public String getName() {
+		return name();
 	}
 }
