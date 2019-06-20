@@ -35,7 +35,7 @@
         },
         config: {
             signUpEnabled : ('{{ signUpEnabled }}' === 'true'),
-            visibleRegions: visibleRegions.substr(1, visibleRegions.length -2).split(','),
+            visibleRegions: visibleRegions.substr(1, visibleRegions.length -2).split(', '),
             clustered: ('{{ clustered }}' === 'true'),
             userSwitchMode: !!('{{ currentUser.ownerUser }}'),
             helpUrl: '{{ helpUrl }}',
