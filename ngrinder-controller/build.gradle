@@ -87,6 +87,8 @@ bootWar {
         attributes "Implementation-Version": project.version, mainClassName: "org.ngrinder.starter.NGrinderControllerStarter"
     }
     requiresUnpack "**/*.jar"
+    sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
+    sourceSets.test.java.outputDir = new File(buildDir, "classes/test")
 }
 
 task convert_cr_lf {
