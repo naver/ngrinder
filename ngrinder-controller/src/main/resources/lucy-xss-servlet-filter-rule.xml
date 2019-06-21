@@ -29,7 +29,7 @@
             </params>
         </url-rule>
         <url-rule>
-            <url>/script/save</url>
+            <url>/script/api/save</url>
             <params>
                 <param name="content" useDefender="false" >
                 </param>
