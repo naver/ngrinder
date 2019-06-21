@@ -4,16 +4,16 @@
             <div class="navbar-inner">
                 <div class="container">
                     <div class="navbar-header">
-                        <a class="brand clickable" @click.prevent="$router.push('/home')">
+                        <router-link class="brand clickable" to="/home">
                             <img src="/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/>
-                        </a>
+                        </router-link>
                     </div>
                     <ul class="nav navbar-nav">
                         <li id="nav_test" class="clickable" :class="{ active : $route.path.startsWith('/perftest') }">
-                            <a @click.prevent="$router.push('/perftest')" v-text="i18n('navigator.perfTest')"></a>
+                            <router-link to="/perftest" v-text="i18n('navigator.perfTest')"></router-link>
                         </li>
                         <li class="clickable" :class="{ active : $route.path.startsWith('/script') }">
-                            <a @click.prevent="$router.push('/script')" v-text="i18n('navigator.script')"></a>
+                            <router-link to="/script" v-text="i18n('navigator.script')"></router-link>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav pull-right">
