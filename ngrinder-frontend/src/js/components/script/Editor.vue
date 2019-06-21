@@ -155,7 +155,7 @@
                         this.$router.push({ path: '/script/' });
                     }
 
-                    res.data.file.content.replace(/&para/g, '&amp;para');
+                    res.data.file.content.replace(/&/g, '&amp;');
 
                     Object.assign(this.file, res.data.file);
                     Object.assign(this.scriptHandler, res.data.scriptHandler);
