@@ -41,17 +41,19 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from 'Base.vue';
     import vueHeadful from 'vue-headful';
     import jstz from 'jstz';
     import SignUpModal from './user/modal/SignUpModal.vue';
+    import MessagesMixin from './common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'login',
         components: { vueHeadful, SignUpModal },
     })
-    export default class Login extends Base {
+    export default class Login extends Mixins(Base, MessagesMixin) {
         userLanguage = 'en';
         userTimezone = jstz.determine().name();
         timezones = [];
@@ -65,15 +67,15 @@
         }
 
         getTimezones() {
-            this.$http.get('home/api/timezones').then(res => {
-                this.timezones = res.data;
-            }).catch(error => console.error(error));
+            this.$http.get('home/api/timezones')
+                .then(res => this.timezones = res.data)
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
 
         getConfig() {
-            this.$http.get('home/api/config').then(res => {
-                this.userLanguage = res.data.userLanguage;
-            }).catch(error => console.error(error));
+            this.$http.get('home/api/config')
+                .then(res => this.userLanguage = res.data.userLanguage)
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }
 </script>

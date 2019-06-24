@@ -20,13 +20,15 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'announcement',
     })
-    export default class Announcement extends Base {
+    export default class Announcement extends Mixins(Base, MessagesMixin) {
         ANNOUNCEMENT_HIDE_SESSION_KEY = 'announcement_hide';
 
         announcement = '';
@@ -46,8 +48,8 @@
 
         getAnnouncement() {
             this.$http.get('/announcement/api')
-            .then(res => this.setAnnouncement(res.data))
-            .catch(err => console.error(err));
+                .then(res => this.setAnnouncement(res.data))
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('announcement.title') })));
         }
 
         toggleDisplay() {

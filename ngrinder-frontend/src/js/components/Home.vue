@@ -24,11 +24,13 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from 'Base.vue';
     import vueHeadful from 'vue-headful';
     import HomePanel from 'HomePanel.vue';
     import IntroButton from 'common/IntroButton.vue';
+    import MessagesMixin from 'common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'home',
@@ -37,7 +39,7 @@
             validator: 'new',
         },
     })
-    export default class Index extends Base {
+    export default class Index extends Mixins(Base, MessagesMixin) {
         leftPanelEntries = [];
         rightPanelEntries = [];
         handlers = [];
@@ -48,13 +50,12 @@
         quickStartUrl = '';
         scriptType = '';
 
-        created() {
+        mounted() {
             if (this.$route.query.type === '404') {
-                // TODO to replace message component.
-                alert('Requested URL does not exist');
+                this.showErrorMsg('Requested URL does not exist');
             }
-            this.getHandlers();
             this.getPanel();
+            this.getHandlers();
             this.getConfig();
         }
 
@@ -62,14 +63,17 @@
             this.$http.get('home/api/handlers').then(res => {
                 this.handlers = res.data;
                 this.scriptType = this.handlers[0].key;
-            }).catch(error => console.error(error));
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
 
         getPanel() {
+            this.showProgressBar();
             this.$http.get('home/api/panel').then(res => {
                 this.leftPanelEntries = res.data.leftPanelEntries;
                 this.rightPanelEntries = res.data.rightPanelEntries;
-            }).catch(error => console.error(error));
+            })
+            .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')))
+            .finally(this.hideProgressBar);
         }
 
         getConfig() {
@@ -77,7 +81,7 @@
                 this.askQuestionUrl = res.data.askQuestionUrl;
                 this.seeMoreQuestionUrl = res.data.seeMoreQuestionUrl;
                 this.seeMoreResourcesUrl = res.data.seeMoreResourcesUrl;
-            }).catch(error => console.error(error));
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
 
         quickStart() {

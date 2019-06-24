@@ -57,6 +57,7 @@
     import Base from '../../../Base.vue';
     import MenuChartMixin from './MenuChartMixin.vue';
     import FormatMixin from '../../mixin/FormatMixin.vue';
+    import MessagesMixin from '../../../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'monitor',
@@ -71,7 +72,7 @@
             },
         },
     })
-    export default class Monitor extends Mixins(Base, MenuChartMixin, FormatMixin) {
+    export default class Monitor extends Mixins(Base, MenuChartMixin, FormatMixin, MessagesMixin) {
         optionalChart = {
             cpuUsageChart: true,
             memUsageChart: true,
@@ -111,7 +112,7 @@
                 this.drawOptionalChart('custom-monitor-chart-5', [res.data.customData5], interval,
                     { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'customMonitorChart5' });
                 this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
-            }).catch(error => console.error(error));
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }
 </script>
