@@ -11,7 +11,7 @@
                    @change="$emit('change')"
                    :checked="radio.checked">
             <span v-show="required" class="required-mark" v-text="'*'"></span>
-            <span v-text="i18n(labelMessageKey)"></span>
+            <span v-html="i18n(labelMessageKey)"></span>
             <span v-if="labelHelpMessageKey"
                   data-toggle="popover"
                   data-html="true"

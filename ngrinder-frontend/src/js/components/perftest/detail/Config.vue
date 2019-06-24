@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoadFinished" id="config-container" class="row config">
+    <div id="config-container" class="row config">
         <div class="span6">
             <fieldset>
                 <legend><span v-text="i18n('perfTest.config.basicConfiguration')"></span></legend>
@@ -60,8 +60,8 @@
                     </transition>
                 </control-group>
 
-                <control-group :class="{error: errors.has('scriptName')}" labelMessageKey="perfTest.config.script" ref="scriptNameControlGroup">
-                    <select2 v-model="test.scriptName" name="scriptName" ref="scriptName" customStyle="width: 275px;" :option="{placeholder: i18n('perfTest.config.scriptInput')}"
+                <control-group :class="{error: errors.has('scriptName')}" labelMessageKey="perfTest.config.script">
+                    <select2 v-model="test.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 275px;" :option="{placeholder: i18n('perfTest.config.scriptInput')}"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts" :data-validate="script.validated" v-text="script.pathInShort" :value="script.path"></option>
@@ -150,7 +150,7 @@
                                 </control-group>
                             </div>
                             <div class="span3">
-                                <control-group :class="{error: errors.has('ignoreSampleCount')}" name="ignoreSampleCount" ref="ignoreSampleCountControlGroup" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
+                                <control-group :class="{error: errors.has('ignoreSampleCount')}" name="ignoreSampleCount" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
                                     <input-popover v-model="test.ignoreSampleCount"
                                                    ref="ignoreSampleCount"
                                                    :validationRules="{ numeric: true }"
@@ -193,6 +193,7 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import { Component, Watch, Inject } from 'vue-property-decorator';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
@@ -200,6 +201,7 @@
     import InputAppend from '../../common/InputAppend.vue';
     import InputPrepend from '../../common/InputPrepend.vue';
     import InputPopover from '../../common/InputPopover.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import HostModal from '../modal/HostModal.vue';
     import RampUp from './RampUp.vue';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
@@ -219,7 +221,7 @@
         },
         components: { DurationSlider, TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, HostModal, Select2, RampUp },
     })
-    export default class Config extends Base {
+    export default class Config extends Mixins(Base, MessagesMixin) {
         @Inject() $validator;
 
         test = {
@@ -250,7 +252,6 @@
 
         maxAgentCount = 0;
         durationMs = 0;
-        dataLoadFinished = false;
 
         display = {
             vuserPanel: false,
@@ -264,26 +265,29 @@
             sec: 0,
         };
 
-        agentCountValidationRules = { required: true, agentCountValidation: true };
+        agentCountValidationRules = { required: true, agentCountValidation: true, min_value: 0 };
 
         created() {
+            this.setCustomValidationRules();
             this.test = this.testProps;
-            this.$http.get('/perftest/api/script').then(res => {
-                if (!this.ngrinder.config.clustered) {
-                    this.test.region = 'NONE';
-                }
-                this.changeMaxAgentCount();
-                this.setScripts(res.data, this.test.scriptName);
-                this.initDurationFromDurationStr();
-                this.changeDuration();
-                this.setTargetHost(this.test.targetHosts);
-                this.getScriptResource();
-                this.finishDataLoad();
-            }).catch(error => console.error(error));
+            this.changeMaxAgentCount();
+            this.initDurationFromDurationStr();
+            this.changeDuration();
+            this.setTargetHost(this.test.targetHosts);
+            this.getScriptResource();
         }
 
         mounted() {
-            this.setCustomValidationRules();
+            this.getScripts();
+
+            const durationHour = parseInt(this.durationMs / 3600000) + 1;
+            this.durationMaxHour = (durationHour > this.config.maxRunHour) ? durationHour : this.config.maxRunHour;
+
+            this.$nextTick(() => {
+                $('[data-toggle="popover"]').popover('destroy');
+                $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#config-container' });
+                this.$refs.rampUp.updateRampUpChart();
+            });
         }
 
         changeMaxAgentCount() {
@@ -303,6 +307,18 @@
             this.scripts = scripts;
         }
 
+        getScripts() {
+            this.$http.get('/perftest/api/script').then(res => {
+                if (!this.ngrinder.config.clustered) {
+                    this.test.region = 'NONE';
+                }
+                this.setScripts(res.data, this.test.scriptName);
+                this.$nextTick(() => {
+                    this.$refs.scriptSelect.selectValue(this.test.scriptName);
+                });
+            }).catch(() => this.showErrorMsg(this.i18n('navigator.script')));
+        }
+
         getScriptResource() {
             if (!this.test.scriptName) {
                 return;
@@ -312,33 +328,22 @@
                 params: {
                     scriptPath: this.test.scriptName,
                 },
-            }).then(res => {
-                this.resources = res.data.resources;
-            }).catch(error => console.error(error));
-        }
-
-        finishDataLoad() {
-            this.dataLoadFinished = true;
-            const durationHour = parseInt(this.durationMs / 3600000) + 1;
-            this.durationMaxHour = (durationHour > this.config.maxRunHour) ? durationHour : this.config.maxRunHour;
-            this.$nextTick(() => {
-                $('[data-toggle="popover"]').popover('destroy');
-                $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#config-container' });
-                this.$refs.rampUp.updateRampUpChart();
-            });
+            })
+            .then(res => this.resources = res.data.resources)
+            .catch(() => this.showErrorMsg(this.i18n('perfTest.config.scriptResources')));
         }
 
         setCustomValidationRules() {
             this.$validator.extend('agentCountValidation', {
-                getMessage: this.i18n('common.message.validate.max', { maxValue: this.maxAgentCount }),
+                getMessage: () => this.i18n('common.message.validate.max', { maxValue: this.maxAgentCount }),
                 validate: agentCount => agentCount <= this.maxAgentCount,
             });
 
             this.$validator.extend('scriptValidation', {
                 getMessage: this.i18n('perfTest.message.script'),
                 validate: () => {
-                    if (this.$refs.scriptName) {
-                        return this.$refs.scriptName.getSelectedOptionValidate() !== '-1';
+                    if (this.$refs.scriptSelect) {
+                        return this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1';
                     }
                     return true;
                 },

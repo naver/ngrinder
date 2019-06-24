@@ -81,11 +81,13 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import InputAppend from '../common/InputAppend.vue';
     import Select2 from '../common/Select2.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import userDescription from '../common/filter/UserDescriptionFilter';
 
     @Component({
@@ -109,7 +111,7 @@
             validator: 'new',
         },
     })
-    export default class UserInfo extends Base {
+    export default class UserInfo extends Mixins(Base, MessagesMixin) {
         user = {
             userId: '',
             userName: '',
@@ -190,7 +192,7 @@
                 if (result) {
                     this.$http.post(this.formUrl, this.user)
                         .then(() => this.$emit('saved'))
-                        .catch(err => console.error(err));
+                        .catch(() => this.showErrorMsg(this.i18n('user.message.save.error')));
                 }
             });
         }
@@ -211,8 +213,7 @@
                 validate: userId => {
                     if (userId && userId.length > 0) {
                         return this.$http.get(`/sign_up/api/${userId}/check_duplication`)
-                            .then(res => res.data.success)
-                            .catch(error => console.error(error));
+                            .then(res => res.data.success);
                     } else {
                         return false;
                     }
