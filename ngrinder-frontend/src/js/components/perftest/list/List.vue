@@ -151,19 +151,21 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import { Component, Watch } from 'vue-property-decorator';
     import Paginate from 'vuejs-paginate';
     import vueHeadful from 'vue-headful';
     import Base from '../../Base.vue';
     import SearchBar from './Searchbar.vue';
     import IntroButton from '../../common/IntroButton.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import SmallChart from './SmallChart.vue';
 
     @Component({
         name: 'perfTestList',
         components: { IntroButton, vueHeadful, SearchBar, SmallChart, Paginate },
     })
-    export default class PerfTestList extends Base {
+    export default class PerfTestList extends Mixins(Base, MessagesMixin) {
         THRESHOLD_TYPE_DURATION = 'D';
         COUNT_OF_TEST_PER_PAGE = 10;
 
@@ -181,7 +183,7 @@
         updateStatusTimeoutId = 0;
 
         mounted() {
-            this.getPerfTest();
+            this.getPerfTest({ showErrorMsg: true });
             this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
         }
 
@@ -234,7 +236,7 @@
             return content;
         }
 
-        getPerfTest() {
+        getPerfTest(options) {
             this.$http.get('/perftest/api/list', {
                 params: {
                     'page.page': this.currentPage - 1,
@@ -247,8 +249,12 @@
                 this.tests = res.data.tests;
                 this.totalElements = res.data.totalElements;
                 this.totalActivationPageCount = Math.ceil(this.totalElements / this.COUNT_OF_TEST_PER_PAGE);
-                this.$nextTick(() => this.initPopover());
-            }).catch(error => console.error(error));
+                this.$nextTick(this.initPopover);
+            }).catch(() => {
+                if (options && options.showErrorMsg) {
+                    this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') }));
+                }
+            });
         }
 
         initPopover() {
@@ -296,9 +302,9 @@
                         if (res.data.success) {
                             this.getPerfTest();
                             this.selectAll = false;
-                            alert(this.i18n('perfTest.message.delete.success'));
+                            this.showSuccessMsg(this.i18n('perfTest.message.delete.success'));
                         }
-                    }).catch(() => alert(this.i18n('perfTest.message.delete.error')));
+                    }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.delete.error')));
                 }
             });
         }
@@ -308,9 +314,9 @@
                 if (result) {
                     this.$http.put(`/perftest/api/${id}?action=stop`).then(res => {
                         if (res.data.success) {
-                            alert(this.i18n('perfTest.message.stop.success'));
+                            this.showSuccessMsg(this.i18n('perfTest.message.stop.success'));
                         }
-                    }).catch(() => alert(this.i18n('perfTest.message.stop.error')));
+                    }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error')));
                 }
             });
         }
@@ -347,9 +353,7 @@
                         $ball.attr('data-original-title', status[index].name);
                         $ball.data('popover').options.content = status[index].message;
                     });
-                })
-                .catch(error => console.error(error))
-                .finally(() => this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000));
+                }).finally(() => this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000));
             } else {
                 this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
             }

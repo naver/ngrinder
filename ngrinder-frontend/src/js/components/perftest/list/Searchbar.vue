@@ -34,15 +34,17 @@
     </div>
 </template>
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'searchBar',
         components: { Select2 },
     })
-    export default class SearchBar extends Base {
+    export default class SearchBar extends Mixins(Base, MessagesMixin) {
         searchText = '';
         selectedTag = '';
         userTags = [];
@@ -55,9 +57,10 @@
         }
 
         getUserTags() {
-            this.$http.get('/perftest/api/search_tag').then(res => {
-                this.userTags = res.data;
-            }).catch(error => console.error(error));
+            this.$http.get('/perftest/api/search_tag')
+                .then(res => this.userTags = res.data)
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error',
+                    { content: this.i18n('perfTest.list.tags') })));
         }
     }
 </script>

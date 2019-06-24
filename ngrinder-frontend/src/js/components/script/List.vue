@@ -72,10 +72,11 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import { Component, Watch } from 'vue-property-decorator';
     import VueHeadful from 'vue-headful';
     import FileType from '../../common/file-type';
-
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import Base from '../Base.vue';
     import SearchBar from './SearchBar.vue';
 
@@ -85,16 +86,17 @@
         name: 'scriptList',
         components: { VueHeadful, SearchBar },
     })
-    export default class ScriptList extends Base {
+    export default class ScriptList extends Mixins(Base, MessagesMixin) {
         scripts = [];
         selectAll = false;
 
         mounted() {
-            this.refreshScriptList();
+            this.showProgressBar();
+            this.refreshScriptList(this.hideProgressBar);
             this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
         }
 
-        refreshScriptList() {
+        refreshScriptList(callback) {
             const refresh = scripts => {
                 const list = scripts.map(script => {
                     script.checked = false;
@@ -109,10 +111,20 @@
 
             if (this.$route.name === 'scriptSearch') {
                 this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
-                    .then(res => refresh(res.data));
+                    .then(res => refresh(res.data))
+                    .finally(() => {
+                        if (typeof callback === 'function') {
+                            callback();
+                        }
+                    });
             } else {
                 this.$http.get(`/script/api/${this.currentPath}`)
-                    .then(res => refresh(res.data));
+                    .then(res => refresh(res.data))
+                    .finally(() => {
+                        if (typeof callback === 'function') {
+                            callback();
+                        }
+                    });
             }
         }
 

@@ -11,15 +11,17 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import UserInfo from '../UserInfo.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'userProfileModal',
         components: { UserInfo },
     })
-    export default class UserProfileModal extends ModalBase {
+    export default class UserProfileModal extends Mixins(ModalBase, MessagesMixin) {
         user = {};
         config = {};
         dataLoadFinished = false;
@@ -37,7 +39,7 @@
                     userSecurityEnabled: res.data.userSecurityEnabled,
                 };
                 this.dataLoadFinished = true;
-            }).catch(error => console.error(error));
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }
 

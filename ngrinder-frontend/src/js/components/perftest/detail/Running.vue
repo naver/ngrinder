@@ -115,6 +115,7 @@
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import SamplingTable from './SamplingTable.vue';
     import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
@@ -130,7 +131,7 @@
         },
         components: { ControlGroup, SamplingTable },
     })
-    export default class Running extends Mixins(Base, FormatMixin) {
+    export default class Running extends Mixins(Base, FormatMixin, MessagesMixin) {
         lastSampleStatistics = [];
         cumulativeStatistics = [];
         totalStatistics = { Tests: 0, Errors: 0 };
@@ -183,9 +184,9 @@
                 if (result) {
                     this.$http.put(`/perftest/api/${this.test.id}?action=stop`).then(res => {
                         if (res.data.success) {
-                            alert(this.i18n('perfTest.message.stop.success'));
+                            this.showSuccessMsg(this.i18n('perfTest.message.stop.success'));
                         }
-                    }).catch(() => alert(this.i18n('perfTest.message.stop.error')));
+                    }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error')));
                 }
             });
         }

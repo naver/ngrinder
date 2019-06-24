@@ -80,7 +80,7 @@
                         </div>
                     </div>
                     <input v-if="scheduledTime" type="hidden" name="scheduledTime" :value="scheduledTime">
-                    <input type="hidden" name="status" :value="test.status">
+                    <input type="hidden" name="status" :value="params.testStatus">
                 </div>
             </form>
             <intro-button></intro-button>
@@ -89,6 +89,7 @@
     </div>
 </template>
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import Config from './Config.vue';
@@ -98,6 +99,7 @@
     import IntroButton from '../../common/IntroButton.vue';
     import Select2 from '../../common/Select2.vue';
     import ScheduleModal from '../modal/ScheduleModal.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'perfTestDetail',
@@ -114,7 +116,7 @@
             validator: 'new',
         },
     })
-    export default class PerfTestDetail extends Base {
+    export default class PerfTestDetail extends Mixins(Base, MessagesMixin) {
         config = {};
         test = {
             id: '',
@@ -142,6 +144,10 @@
 
         $testStatusImage = null;
 
+        params = {
+            testStatus: 'SAVED',
+        };
+
         tab = {
             display: {
                 running: false,
@@ -150,19 +156,22 @@
             },
         };
 
-        created() {
+        mounted() {
+            this.showProgressBar();
             if (this.$route.name === 'quickStart') {
                 this.$http.post('/perftest/api/quickstart', {
                     url: this.url,
                     scriptType: this.scriptType,
-                }).then(res => {
-                    this.initPerfTestDetail(res);
-                }).catch(error => console.error(error));
+                })
+                .then(res => this.initPerfTestDetail(res))
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
+                .finally(this.hideProgressBar);
             } else {
                 const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
-                this.$http.get(apiPath).then(res => {
-                    this.initPerfTestDetail(res);
-                }).catch(error => console.error(error));
+                this.$http.get(apiPath)
+                .then(res => this.initPerfTestDetail(res))
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
+                .finally(this.hideProgressBar);
             }
         }
 
@@ -201,9 +210,7 @@
         }
 
         setTabEvent() {
-            $(this.$refs.configTab).on('shown.bs.tab', () => {
-                this.$refs.config.$refs.rampUp.updateRampUpChart();
-            });
+            $(this.$refs.configTab).on('shown.bs.tab', this.$refs.config.$refs.rampUp.updateRampUpChart);
 
             $(this.$refs.runningTab).on('shown.bs.tab', () => {
                 this.$refs.running.tpsChart.plot();
@@ -212,7 +219,7 @@
                 }
             });
 
-            $(this.$refs.reportTab).on('shown.bs.tab', () => this.$refs.report.fetchReportData());
+            $(this.$refs.reportTab).on('shown.bs.tab', this.$refs.report.fetchReportData);
         }
 
         refreshPerftestStatus() {
@@ -232,7 +239,7 @@
                     this.updateTabDisplay();
                 }
                 this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
-            }).catch(error => console.log(error));
+            });
         }
 
         updateStatus(id, statusType, name, icon, deletable, stoppable, message) {
@@ -293,7 +300,7 @@
             }).then(res => {
                 res.data.forEach(tag => data.results.push({ id: tag, text: tag }));
                 query.callback(data);
-            }).catch(error => console.log(error));
+            });
         }
 
         clonePerftest() {
@@ -305,7 +312,7 @@
                 if (this.errors.any()) {
                     this.$refs.configTab.click();
                 } else {
-                    this.test.status = 'SAVED';
+                    this.params.testStatus = 'SAVED';
                     this.$nextTick(() => {
                         this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
                             if (res.data === 'list') {
@@ -313,7 +320,7 @@
                             } else {
                                 this.$router.push(`/perftest/${res.data}`);
                             }
-                        }).catch(error => console.log(error));
+                        }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
                     });
                 }
             });
@@ -335,13 +342,15 @@
 
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
-            this.test.status = 'READY';
+            this.params.testStatus = 'READY';
             this.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize())
-                    .then(res => this.$router.push(`/perftest/${res.data}`))
-                    .catch(error => console.log(error));
+                    .then(res => {
+                        this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
+                        this.$router.push(`/perftest/${res.data}`);
+                    }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.saveAndRun.error')));
             });
         }
 

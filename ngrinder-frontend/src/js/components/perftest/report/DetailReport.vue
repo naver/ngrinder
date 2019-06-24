@@ -125,12 +125,14 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import vueHeadful from 'vue-headful';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import PerfTest from './menu/PerfTest.vue';
     import Monitor from './menu/Monitor.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'detailReport',
@@ -142,7 +144,7 @@
             },
         },
     })
-    export default class DetailReport extends Base {
+    export default class DetailReport extends Mixins(Base, MessagesMixin) {
         props = {};
         test = {
             targetHosts: '',
@@ -156,7 +158,7 @@
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
-            }).catch(error => console.error(error));
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error'), { content: this.i18n('perfTest.report.detailedReport') }));
         }
 
         mounted() {
