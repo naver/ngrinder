@@ -69,7 +69,9 @@
                     </td>
                     <td>
                         <div class="ellipsis" :title="agent.ip">
-                            <a :href="`/agent/${agent.id}`" target="_self" :value="agent.ip" v-text="agent.ip"></a>
+                            <router-link :to="{ name: 'agentDetail', params: { agentId: `${agent.id}` , agentProp: agent } }"
+                                         :value="agent.ip" v-text="agent.ip">
+                            </router-link>
                         </div>
                     </td>
                     <td v-text="agent.port"></td>
