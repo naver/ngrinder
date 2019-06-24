@@ -57,6 +57,10 @@
                 });
         }
 
+        selectValue(value) {
+            $(this.$refs.select2).select2('val', value);
+        }
+
         // for only type 'select'
         getSelectedOptionValidate() {
             return this.$refs.select2.options[this.$refs.select2.options.selectedIndex].dataset.validate;

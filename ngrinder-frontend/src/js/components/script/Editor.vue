@@ -211,7 +211,7 @@
                 this.saved = true;
                 this.$router.push(`/script/list/${res.data}`);
             })
-            .catch(err => console.error(err));
+            .catch(() => this.showErrorMsg(this.i18n('script.message.save.error')));
         }
 
         validate() {
@@ -234,7 +234,7 @@
                 this.validationResult = res.data;
                 this.validated = true;
             })
-            .catch(() => console.log(this.i18n('script.editor.error.validate')))
+            .catch(() => this.showErrorMsg(this.i18n('script.editor.error.validate')))
             .finally(() => {
                 this.hideProgressBar();
                 this.validating = false;

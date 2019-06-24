@@ -43,6 +43,7 @@
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../../Base.vue';
+    import MessagesMixin from '../../../common/mixin/MessagesMixin.vue';
     import MenuChartMixin from './MenuChartMixin.vue';
 
     @Component({
@@ -54,7 +55,7 @@
             },
         },
     })
-    export default class PerfTest extends Mixins(Base, MenuChartMixin) {
+    export default class PerfTest extends Mixins(Base, MenuChartMixin, MessagesMixin) {
         optionalChart = {
             meantimeToFirstByte: true,
             userDefinedChart: true,
@@ -79,14 +80,15 @@
                     { labels: res.data.User_defined.labels }, { displayFlags: this.optionalChart, key: 'userDefinedChart' });
 
                 this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
-            }).catch(error => console.error(error));
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
 
             $('[data-toggle="popover"]').popover('destroy');
             $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#tps-title' });
         }
 
         downloadCSV() {
-            this.$http.get(`/perftest/${this.id}/download_csv`).catch(error => console.error(error));
+            this.$http.get(`/perftest/${this.id}/download_csv`)
+                .catch(() => this.showErrorMsg(this.i18n('perfTest.message.downloadCSV.error')));
         }
     }
 </script>
