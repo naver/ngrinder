@@ -17,7 +17,6 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -44,14 +43,13 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Get the agent detail info for the given agent id.
 	 *
+	 * @param user  current user
 	 * @param id    agent id
-	 * @param model model
 	 * @return agent/agentDetail
 	 */
 	@RequestMapping("/{id}")
-	public String getOne(@PathVariable Long id, ModelMap model) {
-		model.addAttribute("agent", agentManagerService.getOne(id));
-		return "agent/detail";
+	public String getOne(final User user, @PathVariable Long id) {
+		return "app";
 	}
 
 }
