@@ -96,16 +96,18 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import { Component, Watch } from 'vue-property-decorator';
     import vueHeadful from 'vue-headful';
     import Paginate from 'vuejs-paginate';
     import Base from '../Base.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'userList',
         components: { vueHeadful, Paginate },
     })
-    export default class UserList extends Base {
+    export default class UserList extends Mixins(Base, MessagesMixin) {
         roles = [{
             name: null,
             fullName: this.i18n('user.left.all'),
@@ -144,7 +146,8 @@
                 if (this.$route.query.role) {
                     this.role = this.roles.find(role => role.name === this.$route.query.role);
                 }
-            });
+            })
+            .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
 
         loadUsers() {
@@ -166,7 +169,8 @@
                 this.page.totalPages = res.data.totalPages;
 
                 this.selectAll = false;
-            });
+            })
+            .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.user') })));
         }
 
         search() {
@@ -197,7 +201,8 @@
                 result => {
                     if (result) {
                         this.$http.delete('/user/api/', { params: { userIds } })
-                            .then(() => this.loadUsers());
+                            .then(this.loadUsers)
+                            .catch(() => this.showErrorMsg(this.i18n('user.message.delete.error')));
                     }
                 });
         }

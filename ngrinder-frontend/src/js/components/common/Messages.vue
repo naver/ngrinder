@@ -48,6 +48,7 @@
         }
 
         showMsg(color, message) {
+            message = message || '';
             this.showMsgDiv = false;
             this.msgClass = color;
             this.alertMessage = message;
@@ -61,18 +62,20 @@
         }
 
         showSuccessMsg(msg) {
+            msg = msg || '';
             this.showMsg('alert-success', msg);
         }
 
         showErrorMsg(msg) {
+            msg = msg || '';
             this.showErrMsgDiv = false;
             this.errMessage = msg;
             this.showErrMsgDiv = true;
         }
 
         showProgressBar(msg) {
+            msg = msg || 'Loading...';
             this.showPrgDiv = true;
-            this.progressMessage = '';
             this.progressMessage = msg;
         }
 
