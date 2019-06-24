@@ -48,5 +48,16 @@
                 return `${(value / 1073741824).toFixed(3)}G `;
             }
         }
+
+        formatMemory(format, value) {
+            value = value || 0;
+            if (value < 1024) {
+                return `${value.toFixed(1)}K `;
+            } else if (value < 1048576) { // 1024 * 1024
+                return `${(value / 1024).toFixed(1)}M `;
+            } else {
+                return `${(value / 1048576).toFixed(2)}G `;
+            }
+        }
     }
 </script>
