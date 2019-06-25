@@ -92,7 +92,6 @@
                 :next-text="`${i18n('common.paging.next')} →`">
             </paginate>
         </div>
-        <sign-up-modal ref="signUpModal"></sign-up-modal>
     </div>
 </template>
 
@@ -101,11 +100,10 @@
     import vueHeadful from 'vue-headful';
     import Paginate from 'vuejs-paginate';
     import Base from '../Base.vue';
-    import SignUpModal from './modal/SignUpModal.vue';
 
     @Component({
         name: 'userList',
-        components: { vueHeadful, SignUpModal, Paginate },
+        components: { vueHeadful, Paginate },
     })
     export default class UserList extends Base {
         roles = [{
