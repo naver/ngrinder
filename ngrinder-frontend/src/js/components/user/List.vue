@@ -71,7 +71,8 @@
                     </router-link>
                 </td>
                 <td class="center">
-                    <a class="pointer-cursor" v-if="!isAdminUser(user)" @click="deleteUsers(user.userId)">
+                    <a class="pointer-cursor" v-if="!isAdminUser(user)"
+                       @click="deleteUsers(user.userId, user.userName)">
                         <i class="icon-remove"></i>
                     </a>
                 </td>
@@ -190,14 +191,23 @@
             this.loadUsers();
         }
 
-        deleteUsers(userIds) {
-            this.$http.delete('/user/api/', { params: { userIds } })
-            .then(() => this.loadUsers());
+        deleteUsers(userIds, names) {
+            bootbox.confirm(
+                `${this.i18n('user.list.confirm.delete')} ${names}?`,
+                this.i18n('common.button.cancel'),
+                this.i18n('common.button.ok'),
+                result => {
+                    if (result) {
+                        this.$http.delete('/user/api/', { params: { userIds } })
+                            .then(() => this.loadUsers());
+                    }
+                });
         }
 
         deleteCheckedUsers() {
             const userIds = this.users.filter(u => u.checked).map(u => u.userId).join(',');
-            this.deleteUsers(userIds);
+            const userNames = this.users.filter(u => u.checked).map(u => u.userName).join(', ');
+            this.deleteUsers(userIds, userNames);
         }
 
         @Watch('role')
