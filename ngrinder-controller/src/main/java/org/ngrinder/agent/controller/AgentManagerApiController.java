@@ -85,7 +85,7 @@ public class AgentManagerApiController extends BaseController {
 		return agentManagerService.getAllVisible()
 			.stream()
 			.filter(agent -> filterAgentByCluster(region, agent.getRegion()))
-			.filter(agent -> filterAgentByUserAuthorityAndId(authorities, user.getUserId(), region, agent.getRegion()))
+			.filter(agent -> filterAgentByUserAuthorityAndUserId(authorities, user.getUserId(), region, agent.getRegion()))
 			.collect(toList());
 	}
 
@@ -104,7 +104,7 @@ public class AgentManagerApiController extends BaseController {
 	/**
 	 * Filter agent list using user authority and user id
 	 */
-	private boolean filterAgentByUserAuthorityAndId(Collection<? extends GrantedAuthority> authorities, String userId, String region, String agentRegion) {
+	private boolean filterAgentByUserAuthorityAndUserId(Collection<? extends GrantedAuthority> authorities, String userId, String region, String agentRegion) {
 		if (isAdminOrSuperUser(authorities)) {
 			return true;
 		}
@@ -142,7 +142,6 @@ public class AgentManagerApiController extends BaseController {
 	 *
 	 * @return json message
 	 */
-
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/state")
 	public HttpEntity<String> getState(@RequestParam String ip, @RequestParam String name, @RequestParam String region) {
