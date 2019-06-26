@@ -15,7 +15,7 @@
     <!-- global setting -->
     <global>
         <params>
-            <param name="options" useDefender="false" />
+            <param name="options" useDefender="false"/>
         </params>
     </global>
 
@@ -24,15 +24,13 @@
         <url-rule>
             <url>/script/api/validate</url>
             <params>
-                <param name="content" useDefender="false" >
-                </param>
+                <param name="content" useDefender="false"/>
             </params>
         </url-rule>
         <url-rule>
             <url>/script/api/save</url>
             <params>
-                <param name="content" useDefender="false" >
-                </param>
+                <param name="content" useDefender="false"/>
             </params>
         </url-rule>
     </url-rule-set>

@@ -9,7 +9,7 @@
                     <div>
                         <span class="input-large uneditable-input span6">
                             <template v-if="basePath !== ''"
-                                      v-for="(each, index) in basePath.split('/')"><!--
+                                      v-for="(each, index) in basePath.split('/')"><!--eslint-disable-next-line vue/valid-v-for--><!--
                                 --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
                                                 v-text="each"></router-link><!--
                                 -->/<!--
@@ -154,8 +154,6 @@
                     if (!res.data.file) {
                         this.$router.push({ path: '/script/' });
                     }
-
-                    res.data.file.content.replace(/&/g, '&amp;');
 
                     Object.assign(this.file, res.data.file);
                     Object.assign(this.scriptHandler, res.data.scriptHandler);
