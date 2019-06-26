@@ -174,7 +174,7 @@
                 this.i18n('common.button.ok'),
                 result => {
                     if (result) {
-                        this.$http.put('/agent/api?action=update', null, this.ids)
+                        this.$http.put('/agent/api?action=update', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.update.success')))
                             .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error')))
                             .finally(() => this.selectedAgents = []);
@@ -190,7 +190,7 @@
                 this.i18n('common.button.ok'),
                 result => {
                     if (result) {
-                        this.$http.post('/agent/api?action=cleanup', null, this.ids)
+                        this.$http.post('/agent/api?action=cleanup', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.cleanup.success')))
                             .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error')))
                             .finally(() => this.selectedAgents = []);
@@ -212,7 +212,7 @@
                 this.i18n('common.button.ok'),
                 result => {
                     if (result) {
-                        this.$http.put('/agent/api?action=stop', null, this.ids)
+                        this.$http.put('/agent/api?action=stop', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.stop.success')))
                             .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error')))
                             .finally(() => this.selectedAgents = []);
@@ -239,7 +239,7 @@
             }
         }
 
-        get ids() {
+        getParams() {
             return { params: { ids: this.selectedAgents.join(',') } };
         }
     }
