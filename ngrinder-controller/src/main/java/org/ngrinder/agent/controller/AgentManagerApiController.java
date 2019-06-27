@@ -55,6 +55,13 @@ public class AgentManagerApiController extends BaseController {
 	private AgentPackageService agentPackageService;
 
 	@RestAPI
+	@GetMapping("/regions")
+	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
+	public List<String> getAvailableRegions(final User user) {
+		return availRegions();
+	}
+
+	@RestAPI
 	@GetMapping("/download_link")
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public String getDownloadLink(final User user,  @RequestParam(value = "region", required = false) final String region) {
