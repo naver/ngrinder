@@ -18,7 +18,6 @@
 </div>
 
 <script>
-    const visibleRegions = '{{ visibleRegions }}';
     window.ngrinder = {
         version: '{{ version }}',
         currentUser: {
@@ -35,7 +34,6 @@
         },
         config: {
             signUpEnabled : {{{ signUpEnabled }}},
-            visibleRegions: {{{ visibleRegions }}},
             clustered: {{{ clustered }}},
             userSwitchMode: !!('{{ currentUser.ownerUser }}'),
             helpUrl: '{{ helpUrl }}',
