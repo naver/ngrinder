@@ -171,15 +171,17 @@ public class FileEntryApiController extends BaseController {
 		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
 		FileEntry entry;
 		if (scriptHandler instanceof ProjectHandler) {
+			path += isEmpty(path) ? "" : "/";
+
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResource, options);
 				return of(
 					"message", fileName + " project is created.",
-					"path", "/script/list/" + encodePathWithUTF8(path) + "/" + fileName);
+					"path", "/script/list/" + encodePathWithUTF8(path) + fileName);
 			} else {
 				return of(
 					"message", fileName + " is already existing. Please choose the different name",
-					"path", "/script/list/" + encodePathWithUTF8(path) + "/");
+					"path", "/script/list/" + encodePathWithUTF8(path));
 			}
 
 		} else {
