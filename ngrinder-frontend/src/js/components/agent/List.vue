@@ -130,7 +130,7 @@
         updateStatesTimer = null;
 
         created() {
-            this.regions = this.ngrinder.config.visibleRegions;
+            this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
             this.region = this.$route.query.region || this.region;
 
             this.updateDownloadLink();

@@ -20,7 +20,7 @@
                 <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
                     <a class="clickable" v-text="i18n('navigator.dropDown.downloadAgent')"></a>
                     <ul class="dropdown-menu">
-                        <li v-for="region in ngrinder.config.visibleRegions">
+                        <li v-for="region in regions">
                             <a :href="`/agent/download?region=${region}`" v-text="region"></a>
                         </li>
                     </ul>
@@ -33,7 +33,7 @@
                 <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
                     <a class="clickable" v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></a>
                     <ul class="dropdown-menu">
-                        <li v-for="region in ngrinder.config.visibleRegions">
+                        <li v-for="region in regions">
                             <a :href="`/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="region"></a>
                         </li>
                     </ul>
@@ -79,5 +79,11 @@
     @Component({
         name: 'userMenu',
     })
-    export default class UserMenu extends Base {}
+    export default class UserMenu extends Base {
+        regions = [];
+
+        created() {
+            this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
+        }
+    }
 </script>

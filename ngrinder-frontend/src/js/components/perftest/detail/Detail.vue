@@ -168,6 +168,7 @@
 
         initPerfTestDetail(res) {
             this.config = {
+                regions: res.data.regions,
                 regionAgentCountMap: res.data.regionAgentCountMap,
                 rampUpTypes: res.data.availRampUpType,
                 maxRunCount: res.data.maxRunCount,
