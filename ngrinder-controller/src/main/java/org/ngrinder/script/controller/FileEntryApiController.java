@@ -32,6 +32,7 @@ import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.NullScriptHandler;
 import org.ngrinder.script.handler.ProjectHandler;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
@@ -219,6 +220,7 @@ public class FileEntryApiController extends BaseController {
 	 * @return detail view properties
 	 */
 	@GetMapping("/detail/**")
+	@SuppressWarnings("SpellCheckingInspection")
 	public Map<String, Object> getOne(User user,
 									  @RemainedPath String path,
 									  @RequestParam(value = "r", required = false) Long revision) {
@@ -228,9 +230,16 @@ public class FileEntryApiController extends BaseController {
 			return of();
 		}
 
+		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(script);
+		String codemirrorKey = scriptHandler.getCodemirrorKey();
+		if (scriptHandler instanceof NullScriptHandler) {
+			codemirrorKey = ((NullScriptHandler) scriptHandler).getCodemirrorKey(script.getFileType());
+		}
+
 		return of(
 			"file", script,
-			"scriptHandler", fileEntryService.getScriptHandler(script)
+			"scriptHandler", scriptHandler,
+			"codemirrorKey", codemirrorKey
 		);
 	}
 
