@@ -1,11 +1,8 @@
 package org.ngrinder.common.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.region.service.RegionService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,15 +26,10 @@ public class GlobalControllerAdvice {
 	private AnnouncementService announcementService;
 
 	@Autowired
-	private RegionService regionService;
-
-	@Autowired
 	private PerfTestService perfTestService;
 
 	@Autowired
 	private Config config;
-
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@ModelAttribute
     public void globalAttributes(Model model) {
@@ -47,12 +39,6 @@ public class GlobalControllerAdvice {
 		model.addAttribute("signUpEnabled", config.isSignUpEnabled());
 		model.addAttribute("hasNewAnnouncement", announcementService.isNew());
 		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-
-		try {
-			model.addAttribute("visibleRegions", objectMapper.writeValueAsString(regionService.getAllVisibleRegionNames()));
-		} catch (JsonProcessingException e) {
-			noOp();
-		}
 
 		try {
 			model.addAttribute("currentUser", userContext.getCurrentUser());
