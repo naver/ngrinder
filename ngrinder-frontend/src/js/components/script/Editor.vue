@@ -18,12 +18,13 @@
                     </div>
                     <div>
                         <template v-if="scriptHandler && scriptHandler.validatable">
-                            <a class="pointer-cursor btn btn-success" v-on:click="save"
+                            <a class="pointer-cursor btn btn-success" @click="save"
                                v-text="i18n('common.button.save')"></a>
-                            <a class="pointer-cursor btn btn-primary" v-on:click="validate"
+                            <a class="pointer-cursor btn btn-primary" @click="validate"
                                v-text="i18n('script.editor.button.validate')"></a>
                         </template>
-                        <a v-else class="pointer-cursor btn btn-success" v-text="i18n('common.button.save')"></a>
+                        <a v-else class="pointer-cursor btn btn-success" @click="save"
+                           v-text="i18n('common.button.save')"></a>
                     </div>
                 </div>
                 <div class="flex-box">
@@ -44,10 +45,11 @@
                              :data-content="i18n('perfTest.config.targetHost.help')"
                              data-html="true"
                              data-placement="bottom">
-                            <span v-for="host in targetHosts">
+                            <span v-for="(host, index) in targetHosts">
                                 <p class="host">
                                     <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                    <a class="pointer-cursor"><i class="icon-remove-circle" @click="removeHost(host)"></i></a>
+                                    <a class="pointer-cursor"><i class="icon-remove-circle"
+                                                                 @click="targetHosts.splice(index, 1)"></i></a>
                                 </p>
                                 <br>
                             </span>
@@ -114,9 +116,7 @@
 
         createLibAndResource = false;
 
-        // to use Set object reactively in vue
-        targetHostsChangeTracker = 1;
-        targetHostSet = new Set();
+        targetHosts = [];
         targetHostIp = '';
 
         editorSize = 0;
@@ -157,8 +157,11 @@
 
                     Object.assign(this.file, res.data.file);
                     Object.assign(this.scriptHandler, res.data.scriptHandler);
+                    this.scriptHandler.codemirrorKey = res.data.codemirrorKey;
 
-                    this.file.properties.targetHosts.split(',').filter(s => s).forEach(host => this.addHost(host));
+                    if (this.file.properties.targetHosts) {
+                        this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
+                    }
 
                     this.validated = this.file.validated;
 
@@ -238,18 +241,11 @@
             });
         }
 
-        get targetHosts() {
-            return this.targetHostsChangeTracker && Array.from(this.targetHostSet);
-        }
-
-        addHost(host) {
-            this.targetHostSet.add(host);
-            this.targetHostsChangeTracker += 1;
-        }
-
-        removeHost(host) {
-            this.targetHostSet.delete(host);
-            this.targetHostsChangeTracker += 1;
+        addHost(newHost) {
+            if (this.targetHosts.some(host => host === newHost)) {
+                return;
+            }
+            this.targetHost.push(newHost);
         }
 
         showTargetHostInfoModal(host) {
@@ -303,7 +299,7 @@
 
         unload = () => {
             if (!this.changed()) {
-                return;
+                return null;
             }
             return this.i18n('script.editor.message.exitWithoutSave');
         }
