@@ -247,7 +247,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param file file path
 	 */
 	private void fileAccessWriteAllowed(String file) {
-		if (file != null && (file.contains("log/test_") || file.contains("log\\test_"))) {
+		if (isAgentWorkerLogFile(file)) {
 			return;
 		}
 
@@ -267,6 +267,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param file file path
 	 */
 	private void fileAccessDeleteAllowed(String file) {
+		if (isAgentWorkerLogFile(file)) {
+			return;
+		}
+
 		String filePath = normalize(file, workDirectory);
 		for (String dir : deleteAllowedDirectory) {
 			if (filePath != null && filePath.startsWith(dir)) {
@@ -289,6 +293,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 	@Override
 	public void checkConnect(String host, int port, Object context) {
 		this.netWorkAccessAllowed(host);
+	}
+
+	private boolean isAgentWorkerLogFile(String file) {
+		return file != null && (file.contains("log/test_") || file.contains("log\\test_"));
 	}
 
 	private String normalize(String filename, String workingDirectory) {
