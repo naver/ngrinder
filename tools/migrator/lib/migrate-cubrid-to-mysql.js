@@ -5,7 +5,8 @@ var Cubrid = require('node-cubrid'),
     Result2Array = Cubrid.Result2Array,
     GenericPool = require('generic-pool'),
     Mysql = require('mysql'),
-    EventEmitter = require("events").EventEmitter;
+    EventEmitter = require('events').EventEmitter,
+    fs = require('fs');
 var Q = require('q');
 
 /**
@@ -64,12 +65,27 @@ Migrator.prototype = {
     _aFailureCount: [],
     _aTotalCount: [],
 
+    _htExcludeFields: {},
+
     init: function (htCubrid, htMysql) {
         this._htCubrid = htCubrid || this._htCubrid;
         this._htMysql = htMysql || this._htMysql;
 
         this._connectToCubrid();
         this._connectToMysql();
+
+        var excludeFieldsPath = './exclude-fields.json';
+        if (fs.existsSync(excludeFieldsPath)) {
+            console.log('');
+            console.log('These fields will be removed in migrated database.');
+
+            this._htExcludeFields = JSON.parse(fs.readFileSync(excludeFieldsPath));
+            for (var key in this._htExcludeFields) {
+                console.log(key + ': ' + this._htExcludeFields[key]);
+            }
+
+            console.log('');
+        }
     },
     _connectToCubrid: function () {
         var self = this;
@@ -243,6 +259,8 @@ Migrator.prototype = {
         }
         for (var i = 0, nLen = aData.length; i < nLen; i++) {
             var htData = this._makeHtData(aColumn, aData[i]);
+            htData = this._excludeHtData(htData, sToTablename);
+
             this._oMysql.query('INSERT INTO ' + sToTablename + ' SET ?', htData, function (err, aInnerResult) {
                 if (err) {
                     console.log('Error while insert', err);
@@ -269,6 +287,15 @@ Migrator.prototype = {
         for (var i = 0, nCnt = aColumn.length; i < nCnt; i++) {
             htData[aColumn[i]] = aData[i];
         }
+        return htData;
+    },
+
+    _excludeHtData: function (htData, sToTablename) {
+        var aExcludes = this._htExcludeFields[sToTablename] || [];
+        for (var i = 0, nCnt = aExcludes.length; i < nCnt; i++) {
+            delete htData[aExcludes[i]];
+        }
+
         return htData;
     }
 };
