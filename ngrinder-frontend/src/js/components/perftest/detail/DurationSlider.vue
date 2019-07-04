@@ -72,9 +72,9 @@
             this.$emit('change', durationSec);
         }
 
-        initSliderFromDurationMs(durtaionMs) {
+        initSliderFromDurationMs(durationMs) {
             for (let i = 0; i <= this.sliderMax; i++) {
-                if (this.durationMap[i] * 60000 >= durtaionMs) {
+                if (this.durationMap[i] * 60000 >= durationMs) {
                     this.value = i;
                     break;
                 }

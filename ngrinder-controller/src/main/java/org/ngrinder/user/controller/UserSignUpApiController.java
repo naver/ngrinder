@@ -20,7 +20,6 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
@@ -35,7 +34,7 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
  */
 @RestController
 @RequestMapping("/sign_up/api")
-public class UserSignUpApiController extends UserController {
+public class UserSignUpApiController extends UserApiController {
 
 	@Autowired
 	private UserService userService;
@@ -48,7 +47,7 @@ public class UserSignUpApiController extends UserController {
 	 */
 	@RestAPI
 	@GetMapping("/new")
-	public HttpEntity<String> signUpInfo() {
+	public Map<String, Object> signUpInfo() {
 		Map<String, Object> model = new HashMap<>();
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		User one = User.createNew();
@@ -61,7 +60,7 @@ public class UserSignUpApiController extends UserController {
 		model.put("allowShareChange", false);
 		model.put("showPasswordByDefault", true);
 		model.put("newUser", true);
-		return toJsonHttpEntity(model);
+		return model;
 	}
 
 	/**
@@ -77,5 +76,59 @@ public class UserSignUpApiController extends UserController {
 		newUser.setRole(Role.USER);
 		userService.createUser(newUser);
 		return returnSuccess();
+	}
+
+
+	/**
+	 * To block security issue.
+	 *
+	 * @deprecated
+	 */
+	@Override
+	@GetMapping("/new_remap")
+	public Map<String, Object> openForm(User user) {
+		return null;
+	}
+
+	/**
+	 * To block security issue.
+	 *
+	 * @param user        current user
+	 * @param updatedUser user to be updated.
+	 * @return
+	 * @deprecated
+	 */
+	@Override
+	@GetMapping("/save_remap")
+	public String save(User user, @ModelAttribute("user") User updatedUser) {
+		return null;
+	}
+
+	/**
+	 * To block security issue.
+	 *
+	 * @param userId userId to be checked
+	 * @return
+	 * @deprecated
+	 */
+	@Override
+	@RestAPI
+	@GetMapping("/{userId}/check_duplication_remap")
+	public Map<String, Boolean> checkDuplication(@PathVariable String userId) {
+		return null;
+	}
+
+	/**
+	 * Check the user id existence.
+	 *
+	 * @param userId userId to be checked
+	 * @return success json if true.
+	 */
+	@RestAPI
+	@GetMapping("/{userId}/check_duplication")
+	public Map<String, Boolean> checkDuplicationForRegistration(@PathVariable String userId) {
+		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
+		User user = userService.getOne(userId);
+		return (user == null) ? successJson() : errorJson();
 	}
 }

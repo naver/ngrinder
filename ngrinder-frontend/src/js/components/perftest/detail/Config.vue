@@ -265,7 +265,7 @@
             this.changeMaxAgentCount();
             this.initDurationFromDurationStr();
             this.changeDuration();
-            this.setTargetHost(this.test.targetHosts);
+            this.setTargetHosts(this.test.targetHosts);
             this.getScriptResource();
         }
 
@@ -283,7 +283,7 @@
 
         changeMaxAgentCount() {
             if (this.test.region && this.config.regionAgentCountMap[this.test.region]) {
-                this.maxAgentCount = this.config.regionAgentCountMap[this.test.region].value;
+                this.maxAgentCount = this.config.regionAgentCountMap[this.test.region];
                 return;
             }
             this.maxAgentCount = 0;
@@ -410,11 +410,11 @@
             this.targetHosts.push(newHost);
         }
 
-        setTargetHost(targetHost) {
-            if (!targetHost) {
+        setTargetHosts(targetHosts) {
+            if (!targetHosts) {
                 return;
             }
-            targetHost.split(',').forEach(host => this.targetHosts.push(host));
+            targetHosts.split(',').forEach(host => this.targetHosts.push(host));
         }
 
         showTargetHostInfoModal(host) {

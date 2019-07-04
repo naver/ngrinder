@@ -81,7 +81,7 @@ public class UserApiController extends BaseController {
 	 * @param user current user
 	 * @return app
 	 */
-	@RequestMapping("/new")
+	@GetMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public Map<String, Object> openForm(User user) {
 		User one = User.createNew();
@@ -120,7 +120,7 @@ public class UserApiController extends BaseController {
 	}
 
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping({"/list", "/list/"})
+	@GetMapping({"/list", "/list/"})
 	public Page<User> getAll(@RequestParam(required = false) Role role,
 							 @PageableDefault(page = 0, size = 10) Pageable pageable,
 							 @RequestParam(required = false) String keywords) {
@@ -160,7 +160,7 @@ public class UserApiController extends BaseController {
 	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
-	@RequestMapping("/save")
+	@PostMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
 	public String save(User user, @RequestBody User updatedUser) {
 		checkArgument(updatedUser.validate());
@@ -219,7 +219,7 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/{userId}/check_duplication")
+	@GetMapping("/{userId}/check_duplication")
 	public Map<String, Boolean> checkDuplication(@PathVariable String userId) {
 		User user = userService.getOne(userId);
 		return (user == null) ? successJson() : errorJson();
@@ -233,9 +233,9 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
-	public HttpEntity<String> getAll(Role role) {
-		return toJsonHttpEntity(userService.getAll(role));
+	@GetMapping({"/", ""})
+	public List<User> getAll(Role role) {
+		return userService.getAll(role);
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
+	@GetMapping("/{userId}")
 	public User getOne(@PathVariable("userId") String userId) {
 		return userService.getOne(userId);
 	}
@@ -259,10 +259,10 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = {"/", ""}, method = RequestMethod.POST)
-	public HttpEntity<String> create(@ModelAttribute("user") User newUser) {
+	@PostMapping({"/", ""})
+	public User create(@ModelAttribute("user") User newUser) {
 		checkNull(newUser.getId(), "User DB ID should be null");
-		return toJsonHttpEntity(save(newUser));
+		return save(newUser);
 	}
 
 	/**
@@ -274,11 +274,11 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
-	public HttpEntity<String> update(@PathVariable("userId") String userId, User update) {
+	@PutMapping("/{userId}")
+	public User update(@PathVariable("userId") String userId, User update) {
 		update.setUserId(userId);
 		checkNull(update.getId(), "User DB ID should be null");
-		return toJsonHttpEntity(save(update));
+		return save(update);
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class UserApiController extends BaseController {
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
+	@DeleteMapping("/{userId}")
 	public Map<String, Boolean> delete(User user, @PathVariable("userId") String userId) {
 		if (!user.getUserId().equals(userId)) {
 			userService.delete(userId);
@@ -305,7 +305,7 @@ public class UserApiController extends BaseController {
 	 * @return json message
 	 */
 	@RestAPI
-	@RequestMapping(value = "/search", method = RequestMethod.GET)
+	@GetMapping("/search")
 	public List<User> search(User user,
 							 @PageableDefault Pageable pageable,
 							 @RequestParam String keywords) {

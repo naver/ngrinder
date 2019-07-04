@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.controller;
 
@@ -19,7 +19,6 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +37,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 @RequestMapping("/monitor/api")
 public class MonitorManagerApiController extends BaseController {
 
+	private static final ExecutorService executorService = Executors.newCachedThreadPool();
+
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
@@ -49,14 +50,10 @@ public class MonitorManagerApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/state")
-	public HttpEntity<String> getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
-		Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
-			@Override
-			public SystemInfo call() {
-				return monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort());
-			}
-		});
-		SystemInfo systemInfo = checkNotNull(submit.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
-		return toJsonHttpEntity(new SystemDataModel(systemInfo, "UNKNOWN"));
+	public SystemDataModel getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
+		int port = getConfig().getMonitorPort();
+		Future<SystemInfo> systemInfoFuture = executorService.submit(() -> monitorInfoStore.getSystemInfo(ip, port));
+		SystemInfo systemInfo = checkNotNull(systemInfoFuture.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
+		return new SystemDataModel(systemInfo, "UNKNOWN");
 	}
 }

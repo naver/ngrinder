@@ -127,14 +127,18 @@
         config = {};
         test = {
             id: '',
-            status: '',
-            iconName: '',
+            status: {
+                name: '',
+                iconName: '',
+                springMessageKey: '',
+            },
             testName: '',
             progressMessage: '',
             description: '',
-            createdUserId: '',
+            createdUser: {
+                userId: '',
+            },
             lastProgressMessage: '',
-            springMessageKey: '',
         };
 
         perftestStatus = {
@@ -178,7 +182,7 @@
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
                 .finally(this.hideProgressBar);
             } else {
-                const apiPath = this.id ? `/perftest/api/${this.id}` : '/perftest/api/create';
+                const apiPath = this.id ? `/perftest/api/${this.id}/detail` : '/perftest/api/create';
                 this.$http.get(apiPath)
                 .then(res => this.initPerfTestDetail(res))
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
@@ -197,15 +201,15 @@
             };
             this.test = res.data.test;
             this.timezoneOffset = res.data.timezone_offset;
-            this.isClone = this.test.status !== 'SAVED';
-            this.perftestStatus.iconPath = `/img/ball/${this.test.iconName}`;
-            if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
+            this.isClone = this.test.status.name !== 'SAVED';
+            this.perftestStatus.iconPath = `/img/ball/${this.test.status.iconName}`;
+            if (this.ngrinder.config.clustered && this.test.region.name === 'NONE') {
                 this.test.region = '';
             }
             this.dataLoadFinished = true;
             this.updateTabDisplay();
             this.$nextTick(() => {
-                if (this.test.category === 'TESTING') {
+                if (this.test.status.category === 'TESTING') {
                     this.$refs.running.startSamplingInterval();
                 }
                 this.$testStatusImage = $(this.$refs.testStatusImage);
@@ -242,12 +246,12 @@
             this.$http.get(`/perftest/api/${this.test.id}/status`).then(res => {
                 const status = res.data.status[0];
 
-                if (this.test.status !== status.status_id) {
-                    this.test.status = status.status_id;
+                if (this.test.status.name !== status.status_id) {
+                    this.test.status.name = status.status_id;
                     this.updateStatus(status.status_id, status.status_type, status.name, status.icon, status.deletable, status.stoppable, status.message);
                 }
-                if (this.test.category !== status.status_type) {
-                    this.test.category = status.status_type;
+                if (this.test.status.category !== status.status_type) {
+                    this.test.status.category = status.status_type;
                     this.updateTabDisplay();
                 }
                 this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
@@ -269,7 +273,7 @@
 
         updateTabDisplay() {
             this.tab.display.config = true;
-            if (this.test.category === 'TESTING') {
+            if (this.test.status.category === 'TESTING') {
                 this.tab.display.running = true;
                 this.tab.display.report = false;
                 this.$nextTick(() => this.$refs.runningTab.click());
@@ -286,7 +290,10 @@
         }
 
         isUpdatableStatus() {
-            return !(this.test.category === 'FINISHED' || this.test.category === 'STOP' || this.test.category === 'ERROR' || this.test.category === 'CANCELED');
+            return !(this.test.status.category === 'FINISHED' ||
+                this.test.status.category === 'STOP' ||
+                this.test.status.category === 'ERROR' ||
+                this.test.status.category === 'CANCELED');
         }
 
         initSelection(element, callback) {
@@ -371,11 +378,11 @@
         }
 
         get switchUserTitle() {
-            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdUserName} (${this.test.createdUserId})`;
+            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdUser.userName} (${this.test.createdUser.userId})`;
         }
 
         get disabled() {
-            return this.test.createdUserId !== this.ngrinder.currentUser.factualUser.id;
+            return this.test.createdUser.userId !== this.ngrinder.currentUser.factualUser.id;
         }
     }
 </script>
