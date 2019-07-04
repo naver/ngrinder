@@ -31,6 +31,7 @@ import org.springframework.http.HttpEntity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -162,11 +163,11 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testDuplication() {
 		BaseController ngrinderBaseController = new BaseController();
-		HttpEntity<String> rtnStr = userApiController.checkDuplication("not-exist");
-		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
+		Map<String, Boolean> returnJson = userApiController.checkDuplication("not-exist");
+		assertThat(returnJson, is(ngrinderBaseController.successJson()));
 
-		rtnStr = userApiController.checkDuplication(getTestUser().getUserId());
-		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnError()));
+		returnJson = userApiController.checkDuplication(getTestUser().getUserId());
+		assertThat(returnJson, is(ngrinderBaseController.errorJson()));
 	}
 
 	@Test

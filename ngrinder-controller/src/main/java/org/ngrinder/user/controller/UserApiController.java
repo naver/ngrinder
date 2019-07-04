@@ -201,14 +201,14 @@ public class UserApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping({"", "/"})
-	public HttpEntity<String> deleteUsers(User user, @RequestParam String userIds) {
+	public Map<String, Boolean> deleteUsers(User user, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
 		for (String eachId : ids) {
 			if (!user.getUserId().equals(eachId)) {
 				userService.delete(eachId);
 			}
 		}
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -220,9 +220,9 @@ public class UserApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/{userId}/check_duplication")
-	public HttpEntity<String> checkDuplication(@PathVariable String userId) {
+	public Map<String, Boolean> checkDuplication(@PathVariable String userId) {
 		User user = userService.getOne(userId);
-		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
+		return (user == null) ? successJson() : errorJson();
 	}
 
 	/**
@@ -290,11 +290,11 @@ public class UserApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(User user, @PathVariable("userId") String userId) {
+	public Map<String, Boolean> delete(User user, @PathVariable("userId") String userId) {
 		if (!user.getUserId().equals(userId)) {
 			userService.delete(userId);
 		}
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
