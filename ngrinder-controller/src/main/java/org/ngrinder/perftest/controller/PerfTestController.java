@@ -468,11 +468,11 @@ public class PerfTestController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(User user, @PathVariable("id") Long id) {
+	public Map<String, Boolean> delete(User user, @PathVariable("id") Long id) {
 		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id);
 		perfTestService.delete(user, id);
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 

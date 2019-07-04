@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Map;
+
 /**
  * User sign up controller.
  *
@@ -99,9 +101,9 @@ public class UserSignUpController extends UserController {
 	 */
 	@RestAPI
 	@RequestMapping("/api/{userId}/check_duplication")
-	public HttpEntity<String> checkDuplicationForRegistration(@PathVariable String userId) {
+	public Map<String, Boolean> checkDuplicationForRegistration(@PathVariable String userId) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		User user = userService.getOne(userId);
-		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
+		return (user == null) ? successJson() : errorJson();
 	}
 }

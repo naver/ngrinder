@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 3.5.0
@@ -135,9 +136,9 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PostMapping(value = "", params = "action=cleanup")
-	public HttpEntity<String> cleanUpAgentsInInactiveRegion() {
+	public Map<String, Boolean> cleanUpAgentsInInactiveRegion() {
 		agentManagerService.cleanup();
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -188,9 +189,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=approve")
-	public HttpEntity<String> approve(@PathVariable("id") Long id) {
+	public Map<String, Boolean> approve(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, true);
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -202,9 +203,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=disapprove")
-	public HttpEntity<String> disapprove(@PathVariable("id") Long id) {
+	public Map<String, Boolean> disapprove(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, false);
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -216,9 +217,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=stop")
-	public HttpEntity<String> stop(@PathVariable("id") Long id) {
+	public Map<String, Boolean> stop(@PathVariable("id") Long id) {
 		agentManagerService.stopAgent(id);
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -230,12 +231,12 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=stop")
-	public HttpEntity<String> stop(@RequestParam("ids") String ids) {
+	public Map<String, Boolean> stop(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			stop(Long.parseLong(each));
 		}
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -247,9 +248,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=update")
-	public HttpEntity<String> update(@PathVariable("id") Long id) {
+	public Map<String, Boolean> update(@PathVariable("id") Long id) {
 		agentManagerService.update(id);
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**
@@ -261,12 +262,12 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=update")
-	public HttpEntity<String> update(@RequestParam("ids") String ids) {
+	public Map<String, Boolean> update(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			update(Long.parseLong(each));
 		}
-		return successJsonHttpEntity();
+		return successJson();
 	}
 
 	/**

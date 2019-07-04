@@ -24,6 +24,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * System configuration controller.
  *
@@ -69,9 +71,9 @@ public class SystemConfigController extends BaseController {
 	@RestAPI
 	@ResponseBody
 	@PostMapping(value = "/api")
-	public HttpEntity<String> save(@RequestParam String content) {
+	public Map<String, Boolean> save(@RequestParam String content) {
 		systemConfigService.save(checkNotEmpty(content, "content should be " +
 				"passed as parameter"));
-		return successJsonHttpEntity();
+		return successJson();
 	}
 }
