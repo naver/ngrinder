@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.controller;
 
@@ -42,6 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
@@ -302,27 +303,21 @@ public class BaseController implements WebConstants {
 	}
 
 	/**
-	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
+	 * Return success json
 	 *
-	 * @return {@link HttpEntity} class containing the converted json message
+	 * @return Map containing the json message
 	 */
-	public HttpEntity<String> successJsonHttpEntity() {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		responseHeaders.setPragma("no-cache");
-		return toHttpEntity(successJson, responseHeaders);
+	public Map<String, Boolean> successJson() {
+		return of(JSON_SUCCESS, true);
 	}
 
 	/**
-	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
+	 * Return error json
 	 *
-	 * @return {@link HttpEntity} class containing the converted json message
+	 * @return Map containing the json message
 	 */
-	public HttpEntity<String> errorJsonHttpEntity() {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		responseHeaders.setPragma("no-cache");
-		return toHttpEntity(errorJson, responseHeaders);
+	public Map<String, Boolean> errorJson() {
+		return of(JSON_SUCCESS, false);
 	}
 
 	/**
