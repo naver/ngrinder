@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,10 +9,12 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import net.grinder.common.GrinderProperties;
@@ -23,7 +25,6 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtils;
-import org.ngrinder.common.util.PathUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -241,6 +242,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * Console port for this test. This is the identifier for console
 	 */
+	@JsonIgnore
 	@Column(name = "port")
 	private Integer port;
 
@@ -249,6 +251,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause;
 
+	@JsonIgnore
 	@Column(name = "distribution_path")
 	/** The path used for file distribution */
 	private String distributionPath;
@@ -279,17 +282,21 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "region")
 	private String region;
 
+	@JsonIgnore
 	@Column(name = "safe_distribution", columnDefinition = "char(1)")
 	@Cloneable
 	@Type(type = "true_false")
 	private Boolean safeDistribution;
 
+	@JsonIgnore
 	@Transient
 	private String dateString;
 
+	@JsonIgnore
 	@Transient
 	private GrinderProperties grinderProperties;
 
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
 	@JoinTable(name = "PERF_TEST_TAG", /** join column */
 			joinColumns = @JoinColumn(name = "perf_test_id"), /** inverse join column */
@@ -345,7 +352,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.rampUpType = getSafe(this.rampUpType, RampUp.PROCESS);
 	}
 
-
+	@JsonIgnore
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
 	}
@@ -356,6 +363,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 *
 	 * @return run count
 	 */
+	@JsonIgnore
 	public long getTotalRunCount() {
 		return getAgentCount() * getThreads() * getProcesses() * (long) getRunCount();
 	}
@@ -424,14 +432,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.ignoreSampleCount = ignoreSampleCount;
 	}
 
-	public String getScriptNameInShort() {
-		return PathUtils.getShortPath(scriptName);
-	}
-
 	public String getDescription() {
 		return StringUtils.abbreviate(description, MAX_LONG_STRING_SIZE - MARGIN_FOR_ABBREVIATION);
 	}
 
+	@JsonIgnore
 	public String getLastModifiedDateToStr() {
 		return DateUtils.dateToString(getLastModifiedDate());
 	}
@@ -451,6 +456,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 *
 	 * @return host ip list
 	 */
+	@JsonIgnore
 	public List<String> getTargetHostIP() {
 		List<String> targetIPList = new ArrayList<String>();
 		String[] hostsList = StringUtils.split(StringUtils.trimToEmpty(targetHosts), ",");
@@ -473,10 +479,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return threshold;
 	}
 
+	@JsonIgnore
 	public Boolean isThresholdDuration() {
 		return "D".equals(getThreshold());
 	}
 
+	@JsonIgnore
 	public Boolean isThresholdRunCount() {
 		return "R".equals(getThreshold());
 	}
@@ -497,7 +505,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public Status getStatus() {
 		return status;
 	}
-
 
 	public void setStatus(Status status) {
 		this.status = status;
@@ -541,7 +548,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public Integer getRampUpInitSleepTime() {
 		return rampUpInitSleepTime;
 	}
-
 
 	public void setRampUpInitSleepTime(Integer initSleepTime) {
 		this.rampUpInitSleepTime = initSleepTime;
@@ -651,6 +657,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 *
 	 * @return formatted duration string
 	 */
+	@JsonProperty("duration")
 	public String getDurationStr() {
 		return DateUtils.ms2Time(this.duration);
 	}
@@ -660,6 +667,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 *
 	 * @return formatted runtime string
 	 */
+	@JsonProperty("runtime")
 	public String getRuntimeStr() {
 		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
 				- this.startTime.getTime();
@@ -803,7 +811,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return samplingInterval;
 	}
 
-
 	public void setSamplingInterval(Integer samplingInterval) {
 		this.samplingInterval = samplingInterval;
 	}
@@ -814,10 +821,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setParam(String param) {
 		this.param = param;
-	}
-
-	public StatusCategory getStatusCategory() {
-		return status.getCategory();
 	}
 
 	public void prepare(boolean isClone) {
@@ -835,11 +838,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		@Override
 		public JsonElement serialize(PerfTest perfTest, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject jsonObject = (JsonObject) gson.toJsonTree(perfTest);
-			jsonObject.addProperty("iconName", perfTest.getStatusCategory().getIconName());
-			jsonObject.addProperty("deletable", perfTest.getStatusCategory().isDeletable());
-			jsonObject.addProperty("reportable", perfTest.getStatusCategory().isReportable());
-			jsonObject.addProperty("stoppable", perfTest.getStatusCategory().isStoppable());
-			jsonObject.addProperty("category", perfTest.getStatusCategory().toString());
+			jsonObject.addProperty("iconName", perfTest.getStatus().getCategory().getIconName());
+			jsonObject.addProperty("deletable", perfTest.getStatus().getCategory().isDeletable());
+			jsonObject.addProperty("reportable", perfTest.getStatus().getCategory().isReportable());
+			jsonObject.addProperty("stoppable", perfTest.getStatus().getCategory().isStoppable());
+			jsonObject.addProperty("category", perfTest.getStatus().getCategory().toString());
 
 			jsonObject.addProperty("createdUserName", perfTest.getCreatedUser().getUserName());
 			jsonObject.addProperty("createdUserId", perfTest.getLastModifiedUser().getUserId());

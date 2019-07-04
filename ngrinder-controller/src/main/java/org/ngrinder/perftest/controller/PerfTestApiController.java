@@ -27,6 +27,7 @@ import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.*;
 import org.ngrinder.perftest.model.SamplingModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -47,7 +48,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -123,12 +123,12 @@ public class PerfTestApiController extends BaseController {
 	 * @return perftest/list
 	 */
 	@RestAPI
-	@RequestMapping("/list")
-	public HttpEntity<String> getAllList(User user,
-										 @RequestParam(required = false) String query,
-										 @RequestParam(required = false) String tag,
-										 @RequestParam(required = false) String queryFilter,
-										 @PageableDefault Pageable pageable) {
+	@GetMapping("/list")
+	public Map<String, Object> getAllList(User user,
+										  @RequestParam(required = false) String query,
+										  @RequestParam(required = false) String tag,
+										  @RequestParam(required = false) String queryFilter,
+										  @PageableDefault Pageable pageable) {
 		Map<String, Object> result = new HashMap<>();
 		Pair<Page<PerfTest>, Pageable> pair = getPerfTests(user, query, tag, queryFilter, pageable);
 		Page<PerfTest> tests = pair.getFirst();
@@ -143,7 +143,7 @@ public class PerfTestApiController extends BaseController {
 		result.put("createdUserId", user.getUserId());
 		result.put("tests", tests.getContent());
 		putPageIntoModelMap(result, pageable);
-		return toJsonHttpEntity(result);
+		return result;
 	}
 
 	/**
@@ -201,9 +201,9 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/{id}/status")
-	public HttpEntity<String> getStatus(User user, @PathVariable Long id) {
+	public Map<String, Object> getStatus(User user, @PathVariable Long id) {
 		List<PerfTest> perfTests = perfTestService.getAll(user, new Long[]{id});
-		return toJsonHttpEntity(buildMap("status", getStatus(perfTests)));
+		return buildMap("status", getStatus(perfTests));
 	}
 
 	/**
@@ -230,10 +230,10 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/status")
-	public HttpEntity<String> getStatuses(User user, @RequestParam(defaultValue = "") String ids) {
+	public Map<String, Object> getStatuses(User user, @RequestParam(defaultValue = "") String ids) {
 		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
-		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
-			getStatus(perfTests)));
+		return buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(),
+			"status", getStatus(perfTests));
 	}
 
 	/**
@@ -308,16 +308,15 @@ public class PerfTestApiController extends BaseController {
 	 * @return JSON containing script's list.
 	 */
 	@RestAPI
-	@RequestMapping("/script")
-	public HttpEntity<String> getScripts(User user, @RequestParam(required = false) String ownerId) {
+	@GetMapping("/script")
+	public List<FileEntry> getScripts(User user, @RequestParam(required = false) String ownerId) {
 		if (StringUtils.isNotEmpty(ownerId)) {
 			user = userService.getOne(ownerId);
 		}
-		List<FileEntry> scripts = fileEntryService.getAll(user)
+		return fileEntryService.getAll(user)
 			.stream()
 			.filter(input -> input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT)
 			.collect(Collectors.toList());
-		return toJsonHttpEntity(scripts, fileEntryGson);
 	}
 
 	/**
@@ -331,7 +330,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping("/{id}/basic_report")
-	public HttpEntity<String> getReportSection(User user, @PathVariable long id, @RequestParam int imgWidth) {
+	public Map<String, Object> getReportSection(User user, @PathVariable long id, @RequestParam int imgWidth) {
 		Map<String, Object> model = new HashMap<>();
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
@@ -339,12 +338,20 @@ public class PerfTestApiController extends BaseController {
 		model.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.put(PARAM_TEST, test);
 		model.put(PARAM_TPS, perfTestService.getSingleReportDataAsJson(id, "TPS", interval));
-		return toJsonHttpEntity(model);
+		return model;
 	}
 
+	/**
+	 * Get the logs of the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perftest id
+	 * @return log file names
+	 */
 	@RestAPI
 	@GetMapping("/{id}/logs")
-	public List<String> getLogs(@PathVariable long id) {
+	public List<String> getLogs(User user, @PathVariable long id) {
+		getOneWithPermissionCheck(user, id, false);
 		return perfTestService.getLogFiles(id);
 	}
 
@@ -379,11 +386,11 @@ public class PerfTestApiController extends BaseController {
 	 *
 	 * @param user  user
 	 * @param id    perf test id
-	 * @return perftest/detail
+	 * @return attributes for perftest detail
 	 */
 	@RestAPI
-	@GetMapping({"/{id}", "/create"})
-	public HttpEntity<String> getOne(User user, @PathVariable(required = false) Long id) {
+	@GetMapping({"/{id}/detail", "/create"})
+	public Map<String, Object> getOneDetail(User user, @PathVariable(required = false) Long id) {
 		Map<String, Object> model = new HashMap<>();
 		PerfTest test = null;
 		if (id != null) {
@@ -404,7 +411,7 @@ public class PerfTestApiController extends BaseController {
 		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
 		addDefaultAttributeOnModel(model);
-		return toJsonHttpEntity(model);
+		return model;
 	}
 
 	/**
@@ -414,9 +421,9 @@ public class PerfTestApiController extends BaseController {
 	 * @param id   test id
 	 * @return JSON message	containing test,agent and monitor status.
 	 */
-	@RequestMapping(value = "/{id}/sample")
 	@RestAPI
-	public HttpEntity<String> refreshTestRunning(User user, @PathVariable long id) {
+	@GetMapping("/{id}/sample")
+	public Map<String, Object> refreshTestRunning(User user, @PathVariable long id) {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
 		Map<String, Object> map = newHashMap();
 
@@ -432,16 +439,16 @@ public class PerfTestApiController extends BaseController {
 		}
 
 		map.put("status", test.getStatus());
-		return toJsonHttpEntity(map);
+		return map;
 	}
 
 	@RestAPI
 	@GetMapping("/{id}/detail_report")
-	public HttpEntity<String> getReport(@PathVariable long id) {
+	public Map<String, Object> getReport(@PathVariable long id) {
 		Map<String, Object> model = newHashMap();
 		model.put("test", perfTestService.getOne(id));
 		model.put("plugins", perfTestService.getAvailableReportPlugins(id));
-		return toJsonHttpEntity(model);
+		return model;
 	}
 
 	/**
@@ -463,7 +470,7 @@ public class PerfTestApiController extends BaseController {
 	 * Get the perf test creation form for quickStart.
 	 */
 	@PostMapping("/quickstart")
-	public HttpEntity<String> getQuickStart(User user, @RequestBody Map<String, Object> params) {
+	public Map<String, Object> getQuickStart(User user, @RequestBody Map<String, Object> params) {
 		String urlString = cast(params.get("url"));
 		String scriptType = cast(params.get("scriptType"));
 
@@ -474,13 +481,13 @@ public class PerfTestApiController extends BaseController {
 		PerfTest perfTest = createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost());
 		perfTest.setScriptName(newEntry.getPath());
 		perfTest.setScriptRevision(newEntry.getRevision());
-		model.put(PARAM_TEST, perfTest);
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
+//		model.put(PARAM_TEST, perfTest);
+//		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+//		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+//		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
 		addDefaultAttributeOnModel(model);
 
-		return toJsonHttpEntity(model);
+		return model;
 	}
 
 	/**
@@ -641,6 +648,7 @@ public class PerfTestApiController extends BaseController {
 		return statuses;
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
 		if (oldOne == null) {
 			oldOne = new PerfTest();
@@ -682,6 +690,181 @@ public class PerfTestApiController extends BaseController {
 		}
 		checkArgument(newOne.getVuserPerAgent() == newOne.getProcesses() * newOne.getThreads(),
 			"vuserPerAgent should be equal to (processes * threads)");
+	}
+
+	/**
+	 * Get the plugin monitor data of the target.
+	 *
+	 * @param id       test Id
+	 * @param plugin   monitor plugin category
+	 * @param kind     kind
+	 * @param imgWidth image width
+	 * @return json message
+	 */
+	@RestAPI
+	@GetMapping("/{id}/plugin/{plugin}")
+	public Map<String, Object> getPluginGraph(@PathVariable("id") long id,
+											 @PathVariable("plugin") String plugin,
+											 @RequestParam("kind") String kind, @RequestParam int imgWidth) {
+		return getReportPluginGraphData(id, plugin, kind, imgWidth);
+	}
+
+	private Map<String, Object> getReportPluginGraphData(long id, String plugin, String kind, int imgWidth) {
+		int interval = perfTestService.getReportPluginGraphInterval(id, plugin, kind, imgWidth);
+		Map<String, Object> pluginMonitorData = perfTestService.getReportPluginGraph(id, plugin, kind, interval);
+		final PerfTest perfTest = perfTestService.getOne(id);
+		int samplingInterval = 3;
+		if (perfTest != null) {
+			samplingInterval = perfTest.getSamplingInterval();
+		}
+		pluginMonitorData.put("interval", interval * samplingInterval);
+		return pluginMonitorData;
+	}
+
+
+	/**
+	 * Get the last perf test details in the form of json.
+	 *
+	 * @param user user
+	 * @param page page
+	 * @param size size of retrieved perf test
+	 * @return json string
+	 */
+	@RestAPI
+	@GetMapping({"/last", "", "/"})
+	public List<PerfTest> getAll(User user, @RequestParam(value = "page", defaultValue = "0") int page,
+									 @RequestParam(value = "size", defaultValue = "1") int size) {
+		PageRequest pageRequest = PageRequest.of(page, size, new Sort(Direction.DESC, "id"));
+		Page<PerfTest> testList = perfTestService.getPagedAll(user, null, null, null, pageRequest);
+		return testList.getContent();
+	}
+
+	/**
+	 * Get the perf test detail in the form of json.
+	 *
+	 * @param user user
+	 * @param id   perftest id
+	 * @return json message containing test info.
+	 */
+
+	@RestAPI
+	@GetMapping("/{id}")
+	public PerfTest getOne(User user, @PathVariable Long id) {
+		return checkNotNull(getOneWithPermissionCheck(user, id, false), "PerfTest %s does not exists", id);
+	}
+
+	/**
+	 * Create the given perf test.
+	 *
+	 * @param user     user
+	 * @param perfTest perf test
+	 * @return json message containing test info.
+	 */
+	@RestAPI
+	@PostMapping({"/", ""})
+	public PerfTest create(User user, PerfTest perfTest) {
+		checkNull(perfTest.getId(), "id should be null");
+		// Make the vuser count optional.
+		if (perfTest.getVuserPerAgent() == null && perfTest.getThreads() != null && perfTest.getProcesses() != null) {
+			perfTest.setVuserPerAgent(perfTest.getThreads() * perfTest.getProcesses());
+		}
+		validate(user, null, perfTest);
+		PerfTest savePerfTest = perfTestService.save(user, perfTest);
+		return savePerfTest;
+	}
+
+	/**
+	 * Delete the given perf test.
+	 *
+	 * @param user user
+	 * @param id   perf test id
+	 * @return json success message if succeeded
+	 */
+	@RestAPI
+	@DeleteMapping("/{id}")
+	public Map<String, Boolean> delete(User user, @PathVariable("id") Long id) {
+		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
+		checkNotNull(perfTest, "no perftest for %s exits", id);
+		perfTestService.delete(user, id);
+		return successJson();
+	}
+
+
+	/**
+	 * Update the given perf test.
+	 *
+	 * @param user     user
+	 * @param id       perf test id
+	 * @param perfTest perf test configuration changes
+	 * @return json message
+	 */
+	@RestAPI
+	@PutMapping("/{id}")
+	public PerfTest update(User user, @PathVariable("id") Long id, PerfTest perfTest) {
+		PerfTest existingPerfTest = getOneWithPermissionCheck(user, id, false);
+		perfTest.setId(id);
+		validate(user, existingPerfTest, perfTest);
+		return perfTestService.save(user, perfTest);
+	}
+
+	/**
+	 * Update the given perf test's status.
+	 *
+	 * @param user   user
+	 * @param id     perf test id
+	 * @param status Status to be moved to
+	 * @return json message
+	 */
+	@RestAPI
+	@PutMapping(value = "/{id}", params = "action=status")
+	public PerfTest updateStatus(User user, @PathVariable("id") Long id, Status status) {
+		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
+		checkNotNull(perfTest, "no perftest for %s exits", id).setStatus(status);
+		validate(user, null, perfTest);
+		return perfTestService.save(user, perfTest);
+	}
+
+	/**
+	 * Clone and start the given perf test.
+	 *
+	 * @param user     user
+	 * @param id       perf test id to be cloned
+	 * @param perftest option to override while cloning.
+	 * @return json string
+	 */
+	@SuppressWarnings("MVCPathVariableInspection")
+	@RestAPI
+	@GetMapping({"/{id}/clone_and_start", /* for backward compatibility */ "/{id}/cloneAndStart"})
+	public PerfTest cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {
+		PerfTest test = getOneWithPermissionCheck(user, id, false);
+		checkNotNull(test, "no perftest for %s exits", id);
+		PerfTest newOne = test.cloneTo(new PerfTest());
+		newOne.setStatus(Status.READY);
+		if (perftest != null) {
+			if (perftest.getScheduledTime() != null) {
+				newOne.setScheduledTime(perftest.getScheduledTime());
+			}
+			if (perftest.getScriptRevision() != null) {
+				newOne.setScriptRevision(perftest.getScriptRevision());
+			}
+
+			if (perftest.getAgentCount() != null) {
+				newOne.setAgentCount(perftest.getAgentCount());
+			}
+		}
+		if (newOne.getAgentCount() == null) {
+			newOne.setAgentCount(0);
+		}
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
+		checkNotNull(agentCountObj, "test region should be within current region list");
+		int agentMaxCount = agentCountObj.intValue();
+		checkArgument(newOne.getAgentCount() != 0, "test agent should not be %s", agentMaxCount);
+		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
+			agentMaxCount);
+		PerfTest savePerfTest = perfTestService.save(user, newOne);
+		CoreLogger.LOGGER.info("test {} is created through web api by {}", savePerfTest.getId(), user.getUserId());
+		return savePerfTest;
 	}
 
 }

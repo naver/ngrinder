@@ -13,7 +13,7 @@
  */
 package org.ngrinder.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NotFound;
@@ -42,7 +42,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@Column(name = "created_date", insertable = true, updatable = false)
 	private Date createdDate;
 
-	@JsonIgnore
+	@JsonSerialize(using = User.UserBaseInfoSerializer.class)
 	@ManyToOne
 	@JoinColumn(name = "created_user", insertable = true, updatable = false)
 	@Index(name = "created_user_index")
@@ -53,7 +53,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@Column(name = "last_modified_date", insertable = true, updatable = true)
 	private Date lastModifiedDate;
 
-	@JsonIgnore
+	@JsonSerialize(using = User.UserBaseInfoSerializer.class)
 	@ManyToOne
 	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
 	@Index(name = "last_modified_user_index")
