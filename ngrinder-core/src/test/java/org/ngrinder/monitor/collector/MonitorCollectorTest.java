@@ -10,6 +10,10 @@ import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -22,12 +26,17 @@ public class MonitorCollectorTest {
 	}
 
 	@Test
-	public void testSystemDataCollection() throws InterruptedException {
+	public void testSystemDataCollection() throws IOException {
 		SystemDataCollector collector = new SystemDataCollector();
 		collector.refresh();
+
 		int i = 0;
 		boolean sent = false;
 		boolean received = false;
+
+		HttpURLConnection httpURLConnection = (HttpURLConnection) new URL("https://www.naver.com").openConnection();
+		httpURLConnection.connect();
+		httpURLConnection.disconnect();
 
 		while (i++ < 3) {
 			SystemInfo systemInfo = collector.execute();
