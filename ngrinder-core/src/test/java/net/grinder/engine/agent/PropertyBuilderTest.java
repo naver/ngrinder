@@ -39,7 +39,6 @@ public class PropertyBuilderTest {
 				is("www.sample.com:173.230.129.147,:127.0.0.1"));
 		assertThat(createPropertyBuilder.rebaseHostString("www.sample.com:74.125.128.99"),
 				is("www.sample.com:74.125.128.99"));
-		assertThat(createPropertyBuilder.rebaseHostString("www.google.com").length(), greaterThan(40));
 		assertThat(createPropertyBuilder.rebaseHostString(":127.0.0.1"), is(":127.0.0.1"));
 	}
 
