@@ -8,7 +8,7 @@
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
                 <input type="search" name="search" class="search-query-without-radios form-control"
-                       placeholder="Keywords" v-model="searchText">
+                       placeholder="Keywords" v-model="searchText" @keydown.enter="$emit('search')">
                 <button class="btn btn-info align-baseline" @click="$emit('search')">
                     <i class="fa fa-search mr-1"></i>
                     <span v-text="i18n('common.button.search')"></span>

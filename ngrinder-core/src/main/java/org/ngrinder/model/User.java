@@ -380,22 +380,39 @@ public class User extends BaseModel<User> {
 	public void setFollowersStr(String followersStr) {
 		this.followersStr = followersStr;
 	}
-}
 
-class FollowerSerializer extends StdSerializer<List<User>> {
-	public FollowerSerializer() {
-		this(null);
+	private static class FollowerSerializer extends StdSerializer<List<User>> {
+		@SuppressWarnings("unused")
+		FollowerSerializer() {
+			this(null);
+		}
+
+		FollowerSerializer(Class<List<User>> t) {
+			super(t);
+		}
+
+		@Override
+		public void serialize(List<User> followers, JsonGenerator generator, SerializerProvider provider) throws IOException {
+			List<User> userBaseInfoList = followers.stream()
+				.map(User::getUserBaseInfo)
+				.collect(toList());
+			generator.writeObject(userBaseInfoList);
+		}
 	}
 
-	public FollowerSerializer(Class<List<User>> t) {
-		super(t);
-	}
+	public static class UserBaseInfoSerializer extends StdSerializer<User> {
+		@SuppressWarnings("unused")
+		UserBaseInfoSerializer() {
+			this(null);
+		}
 
-	@Override
-	public void serialize(List<User> followers, JsonGenerator generator, SerializerProvider provider) throws IOException {
-		List<User> userBaseInfoList = followers.stream()
-			.map(User::getUserBaseInfo)
-			.collect(toList());
-		generator.writeObject(userBaseInfoList);
+		UserBaseInfoSerializer(Class<User> t) {
+			super(t);
+		}
+
+		@Override
+		public void serialize(User user, JsonGenerator generator, SerializerProvider provider) throws IOException {
+			generator.writeObject(user.getUserBaseInfo());
+		}
 	}
 }

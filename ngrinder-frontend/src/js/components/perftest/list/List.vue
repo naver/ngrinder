@@ -82,7 +82,7 @@
                                :id="`ball_${test.id}`"
                                :title="test.status"
                                :data-content="`${test.progressMessage}<br><b>${test.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
-                               <img :src="`/img/ball/${test.iconName}`">
+                               <img :src="`/img/ball/${test.status.iconName}`">
                             </a>
                         </td>
                         <td class="ellipsis">
@@ -102,7 +102,7 @@
                                  data-trigger="hover"
                                  :title="i18n('perfTest.list.scriptName')"
                                  :data-content="`${test.scriptName}<br> - ${i18n('script.list.revision')} : ${(test.scriptRevision)}`">
-                                <a v-if="isAdmin" :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}&ownerId=${(test.createdUserId)}`" v-text="test.scriptName"></a>
+                                <a v-if="isAdmin" :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}&ownerId=${(test.createdUser.userId)}`" v-text="test.scriptName"></a>
                                 <a v-else :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}`" v-text="test.scriptName"></a>
                             </div>
                         </td>
@@ -113,8 +113,8 @@
                                 data-trigger="hover"
                                 :title="i18n('perfTest.list.participants')"
                                 :data-content="getOwnerPopoverContent(test).replace(/\n/g, '<br>')">
-                                <span v-if="isAdmin" v-text="test.createdUserName"></span>
-                                <span v-else v-text="test.lastModifiedUserName"></span>
+                                <span v-if="isAdmin" v-text="test.createdUser.userName"></span>
+                                <span v-else v-text="test.lastModifiedUser.userName"></span>
                             </div>
                         </td>
                         <td v-if="ngrinder.config.clustered" class="ellipsis" :title="i18n('common.region')" data-html="true">
@@ -154,9 +154,9 @@
                             </div>
                         </td>
                         <td class="center">
-                            <i v-if="test.reportable" @click="showChart(index)" :title="i18n('perfTest.action.showChart')" class="fa fa-line-chart pointer-cursor"></i>
-                            <i v-if="test.deletable" @click="deleteTests(test.id)" :title="i18n('common.button.delete')" class="fa fa-remove pointer-cursor"></i>
-                            <i v-if="test.stoppable" @click="stopTest(test.id)" :title="i18n('common.button.stop')" class="fa fa-stop pointer-cursor"></i>
+                            <i v-if="test.status.reportable" @click="showChart(index)" :title="i18n('perfTest.action.showChart')" class="fa fa-line-chart pointer-cursor"></i>
+                            <i v-if="test.status.deletable" @click="deleteTests(test.id)" :title="i18n('common.button.delete')" class="fa fa-remove pointer-cursor"></i>
+                            <i v-if="test.status.stoppable" @click="stopTest(test.id)" :title="i18n('common.button.stop')" class="fa fa-stop pointer-cursor"></i>
                         </td>
                     </tr>
                     <small-chart ref="smallChart" :key="test.id" :perfTestId="test.id"></small-chart>
@@ -237,7 +237,7 @@
         }
 
         isFinishedStatusType(test) {
-            return test.status === 'FINISHED' || test.status === 'STOP_BY_ERROR' || test.status === 'STOP_ON_ERROR' || test.status === 'CANCELED';
+            return test.status.name === 'FINISHED' || test.status.name === 'STOP_BY_ERROR' || test.status.name === 'STOP_ON_ERROR' || test.status.name === 'CANCELED';
         }
 
         changeSelectAll(event) {
@@ -249,9 +249,9 @@
         }
 
         getOwnerPopoverContent(test) {
-            let content = `${this.i18n('perfTest.list.owner')} : ${test.createdUserName} (${test.createdUserId})`;
-            if (test.lastModifiedUserId) {
-                content += `<br> ${this.i18n('perfTest.list.modifier.oneLine')} : ${test.lastModifiedUserName} (${test.lastModifiedUserId})`;
+            let content = `${this.i18n('perfTest.list.owner')} : ${test.createdUser.userName} (${test.createdUser.userId})`;
+            if (test.lastModifiedUser) {
+                content += `<br> ${this.i18n('perfTest.list.modifier.oneLine')} : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})`;
             }
             return content;
         }
@@ -392,11 +392,11 @@
                         if (status[index].reportable) {
                             this.getPerfTest();
                         }
-                        this.tests[target.index].iconName = status[index].icon;
-                        this.tests[target.index].reportable = status[index].reportable;
-                        this.tests[target.index].deletable = status[index].deletable;
-                        this.tests[target.index].stoppable = status[index].stoppable;
-                        this.tests[target.index].status = status[index].status_id;
+                        this.tests[target.index].status.iconName = status[index].icon;
+                        this.tests[target.index].status.reportable = status[index].reportable;
+                        this.tests[target.index].status.deletable = status[index].deletable;
+                        this.tests[target.index].status.stoppable = status[index].stoppable;
+                        this.tests[target.index].status.name = status[index].status_id;
                         this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
 
                         const $ball = $(`#ball_${this.tests[target.index].id}`);

@@ -15,7 +15,6 @@ package org.ngrinder.agent.controller;
 
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +22,9 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -33,10 +32,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class AgentManagerApiControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -124,16 +124,14 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 
 	@Test
 	public void testGetCurrentMonitorData() {
-		HttpEntity<String> rtnStr = agentApiController.getState("127.0.0.1", "127.0.0.1", "");
-		assertTrue(rtnStr.getBody().contains("freeMemory"));
+		SystemDataModel systemDataModel = agentApiController.getState("127.0.0.1", "127.0.0.1", "");
+		assertNotNull(systemDataModel);
 	}
 
 	@Test
-	public void testGetAvailableAgentCount() throws Exception {
+	public void testGetAvailableAgentCount() {
 		String targetRegion = "test";
-		HttpEntity<String> returnHttpEntity = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion);
-		String result = returnHttpEntity.getBody();
-		JSONObject obj = new JSONObject(result);
-		assertThat(0, is(obj.get("availableAgentCount")));
+		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion);
+		assertThat(0, is(response.get("availableAgentCount")));
 	}
 }

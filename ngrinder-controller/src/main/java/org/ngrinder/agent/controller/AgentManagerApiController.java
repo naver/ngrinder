@@ -13,8 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static java.util.stream.Collectors.toList;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
 import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
 
@@ -25,10 +25,10 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
@@ -152,8 +152,8 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/state")
-	public HttpEntity<String> getState(@RequestParam String ip, @RequestParam String name, @RequestParam String region) {
-		return toJsonHttpEntity(agentManagerService.getSystemDataModel(ip, name, region));
+	public SystemDataModel getState(@RequestParam String ip, @RequestParam String name, @RequestParam String region) {
+		return agentManagerService.getSystemDataModel(ip, name, region);
 	}
 
 	/**
@@ -164,8 +164,8 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = {"/", ""})
-	public HttpEntity<String> getAll() {
-		return toJsonHttpEntity(agentManagerService.getAllVisible());
+	public List<AgentInfo> getAll() {
+		return agentManagerService.getAllVisible();
 	}
 
 	/**
@@ -280,8 +280,7 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@GetMapping("/availableAgentCount")
 	@PreAuthorize("permitAll")
-	public HttpEntity<String> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
-		int availableAgentCount = agentManagerService.getReadyAgentCount(user, targetRegion);
-		return toJsonHttpEntity(buildMap("availableAgentCount", availableAgentCount));
+	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
+		return of("availableAgentCount", agentManagerService.getReadyAgentCount(user, targetRegion));
 	}
 }
