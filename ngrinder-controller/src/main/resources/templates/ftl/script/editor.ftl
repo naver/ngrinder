@@ -124,7 +124,7 @@
 				Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
 				Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
 				Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
-				F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
+				F11 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
 				ESC : <@spring.message 'script.editor.tip.back'/>
 				"><code>Tip</code></div>
 		<div id="script_samples_link" style="text-align: center;margin-top: 10px;">
