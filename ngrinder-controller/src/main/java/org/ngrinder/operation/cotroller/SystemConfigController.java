@@ -19,7 +19,6 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -58,8 +57,8 @@ public class SystemConfigController extends BaseController {
 	@RestAPI
 	@ResponseBody
 	@GetMapping(value = "/api")
-	public HttpEntity<String> getOne() {
-		return toJsonHttpEntity(systemConfigService.getOne());
+	public String getOne() {
+		return systemConfigService.getOne();
 	}
 
 	/**
