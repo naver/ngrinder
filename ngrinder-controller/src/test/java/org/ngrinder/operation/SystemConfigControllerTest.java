@@ -24,7 +24,6 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.operation.cotroller.SystemConfigController;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 
 public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -39,7 +38,7 @@ public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Test
 	public void testGetSystemConfiguration() {
-		String result = controller.getOne().getBody();
+		String result = controller.getOne();
 		assertThat(result, notNullValue());
 	}
 
