@@ -88,8 +88,7 @@
         }
 
         downloadCSV() {
-            this.$http.get(`/perftest/${this.id}/download_csv`)
-                .catch(() => this.showErrorMsg(this.i18n('perfTest.message.downloadCSV.error')));
+            location.href = `/perftest/${this.id}/download_csv`;
         }
     }
 </script>
