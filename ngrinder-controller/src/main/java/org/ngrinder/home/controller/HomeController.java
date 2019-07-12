@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,12 +9,10 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.home.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
@@ -28,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.LocaleEditor;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -63,8 +60,6 @@ public class HomeController extends BaseController implements ControllerConstant
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
-
-	private static Gson rawObjectJsonSerializer = new GsonBuilder().setPrettyPrinting().create();
 
 	/**
 	 * Return nGrinder index page.
@@ -122,8 +117,9 @@ public class HomeController extends BaseController implements ControllerConstant
 	 * @param response response
 	 * @return region list
 	 */
+	@ResponseBody
 	@RequestMapping("/check/healthcheck")
-	public HttpEntity<String> healthCheck(HttpServletResponse response) {
+	public Map<String, Object> healthCheck(HttpServletResponse response) {
 		if (getConfig().hasShutdownLock()) {
 			try {
 				response.sendError(503, "nGrinder is about to down");
@@ -135,7 +131,7 @@ public class HomeController extends BaseController implements ControllerConstant
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("current", regionService.getCurrent());
 		map.put("regions", regionService.getAll());
-		return toJsonHttpEntity(map, rawObjectJsonSerializer);
+		return map;
 	}
 
 	/**
@@ -148,7 +144,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
-	public HttpEntity<String> healthCheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
+	public Map<String, Object> healthCheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
 												HttpServletResponse response) {
 		ThreadUtils.sleep(sleep);
 		return healthCheck(response);

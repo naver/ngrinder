@@ -20,7 +20,6 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
@@ -28,7 +27,10 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import java.util.Map;
 
 public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -61,8 +63,8 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testHealthCheck() {
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		homeController.healthCheck(res);
-		HttpEntity<String> message = homeController.healthCheckSlowly(500, res);
-		assertThat(message.getBody(), containsString(regionService.getCurrent()));
+		Map<String, Object> message = homeController.healthCheckSlowly(500, res);
+		assertEquals(message.get("current"), regionService.getCurrent());
 	}
 
 	@Test
