@@ -29,11 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -281,28 +278,6 @@ public class BaseController implements WebConstants {
 	}
 
 	/**
-	 * Convert the given object into a json message.
-	 *
-	 * @param <T>     content type
-	 * @param content content
-	 * @param header  header value map
-	 * @return json message
-	 */
-	public <T> HttpEntity<T> toHttpEntity(T content, MultiValueMap<String, String> header) {
-		return new HttpEntity<T>(content, header);
-	}
-
-	/**
-	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
-	 *
-	 * @param content content
-	 * @return {@link HttpEntity} class containing the converted json message
-	 */
-	public HttpEntity<String> toJsonHttpEntity(Object content) {
-		return toJsonHttpEntity(content, gson);
-	}
-
-	/**
 	 * Return success json
 	 *
 	 * @return Map containing the json message
@@ -318,20 +293,6 @@ public class BaseController implements WebConstants {
 	 */
 	public Map<String, Boolean> errorJson() {
 		return of(JSON_SUCCESS, false);
-	}
-
-	/**
-	 * Convert the object with the given serializer into {@link HttpEntity}.
-	 *
-	 * @param content    content
-	 * @param serializer custom JSON serializer
-	 * @return json message
-	 */
-	public HttpEntity<String> toJsonHttpEntity(Object content, Gson serializer) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		responseHeaders.setPragma("no-cache");
-		return toHttpEntity(serializer.toJson(content), responseHeaders);
 	}
 
 	/**
