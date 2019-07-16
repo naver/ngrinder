@@ -205,7 +205,7 @@ public class FileEntryApiController extends BaseController {
 	 * @param folderName folderName
 	 */
 	@PostMapping(value = "/new/**", params = "type=folder")
-	public String addFolder(User user,
+	public Map<String, Object> addFolder(User user,
 							@RemainedPath String path,
 							@RequestParam String folderName) {
 		fileEntryService.addFolder(user, path, trimToEmpty(folderName), "");
@@ -252,7 +252,7 @@ public class FileEntryApiController extends BaseController {
 	 * @return json string
 	 */
 	@PostMapping("/delete")
-	public String delete(User user, @RequestBody List<String> paths) {
+	public Map<String, Object> delete(User user, @RequestBody List<String> paths) {
 		fileEntryService.delete(user, paths);
 		return returnSuccess();
 	}
@@ -267,7 +267,7 @@ public class FileEntryApiController extends BaseController {
 	 * @param file        multi part file
 	 */
 	@PostMapping("/upload/**")
-	public String uploadFile(User user,
+	public Map<String, Object> uploadFile(User user,
 							 @RemainedPath String path,
 							 @RequestParam String description,
 							 @RequestParam("uploadFile") MultipartFile file) {
@@ -299,7 +299,7 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@PostMapping({"/", ""})
-	public String create(User user, FileEntry fileEntry) {
+	public Map<String, Object> create(User user, FileEntry fileEntry) {
 		fileEntryService.save(user, fileEntry);
 		return returnSuccess();
 	}
@@ -315,7 +315,7 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@PostMapping(value = "/**", params = "action=upload")
-	public String uploadForAPI(User user,
+	public Map<String, Object> uploadForAPI(User user,
 							   @RemainedPath String path,
 							   @RequestParam String description,
 							   @RequestParam("uploadFile") MultipartFile file) throws IOException {
@@ -379,7 +379,7 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@DeleteMapping("/**")
-	public String deleteOne(User user, @RemainedPath String path) {
+	public Map<String, Object> deleteOne(User user, @RemainedPath String path) {
 		fileEntryService.delete(user, path);
 		return returnSuccess();
 	}

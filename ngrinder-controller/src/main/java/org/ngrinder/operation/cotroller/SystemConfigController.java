@@ -70,9 +70,9 @@ public class SystemConfigController extends BaseController {
 	@RestAPI
 	@ResponseBody
 	@PostMapping(value = "/api")
-	public Map<String, Boolean> save(@RequestParam String content) {
+	public Map<String, Object> save(@RequestParam String content) {
 		systemConfigService.save(checkNotEmpty(content, "content should be " +
 				"passed as parameter"));
-		return successJson();
+		return returnSuccess();
 	}
 }

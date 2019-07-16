@@ -13,14 +13,10 @@
  */
 package org.ngrinder.common.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.region.service.RegionService;
@@ -30,7 +26,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -49,9 +44,8 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @since 3.0
  */
 public class BaseController implements WebConstants {
-	private static String successJson;
-	private static String errorJson;
-	private static Gson gson = new GsonBuilder().registerTypeAdapter(PerfTest.class, new PerfTest.PerfTestSerializer()).setPrettyPrinting().create();
+	private static Map<String, Object> successJson;
+	private static Map<String, Object> errorJson;
 
 	@Autowired
 	private MessageSource messageSource;
@@ -78,11 +72,8 @@ public class BaseController implements WebConstants {
 
 	@PostConstruct
 	void initJSON() {
-		JsonObject rtnJson = new JsonObject();
-		rtnJson.addProperty(JSON_SUCCESS, true);
-		successJson = rtnJson.toString();
-		rtnJson.addProperty(JSON_SUCCESS, false);
-		errorJson = rtnJson.toString();
+		successJson = of(JSON_SUCCESS, true);
+		errorJson = of(JSON_SUCCESS, false);
 	}
 
 	/**
@@ -94,16 +85,6 @@ public class BaseController implements WebConstants {
 		return userContext.getCurrentUser();
 	}
 
-	protected void putPageIntoModelMap(ModelMap model, Pageable pageable) {
-		model.addAttribute("page", pageable);
-		final Iterator<Sort.Order> iterator = pageable.getSort().iterator();
-		if (iterator.hasNext()) {
-			Sort.Order sortProp = iterator.next();
-			model.addAttribute("sort", sortProp.getProperty() + "," + sortProp.getDirection());
-		}
-	}
-
-	@SuppressWarnings("unckeced")
 	protected void putPageIntoModelMap(Map<String, Object> result, Pageable pageable) {
 		Map<String, Object> page = new HashMap<>();
 		page.put("pageNumber", pageable.getPageNumber());
@@ -214,76 +195,12 @@ public class BaseController implements WebConstants {
 	}
 
 	/**
-	 * Return the success json message.
-	 *
-	 * @param message message
-	 * @return json message
-	 */
-	public String returnSuccess(String message) {
-		JsonObject rtnJson = new JsonObject();
-		rtnJson.addProperty(JSON_SUCCESS, true);
-		rtnJson.addProperty(JSON_MESSAGE, message);
-		return rtnJson.toString();
-	}
-
-	/**
-	 * Return the error json message.
-	 *
-	 * @param message message
-	 * @return json message
-	 */
-	public String returnError(String message) {
-		JsonObject rtnJson = new JsonObject();
-		rtnJson.addProperty(JSON_SUCCESS, false);
-		rtnJson.addProperty(JSON_MESSAGE, message);
-		return rtnJson.toString();
-	}
-
-	/**
-	 * Return the raw success json message.
-	 *
-	 * @return json message
-	 */
-	public String returnSuccess() {
-		return successJson;
-	}
-
-	/**
-	 * Return the raw error json message.
-	 *
-	 * @return json message
-	 */
-	public String returnError() {
-		return errorJson;
-	}
-
-	/**
-	 * Convert the given list into a json message.
-	 *
-	 * @param list list
-	 * @return json message
-	 */
-	public String toJson(List<?> list) {
-		return gson.toJson(list);
-	}
-
-	/**
-	 * Convert the given object into a json message.
-	 *
-	 * @param obj object
-	 * @return json message
-	 */
-	public String toJson(Object obj) {
-		return gson.toJson(obj);
-	}
-
-	/**
 	 * Return success json
 	 *
 	 * @return Map containing the json message
 	 */
-	public Map<String, Boolean> successJson() {
-		return of(JSON_SUCCESS, true);
+	public Map<String, Object> returnSuccess() {
+		return successJson;
 	}
 
 	/**
@@ -291,8 +208,8 @@ public class BaseController implements WebConstants {
 	 *
 	 * @return Map containing the json message
 	 */
-	public Map<String, Boolean> errorJson() {
-		return of(JSON_SUCCESS, false);
+	public Map<String, Object> returnError() {
+		return errorJson;
 	}
 
 	/**

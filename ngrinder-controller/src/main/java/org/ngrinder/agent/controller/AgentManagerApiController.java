@@ -136,9 +136,9 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PostMapping(value = "", params = "action=cleanup")
-	public Map<String, Boolean> cleanUpAgentsInInactiveRegion() {
+	public Map<String, Object> cleanUpAgentsInInactiveRegion() {
 		agentManagerService.cleanup();
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -189,9 +189,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=approve")
-	public Map<String, Boolean> approve(@PathVariable("id") Long id) {
+	public Map<String, Object> approve(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, true);
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -203,9 +203,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=disapprove")
-	public Map<String, Boolean> disapprove(@PathVariable("id") Long id) {
+	public Map<String, Object> disapprove(@PathVariable("id") Long id) {
 		agentManagerService.approve(id, false);
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -217,9 +217,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=stop")
-	public Map<String, Boolean> stop(@PathVariable("id") Long id) {
+	public Map<String, Object> stop(@PathVariable("id") Long id) {
 		agentManagerService.stopAgent(id);
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -231,12 +231,12 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=stop")
-	public Map<String, Boolean> stop(@RequestParam("ids") String ids) {
+	public Map<String, Object> stop(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			stop(Long.parseLong(each));
 		}
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -248,9 +248,9 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=update")
-	public Map<String, Boolean> update(@PathVariable("id") Long id) {
+	public Map<String, Object> update(@PathVariable("id") Long id) {
 		agentManagerService.update(id);
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -262,12 +262,12 @@ public class AgentManagerApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=update")
-	public Map<String, Boolean> update(@RequestParam("ids") String ids) {
+	public Map<String, Object> update(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			update(Long.parseLong(each));
 		}
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**

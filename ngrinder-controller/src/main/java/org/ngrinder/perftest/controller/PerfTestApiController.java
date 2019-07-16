@@ -155,7 +155,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@DeleteMapping
-	public String delete(User user, @RequestParam(defaultValue = "") String ids) {
+	public Map<String, Object> delete(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -171,7 +171,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@PutMapping(params = "action=stop")
-	public String stop(User user, @RequestParam(defaultValue = "") String ids) {
+	public Map<String, Object> stop(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -187,7 +187,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@PutMapping(value = "/{id}", params = "action=stop")
-	public String stop(User user, @PathVariable Long id) {
+	public Map<String, Object> stop(User user, @PathVariable Long id) {
 		perfTestService.stop(user, id);
 		return returnSuccess();
 	}
@@ -461,7 +461,7 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@PostMapping("/{id}/leave_comment")
-	public String leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
+	public Map<String, Object> leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
 		perfTestService.addCommentOn(user, id, cast(params.get("testComment")), cast(params.get("tagString")));
 		return returnSuccess();
 	}
@@ -782,11 +782,11 @@ public class PerfTestApiController extends BaseController {
 	 */
 	@RestAPI
 	@DeleteMapping("/{id}")
-	public Map<String, Boolean> delete(User user, @PathVariable("id") Long id) {
+	public Map<String, Object> delete(User user, @PathVariable("id") Long id) {
 		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id);
 		perfTestService.delete(user, id);
-		return successJson();
+		return returnSuccess();
 	}
 
 

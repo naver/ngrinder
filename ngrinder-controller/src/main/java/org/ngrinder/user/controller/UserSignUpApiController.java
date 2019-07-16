@@ -71,7 +71,7 @@ public class UserSignUpApiController extends UserApiController {
 	 */
 	@RestAPI
 	@PostMapping("/save")
-	public String save(@RequestBody User newUser) {
+	public Map<String, Object> save(@RequestBody User newUser) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		newUser.setRole(Role.USER);
 		userService.createUser(newUser);
@@ -100,7 +100,7 @@ public class UserSignUpApiController extends UserApiController {
 	 */
 	@Override
 	@GetMapping("/save_remap")
-	public String save(User user, @ModelAttribute("user") User updatedUser) {
+	public Map<String, Object> save(User user, @ModelAttribute("user") User updatedUser) {
 		return null;
 	}
 
@@ -114,7 +114,7 @@ public class UserSignUpApiController extends UserApiController {
 	@Override
 	@RestAPI
 	@GetMapping("/{userId}/check_duplication_remap")
-	public Map<String, Boolean> checkDuplication(@PathVariable String userId) {
+	public Map<String, Object> checkDuplication(@PathVariable String userId) {
 		return null;
 	}
 
@@ -126,9 +126,9 @@ public class UserSignUpApiController extends UserApiController {
 	 */
 	@RestAPI
 	@GetMapping("/{userId}/check_duplication")
-	public Map<String, Boolean> checkDuplicationForRegistration(@PathVariable String userId) {
+	public Map<String, Object> checkDuplicationForRegistration(@PathVariable String userId) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		User user = userService.getOne(userId);
-		return (user == null) ? successJson() : errorJson();
+		return user == null ? returnSuccess() : returnError();
 	}
 }
