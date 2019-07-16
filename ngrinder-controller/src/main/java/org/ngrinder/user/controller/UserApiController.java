@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -162,7 +161,7 @@ public class UserApiController extends BaseController {
 	 */
 	@PostMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public String save(User user, @RequestBody User updatedUser) {
+	public Map<String, Object> save(User user, @RequestBody User updatedUser) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -201,14 +200,14 @@ public class UserApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping({"", "/"})
-	public Map<String, Boolean> deleteUsers(User user, @RequestParam String userIds) {
+	public Map<String, Object> deleteUsers(User user, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
 		for (String eachId : ids) {
 			if (!user.getUserId().equals(eachId)) {
 				userService.delete(eachId);
 			}
 		}
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**
@@ -220,9 +219,9 @@ public class UserApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/{userId}/check_duplication")
-	public Map<String, Boolean> checkDuplication(@PathVariable String userId) {
+	public Map<String, Object> checkDuplication(@PathVariable String userId) {
 		User user = userService.getOne(userId);
-		return (user == null) ? successJson() : errorJson();
+		return user == null ? returnSuccess() : returnError();
 	}
 
 	/**
@@ -290,11 +289,11 @@ public class UserApiController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping("/{userId}")
-	public Map<String, Boolean> delete(User user, @PathVariable("userId") String userId) {
+	public Map<String, Object> delete(User user, @PathVariable("userId") String userId) {
 		if (!user.getUserId().equals(userId)) {
 			userService.delete(userId);
 		}
-		return successJson();
+		return returnSuccess();
 	}
 
 	/**

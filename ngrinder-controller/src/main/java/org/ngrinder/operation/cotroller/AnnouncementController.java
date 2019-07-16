@@ -13,8 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import static com.google.common.collect.ImmutableMap.of;
-
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +54,7 @@ public class AnnouncementController extends BaseController {
 	 */
 	@ResponseBody
 	@PostMapping("/api")
-	public Map<String, Boolean> save(@RequestParam String content) {
-		return of("success", announcementService.save(content));
+	public Map<String, Object> save(@RequestParam String content) {
+		return announcementService.save(content) ? returnSuccess() : returnError();
 	}
 }
