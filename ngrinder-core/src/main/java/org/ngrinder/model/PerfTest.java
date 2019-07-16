@@ -15,7 +15,6 @@ package org.ngrinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 
-import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -830,28 +828,5 @@ public class PerfTest extends BaseModel<PerfTest> {
 		}
 		this.useRampUp = getSafe(this.useRampUp);
 		this.safeDistribution = getSafe(this.safeDistribution);
-	}
-
-	// TODO Gson will be removed.
-	public static class PerfTestSerializer implements JsonSerializer<PerfTest> {
-		private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-		@Override
-		public JsonElement serialize(PerfTest perfTest, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject jsonObject = (JsonObject) gson.toJsonTree(perfTest);
-			jsonObject.addProperty("iconName", perfTest.getStatus().getCategory().getIconName());
-			jsonObject.addProperty("deletable", perfTest.getStatus().getCategory().isDeletable());
-			jsonObject.addProperty("reportable", perfTest.getStatus().getCategory().isReportable());
-			jsonObject.addProperty("stoppable", perfTest.getStatus().getCategory().isStoppable());
-			jsonObject.addProperty("category", perfTest.getStatus().getCategory().toString());
-
-			jsonObject.addProperty("createdUserName", perfTest.getCreatedUser().getUserName());
-			jsonObject.addProperty("createdUserId", perfTest.getLastModifiedUser().getUserId());
-			jsonObject.addProperty("lastModifiedUserName", perfTest.getLastModifiedUser().getUserName());
-			jsonObject.addProperty("lastModifiedUserId", perfTest.getLastModifiedUser().getUserId());
-			jsonObject.addProperty("springMessageKey", perfTest.getStatus().getSpringMessageKey());
-			jsonObject.addProperty("duration", defaultIfNull(perfTest.getDurationStr(), "").toString());
-			jsonObject.addProperty("runtime", defaultIfNull(perfTest.getRuntimeStr(), "").toString());
-			return jsonObject;
-		}
 	}
 }

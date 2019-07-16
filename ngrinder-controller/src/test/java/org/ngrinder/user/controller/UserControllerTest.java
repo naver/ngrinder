@@ -163,11 +163,11 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testDuplication() {
 		BaseController ngrinderBaseController = new BaseController();
-		Map<String, Boolean> returnJson = userApiController.checkDuplication("not-exist");
-		assertThat(returnJson, is(ngrinderBaseController.successJson()));
+		Map<String, Object> returnJson = userApiController.checkDuplication("not-exist");
+		assertThat(returnJson, is(ngrinderBaseController.returnSuccess()));
 
 		returnJson = userApiController.checkDuplication(getTestUser().getUserId());
-		assertThat(returnJson, is(ngrinderBaseController.errorJson()));
+		assertThat(returnJson, is(ngrinderBaseController.returnError()));
 	}
 
 	@Test
