@@ -15,6 +15,8 @@ package org.ngrinder.agent.controller;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
 import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
 
@@ -22,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -55,14 +56,12 @@ public class AgentManagerApiController extends BaseController {
 	@Autowired
 	private AgentPackageService agentPackageService;
 
-	@RestAPI
 	@GetMapping("/regions")
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public List<String> getAvailableRegions(final User user) {
 		return availRegions();
 	}
 
-	@RestAPI
 	@GetMapping("/download_link")
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public String getDownloadLink(final User user,  @RequestParam(value = "region", required = false) final String region) {
@@ -85,7 +84,6 @@ public class AgentManagerApiController extends BaseController {
 	/**
 	 * Get the agents.
 	 */
-	@RestAPI
 	@GetMapping({"", "/", "/list"})
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public List<AgentInfo> getAll(final User user, @RequestParam(value = "region", required = false) final String region) {
@@ -157,11 +155,35 @@ public class AgentManagerApiController extends BaseController {
 	}
 
 	/**
+	 * Get the current all agents state.
+	 *
+	 * @return json message
+	 */
+	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
+	@GetMapping(value = {"/api/states/", "/api/states"})
+	public List<Map<String, Object>> getStates() {
+		List<AgentInfo> agents = agentManagerService.getAllVisible();
+		return getAgentStatus(agents);
+	}
+
+	private List<Map<String, Object>> getAgentStatus(List<AgentInfo> agents) {
+		List<Map<String, Object>> statuses = newArrayList(agents.size());
+		for (AgentInfo each : agents) {
+			Map<String, Object> result = newHashMap();
+			result.put("id", each.getId());
+			result.put("port", each.getPort());
+			result.put("icon", each.getState().getCategory().getIconName());
+			result.put("state", each.getState());
+			statuses.add(result);
+		}
+		return statuses;
+	}
+
+	/**
 	 * Get all agents from database.
 	 *
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = {"/", ""})
 	public List<AgentInfo> getAll() {
@@ -173,7 +195,6 @@ public class AgentManagerApiController extends BaseController {
 	 *
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = "/{id}")
 	public AgentInfo getOne(@PathVariable("id") Long id) {
@@ -186,7 +207,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param id agent id
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=approve")
 	public Map<String, Object> approve(@PathVariable("id") Long id) {
@@ -200,7 +220,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param id agent id
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=disapprove")
 	public Map<String, Object> disapprove(@PathVariable("id") Long id) {
@@ -214,7 +233,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param id agent id
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=stop")
 	public Map<String, Object> stop(@PathVariable("id") Long id) {
@@ -228,7 +246,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param ids comma separated agent id list
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=stop")
 	public Map<String, Object> stop(@RequestParam("ids") String ids) {
@@ -245,7 +262,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param id agent id
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=update")
 	public Map<String, Object> update(@PathVariable("id") Long id) {
@@ -259,7 +275,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param ids comma separated agent id list
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=update")
 	public Map<String, Object> update(@RequestParam("ids") String ids) {
@@ -277,7 +292,6 @@ public class AgentManagerApiController extends BaseController {
 	 * @param targetRegion The name of target region
 	 * @return availableAgentCount Available agent count
 	 */
-	@RestAPI
 	@GetMapping("/availableAgentCount")
 	@PreAuthorize("permitAll")
 	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
