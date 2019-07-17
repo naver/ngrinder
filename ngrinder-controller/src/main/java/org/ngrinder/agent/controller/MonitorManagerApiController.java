@@ -14,7 +14,6 @@
 package org.ngrinder.agent.controller;
 
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
@@ -48,7 +47,6 @@ public class MonitorManagerApiController extends BaseController {
 	 * @param ip target host IP
 	 * @return json message containing the target's monitoring data.
 	 */
-	@RestAPI
 	@GetMapping("/state")
 	public SystemDataModel getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
 		int port = getConfig().getMonitorPort();

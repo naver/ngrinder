@@ -334,11 +334,7 @@
                     this.params.testStatus = 'SAVED';
                     this.$nextTick(() => {
                         this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
-                            if (res.data === 'list') {
-                                this.$router.push('/perftest');
-                            } else {
-                                this.$router.push(`/perftest/${res.data}`);
-                            }
+                            this.$router.push(`/perftest/${res.data}`);
                         }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
                     });
                 }

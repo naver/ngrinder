@@ -26,7 +26,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -297,7 +296,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param fileEntry file entry
 	 * @return success json string
 	 */
-	@RestAPI
 	@PostMapping({"/", ""})
 	public Map<String, Object> create(User user, FileEntry fileEntry) {
 		fileEntryService.save(user, fileEntry);
@@ -313,7 +311,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param file        multi part file
 	 * @return success json string
 	 */
-	@RestAPI
 	@PostMapping(value = "/**", params = "action=upload")
 	public Map<String, Object> uploadForAPI(User user,
 							   @RemainedPath String path,
@@ -330,7 +327,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param path path
 	 * @return json string
 	 */
-	@RestAPI
 	@GetMapping(value = "/**", params = "action=view")
 	public FileEntry viewOne(User user, @RemainedPath String path) {
 		FileEntry fileEntry = fileEntryService.getOne(user, path, -1L);
@@ -343,7 +339,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param user user
 	 * @return json string
 	 */
-	@RestAPI
 	@GetMapping(value = {"/**", "/", ""}, params = "action=all")
 	public List<FileEntry> getAll(User user) {
 		return fileEntryService.getAll(user);
@@ -356,7 +351,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param path path
 	 * @return json string
 	 */
-	@RestAPI
 	@GetMapping({"/**", "/", ""})
 	public List<FileEntry> getAll(User user, @RemainedPath String path) {
 		String trimmedPath = trimToEmpty(path);
@@ -377,7 +371,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param path path
 	 * @return json string
 	 */
-	@RestAPI
 	@DeleteMapping("/**")
 	public Map<String, Object> deleteOne(User user, @RemainedPath String path) {
 		fileEntryService.delete(user, path);
@@ -392,7 +385,6 @@ public class FileEntryApiController extends BaseController {
 	 * @param hostString hostString
 	 * @return validation Result string
 	 */
-	@RestAPI
 	@PostMapping("/validate")
 	public String validate(User user, FileEntry fileEntry,
 									   @RequestParam(required = false) String hostString) {
