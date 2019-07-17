@@ -14,7 +14,6 @@
 package org.ngrinder.user.controller;
 
 
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -45,7 +44,6 @@ public class UserSignUpApiController extends UserApiController {
 	/**
 	 * New user sign up form login page.
 	 */
-	@RestAPI
 	@GetMapping("/new")
 	public Map<String, Object> signUpInfo() {
 		Map<String, Object> model = new HashMap<>();
@@ -69,7 +67,6 @@ public class UserSignUpApiController extends UserApiController {
 	 * @param newUser user to be added.
 	 * @return success
 	 */
-	@RestAPI
 	@PostMapping("/save")
 	public Map<String, Object> save(@RequestBody User newUser) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
@@ -112,7 +109,6 @@ public class UserSignUpApiController extends UserApiController {
 	 * @deprecated
 	 */
 	@Override
-	@RestAPI
 	@GetMapping("/{userId}/check_duplication_remap")
 	public Map<String, Object> checkDuplication(@PathVariable String userId) {
 		return null;
@@ -124,7 +120,6 @@ public class UserSignUpApiController extends UserApiController {
 	 * @param userId userId to be checked
 	 * @return success json if true.
 	 */
-	@RestAPI
 	@GetMapping("/{userId}/check_duplication")
 	public Map<String, Object> checkDuplicationForRegistration(@PathVariable String userId) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");

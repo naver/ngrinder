@@ -16,7 +16,6 @@ package org.ngrinder.operation.cotroller;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,7 +53,6 @@ public class SystemConfigController extends BaseController {
 	 *
 	 * @return system configuration
 	 */
-	@RestAPI
 	@ResponseBody
 	@GetMapping(value = "/api")
 	public String getOne() {
@@ -67,7 +65,6 @@ public class SystemConfigController extends BaseController {
 	 * @param content system configuration content to be saved
 	 * @return true if succeeded
 	 */
-	@RestAPI
 	@ResponseBody
 	@PostMapping(value = "/api")
 	public Map<String, Object> save(@RequestParam String content) {

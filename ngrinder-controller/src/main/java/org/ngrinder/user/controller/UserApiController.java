@@ -8,7 +8,6 @@ import static org.ngrinder.common.util.Preconditions.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
@@ -46,7 +45,6 @@ public class UserApiController extends BaseController {
 	 * @param keywords search keyword.
 	 * @return json message
 	 */
-	@RestAPI
 	@GetMapping("/switch_options")
 	public List<User> switchOptions(User user, @RequestParam(defaultValue = "") final String keywords) {
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
@@ -216,7 +214,6 @@ public class UserApiController extends BaseController {
 	 * @param userId userId to be checked
 	 * @return success json if true.
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/{userId}/check_duplication")
 	public Map<String, Object> checkDuplication(@PathVariable String userId) {
@@ -230,7 +227,6 @@ public class UserApiController extends BaseController {
 	 * @param role user role
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping({"/", ""})
 	public List<User> getAll(Role role) {
@@ -243,7 +239,6 @@ public class UserApiController extends BaseController {
 	 * @param userId user id
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/{userId}")
 	public User getOne(@PathVariable("userId") String userId) {
@@ -256,7 +251,6 @@ public class UserApiController extends BaseController {
 	 * @param newUser new user
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PostMapping({"/", ""})
 	public User create(@ModelAttribute("user") User newUser) {
@@ -271,7 +265,6 @@ public class UserApiController extends BaseController {
 	 * @param update update user
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping("/{userId}")
 	public User update(@PathVariable("userId") String userId, User update) {
@@ -286,7 +279,6 @@ public class UserApiController extends BaseController {
 	 * @param userId user id
 	 * @return json message
 	 */
-	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping("/{userId}")
 	public Map<String, Object> delete(User user, @PathVariable("userId") String userId) {
@@ -303,7 +295,6 @@ public class UserApiController extends BaseController {
 	 * @param keywords search keyword.
 	 * @return json message
 	 */
-	@RestAPI
 	@GetMapping("/search")
 	public List<User> search(User user,
 							 @PageableDefault Pageable pageable,

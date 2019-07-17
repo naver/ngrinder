@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,30 +9,30 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.spring;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * Api exception handler which emits the exception message in the form of json.
@@ -47,11 +47,11 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	private static final String JSON_STACKTRACE = "stackTrace";
 	private int order;
 
-	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.core.Ordered#getOrder()
 	 */
 	@Override
@@ -61,7 +61,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.web.servlet.HandlerExceptionResolver#resolveException
 	 * (javax.servlet.http.HttpServletRequest,
@@ -75,22 +75,28 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 			return null;
 		}
 
-		RestAPI methodAnnotation = ((HandlerMethod) handler).getMethodAnnotation(RestAPI.class);
-		if (methodAnnotation == null) {
+		boolean isRestControllerPresent = ((HandlerMethod) handler).getMethod().getDeclaringClass().isAnnotationPresent(RestController.class);
+		boolean isResponseBodyPresent = ((HandlerMethod) handler).getMethodAnnotation(ResponseBody.class) != null;
+		if (!isRestControllerPresent && !isResponseBodyPresent) {
 			return null;
 		}
-		JsonObject object = new JsonObject();
-		object.addProperty(JSON_SUCCESS, false);
-		object.addProperty(JSON_CAUSE, ex.getMessage());
-		StringWriter out = new StringWriter();
+
 		//noinspection ThrowableResultOfMethodCallIgnored
 		Throwable throwable = ExceptionUtils.sanitize(ex);
+
+		StringWriter out = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(out);
 		throwable.printStackTrace(printWriter);
-		object.addProperty(JSON_STACKTRACE, out.toString());
 		IOUtils.closeQuietly(printWriter);
-		String jsonMessage = gson.toJson(object);
+
+		Map<String, Object> jsonResponse = buildMap(
+			JSON_SUCCESS, false,
+			JSON_CAUSE, ex.getMessage(),
+			JSON_STACKTRACE, out.toString()
+		);
+
 		try {
+			String jsonMessage = objectMapper.writeValueAsString(jsonResponse);
 			response.setStatus(500);
 			response.setContentType("application/json; charset=UTF-8");
 			response.addHeader("Pragma", "no-cache");

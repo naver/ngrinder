@@ -17,7 +17,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -104,9 +103,8 @@ public class ScriptConsoleController extends BaseController implements Applicati
 	 * @param script script
 	 * @return script run result
 	 */
-	@GetMapping({"/api/run", "/api/run/"})
-	@RestAPI
 	@ResponseBody
+	@GetMapping({"/api/run", "/api/run/"})
 	public String run(@RequestParam(defaultValue = "") String script) {
 		String result = null;
 

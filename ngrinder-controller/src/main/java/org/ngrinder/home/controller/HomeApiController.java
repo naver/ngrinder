@@ -2,7 +2,6 @@ package org.ngrinder.home.controller;
 
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.script.handler.ScriptHandler;
@@ -53,25 +52,21 @@ public class HomeApiController extends BaseController {
 	}
 
 
-	@RestAPI
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
 		return scriptHandlerFactory.getVisibleHandlers();
 	}
 
-	@RestAPI
 	@GetMapping("/panel")
 	public Map<String, Object> getPanelEntries() {
 		return buildMap("leftPanelEntries", getLeftPanelEntries(), "rightPanelEntries", getRightPanelEntries());
 	}
 
-	@RestAPI
 	@GetMapping("/timezones")
 	public List<TimeZone> getTimezones() {
 		return timeZones;
 	}
 
-	@RestAPI
 	@GetMapping("/config")
 	public Map<String, Object> getCommonHomeConfig() {
 		return buildMap(
