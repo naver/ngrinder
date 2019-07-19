@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,13 +9,12 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.model;
 
 import javax.persistence.*;
 
-import com.google.gson.annotations.Expose;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
@@ -44,7 +43,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	/**
 	 * Agent IP.
 	 */
-	@Expose
 	private String ip;
 
 	/**
@@ -52,7 +50,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 * re-established.
 	 */
 
-	@Expose
 	private Integer port;
 
 	@Transient
@@ -62,32 +59,26 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 * Host name of the agent machine.
 	 */
 
-	@Expose
 	private String hostName;
 
-	@Expose
 	@Enumerated(EnumType.STRING)
 	private AgentControllerState state;
 
 
-	@Expose
 	@Column(name = "system_stat", length = 2000)
 	private String systemStat;
 
 
-	@Expose
 	private String region;
 
 	@Transient
 	private Integer number;
 
 
-	@Expose
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1) default 'F'")
 	private Boolean approved;
 
-	@Expose
 	private String version;
 
 	@PrePersist

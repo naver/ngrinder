@@ -13,19 +13,12 @@
  */
 package org.ngrinder.script.model;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.annotations.Expose;
-import org.apache.commons.collections.MapUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,36 +36,29 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	private static final long serialVersionUID = -2422243194192027508L;
 
-	@Expose
 	private long fileSize;
 
-	@Expose
 	private String content;
 
 	/**
 	 * File properties.
 	 */
-	@Expose
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	/**
 	 * This is mapped to commit comment.
 	 */
-	@Expose
 	private String description;
 
-	@Expose
 	private String encoding;
 
+	@JsonIgnore
 	private byte[] contentBytes;
 
-	@Expose
 	private String path;
 
-	@Expose
 	private FileType fileType;
 
-	@Expose
 	private long revision;
 
 	private long lastRevision;
@@ -219,34 +205,5 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	public void setLastRevision(long lastRevision) {
 		this.lastRevision = lastRevision;
-	}
-
-	/**
-	 * FileEntry to JSON serializer.
-	 *
-	 * @author JunHo Yoon
-	 * @since 3.2.1
-	 */
-	public static class FileEntrySerializer implements JsonSerializer<FileEntry> {
-		@Override
-		public JsonElement serialize(FileEntry fileEntry, Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject root = new JsonObject();
-			root.addProperty("path", FilenameUtils.separatorsToUnix(fileEntry.getPath()));
-			root.addProperty("pathInShort", FilenameUtils.separatorsToUnix(fileEntry.getPathInShort()));
-
-			root.addProperty("revision", fileEntry.getRevision());
-			root.addProperty("lastRevision", fileEntry.getLastRevision());
-
-			root.addProperty("content", fileEntry.getContent());
-			root.addProperty("description", fileEntry.getDescription());
-
-			String validateKey = MapUtils.getString(fileEntry.getProperties(), "validated", "0");
-			if (NumberUtils.isNumber(validateKey)) {
-				root.addProperty("validated", NumberUtils.createInteger(validateKey));
-			} else {
-				root.addProperty("validated", 0);
-			}
-			return root;
-		}
 	}
 }

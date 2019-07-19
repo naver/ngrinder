@@ -15,7 +15,6 @@ package org.ngrinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.Expose;
 import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -64,44 +63,36 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.setLastModifiedUser(createdUser);
 	}
 
-	@Expose
 	@Cloneable
 	@Column(name = "name")
 	private String testName;
 
-	@Expose
 	@Cloneable
 	@Column(name = "tag_string")
 	private String tagString;
 
-	@Expose
 	@Cloneable
 	@Column(length = MAX_LONG_STRING_SIZE)
 	private String description;
 
-	@Expose
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private Status status;
 
-	@Expose
 	@Cloneable
 	/** ignoreSampleCount value, default to 0. */
 	@Column(name = "ignore_sample_count")
 	private Integer ignoreSampleCount;
 
-	@Expose
 	/** the scheduled time of this test. */
 	@Column(name = "scheduled_time")
 	@Index(name = "scheduled_time_index")
 	private Date scheduledTime;
 
-	@Expose
 	/** the start time of this test. */
 	@Column(name = "start_time")
 	private Date startTime;
 
-	@Expose
 	/** the finish time of this test. */
 	@Column(name = "finish_time")
 	private Date finishTime;
@@ -109,7 +100,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * the target host to test.
 	 */
-	@Expose
 	@Cloneable
 	@Column(name = "target_hosts", length = 65535)
 	private String targetHosts;
@@ -117,7 +107,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * The send mail code.
 	 */
-	@Expose
 	@Cloneable
 	@Column(name = "send_mail", columnDefinition = "char(1)")
 	@Type(type = "true_false")
@@ -126,7 +115,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * Use rampUp or not.
 	 */
-	@Expose
 	@Cloneable
 	@Column(name = "use_rampup", columnDefinition = "char(1)")
 	@Type(type = "true_false")
@@ -143,7 +131,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * Use rampUp or not.
 	 */
-	@Expose
 	@Cloneable
 	@Column(name = "ramp_up_type")
 	@Enumerated(EnumType.STRING)
@@ -152,88 +139,70 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * The threshold code, R for run count; D for duration.
 	 */
-	@Expose
 	@Cloneable
 	@Column(name = "threshold")
 	private String threshold;
 
-	@Expose
 	@Cloneable
 	@Column(name = "script_name")
 	private String scriptName;
 
-	@Expose
 	@Cloneable
 	@Column(name = "duration")
 	private Long duration;
 
-	@Expose
 	@Cloneable
 	@Column(name = "run_count")
 	private Integer runCount;
 
-	@Expose
 	@Cloneable
 	@Column(name = "agent_count")
 	private Integer agentCount;
 
-	@Expose
 	@Cloneable
 	@Column(name = "vuser_per_agent")
 	private Integer vuserPerAgent;
 
-	@Expose
 	@Cloneable
 	@Column(name = "processes")
 	private Integer processes;
 
-	@Expose
 	@Cloneable
 	@Column(name = "ramp_up_init_count")
 	private Integer rampUpInitCount;
 
-	@Expose
 	@Cloneable
 	@Column(name = "ramp_up_init_sleep_time")
 	private Integer rampUpInitSleepTime;
 
-	@Expose
 	@Cloneable
 	@Column(name = "ramp_up_step")
 	private Integer rampUpStep;
 
-	@Expose
 	@Cloneable
 	@Column(name = "ramp_up_increment_interval")
 	private Integer rampUpIncrementInterval;
 
-	@Expose
 	@Cloneable
 	@Column(name = "threads")
 	private Integer threads;
 
 	// followings are test result members
-	@Expose
 	@Column(name = "tests")
 	private Long tests;
 
-	@Expose
 	@Column(name = "errors")
 	private Long errors;
 
-	@Expose
 	@Column(name = "mean_test_time")
 	private Double meanTestTime;
 
-	@Expose
 	@Column(name = "test_time_standard_deviation")
 	private Double testTimeStandardDeviation;
 
-	@Expose
 	@Column(name = "tps")
 	private Double tps;
 
-	@Expose
 	@Column(name = "peak_tps")
 	private Double peakTps;
 
@@ -244,7 +213,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "port")
 	private Integer port;
 
-	@Expose
 	@Column(name = "test_error_cause")
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause;
@@ -254,28 +222,22 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The path used for file distribution */
 	private String distributionPath;
 
-	@Expose
 	@Column(name = "progress_message", length = MAX_STRING_SIZE)
 	private String progressMessage;
 
-	@Expose
 	@Column(name = "last_progress_message", length = MAX_STRING_SIZE)
 	private String lastProgressMessage;
 
-	@Expose
 	@Column(name = "test_comment", length = MAX_STRING_SIZE)
 	private String testComment;
 
-	@Expose
 	@Column(name = "script_revision")
 	private Long scriptRevision;
 
-	@Expose
 	@Column(name = "stop_request")
 	@Type(type = "true_false")
 	private Boolean stopRequest;
 
-	@Expose
 	@Cloneable
 	@Column(name = "region")
 	private String region;
@@ -302,12 +264,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
-	@Expose
 	@Cloneable
 	@Column(name = "sampling_interval")
 	private Integer samplingInterval;
 
-	@Expose
 	@Cloneable
 	@Column(name = "param")
 	private String param;

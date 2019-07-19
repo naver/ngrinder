@@ -14,7 +14,6 @@
 package org.ngrinder.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -38,7 +37,6 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Expose
 	@Column(name = "created_date", insertable = true, updatable = false)
 	private Date createdDate;
 
@@ -49,7 +47,6 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@NotFound(action = NotFoundAction.IGNORE)
 	private User createdUser;
 
-	@Expose
 	@Column(name = "last_modified_date", insertable = true, updatable = true)
 	private Date lastModifiedDate;
 

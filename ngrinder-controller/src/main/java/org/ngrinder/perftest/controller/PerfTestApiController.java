@@ -13,8 +13,6 @@
  */
 package org.ngrinder.perftest.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -25,6 +23,7 @@ import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.common.util.UncheckedObjectMapper;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.*;
@@ -49,7 +48,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -101,15 +99,8 @@ public class PerfTestApiController extends BaseController {
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
-	private Gson fileEntryGson;
-
-	/**
-	 * Initialize.
-	 */
-	@PostConstruct
-	public void init() {
-		fileEntryGson = new GsonBuilder().registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer()).create();
-	}
+	@Autowired
+	private UncheckedObjectMapper objectMapper;
 
 	/**
 	 * Get the perf test lists.
@@ -325,13 +316,13 @@ public class PerfTestApiController extends BaseController {
 
 		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, test.getId());
 		if (samplingModel != null) {
-			map.put("perf", fileEntryGson.fromJson(samplingModel.getRunningSample(), HashMap.class));
-			map.put("agent", fileEntryGson.fromJson(samplingModel.getAgentState(), HashMap.class));
+			map.put("perf", objectMapper.readValue(samplingModel.getRunningSample(), HashMap.class));
+			map.put("agent", objectMapper.readValue(samplingModel.getAgentState(), HashMap.class));
 		}
 
 		String monitoringJson = hazelcastService.get(DIST_MAP_NAME_MONITORING, test.getId());
 		if (monitoringJson != null) {
-			map.put("monitor", fileEntryGson.fromJson(monitoringJson, HashMap.class));
+			map.put("monitor", objectMapper.readValue(monitoringJson, HashMap.class));
 		}
 
 		map.put("status", test.getStatus());
