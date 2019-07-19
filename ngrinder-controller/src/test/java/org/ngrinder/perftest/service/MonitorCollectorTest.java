@@ -1,19 +1,19 @@
 package org.ngrinder.perftest.service;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.collect.Lists;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MonitorCollectorTest {
 
 	@Test
-	public void testMonitor() {
+	public void testMonitor() throws IOException {
 		SystemDataModel systemDataModel = new SystemDataModel();
 		systemDataModel.setCollectTime(100L);
 		systemDataModel.setFreeMemory(20L);
@@ -21,15 +21,10 @@ public class MonitorCollectorTest {
 		List<SystemDataModel> lists = Lists.newArrayList();
 		lists.add(systemDataModel);
 		lists.add(systemDataModel);
-		Gson gson = new Gson();
-		String json = gson.toJson(lists);
-		ArrayList<SystemDataModel> fromJson = gson.fromJson(json, getTypeToken());
+		ObjectMapper objectMapper = new ObjectMapper();
+		String json = objectMapper.writeValueAsString(lists);
+		ArrayList<SystemDataModel> fromJson = objectMapper.readValue(json, new TypeReference<ArrayList<SystemDataModel>>() {
+		});
 		System.out.println(fromJson.get(0).getClass());
-	}
-
-	private Type getTypeToken() {
-		return new TypeToken<ArrayList<SystemDataModel>>() {
-			private static final long serialVersionUID = 1L;
-		}.getType();
 	}
 }

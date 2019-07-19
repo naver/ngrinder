@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -44,42 +43,33 @@ public class User extends BaseModel<User> {
 
 	private static final long serialVersionUID = 7398072895183814285L;
 
-	@Expose
 	@Column(name = "user_id", unique = true, nullable = false)
 	/** User Id */
 	private String userId;
 
-	@Expose
 	@Column(name = "user_name")
 	/** User Name e.g) Jone Dogh. */
 	private String userName;
 
 	private String password;
 
-	@Expose
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1)")
 	private Boolean enabled;
 
-	@Expose
 	private String email;
 
-	@Expose
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role_name", nullable = false)
 	private Role role;
 
-	@Expose
 	private String description;
 
-	@Expose
 	private String timeZone;
 
-	@Expose
 	@Column(name = "user_language")
 	private String userLanguage;
 
-	@Expose
 	@Column(name = "mobile_phone")
 	private String mobilePhone;
 
@@ -94,7 +84,6 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User follower;
 
-	@Expose
 	@Transient
 	private String followersStr;
 
