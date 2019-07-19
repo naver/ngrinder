@@ -14,14 +14,15 @@
 package org.ngrinder.infra.spring;
 
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.UrlPathHelper;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * NGrinder specialized Servlet Dispatcher.
@@ -37,7 +38,8 @@ public class Redirect404DispatcherServlet extends DispatcherServlet {
 	private static final String JSON_SUCCESS = "success";
 	private static final String JSON_CAUSE = "message";
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
-	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
 	 * Redirect to error 404 when the /svn/ is not included in the path.
@@ -52,11 +54,13 @@ public class Redirect404DispatcherServlet extends DispatcherServlet {
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				response.setContentType("application/json; charset=UTF-8");
 				String requestUri = urlPathHelper.getRequestUri(request);
-				JsonObject object = new JsonObject();
 
-				object.addProperty(JSON_SUCCESS, false);
-				object.addProperty(JSON_CAUSE, "API URL " + requestUri + " [" + request.getMethod() + "] does not exist.");
-				response.getWriter().write(gson.toJson(object));
+				Map<String, Object> result = buildMap(
+					JSON_SUCCESS, false,
+					JSON_CAUSE, "API URL " + requestUri + " [" + request.getMethod() + "] does not exist."
+				);
+
+				objectMapper.writeValue(response.getWriter(), result);
 				response.flushBuffer();
 			} else {
 				if (pageNotFoundLogger.isWarnEnabled()) {

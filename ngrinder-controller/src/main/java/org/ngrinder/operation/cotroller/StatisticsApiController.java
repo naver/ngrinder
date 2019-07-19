@@ -13,8 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
@@ -36,9 +34,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/stat")
 public class StatisticsApiController extends BaseController implements ControllerConstants {
-
-	// disable escaping ('<', '>', '=' ...)
-	private static Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
 	@Autowired
 	private Config config;
