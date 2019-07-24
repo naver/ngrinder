@@ -15,6 +15,7 @@ package org.ngrinder.infra.spring;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -39,7 +40,8 @@ public class Redirect404DispatcherServlet extends DispatcherServlet {
 	private static final String JSON_CAUSE = "message";
 	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	/**
 	 * Redirect to error 404 when the /svn/ is not included in the path.
