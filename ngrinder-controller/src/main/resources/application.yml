@@ -21,6 +21,9 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
       - org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
       - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
   profiles:
     active: production
+  resources:
+    add-mappings: false
