@@ -4,18 +4,17 @@
  is the bug fix and minor enhancement release.
 
 - Changes
-  * Make agent worker log rolling work correctly.
-    - Allow to delete log rolling backup file on secure mode
+  * Make agent worker log-rotation work correctly.
   * Make script with html escape chracter be saved correctly.
     - Bump Lucy XSS filter version up to 2.0.1
     - Show script contents without HTML escape characters
  
 - Bug Fix
-  * #363 ValidateScript error
-  * #385 HTML escape char cover error
-  * #387 about groove Script Error
-  * #389 `&quot;` error
-  * #433 Agent worker log isn't rolling on secure mode
+  * #363 Fix validate script error
+  * #385 Fix HTML escape char cover error
+  * #387 Fix groovy script Error
+  * #389 Fix `&quot;` error
+  * #433 Fix agent worker log isn't rolling on secure mode
 
 3.4.2 (2018.08.20)
 ==================
