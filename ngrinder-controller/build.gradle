@@ -60,7 +60,7 @@ dependencies {
     compile (group: "com.beust", name: "jcommander", version: "1.32")
     compile (group: "ro.fortsoft.pf4j", name: "pf4j", version: "0.12.0")
     compile (group: "commons-collections", name: "commons-collections", version: "3.2.1")
-    compile (group: "com.navercorp.lucy", name: "lucy-xss-servlet", version: "2.0.0")
+    compile (group: "com.navercorp.lucy", name: "lucy-xss-servlet", version: "2.0.1")
     compile (group: "ro.fortsoft.pf4j", name: "pf4j-spring", version: "0.2.0") {
         exclude (module: "slf4j-log4j12")
     }

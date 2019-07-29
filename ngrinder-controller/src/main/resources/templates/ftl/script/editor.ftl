@@ -113,8 +113,8 @@
 		</form>
 
 
-		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
-		<textarea id="old_content" class="hidden">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
+		<textarea id="codemirror_content">${((file.content)!"")?replace("&", "&amp;")}</textarea>
+		<textarea id="old_content" class="hidden">${((file.content)!"")?replace("&", "&amp;")}</textarea>
 		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px;cursor: pointer"
 			title="Tip" data-html="ture"
 			data-placement="left"
@@ -124,7 +124,7 @@
 				Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
 				Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
 				Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
-				F11 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
+				F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
 				ESC : <@spring.message 'script.editor.tip.back'/>
 				"><code>Tip</code></div>
 		<div id="script_samples_link" style="text-align: center;margin-top: 10px;">
