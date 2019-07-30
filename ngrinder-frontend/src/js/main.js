@@ -5,6 +5,7 @@ import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
 import VueSession from 'vue-session';
+import bFormSlider from 'vue-bootstrap-slider';
 import numFormat from 'vue-filter-number-format';
 
 import Event from 'bus-event.js';
@@ -27,9 +28,16 @@ import Copyright from 'common/Copyright.vue';
 import Navigator from 'common/navigator/Navigator.vue';
 import Messages from 'common/Messages.vue';
 
-import VeeValidateInitializer from 'vee-validate-initializer.js'
+import VeeValidateInitializer from 'vee-validate-initializer.js';
+import Utils from 'utils.js';
+import bootbox from 'bootbox';
 
 import 'moment-duration-format';
+import 'expose-loader?$!expose-loader?jQuery!jquery';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.js';
+import 'font-awesome/css/font-awesome.min.css';
+import 'bootstrap-slider/dist/css/bootstrap-slider.css';
 
 axios.interceptors.request.use(config => {
     if (typeof config.params === 'undefined') {
@@ -49,9 +57,12 @@ Vue.use(Vuex);
 Vue.use(VueSession);
 Vue.use(VueRouter);
 Vue.use(VeeValidate, {inject: false});
+Vue.use(bFormSlider);
 
+Vue.prototype.$bootbox = bootbox;
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axios;
+Vue.prototype.$utils = Utils;
 Vue.prototype.$EventBus = new Vue();
 Vue.prototype.$Event = Event;
 Vue.prototype.initEventBus = () => Vue.prototype.$EventBus = new Vue();
