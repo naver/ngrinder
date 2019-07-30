@@ -1,53 +1,48 @@
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta http-equiv="Cache-Control" content="no-cache"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta charset="UTF-8">
 
-<link href="/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="/css/ngrinder.css" rel="stylesheet"/>
-<link href="/css/bootstrap-slider.min.css" rel="stylesheet"/>
-<link href="/css/introjs.min.css" rel="stylesheet"/>
+        <link href="/css/introjs.min.css" rel="stylesheet"/>
+        <link href="/css/app.css" rel="stylesheet"/>
+        <link href="/css/ngrinder.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <main id="ngrinder">
+            <navigator v-if="ngrinder.currentUser.role"></navigator>
+            <router-view :key="$route.fullPath"></router-view>
+            <copyright :version="ngrinder.version"></copyright>
+            <messages ref="messages"></messages>
+        </main>
+        <script>
+            window.ngrinder = {
+                version: '{{ version }}',
+                currentUser: {
+                    name: '{{ currentUser.userName }}',
+                    id: '{{ currentUser.userId }}',
+                    email: '{{ currentUser.email }}',
+                    role: '{{ currentUser.role.shortName }}',
+                    factualUser: {
+                        name: '{{ currentUser.factualUser.userName }}',
+                        id: '{{ currentUser.factualUser.userId }}',
+                        email: '{{ currentUser.factualUser.email }}',
+                        role: '{{ currentUser.role.shortName }}',
+                    },
+                },
+                config: {
+                    signUpEnabled : {{{ signUpEnabled }}},
+                    clustered: {{{ clustered }}},
+                    userSwitchMode: !!('{{ currentUser.ownerUser }}'),
+                    helpUrl: '{{ helpUrl }}',
+                    hasNewAnnouncement: {{{ hasNewAnnouncement }}},
+                },
+            };
 
-<div id="ngrinder">
-    <div id="ngrinder-main-content-wrapper">
-        <navigator v-if="ngrinder.currentUser.role"></navigator>
-        <router-view :key="$route.fullPath"></router-view>
-        <copyright :version="ngrinder.version"></copyright>
-        <messages ref="messages"></messages>
-    </div>
-</div>
+            {{{ vuserCalcScript }}}
 
-<script>
-    window.ngrinder = {
-        version: '{{ version }}',
-        currentUser: {
-            name: '{{ currentUser.userName }}',
-            id: '{{ currentUser.userId }}',
-            email: '{{ currentUser.email }}',
-            role: '{{ currentUser.role.shortName }}',
-            factualUser: {
-                name: '{{ currentUser.factualUser.userName }}',
-                id: '{{ currentUser.factualUser.userId }}',
-                email: '{{ currentUser.factualUser.email }}',
-                role:  '{{ currentUser.role.shortName }}',
-            },
-        },
-        config: {
-            signUpEnabled : {{{ signUpEnabled }}},
-            clustered: {{{ clustered }}},
-            userSwitchMode: !!('{{ currentUser.ownerUser }}'),
-            helpUrl: '{{ helpUrl }}',
-            hasNewAnnouncement: {{{ hasNewAnnouncement }}},
-        },
-    };
+        </script>
+        <script type="text/javascript" src="/js/app.js"></script>
+    </body>
+</html>
 
-    {{{ vuserCalcScript }}}
-
-</script>
-<script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="/js/jquery.number.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap-slider.min.js"></script>
-<script type="text/javascript" src="/js/bootbox.min.js"></script>
-<script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="/js/app.js"></script>
