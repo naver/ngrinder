@@ -111,6 +111,11 @@ module.exports = function (env) {
             ],
         },
         plugins: [
+            new webpack.ProvidePlugin({
+                $: 'jquery',
+                jQuery: 'jquery',
+                'window.jQuery': 'jquery',
+            }),
             new ExtractTextPlugin('./css/[name].css'),
             new CopyWebpackPlugin([
                 {
