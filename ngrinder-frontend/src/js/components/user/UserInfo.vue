@@ -34,6 +34,7 @@
             <control-group name="description" labelMessageKey="common.label.description">
                 <textarea cols="30" name="description"
                           rows="3" title="Description"
+                          id="description"
                           class="form-control"
                           v-model="user.description"></textarea>
             </control-group>
@@ -67,7 +68,7 @@
 
                     <control-group :class="{ error: errors.has('confirmPassword') }" name="confirmPassword" labelMessageKey="user.info.cpwd" :required="config.showPasswordByDefault">
                         <input-append name="confirmPassword" ref="confirmPassword"
-                                      v-model="user.confirmPassword"
+                                      v-model="confirmPassword"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15], confirmed: user.password}"
                                       type="password" message="user.info.cpwd"/>
                     </control-group>
@@ -105,9 +106,9 @@
                 type: Object,
                 required: true,
             },
-            type: {
+            basePath: {
                 type: String,
-                default: 'save',
+                default: 'user',
             },
         },
         components: { ControlGroup, InputAppend, Select2 },
@@ -123,13 +124,12 @@
             description: '',
             mobilePhone: '',
             password: '',
-            confirmPassword: '',
             followersStr: '',
         };
+        confirmPassword = '';
 
         displayPasswordField = true;
         followerSelect2Option = {};
-        formUrl = '/user/api/save';
 
         created() {
             delete this.userProps.password;
@@ -141,9 +141,6 @@
             this.displayPasswordField = this.config.showPasswordByDefault;
 
             this.setCustomValidationRules();
-            if (this.type === 'signUp') {
-                this.formUrl = '/sign_up/api/save';
-            }
 
             if (this.config.allowShareChange) {
                 this.followerSelect2Option = {
@@ -194,7 +191,7 @@
         save() {
             this.$validator.validateAll().then(result => {
                 if (result) {
-                    this.$http.post(this.formUrl, this.user)
+                    this.$http.post(`/${this.basePath}/api/save`, this.user)
                         .then(() => this.$emit('saved'))
                         .catch(() => this.showErrorMsg(this.i18n('user.message.save.error')));
                 }
@@ -216,7 +213,7 @@
                 getMessage: this.i18n('user.info.userId.exist'),
                 validate: userId => {
                     if (userId && userId.length > 0) {
-                        return this.$http.get(`/sign_up/api/${userId}/check_duplication`)
+                        return this.$http.get(`/${this.basePath}/api/${userId}/check_duplication`)
                             .then(res => res.data.success);
                     } else {
                         return false;

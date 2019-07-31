@@ -7,7 +7,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
                 <div class="modal-body">
-                    <user-info :type="'signUp'" :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
+                    <user-info base-path="sign_up" :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
                 </div>
             </div>
         </div>
