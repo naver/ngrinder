@@ -113,7 +113,7 @@ public enum Role {
 
 	@JsonCreator
 	static Role of(@JsonProperty("name") String name) {
-		return Arrays.stream(Role.values()).filter(role -> role.name().equals(name)).findFirst().get();
+		return Arrays.stream(Role.values()).filter(role -> role.name().equals(name)).findFirst().orElse(null);
 	}
 
 	/**

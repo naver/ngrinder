@@ -14,6 +14,7 @@
 package org.ngrinder.user.controller;
 
 
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -33,7 +34,7 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
  */
 @RestController
 @RequestMapping("/sign_up/api")
-public class UserSignUpApiController extends UserApiController {
+public class UserSignUpApiController extends BaseController {
 
 	@Autowired
 	private UserService userService;
@@ -73,45 +74,6 @@ public class UserSignUpApiController extends UserApiController {
 		newUser.setRole(Role.USER);
 		userService.createUser(newUser);
 		return returnSuccess();
-	}
-
-
-	/**
-	 * To block security issue.
-	 *
-	 * @deprecated
-	 */
-	@Override
-	@GetMapping("/new_remap")
-	public Map<String, Object> openForm(User user) {
-		return null;
-	}
-
-	/**
-	 * To block security issue.
-	 *
-	 * @param user        current user
-	 * @param updatedUser user to be updated.
-	 * @return
-	 * @deprecated
-	 */
-	@Override
-	@GetMapping("/save_remap")
-	public Map<String, Object> save(User user, @ModelAttribute("user") User updatedUser) {
-		return null;
-	}
-
-	/**
-	 * To block security issue.
-	 *
-	 * @param userId userId to be checked
-	 * @return
-	 * @deprecated
-	 */
-	@Override
-	@GetMapping("/{userId}/check_duplication_remap")
-	public Map<String, Object> checkDuplication(@PathVariable String userId) {
-		return null;
 	}
 
 	/**
