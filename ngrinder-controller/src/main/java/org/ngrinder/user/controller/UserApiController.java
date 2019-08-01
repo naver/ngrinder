@@ -62,13 +62,19 @@ public class UserApiController extends BaseController {
 	@GetMapping("/profile")
 	public Map<String, Object> getOne(User user) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		Map<String, Object> model = new HashMap<>();
 		User one = userService.getOneWithFollowers(user.getUserId());
+
+		Map<String, Object> viewConfig = new HashMap<>();
+		viewConfig.put("allowPasswordChange", !config.isDemo());
+		viewConfig.put("allowRoleChange", false);
+		viewConfig.put("allowShareChange", true);
+		viewConfig.put("showPasswordByDefault", false);
+		viewConfig.put("userSecurityEnabled", config.isUserSecurityEnabled());
+
+		Map<String, Object> model = new HashMap<>();
 		model.put("user", one);
-		model.put("allowPasswordChange", !config.isDemo());
-		model.put("allowRoleChange", false);
-		model.put("showPasswordByDefault", false);
-		attachCommonAttribute(one, model);
+		model.put("config", viewConfig);
+
 		return model;
 	}
 
@@ -83,15 +89,18 @@ public class UserApiController extends BaseController {
 	public Map<String, Object> openForm(User user) {
 		User one = User.createNew();
 
-		Map<String, Object> model = new HashMap<>(7);
-		model.put("user", one);
-		model.put("allowUserIdChange", true);
-		model.put("allowPasswordChange", true);
-		model.put("allowRoleChange", false);
-		model.put("roleSet", EnumSet.allOf(Role.class));
-		model.put("showPasswordByDefault", true);
+		Map<String, Object> viewConfig = new HashMap<>();
+		viewConfig.put("allowUserIdChange", true);
+		viewConfig.put("allowPasswordChange", true);
+		viewConfig.put("allowRoleChange", false);
+		viewConfig.put("roleSet", EnumSet.allOf(Role.class));
+		viewConfig.put("allowShareChange", true);
+		viewConfig.put("showPasswordByDefault", true);
+		viewConfig.put("userSecurityEnabled", config.isUserSecurityEnabled());
 
-		attachCommonAttribute(one, model);
+		Map<String, Object> model = new HashMap<>();
+		model.put("user", one);
+		model.put("config", viewConfig);
 		return model;
 	}
 
@@ -105,14 +114,19 @@ public class UserApiController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	public Map<String, Object> getOneDetail(@PathVariable final String userId) {
 		User one = userService.getOneWithFollowers(userId);
-		Map<String, Object> model = buildMap(
-			"user", one,
-			"allowPasswordChange", true,
-			"allowRoleChange", true,
-			"roleSet", EnumSet.allOf(Role.class),
-			"showPasswordByDefault", false
-		);
-		attachCommonAttribute(one, model);
+
+		Map<String, Object> viewConfig = new HashMap<>();
+		viewConfig.put("allowPasswordChange", true);
+		viewConfig.put("allowRoleChange", true);
+		viewConfig.put("roleSet", EnumSet.allOf(Role.class));
+		viewConfig.put("showPasswordByDefault", false);
+		viewConfig.put("allowShareChange", true);
+		viewConfig.put("userSecurityEnabled", config.isUserSecurityEnabled());
+
+
+		Map<String, Object> model = new HashMap<>();
+		model.put("user", one);
+		model.put("config", viewConfig);
 		return model;
 	}
 
@@ -137,17 +151,6 @@ public class UserApiController extends BaseController {
 		}
 
 		return pagedUser;
-	}
-
-	/**
-	 * Get user list that current user will be shared, excluding current user.
-	 *
-	 * @param user  current user
-	 * @param model model
-	 */
-	private void attachCommonAttribute(User user, Map<String, Object> model) {
-		model.put("allowShareChange", true);
-		model.put("userSecurityEnabled", config.isUserSecurityEnabled());
 	}
 
 	/**
