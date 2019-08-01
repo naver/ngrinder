@@ -33,37 +33,13 @@
         dataLoaded = false;
 
         created() {
-            // TODO: Assemble allow configs in a config.
-            if (this.$route.name === 'createNewUser') {
-                this.$http.get('/user/api/new')
-                    .then(res => {
-                        this.user = res.data.user;
-                        this.config = {
-                            allowUserIdChange: res.data.allowUserIdChange,
-                            allowPasswordChange: res.data.allowPasswordChange,
-                            allowRoleChange: res.data.allowRoleChange,
-                            roleSet: res.data.roleSet,
-                            allowShareChange: res.data.allowShareChange,
-                            showPasswordByDefault: res.data.showPasswordByDefault,
-                            userSecurityEnabled: res.data.userSecurityEnabled,
-                        };
-                        this.dataLoaded = true;
-                    });
-            } else {
-                this.$http.get(`/user/api/${this.userId}/detail`)
-                    .then(res => {
-                        this.user = res.data.user;
-                        this.config = {
-                            roleSet: res.data.roleSet,
-                            allowPasswordChange: res.data.allowPasswordChange,
-                            allowRoleChange: res.data.allowRoleChange,
-                            allowShareChange: res.data.allowShareChange,
-                            showPasswordByDefault: res.data.showPasswordByDefault,
-                            userSecurityEnabled: res.data.userSecurityEnabled,
-                        };
-                        this.dataLoaded = true;
-                    });
-            }
+            const url = this.$route.name === 'createNewUser' ? '/user/api/new' : `/user/api/${this.userId}/detail`;
+
+            this.$http.get(url).then(res => {
+                this.user = res.data.user;
+                this.config = res.data.config;
+                this.dataLoaded = true;
+            });
         }
     }
 </script>

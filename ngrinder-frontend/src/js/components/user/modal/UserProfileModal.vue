@@ -33,15 +33,7 @@
         created() {
             this.$http.get('/user/api/profile').then(res => {
                 this.user = res.data.user;
-                this.config = {
-                    allowPasswordChange: res.data.allowPasswordChange,
-                    allowRoleChange: res.data.allowRoleChange,
-                    allowShareChange: res.data.allowShareChange,
-                    followers: res.data.followers,
-                    owners: res.data.owners,
-                    showPasswordByDefault: res.data.showPasswordByDefault,
-                    userSecurityEnabled: res.data.userSecurityEnabled,
-                };
+                this.config = res.data.config;
                 this.dataLoadFinished = true;
                 this.$nextTick(() => {
                     this.show();
