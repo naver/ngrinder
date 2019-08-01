@@ -24,6 +24,5 @@ spring:
       - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
   profiles:
     active: production
-
   jackson:
     default-property-inclusion: non_null
