@@ -44,7 +44,6 @@ import org.ngrinder.script.service.ScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -333,10 +332,9 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping(value = "/**", params = "action=view")
-	public HttpEntity<String> viewOne(User user, @RemainedPath String path) {
+	public FileEntry viewOne(User user, @RemainedPath String path) {
 		FileEntry fileEntry = fileEntryService.getOne(user, path, -1L);
-		return toJsonHttpEntity(checkNotNull(fileEntry
-			, "%s file is not viewable", path));
+		return checkNotNull(fileEntry, "%s file is not viewable", path);
 	}
 
 	/**
@@ -347,8 +345,8 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping(value = {"/**", "/", ""}, params = "action=all")
-	public HttpEntity<String> getAll(User user) {
-		return toJsonHttpEntity(fileEntryService.getAll(user));
+	public List<FileEntry> getAll(User user) {
+		return fileEntryService.getAll(user);
 	}
 
 	/**
@@ -360,18 +358,16 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@GetMapping({"/**", "/", ""})
-	public HttpEntity<String> getAll(User user, @RemainedPath String path) {
+	public List<FileEntry> getAll(User user, @RemainedPath String path) {
 		String trimmedPath = trimToEmpty(path);
 
-		return toJsonHttpEntity(
-			fileEntryService.getAll(user)
+		return fileEntryService.getAll(user)
 				.stream()
 				.filter(Objects::nonNull)
 				.filter(fileEntry -> trimPathSeparatorBothSides(getPath(fileEntry.getPath())).equals(trimmedPath))
 				.sorted(DIRECTORY_PRIORITY_FILE_ENTRY_COMPARATOR)
 				.peek(fileEntry -> fileEntry.setPath(removePrependedSlash(fileEntry.getPath())))
-				.collect(toList())
-		);
+				.collect(toList());
 	}
 
 	/**
@@ -398,9 +394,9 @@ public class FileEntryApiController extends BaseController {
 	 */
 	@RestAPI
 	@PostMapping("/validate")
-	public HttpEntity<String> validate(User user, FileEntry fileEntry,
+	public String validate(User user, FileEntry fileEntry,
 									   @RequestParam(required = false) String hostString) {
 		fileEntry.setCreatedUser(user);
-		return toJsonHttpEntity(scriptValidationService.validate(user, fileEntry, false, hostString));
+		return scriptValidationService.validate(user, fileEntry, false, hostString);
 	}
 }
