@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 
 import java.io.File;
@@ -35,8 +36,8 @@ public class PropertyBuilderTest {
 				+ new File("./native_lib").getAbsolutePath());
 
 		PropertyBuilder createPropertyBuilder = createPropertyBuilder("www.sample.com,:127.0.0.1");
-		assertThat(createPropertyBuilder.rebaseHostString("www.sample.com,:127.0.0.1"),
-				is("www.sample.com:173.230.129.147,:127.0.0.1"));
+		assertTrue(createPropertyBuilder.rebaseHostString("www.sample.com,:127.0.0.1")
+			.matches("www.sample.com:.*,:127.0.0.1"));
 		assertThat(createPropertyBuilder.rebaseHostString("www.sample.com:74.125.128.99"),
 				is("www.sample.com:74.125.128.99"));
 		assertThat(createPropertyBuilder.rebaseHostString(":127.0.0.1"), is(":127.0.0.1"));
