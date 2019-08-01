@@ -33,6 +33,7 @@ import Utils from 'utils.js';
 import bootbox from 'bootbox';
 
 import 'moment-duration-format';
+import 'moment-timezone';
 import 'expose-loader?$!expose-loader?jQuery!jquery';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.js';
@@ -78,7 +79,7 @@ Vue.directive('focus', {
 Vue.filter('numFormat', numFormat);
 Vue.filter('dateFormat', (value, format) => {
     if (value) {
-        return moment(new Date(value)).format(format);
+        return moment(new Date(value)).tz(ngrinder.currentUser.timeZone).format(format);
     }
     return '';
 });
