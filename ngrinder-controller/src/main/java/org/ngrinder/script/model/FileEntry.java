@@ -14,11 +14,16 @@
 package org.ngrinder.script.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,10 +73,12 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	 *
 	 * @return path
 	 */
+	@JsonSerialize(using = UnixPathSerializer.class)
 	public String getPath() {
 		return path;
 	}
 
+	@JsonSerialize(using = UnixPathSerializer.class)
 	public String getPathInShort() {
 		return PathUtils.getShortPath(path);
 	}
@@ -205,5 +212,21 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	public void setLastRevision(long lastRevision) {
 		this.lastRevision = lastRevision;
+	}
+
+	private static class UnixPathSerializer extends StdSerializer<String> {
+		@SuppressWarnings("unused")
+		UnixPathSerializer() {
+			this(null);
+		}
+
+		UnixPathSerializer(Class<String> t) {
+			super(t);
+		}
+
+		@Override
+		public void serialize(String path, JsonGenerator generator, SerializerProvider provider) throws IOException {
+			generator.writeObject(FilenameUtils.separatorsToUnix(path));
+		}
 	}
 }
