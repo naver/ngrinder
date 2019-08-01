@@ -40,12 +40,12 @@
                         <input v-if="script.fileName !== '..'" type="checkbox" class="checkbox" v-model="script.checked">
                     </td>
                     <td>
-                        <i v-if="isEditable(script.fileType , script.path)" class="fa fa-file"></i>
+                        <i v-if="script.editable" class="fa fa-file"></i>
                         <i v-else-if="script.fileType === 'DIR'" class="fa fa-folder-open"></i>
                         <i v-else class="fa fa-briefcase"></i>
                     </td>
                     <td class="ellipsis">
-                        <router-link v-if="isEditable(script.fileType, script.path)"
+                        <router-link v-if="script.editable"
                                      :to="`/script/detail/${script.path}`"
                                      :title="script.path" target="_self"
                                      v-text="script.fileName">
@@ -81,7 +81,6 @@
     import { Mixins } from 'vue-mixin-decorator';
     import { Component, Watch } from 'vue-property-decorator';
     import VueHeadful from 'vue-headful';
-    import FileType from '../../common/file-type';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import Base from '../Base.vue';
     import SearchBar from './SearchBar.vue';
@@ -106,7 +105,6 @@
             const refresh = scripts => {
                 const list = scripts.map(script => {
                     script.checked = false;
-                    script.fileName = this.getFileName(script.path);
                     return script;
                 });
 
@@ -166,41 +164,6 @@
 
         getFileSize(size) {
             return this.formatNumber((size / 1024), 2);
-        }
-
-        isEditable(type, path) {
-            if (type) {
-                return FileType.FileTypeEnum[type].isEditable();
-            } else {
-                const ext = this.getFileExtension(path);
-                return FileType.getFileTypeByExtension(ext).isEditable();
-            }
-        }
-
-        getFileName(filepath) {
-            if (filepath) {
-                const lastIndex = this.indexOfLastSeparator(filepath);
-                return filepath.substring(lastIndex + 1);
-            } else {
-                return '';
-            }
-        }
-
-        indexOfLastSeparator(filepath) {
-            const lastUnixPos = filepath.lastIndexOf('/');
-            const lastWindowsPos = filepath.lastIndexOf('\\');
-            return Math.max(lastUnixPos, lastWindowsPos);
-        }
-
-        getFileExtension(filepath) {
-            if (!filepath) {
-                return '';
-            } else {
-                let extensionPos = filepath.lastIndexOf('.');
-                const lastSeparator = this.indexOfLastSeparator(filepath);
-                extensionPos = lastSeparator > extensionPos ? -1 : extensionPos;
-                return extensionPos === -1 ? '' : filepath.substring(extensionPos + 1);
-            }
         }
 
         formatNumber(number, decimal) {

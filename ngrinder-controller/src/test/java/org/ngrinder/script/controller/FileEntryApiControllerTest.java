@@ -95,8 +95,7 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		scriptController.search(getTestUser(), "test");
 
 		scriptController.delete(getTestUser(), Arrays.asList(path + "/new_file.py"));
-		Type listType = new TypeToken<ArrayList<FileEntry>>(){}.getType();
-		List<FileEntry> scriptList = new Gson().fromJson(scriptController.getAll(getTestUser(), path).getBody(), listType);
+		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
 		assertThat(scriptList.size(), is(0));
 	}
 
@@ -124,8 +123,7 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 
 		// delete both files
 		scriptController.delete(getTestUser(), Arrays.asList(path + "/file-for-search.py", path + "/new-file-for-search.py"));
-		Type listType = new TypeToken<ArrayList<FileEntry>>(){}.getType();
-		List<FileEntry> scriptList = new Gson().fromJson(scriptController.getAll(getTestUser(), path).getBody(), listType);
+		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
 		assertThat(scriptList.size(), is(0));
 	}
 
