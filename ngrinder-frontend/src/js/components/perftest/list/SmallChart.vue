@@ -1,7 +1,7 @@
 <template>
     <transition name="fade">
         <tr class="small-chart-container" v-show="displayChart">
-            <td class="no-padding" colspan="12">
+            <td class="p-0" colspan="12">
                 <table>
                     <tr>
                         <td><div class="small-chart" :id="`tps_${perfTestId}`"></div></td>

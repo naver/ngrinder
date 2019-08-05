@@ -1,9 +1,9 @@
 <template>
     <div v-show="dataLoadFinished" id="report-container">
-        <div class="row">
-            <div ref="" class="span4 intro" data-step="4" :data-intro="i18n('intro.report.summary')">
+        <div class="row m-0">
+            <div class="intro summary-chart-container" data-step="4" :data-intro="i18n('intro.report.summary')">
                 <fieldset>
-                    <legend v-text="i18n('perfTest.report.summary')"></legend>
+                    <legend class="border-bottom" v-text="i18n('perfTest.report.summary')"></legend>
                 </fieldset>
                 <div class="summary form-horizontal form-horizontal-3">
                     <fieldset>
@@ -42,32 +42,36 @@
                     </fieldset>
                 </div>
             </div>
-            <div class="span8 intro" data-step="5" :data-intro="i18n('intro.report.tpsGraph')">
+            <div class="pl-4 intro tps-chart-container" data-step="5" :data-intro="i18n('intro.report.tpsGraph')">
                 <fieldSet>
-                    <legend>
+                    <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.tpsGraph')"></span>
-                        <a @click="$router.push(`/perftest/${report.test.id}/detail_report`)" class="btn btn-primary pull-right" v-text="i18n('perfTest.report.detailedReport')"></a>
+                        <button @click="$router.push(`/perftest/${report.test.id}/detail_report`)" class="btn btn-primary float-right">
+                            <i class="fa fa-file mr-1"></i>
+                            <span v-text="i18n('perfTest.report.detailedReport')"></span>
+                        </button>
                     </legend>
                 </fieldSet>
-                <div id="tps-chart" class="chart"></div>
+                <div id="tps-chart"></div>
             </div>
         </div>
-        <div class="row">
-            <div class="span4">
+        <div class="row m-0">
+            <div class="log-container">
                 <fieldSet>
-                    <legend>
+                    <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.logs')"></span>
                         <span class="log-comment"
                               data-toggle="popover"
+                              data-trigger="hover"
                               data-html="true"
                               :data-content="i18n('perfTest.report.logs.help')"
                               :title="i18n('perfTest.report.logs')">
-                            <i class="icon-question-sign pointer-cursor"></i>
+                            <i class="fa fa-question-circle pointer-cursor"></i>
                         </span>
                     </legend>
                 </fieldSet>
                 <div>
-                    <div v-for="log in logs" class="ellipsis logs-container">
+                    <div v-for="log in logs" class="ellipsis w-100">
                         <a :href="`/perftest/${report.test.id}/show_log/${log}`" target="log" title="open the log in the new window">
                             <img src="/img/open_external.png"></a>
                         <a :href="`/perftest/${report.test.id}/download_log/${log}`" v-text="log"></a>
@@ -75,14 +79,17 @@
                 </div>
                 <div v-if="logs.length <= 0" v-text="i18n('perfTest.report.message.noLog')"></div>
             </div>
-            <div class="span8 intro commend-container" data-step="6" :data-intro="i18n('intro.report.testComment')">
+            <div class="pl-4 intro comment-container" data-step="6" :data-intro="i18n('intro.report.testComment')">
                 <fieldSet>
-                    <legend>
+                    <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.testComment')"></span>
-                        <a @click="leaveComment" class="btn btn-primary pull-right" v-text="i18n('perfTest.report.leaveComment')"></a>
+                        <button @click="leaveComment" class="btn btn-primary float-right">
+                            <i class="fa fa-comment mr-1"></i>
+                            <span v-text="i18n('perfTest.report.leaveComment')"></span>
+                        </button>
                     </legend>
                 </fieldSet>
-                <textarea v-model="report.test.testComment" rows="3"></textarea>
+                <textarea class="form-control" v-model="report.test.testComment" rows="3"></textarea>
             </div>
         </div>
     </div>
@@ -135,8 +142,7 @@
                     this.report.tps = res.data.tps;
                     this.dataLoadFinished = true;
                     this.$nextTick(() => {
-                        $('[data-toggle="popover"]').popover('destroy');
-                        $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#report-container' });
+                        $('[data-toggle="popover"]').popover();
                         new Chart('tps-chart', [this.report.tps], this.report.interval).plot();
                     });
                 }).catch(error => console.log(error));
@@ -165,14 +171,31 @@
 
 <style lang="less" scoped>
     #report-container {
-        .log-comment {
-            margin-top: 10px;
-            margin-left: 10px;
+        .summary-chart-container {
+            width: 300px;
         }
 
-        .commend-container {
+        .border-bottom {
+            margin-bottom: 15px;
+        }
+
+        .log-container {
+            width: 300px;
+
+            img {
+                margin-top: -3px;
+            }
+
+            .log-comment {
+                margin-top: 10px;
+                margin-left: 10px;
+            }
+        }
+
+        .comment-container {
+            width: 638px;
+
             textarea {
-                width: 620px;
                 resize: none;
             }
         }
@@ -183,22 +206,11 @@
                     width: 170px
                 }
             }
+            padding-top: 6px;
         }
 
-        .logs-container {
-            width: 100%;
-
-            img {
-                margin-top: -3px;
-            }
-        }
-
-        .summary {
-            margin-left: 10px;
-        }
-
-        .chart {
-            width: 610px;
+        #tps-chart {
+            width: 620px;
             height: 300px;
             border: 1px solid #666;
         }
