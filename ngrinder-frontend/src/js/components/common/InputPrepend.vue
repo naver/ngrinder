@@ -1,11 +1,12 @@
 <template>
-    <div class="input-prepend-container input-prepend" :class="`input-group ${extraCss}`">
-		<span class="input-group-addon add-on" :title='i18n(message)' v-text="i18n(message)"></span>
-        <input class="form-control input-mini" type="text"
+    <div class="input-prepend-container input-prepend mb-0" :class="`input-group ${extraCss}`">
+        <div class="input-group-prepend">
+            <span class="input-group-text" :title='i18n(message)' v-text="i18n(message)"></span>
+        </div>
+        <input class="form-control d-inline-flex" type="text"
                :id="name" :name="name" :value="value"
                @input="$emit('input', $event.target.value)"
-               @change="$emit('change')"
-               aria-describedby="basic-addon1"/>
+               @change="$emit('change')"/>
     </div>
 </template>
 
@@ -28,13 +29,5 @@
             name: String,
         },
     })
-    export default class InputPrepend extends Base {
-
-    }
+    export default class InputPrepend extends Base {}
 </script>
-
-<style lang="less" scoped>
-    .input-prepend-container {
-        margin-bottom: 0;
-    }
-</style>

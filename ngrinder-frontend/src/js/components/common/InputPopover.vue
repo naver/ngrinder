@@ -2,7 +2,9 @@
     <div class="input-group input-popover">
         <input type="text"
                data-html="true"
+               data-trigger="hover"
                data-toggle="popover"
+               class="form-control"
                v-validate="validationRules"
                :id="name"
                :name="name"

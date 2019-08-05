@@ -1,20 +1,16 @@
 <template>
     <div class="container">
-        <div v-if="announcement" id="announcement-container">
-            <div class="alert alert-block">
-                <div class="page-header">
-                    <span>
-                        <span v-if="ngrinder.config.hasNewAnnouncement" class="label label-important" v-text="'new'"></span>
-                        <span class="announcement-title" v-text="i18n('announcement.title')"></span>
-                        <span class="clickable pull-right" id="hide-announcement" @click.prevent="toggleDisplay">
-                            <i id="announcement-icon" :class="{'icon-plus': hide, 'icon-minus': !hide}"></i>
-                        </span>
+        <div v-if="announcement" class="alert alert-block">
+            <div class="border-bottom">
+                <span>
+                    <span v-if="ngrinder.config.hasNewAnnouncement" class="badge badge-danger" v-text="'new'"></span>
+                    <span class="announcement-title" v-text="i18n('announcement.title')"></span>
+                    <span class="pointer-cursor announcement-icon float-right" @click.prevent="toggleDisplay">
+                        <i class="fa" :class="{'fa-plus': hide, 'fa-minus': !hide}"></i>
                     </span>
-                </div>
-                <transition name="fade">
-                    <div v-if="!hide" id="announcement-content" v-html="announcement"></div>
-                </transition>
+                </span>
             </div>
+            <div v-if="!hide" class="announcement-content" v-html="announcement"></div>
         </div>
     </div>
 </template>
@@ -65,25 +61,35 @@
 
 <style lang="less" scoped>
     .container {
-        padding-top: 40px;
+        padding-top: 40px !important;
 
         .alert-block {
-            padding:5px 20px;
-            margin-bottom:0;
+            color: #c09853;
+            padding: 5px 20px;
+            margin-bottom: 0;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+            background-color: #fcf8e3;
+            border: 1px solid #fbeed5;
+            border-radius: 4px;
 
-            .page-header {
-                margin:0;
-                padding-bottom:2px;
+            .border-bottom {
+                margin: 0;
+                padding-bottom: 2px;
 
                 .announcement-title {
-                    margin-top:0;
-                    margin-bottom:0;
+                    margin-top: 0;
+                    margin-bottom: 0;
                     font-size: 15px;
                 }
             }
         }
 
-        #announcement-content {
+        .announcement-icon {
+            margin-top: 5px;
+            color: black;
+        }
+
+        .announcement-content {
             margin-top: 10px;
         }
     }

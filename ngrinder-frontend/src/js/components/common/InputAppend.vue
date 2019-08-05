@@ -7,14 +7,16 @@
                :title='i18n(message)'
                :value="value"
                v-validate="validationRules"
+               class="form-control"
                @input="$emit('input', $event.target.value)"
                @change="$emit('change')"
-               @focus="$emit('focus')"
-               aria-describedby="basic-addon2"/>
-        <span v-if="append !== null" class="add-on">
-            <span v-text="i18n(appendPrefix)"></span>
-            <span v-html="append"></span>
-        </span>
+               @focus="$emit('focus')"/>
+        <div v-if="append !== null" class="input-group-append">
+            <span class="input-group-text">
+                <span v-text="i18n(appendPrefix)"></span>
+                <span v-html="append"></span>
+            </span>
+        </div>
         <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </div>
 </template>
@@ -69,6 +71,7 @@
 <style lang="less" scoped>
     .input-group {
         input {
+            flex-grow: unset;
             height: 30px;
             width: 74px;
         }
