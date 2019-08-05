@@ -1,100 +1,104 @@
 <template>
-    <div class="row running" id="running-container">
-        <div class="span5 intro" data-step="4" :data-intro="i18n('intro.running.summary')">
+    <div class="row d-flex" id="running-container">
+        <div class="intro left-panel" data-step="4" :data-intro="i18n('intro.running.summary')">
             <fieldSet>
-                <legend v-text="i18n('perfTest.running.summaryTitle')"></legend>
+                <legend class="border-bottom" v-text="i18n('perfTest.running.summaryTitle')"></legend>
             </fieldSet>
-            <div class="content-left form-horizontal form-horizontal-3">
-                <fieldset>
-                    <control-group labelMessageKey="perfTest.running.totalVusers">
+            <div class="d-flex">
+                <fieldset class="w-100">
+                    <div class="my-4">
+                        <label v-text="i18n('perfTest.running.totalVusers')"></label>
                         <strong v-text="test.vuserPerAgent * test.agentCount"></strong>
                         <span class="badge badge-info pull-right">
                             <span v-text="i18n('perfTest.running.running')"></span>
                             <span v-text="runningThread"></span>
                         </span>
-                    </control-group>
-
-                    <control-group labelMessageKey="perfTest.running.totalProcesses">
+                    </div>
+                    <div class="my-4">
+                        <label v-text="i18n('perfTest.running.totalProcesses')"></label>
                         <span v-text="test.processes * test.agentCount"></span>
-                        <span class="badge badge-info pull-right">
+                        <span class="badge badge-info float-right">
                             <span v-text="i18n('perfTest.running.running')"></span>
                             <span v-text="runningProcess"></span>
                         </span>
-                    </control-group><hr>
-
-                    <control-group labelMessageKey="perfTest.config.targetHost" labelStyle="width: 120px;">
+                    </div>
+                    <hr>
+                    <div class="my-4">
+                        <label v-text="i18n('perfTest.config.targetHost')"></label>
                         <template v-if="test.targetHosts" v-for="host in test.targetHosts.split(',')">
                             <span v-text="host.trim()"></span><br/>
                         </template>
-                    </control-group><hr>
-
-                    <div class="control-group">
-                        <control-group v-if="test.threshold === 'D'" labelMessageKey="perfTest.running.duration" labelStyle="width: 130px;">
-                            <span v-text="test.duration"></span>
-                            <code>HH:MM:SS</code>
-                            <span class="badge badge-success pull-right">
-                                <span v-text="i18n('perfTest.running.runCount')"></span><span v-text="(totalStatistics.Tests + totalStatistics.Errors).toFixed(0)"></span>
-                            </span>
-                        </control-group>
-                        <control-group v-else labelMessageKey="perfTest.running.totalRunCount">
-                            <span v-text="test.runCount * test.agentCount * test.vuserPerAgent"></span>
-                            <span class="badge badge-success pull-right">
-                                <span v-text="i18n('perfTest.running.runCount')"></span><span v-text="(totalStatistics.Tests + totalStatistics.Errors).toFixed(0)"></span>
-                            </span>
-                        </control-group>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" v-text="i18n('perfTest.running.targetState')"></label>
-                    </div>
-                    <div class="control-group">
-                        <div id="monitor-state">
-                            <ul v-for="(monitor, name) in monitorState">
-                                <li>
-                                    <div class="ellipsis">
-                                        <span><b v-text="getShortenString(name)"></b></span>
-                                        <span v-text="getPackageState(monitor)"></span>
-                                    </div>
-                                </li>
-                            </ul>
+                    <hr>
+                    <div v-if="test.threshold === 'D'" class="my-4">
+                        <label v-text="i18n('perfTest.running.duration')"></label>
+                        <span v-text="test.duration" class="mr-2"></span>
+                        <code>HH:MM:SS</code>
+                        <div class="badge badge-success float-right">
+                            <span v-text="i18n('perfTest.running.runCount')"></span>
+                            <span v-text="(totalStatistics.Tests + totalStatistics.Errors).toFixed(0)"></span>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" v-text="i18n('perfTest.running.agentState')"></label>
-                    </div>
-                    <div class="control-group">
-                        <div id="agent-state">
-                            <ul v-for="(agent, name) in agentState">
-                                <li>
-                                    <div class="ellipsis">
-                                        <span><b v-text="getShortenString(name)"></b></span>
-                                        <span v-text="getPackageState(agent)"></span>
-                                    </div>
-                                </li>
-                            </ul>
+                    <div v-else class="my-4">
+                        <label v-text="i18n('perfTest.running.totalRunCount')"></label>
+                        <span v-text="test.runCount * test.agentCount * test.vuserPerAgent"></span>
+                        <div class="badge badge-success float-right">
+                            <span v-text="i18n('perfTest.running.runCount')"></span>
+                            <span v-text="(totalStatistics.Tests + totalStatistics.Errors).toFixed(0)"></span>
                         </div>
+                    </div>
+                    <div>
+                        <label v-text="i18n('perfTest.running.targetState')"></label>
+                    </div>
+                    <div class="monitor-state my-4">
+                        <ul v-for="(monitor, name) in monitorState">
+                            <li>
+                                <div class="ellipsis">
+                                    <span><b v-text="getShortenString(name)"></b></span>
+                                    <span v-text="getPackageState(monitor)"></span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <label v-text="i18n('perfTest.running.agentState')"></label>
+                    </div>
+                    <div class="agent-state my-4">
+                        <ul v-for="(agent, name) in agentState">
+                            <li>
+                                <div class="ellipsis">
+                                    <span><b v-text="getShortenString(name)"></b></span>
+                                    <span v-text="getPackageState(agent)"></span>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </fieldset>
             </div>
         </div>
         <!-- end running content left -->
-
-        <div class="span7">
-            <fieldSet>
-                <legend>
+        <div class="ml-auto right-panel">
+            <fieldSet class="mb-3">
+                <legend class="border-bottom">
                     <span v-text="i18n('perfTest.running.tpsGraph')"></span>
-                    <span id="running_time" class="badge badge-success" v-text="formatTestTime(testTime)"></span>
-                    <a @click.prevent="stopRunningTest" class="btn btn-danger pull-right intro" data-step="5"
-                       :data-intro="i18n('intro.running.stopButton')" v-text="i18n('common.button.stop')"></a>
+                    <span class="badge badge-success" v-text="formatTestTime(testTime)"></span>
+                    <button @click.prevent="stopRunningTest" class="btn btn-danger float-right intro" data-step="5"
+                       :data-intro="i18n('intro.running.stopButton')">
+                        <i class="fa fa-stop mr-1"></i>
+                        <span v-text="i18n('common.button.stop')"></span>
+                    </button>
                 </legend>
             </fieldSet>
-            <div id="running-tps-chart" class="chart"></div>
-            <div class="tabbable intro" data-step="6" :data-intro="i18n('intro.running.accumulated')">
-                <ul class="nav nav-tabs" id="sample_tab">
-                    <li class="active">
-                        <a href="#last-sample-tab" data-toggle="tab" v-text="i18n('perfTest.running.latestSample')"></a>
+            <div id="running-tps-chart" class="chart w-100"></div>
+            <div class="intro mt-1" data-step="6" :data-intro="i18n('intro.running.accumulated')">
+                <ul class="nav nav-tabs border-bottom-0">
+                    <li class="nav-item">
+                        <a href="#last-sample-tab" data-toggle="tab" class="nav-link active"
+                           v-text="i18n('perfTest.running.latestSample')"></a>
                     </li>
-                    <li>
-                        <a href="#accumulated-sample-tab" data-toggle="tab" v-text="i18n('perfTest.running.accumulatedStatistic')"></a>
+                    <li class="nav-item">
+                        <a href="#accumulated-sample-tab" data-toggle="tab" class="nav-link"
+                           v-text="i18n('perfTest.running.accumulatedStatistic')"></a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -176,18 +180,25 @@
                 }
                 this.agentState = res.data.agent || {};
                 this.monitorState = res.data.monitor || {};
-            }).catch(error => console.log(error));
+            });
         }
 
         stopRunningTest() {
-            bootbox.confirm(this.i18n('perfTest.message.stop.confirm'), this.i18n('common.button.cancel'), this.i18n('common.button.ok'), result => {
-                if (result) {
-                    this.$http.put(`/perftest/api/${this.test.id}?action=stop`).then(res => {
-                        if (res.data.success) {
-                            this.showSuccessMsg(this.i18n('perfTest.message.stop.success'));
-                        }
-                    }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error')));
-                }
+            this.$bootbox.confirm({
+                message: this.i18n('perfTest.message.stop.confirm'),
+                buttons: {
+                    confirm: { label: this.i18n('common.button.ok') },
+                    cancel: { label: this.i18n('common.button.cancel') },
+                },
+                callback: result => {
+                    if (result) {
+                        this.$http.put(`/perftest/api/${this.test.id}?action=stop`).then(res => {
+                            if (res.data.success) {
+                                this.showSuccessMsg(this.i18n('perfTest.message.stop.success'));
+                            }
+                        }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error')));
+                    }
+                },
             });
         }
 
@@ -225,55 +236,50 @@
 <style lang="less" scoped>
     #running-container {
         #running-tps-chart {
-            width: 530px;
             height: 300px;
         }
 
-        .content-left {
-            margin-top: 10px;
+        .left-panel {
+            width: 380px;
         }
 
-        #agent-state, #monitor-state {
-            font-size: 12px;
+        .right-panel {
+            width: 540px;
+        }
+
+        .agent-state, .monitor-state {
             margin-left: -20px;
 
-            li {
-                height: 20px;
-                div {
-                    width: 100%;
+            ul {
+                list-style: none;
+
+                li {
+                    height: 20px;
+
+                    div {
+                        width: 100%;
+                    }
                 }
             }
         }
 
-        .commend-container {
-            textarea {
-                width: 620px;
-                resize: none;
-            }
+        .badge {
+            font-size: 11px;
+            padding: 3px 6px;
         }
 
-        table {
-            font-size: 12px;
+        label {
+            width: 110px;
+            color: #666;
+            font-weight: bold;
         }
 
-        .control-group {
-            label {
-                &.control-label {
-                    width: 170px
-                }
-            }
+        legend, label {
+            margin-bottom: 0;
         }
 
-        .logs-container {
-            width: 100%;
-
-            img {
-                margin-top: -3px;
-            }
-        }
-
-        .summary {
-            margin-left: 10px;
+        strong {
+            color: #6DAFCF;
         }
 
         .chart {

@@ -1,6 +1,6 @@
 <template>
     <div class="duration-slider-container">
-        <input class="slider" ref="durationInput" data-slider-step="1"/>
+        <b-form-slider class="slider" :value=value :max="sliderMax" :min="1"  @change="changeSlider"></b-form-slider>
     </div>
 </template>
 
@@ -22,9 +22,9 @@
         },
     })
     export default class DurationSlider extends Base {
+        value = 0;
         sliderMax = 1000;
         durationMap = [];
-        $durationInput = null;
 
         mounted() {
             this.initDuration();
@@ -58,47 +58,56 @@
                 }
             }
 
-            this.$durationInput = $(this.$refs.durationInput);
-            this.$durationInput.slider({
-                max: this.sliderMax,
-                min: 1,
-                tooltip: 'hide',
-                handle: 'square',
-            });
-
-            this.$durationInput.on('slide', event => {
-                const maxIndex = this.durationMap.length - 1;
-                let durationSec = 0;
-                if (maxIndex === parseInt(event.value)) {
-                    durationSec = (this.durationMap[maxIndex] + 59) * 60 + 59;
-                } else {
-                    durationSec = this.durationMap[event.value] * 60;
-                }
-                this.$emit('change', durationSec);
-            });
-
             this.initSliderFromDurationMs(this.durationMs);
+        }
+
+        changeSlider(values) {
+            const maxIndex = this.durationMap.length - 1;
+            let durationSec = 0;
+            if (maxIndex === values.newValue) {
+                durationSec = (this.durationMap[maxIndex] + 59) * 60 + 59;
+            } else {
+                durationSec = this.durationMap[values.newValue] * 60;
+            }
+            this.$emit('change', durationSec);
         }
 
         initSliderFromDurationMs(durtaionMs) {
             for (let i = 0; i <= this.sliderMax; i++) {
                 if (this.durationMap[i] * 60000 >= durtaionMs) {
-                    this.$durationInput.slider('setValue', i);
+                    this.value = i;
                     break;
                 }
+
                 if (i === this.sliderMax) {
-                    this.$durationInput.slider('setValue', this.sliderMax);
+                    this.value = this.sliderMax;
                 }
             }
         }
     }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
     .duration-slider-container {
         .slider {
-            margin-left: 0;
             width: 255px;
+        }
+
+        .slider-handle {
+            width: 16px;
+            height: 16px;
+            top: 2px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f0f0f0;
+        }
+
+        .slider-selection {
+            background: #337ab7;
+        }
+
+        .slider-track-high {
+            border: 1px solid #ccc;
         }
     }
 </style>

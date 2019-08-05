@@ -1,19 +1,21 @@
 <template>
-    <div id="detail-report-perftest-menu">
-        <div class="page-header">
+    <div class="detail-report-perftest-menu">
+        <div class="pb-2 mt-4 mb-3 border-bottom">
             <h4 v-text="'Performance'"></h4>
-            <button @click.prevent="downloadCSV" class="download-csv btn btn-primary pull-right">
-                <i class="icon-download-alt icon-white"></i> <span v-text="i18n('perfTest.report.downloadCSV')"></span>
+            <button @click.prevent="downloadCSV" class="download-csv btn btn-primary float-right">
+                <i class="fa fa-download mr-1"></i>
+                <span v-text="i18n('perfTest.report.downloadCSV')"></span>
             </button>
         </div>
 
         <h6>
             <span v-text="'TPS'"></span>
             <span data-toggle="popover"
+                  data-html="true"
+                  data-trigger="hover"
                   :data-content="i18n('perfTest.report.tps.help')"
-                  :title="i18n('perfTest.report.tps')"
-                  data-html="true" id="tps-title">
-                <i class="icon-question-sign pointer-cursor"></i>
+                  :title="i18n('perfTest.report.tps')">
+                <i class="fa fa-question-circle"></i>
             </span>
         </h6>
         <div class="bigchart" ref="tpsChart" id="tps-chart"></div>
@@ -82,8 +84,7 @@
                 this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
 
-            $('[data-toggle="popover"]').popover('destroy');
-            $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#tps-title' });
+            $('[data-toggle="popover"]').popover();
         }
 
         downloadCSV() {
@@ -94,7 +95,11 @@
 </script>
 
 <style lang="less" scoped>
-    #detail-report-perftest-menu {
+    .detail-report-perftest-menu {
+        h6 {
+            position: absolute;
+        }
+
         .download-csv {
             margin-top: -36px;
         }
@@ -104,16 +109,15 @@
         }
 
         div {
-            &.chart {
-                border: 1px solid #878988;
-                height: 200px;
-                min-width: 615px;
-            }
-
-            &.bigchart {
+            &.bigchart, &.chart {
                 border: 1px solid #878988;
                 height: 300px;
                 min-width: 615px;
+                margin-bottom: 20px;
+
+                &.chart {
+                    height: 200px;
+                }
             }
         }
     }

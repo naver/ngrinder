@@ -1,8 +1,8 @@
 <template>
-    <div id="detail-report-monitor-menu">
-        <div class="page-header page-header">
+    <div class="detail-report-monitor-menu">
+        <header class="pb-2 mt-4 mb-3 border-bottom">
             <h4 v-text="'Monitor'"></h4>
-        </div>
+        </header>
 
         <template v-if="optionalChart.cpuUsageChart">
             <h6 v-text="'CPU'"></h6>
@@ -117,17 +117,18 @@
     }
 </script>
 
-<style lang="less">
-
-</style>
-
 <style lang="less" scoped>
-    #detail-report-monitor-menu {
+    .detail-report-monitor-menu {
+        h6 {
+            position: absolute;
+        }
+
         div {
             &.chart {
                 border: 1px solid #878988;
                 height: 200px;
                 min-width: 615px;
+                margin-bottom: 20px;
             }
         }
     }

@@ -1,16 +1,16 @@
 <template>
-    <div class="detail-report">
-        <vue-headful :title="i18n('perfTest.report.title')"></vue-headful>
-        <div class="navbar-inner">
+    <main class="detail-report">
+        <header>
+            <vue-headful :title="i18n('perfTest.report.title')"></vue-headful>
             <h3 v-text="`${i18n('perfTest.report.reportPage')} ${test.testName}`"></h3>
-        </div>
-        <div class="content container">
-            <form name="download_csv_form">
-                <input type="hidden" id="test_id" name="testId" :value="test.id">
+        </header>
+        <div class="container p-0">
+            <form>
+                <input type="hidden" name="testId" :value="test.id">
             </form>
             <div class="row">
-                <div class="span3">
-                    <table class="table table-bordered compactpadding">
+                <div class="report-summary-container">
+                    <table class="table table-bordered compact-padding">
                         <colgroup>
                             <col width="120px">
                             <col>
@@ -47,7 +47,10 @@
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.meantime')"></th>
-                            <td><span>{{ test.meanTestTime | numFormat('0.00')}}</span>&nbsp;&nbsp; <code>ms</code></td>
+                            <td>
+                                <span>{{ test.meanTestTime | numFormat('0.00')}}</span>
+                                <code class="ml-1">ms</code>
+                            </td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.totalTests')"></th>
@@ -62,25 +65,23 @@
                             <td v-text="test.error || 0"></td>
                         </tr>
                     </table>
-                    <div class="well">
-                        <ul class="nav nav-list">
-                            <li class="active pointer-cursor perf nav-header" ref="perftestNavMenu">
-                                <a @click="showPerftestMenu($event)" class="pointer-cursor" v-text="i18n('perfTest.report.performanceReport')"></a>
-                            </li>
+                    <ul class="nav flex-column">
+                        <li class="nav-item nav-link active" ref="perftestNavMenu">
+                            <a href="#" @click="showPerftestMenu($event)" v-text="i18n('perfTest.report.performanceReport')"></a>
+                        </li>
 
-                            <li class="nav-header" v-text="i18n('perfTest.report.targetHost')"></li>
-                            <li v-for="ip in test.targetHosts.split(',')" class="monitor pointer-cursor" :ip="ip">
-                                <a @click="showMonitorMenu($event, ip)" class="pointer-cursor" v-text="ip"></a>
-                            </li>
+                        <li class="nav-item" v-text="i18n('perfTest.report.targetHost')"></li>
+                        <li v-for="ip in test.targetHosts.split(',')" class="monitor" :ip="ip">
+                            <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link" v-text="ip"></a>
+                        </li>
 
-                            <li  class="nav-header" v-text="i18n('perfTest.report.plugins')"></li>
-                            <li v-for="plugin in plugins" class="plugin pointer-cursor" :plugin="plugin.first" :ip="plugin.second">
-                                <a class="pointer-cursor" v-text="`${plugin.first.replace('_', ' ')} - ${plugin.second}`"></a>
-                            </li>
-                        </ul>
-                    </div>
+                        <li  class="nav-item" v-text="i18n('perfTest.report.plugins')"></li>
+                        <li v-for="plugin in plugins" class="plugin" :plugin="plugin.first" :ip="plugin.second">
+                            <a href="#" class="nav-link" v-text="`${plugin.first.replace('_', ' ')} - ${plugin.second}`"></a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="span9">
+                <div class="report-chart-container">
                     <table class="table table-bordered">
                         <colgroup>
                             <col width="120">
@@ -97,14 +98,20 @@
                         <tr>
                             <template v-if="test.threshold === 'D'">
                                 <th v-text="i18n('perfTest.report.duration')"></th>
-                                <td><span v-text="test.duration"></span> &nbsp;<code>HH:MM:SS</code></td>
+                                <td>
+                                    <span v-text="test.duration"></span>
+                                    <code class="ml-1">HH:MM:SS</code>
+                                </td>
                             </template>
                             <template v-else>
                                 <th v-text="i18n('perfTest.report.runCount')"></th>
                                 <td><span v-text="test.runCount"></span></td>
                             </template>
                             <th v-text="i18n('perfTest.report.runtime')"></th>
-                            <td><span v-text="test.runtime"></span> &nbsp;<code>HH:MM:SS</code></td>
+                            <td>
+                                <span v-text="test.runtime"></span>
+                                <code class="ml-1">HH:MM:SS</code>
+                            </td>
                         </tr>
                         <tr v-if="test.description">
                             <th v-text="i18n('common.label.description')"></th>
@@ -121,7 +128,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 </template>
 
 <script>
@@ -158,7 +165,8 @@
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
-            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error'), { content: this.i18n('perfTest.report.detailedReport') }));
+            })
+            .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error'), { content: this.i18n('perfTest.report.detailedReport') }));
         }
 
         mounted() {
@@ -203,9 +211,40 @@
 <style lang="less" scoped>
     .detail-report {
         margin-bottom: 80px;
-        .content {
+
+        header {
+            display: flex;
+            align-items: center;
+            height: 60px;
+            width: 940px;
+            margin: 0 auto 20px auto;
+            min-height: 40px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background-color: #fafafa;
+            background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+            background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+            background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+            background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+            border: 1px solid #d4d4d4;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+            -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+        }
+
+        .container {
             th, td {
                 font-size: 12px;
+
+                strong {
+                    color: #6DAFCF;
+                }
             }
 
             .process-thread-col {
@@ -213,7 +252,7 @@
             }
         }
 
-        .compactpadding {
+        .compact-padding {
             th {
                 padding: 8px 5px;
                 vertical-align: middle;
@@ -226,13 +265,20 @@
         }
 
         .navbar-inner {
-            width: 912px;
+            width: 940px;
             margin-left: auto;
             margin-right: auto;
             margin-bottom: 0;
         }
 
-        .span9 {
+        .report-summary-container {
+            width: 220px;
+        }
+
+        .report-chart-container {
+            margin-left: 20px;
+            width: 700px;
+
             .table {
                 margin-bottom: 35px;
             }

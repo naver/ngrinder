@@ -1,35 +1,39 @@
 <template>
-    <div class="well form-inline search-bar no-margin">
-        <div class="left-float">
+    <div class="search-bar clearfix">
+        <div class="float-left">
             <div data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
-                <select2 v-model="selectedTag" :value="selectedTag" customStyle="width: 150px"
-                         :option="{placeholder: i18n('perfTest.action.selectATag'), allowClear: true}" @change="$emit('change-tag')">
+                <select2 v-model="selectedTag" :value="selectedTag" @change="$emit('change-tag')"
+                         :option="{placeholder: i18n('perfTest.action.selectATag'), allowClear: true}">
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
-                <input type="search" name="search" class="search-query search-query-without-radios span2"
+                <input type="search" name="search" class="search-query-without-radios form-control"
                        placeholder="Keywords" v-model="searchText">
-                <button class="btn btn-info" @click="$emit('search')" v-text="i18n('common.button.search')">
-                    <i class="glyphicon glyphicon-search"></i>
+                <button class="btn btn-info align-baseline" @click="$emit('search')">
+                    <i class="fa fa-search mr-1"></i>
+                    <span v-text="i18n('common.button.search')"></span>
                 </button>
                 <label class="checkbox">
-                    <input type="checkbox" @click="$emit('filter-running', {enable: !running, token: 'R'})" v-model="running"><span v-text="i18n('perfTest.action.running')"></span>
+                    <input type="checkbox" @click="$emit('filter-running', {enable: !running, token: 'R'})" v-model="running">
+                    <span v-text="i18n('perfTest.action.running')"></span>
                 </label>
                 <label class="checkbox">
-                    <input type="checkbox" @click="$emit('filter-schduled', {enable: !scheduled, token: 'S'})" v-model="scheduled"><span v-text="i18n('perfTest.action.scheduled')"></span>
+                    <input type="checkbox" @click="$emit('filter-schduled', {enable: !scheduled, token: 'S'})" v-model="scheduled">
+                    <span v-text="i18n('perfTest.action.scheduled')"></span>
                 </label>
             </div>
         </div>
-
-        <div class="right-float">
-            <a class="btn btn-primary" @click="$emit('create')" data-position="left" data-step="1"
-               :data-intro="i18n('intro.list.create')" v-text="i18n('perfTest.action.createTest')">
-                <i class="glyphicon glyphicon-file icon-white"></i>
-            </a>
-            <a @click="$emit('delete-selected-tests')" class="pointer-cursor btn btn-danger" data-position="top"
-               data-step="2" :data-intro="i18n('intro.list.delete')" v-text="i18n('perfTest.action.deleteSelectedTest')">
-                <i class="glyphicon glyphicon-remove icon-white"></i>
-            </a>
+        <div class="float-right">
+            <button class="btn btn-primary align-baseline" @click="$emit('create')" data-position="left" data-step="1"
+               :data-intro="i18n('intro.list.create')">
+                <i class="fa fa-file mr-1"></i>
+                <span v-text="i18n('perfTest.action.createTest')"></span>
+            </button>
+            <button @click="$emit('delete-selected-tests')" class="btn btn-danger align-baseline" data-position="top"
+               data-step="2" :data-intro="i18n('intro.list.delete')">
+                <i class="fa fa-remove mr-1"></i>
+                <span v-text="i18n('perfTest.action.deleteSelectedTest')"></span>
+            </button>
         </div>
     </div>
 </template>
@@ -64,16 +68,43 @@
         }
     }
 </script>
+
+<style lang="less">
+    .search-bar {
+        .select2-container {
+            .select2-choice {
+                width: 150px;
+                height: 29px;
+            }
+        }
+    }
+</style>
+
 <style lang="less" scoped>
     .search-bar {
-        height: 30px;
+        height: 53px;
         border-radius: 0;
         margin: 0;
+        padding: 10px;
+        border: 1px solid #e3e3e3;
+        border-bottom: none;
+        background-color: #f5f5f5;
+
+        .form-control {
+            display: inline-block;
+        }
+
+        .search-query-without-radios {
+            width: 140px;
+        }
 
         .checkbox {
             position:relative;
             margin-left:5px;
         }
-    }
 
+        * {
+            font-size: 12px;
+        }
+    }
 </style>

@@ -1,34 +1,36 @@
 <template>
-    <div class="modal fade" id="schedule-modal">
+    <div class="modal" id="schedule-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <a class="close" data-dismiss="modal">&times;</a>
                     <h4 v-text="i18n('perfTest.running.scheduleTitle')"></h4>
+                    <a href="#" class="close" data-dismiss="modal">x</a>
                 </div>
                 <div class="modal-body">
-                    <div class="form-horizontal">
-                        <fieldset>
-                            <div class="control-group" :class="{'error': !validation}">
-                                <label class="control-label" v-text="i18n('perfTest.running.schedule')"></label>
-                                <div class="controls form-inline">
-                                    <input type="text" class="input span2" ref="scheduledDate" :value="schedule.date">&nbsp;
-                                    <select id="scheduled_hour" class="select-item" v-model="schedule.hour">
-                                        <option v-for="(val, hour) in 24" :value="hour" v-text="hour < 10 ? `0${hour}` : hour"></option>
-                                    </select> :
-                                    <select id="scheduled_min" class="select-item" v-model="schedule.minute">
-                                        <option v-for="(val, min) in 60" :value="min" v-text="min < 10 ? `0${min}` : min"></option>
-                                    </select>
-                                    <code>HH:MM</code>
-                                    <div v-show="!validation" class="help-inline" v-text="i18n('perfTest.message.scheduleDate.error')"></div>
-                                </div>
-                            </div>
-                        </fieldset>
+                    <div class="control-group d-flex justify-content-center align-items-center" :class="{'error': !validation}">
+                        <label class="mr-5 mb-0" v-text="i18n('perfTest.running.schedule')"></label>
+                        <div>
+                            <input type="text" class="form-control" ref="scheduledDate" :value="schedule.date">&nbsp;
+                            <select class="select-item form-control" v-model="schedule.hour">
+                                <option v-for="(val, hour) in 24" :value="hour" v-text="hour < 10 ? `0${hour}` : hour"></option>
+                            </select> :
+                            <select class="select-item form-control" v-model="schedule.minute">
+                                <option v-for="(val, min) in 60" :value="min" v-text="min < 10 ? `0${min}` : min"></option>
+                            </select>
+                            <code>HH:MM</code>
+                        </div>
                     </div>
+                    <div v-show="!validation" class="mt-2 text-danger" v-text="i18n('perfTest.message.scheduleDate.error')"></div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary" v-text="i18n('perfTest.running.runNow')" @click="$emit('run')"></a>
-                    <a class="btn btn-primary" v-text="i18n('perfTest.running.schedule')" @click="runSchedule"></a>
+                    <button class="btn btn-primary" @click="$emit('run')">
+                        <i class="fa fa-play mr-1"></i>
+                        <span v-text="i18n('perfTest.running.runNow')"></span>
+                    </button>
+                    <button class="btn btn-primary" @click="runSchedule">
+                        <i class="fa fa-calendar mr-1"></i>
+                        <span v-text="i18n('perfTest.running.schedule')"></span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -105,36 +107,33 @@
     @import '../../../../plugins/datepicker/css/datepicker.css';
 
     #schedule-modal {
-        .help-inline {
-            margin-left: 30px;
+        .modal-body {
+            label {
+                color: #666;
+                font-weight: bold;
+            }
+
+            .text-danger {
+                margin-left: 118px;
+            }
         }
 
         .select-item {
             width: 60px;
         }
 
-        label {
-            &.control-label {
-                width: 130px;
-            }
-        }
-
-        div {
-            &.controls {
-                margin-left: 150px;
-            }
-        }
-
         code {
             margin-left: 3px;
         }
+
+        input {
+            width: 140px;
+        }
     }
 
-    &.fade div {
-        display: none;
-    }
-
-    &.in div {
-        display: block;
+    .modal-open {
+        #schedule-modal {
+            top: 10%;
+        }
     }
 </style>

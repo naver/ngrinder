@@ -1,51 +1,56 @@
 <template>
     <div class="modal fade" id="add-host-modal">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <header class="modal-header">
                     <h4>
-                        <span v-text="i18n('perfTest.config.addHost')"></span>&nbsp;
+                        <span v-text="i18n('perfTest.config.addHost')"></span>
                         <small v-text="i18n('perfTest.config.pleaseInputOneOptionAtLeast')"></small>
                     </h4>
-                </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                </header>
                 <div class="modal-body">
                     <div class="form-horizontal form-horizontal-4">
                         <fieldset>
-                            <control-group :class="{error: errors.has('domain')}" labelMessageKey="perfTest.config.domain" labelStyle="text-align: right; margin-right: 10px;">
+                            <control-group :class="{error: errors.has('domain')}" labelMessageKey="perfTest.config.domain">
                                 <input type="text"
                                        ref="domainInput"
-                                       class="input-medium"
+                                       class="form-control"
                                        name="domain"
                                        v-model="host"
                                        v-validate="{ regex: /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$/ }"
                                        data-toggle="popover"
                                        data-html="true"
+                                       data-trigger="hover"
                                        data-placement="right"
                                        :title="i18n('perfTest.config.domain')"
                                        :data-content="i18n('perfTest.config.addHost.inputTargetDomain')">
-                                <span v-show="errors.has('domain')" class="validation-message" v-text="errors.first('domain')"></span>
+                                <div v-show="errors.has('domain')" class="validation-message mt-1" v-text="errors.first('domain')"></div>
                             </control-group>
-                            <control-group :class="{error: errors.has('ip')}" labelMessageKey="common.IP" labelStyle="text-align: right; margin-right: 10px;">
+                            <control-group :class="{error: errors.has('ip')}" labelMessageKey="common.IP">
                                 <input type="text"
                                        name="ip"
-                                       class="input-medium"
+                                       class="form-control"
                                        v-model="ip"
                                        v-validate="{ regex: /((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))/ }"
                                        data-toggle="popover"
                                        data-html="true"
+                                       data-trigger="hover"
                                        data-placement="right"
                                        title="IP"
                                        :data-content="i18n('perfTest.config.addHost.inputTargetIp')">
-                                <span v-show="errors.has('ip')" class="validation-message" v-text="errors.first('ip')"></span>
+                                <div v-show="errors.has('ip')" class="validation-message mt-1" v-text="errors.first('ip')"></div>
                             </control-group>
                         </fieldset>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" v-text="i18n('perfTest.config.add')" @click.prevent="addHost"></button>
-                    <button class="btn" data-dismiss="modal" v-text="i18n('common.button.cancel')"></button>
-                </div>
+                <footer class="modal-footer">
+                    <button class="btn btn-success" @click.prevent="addHost">
+                        <i class="fa fa-plus mr-1"></i>
+                        <span v-text="i18n('perfTest.config.add')"></span>
+                    </button>
+                    <button class="btn btn-danger" data-dismiss="modal" v-text="i18n('common.button.cancel')"></button>
+                </footer>
             </div>
         </div>
     </div>
@@ -69,8 +74,7 @@
 
         mounted() {
             this.$nextTick(() => {
-                $('[data-toggle="popover"]').popover('destroy');
-                $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#add-host-modal' });
+                $('[data-toggle="popover"]').popover();
             });
         }
 
@@ -105,22 +109,32 @@
 
 <style lang="less" scoped>
     #add-host-modal {
-        display: none;
+        .modal-dialog {
+            margin-top: 80px;
+        }
 
         .validation-message {
             margin-left: 5px;
         }
 
-        &.fade div {
-            display: none;
-        }
-
-        &.in div {
-            display: block;
+        .control-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
     }
 
     input[type="text"] {
+        width: 200px;
         height: 30px;
+        display: block;
+    }
+</style>
+
+<style lang="less">
+    #add-host-modal {
+        .controls {
+            margin: 0 0 0 30px;
+        }
     }
 </style>

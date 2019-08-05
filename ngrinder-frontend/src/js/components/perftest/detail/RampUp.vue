@@ -1,10 +1,10 @@
 <template>
-    <div class="span6 intro" id="ramp-up-container">
+    <div class="ramp-up-container intro">
         <fieldset>
-            <legend>
-                <input type="checkbox" id="use-ramp-up" name="useRampUp" v-model="enableRampUp" :checked="test.useRampUp"/>
+            <legend class="border-bottom">
+                <input type="checkbox" class="use-ramp-up" name="useRampUp" v-model="enableRampUp" :checked="test.useRampUp"/>
                 <span v-text="i18n('perfTest.config.rampUp.enable')"></span>
-                <select id="ramp_up_type" class="span2 pull-right" name="rampUpType" :disabled="!enableRampUp" v-model="test.rampUpType" @change="updateRampUpChart">
+                <select class="pull-right form-control" name="rampUpType" :disabled="!enableRampUp" v-model="test.rampUpType" @change="updateRampUpChart">
                     <option v-for="rampUpType in rampUpTypes" :value="rampUpType" v-text="i18n(`perfTest.config.rampUp.${rampUpType.toLowerCase()}`)"></option>
                 </select>
             </legend>
@@ -12,16 +12,16 @@
         <div class="form-horizontal form-horizontal-2 ramp-up-config-container">
             <!--eslint-disable-next-line vue/no-unused-vars-->
             <template v-for="i in 1">
-                <div class="control-group">
-                    <div class="row">
-                        <div class="span3">
+                <div>
+                    <div class="row m-0">
+                        <div class="ramp-up-config-item">
                             <input-label name="rampUpInitCount"
                                          v-model="test.rampUpInitCount"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.initialCount">
                             </input-label>
                         </div>
-                        <div class="span3">
+                        <div class="ramp-up-config-item">
                             <input-label name="rampUpStep"
                                          v-model="test.rampUpStep"
                                          ref="rampUpConfig"
@@ -29,15 +29,15 @@
                             </input-label>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="span3">
+                    <div class="row m-0">
+                        <div class="ramp-up-config-item">
                             <input-label name="rampUpInitSleepTime"
                                          v-model="test.rampUpInitSleepTime"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.initialSleepTime" others="<code>MS</code>">
                             </input-label>
                         </div>
-                        <div class="span3">
+                        <div class="ramp-up-config-item">
                             <input-label name="rampUpIncrementInterval"
                                          v-model="test.rampUpIncrementInterval"
                                          ref="rampUpConfig"
@@ -48,7 +48,7 @@
                 </div>
             </template>
         </div>
-        <legend class="center ramp-ip-desc">
+        <legend class="center mt-0 pt-0">
             <span v-text="i18n('perfTest.config.rampUp.des')"></span>
         </legend>
         <div id="ramp-up-chart"></div>
@@ -244,27 +244,30 @@
     }
 </script>
 
-<style lang="less">
-    #ramp-up-container {
-
-    }
-</style>
-
 <style lang="less" scoped>
-    #ramp-up-container {
+    .ramp-up-container {
+        width: 460px;
         margin-left: 18px;
+
+        .ramp-up-config-container {
+            margin-top: 10px;
+        }
 
         #ramp-up-chart {
             margin-left: 20px;
         }
 
-        .ramp-ip-desc {
-            margin-top: 0;
-            padding-top :0;
+        .ramp-up-config-item {
+            width: 220px;
+        }
+
+        select {
+            width: 90px;
+            font-size: 12px;
         }
 
         input {
-            &#use-ramp-up {
+            &.use-ramp-up {
                 vertical-align: middle;
                 margin-bottom: 5px;
             }

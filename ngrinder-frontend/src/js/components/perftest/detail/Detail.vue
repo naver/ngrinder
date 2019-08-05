@@ -2,42 +2,49 @@
     <div v-if="dataLoadFinished" class="perftest-detail-container">
         <div class="container">
             <form ref="configForm">
-                <div class="well">
+                <div class="card bg-light">
                     <input type="hidden" name="id" :value="test.id">
                     <div class="form-horizontal info">
                         <fieldset>
                             <div class="control-group">
                                 <div class="row">
-                                    <div class="span4-5" data-step="1" :data-intro="i18n('intro.detail.testName')">
-                                        <control-group :class="{error: errors.has('testName')}" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
-                                            <input class="required span3 left-float" name="testName"
+                                    <div class="test-name-container" data-step="1" :data-intro="i18n('intro.detail.testName')">
+                                        <control-group :class="{ error: errors.has('testName') }" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
+                                            <input class="required form-control float-left" name="testName"
                                                    maxlength="80" size="30" type="text"
                                                    v-validate="{ required: true }"
                                                    v-model="test.testName"/>
                                             <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
                                         </control-group>
                                     </div>
-                                    <div class="span3-4 tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
+                                    <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                         <control-group name="tagString" labelMessageKey="perfTest.config.tags">
                                             <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 175px" type="input" name="tagString"
-                                                     :option="{tokenSeparators: [',', ' '], tags:[''], placeholder: i18n('perfTest.config.tagInput'),
-                                                      maximumSelectionSize: 5, initSelection: initSelection, query: select2Query}"></select2>
+                                                     :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
+                                                      maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
+                                            </select2>
                                         </control-group>
                                     </div>
-                                    <div class="span1 status-image-container">
-                                        <img id="test-status-img" class="ball"
+                                    <div class="status-image-container">
+                                        <img ref="testStatusImage" class="ball"
                                              data-html="true"
                                              data-toggle="popover"
+                                             data-trigger="hover"
                                              data-placement="bottom"
                                              :title="i18n(test.springMessageKey)"
                                              :src="perftestStatus.iconPath"/>
                                     </div>
-                                    <div class="span2-3 start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
+                                    <div class="start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
                                         <div class="control-group">
                                             <input type="hidden" name="isClone" :value="isClone"/>
-                                            <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest"
-                                                    v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></button>
-                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart" v-text="saveScheduleBtnTitle()"></button>
+                                            <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
+                                                <i class="fa fa-clone mr-1"></i>
+                                                <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
+                                            </button>
+                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart">
+                                                <i class="fa fa-play mr-1"></i>
+                                                <span v-text="saveScheduleBtnTitle"></span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -45,28 +52,28 @@
                             <div class="control-group description-container">
                                 <label for="description" class="control-label" v-text="i18n('common.label.description')"></label>
                                 <div class="controls">
-                                    <textarea id="description" rows="2" name="description" v-text="test.description"></textarea>
+                                    <textarea class="form-control" id="description" rows="2" name="description" v-text="test.description"></textarea>
                                 </div>
                             </div>
                         </fieldset>
                     </div>
                 </div>
 
-                <div v-if="isAdmin" class="pull-right">
-                    <a :href="`/user/switch?to=${test.createdUserId}`" v-text="switchUserTitle"></a>
-                </div>
-
                 <div class="tabbable tab-container">
-                    <ul class="nav nav-tabs" id="homeTab">
-                        <li>
-                            <a v-show="tab.display.config" href="#test-config-section" data-toggle="tab" ref="configTab" v-text="i18n('perfTest.config.testConfiguration')"></a>
+                    <ul class="nav nav-tabs home-tab">
+                        <li class="nav-item">
+                            <a v-show="tab.display.config" href="#test-config-section" class="nav-link"
+                               data-toggle="tab" ref="configTab" v-text="i18n('perfTest.config.testConfiguration')"></a>
                         </li>
-                        <li>
-                            <a v-show="tab.display.running" href="#running-section" data-toggle="tab" ref="runningTab" v-text="i18n('perfTest.running.title')"></a>
+                        <li class="nav-item">
+                            <a v-show="tab.display.running" href="#running-section" class="nav-link"
+                               data-toggle="tab" ref="runningTab" v-text="i18n('perfTest.running.title')"></a>
                         </li>
-                        <li>
-                            <a v-show="tab.display.report" href="#report-section" data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
+                        <li class="nav-item">
+                            <a v-show="tab.display.report" href="#report-section" class="nav-link"
+                               data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                         </li>
+                        <a v-if="isAdmin" class="ml-auto" :href="`/user/switch?to=${test.createdUserId}`" v-text="switchUserTitle"></a>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="test-config-section">
@@ -156,6 +163,10 @@
             },
         };
 
+        created() {
+            $('[data-toggle="popover"]').popover('hide');
+        }
+
         mounted() {
             this.showProgressBar();
             if (this.$route.name === 'quickStart') {
@@ -197,9 +208,10 @@
                 if (this.test.category === 'TESTING') {
                     this.$refs.running.startSamplingInterval();
                 }
-                this.$testStatusImage = $('#test-status-img');
+                this.$testStatusImage = $(this.$refs.testStatusImage);
                 this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
                 this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
+                $('[data-toggle="popover"]').popover();
                 this.setTabEvent();
             });
         }
@@ -354,7 +366,7 @@
             });
         }
 
-        saveScheduleBtnTitle() {
+        get saveScheduleBtnTitle() {
             return `${this.isClone ? this.i18n('perfTest.action.clone') : this.i18n('common.button.save')} ${this.i18n('perfTest.action.andStart')}`;
         }
 
@@ -371,6 +383,8 @@
 <style lang="less">
     .perftest-detail-container {
         .info {
+            padding-top: 10px;
+
             .control-label {
                 width: 95px;
             }
@@ -381,6 +395,8 @@
         }
 
         .tag-container {
+            width: 260px;
+
             label.control-label {
                 width: 60px;
             }
@@ -390,29 +406,51 @@
             }
         }
 
+        .test-name-container {
+            width: 340px;
+
+            input {
+                width: 220px;
+            }
+        }
+
         input[type="text"] {
             height: 30px;
         }
 
         .intro-button-container {
-            margin-top: -50px;
+            margin-top: -28px;
+        }
+
+        .select2-choices {
+            border: 1px solid #ced4da;
+
+            .select2-input {
+                height: 26px !important;
+            }
         }
     }
 </style>
 
 <style lang="less" scoped>
     .perftest-detail-container {
-        .well {
+        .container {
+            padding: 0;
+
+            .row {
+                margin: 0;
+            }
+        }
+
+        .card {
+            padding: 5px;
             margin-bottom: 5px;
             margin-top: 0;
         }
 
         .status-image-container {
             text-align: center;
-        }
-
-        .start-button-container {
-            margin-left: 19px;
+            margin: 0 20px;
         }
 
         #description {
@@ -426,18 +464,15 @@
 
         .tab-container {
             ul {
-                &#homeTab {
+                &.home-tab {
                     margin-bottom: 5px;
+                    width: 100%;
                 }
             }
         }
 
         .description-container {
             margin-bottom: 0;
-
-            div.controls {
-                margin-left: 120px;
-            }
         }
 
         .control-label {
@@ -457,14 +492,10 @@
             code {
                 vertical-align: middle;
             }
-
-            .span3 {
-                margin-left: 0;
-            }
         }
 
         .datepicker {
-            z-index:1151;
+            z-index: 1151;
         }
 
         div {
@@ -475,11 +506,11 @@
         }
 
         div.modal-body div.chart {
-            border:1px solid #878988;
-            height:250px;
-            min-width:500px;
-            margin-bottom:12px;
-            padding:5px
+            border: 1px solid #878988;
+            height: 250px;
+            min-width: 500px;
+            margin-bottom: 12px;
+            padding: 5px;
         }
 
         .table {
@@ -500,7 +531,7 @@
 
         .rampup-chart {
             width: 400px;
-            height: 300px
+            height: 300px;
         }
 
         i {
@@ -520,7 +551,7 @@
 
         .form-horizontal {
             .control-group {
-                margin-bottom:10px;
+                margin-bottom: 10px;
             }
         }
 
@@ -548,8 +579,9 @@
 
         legend {
             padding-top: 10px;
+
             &.region {
-                margin-left:-40px;
+                margin-left: -40px;
             }
         }
     }

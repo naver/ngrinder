@@ -1,13 +1,15 @@
 <template>
-    <div id="config-container" class="row config">
-        <div class="span6">
+    <div class="row config-container">
+        <div class="basic-config-container">
             <fieldset>
-                <legend><span v-text="i18n('perfTest.config.basicConfiguration')"></span></legend>
+                <legend class="border-bottom">
+                    <span v-text="i18n('perfTest.config.basicConfiguration')"></span>
+                </legend>
             </fieldset>
             <div class="form-horizontal form-horizontal-2">
                 <div class="row intro agent-config-container" data-step="4" :data-intro="i18n('intro.config.basic.agent')">
-                    <div class="span4">
-                        <control-group :class="{error: errors.has('agentCount')}" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
+                    <div class="agent-count-container">
+                        <control-group :class="{ error: errors.has('agentCount') }" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
                                           v-model="test.agentCount"
                                           :validationRules="agentCountValidationRules"
@@ -18,56 +20,58 @@
                             </input-append>
                         </control-group>
                     </div>
-
-                    <div v-if="ngrinder.config.clustered" class="span2">
-                        <control-group :class="{error: errors.has('region')}" ref="regionControlGroup" labelMessageKey="perfTest.config.region" labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -50px; width: 80px;">
+                    <div v-if="ngrinder.config.clustered" class="agent-region-container">
+                        <control-group :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
+                                       labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -30px; width: 80px;">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
-                                     class="pull-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
+                                     class="float-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
                                 <option v-for="region in config.regions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select2>
                         </control-group>
                     </div>
                 </div>
-
-                <control-group :class="{error: errors.has('vuserPerAgent')}" labelMessageKey="perfTest.config.vuserPerAgent" ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
-                    <input-append name="vuserPerAgent" ref="vuserPerAgent"
-                                  v-model="test.vuserPerAgent"
-                                  :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
-                                  @change="changeVuserPerAgent"
-                                  errStyle="margin: 0; width: 140px;"
-                                  appendPrefix="perfTest.config.max"
-                                  :append="config.maxVuserPerAgent"
-                                  message="perfTest.config.vuserPerAgent">
-                    </input-append>
+                <control-group :class="{ error: errors.has('vuserPerAgent') }" labelMessageKey="perfTest.config.vuserPerAgent"
+                               ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
+                    <div class="vuser-per-agent-container">
+                        <input-append name="vuserPerAgent" ref="vuserPerAgent"
+                                      v-model="test.vuserPerAgent"
+                                      :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
+                                      @change="changeVuserPerAgent"
+                                      errStyle="margin: 0; width: 140px;"
+                                      appendPrefix="perfTest.config.max"
+                                      :append="config.maxVuserPerAgent"
+                                      message="perfTest.config.vuserPerAgent">
+                        </input-append>
+                    </div>
                     <i class="pointer-cursor expand" @click="display.vuserPanel = !display.vuserPanel"></i>
-                    <div class="pull-right">
-                        <span class="badge badge-info pull-right">
+                    <div class="float-right">
+                        <span class="badge badge-info float-right">
                             <span v-text="i18n('perfTest.config.availVuser')"></span>
                             <span v-text="totalVuser"></span>
                         </span>
                     </div>
-                    <transition name="fade">
-                        <div v-show="display.vuserPanel" id="vuser-panel">
-                            <input-prepend name="processes" v-model="test.processes"
-                                           @change="changeProcessThreadCount"
-                                           message="perfTest.config.process" extraCss="control-group">
-                            </input-prepend>
-                            <input-prepend name="threads" v-model="test.threads"
-                                           @change="changeProcessThreadCount"
-                                           message="perfTest.config.thread" extraCss="control-group">
-                            </input-prepend>
-                        </div>
-                    </transition>
+                    <div v-show="display.vuserPanel" class="vuser-panel">
+                        <input-prepend name="processes" v-model="test.processes"
+                                       @change="changeProcessThreadCount"
+                                       message="perfTest.config.process" extraCss="control-group">
+                        </input-prepend>
+                        <input-prepend name="threads" v-model="test.threads"
+                                       @change="changeProcessThreadCount"
+                                       message="perfTest.config.thread" extraCss="control-group">
+                        </input-prepend>
+                    </div>
                 </control-group>
 
-                <control-group :class="{error: errors.has('scriptName')}" labelMessageKey="perfTest.config.script">
-                    <select2 v-model="test.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 275px;" :option="{placeholder: i18n('perfTest.config.scriptInput')}"
+                <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script">
+                    <select2 v-model="test.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
+                             :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts" :data-validate="script.validated" v-text="script.pathInShort" :value="script.path"></option>
                     </select2>
                     <input type="hidden" name="scriptRevision" :value="test.scriptRevision">
-                    <button class="btn btn-mini btn-info pull-right btn-script-revision" type="button">
+                    <button class="btn btn-info float-right btn-script-revision" type="button">
+                        <i class="fa fa-file mr-1"></i>
                         R <span v-if="test.scriptRevision !== -1" v-text="test.scriptRevision"></span>
                         <span v-else v-text="test.quickScriptRevision ? test.quickScriptRevision : 'HEAD'"></span>
                     </button>
@@ -80,110 +84,98 @@
                 </control-group>
 
                 <control-group labelMessageKey="perfTest.config.targetHost">
-                    <a class="btn pull-right btn-mini add-host-btn" @click.prevent="$refs.addHostModal.show" v-text="i18n('perfTest.config.add')">
-                    </a>
+                    <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
+                        <i class="fa fa-plus"></i>
+                        <span v-text="i18n('perfTest.config.add')"></span>
+                    </button>
                     <div class="div-host"
                          data-toggle="popover"
-                         data-placement="bottom"
                          data-html="true"
+                         data-placement="bottom"
+                         data-trigger="hover"
                          :title="i18n('perfTest.config.targetHost')"
                          :data-content="i18n('perfTest.config.targetHost.help')">
-                        <span v-for="(host, index) in targetHost">
-                            <p class="host">
-                                <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                <a class="pointer-cursor"><i class="icon-remove-circle" @click="targetHost.splice(index, 1)"></i></a>
-                            </p>
-                            <br style="line-height: 0">
-                        </span>
+                        <div v-for="(host, index) in targetHosts" class="host">
+                            <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
+                            <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
+                        </div>
                     </div>
-                    <input type="hidden" name="targetHosts" :value="targetHost.join(',')">
+                    <input type="hidden" name="targetHosts" :value="targetHosts.join(',')">
                 </control-group>
                 <hr>
 
                 <div class="threshold-container">
-                    <control-group :class="{error: errors.has('duration')}" :radio="{radioValue: 'D', checked: test.threshold === 'D'}" v-model="test.threshold"
+                    <control-group :class="{ error: errors.has('duration') }" :radio="{ radioValue: 'D', checked: test.threshold === 'D' }" v-model="test.threshold"
                                    ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
-                        <select class="select-item" id="select_hour" v-model="duration.hour" @change="changeDuration({ focus: true, updateSlider: true })">
+                        <select class="select-item form-control" v-model="duration.hour" @change="changeDuration({ focus: true, updateSlider: true })">
                             <option v-for="(v, h) in durationMaxHour" :value="h" v-text="h"></option>
                         </select> :
-                        <select class="select-item" id="select_min" v-model="duration.min" @change="changeDuration({ focus: true, updateSlider: true })">
+                        <select class="select-item form-control" v-model="duration.min" @change="changeDuration({ focus: true, updateSlider: true })">
                             <option v-for="(v, m) in 60" :value="m" v-text="m < 10 ? `0${m}` : m"></option>
                         </select> :
-                        <select class="select-item" id="select_sec" v-model="duration.sec" @change="changeDuration({ focus: true, updateSlider: true })">
+                        <select class="select-item form-control" v-model="duration.sec" @change="changeDuration({ focus: true, updateSlider: true })">
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
-                        </select> &nbsp;&nbsp;
+                        </select>
                         <code>HH:MM:SS</code>
-                        <input v-validate="{min_value: test.threshold === 'D' ? 1 : 0}" type="hidden" name="duration" v-model="durationMs"/>
+                        <input v-validate="{ min_value: test.threshold === 'D' ? 1 : 0 }" type="hidden" name="duration" v-model="durationMs"/>
                         <duration-slider @change="changeDurationSlider" ref="durationSlider" :durationMs="durationMs" :maxRunHour="config.maxRunHour"></duration-slider>
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
-
-                    <control-group :class="{error: errors.has('runCount')}" :radio="{radioValue: 'R', checked: test.threshold === 'R'}" v-model="test.threshold" labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold" id="runCount">
+                    <control-group :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.threshold === 'R' }" v-model="test.threshold"
+                                   labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
-                                      :append="config.maxRunCount"
-                                      :validationRules="{required: true, max_value: config.maxRunCount, min_value: test.threshold === 'R' ? 1 : 0}"
                                       v-model="test.runCount"
                                       @focus="test.threshold = 'R'"
-                                      message="perfTest.config.runCount">
+                                      message="perfTest.config.runCount"
+                                      :append="config.maxRunCount"
+                                      :validationRules="{ required: true, max_value: config.maxRunCount, min_value: test.threshold === 'R' ? 1 : 0 }">
                         </input-append>
                     </control-group>
                 </div>
 
-                <div class="row accordion-heading detail-config-btn-container">
-                    <span class="pull-right">
-                        <a @click.prevent="display.detailConfig = !display.detailConfig"
-                           class="pointer-cursor" v-text="i18n('perfTest.config.showAdvancedConfig')"></a>
-                    </span>
-                    <hr>
+                <div class="row detail-config-btn-container">
+                    <a href="" @click.prevent="display.detailConfig = !display.detailConfig"
+                       class="pointer-cursor" v-text="i18n('perfTest.config.showAdvancedConfig')"></a>
                 </div>
 
-                <transition name="fade">
-                    <div id="advanced-config" v-show="display.detailConfig">
-                        <div class="row">
-                            <div class="span3">
-                                <control-group name="samplingInterval" labelMessageKey="perfTest.config.samplingInterval">
-                                    <select class="select-item" id="sampling_interval"
-                                            name="samplingInterval" v-model="test.samplingInterval">
-                                        <option v-for="interval in samplingIntervals" :value="interval" v-text="interval"></option>
-                                    </select>
-                                </control-group>
-                            </div>
-                            <div class="span3">
-                                <control-group :class="{error: errors.has('ignoreSampleCount')}" name="ignoreSampleCount" labelStyle="width: 150px;" labelMessageKey="perfTest.config.ignoreSampleCount">
-                                    <input-popover v-model="test.ignoreSampleCount"
-                                                   ref="ignoreSampleCount"
-                                                   :validationRules="{ numeric: true }"
-                                                   dataPlacement="top"
-                                                   errStyle="margin-left: -120px;"
-                                                   name="ignoreSampleCount"
-                                                   message="perfTest.config.ignoreSampleCount" extraCss="input-mini">
-                                    </input-popover>
-                                </control-group>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="span3">
-                                <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution" labelHelpMessageKey="perfTest.config.safeDistribution">
-                                    <input type="checkbox" name="safeDistribution" :checked="test.safeDistribution">
-                                </control-group>
-                            </div>
-                            <div class="span3">
-                                <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
-                                               controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
-                                    <input-popover name="param"
-                                                   ref="param"
-                                                   :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }"
-                                                   dataPlacement="top"
-                                                   v-model="test.param"
-                                                   message="perfTest.config.param"
-                                                   customStyle="width: 125px;">
-                                    </input-popover>
-                                </control-group>
-                            </div>
-                        </div>
+                <div class="advanced-config" v-show="display.detailConfig">
+                    <div class="row">
+                        <control-group name="samplingInterval" labelMessageKey="perfTest.config.samplingInterval">
+                            <select class="select-item form-control" name="samplingInterval" v-model="test.samplingInterval">
+                                <option v-for="interval in samplingIntervals" :value="interval" v-text="interval"></option>
+                            </select>
+                        </control-group>
+                        <control-group :class="{ error: errors.has('ignoreSampleCount') }" name="ignoreSampleCount"
+                                       labelMessageKey="perfTest.config.ignoreSampleCount">
+                            <input-popover v-model="test.ignoreSampleCount"
+                                           ref="ignoreSampleCount"
+                                           dataPlacement="top"
+                                           name="ignoreSampleCount"
+                                           message="perfTest.config.ignoreSampleCount"
+                                           extraCss="input-mini"
+                                           :validationRules="{ numeric: true }">
+                            </input-popover>
+                        </control-group>
                     </div>
-                </transition>
+                    <div class="row">
+                        <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
+                                       labelHelpMessageKey="perfTest.config.safeDistribution">
+                            <input type="checkbox" name="safeDistribution" :checked="test.safeDistribution">
+                        </control-group>
+                        <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
+                                       controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
+                            <input-popover name="param"
+                                           ref="param"
+                                           dataPlacement="top"
+                                           v-model="test.param"
+                                           message="perfTest.config.param"
+                                           customStyle="width: 125px;"
+                                           :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }">
+                            </input-popover>
+                        </control-group>
+                    </div>
+                </div>
             </div>
         </div>
         <ramp-up ref="rampUp" :test="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
@@ -248,7 +240,7 @@
         regionAgentCountMap = {};
 
         targetHostIp = '';
-        targetHost = [];
+        targetHosts = [];
 
         maxAgentCount = 0;
         durationMs = 0;
@@ -284,8 +276,7 @@
             this.durationMaxHour = (durationHour > this.config.maxRunHour) ? durationHour : this.config.maxRunHour;
 
             this.$nextTick(() => {
-                $('[data-toggle="popover"]').popover('destroy');
-                $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#config-container' });
+                $('[data-toggle="popover"]').popover();
                 this.$refs.rampUp.updateRampUpChart();
             });
         }
@@ -416,14 +407,14 @@
             if (this.targetHosts.some(host => host === newHost)) {
                 return;
             }
-            this.targetHost.push(newHost);
+            this.targetHosts.push(newHost);
         }
 
         setTargetHost(targetHost) {
             if (!targetHost) {
                 return;
             }
-            targetHost.split(',').forEach(host => this.targetHost.push(host));
+            targetHost.split(',').forEach(host => this.targetHosts.push(host));
         }
 
         showTargetHostInfoModal(host) {
@@ -439,37 +430,73 @@
 </script>
 
 <style lang="less">
-    #advanced-config {
-        .validation-message {
-            margin-left: -85px;
-            margin-top: 5px;
-        }
+    .config-container {
+        .advanced-config {
+            margin-top: 10px;
 
-        div.row {
-            width: 500px;
+            .row {
+                width: 480px;
+
+                .control-group {
+                    width: 240px;
+                }
+            }
         }
     }
 </style>
 
 <style lang="less" scoped>
-    #config-container {
-        .badge-info {
-            padding: 7px 20px 7px 20px;
-            border-radius: 20px;
-            -webkit-border-radius: 20px;
-            -moz-border-radius: 20px;
+    .config-container {
+        .basic-config-container {
+            width: 460px;
+
+            .form-horizontal {
+                margin-top: 10px;
+            }
+
+            .badge-info {
+                font-size: 12px;
+                padding: 7px 20px;
+                border-radius: 20px;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+            }
+
+            .agent-config-container {
+                .agent-count-container {
+                    width: 300px;
+
+                    .input-append {
+                        width: 130px;
+                    }
+                }
+
+                .agent-region-container {
+                    width: 158px;
+                }
+            }
+
+            .vuser-per-agent-container {
+                width: 145px;
+                display: inline-block;
+            }
         }
 
-        #region {
-            width: 110px;
-        }
+        .vuser-panel {
+            margin-top: 10px;
 
-        #vuser-panel {
-            margin-top: 5px;
+            .input-prepend-container {
+                width: 130px;
+            }
+
+            .input-group {
+                display: inline-flex;
+                margin: 0;
+            }
         }
 
         .detail-config-btn-container {
-            margin-top: -20px;
+            justify-content: flex-end;
 
             span {
                 margin-right: 10px;
@@ -478,11 +505,19 @@
 
         .threshold-container {
             margin-left: 2px;
+
+            .select-item {
+                display: inline-block;
+                padding: 4px 6px;
+            }
         }
 
         .btn-script-revision {
             position: relative;
-            margin-top: 3px;
+
+            i {
+                vertical-align: baseline;
+            }
         }
 
         i {
@@ -504,11 +539,11 @@
                 height: 40px;
                 margin-bottom: 8px;
                 overflow-y: auto;
-                border-radius: 3px 3px 3px 3px;
+                border-radius: 3px;
 
                 .resource {
                     width: 300px;
-                    color: #666666;
+                    color: #666;
                     display: block;
                     margin-left: 7px;
                     margin-top: 2px;
@@ -524,11 +559,9 @@
                 border-radius: 3px;
 
                 .host {
-                    color: #666666;
+                    color: #666;
                     display: inline-block;
-                    margin-left: 7px;
-                    margin-top: 2px;
-                    margin-bottom: 2px;
+                    margin: 2px 0 2px 7px;
                 }
             }
 
@@ -542,12 +575,24 @@
         }
 
         .add-host-btn {
-            margin-top: 27px;
-            margin-left: 287px;
+            font-size: 10px;
+            padding: 1px 3px;
+            margin-top: 30px;
+            margin-left: 283px;
             position: absolute;
+
+            i {
+                vertical-align: initial;
+            }
         }
 
         .control-group {
+            margin-bottom: 10px;
+
+            &.script-control-group.error {
+                margin-bottom: 20px;
+            }
+
             label {
                 &.control-label {
                     width: 110px;
