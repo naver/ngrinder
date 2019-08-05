@@ -9,7 +9,7 @@
         </select>
         <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </span>
-    <input v-else ref="select2" value=" " :style="customStyle" :name="name">
+    <input v-else ref="select2" v-model="value" :style="customStyle" :name="name">
 </template>
 
 <script>
@@ -53,7 +53,7 @@
                 .change(function() {
                     self.$emit('input', this.value);
                     self.$emit('change');
-                    self.$nextTick(() => self.$validator.validateAll());
+                    self.$nextTick(() => self.$validator.validate(self.name));
                 });
         }
 
@@ -71,4 +71,16 @@
 
 <style lang="less" scoped>
     @import '../../../plugins/select2/select2.css';
+</style>
+
+<style lang="less">
+    .select2-container {
+        .select2-choice {
+            height: 30px;
+        }
+    }
+
+    .select2-no-results, .select2-input {
+        font-size: 12px;
+    }
 </style>

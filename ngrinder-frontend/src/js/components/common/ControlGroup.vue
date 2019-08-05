@@ -1,5 +1,5 @@
 <template>
-    <div id="control-group" class="control-group" :class="{success: success}"
+    <div class="control-group" :class="{success: success}"
          :data-step="dataStep" :data-intro="dataIntro" data-html="true">
         <label class="control-label" :for="id ? id : name" :style="labelStyle">
             <input v-if="radio"
@@ -15,10 +15,11 @@
             <span v-if="labelHelpMessageKey"
                   data-toggle="popover"
                   data-html="true"
+                  data-trigger="hover"
                   :data-content="i18n(`${labelHelpMessageKey}.help`)"
                   :title="i18n(labelHelpMessageKey)"
                   data-placement='top'>
-				<i class="icon-question-sign" style="vertical-align: middle;"></i>
+				<i class="icon-question-sign align-middle"></i>
 			</span>
         </label>
         <div class="controls" :style="controlsStyle">

@@ -256,7 +256,7 @@ export default class Chart {
                 div = null;
                 close = null;
                 if ($(`#${$(this).attr("id")}_img_btn`)[0] === undefined) {
-                    let btn = $(`<a class='pointer-cursor' title='${btnLabel}'><i class='icon-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>`);
+                    let btn = $(`<a class='pointer-cursor' title='${btnLabel}'><i class='fa fa-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>`);
                     btn.attr("id", $(this).attr("id") + "_img_btn");
                     btn.bind('click', {chart: $(this)}, function (evt) {
                         const imgelem = evt.data.chart.jqplotToImageElem();

@@ -1,76 +1,78 @@
 <template>
     <li class="dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle clickable">
+        <a data-toggle="dropdown" class="dropdown-toggle pointer-cursor">
             <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name}(${ngrinder.currentUser.factualUser.name})`"></span>
             <span v-else v-text="ngrinder.currentUser.name"></span>
-            <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-            <li v-if="ngrinder.config.userSwitchMode">
-                <a href="/user/switch?to=" v-text="i18n('common.button.return')"></a>
+            <li v-show="ngrinder.config.userSwitchMode">
+                <a class="dropdown-item" href="/user/switch?to=" v-text="i18n('common.button.return')"></a>
             </li>
-            <li v-show="!ngrinder.config.userSwitchMode">
-                <a @click.prevent="$emit('showUserProfileModal')" class="clickable" v-text="i18n('navigator.dropDown.profile')"></a>
-            </li>
-            <li v-show="!ngrinder.config.userSwitchMode">
-                <a @click.prevent="$emit('showUserSwitchModal')" class="clickable" v-text="i18n('navigator.dropDown.switchUser')"></a>
-            </li>
-            <li class="divider"></li>
-            <template v-if="isAdmin">
-                <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
-                    <a class="clickable" v-text="i18n('navigator.dropDown.downloadAgent')"></a>
-                    <ul class="dropdown-menu">
-                        <li v-for="region in regions">
-                            <a :href="`/agent/download?region=${region}`" v-text="region"></a>
-                        </li>
-                    </ul>
-                </li>
-                <li v-else>
-                    <a href="/agent/download" v-text="i18n('navigator.dropDown.downloadAgent')"></a>
-                </li>
-            </template>
-            <template v-if="!isAdmin">
-                <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
-                    <a class="clickable" v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></a>
-                    <ul class="dropdown-menu">
-                        <li v-for="region in regions">
-                            <a :href="`/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="region"></a>
-                        </li>
-                    </ul>
-                </li>
-                <li v-else>
-                    <a :href="`/agent/download?owner=${ngrinder.currentUser.id}`" v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></a>
-                </li>
-            </template>
-            <li>
-                <a href="/monitor/download" v-text="i18n('navigator.dropDown.downloadMonitor')"></a>
-            </li>
-            <li>
-                <a href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank" v-text="i18n('navigator.dropDown.downloadRecorder')"></a>
-            </li>
-            <template v-if="isAdmin">
-                <li class="divider"></li>
-                <li><router-link to="/user" v-text="i18n('navigator.dropDown.userManagement')"></router-link></li>
-                <li><router-link to="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></router-link></li>
+            <template v-show="!ngrinder.config.userSwitchMode">
                 <li>
-                    <router-link to="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></router-link>
+                    <a @click.prevent="$emit('showUserProfileModal')" class="dropdown-item" v-text="i18n('navigator.dropDown.profile')"></a>
                 </li>
-                <li><router-link to="/operation/system_config" v-text="i18n('navigator.dropDown.systemConfig')"></router-link></li>
+                <li>
+                    <a @click.prevent="$emit('showUserSwitchModal')" class="dropdown-item" v-text="i18n('navigator.dropDown.switchUser')"></a>
+                </li>
+            </template>
+            <li class="dropdown-divider"></li>
+            <template v-if="isAdmin">
+                <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
+                    <a class="dropdown-item">
+                        <span v-text="i18n('navigator.dropDown.downloadAgent')"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li v-for="region in regions">
+                            <a class="dropdown-item" :href="`/agent/download?region=${region}`" v-text="region"></a>
+                        </li>
+                    </ul>
+                </li>
+                <li v-else>
+                    <a class="dropdown-item" href="/agent/download" v-text="i18n('navigator.dropDown.downloadAgent')"></a>
+                </li>
+            </template>
+            <template v-else>
+                <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
+                    <a class="dropdown-item">
+                        <span v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li v-for="region in regions">
+                            <a class="dropdown-item" :href="`/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="region"></a>
+                        </li>
+                    </ul>
+                </li>
+                <li v-else>
+                    <a class="dropdown-item" :href="`/agent/download?owner=${ngrinder.currentUser.id}`" v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></a>
+                </li>
+            </template>
+            <li>
+                <a class="dropdown-item" href="/monitor/download" v-text="i18n('navigator.dropDown.downloadMonitor')"></a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank" v-text="i18n('navigator.dropDown.downloadRecorder')"></a>
+            </li>
+            <template v-if="isAdmin">
+                <li class="dropdown-divider"></li>
+                <li><router-link class="dropdown-item" to="/user" v-text="i18n('navigator.dropDown.userManagement')"></router-link></li>
+                <li><router-link class="dropdown-item" to="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></router-link></li>
+                <li><router-link class="dropdown-item" to="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></router-link></li>
+                <li><router-link class="dropdown-item" to="/operation/system_config" v-text="i18n('navigator.dropDown.systemConfig')"></router-link></li>
             </template>
             <template v-if="isAdminOrSuperUser">
-                <li class="divider"></li>
+                <li class="dropdown-divider"></li>
                 <li>
-                    <router-link to="/operation/announcement" v-text="i18n('navigator.dropDown.announcement')"></router-link>
+                    <router-link class="dropdown-item" to="/operation/announcement" v-text="i18n('navigator.dropDown.announcement')"></router-link>
                 </li>
             </template>
-            <li class="divider"></li>
+            <li class="dropdown-divider"></li>
             <li>
-                <a href="/logout" v-text="i18n('navigator.dropDown.logout')"></a>
+                <a class="dropdown-item" href="/logout" v-text="i18n('navigator.dropDown.logout')"></a>
             </li>
         </ul>
     </li>
 </template>
-
 
 <script>
     import Component from 'vue-class-component';
@@ -83,7 +85,58 @@
         regions = [];
 
         created() {
-            this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
+            if (this.ngrinder.config.clustered) {
+                this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
+            }
         }
     }
 </script>
+
+<style lang="less" scoped>
+    .dropdown {
+        .dropdown-toggle {
+            &:hover {
+                color: white;
+            }
+        }
+
+        .dropdown-item {
+            cursor: pointer;
+            font-size: 12px;
+
+            &:hover {
+                color: #fff;
+                background-color: #007bff;
+            }
+        }
+
+        > .dropdown-menu::after {
+            content: '';
+            display: inline-block;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid #fff;
+            position: absolute;
+            top: -6px;
+            left: 10px;
+        }
+
+        .dropdown-submenu {
+            position: relative;
+
+            &:hover {
+                > ul.dropdown-menu {
+                    display: block;
+                }
+            }
+        }
+
+        .dropdown-submenu {
+            > .dropdown-menu {
+                top: -8px;
+                left: -100%;
+                width: 100%;
+            }
+        }
+    }
+</style>
