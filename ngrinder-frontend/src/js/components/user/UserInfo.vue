@@ -9,7 +9,7 @@
                               message="user.info.userId"/>
             </control-group>
 
-            <control-group :class="{error: errors.has('userName')}" name="userName" labelMessageKey="user.info.name" required>
+            <control-group :class="{ error: errors.has('userName') }" name="userName" labelMessageKey="user.info.name" required>
                 <input-append name="userName" ref="userName"
                               v-model="user.userName"
                               :validationRules="{ required: true, max: 20 }"
@@ -17,14 +17,14 @@
             </control-group>
 
             <control-group v-if="config.allowRoleChange" name="role" labelMessageKey="user.info.role">
-                <select v-model="user.role" name="role">
+                <select v-model="user.role" name="role" class="form-control">
                     <option v-for="role in config.roleSet" :value="role"
                             v-text="role.fullName" :selected="user.role === role">
                     </option>
                 </select>
             </control-group>
 
-            <control-group :class="{error: errors.has('email')}" name="email" labelMessageKey="user.info.email">
+            <control-group :class="{ error: errors.has('email') }" name="email" labelMessageKey="user.info.email">
                 <input-append name="email" ref="email"
                               v-model="user.email"
                               :validationRules="{ email: true }"
@@ -33,11 +33,12 @@
 
             <control-group name="description" labelMessageKey="common.label.description">
                 <textarea cols="30" name="description"
-                          rows="3" title="Description" class="tx_area span4"
+                          rows="3" title="Description"
+                          class="form-control"
                           v-model="user.description"></textarea>
             </control-group>
 
-            <control-group :class="{error: errors.has('mobilePhone')}" name="mobilePhone" labelMessageKey="user.info.phone">
+            <control-group :class="{ error: errors.has('mobilePhone') }" name="mobilePhone" labelMessageKey="user.info.phone">
                 <input-append name="mobilePhone" ref="mobilePhone"
                               errStyle="width: 285px;"
                               v-model="user.mobilePhone"
@@ -46,23 +47,25 @@
             </control-group>
 
             <control-group v-if="config.allowShareChange" labelMessageKey="user.share.title">
-                <select2 v-model="user.followersStr" type="input" name="followersStr" :option="followerSelect2Option" customStyle="width: 285px;"></select2>
+                <select2 v-model="user.followersStr" type="input" name="followersStr"
+                         :option="followerSelect2Option" customStyle="width: 100%;">
+                </select2>
             </control-group>
 
-            <div v-if="!config.showPasswordByDefault" class="accordion-heading">
-                <a @click="displayPasswordField = !displayPasswordField" class="pointer-cursor" v-text="i18n('user.info.button.changePwd')"></a>
+            <div v-if="!config.showPasswordByDefault">
+                <a href="#" @click="displayPasswordField = !displayPasswordField" class="pointer-cursor" v-text="i18n('user.info.button.changePwd')"></a>
             </div>
 
             <template v-if="config.allowPasswordChange">
-                <div v-show="displayPasswordField" class="accordion-inner password-container">
-                    <control-group :class="{error: errors.has('password')}" name="password" labelMessageKey="user.info.pwd" :required="config.showPasswordByDefault">
+                <div v-show="displayPasswordField" class="password-container border-top mt-1">
+                    <control-group :class="{ error: errors.has('password') }" name="password" labelMessageKey="user.info.pwd" :required="config.showPasswordByDefault">
                         <input-append name="password" ref="password"
                                       v-model="user.password"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15] }"
                                       type="password" message="user.info.pwd"/>
                     </control-group>
 
-                    <control-group :class="{error: errors.has('confirmPassword')}" name="confirmPassword" labelMessageKey="user.info.cpwd" :required="config.showPasswordByDefault">
+                    <control-group :class="{ error: errors.has('confirmPassword') }" name="confirmPassword" labelMessageKey="user.info.cpwd" :required="config.showPasswordByDefault">
                         <input-append name="confirmPassword" ref="confirmPassword"
                                       v-model="user.confirmPassword"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15], confirmed: user.password}"
@@ -71,10 +74,11 @@
                 </div>
             </template>
 
-            <div class="control-group">
-                <div class="controls pull-right">
-                    <a class="btn btn-success save-user-btn" @click="save" v-text="i18n('user.info.button.saveUser')"></a>
-                </div>
+            <div class="controls float-right">
+                <button class="btn btn-success save-user-btn" @click="save">
+                    <i class="fa fa-save mr-1"></i>
+                    <span v-text="i18n('user.info.button.saveUser')"></span>
+                </button>
             </div>
         </fieldset>
     </form>
@@ -228,10 +232,26 @@
         .user-form {
             .input-group {
                 input {
-                    width: 286px;
+                    width: 100%;
                     border-radius: 4px;
                 }
             }
+        }
+    }
+</style>
+
+<style lang="less">
+    .user-form {
+        .controls {
+            display: flex;
+        }
+
+        .control-label {
+            width: 160px;
+        }
+
+        select {
+            font-size: 12px;
         }
     }
 </style>
@@ -243,6 +263,7 @@
         }
 
         .control-group {
+            width: 450px;
             margin-bottom: 12px;
         }
 

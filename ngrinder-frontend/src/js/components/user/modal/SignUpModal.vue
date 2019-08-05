@@ -1,10 +1,10 @@
 <template>
     <div v-if="dataLoadFinished" class="modal fade" id="sign-up-modal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content sign-up">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header align-items-center">
                     <h4 class="modal-title" v-text="i18n('user.signup.header')"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
                 <div class="modal-body">
                     <user-info :type="'signUp'" :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>

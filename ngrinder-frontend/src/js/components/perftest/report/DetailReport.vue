@@ -5,9 +5,6 @@
             <h3 v-text="`${i18n('perfTest.report.reportPage')} ${test.testName}`"></h3>
         </header>
         <div class="container p-0">
-            <form>
-                <input type="hidden" name="testId" :value="test.id">
-            </form>
             <div class="row">
                 <div class="report-summary-container">
                     <table class="table table-bordered compact-padding">
@@ -65,21 +62,18 @@
                             <td v-text="test.error || 0"></td>
                         </tr>
                     </table>
-                    <ul class="nav flex-column">
-                        <li class="nav-item nav-link active" ref="perftestNavMenu">
-                            <a href="#" @click="showPerftestMenu($event)" v-text="i18n('perfTest.report.performanceReport')"></a>
-                        </li>
+                    <div class="card bg-light py-1">
+                        <ul class="nav flex-column">
+                            <li class="nav-item active pl-3" ref="perftestNavMenu">
+                                <a href="#" class="nav-link px-0" @click="showPerftestMenu($event)" v-text="i18n('perfTest.report.performanceReport')"></a>
+                            </li>
 
-                        <li class="nav-item" v-text="i18n('perfTest.report.targetHost')"></li>
-                        <li v-for="ip in test.targetHosts.split(',')" class="monitor" :ip="ip">
-                            <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link" v-text="ip"></a>
-                        </li>
-
-                        <li  class="nav-item" v-text="i18n('perfTest.report.plugins')"></li>
-                        <li v-for="plugin in plugins" class="plugin" :plugin="plugin.first" :ip="plugin.second">
-                            <a href="#" class="nav-link" v-text="`${plugin.first.replace('_', ' ')} - ${plugin.second}`"></a>
-                        </li>
-                    </ul>
+                            <li class="nav-item mb-2 pl-3" v-text="i18n('perfTest.report.targetHost')"></li>
+                            <li v-for="ip in test.targetHosts.split(',')" class="monitor" :ip="ip">
+                                <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link py-0 ml-3 pb-1" v-text="ip"></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="report-chart-container">
                     <table class="table table-bordered">
@@ -259,20 +253,24 @@
             }
         }
 
-        .well {
-            max-width: 340px;
-            padding: 8px 0;
-        }
-
-        .navbar-inner {
-            width: 940px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 0;
-        }
-
         .report-summary-container {
             width: 220px;
+
+            .nav {
+                a {
+                    text-decoration: none;
+                }
+
+                li {
+                    &.active {
+                        background-color: #0069d9;
+
+                        a {
+                            color: #fff;
+                        }
+                    }
+                }
+            }
         }
 
         .report-chart-container {
