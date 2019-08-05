@@ -1,28 +1,30 @@
 <template>
-    <div ref="targetHostInfoModal" class="modal hide fade" id="target-host-info-modal"
-         tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        </div>
-        <div class="modal-body">
-            <div id="system_chart">
-                <div class="page-header">
+    <div ref="targetHostInfoModal" class="modal fade" id="target-host-info-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-bottom align-content-center">
                     <h4 v-text="i18n('monitor.info.header')"></h4>
-                    <span v-text="`( ${ip} )`"></span>
+                    <span class="ml-1" v-text="`( ${ip} )`"></span>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
-                <h5 v-text="i18n('monitor.info.cpu')"></h5>
-                <div class="chart" id="cpu-usage-chart"></div>
-                <h5 v-text="i18n('monitor.info.memory')"></h5>
-                <div class="chart" id="memory-usage-chart"></div>
+                <div class="modal-body">
+                    <div>
+                        <h5 v-text="i18n('monitor.info.cpu')"></h5>
+                        <div class="chart" id="cpu-usage-chart"></div>
+                        <h5 v-text="i18n('monitor.info.memory')"></h5>
+                        <div class="chart" id="memory-usage-chart"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import ModalBase from '../../common/modal/ModalBase.vue';
-
+    import FormatMixin from '../mixin/FormatMixin.vue';
     import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
 
@@ -34,7 +36,7 @@
             },
         },
     })
-    export default class TargetHostInfoModal extends ModalBase {
+    export default class TargetHostInfoModal extends Mixins(ModalBase, FormatMixin) {
         INTERVAL = 3;
 
         currentIntervalId = -1;
@@ -85,42 +87,26 @@
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
                 this.cpu.chart.plot();
                 this.memory.chart.plot();
-            }).catch(error => console.log(error));
-        }
-
-        formatMemory(format, value) {
-            value = value || 0;
-            if (value < 1024) {
-                return `${value.toFixed(1)}K `;
-            } else if (value < 1048576) { // 1024 * 1024
-                return `${(value / 1024).toFixed(1)}M `;
-            } else {
-                return `${(value / 1048576).toFixed(2)}G `;
-            }
-        }
-
-        formatPercentage(format, value) {
-            value = value || 0;
-            if (value < 10) {
-                return `${value.toFixed(1)}% `;
-            } else {
-                return `${value.toFixed(0)}% `;
-            }
+            });
         }
     }
 </script>
 
 <style lang="less" scoped>
     #target-host-info-modal {
-        width: 580px;
-
         .modal-body {
+            padding: 20px;
             max-height: 1200px;
-            padding-left: 30px;
+        }
+
+        .modal-content {
+            width: 600px;
         }
 
         .modal-header {
-            border: none;
+            span {
+                margin-top: 2px;
+            }
         }
 
         .page-header {
