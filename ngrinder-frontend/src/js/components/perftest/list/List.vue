@@ -172,7 +172,7 @@
                 pageLinkClass="page-link"
                 prevLinkClass="page-link"
                 nextLinkClass="page-link"
-                containerClass="pagination pagination-sm"
+                containerClass="pagination"
                 ref="perftestPaginate"
                 v-model="currentPage"
                 :page-count="totalActivationPageCount"
