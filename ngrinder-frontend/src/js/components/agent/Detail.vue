@@ -1,69 +1,68 @@
 <template>
-    <div class="container">
+    <div class="agent-detail container">
         <vue-headful :title="i18n('agent.info.title')"></vue-headful>
         <fieldset>
-            <legend class="header">
+            <legend class="header border-bottom d-flex">
                 <span v-text="i18n('agent.info.head')"></span>
-                <button class="btn pull-right" @click="$router.go(-1)"
-                        v-text="i18n('common.button.return')">
+                <button class="btn btn-success ml-auto mt-auto mb-auto" @click="$router.go(-1)">
+                    <i class="fa fa-undo"></i>
+                    <span v-text="i18n('common.button.return')"></span>
                 </button>
             </legend>
         </fieldset>
         <div class="row">
-            <div class="span3">
+            <div>
                 <table class="table table-bordered table-striped">
                     <tbody>
-                    <tr>
-                        <th v-text="i18n('agent.info.IP')"></th>
-                    </tr>
-                    <tr>
-                        <td v-text="agent.ip"></td>
-                    </tr>
-
-                    <tr>
-                        <th v-text="i18n('agent.info.port')"></th>
-                    </tr>
-                    <tr>
-                        <td v-text="agent.port"></td>
-                    </tr>
-
-                    <tr>
-                        <th v-text="i18n('agent.info.name')"></th>
-                    </tr>
-                    <tr>
-                        <td v-text="agent.hostName"></td>
-                    </tr>
-
-                    <tr>
-                        <th v-text="i18n('agent.info.region')"></th>
-                    </tr>
-                    <tr>
-                        <td v-text="agent.region"></td>
-                    </tr>
-
-                    <tr>
-                        <th v-text="i18n('agent.info.version')"></th>
-                    </tr>
-                    <tr>
-                        <td v-text="agent.version ? agent.version : 'Prior to 3.3'"></td>
-                    </tr>
-
-                    <tr>
-                        <th v-text="i18n('agent.info.state')"></th>
-                    </tr>
-                    <tr>
-                        <td v-text="agent.state.name"></td>
-                    </tr>
+                        <tr>
+                            <th v-text="i18n('agent.info.IP')"></th>
+                        </tr>
+                        <tr>
+                            <td v-text="agent.ip"></td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('agent.info.port')"></th>
+                        </tr>
+                        <tr>
+                            <td v-text="agent.port"></td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('agent.info.name')"></th>
+                        </tr>
+                        <tr>
+                            <td v-text="agent.hostName"></td>
+                        </tr>
+                        <template v-if="ngrinder.config.clustered">
+                            <tr>
+                                <th v-text="i18n('agent.info.region')"></th>
+                            </tr>
+                            <tr>
+                                <td v-text="agent.region"></td>
+                            </tr>
+                        </template>
+                        <tr>
+                            <th v-text="i18n('agent.info.version')"></th>
+                        </tr>
+                        <tr>
+                            <td v-text="agent.version ? agent.version : 'Prior to 3.3'"></td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('agent.info.state')"></th>
+                        </tr>
+                        <tr>
+                            <td v-text="agent.state.name"></td>
+                        </tr>
                     </tbody>
                 </table>
-                <label v-text="i18n('agent.info.refreshInterval')"></label>
-                <input type="text" class="span3" placeholder="number" v-model="interval" @keyup="refreshInterval">
+                <label v-text="i18n('agent.info.refreshInterval')" class="d-block"></label>
+                <input type="text" class="input-refresh-interval form-control"
+                       placeholder="number" v-model="interval" @keyup="refreshInterval">
             </div>
-            <div class="span9">
+            <div class="chart-container">
                 <h5 v-text="i18n('agent.info.cpu')"></h5>
-                <div class="chart" id="cpu_usage_chart"></div>
+                <div class="chart border border-secondary mb-4" id="cpu-usage-chart"></div>
                 <h5 v-text="i18n('agent.info.memory')"></h5>
-                <div class="chart" id="memory_usage_chart"></div>
+                <div class="chart border border-secondary" id="memory-usage-chart"></div>
             </div>
         </div>
         <!--content-->
@@ -122,11 +121,11 @@
 
         mounted() {
             this.cpu.queue = new Queue(60);
-            this.cpu.chart = new Chart('cpu_usage_chart', [this.cpu.queue.getArray()], this.interval,
+            this.cpu.chart = new Chart('cpu-usage-chart', [this.cpu.queue.getArray()], this.interval,
                 { yAxisFormatter: this.formatPercentage }).plot();
 
             this.memory.queue = new Queue(60);
-            this.memory.chart = new Chart('memory_usage_chart', [this.memory.queue.getArray()], this.interval,
+            this.memory.chart = new Chart('memory-usage-chart', [this.memory.queue.getArray()], this.interval,
                 { yAxisFormatter: this.formatMemory }).plot();
 
             this.intervalTimer = setInterval(this.getState, this.interval * 1000);
@@ -159,9 +158,25 @@
 </script>
 
 <style lang="less" scoped>
-    .table {
-        font-size: 12px;
-        border-top:#cccccc solid 1px;
-        margin-top:14px;
+    .agent-detail {
+        table {
+            font-size: 12px;
+            border-top:#cccccc solid 1px;
+            margin-top:14px;
+            width: 220px;
+        }
+
+        .input-refresh-interval {
+            width: 220px;
+        }
+
+        .chart-container {
+            width: 700px;
+            margin-left: auto;
+
+            .chart {
+                height: 250px;
+            }
+        }
     }
 </style>
