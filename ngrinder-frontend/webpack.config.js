@@ -1,12 +1,14 @@
 var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var VueLoaderPlugin = require('vue-loader/lib/plugin');
 var webpack = require("webpack");
 
 var outputDir = path.resolve("../ngrinder-controller/build/classes/main/static");
 
 var argv = require('yargs').argv;
 var productionBuild = argv.p || false;
+var devMode = process.env.NODE_ENV !== 'production';
 
 if (productionBuild) {
     console.log("### production build is enabled. ga is included and javascript is optmized\r");
@@ -21,7 +23,6 @@ if (argv.w || argv.watch) {
 console.log("### passed env is " + JSON.stringify(argv.env));
 
 module.exports = function (env) {
-
     var ngrinderVersion = "3.5.0-SNAPSHOT";
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
@@ -29,6 +30,10 @@ module.exports = function (env) {
     console.log("### frontend version is " + ngrinderVersion + "\r");
 
     var webpackConfig = {
+        mode: 'production',
+        performance: {
+            hints: false,
+        },
         entry: {
             'app': 'entries/app.js',
         },
@@ -61,11 +66,6 @@ module.exports = function (env) {
                 {
                     test: /\.vue$/,
                     loader: 'vue-loader',
-                    options: {
-                        loaders: {
-                            scss: 'vue-style-loader!css-loader!sass-loader',
-                        },
-                    },
                 },
                 {
                     test: /.properties$/,
@@ -82,22 +82,20 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.css$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: [
-                            {loader: 'css-loader', options: {sourceMap: !productionBuild, importLoaders: 1}},
-                        ],
-                    }),
+                    use: [MiniCssExtractPlugin.loader, {
+                        loader: 'css-loader',
+                        options: { sourceMap: devMode },
+                    }],
                 },
                 {
-                    test: /\.less/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: [
-                            {loader: 'css-loader', options: {sourceMap: !productionBuild, importLoaders: 1}},
-                            {loader: 'less-loader', options: {sourceMap: !productionBuild}},
-                        ],
-                    }),
+                    test: /\.less$/,
+                    use: [MiniCssExtractPlugin.loader, {
+                        loader: 'css-loader',
+                        options: { sourceMap: devMode },
+                    }, {
+                        loader: 'less-loader',
+                        options: { sourceMap: devMode },
+                    }],
                 },
                 {
                     test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
@@ -116,7 +114,10 @@ module.exports = function (env) {
                 jQuery: 'jquery',
                 'window.jQuery': 'jquery',
             }),
-            new ExtractTextPlugin('./css/[name].css'),
+            new MiniCssExtractPlugin({
+                filename: 'css/[name].css',
+            }),
+            new VueLoaderPlugin(),
             new CopyWebpackPlugin([
                 {
                     context: 'src/html',
