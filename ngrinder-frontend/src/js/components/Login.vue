@@ -1,25 +1,25 @@
 <template>
-    <div id="login-container">
-        <vue-headful title="Login"/>
+    <main>
         <sign-up-modal v-if="ngrinder.config.signUpEnabled" ref="signUpModal"></sign-up-modal>
-        <div class="logo">
+        <header>
+            <vue-headful title="Login"/>
             <img src="/img/logo_ngrinder_a.png" width="400" alt="nGrinder logo">
-        </div>
-        <div class="content">
+        </header>
+        <section>
             <form ref="loginForm" action="/form_login" method="post">
                 <fieldset>
-                    <div class="login">
-                        <div class="lgn_ipt">
-                            <input v-focus type="text" class="span2 input" name="j_username" placeholder="User ID"><br>
-                            <input type="password" class="span2 input" name="j_password" placeholder="Password">
+                    <div class="login-input-container">
+                        <div>
+                            <input v-focus type="text" class="form-control d-block" name="j_username" placeholder="User ID">
+                            <input type="password" class="form-control" name="j_password" placeholder="Password">
                         </div>
-                        <input id="loginBtn" type="image" src="/img/login.gif" alt="Login" class="btn_lgn">
+                        <input type="image" src="/img/login.gif" alt="Login" class="login-btn">
                     </div>
 
                     <div class="prompt">
-                        <input id="remember_me" type="checkbox" class="checkbox" name='_spring_security_remember_me'>
+                        <input type="checkbox" class="checkbox remember-me" name='_spring_security_remember_me'>
                         <span>Remember Me</span>
-                        <select id="native_language" name="native_language" v-model="userLanguage">
+                        <select class="form-control native-language" name="native_language" v-model="userLanguage">
                             <option value="en">English</option>
                             <option value="kr">한국어</option>
                             <option value="cn">中文</option>
@@ -27,7 +27,7 @@
                     </div>
 
                     <div class="prompt">
-                        <select id="user_timezone" name="user_timezone" v-model="userTimezone">
+                        <select class="form-control user-timezone" name="user_timezone" v-model="userTimezone">
                             <option v-for="timezone in timezones" :value="timezone" v-text="timezone"></option>
                         </select>
                     </div>
@@ -36,8 +36,8 @@
                     </div>
                 </fieldset>
             </form>
-        </div>
-    </div>
+        </section>
+    </main>
 </template>
 
 <script>
@@ -81,18 +81,17 @@
 </script>
 
 <style lang="less" scoped>
-
     body {
         overflow-y: hidden;
     }
 
-    #login-container {
-        .logo {
+    main {
+        header {
             margin-top: 150px;
             text-align: center;
         }
 
-        .content {
+        section {
             height: 635px;
             margin-top: 30px;
             padding-top: 30px;
@@ -101,48 +100,52 @@
             fieldset {
                 border: 0;
 
-                .lgn_ipt {
-                    display: inline-block;
-                    input {
-                        height: 30px;
-                        margin-bottom: 5px;
-                    }
-                }
-
-                .login {
+                .login-input-container {
                     text-align: center;
-                    input.span2 {
-                        border: 1px solid #e0e0e0;
-                        width: 135px;
+                    div {
+                        display: inline-block;
+                        input {
+                            width: 135px;
+                            height: 30px;
+                            margin-bottom: 5px;
+                        }
                     }
-                }
 
-                .btn_lgn {
-                    display: inline-block;
-                    margin-left: 20px;
-                    vertical-align: top;
-                    margin-top: 0;
+                    .login-btn {
+                        display: inline-block;
+                        border-radius: 2px;
+                        margin-left: 20px;
+                        vertical-align: top;
+                        margin-top: 0;
+                    }
                 }
 
                 .prompt {
+                    font-size: 12px;
                     text-align: center;
                     margin-top: 5px;
                     height: 30px;
 
-                    #remember_me {
-                        margin-top: -4px;
+                    .form-control {
+                        display: inline-block;
                     }
 
-                    #native_language {
+                    .remember-me {
+                        position: relative;
+                        top: 4px;
+                    }
+
+                    .native-language {
                         margin-left: 60px;
-                        width: 80px;
+                        width: 85px;
                     }
 
-                    #user_timezone {
+                    .user-timezone {
                         width: 240px;
                     }
 
                     .sign-up-btn {
+                        color: #08c;
                         margin-left: 200px;
                     }
 
