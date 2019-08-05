@@ -5,7 +5,7 @@
 
         <search-bar :scripts="scripts" :currentPath="currentPath"></search-bar>
 
-        <table class="table table-striped table-bordered ellipsis dataTable">
+        <table class="table table-striped table-bordered ellipsis">
             <colgroup>
                 <col width="30">
                 <col width="32">
@@ -17,55 +17,61 @@
                 <col width="80">
             </colgroup>
             <thead>
-            <tr>
-                <th><input type="checkbox" class="checkbox" v-model="selectAll" @change="changeSelectAll"></th>
-                <th class="no-click">
-                    <router-link :to="baseDirectory" target="_self">
-                        <img src="/img/up_folder.png"/>
-                    </router-link>
-                </th>
-                <th v-text="i18n('script.list.name')"></th>
-                <th class="no-click" v-text="i18n('script.list.commit')"></th>
-                <th v-text="i18n('script.list.lastDate')"></th>
-                <th v-text="i18n('script.list.revision')"></th>
-                <th v-text="i18n('script.list.size')"></th>
-                <th class="no-click" v-text="i18n('script.list.download')"></th>
-            </tr>
+                <tr>
+                    <th>
+                        <input type="checkbox" class="checkbox" v-model="selectAll" @change="changeSelectAll">
+                    </th>
+                    <th>
+                        <router-link :to="baseDirectory" target="_self">
+                            <img src="/img/up_folder.png"/>
+                        </router-link>
+                    </th>
+                    <th v-text="i18n('script.list.name')"></th>
+                    <th v-text="i18n('script.list.commit')"></th>
+                    <th v-text="i18n('script.list.lastDate')"></th>
+                    <th v-text="i18n('script.list.revision')"></th>
+                    <th v-text="i18n('script.list.size')"></th>
+                    <th v-text="i18n('script.list.download')"></th>
+                </tr>
             </thead>
             <tbody>
-            <tr v-for="script in scripts">
-                <td>
-                    <input v-if="script.fileName !== '..'" type="checkbox" class="checkbox" v-model="script.checked">
-                </td>
-                <td>
-                    <i v-if="isEditable(script.fileType , script.path)" class="icon-file"></i>
-                    <i v-else-if="script.fileType === 'DIR'" class="icon-folder-open"></i>
-                    <i v-else class="icon-briefcase"></i>
-                </td>
-                <td class="ellipsis">
-                    <router-link v-if="isEditable(script.fileType, script.path)"
-                                 :to="`/script/detail/${script.path}`"
-                                 :title="script.path" target="_self"
-                                 v-text="script.fileName">
-                    </router-link>
-                    <router-link v-else-if="script.fileType === 'DIR'"
-                                 :to="`/script/list/${script.path}`"
-                                 :title="script.path" target="_self"
-                                 v-text="script.fileName">
-                    </router-link>
-                    <a v-else :href="`/script/download/${script.path}`"
-                       target="_blank" :title="script.path"
-                       v-text="script.fileName">
-                    </a>
-                </td>
-                <td class="ellipsis" :title="script.description" v-text="script.description"></td>
-                <td><span v-if="!!script.lastModifiedDate">{{ script.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span></td>
-                <td v-text="script.revision"></td>
-                <td><span v-text="script.fileType !== 'DIR' ? getFileSize(script.fileSize) : ''"></span></td>
-                <td class="center">
-                    <i v-if="script.fileType !== 'DIR'" class="pointer-cursor icon-download-alt script-download" :spath="script.path" v-on:click="downloadScript(script.path)"></i>
-                </td>
-            </tr>
+                <tr v-for="script in scripts">
+                    <td>
+                        <input v-if="script.fileName !== '..'" type="checkbox" class="checkbox" v-model="script.checked">
+                    </td>
+                    <td>
+                        <i v-if="isEditable(script.fileType , script.path)" class="fa fa-file"></i>
+                        <i v-else-if="script.fileType === 'DIR'" class="fa fa-folder-open"></i>
+                        <i v-else class="fa fa-briefcase"></i>
+                    </td>
+                    <td class="ellipsis">
+                        <router-link v-if="isEditable(script.fileType, script.path)"
+                                     :to="`/script/detail/${script.path}`"
+                                     :title="script.path" target="_self"
+                                     v-text="script.fileName">
+                        </router-link>
+                        <router-link v-else-if="script.fileType === 'DIR'"
+                                     :to="`/script/list/${script.path}`"
+                                     :title="script.path" target="_self"
+                                     v-text="script.fileName">
+                        </router-link>
+                        <a v-else :href="`/script/download/${script.path}`"
+                           :title="script.path" target="_blank"
+                           v-text="script.fileName">
+                        </a>
+                    </td>
+                    <td class="ellipsis" :title="script.description" v-text="script.description"></td>
+                    <td>
+                        <span v-if="!!script.lastModifiedDate">{{ script.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span>
+                    </td>
+                    <td v-text="script.revision"></td>
+                    <td>
+                        <span v-text="script.fileType !== 'DIR' ? getFileSize(script.fileSize) : ''"></span>
+                    </td>
+                    <td class="center">
+                        <i v-if="script.fileType !== 'DIR'" class="pointer-cursor fa fa-download" @click="downloadScript(script.path)"></i>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -206,7 +212,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .script-img-unit {
         background-image: url('/img/bg_script_banner_en.png');
         height: 110px;
@@ -216,5 +222,9 @@
 
     .table {
         font-size: 12px;
+
+        th, td {
+            padding: 8px;
+        }
     }
 </style>

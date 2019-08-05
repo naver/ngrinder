@@ -1,64 +1,70 @@
 <template>
-    <div>
-        <div class="row form-horizontal">
-            <div class="option-title span1"><h5 v-text="i18n('script.option.header.title')"></h5></div>
-            <div id="headers" class="option-data span9">
-                <div :class="{hide: !showContentTypeHeader}">
-                    <input type="text" class="input name span2" placeholder="name" disabled="disabled"
+    <div class="script-option">
+        <div class="row form-horizontal py-3">
+            <div class="option-title">
+                <h5 class="my-0" v-text="i18n('script.option.header.title')"></h5>
+            </div>
+            <div>
+                <div v-show="showContentTypeHeader">
+                    <input type="text" class="form-control" placeholder="name" disabled="disabled"
                            v-model="contentTypeHeader.name"> =
-                    <autocomplete class="input value span2-3"
-                                  placeholder="value"
+                    <autocomplete placeholder="value"
                                   v-model="contentTypeHeader.value"
-                                  :source="contentTypeHeaderValues"></autocomplete>
-                    <i class="icon-minus pointer-cursor" title="Delete" @click="showContentTypeHeader = false"></i>
+                                  :source="contentTypeHeaderValues">
+                    </autocomplete>
+                    <i class="fa fa-minus ml-2 pointer-cursor" title="Delete" @click="showContentTypeHeader = false"></i>
                 </div>
-                <div v-for="(header, index) in headers">
-                    <autocomplete class="input name span2"
-                                  placeholder="name"
+                <div v-for="(header, index) in headers" class="mb-2">
+                    <autocomplete placeholder="name"
                                   v-model="header.name"
-                                  :source="headerNames"></autocomplete> =
-                    <autocomplete class="input value span2-3"
-                                  placeholder="value"
+                                  :source="headerNames">
+                    </autocomplete> =
+                    <autocomplete placeholder="value"
                                   v-model="header.value"
                                   :source="headerValues[header.name]">
                     </autocomplete>
-                    <i class="icon-minus pointer-cursor" title="Delete" @click="removeHeader(index)"></i>
+                    <i class="fa fa-minus ml-2 pointer-cursor" title="Delete" @click="removeHeader(index)"></i>
                 </div>
-                <i title="Add header" id="addHeaderBtn" class="icon-plus pointer-cursor" @click="addHeader"></i>
+                <i title="Add header" class="fa fa-plus pointer-cursor" @click="addHeader"></i>
             </div>
         </div>
         <hr class="small">
-        <div class="row form-horizontal">
-            <div class="option-title span1"><h5 v-text="i18n('script.option.cookie.title')"></h5></div>
-            <div id="cookies" class="option-data span9">
-                <div v-for="(cookie, index) in cookies">
-                    <input type="text" class="input name span2" placeholder="name" v-model="cookie.name"> =
-                    <input type="text" class="input value sapn2-3" placeholder="value" v-model="cookie.value">
+        <div class="row form-horizontal py-3">
+            <div class="option-title">
+                <h5 class="my-0" v-text="i18n('script.option.cookie.title')"></h5>
+            </div>
+            <div>
+                <div v-for="(cookie, index) in cookies" class="mb-2">
+                    <input type="text" class="form-control" placeholder="name" v-model="cookie.name"> =
+                    <input type="text" class="form-control" placeholder="value" v-model="cookie.value">
 
-                    <input type="text" class="input domain span2 form-control" placeholder="domain"
-                           v-model="cookie.domain">
-                    <input type="text" class="input path span2 form-control" placeholder="path" v-model="cookie.path">
-                    <i class="icon-minus pointer-cursor" title="Delete" @click="removeCookie(index)"></i>
+                    <input type="text" class="form-control" placeholder="domain" v-model="cookie.domain">
+                    <input type="text" class="form-control" placeholder="path" v-model="cookie.path">
+                    <i class="fa fa-minus ml-2 pointer-cursor" title="Delete" @click="removeCookie(index)"></i>
                 </div>
-                <i title="Add cookie" id="addCookieBtn" class="icon-plus pointer-cursor" @click="addCookie"></i>
+                <i title="Add cookie" class="fa fa-plus pointer-cursor" @click="addCookie"></i>
             </div>
         </div>
         <hr class="small">
-        <div id="paramRow" class="row form-horizontal" :class="{hide: showRequestBody}">
-            <div class="option-title span1"><h5 v-text="i18n('script.option.param.title')"></h5></div>
-            <div id="params" class="option-data span9">
-                <div v-for="(param, index) in parameters">
-                    <input type="text" class="input name span2" placeholder="name" v-model="param.name"> =
-                    <input type="text" class="input value sapn2-3" placeholder="value" v-model="param.value">
-                    <i class="icon-minus pointer-cursor" title="Delete" @click="removeParameter(index)"></i>
+        <div class="row form-horizontal py-3" v-show="!showRequestBody">
+            <div class="option-title">
+                <h5 class="my-0" v-text="i18n('script.option.param.title')"></h5>
+            </div>
+            <div>
+                <div v-for="(param, index) in parameters" class="mb-2">
+                    <input type="text" class="form-control" placeholder="name" v-model="param.name"> =
+                    <input type="text" class="form-control" placeholder="value" v-model="param.value">
+                    <i class="fa fa-minus ml-2 pointer-cursor" title="Delete" @click="removeParameter(index)"></i>
                 </div>
-                <i title="Add param" id="addParamBtn" class="icon-plus pointer-cursor" @click="addParameter"></i>
+                <i title="Add param" class="fa fa-plus pointer-cursor" @click="addParameter"></i>
             </div>
         </div>
-        <div id="body-row" class="row" :class="{hide: !showRequestBody}">
-            <div class="option-title span1"><h5 v-text="i18n('script.option.reqBody.title')"></h5></div>
-            <div class="span9">
-                <textarea id="reqBodyText" class="span9" rows="6" cols="95" v-model="requestBody"></textarea>
+        <div class="row" v-show="showRequestBody">
+            <div class="option-title">
+                <h5 class="my-0" v-text="i18n('script.option.reqBody.title')"></h5>
+            </div>
+            <div>
+                <textarea rows="6" cols="95" v-model="requestBody"></textarea>
             </div>
         </div>
     </div>
@@ -134,11 +140,7 @@
 
         @Watch('contentTypeHeader', { deep: true })
         contentTypeHeaderChanged(newContentTypeHeader) {
-            if (newContentTypeHeader.value === 'application/json') {
-                this.showRequestBody = true;
-            } else {
-                this.showRequestBody = false;
-            }
+            this.showRequestBody = newContentTypeHeader.value === 'application/json';
         }
 
         addHeader() {
@@ -190,19 +192,19 @@
 </script>
 
 <style lang="less" scoped>
-    .option-data {
-        padding-top: 10px;
-    }
+    .script-option {
+        .option-title {
+            width: 60px;
+            margin-left: 50px;
+        }
 
-    input[type="text"] {
-        height: 30px;
-    }
+        input[type="text"] {
+            height: 30px;
+            width: 140px;
+        }
 
-    .icon-minus {
-        margin-left: 10px;
-    }
-
-    .domain {
-        margin-left: 15px;
+        .domain {
+            margin-left: 15px;
+        }
     }
 </style>
