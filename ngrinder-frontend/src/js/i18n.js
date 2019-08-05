@@ -1,7 +1,7 @@
-import i18next from "i18next";
-import jqueryI18next from "jquery-i18next";
-import Cache from "i18next-localstorage-cache";
-import LanguageDetector from "i18next-browser-languagedetector";
+import i18next from 'i18next';
+import jqueryI18next from 'jquery-i18next';
+import Cache from 'i18next-localstorage-cache';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 function replaceArgs(msgs) {
     for (const each in msgs) {
