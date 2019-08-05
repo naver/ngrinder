@@ -1,41 +1,39 @@
 <template>
     <div class="modal fade" id="upload-file-modal" ref="uploadFileModal">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+                <header class="modal-header">
                     <h4 v-text="i18n('script.action.upload')"></h4>
-                </div>
+                    <a class="close pointer-cursor" data-dismiss="modal" id="upCloseBtn">x</a>
+                </header>
                 <div class="modal-body">
-                    <div class="form-horizontal" method="post" target="_self"
-                          :action="`/script/upload/${currentPath}`" id="uploadForm"
-                          enctype="multipart/form-data">
+                    <div class="form-horizontal">
                         <fieldset>
-                            <input type="hidden" id="path" name="path"/>
                             <control-group name="description" labelMessageKey="script.action.commit">
-                                <input type="text" id="description" name="description" class="form-control"
-                                       v-model="description">
+                                <input type="text" id="description" class="form-control mb-2" v-model="description">
                             </control-group>
-                            <control-group :class="{error: errors.has('file')}" name="uploadFile" labelMessageKey="script.info.file" ref="fileControlGroup">
-                                <div data-html='true'
-                                     :title="i18n(' script.message.upload.title')"
+                            <control-group :class="{ error: errors.has('file') }" labelMessageKey="script.info.file" ref="fileControlGroup">
+                                <div data-html="true"
+                                     :title="i18n('script.message.upload.title')"
                                      :data-content="i18n('script.message.upload.content')">
-                                    <input type="file" class="input-file form-control" id="file" name="file"
-                                           @change="file = $event.target"
+                                    <input type="file"
                                            ref="file"
-                                           v-validate="{required: true}"/>
-                                    <span v-show="errors.has('file')" class="help-inline" v-text="errors.first('file')"></span>
+                                           class="d-block"
+                                           @change="file = $event.target"
+                                           v-validate="{ required: true }"/>
                                 </div>
                             </control-group>
+                            <span v-show="errors.has('file')" class="validation-message mt-1" v-text="errors.first('file')"></span>
                         </fieldset>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="upload_file_button" @click="uploadFile"
-                            v-text="i18n('script.action.upload')">
+                <footer class="modal-footer">
+                    <button class="btn btn-primary" @click="uploadFile">
+                        <i class="fa fa-upload mr-1"></i>
+                        <span v-text="i18n('script.action.upload')"></span>
                     </button>
-                    <button class="btn" data-dismiss="modal" v-text="i18n('common.button.cancel')"></button>
-                </div>
+                    <button class="btn btn-danger" data-dismiss="modal" v-text="i18n('common.button.cancel')"></button>
+                </footer>
             </div>
         </div>
     </div>
@@ -44,9 +42,7 @@
 <script>
     import { Component } from 'vue-property-decorator';
     import ModalBase from '../../common/modal/ModalBase.vue';
-
     import ControlGroup from '../../common/ControlGroup.vue';
-
 
     @Component({
         name: 'uploadFileModal',
@@ -95,15 +91,30 @@
 
 <style lang="less" scoped>
     #upload-file-modal {
-        display: none;
+        input[type="text"] {
+            width: 220px;
+            height: 30px;
+        }
 
         .control-group {
-            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .validation-message {
+            margin-left: 161px;
         }
     }
+</style>
 
-    input[type="text"] {
-        width: 220px;
-        height: 30px;
+<style lang="less">
+    #upload-file-modal {
+        .control-label {
+            width: 140px;
+        }
+
+        .controls {
+            margin-left: 20px;
+        }
     }
 </style>

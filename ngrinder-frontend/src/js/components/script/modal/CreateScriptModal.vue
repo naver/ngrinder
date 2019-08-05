@@ -1,96 +1,101 @@
 <template>
-    <div class="modal modal-lg fade" id="create-script-modal" ref="createScriptModal">
-        <div class="modal-dialog modal-script" role="document">
+    <div class="modal fade" id="create-script-modal" ref="createScriptModal">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <div class="modal-header-title">
-                        <h4 v-text="i18n('script.action.createScript')"></h4>
-                    </div>
+                <header class="modal-header">
+                    <h4 v-text="i18n('script.action.createScript')"></h4>
                     <div id="script-sample"
                          title="Sample Script Link"
                          data-toggle="popover"
-                         :data-content="i18n('script.editor.sample.message')"
+                         data-trigger="hover"
                          data-html="true"
-                         data-placement="left">
+                         data-placement="left"
+                         class="ml-auto"
+                         :data-content="i18n('script.editor.sample.message')">
                         <code>
                             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">
                                 Script Samples
                             </a>
                         </code>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                     </div>
-                </div>
-                <div class="modal-body" id="create-script-modal-body">
-                    <form class="form-horizontal" method="post" target="_self" id="createForm">
-                        <control-group :class="{error: errors.has('fileName')}" name="fileName" labelMessageKey="script.info.name">
-                            <select name="scriptType" class="form-control span2" v-model="scriptHandler">
+                </header>
+                <div class="modal-body">
+                    <form class="form-horizontal" method="post" target="_self">
+                        <control-group :class="{ error: errors.has('fileName') }" name="fileName" labelMessageKey="script.info.name">
+                            <select name="scriptType" class="form-control ml-2" v-model="scriptHandler">
                                 <option v-for="handler in handlers"
                                         :value="handler"
                                         v-text="handler.title">
                                 </option>
                             </select>
                             <input type="text" id="fileName" name="fileName"
-                                   class="span5" :title="i18n('script.info.name')"
+                                   class="ml-1 form-control" :title="i18n('script.info.name')"
                                    data-toggle="popover"
+                                   data-trigger="focus"
                                    data-placement="right"
+                                   ref="fileName"
                                    :data-content="i18n('script.info.name.help')"
                                    v-model="fileName"
-                                   v-validate="{required: true, regex: '^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){2,19}$'}"
-                                   ref="fileName"/>
+                                   v-validate="{ required: true, regex: '^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){2,19}$' }">
                         </control-group>
-
-                        <control-group :class="{error: errors.has('testUrl')}" name="testUrl" labelMessageKey="script.info.url">
-                            <select id="method" name="method" class="form-control span2" v-model="method">
+                        <control-group :class="{ error: errors.has('testUrl') }" name="testUrl" labelMessageKey="script.info.url">
+                            <select id="method" name="method" class="form-control ml-2" v-model="method">
                                 <option value="GET" selected="selected">GET</option>
                                 <option value="POST">POST</option>
                             </select>
                             <input type="text" id="testUrl" name="testUrl"
-                                   class="span5" :title="i18n('home.tip.url.title')"
+                                   class="ml-1 form-control" :title="i18n('home.tip.url.title')"
                                    data-toggle="popover"
+                                   data-trigger="focus"
                                    data-placement="bottom"
-                                   :data-content="i18n('home.tip.url.content')"
+                                   ref="testUrl"
                                    v-model="testUrl"
+                                   v-validate="scriptHandler.projectHandler ? null : { url: { require_protocol: true }, required: true }"
                                    :placeholder="i18n('home.placeholder.url')"
-                                   v-validate="scriptHandler.projectHandler ? null : {url: {require_protocol: true}, required: true}"
-                                   ref="testUrl"/>
+                                   :data-content="i18n('home.tip.url.content')">
                         </control-group>
-
-                        <div class="control-group">
-                            <div class="controls">
-                                <label class="create-lib-and-resource-checkbox">
+                        <div class="d-flex justify-content-center">
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
                                     <input type="checkbox"
                                            name="createLibAndResource"
                                            data-toggle="popover"
+                                           data-trigger="focus"
                                            data-placement="right"
+                                           v-model="createLibAndResource"
                                            :title="i18n('script.action.createResourceAndLib')"
-                                           :data-content="i18n('script.message.libAndResource.help')"
-                                           v-model="createLibAndResource"/>
-                                    <span v-text="i18n('script.action.createResourceAndLib')"></span>
-                                </label>
-                                <span class="help-inline well create-script-help-message">
-                                    <span v-text="i18n('script.action.createResourceAndLib.help')"></span>
-                                    <a href="https://github.com/naver/ngrinder/wiki/How-to-use-lib-and-resources"
-                                       target="blank"><i
-                                        class="icon-question-sign how-to-use-lib-and-resources-icon"></i></a>
-                                </span>
+                                           :data-content="i18n('script.message.libAndResource.help')">
+                                    <span class="ml-1" v-text="i18n('script.action.createResourceAndLib')"></span>
+                                </div>
+                                <div class="card bg-light mb-2 create-script-help-message">
+                                    <div>
+                                        {{ i18n('script.action.createResourceAndLib.help') }}
+                                        <a href="https://github.com/naver/ngrinder/wiki/How-to-use-lib-and-resources"
+                                           target="_blank" class="ml-2" v-text="'guide'">
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-body" id="advanced-option-body">
-                    <div class="text-center">
-                        <a id="detail_config_section_btn" class="pointer-cursor"
-                           @click="showScriptOption = !showScriptOption"
-                           v-text="i18n('perfTest.config.showAdvancedConfig')"></a>
+                    <div class="d-flex align-items-center flex-column">
+                        <div>
+                            <a class="pointer-cursor" @click="showScriptOption = !showScriptOption"
+                               href="#" v-text="i18n('perfTest.config.showAdvancedConfig')"></a>
+                        </div>
+                        <div v-show="showScriptOption" class="card bg-light mt-2 w-100">
+                            <script-option ref="scriptOption" :method="method"></script-option>
+                        </div>
                     </div>
-                    <div :class="{hide: !showScriptOption}" class="well" style="overflow: scroll">
-                        <script-option ref="scriptOption" :method="method"></script-option>
-                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" v-text="i18n('common.button.create')" @click="createScript"></button>
-                    <button class="btn" v-text="i18n('common.button.cancel')" data-dismiss="modal"></button>
-                </div>
+                <footer class="modal-footer">
+                    <button class="btn btn-primary" @click="createScript">
+                        <i class="fa fa-plus mr-1"></i>
+                        <span v-text="i18n('common.button.create')"></span>
+                    </button>
+                    <button class="btn btn-danger" v-text="i18n('common.button.cancel')" data-dismiss="modal"></button>
+                </footer>
             </div>
         </div>
     </div>
@@ -202,50 +207,41 @@
 
 <style lang="less" scoped>
     #create-script-modal {
-        display: none;
-
         .control-group {
             margin-bottom: 20px;
-        }
-    }
-
-    #script-sample {
-        margin-top: -35px;
-        margin-left: 753px;
-    }
-
-    #create-script-modal-body {
-        max-height: 500px;
-    }
-
-    #advanced-option-body {
-        overflow: scroll;
-    }
-
-    .how-to-use-lib-and-resources-icon {
-        margin-top: 2px;
-    }
-
-    .create-lib-and-resource-checkbox {
-        input[type=checkbox] {
-            margin: -1px 0 0  -20px;
+            display: flex;
+            align-items: center;
         }
 
-        span {
-            padding-left: 5px;
+        .modal-dialog {
+            max-width: 800px;
         }
-    }
 
-    .create-script-help-message {
-        min-height: 20px;
-        padding: 19px;
+        select {
+            width: 140px;
+        }
     }
 
     .modal-body {
-        overflow: visible;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .create-script-help-message {
+        padding: 10px 15px;
+        width: 350px;
     }
 
     input[type="text"] {
+        width: 380px;
         height: 30px;
+    }
+</style>
+
+<style lang="less">
+    #create-script-modal {
+        .control-label {
+            width: 160px;
+        }
     }
 </style>

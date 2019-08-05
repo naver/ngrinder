@@ -1,26 +1,30 @@
 <template>
-    <div class="well form-inline search-bar" style="margin-top:0;margin-bottom:0">
+    <div class="search-bar card card-header">
         <table>
             <tr>
                 <td>
-                    <table>
+                    <table class="w-100">
                         <colgroup>
-                            <col width="400px"/>
-                            <col width="*"/>
+                            <col width="350px"/>
                         </colgroup>
                         <tr>
                             <td>
-                                <input type="text" class="search-query span3" placeholder="Keywords" v-model="query" @keyup.enter="search">
-                                <button class="btn" @click="search">
-                                    <i class="icon-search"></i><span v-text="i18n('common.button.search')"></span>
+                                <input type="text" class="search-query form-control" placeholder="Keywords" v-model="query" @keyup.enter="search">
+                                <button class="btn btn-info search-btn" @click="search">
+                                    <i class="fa fa-search mr-1"></i>
+                                    <span v-text="i18n('common.button.search')"></span>
                                 </button>
                             </td>
                             <td>
                                 <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend"
-                                     data-toggle="popover" :data-content="i18n('script.message.svn')" data-html="true"
-                                     title="Subversion" data-placement="bottom">
-                                    <span class="add-on">SVN</span>
-                                    <span class="input-xlarge uneditable-input span7 svn-url">
+                                     data-toggle="popover"
+                                     data-trigger="hover"
+                                     data-html="true"
+                                     data-placement="bottom"
+                                     title="Subversion"
+                                     :data-content="i18n('script.message.svn')">
+                                    <div class="input-group-text">SVN</div>
+                                    <div class="border uneditable-input">
                                         <router-link v-text="basePath" to="/script/list"></router-link><!--
                                         --><template v-if="currentPath !== ''"
                                                      v-for="(each, index) in currentPath.split('/')"><!--
@@ -28,7 +32,7 @@
                                             --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
                                                             v-text="each"></router-link>
                                         </template>
-                                    </span>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -37,33 +41,32 @@
             </tr>
             <tr>
                 <td>
-                    <table class="search-bar-buttons">
+                    <table class="w-100 mt-1">
                         <colgroup>
                             <col width="600px"/>
-                            <col width="340px"/>
                         </colgroup>
                         <tr>
                             <td>
                                 <template v-if="$route.name !== 'scriptSearch'">
-                                    <a class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
-                                        <i class="icon-file icon-white"></i>
+                                    <button class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
+                                        <i class="fa fa-file mr-1"></i>
                                         <span v-text="i18n('script.action.createScript')"></span>
-                                    </a>
-                                    <a class="btn" @click.prevent="$refs.createFolderModal.show">
-                                        <i class="icon-folder-open"></i>
+                                    </button>
+                                    <button class="btn btn-primary" @click.prevent="$refs.createFolderModal.show">
+                                        <i class="fa fa-folder-open mr-1"></i>
                                         <span v-text="i18n('script.action.createFolder')"></span>
-                                    </a>
-                                    <a class="btn" @click.prevent="$refs.uploadFileModal.show">
-                                        <i class="icon-upload"></i>
+                                    </button>
+                                    <button class="btn btn-primary" @click.prevent="$refs.uploadFileModal.show">
+                                        <i class="fa fa-upload mr-1"></i>
                                         <span v-text="i18n('script.action.uploadResources')"></span>
-                                    </a>
+                                    </button>
                                 </template>
                             </td>
                             <td>
-                                <a class="pointer-cursor btn btn-danger pull-right" @click="deleteFile">
-                                    <i class="icon-remove icon-white"></i>
+                                <button class="pointer-cursor btn btn-danger float-right" @click="deleteFile">
+                                    <i class="fa fa-remove mr-1"></i>
                                     <span v-text="i18n('script.action.delete')"></span>
-                                </a>
+                                </button>
                             </td>
                         </tr>
                     </table>
@@ -108,13 +111,11 @@
         mounted() {
             this.query = this.$route.query.query;
             this.$nextTick(() => {
-                $('[data-toggle="popover"]').popover('destroy');
+                $('#svn-url').popover();
+                $('#script-sample').popover();
 
-                $('#svn-url').popover({ trigger: 'hover' });
-                $('#script-sample').popover({ trigger: 'hover' });
-
-                $('#fileName').popover({ trigger: 'focus' });
-                $('#testUrl').popover({ trigger: 'focus' });
+                $('#fileName').popover();
+                $('#testUrl').popover();
 
                 $('#folderName').popover({ trigger: 'focus' });
             });
@@ -123,20 +124,28 @@
         deleteFile() {
             const checkedScripts = this.scripts.filter(script => script.checked);
             if (checkedScripts.length === 0) {
-                bootbox.alert(this.i18n('script.message.delete.alert'), this.i18n('common.button.ok'));
+                this.$bootbox.alert({
+                    message: this.i18n('script.message.delete.alert'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
             } else {
-                bootbox.confirm(
-                    this.i18n('script.message.delete.confirm'),
-                    this.i18n('common.button.cancel'),
-                    this.i18n('common.button.ok'),
-                    result => {
+                this.$bootbox.confirm({
+                    message: this.i18n('script.message.delete.confirm'),
+                    buttons: {
+                        confirm: { label: this.i18n('common.button.ok') },
+                        cancel: { label: this.i18n('common.button.cancel') },
+                    },
+                    callback: result => {
                         if (!result) {
                             return;
                         }
 
                         this.$http.post('/script/api/delete', checkedScripts.map(file => file.path))
-                        .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
-                    });
+                            .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
+                    },
+                });
             }
         }
 
@@ -150,22 +159,28 @@
     }
 </script>
 
-<style scoped>
-    .search-query {
-        width: 234px;
-        height: inherit;
-    }
+<style lang="less" scoped>
+    .search-bar {
+        .search-btn {
+            height: 32px;
+            vertical-align: baseline;
+        }
 
-    .uneditable-input {
-        cursor: text;
-    }
+        .input-group-text {
+            float: left;
+            cursor: default;
+            padding: 6px 10px;
+        }
 
-    .add-on {
-        cursor: default;
-    }
+        .uneditable-input {
+            a {
+                margin-left: 7px;
+            }
+        }
 
-    .search-bar-buttons{
-        width:100%;
-        margin-top:5px;
+        .search-query {
+            height: 32px;
+            width: 220px;
+        }
     }
 </style>
