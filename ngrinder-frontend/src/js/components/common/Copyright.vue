@@ -1,9 +1,9 @@
 <template>
-    <div id="foot_div">
-        <div class="credit">
+    <footer>
+        <section class="d-flex">
             <a href="https://naver.github.io/ngrinder" target="_blank" v-text="`nGrinder v${version}`"></a>
-        </div>
-    </div>
+        </section>
+    </footer>
 </template>
 
 <script>
@@ -22,18 +22,22 @@
 </script>
 
 <style lang="less" scoped>
-    #foot_div {
+    footer {
         position: fixed;
-        left: 0;
+        height: 40px;
         bottom: 0;
         width: 100%;
+        background-color: #f5f4f2;
 
-        .credit {
+        section {
             height: 100%;
             margin: 0;
-            display: flex;
             align-items: center;
             justify-content: center;
+
+            a:hover {
+                text-decoration: none;
+            }
         }
     }
 </style>

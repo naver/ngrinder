@@ -1,43 +1,39 @@
 <template>
-    <div class="navigator-container">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <div class="navbar-header">
-                        <router-link class="brand clickable" to="/home">
-                            <img src="/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/>
-                        </router-link>
-                    </div>
-                    <ul class="nav navbar-nav">
-                        <li id="nav_test" class="clickable" :class="{ active : $route.path.startsWith('/perftest') }">
-                            <router-link to="/perftest" v-text="i18n('navigator.perfTest')"></router-link>
-                        </li>
-                        <li class="clickable" :class="{ active : $route.path.startsWith('/script') }">
-                            <router-link to="/script" v-text="i18n('navigator.script')"></router-link>
-                        </li>
-                    </ul>
-                    <ul class="nav navbar-nav pull-right">
-                        <template v-if="ngrinder.config.clustered">
-                            <li class="cluster-icon-container">
-                                <img src="/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode">
-                            </li>
-                            <li class="divider-vertical"></li>
-                        </template>
-
-                        <user-menu @showUserProfileModal="$refs.userProfileModal.show()"
+    <header>
+        <nav class="navbar navbar-expand bg-dark navbar-dark fixed-top">
+            <div class="container">
+                <router-link class="navbar-brand" to="/home">
+                    <img src="/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/>
+                </router-link>
+                <ul class="navbar-nav link-nav">
+                    <li class="nav-item" :class="{ active : $route.name === 'perfTestList' }">
+                        <router-link class="nav-link" to="/perftest" v-text="i18n('navigator.perfTest')"></router-link>
+                    </li>
+                    <li class="nav-item" :class="{ active : $route.name === 'scriptList' }">
+                        <router-link class="nav-link" to="/script" v-text="i18n('navigator.script')"></router-link>
+                    </li>
+                </ul>
+                <ul class="navbar-nav user-nav">
+                    <li v-if="ngrinder.config.clustered" class="nav-item cluster-icon-container" >
+                        <img src="/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode">
+                    </li>
+                    <li class="divider-vertical"></li>
+                    <li class="nav-item">
+                        <user-menu class="nav-link" @showUserProfileModal="$refs.userProfileModal.show()"
                                    @showUserSwitchModal="$refs.userSwitchModal.show()">
                         </user-menu>
-
-                        <li class="divider-vertical"></li>
-                        <li><a :href="ngrinder.config.helpUrl" target="_blank" v-text="i18n('navigator.help')"></a></li>
-                    </ul>
-                </div>
+                    </li>
+                    <li class="divider-vertical"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" :href="ngrinder.config.helpUrl" target="_blank" v-text="i18n('navigator.help')"></a>
+                    </li>
+                </ul>
             </div>
-        </div>
+        </nav>
         <announcement></announcement>
         <user-switch-modal ref="userSwitchModal"></user-switch-modal>
         <user-profile-modal ref="userProfileModal"></user-profile-modal>
-    </div>
+    </header>
 </template>
 
 <script>
@@ -56,20 +52,51 @@
 </script>
 
 <style lang="less" scoped>
-    .navigator-container {
+    header {
+        .navbar {
+            padding: 1px 0;
 
-        .profile-dialog {
-            height: auto;
-            padding-bottom: 30px;
+            .container {
+                padding: 0;
+                justify-content: normal;
+            }
+
+            .divider-vertical {
+                height: 40px;
+                margin: 0 9px;
+                border-left: 1px solid #111;
+                border-right: 1px solid #222;
+            }
+
+            .navbar-nav {
+                &.link-nav {
+                    min-width: 200px;
+                }
+
+                &.user-nav {
+                    width: 100%;
+                    justify-content: flex-end;
+                }
+
+                &.cluster-icon-container {
+                    padding-top: 5px;
+                }
+
+                .nav-item {
+                    display: flex;
+                    align-items: center;
+                }
+            }
         }
 
-        .navbar-inner {
-            filter: none;
-        }
+        .bg-dark {
+            background-color: #1b1b1b !important;
 
-        li {
-            &.cluster-icon-container {
-                padding-top: 5px;
+            a {
+                color: #999;
+                &.active, &:hover {
+                    color: white;
+                }
             }
         }
     }

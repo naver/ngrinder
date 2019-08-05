@@ -1,5 +1,5 @@
 <template>
-    <input type="text" ref="autocomplete" v-model="value">
+    <input type="text" ref="autocomplete" v-model="value" class="form-control">
 </template>
 
 <script>

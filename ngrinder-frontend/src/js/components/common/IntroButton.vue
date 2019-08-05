@@ -1,7 +1,11 @@
 <template>
-    <div class="pull-right intro-button-container clickable" rel="popover"
-         :title="title" data-html="ture" data-placement="left"
-         :data-content="i18n('intro.public.button.show')" id="introButton" @click="startIntroJs">
+    <div class="intro-button-container float-right pointer-cursor"
+         :title="title"
+         data-html="true"
+         data-toggle="popover"
+         data-placement="left"
+         data-trigger="hover"
+         :data-content="i18n('intro.public.button.show')" @click="startIntroJs">
         <code class="intro-button-title" v-text="title"></code>
     </div>
 </template>
@@ -21,6 +25,10 @@
         },
     })
     export default class IntroButton extends Base {
+        mounted() {
+            $('[data-toggle="popover"]').popover();
+        }
+
         startIntroJs() {
             intro.introJs().start();
         }
@@ -28,7 +36,9 @@
 </script>
 
 <style lang="less" scoped>
-    .intro-button-title {
-        margin-right: -30px;
+    .intro-button-container {
+        .intro-button-title {
+            margin-right: -29px;
+        }
     }
 </style>

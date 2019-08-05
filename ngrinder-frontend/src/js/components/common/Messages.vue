@@ -1,27 +1,26 @@
 <template>
     <div id="message-container">
         <transition name="fade">
-            <div class="alert message-div"
+            <div class="message-div alert alert-info"
                  :class="msgClass"
                  v-show="showMsgDiv"
                  v-text="alertMessage"></div>
         </transition>
         <transition name="fade">
-            <div class="alert alert-error message-div error-message-div"
+            <div class="message-div alert alert-danger error-message-div"
                  v-show="showErrMsgDiv">
-                <button class="close" @click="close">&times;</button>
+                <button class="close" @click="close">x</button>
                 <h4 class="alert-heading">ERROR</h4>
                 <span class="error-message" v-text="errMessage"></span>
             </div>
         </transition>
         <transition name="fade">
-            <div class="message-div progress progress-striped progress-bar active" v-show="showPrgDiv">
-                <div class="bar" v-text="progressMessage"></div>
+            <div class="message-div rounded progress-bar progress-bar-striped progress-bar-animated" v-show="showPrgDiv">
+                <div class="w-100" v-text="progressMessage"></div>
             </div>
         </transition>
     </div>
 </template>
-
 
 <script>
     import Vue from 'vue';
@@ -87,6 +86,7 @@
 <style lang="less" scoped>
     .error-message-div {
         z-index: 1152;
+
         .error-message {
             margin-left: 20px;
         }
@@ -98,18 +98,15 @@
 
     .progress-bar {
         height: 20px;
-         .bar {
-             width: 100%;
-         }
     }
 </style>
 
-<style>
+<style lang="less">
     .fade-enter-active, .fade-leave-active {
-        transition: opacity .1s
+        transition: opacity .1s;
     }
 
     .fade-enter, .fade-leave-to {
-        opacity: 0
+        opacity: 0;
     }
 </style>

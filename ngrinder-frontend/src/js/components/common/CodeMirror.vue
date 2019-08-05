@@ -93,6 +93,7 @@
 
     .CodeMirror {
         border: 1px solid #dddddd;
+        font-family: Consolas, monospace;
     }
 
     .cm-tab {

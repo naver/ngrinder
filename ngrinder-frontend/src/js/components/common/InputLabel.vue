@@ -1,8 +1,8 @@
 <template>
-    <div class="control-group input-label-container">
+    <div class="input-label-container">
         <label :for="name" class="control-label"><span v-text="i18n(message)"></span></label>
         <div class="controls">
-            <input type="text" class="input input-mini" :id="name" :name="name" :style="extraCss"
+            <input type="text" class="input form-control" :id="name" :name="name" :style="extraCss"
                    :value="value" @input="$emit('input', $event.target.value)" :readonly="readonly"/>
             <span v-if="others" v-html="others"></span>
             <div :id="`err-${name}`" :style="errStyle"></div>
@@ -38,8 +38,15 @@
 
 <style lang="less" scoped>
     .input-label-container {
+        margin-bottom: 10px;
         input {
-            width: 40px;
+            padding: 4px 6px;
+            width: 50px;
+            font-size: 12px;
+
+            &.form-control {
+                display: inline-block;
+            }
         }
     }
 </style>
