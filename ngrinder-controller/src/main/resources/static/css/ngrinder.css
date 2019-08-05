@@ -18,10 +18,7 @@ thead tr th {
     height: auto !important;
     margin: 0 auto -40px;
 }
-#foot_div {
-    background-color: #f5f4f2;
-    height: 40px;
-}
+
 #foot_div.container:before, .container:after {
     display: table;
     line-height: 0;
@@ -142,10 +139,6 @@ table.ellipsis td.ellipsis {
 	padding:10px;
 }
 
-.container .search-bar {
-	margin: 10px 0 20px
-}
-
 @media (min-width: 992px) {
 	.modal-lg {
 		width: 900px;
@@ -204,11 +197,6 @@ table th.center {
 
 .center {
 	text-align: center
-}
-
-img.status {
-	width: 23px;
-	height: 23px
 }
 
 .select2-choices {
@@ -291,10 +279,6 @@ legend a {
 
 .non-cursor {
 	cursor:default;
-}
-
-.pointer-cursor {
-	cursor:pointer;
 }
 
 .small-error-box {
