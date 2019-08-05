@@ -19,7 +19,7 @@
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <user-menu class="nav-link" @showUserProfileModal="$refs.userProfileModal.show()"
+                        <user-menu class="nav-link" @showUserProfileModal="showUserProfileModal = true"
                                    @showUserSwitchModal="$refs.userSwitchModal.show()">
                         </user-menu>
                     </li>
@@ -32,7 +32,7 @@
         </nav>
         <announcement></announcement>
         <user-switch-modal ref="userSwitchModal"></user-switch-modal>
-        <user-profile-modal ref="userProfileModal"></user-profile-modal>
+        <user-profile-modal v-if="showUserProfileModal" @hidden="showUserProfileModal = false"  ref="userProfileModal"></user-profile-modal>
     </header>
 </template>
 
@@ -48,7 +48,9 @@
         name: 'navigator',
         components: { Announcement, UserMenu, UserSwitchModal, UserProfileModal },
     })
-    export default class Navigator extends Base {}
+    export default class Navigator extends Base {
+        showUserProfileModal = false;
+    }
 </script>
 
 <style lang="less" scoped>

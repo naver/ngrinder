@@ -2,30 +2,32 @@
     <div class="container">
         <vue-headful :title="i18n('user.list.title')"/>
         <fieldSet>
-            <legend class="header">
+            <legend class="header border-bottom d-flex">
                 <span v-text="i18n('navigator.dropDown.userManagement')"></span>
-                <select class="pull-right form-control role-select" v-model="role">
+                <select class="form-control role-select ml-auto mt-auto mb-auto" v-model="role" @change="changeRole">
                     <option v-for="role in roles" :value="role" v-text="role.fullName"></option>
                 </select>
             </legend>
         </fieldSet>
-        <div class="well form-inline search-bar">
-            <input type="text" class="search-query search-query-without-radios form-control"
+        <div class="card card-header search-bar border-bottom-0">
+            <input type="text" class="search-query-without-radios form-control"
                    placeholder="Keywords" @keyup.enter="search" v-model="keywords">
-            <a class="btn" @click="search">
-                <i class="icon-search"></i><span v-text="i18n('common.button.search')"></span>
-            </a>
-            <span class="pull-right">
-                <a class="btn" data-toggle="modal" data-target="#sign_up_modal"
-                   @click="$router.push({ path : '/user/new' })">
-                    <i class="icon-user"></i><span v-text="i18n('user.list.button.create')"></span>
-                </a>
-                <a class="btn btn-danger" @click="deleteCheckedUsers">
-                    <i class="icon-remove icon-white"></i><span v-text="i18n('user.list.button.delete')"></span>
-                </a>
-            </span>
+            <button class="btn btn-info btn-search" @click="search">
+                <i class="fa fa-search mr-1"></i>
+                <span v-text="i18n('common.button.search')"></span>
+            </button>
+            <div class="ml-auto">
+                <button class="btn btn-info" @click="$router.push({ path : '/user/new' })">
+                    <i class="fa fa-user mr-1"></i>
+                    <span v-text="i18n('user.list.button.create')"></span>
+                </button>
+                <button class="btn btn-danger" @click="deleteCheckedUsers">
+                    <i class="fa fa-remove mr-1"></i>
+                    <span v-text="i18n('user.list.button.delete')"></span>
+                </button>
+            </div>
         </div>
-        <table class="table table-striped table-bordered ellipsis dataTable" id="user_table">
+        <table class="table table-striped table-bordered ellipsis dataTable">
             <colgroup>
                 <col width="30">
                 <col width="120">
@@ -67,13 +69,13 @@
                 <td>{{ user.createdDate | dateFormat('YYYY-MM-DD HH:mm') }}</td>
                 <td class="center">
                     <router-link :to="`/user/${user.userId}`">
-                        <i class="icon-edit"></i>
+                        <i class="fa fa-edit"></i>
                     </router-link>
                 </td>
                 <td class="center">
                     <a class="pointer-cursor" v-if="!isAdminUser(user)"
                        @click="deleteUsers(user.userId, user.userName)">
-                        <i class="icon-remove"></i>
+                        <i class="fa fa-remove"></i>
                     </a>
                 </td>
             </tr>
@@ -82,8 +84,15 @@
             </tr>
             </tbody>
         </table>
-        <div v-show="page.totalPages > 1" class="pagination dataTables_paginate">
+        <div v-show="page.totalPages > 1" class="pagination">
             <paginate
+                pageClass="page-item"
+                prevClass="page-item"
+                nextClass="page-item"
+                pageLinkClass="page-link"
+                prevLinkClass="page-link"
+                nextLinkClass="page-link"
+                containerClass="pagination pagination-sm"
                 v-model="page.number"
                 :pageCount="page.totalPages"
                 :page-range="page.size"
@@ -128,8 +137,7 @@
 
         mounted() {
             this.initByQueryParams();
-            this.loadRoleSet();
-            this.loadUsers();
+            this.loadRoleSet().then(this.loadUsers);
         }
 
         initByQueryParams() {
@@ -140,7 +148,7 @@
         }
 
         loadRoleSet() {
-            this.$http.get('/user/api/role')
+            return this.$http.get('/user/api/role')
             .then(res => {
                 this.roles.push(...res.data);
                 if (this.$route.query.role) {
@@ -194,17 +202,20 @@
         }
 
         deleteUsers(userIds, names) {
-            bootbox.confirm(
-                `${this.i18n('user.list.confirm.delete')} ${names}?`,
-                this.i18n('common.button.cancel'),
-                this.i18n('common.button.ok'),
-                result => {
+            this.$bootbox.confirm({
+                message: `${this.i18n('user.list.confirm.delete')} ${names}?`,
+                buttons: {
+                    confirm: { label: this.i18n('common.button.ok') },
+                    cancel: { label: this.i18n('common.button.cancel') },
+                },
+                callback: result => {
                     if (result) {
                         this.$http.delete('/user/api/', { params: { userIds } })
                             .then(this.loadUsers)
                             .catch(() => this.showErrorMsg(this.i18n('user.message.delete.error')));
                     }
-                });
+                },
+            });
         }
 
         deleteCheckedUsers() {
@@ -213,15 +224,11 @@
             this.deleteUsers(userIds, userNames);
         }
 
-        @Watch('role')
         changeRole() {
             this.keywords = '';
             this.page.number = 1;
-            this.$router.replace({
-                query: {
-                    role: this.role.name ? this.role.name : undefined,
-                },
-            });
+            const queryParam = this.role.name ? `?role=${this.role.name}` : '';
+            history.replaceState('', '', `${this.$route.path}${queryParam}`);
             this.loadUsers();
         }
 
@@ -237,12 +244,32 @@
 </script>
 
 <style lang="less" scoped>
-    .search-query {
-        width: 234px;
-        height: 30px;
-    }
+    .container {
+        table {
+            i {
+                color: black;
+            }
+        }
 
-    table {
-        font-size: 12px;
+        .search-bar {
+            flex-direction: row;
+
+            .search-query-without-radios {
+                width: 234px;
+                height: 30px;
+            }
+
+            .btn-search {
+                margin-left: 5px;
+            }
+        }
+
+        .pagination {
+            margin-top: -3px !important;
+        }
+
+        .role-select {
+            width: 220px;
+        }
     }
 </style>

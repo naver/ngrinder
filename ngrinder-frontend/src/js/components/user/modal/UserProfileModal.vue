@@ -1,11 +1,15 @@
 <template>
-    <div v-if="dataLoadFinished" id="user-profile-modal" class="modal fade" role="dialog">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" v-text="i18n('navigator.dropDown.profile.title')"></h4>
-        </div>
-        <div class="modal-body">
-            <user-info :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
+    <div v-if="dataLoadFinished" id="user-profile-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header align-items-center">
+                    <h4 class="modal-title" v-text="i18n('navigator.dropDown.profile.title')"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                </div>
+                <div class="modal-body">
+                    <user-info :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -39,6 +43,10 @@
                     userSecurityEnabled: res.data.userSecurityEnabled,
                 };
                 this.dataLoadFinished = true;
+                this.$nextTick(() => {
+                    this.show();
+                    $(this.$el).on('hidden.bs.modal', () => this.$emit('hidden'));
+                });
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }
@@ -47,7 +55,9 @@
 
 <style lang="less" scoped>
     #user-profile-modal {
-        display: none;
+        .modal-dialog {
+            margin-top: 80px;
+        }
 
         .modal.fade.in {
             top: 2%;
@@ -55,7 +65,7 @@
 
         .modal-body {
             max-height: 640px;
-            padding-left: 45px;
+            padding: 20px;
         }
     }
 </style>

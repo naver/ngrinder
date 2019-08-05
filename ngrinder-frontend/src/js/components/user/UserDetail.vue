@@ -1,9 +1,12 @@
 <template>
     <div v-if="dataLoaded" class="container">
         <fieldset>
-            <legend class="header">
+            <legend class="header border-bottom">
                 <span v-text="i18n('user.info.header')"></span>
-                <button class="btn pull-right" @click="$router.go(-1)" v-text="i18n('common.button.return')"></button>
+                <button class="btn btn-success float-right" @click="$router.go(-1)">
+                    <i class="fa fa-undo mr-1"></i>
+                    <span v-text="i18n('common.button.return')"></span>
+                </button>
             </legend>
         </fieldset>
         <user-info :user-props="user" :config="config" @saved="$router.push({ name: 'userList' })"></user-info>
@@ -64,7 +67,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>
