@@ -1,10 +1,11 @@
 <template>
     <div class="container">
         <fieldset>
-            <legend class="header">
+            <legend class="header border-bottom d-flex">
                 <span v-text="i18n('navigator.dropDown.systemConfig')"></span>
-                <button id="run_btn" class="btn btn-success pull-right"
-                        v-text="i18n('common.button.save')" @click="save">
+                <button class="btn btn-success mt-auto mb-auto ml-auto" @click="save">
+                    <i class="fa fa-save mr-1"></i>
+                    <span v-text="i18n('common.button.save')"></span>
                 </button>
             </legend>
         </fieldset>
@@ -95,5 +96,9 @@
 
     .cm-tab {
         background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=) no-repeat right;
+    }
+
+    button {
+        height: 30px;
     }
 </style>

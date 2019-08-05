@@ -1,16 +1,16 @@
 <template>
     <div class="container">
         <fieldset>
-            <legend class="header">
+            <legend class="header border-bottom d-flex">
                 <span v-text="i18n('navigator.dropDown.scriptConsole')"></span>
-                <button id="run_btn" class="btn btn-success pull-right"
-                        v-text="i18n('operation.script.runScript')" v-on:click="runScript">
+                <button class="btn btn-success mt-auto mb-auto ml-auto" @click="runScript">
+                    <i class="fa fa-play mr-1"></i>
+                    <span v-text="i18n('operation.script.runScript')"></span>
                 </button>
             </legend>
         </fieldset>
-        <codemirror ref="editor"
-                    :options="cmOptions"></codemirror>
-        <pre class="prettyprint pre-scrollable validation" v-text="result"></pre>
+        <codemirror ref="editor" :options="cmOptions"></codemirror>
+        <pre class="rounded border" v-text="result"></pre>
     </div>
 </template>
 
@@ -99,16 +99,25 @@
     @import '~codemirror/addon/display/fullscreen.css';
     @import '~codemirror/addon/dialog/dialog.css';
 
-    .validation {
-        margin-top: 20px;
-        height: 150px;
-    }
-
     .CodeMirror {
         border: 1px solid #dddddd;
     }
 
+    pre {
+        height: 250px;
+        margin: 5px 0 20px;
+        padding: 14px 10px;
+        max-height: 340px;
+        overflow-y: scroll;
+        font-size: 12px;
+        background-color: #f5f5f5;
+    }
+
     .cm-tab {
         background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=) no-repeat right;
+    }
+
+    button {
+        height: 30px;
     }
 </style>

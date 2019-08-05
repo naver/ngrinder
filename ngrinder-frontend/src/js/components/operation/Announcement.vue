@@ -1,13 +1,19 @@
 <template>
     <div class="container">
-        <fieldset>
-            <legend class="header">
-                <span v-text="i18n('navigator.dropDown.announcement')"></span>&nbsp;&nbsp;
-                <small v-text="i18n('operation.announcement.help')"></small>
-                <a class="pointer-cursor btn btn-primary pull-right"
-                   v-text="i18n('common.button.test')" @click="test"></a>
-                <button class="btn btn-success pull-right"
-                        v-text="i18n('common.button.save')" @click="save"></button>
+        <fieldset class="mb-0">
+            <legend class="header border-bottom d-flex">
+                <span v-text="i18n('navigator.dropDown.announcement')"></span>
+                <small class="ml-3" v-text="i18n('operation.announcement.help')"></small>
+                <span class="ml-auto mt-auto mb-auto">
+                    <button class="btn btn-primary" @click="test">
+                        <i class="fa fa-play mr-1"></i>
+                        <span v-text="i18n('common.button.test')"></span>
+                    </button>
+                    <button class="btn btn-success" @click="save">
+                        <i class="fa fa-save mr-1"></i>
+                        <span v-text="i18n('common.button.save')"></span>
+                    </button>
+                </span>
             </legend>
         </fieldset>
         <code-mirror ref="editor" :options="{ mode: 'text/html' }"></code-mirror>
@@ -26,7 +32,6 @@
         name: 'announcement',
         components: { CodeMirror },
     })
-
     export default class Announcement extends Mixins(Base, MessagesMixin) {
         mounted() {
             this.pullAnnouncement();
@@ -65,7 +70,14 @@
 </script>
 
 <style lang="less" scoped>
-    .btn-success {
-        margin-right: 5px
+    legend {
+        small {
+            font-size: 15px;
+            color: #999999;
+        }
+
+        button {
+            height: 30px;
+        }
     }
 </style>
