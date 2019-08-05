@@ -1,26 +1,28 @@
 <template>
-    <div class="container">
+    <main class="container">
         <vue-headful title="Home"/>
-        <div class="hero-unit main-banner" data-step="1" :data-intro="i18n('intro.index.quick.start')">
+        <div class="main-banner" data-step="1" :data-intro="i18n('intro.index.quick.start')">
             <div class="quick-start" :data-original-title="i18n('home.tip.url.title')" :data-content="i18n('home.tip.url.content')" data-placement="bottom" rel="popover">
-                <input v-focus type="text" name="url" class="span6" v-validate="{url: {require_protocol: true}, required: true}" ref="inputQuickStartUrl"
+                <input v-focus type="text" name="url" class="form-control" v-validate="{url: {require_protocol: true}, required: true}" ref="inputQuickStartUrl"
                        :class="{error: errors.any()}" :placeholder="i18n('home.placeholder.url')" data-step="2" :data-intro="i18n('intro.index.test.url')" v-model="quickStartUrl"/>
-                <select class="select-item span2" v-model="scriptType" name="scriptType" data-step="3" :data-intro="i18n('intro.index.select.language')">
+                <select class="select-item form-control" v-model="scriptType" name="scriptType" data-step="3" :data-intro="i18n('intro.index.select.language')">
                     <option v-for="handler in handlers" :value="handler.key" v-text="handler.title"></option>
                 </select>
-                <button id="start_test_btn" class="btn btn-primary" data-step="4"
-                        :data-intro="i18n('intro.index.create')" @click.prevent="quickStart" v-text="i18n('home.button.startTest')">
+                <button class="btn btn-primary" data-step="4" :data-intro="i18n('intro.index.create')"
+                        @click.prevent="quickStart" v-text="i18n('home.button.startTest')">
                 </button>
             </div>
         </div>
-        <div class="row">
+        <section class="row">
             <home-panel :title="i18n('home.qa.title')" :entries="leftPanelEntries" :introJsDataSetp="5" :introJsDataIntro="i18n('intro.index.qna')"
-                        :seeMoreQuestionUrl="seeMoreQuestionUrl" :askQuestionUrl="askQuestionUrl"></home-panel>
+                        :seeMoreQuestionUrl="seeMoreQuestionUrl" :askQuestionUrl="askQuestionUrl">
+            </home-panel>
             <home-panel :title="i18n('home.resources.title')" :entries="rightPanelEntries" :introJsDataSetp="6" :introJsDataIntro="i18n('intro.index.resource')"
-                        :seeMoreQuestionUrl="seeMoreQuestionUrl"></home-panel>
-        </div>
+                        :seeMoreQuestionUrl="seeMoreQuestionUrl">
+            </home-panel>
+        </section>
         <intro-button></intro-button>
-    </div>
+    </main>
 </template>
 
 <script>
@@ -102,33 +104,49 @@
 
 <style lang="less" scoped>
     .container {
+        padding: 0;
+
         .main-banner {
             background-image: url('/img/bg_main_banner_en.png');
             margin-bottom: 10px;
             height: 160px;
             padding: 0;
             margin-top: 0;
+            border-radius: 6px;
+
+            button {
+                vertical-align: baseline;
+            }
         }
 
         .quick-start {
             padding-left: 160px;
             padding-top: 35px;
 
+            * {
+                margin: 0;
+            }
+
+            .form-control {
+                display: inline-block;
+            }
+
             input {
+                width: 460px;
                 height: 30px;
 
                 &.error {
-                    border: 2px solid #b94a48;
+                    border: 2px solid #B94A48;
                 }
             }
 
-            & > * {
-                margin: 0;
+            select {
+                width: 140px;
             }
         }
 
         .intro-button-container {
-            margin-top: -40px;
+            margin-top: -21px;
         }
     }
 </style>
