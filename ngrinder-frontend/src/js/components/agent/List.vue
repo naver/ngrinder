@@ -1,37 +1,42 @@
  <template>
     <div class="container">
         <fieldSet>
-            <legend class="header" v-text="i18n('agent.list.title')"></legend>
+            <legend class="header border-bottom d-flex">
+                <span v-text="i18n('agent.list.title')"></span>
+                <select v-if="ngrinder.config.clustered" class="form-control change-region ml-auto mt-auto mb-auto"
+                        v-model="region" @change="changeRegion">
+                    <option value="">All</option>
+                    <option v-for="region in regions" :value="region" v-text="region"></option>
+                </select>
+            </legend>
         </fieldSet>
-        <select v-if="ngrinder.config.clustered" class="pull-right form-control change-region"
-                v-model="region" @change="changeRegion">
-            <option value="">All</option>
-            <option v-for="region in regions" :value="region" v-text="region"></option>
-        </select>
-        <div class="well search-bar">
-            <button class="btn btn-success" @click="update">
-                <i class="icon-arrow-up"></i><span v-text="i18n('agent.list.update')"></span>
+        <div class="card card-header search-bar border-bottom-0">
+            <button class="btn btn-primary mr-1" @click="update">
+                <i class="mr-1 fa fa-arrow-up"></i>
+                <span v-text="i18n('agent.list.update')"></span>
             </button>
-            <button class="btn" @click="cleanup">
-                <i class="icon-trash"></i><span v-text="i18n('common.button.cleanup')"></span>
+            <button class="btn btn-primary mr-1" @click="cleanup">
+                <i class="mr-1 fa fa-trash"></i>
+                <span v-text="i18n('common.button.cleanup')"></span>
             </button>
-            <button class="btn" @click="stopAgents">
-                <i class="icon-stop"></i><span v-text="i18n('common.button.stop')"></span>
+            <button class="btn btn-danger" @click="stopAgents">
+                <i class="mr-1 fa fa-stop"></i>
+                <span v-text="i18n('common.button.stop')"></span>
             </button>
 
-            <div class="input-prepend pull-right">
-                <span class="add-on" style="cursor:default" v-text="i18n('agent.list.download')"></span>
-                <span class="input-xlarge uneditable-input span6" style="cursor: text">
-                <template v-if="downloadLink">
-                    <a :href="downloadLink" v-html="downloadLink"></a>
-                </template>
-                <template v-else>
-                    Please select the region in advance to download agent.
-                </template>
-			</span>
+            <div class="input-prepend ml-auto mt-auto mb-auto">
+                <div class="input-group-text" v-text="i18n('agent.list.download')"></div>
+                <div class="border rounded uneditable-input">
+                    <template v-if="downloadLink">
+                        <a :href="downloadLink" v-html="downloadLink"></a>
+                    </template>
+                    <template v-else>
+                        Please select the region in advance to download agent.
+                    </template>
+                </div>
             </div>
         </div>
-        <table class="table table-striped table-bordered ellipsis" id="agent_table">
+        <table class="table table-striped table-bordered">
             <colgroup>
                 <col width="30">
                 <col width="80">
@@ -49,11 +54,11 @@
                 </th>
                 <th v-text="i18n('agent.list.state')"></th>
                 <th v-text="i18n('agent.list.IPAndDns')"></th>
-                <th class="no-click" v-text="i18n('agent.list.port')"></th>
+                <th v-text="i18n('agent.list.port')"></th>
                 <th class="ellipsis" v-text="i18n('agent.list.name')"></th>
                 <th v-text="i18n('agent.list.version')"></th>
                 <th v-text="i18n('agent.list.region')"></th>
-                <th class="no-click" v-text="i18n('agent.list.approved')"></th>
+                <th v-text="i18n('agent.list.approved')"></th>
             </tr>
             </thead>
             <tbody>
@@ -75,16 +80,16 @@
                         </div>
                     </td>
                     <td v-text="agent.port"></td>
-                    <td class="ellipsis agent-name" :title="agent.hostName" v-text="agent.hostName"></td>
+                    <td class="ellipsis" :title="agent.hostName" v-text="agent.hostName"></td>
                     <td class="ellipsis" v-text="agent.version || 'Prior to 3.3'"></td>
                     <td class="ellipsis" :title="agent.region" v-text="agent.region"></td>
                     <td>
-                        <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" class="btn btn-mini btn-primary disapproved"
+                        <div class="btn-group">
+                            <button class="btn btn-primary disapproved"
                                     :class="{ active: !agent.approved }"
                                     v-text="i18n('agent.list.disapproved')" @click="disapprove(agent)">
                             </button>
-                            <button type="button" class="btn btn-mini btn-primary approved"
+                            <button class="btn btn-primary approved"
                                     :class="{ active: agent.approved }"
                                     v-text="i18n('agent.list.approved')" @click="approve(agent)">
                             </button>
@@ -162,73 +167,96 @@
 
         update() {
             if (this.selectedAgents.length === 0) {
-                bootbox.alert(
-                    this.i18n('agent.message.common.noagent'),
-                    this.i18n('common.button.ok'));
+                this.$bootbox.alert({
+                    message: this.i18n('agent.message.common.noagent'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
                 return;
             }
 
-            const $confirm = bootbox.confirm(
-                this.i18n('agent.message.update.confirm'),
-                this.i18n('common.button.cancel'),
-                this.i18n('common.button.ok'),
-                result => {
+            const $confirm = this.$bootbox.confirm({
+                message: this.i18n('agent.message.update.confirm'),
+                buttons: {
+                    confirm: { label: this.i18n('common.button.ok') },
+                    cancel: { label: this.i18n('common.button.cancel') },
+                },
+                callback: result => {
                     if (result) {
                         this.$http.put('/agent/api?action=update', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.update.success')))
                             .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error')))
                             .finally(() => this.selectedAgents = []);
                     }
-                });
+                },
+            });
             $confirm.children('.modal-body').addClass('error-color');
         }
 
         cleanup() {
-            bootbox.confirm(
-                this.i18n('agent.message.cleanup.confirm'),
-                this.i18n('common.button.cancel'),
-                this.i18n('common.button.ok'),
-                result => {
+            this.$bootbox.confirm({
+                message: this.i18n('agent.message.cleanup.confirm'),
+                buttons: {
+                    confirm: { label: this.i18n('common.button.ok') },
+                    cancel: { label: this.i18n('common.button.cancel') },
+                },
+                callback: result => {
                     if (result) {
                         this.$http.post('/agent/api?action=cleanup', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.cleanup.success')))
                             .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error')))
                             .finally(() => this.selectedAgents = []);
                     }
-                });
+                },
+            });
         }
 
         stopAgents() {
             if (this.selectedAgents.length === 0) {
-                bootbox.alert(
-                    this.i18n('agent.message.common.noagent'),
-                    this.i18n('common.button.ok'));
+                this.$bootbox.alert({
+                    message: this.i18n('agent.message.common.noagent'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
                 return;
             }
 
-            const $confirm = bootbox.confirm(
-                this.i18n('agent.message.stop.confirm'),
-                this.i18n('common.button.cancel'),
-                this.i18n('common.button.ok'),
-                result => {
+            const $confirm = this.$bootbox.confirm({
+                message: this.i18n('agent.message.stop.confirm'),
+                buttons: {
+                    confirm: { label: this.i18n('common.button.ok') },
+                    cancel: { label: this.i18n('common.button.cancel') },
+                },
+                callback: result => {
                     if (result) {
                         this.$http.put('/agent/api?action=stop', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.stop.success')))
                             .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error')))
                             .finally(() => this.selectedAgents = []);
                     }
-                });
+                },
+            });
             $confirm.children('.modal-body').addClass('error-color');
         }
 
         approve(agent) {
+            if (agent.approved) {
+                return;
+            }
+
             this.$http.put(`/agent/api/${agent.id}?action=approve`)
-                .then(() => this.i18n('agent.message.approve'));
+                .then(() => agent.approved = true);
         }
 
         disapprove(agent) {
+            if (!agent.approved) {
+                return;
+            }
+
             this.$http.put(`/agent/api/${agent.id}?action=disapprove`)
-                .then(() => this.i18n('agent.message.disapprove'));
+                .then(() => agent.approved = false);
         }
 
         changeSelectAll(event) {
@@ -248,14 +276,50 @@
 <style lang="less" scoped>
     table {
         font-size: 12px;
+
+        td {
+            height: 40px;
+            padding: 8px;
+        }
+
+        input[type='checkbox'] {
+            vertical-align: bottom;
+        }
     }
 
     .change-region {
-        margin-top: -53px;
         width: 150px;
     }
 
-    .search-bar .btn i {
-        padding-right: 1px;
+    img.status {
+        width: 23px;
+        height: 23px;
+    }
+
+    .btn-group {
+        button {
+            outline: none;
+            font-size: 10px;
+            padding: 2px 4px;
+            height: 22px;
+        }
+    }
+
+    .input-group-text {
+        float: left;
+        cursor: default;
+        padding: 6px 10px;
+    }
+
+    .uneditable-input {
+        width: 530px;
+
+        a {
+            margin-left: 7px;
+        }
+    }
+
+    .search-bar {
+        flex-direction: row;
     }
 </style>
