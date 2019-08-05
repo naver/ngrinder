@@ -27,93 +27,144 @@
 </script>
 
 <style lang="less">
-    #ngrinder-main-content-wrapper {
-        .clickable {
-            cursor: pointer;
+    @error-color: #d9534f;
+
+    html {
+        font-size: 12px !important;
+
+        #ngrinder {
+            .container {
+                width: 940px;
+                min-width: 940px;
+            }
+
+            .pointer-cursor {
+                cursor: pointer;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .validation-message {
+                color: @error-color;
+            }
+
+            .pagination {
+                float: right;
+                margin: 0;
+            }
+
+            button, select, a, i {
+                outline: none;
+            }
+
+            code {
+                border-radius: 2px;
+                font-size: 12px;
+                padding: 2px 4px;
+                color: #d14;
+                background-color: #f7f7f9;
+                border: 1px solid #e1e1e8;
+                white-space: nowrap;
+            }
+
+            .display-inline {
+                display: inline;
+            }
+
+            .fade-enter-active {
+                transition-duration: 1s;
+                transition-timing-function: ease-in;
+            }
+
+            .fade-leave-active {
+                transition-duration: .4s;
+                transition-timing-function: ease-out;
+            }
+
+            .fade-leave-to, .fade-enter {
+                max-height: 0;
+                overflow: hidden;
+            }
+
+            .fade-enter-to, .fade-leave {
+                max-height: 100%;
+                overflow: hidden;
+            }
+
+            .error {
+                .select2-choice {
+                    border-color: @error-color;
+                    span {
+                        color: @error-color;
+                    }
+                }
+            }
         }
 
-        .validation-message {
-            font-size: 12px;
-            color: #b94a48;
+        .uneditable-input {
+            border-color: #ced4da !important;
+            background-color: #fff;
+            padding: 6px;
+            cursor: text;
         }
 
-        .pagination {
-            float: right;
+        .control-group.error {
+            input, select, .input-group-text {
+                color: @error-color;
+                border-color: @error-color;
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+
+                &.input-group-text {
+                    background-color: #f2dede;
+                }
+            }
+
+            input[type="file"] {
+                outline-color: @error-color;
+            }
+
+            label {
+                color: @error-color !important;
+            }
+        }
+
+        .row {
             margin: 0;
         }
 
-        button, select, a, i {
-            outline: none;
+        .form-control {
+            display: inline-block;
+            padding: 4px 6px;
         }
 
-        .display-inline {
-            display: inline;
-        }
-
-        .hide {
-            display: none;
+        .pagination-sm {
+            .page-link {
+                font-size: 12px;
+            }
         }
 
         .popover {
             width: auto;
             min-width: 300px;
             max-width: 600px;
-            max-height: 500px;
+            font-size: 12px;
 
-            .popover-content {
-                line-height: 18px;
+            .popover-body {
+                line-height: 20px;
             }
         }
 
-        .no-padding {
-            padding: 0;
+        .control-label {
+            float: left;
+            text-align: right;
         }
 
-        .fade-enter-active {
-            transition-duration: 1s;
-            transition-timing-function: ease-in;
-        }
-
-        .fade-leave-active {
-            transition-duration: .4s;
-            transition-timing-function: ease-out;
-        }
-
-        .fade-leave-to, .fade-enter {
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .fade-enter-to, .fade-leave {
-            max-height: 100%;
-            overflow: hidden;
-        }
-
-        .error {
-            .select2-choice {
-                border-color: #b94a48;
-                span {
-                    color: #b94a48;
-                }
+        div {
+            &.datepicker {
+                z-index: 1200;
             }
-        }
-
-        .span4-5 {
-            width: 340px;
-        }
-
-        .span3-4 {
-            width: 260px;
-        }
-
-        .span2-3 {
-            width: 180px;
-        }
-    }
-
-    div {
-        &.datepicker {
-            z-index: 1200;
         }
     }
 
