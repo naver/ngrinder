@@ -1,13 +1,13 @@
 <template>
     <div class="container" ref="container">
-        <div id="top" class="well" ref="top">
+        <div class="top card card-header" ref="top">
             <div class="form-horizontal">
-                <div class="flex-box control-group">
+                <div class="mb-2 flex-box control-group">
                     <div>
                         <label class="control-label" v-text="i18n('script.info.name')"></label>
                     </div>
                     <div>
-                        <span class="input-large uneditable-input span6">
+                        <span class="d-inline-block border rounded uneditable-input">
                             <template v-if="basePath !== ''"
                                       v-for="(each, index) in basePath.split('/')"><!--eslint-disable-next-line vue/valid-v-for--><!--
                                 --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
@@ -18,13 +18,19 @@
                     </div>
                     <div>
                         <template v-if="scriptHandler && scriptHandler.validatable">
-                            <a class="pointer-cursor btn btn-success" @click="save"
-                               v-text="i18n('common.button.save')"></a>
-                            <a class="pointer-cursor btn btn-primary" @click="validate"
-                               v-text="i18n('script.editor.button.validate')"></a>
+                            <button class="btn btn-success" @click="save">
+                                <i class="fa fa-save mr-1"></i>
+                                <span v-text="i18n('common.button.save')"></span>
+                            </button>
+                            <button class="btn btn-primary" @click="validate">
+                                <i class="fa fa-check mr-1"></i>
+                                <span v-text="i18n('script.editor.button.validate')"></span>
+                            </button>
                         </template>
-                        <a v-else class="pointer-cursor btn btn-success" @click="save"
-                           v-text="i18n('common.button.save')"></a>
+                        <button v-else class="btn btn-success" @click="save">
+                            <i class="fa fa-save mr-1"></i>
+                            <span v-text="i18n('common.button.save')"></span>
+                        </button>
                     </div>
                 </div>
                 <div class="flex-box">
@@ -32,27 +38,26 @@
                         <label class="control-label" for="description" v-text="i18n('script.action.commit')"></label>
                     </div>
                     <div>
-                        <textarea class="form-control" id="description" name="description"
-                                  v-model="file.description"></textarea>
+                        <textarea class="form-control" id="description"
+                                  name="description" v-model="file.description">
+                        </textarea>
                     </div>
                     <div>
-                        <a class="btn pull-right btn-mini add-host-btn"
-                           @click.prevent="$refs.addHostModal.show" v-text="i18n('perfTest.config.add')">
-                        </a>
-                        <div class="div-host" rel="popover"
-                             id="host-div"
+                        <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
+                            <i class="fa fa-plus"></i>
+                            <span v-text="i18n('perfTest.config.add')"></span>
+                        </button>
+                        <div class="div-host"
                              :title="i18n('perfTest.config.targetHost')"
                              :data-content="i18n('perfTest.config.targetHost.help')"
+                             data-toggle="popover"
                              data-html="true"
+                             data-trigger="hover"
                              data-placement="bottom">
-                            <span v-for="(host, index) in targetHosts">
-                                <p class="host">
-                                    <a class="pointer-cursor" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                    <a class="pointer-cursor"><i class="icon-remove-circle"
-                                                                 @click="targetHosts.splice(index, 1)"></i></a>
-                                </p>
-                                <br>
-                            </span>
+                            <div v-for="(host, index) in targetHosts" class="host">
+                                <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
+                                <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -61,25 +66,27 @@
         <code-mirror ref="editor"
                      :value="this.file.content"
                      :options="cmOptions"></code-mirror>
-        <div class="pull-right tip" id="tip" rel="popover" title="Tip" data-html="true" data-placement="left" :data-content="
+        <div class="float-right tip" data-toggle="popover" title="Tip" data-html="true"
+             data-placement="left" data-trigger="hover" :data-content="
             'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
             'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
             'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
             'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
             'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
-            'F12 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
+            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
             'ESC : ' + i18n('script.editor.tip.back') ">
             <code class="tip">Tip</code>
         </div>
-        <div class="script-samples-link" :class="{ hide : !validating && validated }" ref="sampleLink">
+        <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
         </div>
-        <div class="validation-result-panel" :class="{ hide : !validationResult || (validating && !validated) }">
-            <pre class="prettyprint pre-scrollable validation-result"
+        <div v-show="showValidationResult" class="validation-result-panel">
+            <pre class="border validation-result"
                  :class="{ expanded: validationResultExpanded }"
-                 v-text="validationResult"></pre>
-            <div class="pull-right expand-btn-container">
-                <a class="pointer-cursor" id="expand-btn" v-on:click="expand">
+                 v-text="validationResult">
+            </pre>
+            <div class="float-right expand-btn-container">
+                <a class="pointer-cursor" @click="expand">
                     <code v-text="validationResultExpanded ? '-' : '+'"></code>
                 </a>
             </div>
@@ -133,8 +140,7 @@
         mounted() {
             this.initScriptDetail();
 
-            $('#host-div').popover({ trigger: 'hover' });
-            $('#tip').popover({ trigger: 'hover' });
+            $('[data-toggle="popover"]').popover();
         }
 
         get basePath() {
@@ -182,15 +188,18 @@
             }
 
             if (this.file.revision > 0 && this.file.lastRevision > 0 && this.file.revision < this.file.lastRevision) {
-                bootbox.confirm(
-                    this.i18n('script.editor.message.overWriteNewer'),
-                    this.i18n('common.button.cancel'),
-                    this.i18n('common.button.ok'),
-                    result => {
+                this.$bootbox.confirm({
+                    message: this.i18n('script.editor.message.overWriteNewer'),
+                    buttons: {
+                        confirm: { label: this.i18n('common.button.ok') },
+                        cancel: { label: this.i18n('common.button.cancel') },
+                    },
+                    callback: result => {
                         if (result) {
                             this.saveScript();
                         }
-                    });
+                    },
+                });
             } else {
                 this.saveScript();
             }
@@ -245,7 +254,7 @@
             if (this.targetHosts.some(host => host === newHost)) {
                 return;
             }
-            this.targetHost.push(newHost);
+            this.targetHosts.push(newHost);
         }
 
         showTargetHostInfoModal(host) {
@@ -277,12 +286,14 @@
 
         beforeRouteLeave(to, from, next) {
             if (!this.saved && this.changed()) {
-                bootbox.confirm(
-                    this.i18n('script.editor.message.exitWithoutSave'),
-                    this.i18n('common.button.cancel'),
-                    this.i18n('common.button.ok'),
-                    result => (result ? (window.onbeforeunload = null & next()) : next(false)),
-                );
+                this.$bootbox.confirm({
+                    message: this.i18n('script.editor.message.exitWithoutSave'),
+                    buttons: {
+                        confirm: { label: this.i18n('common.button.ok') },
+                        cancel: { label: this.i18n('common.button.cancel') },
+                    },
+                    callback: result => (result ? (window.onbeforeunload = null & next()) : next(false)),
+                });
             } else {
                 window.onbeforeunload = null;
                 next();
@@ -290,24 +301,26 @@
         }
 
         beforeMount() {
-            window.onbeforeunload = this.unload;
+            window.onbeforeunload = () => {
+                if (!this.changed()) {
+                    return null;
+                }
+                return this.i18n('script.editor.message.exitWithoutSave');
+            };
         }
 
         beforeDestroy() {
             window.onbeforeunload = null;
         }
 
-        unload = () => {
-            if (!this.changed()) {
-                return null;
-            }
-            return this.i18n('script.editor.message.exitWithoutSave');
+        get showValidationResult() {
+            return this.validationResult || (this.validated && !this.validating);
         }
     }
 </script>
 
 <style lang="less" scoped>
-    #top {
+    .top {
         margin-bottom: 10px;
         margin-top: 0;
     }
@@ -320,26 +333,39 @@
 
     .uneditable-input {
         cursor: text;
+        width: 460px;
     }
 
     .tip {
         float: right;
         cursor: pointer;
-        margin-top: -13px;
-        margin-right: -16px;
+        margin-top: -12px;
+        margin-right: -15px;
     }
 
     .flex-box {
         display: flex;
+
         div {
             margin-left: 10px;
         }
+
+        label {
+            margin-left: 20px;
+            width: 120px;
+        }
+    }
+
+    button:not(.add-host-btn) {
+        height: 32px;
     }
 
     .add-host-btn {
-        margin-top: 38px;
-        margin-left: 210px;
+        margin-top: 45px;
+        margin-left: 194px;
         position: absolute;
+        padding: 1px 4px;
+        font-size: 10px;
     }
 
     .script-samples-link {
@@ -347,26 +373,19 @@
         text-align: center;
     }
 
-    .btn-success {
-        margin-left: 73px;
-        width: 40px;
-    }
-
-    .btn-primary {
-        width: 90px;
-    }
-
-    div.div-host {
-        background-color: #FFFFFF;
-        border: 1px solid #D6D6D6;
-        height: 63px;
-        overflow-y: scroll;
-        border-radius: 3px 3px 3px 3px;
-        width: 250px;
-        margin-left: 0;
+    div {
+        .div-host {
+            background-color: #FFF;
+            border: 1px solid #D6D6D6;
+            height: 65px;
+            overflow-y: scroll;
+            border-radius: 3px;
+            width: 250px;
+            margin-left: 0;
+        }
 
         .host {
-            color: #666666;
+            color: #666;
             display: inline-block;
             margin-left: 7px;
             margin-top: 2px;
@@ -375,17 +394,22 @@
     }
 
     .validation-result {
-        height: 100px;
-        margin: 5px 0px 10px;
+        height: 140px;
+        margin: 5px 0 20px;
+        padding: 5px;
+        max-height: 340px;
+        overflow-y: scroll;
+        font-size: 12px;
+        background-color: #f5f5f5;
     }
 
     .expand-btn-container {
-        margin-top: -30px;
+        margin-top: -39px;
         margin-right: -17px;
     }
 
     .expanded {
-        height: 300px;
+        height: 340px;
     }
 
     input[type="text"] {
