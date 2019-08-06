@@ -14,12 +14,10 @@
 package org.ngrinder.extension;
 
 import net.grinder.statistics.ImmutableStatisticsSet;
-
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
 import org.ngrinder.service.ISingleConsole;
-
-import ro.fortsoft.pf4j.ExtensionPoint;
+import org.pf4j.ExtensionPoint;
 
 /**
  * Plugin extension point for {@link PerfTest} control by examining each sampling statistics.

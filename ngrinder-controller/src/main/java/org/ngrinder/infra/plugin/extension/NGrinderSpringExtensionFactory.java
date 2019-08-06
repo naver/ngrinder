@@ -1,44 +1,33 @@
 package org.ngrinder.infra.plugin.extension;
 
+import org.pf4j.ExtensionFactory;
+import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-
-import ro.fortsoft.pf4j.Plugin;
-import ro.fortsoft.pf4j.PluginManager;
-import ro.fortsoft.pf4j.PluginWrapper;
-import ro.fortsoft.pf4j.spring.SpringExtensionFactory;
-import ro.fortsoft.pf4j.spring.SpringPlugin;
 
 /**
  * SpringExtensionFactory extended class.
  * The springframework ApplicationContext injection.
  *
  * @author Gisoo Gwon ,GeunWoo Son
- * @see https://github.com/decebals/pf4j-spring
  * @since 3.0
  */
-@Component
-public class NGrinderSpringExtensionFactory extends SpringExtensionFactory {
+public class NGrinderSpringExtensionFactory implements ExtensionFactory {
 
-	private final PluginManager pluginManager;
+	private static final Logger LOGGER = LoggerFactory.getLogger(NGrinderSpringExtensionFactory.class);
+
+	@Autowired
+	private PluginManager pluginManager;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Autowired
-	public NGrinderSpringExtensionFactory(PluginManager pluginManager) {
-		super(pluginManager);
-		this.pluginManager = pluginManager;
-	}
-
-	protected void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
-
 	@Override
-	public Object create(Class<?> extensionClass) {
-		Object extension = createWithoutSpring(extensionClass);
+	public <T> T create(Class<T> extensionClass) {
+		T extension = createWithoutSpring(extensionClass);
 		if (extension != null) {
 			PluginWrapper pluginWrapper = pluginManager.whichPlugin(extensionClass);
 			if (pluginWrapper != null) {
@@ -48,4 +37,13 @@ public class NGrinderSpringExtensionFactory extends SpringExtensionFactory {
 		return extension;
 	}
 
+	private <T> T createWithoutSpring(Class<T> extensionClass) {
+		try {
+			return extensionClass.newInstance();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		return null;
+	}
 }
