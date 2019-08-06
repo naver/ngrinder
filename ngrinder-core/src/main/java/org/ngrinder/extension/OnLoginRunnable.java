@@ -14,8 +14,7 @@
 package org.ngrinder.extension;
 
 import org.ngrinder.model.User;
-
-import ro.fortsoft.pf4j.ExtensionPoint;
+import org.pf4j.ExtensionPoint;
 
 /**
  * Plugin extension point for the custom user authentication.
