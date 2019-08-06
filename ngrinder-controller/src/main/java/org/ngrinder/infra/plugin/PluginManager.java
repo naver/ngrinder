@@ -23,14 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import ro.fortsoft.pf4j.DefaultPluginManager;
+import org.pf4j.DefaultPluginManager;
 
 /**
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
  * It is built on Plugin Framework for Java.
  *
  * @author JunHo Yoon ,GeunWoo Son
- * @see https://github.com/decebals/pf4j
  * @since 3.0
  */
 @Profile("production")

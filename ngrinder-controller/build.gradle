@@ -64,12 +64,9 @@ dependencies {
     compile (group: "com.google.code.gson", name: "gson", version: gson_version)
     compile (group: "jaxen", name: "jaxen", version: "1.1.4")
     compile (group: "com.beust", name: "jcommander", version: "1.32")
-    compile (group: "ro.fortsoft.pf4j", name: "pf4j", version: "0.12.0")
+    compile (group: "org.pf4j", name: "pf4j", version: "3.0.1")
     compile (group: "commons-collections", name: "commons-collections", version: "3.2.1")
     compile (group: "com.navercorp.lucy", name: "lucy-xss-servlet", version: "2.0.1")
-    compile (group: "ro.fortsoft.pf4j", name: "pf4j-spring", version: "0.2.0") {
-        exclude (module: "slf4j-log4j12")
-    }
     compile (group: "org.reflections", name: "reflections", version: "0.9.9")
     compile (group: "com.hazelcast", name: "hazelcast", version: hazelcast_version)
     compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
