@@ -27,7 +27,6 @@ import org.springframework.core.io.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URLClassLoader;
 import java.util.Properties;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -189,17 +188,6 @@ public class Home {
 	 */
 	public File getSubFile(String subPathName) {
 		return new File(directory, subPathName);
-	}
-
-	/**
-	 * Get the plugin cache directory.
-	 *
-	 * @return plugin cache directory.
-	 */
-	public File getPluginsCacheDirectory() {
-		File cacheDir =  getSubFile(PATH_PLUGIN + "_cache");
-		cacheDir.mkdirs();
-		return cacheDir;
 	}
 
 	/**
