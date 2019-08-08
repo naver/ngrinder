@@ -14,10 +14,13 @@
 package org.ngrinder.agent.controller;
 
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.common.util.AopUtils;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,8 +39,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 @RequestMapping("/monitor/api")
 public class MonitorManagerApiController extends BaseController {
 
-	private static final ExecutorService executorService = Executors.newCachedThreadPool();
-
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
@@ -50,8 +51,13 @@ public class MonitorManagerApiController extends BaseController {
 	@GetMapping("/state")
 	public SystemDataModel getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
 		int port = getConfig().getMonitorPort();
-		Future<SystemInfo> systemInfoFuture = executorService.submit(() -> monitorInfoStore.getSystemInfo(ip, port));
+		Future<SystemInfo> systemInfoFuture = AopUtils.proxy(this).getAsyncSystemInfo(ip, port);
 		SystemInfo systemInfo = checkNotNull(systemInfoFuture.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
 		return new SystemDataModel(systemInfo, "UNKNOWN");
+	}
+
+	@Async
+	public Future<SystemInfo> getAsyncSystemInfo(String ip, int port) {
+		return new AsyncResult<>(monitorInfoStore.getSystemInfo(ip, port));
 	}
 }
