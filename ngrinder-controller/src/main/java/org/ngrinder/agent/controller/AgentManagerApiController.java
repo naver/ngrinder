@@ -160,14 +160,11 @@ public class AgentManagerApiController extends BaseController {
 	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
-	@GetMapping(value = {"/api/states/", "/api/states"})
+	@GetMapping(value = {"/states/", "/states"})
 	public List<Map<String, Object>> getStates() {
 		List<AgentInfo> agents = agentManagerService.getAllVisible();
-		return getAgentStatus(agents);
-	}
-
-	private List<Map<String, Object>> getAgentStatus(List<AgentInfo> agents) {
 		List<Map<String, Object>> statuses = newArrayList(agents.size());
+
 		for (AgentInfo each : agents) {
 			Map<String, Object> result = newHashMap();
 			result.put("id", each.getId());
@@ -176,6 +173,7 @@ public class AgentManagerApiController extends BaseController {
 			result.put("state", each.getState());
 			statuses.add(result);
 		}
+
 		return statuses;
 	}
 
@@ -197,7 +195,7 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = "/{id}")
-	public AgentInfo getOne(@PathVariable("id") Long id) {
+	public AgentInfo getOne(@PathVariable Long id) {
 		return agentManagerService.getOne(id);
 	}
 
@@ -209,7 +207,7 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=approve")
-	public Map<String, Object> approve(@PathVariable("id") Long id) {
+	public Map<String, Object> approve(@PathVariable Long id) {
 		agentManagerService.approve(id, true);
 		return returnSuccess();
 	}
@@ -222,7 +220,7 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=disapprove")
-	public Map<String, Object> disapprove(@PathVariable("id") Long id) {
+	public Map<String, Object> disapprove(@PathVariable Long id) {
 		agentManagerService.approve(id, false);
 		return returnSuccess();
 	}
@@ -235,7 +233,7 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=stop")
-	public Map<String, Object> stop(@PathVariable("id") Long id) {
+	public Map<String, Object> stop(@PathVariable Long id) {
 		agentManagerService.stopAgent(id);
 		return returnSuccess();
 	}
@@ -264,7 +262,7 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=update")
-	public Map<String, Object> update(@PathVariable("id") Long id) {
+	public Map<String, Object> update(@PathVariable Long id) {
 		agentManagerService.update(id);
 		return returnSuccess();
 	}
@@ -277,7 +275,7 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=update")
-	public Map<String, Object> update(@RequestParam("ids") String ids) {
+	public Map<String, Object> update(@RequestParam String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			update(Long.parseLong(each));
