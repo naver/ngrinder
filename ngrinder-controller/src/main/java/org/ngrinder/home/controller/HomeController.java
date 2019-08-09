@@ -178,24 +178,4 @@ public class HomeController extends BaseController implements ControllerConstant
 		return "app";
 	}
 
-	/**
-	 * Error redirection to 404.
-	 *
-	 * @return "redirect:/doError"
-	 */
-	@RequestMapping(value = "/error_404")
-	public String error404(ModelMap model) {
-		model.clear();
-		return "redirect:/doError?type=404";
-	}
-
-	/**
-	 * Error redirection as a second phase.
-	 *
-	 * @return "app"
-	 */
-	@RequestMapping(value = "/doError")
-	public String doError(User user) {
-		return "app";
-	}
 }

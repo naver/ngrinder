@@ -74,14 +74,4 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		assertThat(viewName, is("app"));
 	}
 
-
-	@Test
-	public void testErrorPage() {
-		String viewName = homeController.error404(new ModelMap());
-		assertThat(viewName, startsWith("redirect:/doError"));
-
-		viewName = homeController.doError(getTestUser());
-		assertThat(viewName, is("app"));
-	}
-
 }
