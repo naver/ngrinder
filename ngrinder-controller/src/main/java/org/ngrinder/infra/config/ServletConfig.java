@@ -1,6 +1,5 @@
 package org.ngrinder.infra.config;
 
-import org.ngrinder.infra.spring.Redirect404DispatcherServlet;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -13,15 +12,15 @@ public class ServletConfig {
 	@Bean
 	@SuppressWarnings("unchecked")
 	public ServletRegistrationBean appServletRegisterBean() {
-		ServletRegistrationBean redirect404DispatcherServlet = new ServletRegistrationBean(dispatcherServlet(), dispatcherServletPath().getPath());
-		redirect404DispatcherServlet.setLoadOnStartup(1);
-		redirect404DispatcherServlet.setName("appServlet");
-		return redirect404DispatcherServlet;
+		ServletRegistrationBean appServletRegistrationBean = new ServletRegistrationBean(dispatcherServlet(), dispatcherServletPath().getPath());
+		appServletRegistrationBean.setLoadOnStartup(1);
+		appServletRegistrationBean.setName("appServlet");
+		return appServletRegistrationBean;
 	}
 
 	@Bean
 	public DispatcherServlet dispatcherServlet() {
-		return new Redirect404DispatcherServlet();
+		return new DispatcherServlet();
 	}
 
 	@Bean
