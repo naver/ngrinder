@@ -23,9 +23,7 @@ public class NGrinderPluginManager extends JarPluginManager {
 
 	@Autowired
 	public NGrinderPluginManager(Config config) {
-		super(config.isClustered()
-			? config.getExHome().getPluginsDirectory().toPath()
-			: config.getHome().getPluginsDirectory().toPath());
+		super(config.getHome().getPluginsDirectory().toPath());
 	}
 
 	@PostConstruct
