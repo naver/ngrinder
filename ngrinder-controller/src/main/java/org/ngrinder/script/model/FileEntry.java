@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
@@ -212,6 +213,15 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	public void setLastRevision(long lastRevision) {
 		this.lastRevision = lastRevision;
+	}
+
+	public int getValidated() {
+		String validateValue = this.getProperties().getOrDefault("validated", "0");
+		if (NumberUtils.isNumber(validateValue)) {
+			return NumberUtils.createInteger(validateValue);
+		} else {
+			return 0;
+		}
 	}
 
 	private static class UnixPathSerializer extends StdSerializer<String> {
