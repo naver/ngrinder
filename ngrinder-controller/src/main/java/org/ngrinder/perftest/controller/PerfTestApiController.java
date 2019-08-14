@@ -22,8 +22,8 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.DateUtils;
+import org.ngrinder.common.util.JsonUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.common.util.UncheckedObjectMapper;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.*;
@@ -98,9 +98,6 @@ public class PerfTestApiController extends BaseController {
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
-
-	@Autowired
-	private UncheckedObjectMapper objectMapper;
 
 	/**
 	 * Get the perf test lists.
@@ -316,13 +313,13 @@ public class PerfTestApiController extends BaseController {
 
 		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, test.getId());
 		if (samplingModel != null) {
-			map.put("perf", objectMapper.readValue(samplingModel.getRunningSample(), HashMap.class));
-			map.put("agent", objectMapper.readValue(samplingModel.getAgentState(), HashMap.class));
+			map.put("perf", JsonUtils.deserialize(samplingModel.getRunningSample(), HashMap.class));
+			map.put("agent", JsonUtils.deserialize(samplingModel.getAgentState(), HashMap.class));
 		}
 
 		String monitoringJson = hazelcastService.get(DIST_MAP_NAME_MONITORING, test.getId());
 		if (monitoringJson != null) {
-			map.put("monitor", objectMapper.readValue(monitoringJson, HashMap.class));
+			map.put("monitor", JsonUtils.deserialize(monitoringJson, HashMap.class));
 		}
 
 		map.put("status", test.getStatus());

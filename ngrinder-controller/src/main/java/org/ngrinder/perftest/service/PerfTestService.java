@@ -35,8 +35,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
+import org.ngrinder.common.util.JsonUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.common.util.UncheckedObjectMapper;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.*;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -120,9 +120,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	@Autowired
 	private HazelcastService hazelcastService;
-
-	@Autowired
-	private UncheckedObjectMapper objectMapper;
 
 	/**
 	 * Get {@link PerfTest} list for the given user.
@@ -832,7 +829,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	private String getProperSizeRunningSample(SingleConsole singleConsole) {
 		Map<String, Object> statisticData = singleConsole.getStatisticsData();
-		String runningSample = objectMapper.writeValueAsString(statisticData);
+		String runningSample = JsonUtils.serialize(statisticData);
 
 		if (runningSample.length() > 9950) { // max column size is 10,000
 			Map<String, Object> tempData = newHashMap();
@@ -844,7 +841,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				}
 				tempData.put(key, each.getValue());
 			}
-			runningSample = objectMapper.writeValueAsString(tempData);
+			runningSample = JsonUtils.serialize(tempData);
 		}
 		return runningSample;
 	}
@@ -865,7 +862,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	String getProperSizedStatusString(Map<String, SystemDataModel> agentStatusMap) {
-		String json = objectMapper.writeValueAsString(agentStatusMap);
+		String json = JsonUtils.serialize(agentStatusMap);
 		int statusLength = StringUtils.length(json);
 		if (statusLength > 9950) { // max column size is 10,000
 			LOGGER.info("Agent status string length: {}, too long to save into table.", statusLength);
@@ -880,9 +877,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					pickIndex++;
 				}
 			}
-			json = objectMapper.writeValueAsString(pickAgentStateMap);
-			LOGGER.debug("Agent status string get {} outof {} agents, new size is {}.", new Object[]{pickSize,
-					agentStatusMap.size(), json.length()});
+			json = JsonUtils.serialize(pickAgentStateMap);
+			LOGGER.debug("Agent status string get {} outof {} agents, new size is {}.", pickSize, agentStatusMap.size(), json.length());
 		}
 		return json;
 	}
@@ -930,7 +926,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@SuppressWarnings("unchecked")
 	public boolean hasTooManyError(PerfTest perfTest) {
 		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, perfTest.getId());
-		Map<String, Object> result = objectMapper.readValue(samplingModel.getRunningSample(), HashMap.class);
+		Map<String, Object> result = JsonUtils.deserialize(samplingModel.getRunningSample(), HashMap.class);
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
 		long errors = MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue();
@@ -1124,7 +1120,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param systemInfos systemDataModel map
 	 */
 	public void updateMonitorStat(Long perfTestId, Map<String, SystemDataModel> systemInfos) {
-		String json = objectMapper.writeValueAsString(systemInfos);
+		String json = JsonUtils.serialize(systemInfos);
 		if (json.length() >= 2000) {
 			Map<String, SystemDataModel> systemInfo = Maps.newHashMap();
 			int i = 0;
@@ -1134,7 +1130,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				}
 				systemInfo.put(each.getKey(), each.getValue());
 			}
-			json = objectMapper.writeValueAsString(systemInfo);
+			json = JsonUtils.serialize(systemInfo);
 		}
 		hazelcastService.put(DIST_MAP_NAME_MONITORING , perfTestId , json);
 	}

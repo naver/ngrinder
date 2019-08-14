@@ -13,9 +13,9 @@
  */
 package org.ngrinder.infra.spring;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.ExceptionUtils;
+import org.ngrinder.common.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -46,8 +46,6 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	private static final String JSON_CAUSE = "message";
 	private static final String JSON_STACKTRACE = "stackTrace";
 	private int order;
-
-	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	/*
 	 * (non-Javadoc)
@@ -96,7 +94,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		);
 
 		try {
-			String jsonMessage = objectMapper.writeValueAsString(jsonResponse);
+			String jsonMessage = JsonUtils.serialize(jsonResponse);
 			response.setStatus(500);
 			response.setContentType("application/json; charset=UTF-8");
 			response.addHeader("Pragma", "no-cache");
