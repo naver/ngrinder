@@ -2,7 +2,6 @@ package org.ngrinder.user.controller;
 
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
