@@ -1,9 +1,6 @@
 package org.ngrinder.infra.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
-import org.ngrinder.common.util.UncheckedObjectMapper;
 import org.ngrinder.infra.spring.ApiExceptionHandlerResolver;
 import org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver;
 import org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver;
@@ -126,12 +123,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations()).setCachePeriod(3600);
 	}
 
-	@Bean
-	public UncheckedObjectMapper objectMapper() {
-		UncheckedObjectMapper objectMapper = new UncheckedObjectMapper();
-		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-		return objectMapper;
-	}
 }
