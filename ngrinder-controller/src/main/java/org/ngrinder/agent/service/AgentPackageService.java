@@ -5,7 +5,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.AgentPackageHandler;
-import org.ngrinder.packages.MonitorPackageHandler;
 import org.ngrinder.packages.PackageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,7 @@ import java.util.zip.ZipFile;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.util.CompressionUtils.*;
+import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 
 /**
  * Agent package service.
@@ -96,7 +96,7 @@ public class AgentPackageService {
 		packageHandler.copyShellFile(tarOutputStream);
 
 		for (URL eachUrl : classLoader.getURLs()) {
-			File eachClassPath = new File(eachUrl.getFile());
+			File eachClassPath = new File(decodePathWithUTF8(eachUrl.getFile()));
 			if (!isJar(eachClassPath)) {
 				continue;
 			}

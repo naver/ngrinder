@@ -13,10 +13,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 
 /**
  * ArchLoader initializer
@@ -73,7 +74,7 @@ public class ArchLoaderInit {
 		final ClassLoader classLoader = ArchLoaderInit.class.getClassLoader();
 		for (URL each : ((URLClassLoader) classLoader).getURLs()) {
 			if (each.getFile().contains("sigar-native-")) {
-				return URLDecoder.decode(each.getFile(), "UTF-8");
+				return decodePathWithUTF8(each.getFile());
 			}
 		}
 
@@ -82,7 +83,7 @@ public class ArchLoaderInit {
 		if (parent != null) {
 			for (URL each : ((URLClassLoader) parent).getURLs()) {
 				if (each.getFile().contains("sigar-native-")) {
-					return URLDecoder.decode(each.getFile(), "UTF-8");
+					return decodePathWithUTF8(each.getFile());
 				}
 			}
 		}

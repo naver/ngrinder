@@ -15,13 +15,14 @@ package org.ngrinder.common.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
@@ -87,6 +88,20 @@ public abstract class EncodingUtils {
 				}
 			}
 			return result.toString();
+		} catch (UnsupportedEncodingException e) {
+			throw processException(e);
+		}
+	}
+
+	/**
+	 * Decode the given path with UTF-8.
+	 *
+	 * @param path path
+	 * @return decoded path
+	 */
+	public static String decodePathWithUTF8(String path) {
+		try {
+			return URLDecoder.decode(path, UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw processException(e);
 		}
