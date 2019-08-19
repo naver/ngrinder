@@ -13,8 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
-import static com.google.common.collect.ImmutableMap.of;
 import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
@@ -134,9 +134,8 @@ public class AgentManagerApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PostMapping(value = "", params = "action=cleanup")
-	public Map<String, Object> cleanUpAgentsInInactiveRegion() {
+	public void cleanUpAgentsInInactiveRegion() {
 		agentManagerService.cleanup();
-		return returnSuccess();
 	}
 
 	/**
@@ -180,7 +179,7 @@ public class AgentManagerApiController extends BaseController {
 	/**
 	 * Get all agents from database.
 	 *
-	 * @return json message
+	 * @return agentInfoList
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = {"/", ""})
@@ -191,7 +190,7 @@ public class AgentManagerApiController extends BaseController {
 	/**
 	 * Get the agent for the given agent id.
 	 *
-	 * @return json message
+	 * @return agentInfo
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = "/{id}")
@@ -203,84 +202,72 @@ public class AgentManagerApiController extends BaseController {
 	 * Approve an agent.
 	 *
 	 * @param id agent id
-	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=approve")
-	public Map<String, Object> approve(@PathVariable Long id) {
+	public void approve(@PathVariable Long id) {
 		agentManagerService.approve(id, true);
-		return returnSuccess();
 	}
 
 	/**
 	 * Disapprove an agent.
 	 *
 	 * @param id agent id
-	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=disapprove")
-	public Map<String, Object> disapprove(@PathVariable Long id) {
+	public void disapprove(@PathVariable Long id) {
 		agentManagerService.approve(id, false);
-		return returnSuccess();
 	}
 
 	/**
 	 * Stop the given agent.
 	 *
 	 * @param id agent id
-	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=stop")
-	public Map<String, Object> stop(@PathVariable Long id) {
+	public void stop(@PathVariable Long id) {
 		agentManagerService.stopAgent(id);
-		return returnSuccess();
 	}
 
 	/**
 	 * Stop the given agent.
 	 *
 	 * @param ids comma separated agent id list
-	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=stop")
-	public Map<String, Object> stop(@RequestParam("ids") String ids) {
+	public void stop(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			stop(Long.parseLong(each));
 		}
-		return returnSuccess();
 	}
 
 	/**
 	 * Update the given agent.
 	 *
 	 * @param id agent id
-	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{id}", params = "action=update")
-	public Map<String, Object> update(@PathVariable Long id) {
+	public void update(@PathVariable Long id) {
 		agentManagerService.update(id);
-		return returnSuccess();
 	}
 
 	/**
 	 * Send update message to agent side
 	 *
 	 * @param ids comma separated agent id list
-	 * @return json message
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=update")
-	public Map<String, Object> update(@RequestParam String ids) {
+	public void update(@RequestParam String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
 			update(Long.parseLong(each));
 		}
-		return returnSuccess();
 	}
 
 	/**
@@ -293,6 +280,6 @@ public class AgentManagerApiController extends BaseController {
 	@GetMapping("/availableAgentCount")
 	@PreAuthorize("permitAll")
 	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
-		return of("availableAgentCount", agentManagerService.getReadyAgentCount(user, targetRegion));
+		return buildMap("availableAgentCount", agentManagerService.getReadyAgentCount(user, targetRegion));
 	}
 }

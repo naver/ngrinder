@@ -37,9 +37,8 @@ public class AnnouncementControllerTest extends AbstractNGrinderTransactionalTes
 	@Test
 	public void testSaveAnnouncement() {
 		String content = "My test.";
-		boolean result = (Boolean) controller.save(content).get("success");
+		controller.save(content);
 
-		assertThat(result, is(true));
 		assertThat(service.getOne(), is(content));
 		assertThat(config.getAnnouncement(), is(content));
 	}

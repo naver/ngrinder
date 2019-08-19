@@ -31,10 +31,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
-import static com.google.common.collect.ImmutableMap.of;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
@@ -44,8 +42,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @since 3.0
  */
 public class BaseController implements WebConstants {
-	private static Map<String, Object> successJson;
-	private static Map<String, Object> errorJson;
 
 	@Autowired
 	private MessageSource messageSource;
@@ -69,12 +65,6 @@ public class BaseController implements WebConstants {
 
 	@Autowired
 	private RegionService regionService;
-
-	@PostConstruct
-	void initJSON() {
-		successJson = of(JSON_SUCCESS, true);
-		errorJson = of(JSON_SUCCESS, false);
-	}
 
 	/**
 	 * Get the current user.
@@ -192,24 +182,6 @@ public class BaseController implements WebConstants {
 		}
 		Locale locale = new Locale(userLanguage);
 		return messageSource.getMessage(key, null, locale);
-	}
-
-	/**
-	 * Return success json
-	 *
-	 * @return Map containing the json message
-	 */
-	public Map<String, Object> returnSuccess() {
-		return successJson;
-	}
-
-	/**
-	 * Return error json
-	 *
-	 * @return Map containing the json message
-	 */
-	public Map<String, Object> returnError() {
-		return errorJson;
 	}
 
 	/**

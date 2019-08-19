@@ -14,13 +14,12 @@
 package org.ngrinder.operation.cotroller;
 
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 /**
  * Announcement message management controller.
@@ -54,7 +53,10 @@ public class AnnouncementController extends BaseController {
 	 */
 	@ResponseBody
 	@PostMapping("/api")
-	public Map<String, Object> save(@RequestParam String content) {
-		return announcementService.save(content) ? returnSuccess() : returnError();
+	public void save(@RequestParam String content) {
+		boolean saved = announcementService.save(content);
+		if (!saved) {
+			throw new NGrinderRuntimeException("Fail to save new announcement");
+		}
 	}
 }
