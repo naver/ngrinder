@@ -40,7 +40,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@Column(name = "created_date", insertable = true, updatable = false)
 	private Date createdDate;
 
-	@JsonSerialize(using = User.UserBaseInfoSerializer.class)
+	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
 	@JoinColumn(name = "created_user", insertable = true, updatable = false)
 	@Index(name = "created_user_index")
@@ -50,7 +50,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@Column(name = "last_modified_date", insertable = true, updatable = true)
 	private Date lastModifiedDate;
 
-	@JsonSerialize(using = User.UserBaseInfoSerializer.class)
+	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
 	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
 	@Index(name = "last_modified_user_index")

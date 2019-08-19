@@ -13,11 +13,7 @@
  */
 package org.ngrinder.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Arrays;
 
 /**
  * Role of the User.
@@ -109,11 +105,6 @@ public enum Role {
 	Role(String shortName, String fullName) {
 		this.shortName = shortName;
 		this.fullName = fullName;
-	}
-
-	@JsonCreator
-	static Role of(@JsonProperty("name") String name) {
-		return Arrays.stream(Role.values()).filter(role -> role.name().equals(name)).findFirst().orElse(null);
 	}
 
 	/**
