@@ -13,13 +13,16 @@
  */
 package org.ngrinder.model;
 
-import static java.util.stream.Collectors.toList;
-import static org.ngrinder.common.util.AccessUtils.getSafe;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -27,7 +30,11 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * User managed by nGrinder.
@@ -59,6 +66,7 @@ public class User extends BaseModel<User> {
 
 	private String email;
 
+	@JsonDeserialize(using = RoleDeserializer.class)
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role_name", nullable = false)
 	private Role role;
@@ -90,7 +98,7 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User ownerUser;
 
-	@JsonSerialize(using = FollowerSerializer.class)
+	@JsonSerialize(using = UserReferenceListSerializer.class)
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
 		inverseJoinColumns = @JoinColumn(name = "follow_id"))
@@ -370,13 +378,13 @@ public class User extends BaseModel<User> {
 		this.followersStr = followersStr;
 	}
 
-	private static class FollowerSerializer extends StdSerializer<List<User>> {
+	private static class UserReferenceListSerializer extends StdSerializer<List<User>> {
 		@SuppressWarnings("unused")
-		FollowerSerializer() {
+		UserReferenceListSerializer() {
 			this(null);
 		}
 
-		FollowerSerializer(Class<List<User>> t) {
+		UserReferenceListSerializer(Class<List<User>> t) {
 			super(t);
 		}
 
@@ -389,19 +397,45 @@ public class User extends BaseModel<User> {
 		}
 	}
 
-	public static class UserBaseInfoSerializer extends StdSerializer<User> {
+	public static class UserReferenceSerializer extends StdSerializer<User> {
 		@SuppressWarnings("unused")
-		UserBaseInfoSerializer() {
+		UserReferenceSerializer() {
 			this(null);
 		}
 
-		UserBaseInfoSerializer(Class<User> t) {
+		UserReferenceSerializer(Class<User> t) {
 			super(t);
 		}
 
 		@Override
 		public void serialize(User user, JsonGenerator generator, SerializerProvider provider) throws IOException {
 			generator.writeObject(user.getUserBaseInfo());
+		}
+	}
+
+	public static class RoleDeserializer extends StdDeserializer<Role> {
+		@SuppressWarnings("unused")
+		RoleDeserializer() {
+			this(null);
+		}
+
+		RoleDeserializer(Class<?> vc) {
+			super(vc);
+		}
+
+		@Override
+		public Role deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+			JsonNode node = parser.getCodec().readTree(parser);
+			TreeNode nameNode = node.get("name");
+			if (nameNode == null) {
+				return null;
+			}
+
+			String name = node.get("name").asText();
+			return Arrays.stream(Role.values())
+				.filter(role -> role.name().equals(name))
+				.findFirst()
+				.orElse(null);
 		}
 	}
 }
