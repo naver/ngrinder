@@ -2,6 +2,7 @@ package org.ngrinder.user.controller;
 
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
@@ -161,7 +162,7 @@ public class UserApiController extends BaseController {
 	 */
 	@PostMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public Map<String, Object> save(User user, @RequestBody User updatedUser) {
+	public void save(User user, @RequestBody User updatedUser) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -174,7 +175,6 @@ public class UserApiController extends BaseController {
 				updatedUser);
 		}
 		save(updatedUser);
-		return returnSuccess();
 	}
 
 	private User save(User user) {
@@ -200,14 +200,13 @@ public class UserApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping({"", "/"})
-	public Map<String, Object> deleteUsers(User user, @RequestParam String userIds) {
+	public void deleteUsers(User user, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
 		for (String eachId : ids) {
 			if (!user.getUserId().equals(eachId)) {
 				userService.delete(eachId);
 			}
 		}
-		return returnSuccess();
 	}
 
 	/**
@@ -220,7 +219,7 @@ public class UserApiController extends BaseController {
 	@GetMapping("/{userId}/check_duplication")
 	public Map<String, Object> checkDuplication(@PathVariable String userId) {
 		User user = userService.getOne(userId);
-		return user == null ? returnSuccess() : returnError();
+		return buildMap(JSON_SUCCESS, user == null);
 	}
 
 	/**
@@ -283,11 +282,10 @@ public class UserApiController extends BaseController {
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping("/{userId}")
-	public Map<String, Object> delete(User user, @PathVariable("userId") String userId) {
+	public void delete(User user, @PathVariable("userId") String userId) {
 		if (!user.getUserId().equals(userId)) {
 			userService.delete(userId);
 		}
-		return returnSuccess();
 	}
 
 	/**

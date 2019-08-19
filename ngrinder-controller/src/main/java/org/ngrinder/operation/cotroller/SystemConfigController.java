@@ -16,13 +16,12 @@ package org.ngrinder.operation.cotroller;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 /**
  * System configuration controller.
@@ -67,9 +66,10 @@ public class SystemConfigController extends BaseController {
 	 */
 	@ResponseBody
 	@PostMapping(value = "/api")
-	public Map<String, Object> save(@RequestParam String content) {
-		systemConfigService.save(checkNotEmpty(content, "content should be " +
-				"passed as parameter"));
-		return returnSuccess();
+	public void save(@RequestParam String content) {
+		boolean saved = systemConfigService.save(checkNotEmpty(content, "content should be " + "passed as parameter"));
+		if (!saved) {
+			throw new NGrinderRuntimeException("Fail to save new system config");
+		}
 	}
 }

@@ -13,10 +13,11 @@
  */
 package org.ngrinder.script.controller;
 
-import static com.google.common.collect.ImmutableMap.of;
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.apache.commons.lang3.StringUtils.*;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
@@ -124,7 +125,7 @@ public class FileEntryApiController extends BaseController {
 					   @RequestParam(defaultValue = "0") String validated,
 					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
-			Map<String, String> map = of(
+			Map<String, String> map = buildMap(
 				"validated", validated,
 				"targetHosts", trimToEmpty(targetHosts)
 			);
@@ -173,11 +174,11 @@ public class FileEntryApiController extends BaseController {
 
 			if (!fileEntryService.hasFileEntry(user, PathUtils.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler, createLibAndResource, options);
-				return of(
+				return buildMap(
 					"message", fileName + " project is created.",
 					"path", "/script/list/" + encodePathWithUTF8(path) + fileName);
 			} else {
-				return of(
+				return buildMap(
 					"message", fileName + " is already existing. Please choose the different name",
 					"path", "/script/list/" + encodePathWithUTF8(path));
 			}
@@ -193,7 +194,7 @@ public class FileEntryApiController extends BaseController {
 
 		save(user, entry, null, "0", createLibAndResource);
 
-		return of("file", entry);
+		return buildMap("file", entry);
 	}
 
 	/**
@@ -204,11 +205,10 @@ public class FileEntryApiController extends BaseController {
 	 * @param folderName folderName
 	 */
 	@PostMapping(value = "/new/**", params = "type=folder")
-	public Map<String, Object> addFolder(User user,
+	public void addFolder(User user,
 							@RemainedPath String path,
 							@RequestParam String folderName) {
 		fileEntryService.addFolder(user, path, trimToEmpty(folderName), "");
-		return returnSuccess();
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class FileEntryApiController extends BaseController {
 		FileEntry script = fileEntryService.getOne(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
-			return of();
+			return emptyMap();
 		}
 
 		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(script);
@@ -236,7 +236,7 @@ public class FileEntryApiController extends BaseController {
 			codemirrorKey = ((NullScriptHandler) scriptHandler).getCodemirrorKey(script.getFileType());
 		}
 
-		return of(
+		return buildMap(
 			"file", script,
 			"scriptHandler", scriptHandler,
 			"codemirrorKey", codemirrorKey
@@ -251,9 +251,8 @@ public class FileEntryApiController extends BaseController {
 	 * @return json string
 	 */
 	@PostMapping("/delete")
-	public Map<String, Object> delete(User user, @RequestBody List<String> paths) {
+	public void delete(User user, @RequestBody List<String> paths) {
 		fileEntryService.delete(user, paths);
-		return returnSuccess();
 	}
 
 
@@ -266,7 +265,7 @@ public class FileEntryApiController extends BaseController {
 	 * @param file        multi part file
 	 */
 	@PostMapping("/upload/**")
-	public Map<String, Object> uploadFile(User user,
+	public void uploadFile(User user,
 							 @RemainedPath String path,
 							 @RequestParam String description,
 							 @RequestParam("uploadFile") MultipartFile file) {
@@ -277,7 +276,6 @@ public class FileEntryApiController extends BaseController {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
 			throw processException("Error while getting file content:" + e.getMessage(), e);
 		}
-		return returnSuccess();
 	}
 
 	private void upload(User user, String path, String description, MultipartFile file) throws IOException {
@@ -297,9 +295,8 @@ public class FileEntryApiController extends BaseController {
 	 * @return success json string
 	 */
 	@PostMapping({"/", ""})
-	public Map<String, Object> create(User user, FileEntry fileEntry) {
+	public void create(User user, FileEntry fileEntry) {
 		fileEntryService.save(user, fileEntry);
-		return returnSuccess();
 	}
 
 	/**
@@ -312,12 +309,11 @@ public class FileEntryApiController extends BaseController {
 	 * @return success json string
 	 */
 	@PostMapping(value = "/**", params = "action=upload")
-	public Map<String, Object> uploadForAPI(User user,
+	public void uploadAPI(User user,
 							   @RemainedPath String path,
 							   @RequestParam String description,
 							   @RequestParam("uploadFile") MultipartFile file) throws IOException {
 		upload(user, path, description, file);
-		return returnSuccess();
 	}
 
 	/**
@@ -372,9 +368,8 @@ public class FileEntryApiController extends BaseController {
 	 * @return json string
 	 */
 	@DeleteMapping("/**")
-	public Map<String, Object> deleteOne(User user, @RemainedPath String path) {
+	public void deleteOne(User user, @RemainedPath String path) {
 		fileEntryService.delete(user, path);
-		return returnSuccess();
 	}
 
 	/**

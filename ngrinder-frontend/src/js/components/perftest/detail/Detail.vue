@@ -333,9 +333,9 @@
                 } else {
                     this.params.testStatus = 'SAVED';
                     this.$nextTick(() => {
-                        this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize()).then(res => {
-                            this.$router.push(`/perftest/${res.data}`);
-                        }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
+                        this.$http.post('/perftest/api/save', $(this.$refs.configForm).serialize())
+                            .then(() => this.$router.push('/perftest'))
+                            .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
                     });
                 }
             });
@@ -361,10 +361,10 @@
             this.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
-                this.$http.post('/perftest/api/new', $(this.$refs.configForm).serialize())
+                this.$http.post('/perftest/api/save', $(this.$refs.configForm).serialize())
                     .then(res => {
                         this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
-                        this.$router.push(`/perftest/${res.data}`);
+                        this.$router.push(`/perftest/${res.data.id}`);
                     }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.saveAndRun.error')));
             });
         }
