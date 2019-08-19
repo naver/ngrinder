@@ -33,16 +33,7 @@
         created() {
             this.$http.get('/sign_up/api/new').then(res => {
                 this.user = res.data.user;
-                this.config = {
-                    newUser: res.data.newUser,
-                    roleSet: res.data.roleSet,
-                    allowPasswordChange: res.data.allowPasswordChange,
-                    allowRoleChange: res.data.allowRoleChange,
-                    allowShareChange: res.data.allowShareChange,
-                    allowUserIdChange: res.data.allowUserIdChange,
-                    showPasswordByDefault: res.data.showPasswordByDefault,
-                    userSecurityEnabled: res.data.userSecurityEnabled,
-                };
+                this.config = res.data.config;
                 this.dataLoadFinished = true;
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }

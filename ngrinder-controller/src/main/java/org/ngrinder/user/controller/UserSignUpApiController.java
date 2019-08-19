@@ -51,14 +51,18 @@ public class UserSignUpApiController extends BaseController {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		User one = User.createNew();
 		model.put("user", one);
-		model.put("allowUserIdChange", true);
-		model.put("allowPasswordChange", true);
-		model.put("allowRoleChange", false);
-		model.put("roleSet", EnumSet.allOf(Role.class));
-		model.put("userSecurityEnabled", config.isUserSecurityEnabled());
-		model.put("allowShareChange", false);
-		model.put("showPasswordByDefault", true);
-		model.put("newUser", true);
+
+		Map<String, Object> viewConfig = new HashMap<>();
+		viewConfig.put("newUser", true);
+		viewConfig.put("roleSet", EnumSet.allOf(Role.class));
+		viewConfig.put("allowUserIdChange", true);
+		viewConfig.put("allowPasswordChange", true);
+		viewConfig.put("allowRoleChange", false);
+		viewConfig.put("userSecurityEnabled", config.isUserSecurityEnabled());
+		viewConfig.put("allowShareChange", false);
+		viewConfig.put("showPasswordByDefault", true);
+
+		model.put("config", viewConfig);
 		return model;
 	}
 
