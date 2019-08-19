@@ -140,11 +140,10 @@ public class PerfTestApiController extends BaseController {
 	 * @return success json messages if succeeded.
 	 */
 	@DeleteMapping("/")
-	public Map<String, Object> delete(User user, @RequestParam(defaultValue = "") String ids) {
+	public void delete(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
 		}
-		return returnSuccess();
 	}
 
 	/**
@@ -155,11 +154,10 @@ public class PerfTestApiController extends BaseController {
 	 * @return success json if succeeded.
 	 */
 	@PutMapping(value="/", params = "action=stop")
-	public Map<String, Object> stop(User user, @RequestParam(defaultValue = "") String ids) {
+	public void stop(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));
 		}
-		return returnSuccess();
 	}
 
 	/**
@@ -248,10 +246,10 @@ public class PerfTestApiController extends BaseController {
 	 * @param user     user
 	 * @param perfTest {@link PerfTest}
 	 * @param isClone  true if cloneTo
-	 * @return redirect:/perftest/list
+	 * @return saved perftest
 	 */
-	@PostMapping("/new")
-	public String saveOne(User user, PerfTest perfTest, @RequestParam(defaultValue = "false") boolean isClone) {
+	@PostMapping("/save")
+	public PerfTest saveOne(User user, PerfTest perfTest, @RequestParam(defaultValue = "false") boolean isClone) {
 		validate(user, null, perfTest);
 
 		// Point to the head revision
@@ -260,11 +258,7 @@ public class PerfTestApiController extends BaseController {
 		perfTest.prepare(isClone);
 		perfTest = perfTestService.save(user, perfTest);
 
-		if (perfTest.getStatus() == Status.SAVED || perfTest.getScheduledTime() != null) {
-			return "";
-		} else {
-			return perfTest.getId().toString();
-		}
+		return perfTest;
 	}
 
 	/**
@@ -343,9 +337,8 @@ public class PerfTestApiController extends BaseController {
 	 * @return JSON
 	 */
 	@PostMapping("/{id}/leave_comment")
-	public Map<String, Object> leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
+	public void leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
 		perfTestService.addCommentOn(user, id, cast(params.get("testComment")), cast(params.get("tagString")));
-		return returnSuccess();
 	}
 
 	/**
@@ -731,11 +724,10 @@ public class PerfTestApiController extends BaseController {
 	 * @return json success message if succeeded
 	 */
 	@DeleteMapping("/{id}")
-	public Map<String, Object> delete(User user, @PathVariable("id") Long id) {
+	public void delete(User user, @PathVariable("id") Long id) {
 		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id);
 		perfTestService.delete(user, id);
-		return returnSuccess();
 	}
 
 
@@ -763,9 +755,8 @@ public class PerfTestApiController extends BaseController {
 	 * @return json success message if succeeded
 	 */
 	@PutMapping(value = "/{id}", params = "action=stop")
-	public Map<String, Object> stop(User user, @PathVariable Long id) {
+	public void stop(User user, @PathVariable Long id) {
 		perfTestService.stop(user, id);
-		return returnSuccess();
 	}
 
 	/**

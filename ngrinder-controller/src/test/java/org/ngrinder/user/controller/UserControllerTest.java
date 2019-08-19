@@ -14,20 +14,20 @@
 package org.ngrinder.user.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.ngrinder.common.constant.WebConstants.JSON_SUCCESS;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -162,12 +162,11 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testDuplication() {
-		BaseController ngrinderBaseController = new BaseController();
 		Map<String, Object> returnJson = userApiController.checkDuplication("not-exist");
-		assertThat(returnJson, is(ngrinderBaseController.returnSuccess()));
+		assertTrue((Boolean) returnJson.get(JSON_SUCCESS));
 
 		returnJson = userApiController.checkDuplication(getTestUser().getUserId());
-		assertThat(returnJson, is(ngrinderBaseController.returnError()));
+		assertFalse((Boolean) returnJson.get(JSON_SUCCESS));
 	}
 
 	@Test

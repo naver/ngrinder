@@ -22,8 +22,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
-
 /**
  * Controller which gets the target host system information.
  *
@@ -59,9 +57,9 @@ public class MonitorManagerController extends BaseController {
 	 * @return success if succeeded.
 	 */
 	@RequestMapping("/close")
-	public Map<String, Object> closeMonitorConnection(@RequestParam String ip) {
+	public void closeMonitorConnection(@RequestParam String ip) {
+		// TODO: This API must be called after monitor modal is closed
 		monitorInfoStore.close(ip);
-		return returnSuccess();
 	}
 
 }

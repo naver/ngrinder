@@ -1,6 +1,7 @@
 package org.ngrinder.infra.config;
 
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
+import org.ngrinder.infra.interceptor.DefaultSuccessJsonInterceptor;
 import org.ngrinder.infra.spring.ApiExceptionHandlerResolver;
 import org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver;
 import org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver;
@@ -41,6 +42,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 	@Autowired
 	private LocaleChangeInterceptor localeChangeInterceptor;
+
+	@Autowired
+	private DefaultSuccessJsonInterceptor defaultSuccessJsonInterceptor;
 
 	@Autowired
 	private ResourceProperties resourceProperties = new ResourceProperties();
@@ -92,6 +96,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(localeChangeInterceptor);
+		registry.addInterceptor(defaultSuccessJsonInterceptor);
 	}
 
 	@Bean

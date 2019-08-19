@@ -26,6 +26,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
@@ -73,11 +74,10 @@ public class UserSignUpApiController extends BaseController {
 	 * @return success
 	 */
 	@PostMapping("/save")
-	public Map<String, Object> save(@RequestBody User newUser) {
+	public void save(@RequestBody User newUser) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		newUser.setRole(Role.USER);
 		userService.createUser(newUser);
-		return returnSuccess();
 	}
 
 	/**
@@ -90,6 +90,6 @@ public class UserSignUpApiController extends BaseController {
 	public Map<String, Object> checkDuplicationForRegistration(@PathVariable String userId) {
 		checkTrue(config.isSignUpEnabled(), "Access to this url is not allowed when sign up is disabled");
 		User user = userService.getOne(userId);
-		return user == null ? returnSuccess() : returnError();
+		return buildMap(JSON_SUCCESS, user == null);
 	}
 }
