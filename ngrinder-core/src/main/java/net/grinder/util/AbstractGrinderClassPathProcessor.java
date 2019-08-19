@@ -13,8 +13,9 @@
  */
 package net.grinder.util;
 
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.net.URL;
@@ -22,9 +23,9 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Grinder classpath optimization class.
@@ -211,7 +212,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
 		StringBuilder builder = new StringBuilder();
 		for (URL each : urLs) {
-			builder.append(each.getFile()).append(File.pathSeparator);
+			builder.append(decodePathWithUTF8(each.getFile())).append(File.pathSeparator);
 		}
 		return filterForeMostClassPath(builder.toString(), logger);
 	}
@@ -226,7 +227,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
 		StringBuilder builder = new StringBuilder();
 		for (URL each : urLs) {
-			builder.append(each.getFile()).append(File.pathSeparator);
+			builder.append(decodePathWithUTF8(each.getFile())).append(File.pathSeparator);
 		}
 		return filterPatchClassPath(builder.toString(), logger);
 	}
@@ -242,7 +243,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 
 		StringBuilder builder = new StringBuilder();
 		for (URL each : urls) {
-			builder.append(each.getFile()).append(File.pathSeparator);
+			builder.append(decodePathWithUTF8(each.getFile())).append(File.pathSeparator);
 		}
 		if (builder.length() < 300) {
 			// In case of the URLClassLoader is not activated, Try with system class path

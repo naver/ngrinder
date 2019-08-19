@@ -34,6 +34,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Properties;
 
+import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
@@ -43,7 +44,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * in ngrinder-core is... some The Grinder core class doesn't have public
  * access..
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class LocalScriptTestDriveService {
@@ -241,7 +241,7 @@ public class LocalScriptTestDriveService {
 		StringBuilder runtimeClassPath = new StringBuilder();
 		for (URL url : ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()) {
 			if (url.getPath().contains("ngrinder-runtime") || url.getPath().contains("ngrinder-groovy")) {
-				runtimeClassPath.append(url.getFile()).append(File.pathSeparator);
+				runtimeClassPath.append(decodePathWithUTF8(url.getFile())).append(File.pathSeparator);
 			}
 		}
 		return runtimeClassPath.toString();
