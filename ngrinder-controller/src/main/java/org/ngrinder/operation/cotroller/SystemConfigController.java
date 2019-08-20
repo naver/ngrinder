@@ -13,20 +13,15 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.operation.service.SystemConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * System configuration controller.
  *
- * @author Alex Qin
  * @since 3.1
  */
 @Controller
@@ -34,42 +29,9 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasAnyRole('A')")
 public class SystemConfigController extends BaseController {
 
-	@Autowired
-	private SystemConfigService systemConfigService;
-
-	/**
-	 * Open the system configuration editor.
-	 *
-	 *  @return app
-	 */
 	@GetMapping("")
 	public String systemConfig() {
 		return "app";
 	}
 
-	/**
-	 * Get the system configuration.
-	 *
-	 * @return system configuration
-	 */
-	@ResponseBody
-	@GetMapping(value = "/api")
-	public String getOne() {
-		return systemConfigService.getOne();
-	}
-
-	/**
-	 * Save the system configuration.
-	 *
-	 * @param content system configuration content to be saved
-	 * @return true if succeeded
-	 */
-	@ResponseBody
-	@PostMapping(value = "/api")
-	public void save(@RequestParam String content) {
-		boolean saved = systemConfigService.save(checkNotEmpty(content, "content should be " + "passed as parameter"));
-		if (!saved) {
-			throw new NGrinderRuntimeException("Fail to save new system config");
-		}
-	}
 }
