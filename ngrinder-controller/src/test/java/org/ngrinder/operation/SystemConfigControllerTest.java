@@ -21,14 +21,14 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.operation.cotroller.SystemConfigController;
+import org.ngrinder.operation.cotroller.SystemConfigApiController;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private SystemConfigController controller;
+	private SystemConfigApiController controller;
 
 	@Autowired
 	private SystemConfigService service;

@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,14 +70,13 @@ public class AnnouncementService {
 	 *            file content.
 	 * @return save successfully or not.
 	 */
-	public boolean save(String content) {
+	public void save(String content) {
 		try {
 			FileUtils.writeStringToFile(config.getHome().getSubFile("announcement.conf"), content, "UTF-8");
 			config.loadAnnouncement();
 		} catch (IOException e) {
 			LOGGER.error("Error while writing announcement file.");
-			return false;
+			throw new NGrinderRuntimeException("Error while writing announcement file.");
 		}
-		return true;
 	}
 }
