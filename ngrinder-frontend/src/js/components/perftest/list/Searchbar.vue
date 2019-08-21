@@ -2,7 +2,8 @@
     <div class="search-bar clearfix">
         <div class="float-left">
             <div data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
-                <select2 v-model="selectedTag" :value="selectedTag" @change="$emit('change-tag')" name="tagSelect"
+                <select2 v-model="selectedTag" :value="selectedTag" @change="$emit('change-tag')"
+                         name="tagSelect" ref="tagSelect"
                          :option="{placeholder: i18n('perfTest.action.selectATag'), allowClear: true}">
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
@@ -62,7 +63,12 @@
 
         getUserTags() {
             this.$http.get('/perftest/api/search_tag')
-                .then(res => this.userTags = res.data)
+                .then(res => {
+                    this.userTags = res.data;
+                    this.$nextTick(() => {
+                        this.$refs.tagSelect.selectValue(this.selectedTag);
+                    });
+                })
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error',
                     { content: this.i18n('perfTest.list.tags') })));
         }

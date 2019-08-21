@@ -5,75 +5,59 @@
 
         <search-bar :scripts="scripts" :currentPath="currentPath"></search-bar>
 
-        <table class="table table-striped table-bordered ellipsis">
-            <colgroup>
-                <col width="30">
-                <col width="32">
-                <col width="230">
-                <col>
-                <col width="180">
-                <col width="80">
-                <col width="80">
-                <col width="80">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" class="checkbox" v-model="selectAll" @change="changeSelectAll">
-                    </th>
-                    <th>
-                        <router-link :to="baseDirectory" target="_self">
-                            <img src="/img/up_folder.png"/>
-                        </router-link>
-                    </th>
-                    <th v-text="i18n('script.list.name')"></th>
-                    <th v-text="i18n('script.list.commit')"></th>
-                    <th v-text="i18n('script.list.lastDate')"></th>
-                    <th v-text="i18n('script.list.revision')"></th>
-                    <th v-text="i18n('script.list.size')"></th>
-                    <th v-text="i18n('script.list.download')"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="script in scripts">
-                    <td>
-                        <input v-if="script.fileName !== '..'" type="checkbox" class="checkbox" v-model="script.checked">
-                    </td>
-                    <td>
-                        <i v-if="isEditable(script.fileType , script.path)" class="fa fa-file"></i>
-                        <i v-else-if="script.fileType === 'DIR'" class="fa fa-folder-open"></i>
-                        <i v-else class="fa fa-briefcase"></i>
-                    </td>
-                    <td class="ellipsis">
-                        <router-link v-if="isEditable(script.fileType, script.path)"
-                                     :to="`/script/detail/${script.path}`"
-                                     :title="script.path" target="_self"
-                                     v-text="script.fileName">
-                        </router-link>
-                        <router-link v-else-if="script.fileType === 'DIR'"
-                                     :to="`/script/list/${script.path}`"
-                                     :title="script.path" target="_self"
-                                     v-text="script.fileName">
-                        </router-link>
-                        <a v-else :href="`/script/download/${script.path}`"
-                           :title="script.path" target="_blank"
-                           v-text="script.fileName">
-                        </a>
-                    </td>
-                    <td class="ellipsis" :title="script.description" v-text="script.description"></td>
-                    <td>
-                        <span v-if="!!script.lastModifiedDate">{{ script.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span>
-                    </td>
-                    <td v-text="script.revision"></td>
-                    <td>
-                        <span v-text="script.fileType !== 'DIR' ? getFileSize(script.fileSize) : ''"></span>
-                    </td>
-                    <td class="center">
-                        <i v-if="script.fileType !== 'DIR'" class="pointer-cursor fa fa-download" @click="downloadScript(script.path)"></i>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <vuetable
+            ref="vuetable"
+            data-path="data"
+            pagination-path="pagination"
+            :api-mode="false"
+            :css="table.css.table"
+            :fields="tableFields"
+            :per-page="table.renderingData.pagination.per_page"
+            :data-manager="dataManager"
+            @vuetable:pagination-data="beforePagination">
+
+            <template slot="fileIcon" slot-scope="props">
+                <i v-if="isEditable(props.rowData.fileType , props.rowData.path)" class="fa fa-file"></i>
+                <i v-else-if="props.rowData.fileType === 'DIR'" class="fa fa-folder-open"></i>
+                <i v-else class="fa fa-briefcase"></i>
+            </template>
+
+            <template slot="path" slot-scope="props">
+                <router-link v-if="isEditable(props.rowData.fileType, props.rowData.path)"
+                             :to="`/script/detail/${props.rowData.path}`"
+                             :title="props.rowData.path" target="_self"
+                             v-text="getFileName(props.rowData.path)">
+                </router-link>
+                <router-link v-else-if="props.rowData.fileType === 'DIR'"
+                             :to="`/script/list/${props.rowData.path}`"
+                             :title="props.rowData.path" target="_self"
+                             v-text="getFileName(props.rowData.path)">
+                </router-link>
+                <a v-else :href="`/script/download/${props.rowData.path}`"
+                   :title="props.rowData.path" target="_blank"
+                   v-text="getFileName(props.rowData.path)">
+                </a>
+            </template>
+
+            <template slot="lastModifiedDate" slot-scope="props">
+                <span v-if="!!props.rowData.lastModifiedDate">{{ props.rowData.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span>
+            </template>
+
+            <template slot="fileSize" slot-scope="props">
+                <span v-text="props.rowData.fileType !== 'DIR' ? getFileSize(props.rowData.fileSize) : ''"></span>
+            </template>
+
+            <template slot="download" slot-scope="props">
+                <i v-if="props.rowData.fileType !== 'DIR'" class="pointer-cursor fa fa-download"
+                   @click="downloadScript(props.rowData.path)"></i>
+            </template>
+
+        </vuetable>
+        <vuetable-pagination
+            ref="pagination"
+            :css="table.css.pagination"
+            @vuetable-pagination:change-page="changePage">
+        </vuetable-pagination>
     </div>
 </template>
 
@@ -81,6 +65,10 @@
     import { Mixins } from 'vue-mixin-decorator';
     import { Component, Watch } from 'vue-property-decorator';
     import VueHeadful from 'vue-headful';
+    import _ from 'lodash';
+    import Vuetable from 'vuetable-2';
+    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue';
+    import TableConfig from './mixin/TableConfig.vue';
     import FileType from '../../common/file-type';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import Base from '../Base.vue';
@@ -90,11 +78,23 @@
 
     @Component({
         name: 'scriptList',
-        components: { VueHeadful, SearchBar },
+        components: { VueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
-    export default class ScriptList extends Mixins(Base, MessagesMixin) {
+    export default class ScriptList extends Mixins(Base, MessagesMixin, TableConfig) {
         scripts = [];
-        selectAll = false;
+        table = {
+            css: {},
+            renderingData: {
+                data: [],
+                pagination: {
+                    per_page: 10,
+                },
+            },
+        };
+
+        created() {
+            this.table.css = this.tableCss;
+        }
 
         mounted() {
             this.showProgressBar();
@@ -102,22 +102,33 @@
             this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
         }
 
-        refreshScriptList(callback) {
-            const refresh = scripts => {
-                const list = scripts.map(script => {
-                    script.checked = false;
-                    script.fileName = this.getFileName(script.path);
-                    return script;
-                });
+        dataManager(sortOrder, pagination) {
+            let data = this.scripts;
 
-                this.scripts.splice(0);
-                this.scripts.push(...list);
-                this.selectAll = false;
+            pagination = this.$refs.vuetable.makePagination(data.length);
+
+            if (sortOrder.length > 0) {
+                data = _.orderBy(data, [sortOrder[0].sortField], [sortOrder[0].direction]);
+            }
+
+            return {
+                pagination,
+                data: _.slice(data, pagination.from - 1, pagination.to),
             };
+        }
 
+        changePage(nextPage) {
+            this.$refs.vuetable.changePage(nextPage);
+        }
+
+        beforePagination(paginationData) {
+            this.$refs.pagination.setPaginationData(paginationData);
+        }
+
+        refreshScriptList(callback) {
             if (this.$route.name === 'scriptSearch') {
                 this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
-                    .then(res => refresh(res.data))
+                    .then(res => this.initTableData(res.data))
                     .finally(() => {
                         if (typeof callback === 'function') {
                             callback();
@@ -125,13 +136,22 @@
                     });
             } else {
                 this.$http.get(`/script/api/${this.currentPath}`)
-                    .then(res => refresh(res.data))
+                    .then(res => this.initTableData(res.data))
                     .finally(() => {
                         if (typeof callback === 'function') {
                             callback();
                         }
                     });
             }
+        }
+
+        initTableData(data) {
+            this.scripts = data;
+            this.table.renderingData.data = _.slice(this.scripts, 0, this.table.renderingData.pagination.per_page);
+            this.table.renderingData.pagination.total = this.scripts.length;
+            this.table.renderingData.pagination.last_page =
+                Math.ceil(this.table.renderingData.pagination.total / this.table.renderingData.pagination.per_page);
+            this.$refs.vuetable.setData(this.table.renderingData);
         }
 
         get currentPath() {
@@ -154,10 +174,6 @@
                 (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query)) {
                 this.refreshScriptList();
             }
-        }
-
-        changeSelectAll(event) {
-            this.scripts.forEach(script => script.checked = event.target.checked);
         }
 
         downloadScript(path) {

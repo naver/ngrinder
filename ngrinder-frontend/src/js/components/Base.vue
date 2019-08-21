@@ -103,6 +103,36 @@
             }
         }
 
+        .vuetable {
+            .sort-icon {
+                padding-top: 4px;
+            }
+        }
+
+        .pagination {
+            .page-link {
+                cursor: pointer;
+
+                &.active {
+                    border-color: #007bff;
+                    background: #007bff;
+                    color: #fff;
+
+                    &:hover {
+                        color: #fff;
+                    }
+                }
+            }
+
+            a {
+                &.disabled {
+                    opacity: 0.5;
+                    pointer-events: none;
+                    cursor: default;
+                }
+            }
+        }
+
         .uneditable-input {
             border-color: #ced4da !important;
             background-color: #fff;
@@ -137,12 +167,6 @@
         .form-control {
             display: inline-block;
             padding: 4px 6px;
-        }
-
-        .pagination-sm {
-            .page-link {
-                font-size: 12px;
-            }
         }
 
         .popover {

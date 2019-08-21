@@ -1,19 +1,16 @@
 <template>
     <div id="message-container">
-        <transition name="fade">
-            <div class="message-div alert alert-info"
-                 :class="msgClass"
-                 v-show="showMsgDiv"
-                 v-text="alertMessage"></div>
-        </transition>
-        <transition name="fade">
-            <div class="message-div alert alert-danger error-message-div"
-                 v-show="showErrMsgDiv">
-                <button class="close" @click="close">x</button>
-                <h4 class="alert-heading">ERROR</h4>
-                <span class="error-message" v-text="errMessage"></span>
-            </div>
-        </transition>
+        <div class="message-div alert alert-info"
+             :class="msgClass"
+             v-show="showMsgDiv"
+             v-text="alertMessage">
+        </div>
+        <div class="message-div alert alert-danger error-message-div"
+             v-show="showErrMsgDiv">
+            <button class="close" @click="close">x</button>
+            <h4 class="alert-heading">ERROR</h4>
+            <span class="error-message" v-text="errMessage"></span>
+        </div>
         <transition name="fade">
             <div class="message-div rounded progress-bar progress-bar-striped progress-bar-animated" v-show="showPrgDiv">
                 <div class="w-100" v-text="progressMessage"></div>

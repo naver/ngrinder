@@ -1,17 +1,11 @@
 <template>
-    <transition name="fade">
-        <tr class="small-chart-container" v-show="displayChart">
-            <td class="p-0" colspan="12">
-                <table>
-                    <tr>
-                        <td><div class="small-chart" :id="`tps_${perfTestId}`"></div></td>
-                        <td><div class="small-chart" :id="`mtt_${perfTestId}`"></div></td>
-                        <td><div class="small-chart" :id="`err_${perfTestId}`"></div></td>
-                    </tr>
-                </table>
-            </td>
+    <table class="small-chart-table">
+        <tr>
+            <td><div style="width: 280px; height: 150px;" class="small-chart" :id="`tps_${rowData.id}`"></div></td>
+            <td><div style="width: 280px; height: 150px;" class="small-chart" :id="`mtt_${rowData.id}`"></div></td>
+            <td><div style="width: 280px; height: 150px;" class="small-chart" :id="`err_${rowData.id}`"></div></td>
         </tr>
-    </transition>
+    </table>
 </template>
 
 <script>
@@ -22,9 +16,12 @@
     @Component({
         name: 'smallChart',
         props: {
-            perfTestId: {
-                type: Number,
+            rowData: {
+                type: Object,
                 required: true,
+            },
+            rowIndex: {
+                type: Number,
             },
         },
     })
@@ -34,10 +31,12 @@
         CHART_LEGEND_MARGIN = 1;
         CHART_LEGEND_LOCATION = 'nw';
 
-        displayChart = false;
+        created() {
+            this.showChart();
+        }
 
         showChart() {
-            this.$http.get(`/perftest/api/${this.perfTestId}/graph`, {
+            this.$http.get(`/perftest/api/${this.rowData.id}/graph`, {
                 params: {
                     dataType: 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
                     imgWidth: 100,
@@ -45,24 +44,24 @@
                 },
             }).then(res => {
                 this.initCharts(res.data);
-            }).catch(error => console.log(error));
+            });
         }
 
         initCharts(data) {
             if (data.TPS.labels.length >= 1) {
                 data.TPS.labels[0] = 'TPS';
             }
-            this.makeNewChart(`tps_${this.perfTestId}`, data.TPS.data, data.chartInterval, data.TPS.labels);
+            this.makeNewChart(`tps_${this.rowData.id}`, data.TPS.data, data.chartInterval, data.TPS.labels);
 
             if (data.Mean_Test_Time_ms.labels.length >= 1) {
                 data.Mean_Test_Time_ms.labels[0] = 'MTT';
             }
-            this.makeNewChart(`mtt_${this.perfTestId}`, data.Mean_Test_Time_ms.data, data.chartInterval, data.Mean_Test_Time_ms.labels);
+            this.makeNewChart(`mtt_${this.rowData.id}`, data.Mean_Test_Time_ms.data, data.chartInterval, data.Mean_Test_Time_ms.labels);
 
             if (data.Errors.labels.length >= 1) {
                 data.Errors.labels[0] = 'ERR';
             }
-            this.makeNewChart(`err_${this.perfTestId}`, data.Errors.data, data.chartInterval, data.Errors.labels);
+            this.makeNewChart(`err_${this.rowData.id}`, data.Errors.data, data.chartInterval, data.Errors.labels);
         }
 
         makeNewChart(id, data, interval, labels) {
@@ -73,13 +72,6 @@
                     legend_margin: this.CHART_LEGEND_MARGIN,
                     legend_location: this.CHART_LEGEND_LOCATION,
                 }).plot();
-        }
-
-        toggleDisplay() {
-            this.displayChart = !this.displayChart;
-            if (this.displayChart) {
-                this.showChart();
-            }
         }
     }
 </script>
@@ -96,30 +88,27 @@
 <style lang="less">
     @import '../../../../plugins/jqplot/css/jquery.jqplot.min.css';
 
-    .small-chart-container {
-        .jqplot-table-legend {
+    .small-chart-table {
+        width: 100%;
+
+        &.jqplot-table-legend {
+            left: 32px !important;
+            top: 17px !important;
             width: 20px;
             height: 16px;
             padding-bottom: 0;
         }
 
-        table {
-            width: 100%;
-            &.jqplot-table-legend {
-                left: 32px !important;
-                top: 17px !important;
-            }
+        div.small-chart {
+            border: 1px solid #878988;
+            height: 150px;
+            width: 289px;
+        }
 
-            div.small-chart {
-                border: 1px solid #878988;
-                height: 150px;
-                min-width: 290px;
-            }
-
-            th.small-border {
-                padding-left:3px;
-                padding-right:3px;
-            }
+        th.small-border {
+            padding-left: 3px;
+            padding-right: 3px;
         }
     }
+
 </style>
