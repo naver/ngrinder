@@ -7,218 +7,176 @@
         </div>
 
         <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter" @create="$router.push('/perftest/new')"
-                    @search="getPerfTest" @change-tag="getPerfTest" @delete-selected-tests="deleteTests(selectedTests.toString())"></search-bar>
+                    @search="updateTableWithUrl" @change-tag="updateTableWithUrl" @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))"></search-bar>
+        <vuetable
+            v-show="showTable"
+            ref="vuetable"
+            api-url="/perftest/api/list"
+            data-path="tests"
+            pagination-path=""
+            detail-row-component="small-chart"
+            :append-params="table.appendParams"
+            :query-params="{ sort: 'sort', page: 'page.page', perPage: 'page.size' }"
+            :per-page="table.pagination.perPage"
+            :css="table.css.table"
+            :multi-sort="true"
+            :fields="tableFields"
+            :load-on-start="false"
+            @vuetable:pagination-data="beforePagination"
+            @vuetable:loading="beforeTableLoading"
+            @vuetable:loaded="tableLoaded">
 
-        <table class="table table-bordered ellipsis">
-            <colgroup>
-                <col width="30">
-                <col width="50">
-                <col>
-                <col>
-                <col width="70">
-                <col v-if="ngrinder.config.clustered" width="70">
-                <col width="130">
-                <col width="80">
-                <col width="65">
-                <col width="65">
-                <col width="70">
-                <col width="65">
-                <col width="60">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" v-model="selectAll" class="checkbox" @change="changeSelectAll">
-                    </th>
-                    <th class="center status" data-step="4" :data-intro="i18n('intro.list.perftest.status')">
-                        <span v-text="i18n('common.label.status')"></span>
-                    </th>
-                    <th>
-                        <span v-text="i18n('perfTest.list.testName')"></span>
-                    </th>
-                    <th>
-                        <span v-text="i18n('perfTest.list.scriptName')"></span>
-                    </th>
-                    <th>
-                        <span v-if="isAdmin" v-text="i18n('perfTest.list.owner')"></span>
-                        <span v-else v-text="i18n('perfTest.list.modifier.oneLine')"></span>
-                    </th>
-                    <th v-if="ngrinder.config.clustered">
-                        <span v-text="i18n('common.region')"></span>
-                    </th>
-                    <th>
-                        <span v-text="i18n('perfTest.list.startTime')"></span>
-                    </th>
-                    <th>
-                        <span class="ellipsis"></span>
-                        <span v-text="i18n('perfTest.list.threshold')"></span>
-                    </th>
-                    <th>
-                        <span v-text="i18n('perfTest.list.tps')"></span>
-                    </th>
-                    <th :title="i18n('perfTest.list.meantime')" v-text="'MIT'"></th>
-                    <th class="ellipsis">
-                        <span v-text="i18n('perfTest.list.errorRate')"></span>
-                    </th>
-                    <th class="nothing small-border">
-                        <span v-text="i18n('perfTest.list.vusers')"></span>
-                    </th>
-                    <th data-step="5" :data-intro="i18n('intro.list.perftest.actions')">
-                        <span v-text="i18n('common.label.actions')"></span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <template v-for="(test, index) in tests">
-                    <tr>
-                        <td class="center">
-                            <input type="checkbox" v-model="selectedTests" :value="test.id" :disabled="!test.deletable">
-                        </td>
-                        <td class="center">
-                            <a class="ball"
-                               data-toggle="popover"
-                               data-html="true"
-                               data-trigger="hover"
-                               :id="`ball_${test.id}`"
-                               :title="test.status"
-                               :data-content="`${test.progressMessage}<br><b>${test.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
-                               <img :src="`/img/ball/${test.status.iconName}`">
-                            </a>
-                        </td>
-                        <td class="ellipsis">
-                            <div class="ellipsis"
-                                 data-toggle="popover"
-                                 data-html="true"
-                                 data-trigger="hover"
-                                 :title="test.testName"
-                                 :data-content="getTestNamePopoverContent(test).replace(/\n/g, '<br>')">
-                                <router-link :to="`/perftest/${test.id}`" target="_self" v-text="test.testName"></router-link>
-                            </div>
-                        </td>
-                        <td class="ellipsis">
-                            <div class="ellipsis"
-                                 data-toggle="popover"
-                                 data-html="true"
-                                 data-trigger="hover"
-                                 :title="i18n('perfTest.list.scriptName')"
-                                 :data-content="`${test.scriptName}<br> - ${i18n('script.list.revision')} : ${(test.scriptRevision)}`">
-                                <a v-if="isAdmin" :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}&ownerId=${(test.createdUser.userId)}`" v-text="test.scriptName"></a>
-                                <a v-else :href="`/script/detail/${test.scriptName}?r=${(test.scriptRevision)}`" v-text="test.scriptName"></a>
-                            </div>
-                        </td>
-                        <td>
-                           <div class="ellipsis"
-                                data-toggle="popover"
-                                data-html="true"
-                                data-trigger="hover"
-                                :title="i18n('perfTest.list.participants')"
-                                :data-content="getOwnerPopoverContent(test).replace(/\n/g, '<br>')">
-                                <span v-if="isAdmin" v-text="test.createdUser.userName"></span>
-                                <span v-else v-text="test.lastModifiedUser.userName"></span>
-                            </div>
-                        </td>
-                        <td v-if="ngrinder.config.clustered" class="ellipsis" :title="i18n('common.region')" data-html="true">
-                            <span v-text="test.region"></span>
-                        </td>
-                        <td>
-                            <span v-if="test.startTime">{{ test.startTime | dateFormat('YYYY-MM-DD HH:mm') }}</span>
-                        </td>
-                        <td>
-                            <div v-if="test.threshold === 'D'" :title="i18n('perfTest.list.duration')" v-text="test.duration"></div>
-                            <div v-else v-text="test.runCount" :title="i18n('perfTest.list.runCount')"></div>
-                        </td>
-                        <td>
-                            <span v-if="$utils.exists(test.tps)" v-text="test.tps.toFixed(1)"></span>
-                        </td>
-                        <td>
-                            <span v-if="$utils.exists(test.meanTestTime)" v-text="test.meanTestTime.toFixed(1)"></span>
-                        </td>
-                        <td>
-                            <div class="ellipsis"
-                                 data-toggle="popover"
-                                 data-html="true"
-                                 data-trigger="hover"
-                                 data-placement="top"
-                                 :data-content="getErrorRatePopoverContent(test)"
-                                 v-text="getErrorRate(test.tests, test.errors)">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="ellipsis"
-                                 data-toggle="popover"
-                                 data-html="true"
-                                 data-trigger="hover"
-                                 data-placement="left"
-                                 :data-content="getVuserPopoverContent(test)"
-                                 v-text="(test.vuserPerAgent) * (test.agentCount)">
-                            </div>
-                        </td>
-                        <td class="center">
-                            <i v-if="test.status.reportable" @click="showChart(index)" :title="i18n('perfTest.action.showChart')" class="fa fa-line-chart pointer-cursor"></i>
-                            <i v-if="test.status.deletable" @click="deleteTests(test.id)" :title="i18n('common.button.delete')" class="fa fa-remove pointer-cursor"></i>
-                            <i v-if="test.status.stoppable" @click="stopTest(test.id)" :title="i18n('common.button.stop')" class="fa fa-stop pointer-cursor"></i>
-                        </td>
-                    </tr>
-                    <small-chart ref="smallChart" :key="test.id" :perfTestId="test.id"></small-chart>
-                </template>
-            </tbody>
-        </table>
-        <intro-button></intro-button>
-        <div v-show="totalElements > 0">
-            <paginate
-                pageClass="page-item"
-                prevClass="page-item"
-                nextClass="page-item"
-                pageLinkClass="page-link"
-                prevLinkClass="page-link"
-                nextLinkClass="page-link"
-                containerClass="pagination"
-                ref="perftestPaginate"
-                v-model="currentPage"
-                :page-count="totalActivationPageCount"
-                :page-range="COUNT_OF_TEST_PER_PAGE"
-                :click-handler="changeActivationPage"
-                :prev-text="`← ${i18n('common.paging.previous')}`"
-                :next-text="`${i18n('common.paging.next')} →`">
-            </paginate>
-        </div>
+            <template slot="status" slot-scope="props">
+                <a class="ball"
+                   data-toggle="popover"
+                   data-html="true"
+                   data-trigger="hover"
+                   :id="`ball_${props.rowData.id}`"
+                   :title="props.rowData.status.name"
+                   :data-content="`${props.rowData.progressMessage}<br><b>${props.rowData.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
+                    <img :src="`/img/ball/${props.rowData.status.iconName}`">
+                </a>
+            </template>
+
+            <template slot="testName" slot-scope="props">
+                <div class="ellipsis testName"
+                     data-toggle="popover"
+                     data-html="true"
+                     data-trigger="hover"
+                     :title="props.rowData.testName"
+                     :data-content="getTestNamePopoverContent(props.rowData).replace(/\n/g, '<br>')">
+                    <router-link :to="`/perftest/${props.rowData.id}`" target="_self" v-text="props.rowData.testName"></router-link>
+                </div>
+            </template>
+
+            <template slot="scriptName" slot-scope="props">
+                <div class="ellipsis scriptName"
+                     data-toggle="popover"
+                     data-html="true"
+                     data-trigger="hover"
+                     :title="i18n('perfTest.list.scriptName')"
+                     :data-content="`${props.rowData.scriptName}<br> - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
+                    <a v-if="isAdmin"
+                       :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUserId)}`"
+                       v-text="props.rowData.scriptName"></a>
+                    <a v-else :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}`"
+                       v-text="props.rowData.scriptName"></a>
+                </div>
+            </template>
+
+            <template slot="createUser" slot-scope="props">
+                <div class="createUser" v-text="props.rowData.createdUser.userName"></div>
+            </template>
+
+            <template slot="threshold" slot-scope="props">
+                <div v-if="props.rowData.threshold === 'D'" :title="i18n('perfTest.list.duration')" v-text="props.rowData.duration"></div>
+                <div v-else v-text="props.rowData.runCount" :title="i18n('perfTest.list.runCount')"></div>
+            </template>
+
+            <template slot="startTime" slot-scope="props">
+                <div class="startTime">
+                    <div v-if="props.rowData.startTime">{{ props.rowData.startTime | dateFormat('YYYY-MM-DD HH:mm') }}</div>
+                </div>
+            </template>
+
+            <template slot="tps" slot-scope="props">
+                <div class="tps">
+                    <div v-if="$utils.exists(props.rowData.tps)" v-text="props.rowData.tps.toFixed(1)"></div>
+                </div>
+            </template>
+
+            <template slot="meanTestTime" slot-scope="props">
+                <div class="meanTestTime">
+                    <div v-if="$utils.exists(props.rowData.meanTestTime)" v-text="props.rowData.meanTestTime.toFixed(1)"></div>
+                </div>
+            </template>
+
+            <template slot="errorRate" slot-scope="props">
+                <div class="ellipsis errorRate"
+                     data-toggle="popover"
+                     data-html="true"
+                     data-trigger="hover"
+                     data-placement="top"
+                     :data-content="getErrorRatePopoverContent(props.rowData)"
+                     v-text="getErrorRate(props.rowData.tests, props.rowData.errors)">
+                </div>
+            </template>
+
+            <template slot="vuser" slot-scope="props">
+                <div class="ellipsis"
+                     data-toggle="popover"
+                     data-html="true"
+                     data-trigger="hover"
+                     data-placement="left"
+                     :data-content="getVuserPopoverContent(props.rowData)"
+                     v-text="(props.rowData.vuserPerAgent) * (props.rowData.agentCount)">
+                </div>
+            </template>
+
+            <template slot="actions" slot-scope="props">
+                <i v-if="props.rowData.status.reportable" @click="showChart(props.rowData.id)"
+                   :title="i18n('perfTest.action.showChart')" class="fa fa-line-chart pointer-cursor"></i>
+                <i v-if="props.rowData.status.deletable" @click="deleteTests(props.rowData.id)"
+                   :title="i18n('common.button.delete')" class="fa fa-remove pointer-cursor"></i>
+                <i v-if="props.rowData.status.stoppable" @click="stopTest(props.rowData.id)"
+                   :title="i18n('common.button.stop')" class="fa fa-stop pointer-cursor"></i>
+            </template>
+
+        </vuetable>
+        <vuetable-pagination
+            ref="pagination"
+            :css="table.css.pagination"
+            @vuetable-pagination:change-page="changePage">
+        </vuetable-pagination>
     </div>
 </template>
 
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import { Component, Watch } from 'vue-property-decorator';
-    import Paginate from 'vuejs-paginate';
+    import { Component } from 'vue-property-decorator';
+    import Vuetable from 'vuetable-2';
+    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue';
     import vueHeadful from 'vue-headful';
+    import Vue from 'vue';
 
     import Base from '../../Base.vue';
     import SearchBar from './Searchbar.vue';
     import IntroButton from '../../common/IntroButton.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import SmallChart from './SmallChart.vue';
+    import TableConfig from './mixin/TableConfig.vue';
+
+    Vue.component('small-chart', SmallChart);
 
     @Component({
         name: 'perfTestList',
-        components: { IntroButton, vueHeadful, SearchBar, SmallChart, Paginate },
+        components: { IntroButton, vueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
-    export default class PerfTestList extends Mixins(Base, MessagesMixin) {
-        COUNT_OF_TEST_PER_PAGE = 10;
-
-        totalActivationPageCount = 1;
-        currentPage = 0;
+    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig) {
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
-        totalElements = 0;
         tests = [];
         autoUpdateTargets = [];
-        selectAll = false;
-        selectedTests = [];
         queryFilter = new Set();
-        selectedTag = '';
+        sort = 'id,DESC';
 
+        table = {
+            css: {},
+            appendParams: {},
+            pagination: {
+                perPage: 10,
+            },
+        };
+
+        showTable = false;
         updateStatusTimeoutId = 0;
 
+        created() {
+            this.table.css = this.tableCss;
+        }
+
         mounted() {
-            this.getPerfTest({ showErrorMsg: true });
+            this.initByQueryParams();
+            this.$refs.vuetable.reload().then(() => this.showTable = true);
             this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
         }
 
@@ -226,26 +184,81 @@
             clearTimeout(this.updateStatusTimeoutId);
         }
 
-        @Watch('tests')
-        watchTests() {
+        initByQueryParams() {
+            this.$refs.searchBar.searchText = this.$route.query.query || '';
+            this.$refs.searchBar.selectedTag = this.$route.query.tag || '';
+            if (this.$route.query.queryFilter) {
+                const queryFilters = this.$route.query.queryFilter.split('');
+                queryFilters.forEach(filterToken => {
+                    if (filterToken === 'R') {
+                        this.$refs.searchBar.running = true;
+                    }
+                    if (filterToken === 'S') {
+                        this.$refs.searchBar.scheduled = true;
+                    }
+                    this.queryFilter.add(filterToken);
+                });
+            }
+            this.$refs.vuetable.currentPage = parseInt(this.$route.query['page.page']) || 1;
+            this.table.pagination.perPage = parseInt(this.$route.query['page.size']) || this.table.pagination.perPage;
+            this.sort = this.$route.query.sort || this.sort;
+        }
+
+        changePage(nextPage) {
+            this.$refs.vuetable.changePage(nextPage);
+            history.replaceState('', '', this.makeQueryString(this.$refs.vuetable.currentPage, this.table.pagination.perPage,
+                this.$refs.searchBar.searchText, this.makeQueryFilter(), this.sort, this.$refs.searchBar.selectedTag));
+        }
+
+        transform(data) {
+            this.tests = data.tests;
+            console.log(this.tests);
+            return data;
+        }
+
+        beforePagination(paginationData) {
+            paginationData.total = paginationData.totalElements;
+            paginationData.last_page = Math.ceil(paginationData.total / this.table.pagination.perPage);
+            paginationData.per_page = this.table.pagination.perPage;
+            paginationData.current_page = this.$refs.vuetable.currentPage;
+            this.$refs.pagination.setPaginationData(paginationData);
+        }
+
+        beforeTableLoading() {
+            this.table.appendParams['page.page'] = this.$refs.vuetable.currentPage - 1;
+            this.table.appendParams['page.size'] = this.table.pagination.perPage;
+            this.table.appendParams.queryFilter = this.makeQueryFilter();
+            this.table.appendParams.query = this.$refs.searchBar.searchText;
+            this.table.appendParams.tag = this.$refs.searchBar.selectedTag;
+            if (this.$refs.vuetable.getSortParam()) {
+                this.sort = this.$refs.vuetable.getSortParam().split('|').join(',');
+            }
+            this.table.appendParams.sort = this.sort;
+        }
+
+        tableLoaded() {
             this.autoUpdateTargets = [];
             this.tests.forEach((test, index) => {
                 if (!this.isFinishedStatusType(test)) {
                     this.autoUpdateTargets.push({ 'id': test.id, 'index': index });
                 }
             });
+            this.$nextTick(() => $('[data-toggle="popover"]').popover());
+        }
+
+        updateTableWithUrl() {
+            history.replaceState('', '', this.makeQueryString(1, this.table.pagination.perPage, this.$refs.searchBar.searchText,
+                this.makeQueryFilter(), this.sort, this.$refs.searchBar.selectedTag));
+            this.$refs.vuetable.refresh();
+        }
+
+        makeQueryString(page, pageSize, query, queryFilter, sort, tag) {
+            return `/perftest?page.page=${page}&page.size=${pageSize}&query=${query}&queryFilter=${queryFilter}&sort=${sort}&tag=${tag}`;
         }
 
         isFinishedStatusType(test) {
-            return test.status.name === 'FINISHED' || test.status.name === 'STOP_BY_ERROR' || test.status.name === 'STOP_ON_ERROR' || test.status.name === 'CANCELED';
-        }
-
-        changeSelectAll(event) {
-            if (event.target.checked) {
-                this.tests.forEach(test => this.selectedTests.push(test.id));
-            } else {
-                this.selectedTests = [];
-            }
+            return test.status.name === 'FINISHED' || test.status.name === 'STOP_BY_ERROR' ||
+                test.status.name === 'STOP_ON_ERROR' || test.status.name === 'CANCELED';
         }
 
         getOwnerPopoverContent(test) {
@@ -281,48 +294,23 @@
             return content;
         }
 
-        getPerfTest(options) {
-            this.$http.get('/perftest/api/list', {
-                params: {
-                    'page.page': this.currentPage - 1,
-                    'page.size': this.COUNT_OF_TEST_PER_PAGE,
-                    'query': this.$refs.searchBar.searchText,
-                    'queryFilter': this.makeQueryFilter(),
-                    'tag': this.$refs.searchBar.selectedTag,
-                },
-            }).then(res => {
-                this.tests = res.data.tests;
-                this.totalElements = res.data.totalElements;
-                this.totalActivationPageCount = Math.ceil(this.totalElements / this.COUNT_OF_TEST_PER_PAGE);
-                this.$nextTick(this.initPopover);
-            }).catch(() => {
-                if (options && options.showErrorMsg) {
-                    this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') }));
-                }
-            });
-        }
-
-        initPopover() {
-            $('[data-toggle="popover"]').popover();
-        }
-
         getErrorRate(tests, errors) {
             if (!this.$utils.exists(tests) || !this.$utils.exists(errors)) {
                 return '';
             }
-            return `${(errors / (tests + errors) * 100).toFixed(1)}%`;
-        }
 
-        changeActivationPage(page) {
-            this.selectAll = false;
-            this.selectedTests = [];
-            this.currentPage = page;
-            this.getPerfTest();
+            if (tests === 0 && errors === 0) {
+                return '0.0%';
+            }
+
+            return `${(errors / (tests + errors) * 100).toFixed(1)}%`;
         }
 
         runQueryFilter(queryFilter) {
             queryFilter.enable ? this.queryFilter.add(queryFilter.token) : this.queryFilter.delete(queryFilter.token);
-            this.getPerfTest();
+            history.replaceState('', '', this.makeQueryString(0, this.table.pagination.perPage, this.$refs.searchBar.searchText,
+                this.makeQueryFilter(), this.sort, this.$refs.searchBar.selectedTag));
+            this.$refs.vuetable.refresh();
         }
 
         makeQueryFilter() {
@@ -346,9 +334,8 @@
                             },
                         }).then(res => {
                             if (res.data.success) {
-                                this.getPerfTest();
-                                this.selectAll = false;
                                 this.showSuccessMsg(this.i18n('perfTest.message.delete.success'));
+                                this.$refs.vuetable.refresh();
                             }
                         }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.delete.error')));
                     }
@@ -376,7 +363,7 @@
         }
 
         showChart(index) {
-            this.$refs.smallChart[index].toggleDisplay();
+            this.$refs.vuetable.toggleDetailRow(index);
         }
 
         updatePerftestStatus() {
@@ -390,7 +377,7 @@
                     const status = res.data.status.reverse();
                     this.autoUpdateTargets.forEach((target, index) => {
                         if (status[index].reportable) {
-                            this.getPerfTest();
+                            this.$refs.vuetable.refresh();
                         }
                         this.tests[target.index].status.iconName = status[index].icon;
                         this.tests[target.index].status.reportable = status[index].reportable;
@@ -413,6 +400,8 @@
 
 <style lang="less" scoped>
     .perftest-list-container {
+        margin-bottom: 80px;
+
         .img-unit {
             background-image: url('/img/bg_perftest_banner_en.png');
             height: 110px;
@@ -438,6 +427,18 @@
                     width: 23px;
                     height: 23px;
                 }
+            }
+
+            .testName, .scriptName {
+                width: 90px;
+            }
+
+            .startTime {
+                width: 110px;
+            }
+
+            .tps, .meanTestTime {
+                width: 45px;
             }
         }
 

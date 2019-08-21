@@ -33,7 +33,7 @@
                                    class="ml-1 form-control" :title="i18n('script.info.name')"
                                    data-toggle="popover"
                                    data-trigger="focus"
-                                   data-placement="right"
+                                   data-placement="bottom"
                                    ref="fileName"
                                    :data-content="i18n('script.info.name.help')"
                                    v-model="fileName"
@@ -142,6 +142,9 @@
                 .then(res => {
                     this.handlers = res.data;
                     this.scriptHandler = this.handlers[0];
+                    this.$nextTick(() => {
+                        $('[data-toggle="popover"]').popover();
+                    });
                 });
         }
 
