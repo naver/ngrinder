@@ -21,9 +21,7 @@ import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -51,8 +49,8 @@ public class UserController extends BaseController {
 	 *
 	 * @return app
 	 */
+	@GetMapping({"", "/"})
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping({"", "/"})
 	public String userList(User user) {
 		return "app";
 	}
@@ -62,7 +60,7 @@ public class UserController extends BaseController {
 	 *
 	 * @return app
 	 */
-	@RequestMapping("/new")
+	@GetMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String openForm(User user) {
 		return "app";
@@ -75,7 +73,7 @@ public class UserController extends BaseController {
 	 * @param userId user to get
 	 * @return app
 	 */
-	@RequestMapping("/{userId}")
+	@GetMapping("/{userId}")
 	@PreAuthorize("hasAnyRole('A')")
 	public String userDetail(User user, @PathVariable final String userId) {
 		return "app";
@@ -89,7 +87,7 @@ public class UserController extends BaseController {
 	 * @param response response
 	 * @return redirect:/perftest/
 	 */
-	@RequestMapping("/switch")
+	@GetMapping("/switch")
 	public String switchUser(User user,
 							 @RequestParam(defaultValue = "") String to,
 							 HttpServletRequest request, HttpServletResponse response) {

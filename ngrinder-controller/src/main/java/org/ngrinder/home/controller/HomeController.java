@@ -29,7 +29,7 @@ import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
@@ -72,7 +72,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	 * @param request   request
 	 * @return "index" if already logged in. Otherwise "login".
 	 */
-	@RequestMapping(value = {"/home", "/"})
+	@GetMapping({"/home", "/"})
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
 					   @RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
 					   HttpServletResponse response, HttpServletRequest request) {
@@ -118,7 +118,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	 * @return region list
 	 */
 	@ResponseBody
-	@RequestMapping("/check/healthcheck")
+	@GetMapping("/check/healthcheck")
 	public Map<String, Object> healthCheck(HttpServletResponse response) {
 		if (getConfig().hasShutdownLock()) {
 			try {
@@ -143,7 +143,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	 * @return region list
 	 */
 	@ResponseBody
-	@RequestMapping("/check/healthcheck_slow")
+	@GetMapping("/check/healthcheck_slow")
 	public Map<String, Object> healthCheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
 												HttpServletResponse response) {
 		ThreadUtils.sleep(sleep);
@@ -166,7 +166,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	 * @param model model
 	 * @return "login" if not logged in. Otherwise, "/"
 	 */
-	@RequestMapping(value = "/login")
+	@GetMapping("/login")
 	public String login(ModelMap model) {
 		try {
 			getCurrentUser();

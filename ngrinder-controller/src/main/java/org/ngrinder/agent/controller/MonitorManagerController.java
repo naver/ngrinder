@@ -19,6 +19,7 @@ import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/monitor")
 public class MonitorManagerController extends BaseController {
+
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
@@ -40,7 +42,7 @@ public class MonitorManagerController extends BaseController {
 	 * @param ip    target host IP
 	 * @return monitor/info
 	 */
-	@RequestMapping("/info")
+	@GetMapping("/info")
 	public String getMonitor(ModelMap model, @RequestParam String ip) {
 		String[] addresses = StringUtils.split(ip, ":");
 		if (addresses.length > 0) {
@@ -56,7 +58,7 @@ public class MonitorManagerController extends BaseController {
 	 * @param ip target host IP
 	 * @return success if succeeded.
 	 */
-	@RequestMapping("/close")
+	@GetMapping("/close")
 	public void closeMonitorConnection(@RequestParam String ip) {
 		// TODO: This API must be called after monitor modal is closed
 		monitorInfoStore.close(ip);
