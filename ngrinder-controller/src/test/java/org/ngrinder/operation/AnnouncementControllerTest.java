@@ -19,14 +19,14 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.operation.cotroller.AnnouncementController;
+import org.ngrinder.operation.cotroller.AnnouncementApiController;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AnnouncementControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private AnnouncementController controller;
+	private AnnouncementApiController controller;
 
 	@Autowired
 	private AnnouncementService service;
