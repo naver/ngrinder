@@ -43,7 +43,7 @@
         }
 
         getAnnouncement() {
-            this.$http.get('/announcement/api')
+            this.$http.get('/operation/announcement/api')
                 .then(res => this.setAnnouncement(res.data))
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('announcement.title') })));
         }
