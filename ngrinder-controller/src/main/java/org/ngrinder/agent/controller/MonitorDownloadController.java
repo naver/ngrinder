@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -38,7 +39,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * @since 3.0
  */
 @Controller
-@RequestMapping("/monitor")
+@RequestMapping("/monitor/download")
 public class MonitorDownloadController extends BaseController {
 
 	@Autowired
@@ -58,7 +59,7 @@ public class MonitorDownloadController extends BaseController {
 	 * @param response response.
 	 */
 
-	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-_]+}")
+	@GetMapping("/{fileName:[a-zA-Z0-9\\.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
 		File home = getConfig().getHome().getDownloadDirectory();
 		File monitorFile = new File(home, fileName);
@@ -68,7 +69,7 @@ public class MonitorDownloadController extends BaseController {
 	/**
 	 * Download monitor.
 	 */
-	@RequestMapping(value = "/download")
+	@GetMapping("")
 	public String download(ModelMap model) {
 		try {
 			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, (URLClassLoader) getClass().getClassLoader(),

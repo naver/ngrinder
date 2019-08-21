@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -38,7 +39,7 @@ public class DevController extends BaseController {
 	 * @param model model
 	 * @return "redirect:/"
 	 */
-	@RequestMapping("/msg")
+	@GetMapping("/msg")
 	public String refreshMessage(ModelMap model) {
 		messageSource.clearCacheIncludingAncestors();
 		model.clear();

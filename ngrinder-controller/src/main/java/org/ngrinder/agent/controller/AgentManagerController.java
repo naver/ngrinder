@@ -17,6 +17,7 @@ import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,7 +35,7 @@ public class AgentManagerController extends BaseController {
 	/**
 	 * Agents list
 	 */
-	@RequestMapping({"", "/", "/list"})
+	@GetMapping({"", "/", "/list"})
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public String getAll(final User user) {
 		return "app";
@@ -47,7 +48,7 @@ public class AgentManagerController extends BaseController {
 	 * @param id    agent id
 	 * @return agent/agentDetail
 	 */
-	@RequestMapping("/{id}")
+	@GetMapping("/{id}")
 	public String getOne(final User user, @PathVariable Long id) {
 		return "app";
 	}
