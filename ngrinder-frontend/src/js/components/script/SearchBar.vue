@@ -63,7 +63,7 @@
                                 </template>
                             </td>
                             <td>
-                                <button class="pointer-cursor btn btn-danger float-right" @click="deleteFile">
+                                <button class="pointer-cursor btn btn-danger float-right" @click="$emit('deleteFile')">
                                     <i class="fa fa-remove mr-1"></i>
                                     <span v-text="i18n('script.action.delete')"></span>
                                 </button>
@@ -93,10 +93,6 @@
                 type: String,
                 required: true,
             },
-            scripts: {
-                type: Array,
-                required: true,
-            },
         },
         components: { CreateScriptModal, CreateFolderModal, UploadFileModal },
     })
@@ -119,34 +115,6 @@
 
                 $('#folderName').popover({ trigger: 'focus' });
             });
-        }
-
-        deleteFile() {
-            const checkedScripts = this.scripts.filter(script => script.checked);
-            if (checkedScripts.length === 0) {
-                this.$bootbox.alert({
-                    message: this.i18n('script.message.delete.alert'),
-                    buttons: {
-                        ok: { label: this.i18n('common.button.ok') },
-                    },
-                });
-            } else {
-                this.$bootbox.confirm({
-                    message: this.i18n('script.message.delete.confirm'),
-                    buttons: {
-                        confirm: { label: this.i18n('common.button.ok') },
-                        cancel: { label: this.i18n('common.button.cancel') },
-                    },
-                    callback: result => {
-                        if (!result) {
-                            return;
-                        }
-
-                        this.$http.post('/script/api/delete', checkedScripts.map(file => file.path))
-                            .then(() => this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST));
-                    },
-                });
-            }
         }
 
         search() {

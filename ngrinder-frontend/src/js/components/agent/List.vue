@@ -36,123 +36,137 @@
                 </div>
             </div>
         </div>
-        <table class="table table-striped table-bordered">
-            <colgroup>
-                <col width="30">
-                <col width="80">
-                <col width="130">
-                <col width="60">
-                <col width="*">
-                <col width="100">
-                <col width="150">
-                <col width="160">
-            </colgroup>
-            <thead>
-            <tr>
-                <th class="no-click nothing">
-                    <input type="checkbox" class="checkbox" v-model="selectAll" @change="changeSelectAll">
-                </th>
-                <th v-text="i18n('agent.list.state')"></th>
-                <th v-text="i18n('agent.list.IPAndDns')"></th>
-                <th v-text="i18n('agent.list.port')"></th>
-                <th class="ellipsis" v-text="i18n('agent.list.name')"></th>
-                <th v-text="i18n('agent.list.version')"></th>
-                <th v-text="i18n('agent.list.region')"></th>
-                <th v-text="i18n('agent.list.approved')"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <template v-show="agents.length > 0">
-                <tr v-for="agent in agents">
-                    <td class="center">
-                        <input type="checkbox" class="agent-state checkbox" v-model="selectedAgents" :value="agent.id">
-                    </td>
-                    <td class="center">
-                        <div class="ball" data-html="true" rel="popover">
-                            <img class="status" :src="`/img/ball/${agent.state.iconName}`"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="ellipsis" :title="agent.ip">
-                            <router-link :to="{ name: 'agentDetail', params: { agentId: `${agent.id}` , agentProp: agent } }"
-                                         :value="agent.ip" v-text="agent.ip">
-                            </router-link>
-                        </div>
-                    </td>
-                    <td v-text="agent.port"></td>
-                    <td class="ellipsis" :title="agent.hostName" v-text="agent.hostName"></td>
-                    <td class="ellipsis" v-text="agent.version || 'Prior to 3.3'"></td>
-                    <td class="ellipsis" :title="agent.region" v-text="agent.region"></td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="btn btn-primary disapproved"
-                                    :class="{ active: !agent.approved }"
-                                    v-text="i18n('agent.list.disapproved')" @click="disapprove(agent)">
-                            </button>
-                            <button class="btn btn-primary approved"
-                                    :class="{ active: agent.approved }"
-                                    v-text="i18n('agent.list.approved')" @click="approve(agent)">
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+        <vuetable
+            ref="vuetable"
+            data-path="data"
+            pagination-path="pagination"
+            :api-mode="false"
+            :css="table.css.table"
+            :fields="tableFields"
+            :per-page="table.renderingData.pagination.perPage"
+            :data-manager="dataManager"
+            @vuetable:pagination-data="beforePagination">
+
+            <template slot="state" slot-scope="props">
+                <div class="ball" data-html="true" rel="popover">
+                    <img class="status" :src="`/img/ball/${props.rowData.state.iconName}`"/>
+                </div>
             </template>
-            <tr v-show="agents.length === 0">
-                <td colspan="8" class="center" v-text="i18n('common.message.noData')"></td>
-            </tr>
-            </tbody>
-        </table>
-        <!-- TODO: Paginate using datatables -->
+
+            <template slot="domain" slot-scope="props">
+                <router-link :to="{ name: 'agentDetail', params: { agentId: props.rowData.id, agentProp: props.rowData } }"
+                             :value="props.rowData.ip" v-text="props.rowData.ip">
+                </router-link>
+            </template>
+
+            <template slot="approved" slot-scope="props">
+                <div class="btn-group">
+                    <button class="btn btn-primary disapproved"
+                            :class="{ active: !props.rowData.approved }"
+                            v-text="i18n('agent.list.disapproved')" @click="disapprove(props.rowData)">
+                    </button>
+                    <button class="btn btn-primary approved"
+                            :class="{ active: props.rowData.approved }"
+                            v-text="i18n('agent.list.approved')" @click="approve(props.rowData)">
+                    </button>
+                </div>
+            </template>
+
+        </vuetable>
+        <vuetable-pagination
+            ref="pagination"
+            :css="table.css.pagination"
+            @vuetable-pagination:change-page="changePage">
+        </vuetable-pagination>
     </div>
 </template>
 
 <script>
     import Component from 'vue-class-component';
     import { Mixins } from 'vue-mixin-decorator';
+    import _ from 'lodash';
+    import Vuetable from 'vuetable-2';
+    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue';
     import Base from '../Base.vue';
+    import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'agentList',
+        components: { Vuetable, VuetablePagination },
     })
-    export default class AgentList extends Mixins(Base, MessagesMixin) {
+    export default class AgentList extends Mixins(Base, MessagesMixin, TableConfig) {
+        agents = [];
         regions = [];
         region = '';
 
-        agents = [];
-
         downloadLink = '';
-
-        page = {
-            number: 1,
-            totalPages: 1,
-            size: 10,
-        };
-
-        selectAll = false;
-        selectedAgents = [];
-
         updateStatesTimer = null;
 
+        table = {
+            css: {},
+            renderingData: {
+                data: [],
+                pagination: {
+                    perPage: 10,
+                },
+            },
+        };
+
         created() {
+            this.table.css = this.tableCss;
+        }
+
+        mounted() {
             this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
             this.region = this.$route.query.region || this.region;
-
             this.updateDownloadLink();
-            this.updateStates();
+            this.updateStates(true);
         }
 
         beforeDestroy() {
             clearTimeout(this.updateStatesTimer);
         }
 
+        dataManager(sortOrder) {
+            let data = this.agents;
+            const pagination = this.$refs.vuetable.makePagination(data.length);
+
+            if (sortOrder.length > 0) {
+                data = _.orderBy(data, [sortOrder[0].sortField], [sortOrder[0].direction]);
+            }
+
+            return {
+                pagination,
+                data: _.slice(data, pagination.from - 1, pagination.to),
+            };
+        }
+
+        changePage(nextPage) {
+            this.$refs.vuetable.changePage(nextPage);
+        }
+
+        beforePagination(paginationData) {
+            this.$refs.pagination.setPaginationData(paginationData);
+        }
+
         updateDownloadLink() {
             this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => this.downloadLink = res.data);
         }
 
-        updateStates() {
+        updateStates(initialize) {
             this.$http.get('/agent/api/list', { params: { region: this.region } })
-                .then(res => this.agents = res.data)
+                .then(res => {
+                    this.agents = res.data;
+                    if (initialize) {
+                        this.table.renderingData.data = _.slice(this.agents, 0, this.table.renderingData.pagination.perPage);
+                        this.table.renderingData.pagination.total = this.agents.length;
+                        this.table.renderingData.pagination.last_page =
+                            Math.ceil(this.table.renderingData.pagination.total / this.table.renderingData.pagination.perPage);
+                        this.$refs.vuetable.setData(this.table.renderingData);
+                    }
+                    this.$refs.vuetable.reload();
+                })
                 .then(() => history.replaceState('', '', this.region ? `/agent?region=${this.region}` : '/agent'))
                 .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
         }
@@ -166,7 +180,7 @@
         }
 
         update() {
-            if (this.selectedAgents.length === 0) {
+            if (this.$refs.vuetable.selectedTo.length === 0) {
                 this.$bootbox.alert({
                     message: this.i18n('agent.message.common.noagent'),
                     buttons: {
@@ -186,8 +200,7 @@
                     if (result) {
                         this.$http.put('/agent/api?action=update', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.update.success')))
-                            .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error')))
-                            .finally(() => this.selectedAgents = []);
+                            .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error')));
                     }
                 },
             });
@@ -205,15 +218,14 @@
                     if (result) {
                         this.$http.post('/agent/api?action=cleanup', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.cleanup.success')))
-                            .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error')))
-                            .finally(() => this.selectedAgents = []);
+                            .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error')));
                     }
                 },
             });
         }
 
         stopAgents() {
-            if (this.selectedAgents.length === 0) {
+            if (this.$refs.vuetable.selectedTo.length === 0) {
                 this.$bootbox.alert({
                     message: this.i18n('agent.message.common.noagent'),
                     buttons: {
@@ -233,8 +245,7 @@
                     if (result) {
                         this.$http.put('/agent/api?action=stop', null, this.getParams())
                             .then(() => this.showSuccessMsg(this.i18n('agent.message.stop.success')))
-                            .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error')))
-                            .finally(() => this.selectedAgents = []);
+                            .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error')));
                     }
                 },
             });
@@ -247,7 +258,10 @@
             }
 
             this.$http.put(`/agent/api/${agent.id}?action=approve`)
-                .then(() => agent.approved = true);
+                .then(() => {
+                    agent.approved = true;
+                    this.$refs.vuetable.reload();
+                });
         }
 
         disapprove(agent) {
@@ -256,19 +270,14 @@
             }
 
             this.$http.put(`/agent/api/${agent.id}?action=disapprove`)
-                .then(() => agent.approved = false);
-        }
-
-        changeSelectAll(event) {
-            if (event.target.checked) {
-                this.selectedAgents = this.agents.map(agent => agent.id);
-            } else {
-                this.selectedAgents = [];
-            }
+                .then(() => {
+                    agent.approved = false;
+                    this.$refs.vuetable.reload();
+                });
         }
 
         getParams() {
-            return { params: { ids: this.selectedAgents.join(',') } };
+            return { params: { ids: this.$refs.vuetable.selectedTo.join(',') } };
         }
     }
 </script>

@@ -83,7 +83,7 @@
                 <fieldSet>
                     <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.testComment')"></span>
-                        <button @click="leaveComment" class="btn btn-primary float-right">
+                        <button type="button" @click="leaveComment" class="btn btn-primary float-right">
                             <i class="fa fa-comment mr-1"></i>
                             <span v-text="i18n('perfTest.report.leaveComment')"></span>
                         </button>

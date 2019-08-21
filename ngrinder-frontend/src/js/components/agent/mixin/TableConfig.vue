@@ -1,0 +1,82 @@
+<script>
+    import { Mixin } from 'vue-mixin-decorator';
+    import Base from '../../Base.vue';
+
+    @Mixin
+    export default class TableConfig extends Base {
+        get tableFields() {
+            return [
+                {
+                    name: '__checkbox',
+                    titleClass: 'center aligned',
+                    dataClass: 'center aligned',
+                    width: '30px',
+                },
+                {
+                    name: '__slot:state',
+                    title: this.i18n('agent.list.state'),
+                    dataClass: 'center aligned',
+                    width: '80px',
+                },
+                {
+                    name: '__slot:domain',
+                    title: this.i18n('agent.list.IPAndDns'),
+                    width: '130px',
+                },
+                {
+                    name: 'port',
+                    title: this.i18n('agent.list.port'),
+                    width: '60px',
+                },
+                {
+                    name: 'name',
+                    title: this.i18n('agent.list.name'),
+                    sortField: 'name',
+                },
+                {
+                    name: 'version',
+                    title: this.i18n('agent.list.version'),
+                    sortField: 'version',
+                    width: '100px',
+                },
+                {
+                    name: 'region',
+                    title: this.i18n('agent.list.region'),
+                    sortField: 'region',
+                    width: '150px',
+                },
+                {
+                    name: '__slot:approved',
+                    title: this.i18n('agent.list.approved'),
+                    dataClass: 'center aligned',
+                    width: '160px',
+                },
+            ];
+        }
+
+        get tableCss() {
+            return {
+                table: {
+                    ascendingIcon: 'fa fa-arrow-up',
+                    descendingIcon: 'fa fa-arrow-down',
+                    tableClass: 'table table-striped table-bordered',
+                },
+                pagination: {
+                    infoClass: 'float-left',
+                    wrapperClass: 'pagination float-right',
+                    activeClass: 'active',
+                    disabledClass: 'disabled',
+                    pageClass: 'page-link',
+                    linkClass: 'page-link',
+                    icons: {
+                        first: 'fa fa-angle-double-left',
+                        prev: 'fa fa-angle-left',
+                        next: 'fa fa-angle-right',
+                        last: 'fa fa-angle-double-right',
+                    },
+                },
+            };
+        }
+    }
+
+</script>
