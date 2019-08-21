@@ -13,11 +13,12 @@
  */
 package org.ngrinder.infra.spring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.ExceptionUtils;
-import org.ngrinder.common.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +48,9 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	private static final String JSON_STACKTRACE = "stackTrace";
 	private int order;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -67,8 +71,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	 * java.lang.Exception)
 	 */
 	@Override
-	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-	                                     Exception ex) {
+	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 		if (!(handler instanceof HandlerMethod)) {
 			return null;
 		}
@@ -94,12 +97,10 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		);
 
 		try {
-			String jsonMessage = JsonUtils.serialize(jsonResponse);
 			response.setStatus(500);
 			response.setContentType("application/json; charset=UTF-8");
-			response.addHeader("Pragma", "no-cache");
-			PrintWriter writer = response.getWriter();
-			writer.write(jsonMessage);
+			response.addHeader("Cache-control", "no-cache");
+			objectMapper.writeValue(response.getWriter(), jsonResponse);
 			response.flushBuffer();
 		} catch (IOException e) {
 			LOGGER.error("Exception was occurred while processing api exception.", e);
