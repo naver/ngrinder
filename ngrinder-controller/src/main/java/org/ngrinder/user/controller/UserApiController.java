@@ -130,8 +130,8 @@ public class UserApiController extends BaseController {
 		return model;
 	}
 
-	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping({"/list", "/list/"})
+	@PreAuthorize("hasAnyRole('A')")
 	public Page<User> getAll(@RequestParam(required = false) Role role,
 							 @PageableDefault(page = 0, size = 10) Pageable pageable,
 							 @RequestParam(required = false) String keywords) {
@@ -158,7 +158,6 @@ public class UserApiController extends BaseController {
 	 *
 	 * @param user        current user
 	 * @param updatedUser user to be updated.
-	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
 	@PostMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
@@ -186,8 +185,8 @@ public class UserApiController extends BaseController {
 	}
 
 
-	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping({"/role", "/role/"})
+	@PreAuthorize("hasAnyRole('A')")
 	public EnumSet<Role> roleSet() {
 		return EnumSet.allOf(Role.class);
 	}
@@ -198,8 +197,8 @@ public class UserApiController extends BaseController {
 	 * @param userIds comma separated user ids.
 	 * @return "redirect:/user/"
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping({"", "/"})
+	@PreAuthorize("hasAnyRole('A')")
 	public void deleteUsers(User user, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
 		for (String eachId : ids) {
@@ -215,8 +214,8 @@ public class UserApiController extends BaseController {
 	 * @param userId userId to be checked
 	 * @return success json if true.
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/{userId}/check_duplication")
+	@PreAuthorize("hasAnyRole('A')")
 	public Map<String, Object> checkDuplication(@PathVariable String userId) {
 		User user = userService.getOne(userId);
 		return buildMap(JSON_SUCCESS, user == null);
@@ -228,8 +227,8 @@ public class UserApiController extends BaseController {
 	 * @param role user role
 	 * @return json message
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping({"/", ""})
+	@PreAuthorize("hasAnyRole('A')")
 	public List<User> getAll(Role role) {
 		return userService.getAll(role);
 	}
@@ -240,8 +239,8 @@ public class UserApiController extends BaseController {
 	 * @param userId user id
 	 * @return json message
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/{userId}")
+	@PreAuthorize("hasAnyRole('A')")
 	public User getOne(@PathVariable("userId") String userId) {
 		return userService.getOne(userId);
 	}
@@ -252,8 +251,8 @@ public class UserApiController extends BaseController {
 	 * @param newUser new user
 	 * @return json message
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@PostMapping({"/", ""})
+	@PreAuthorize("hasAnyRole('A')")
 	public User create(@ModelAttribute("user") User newUser) {
 		checkNull(newUser.getId(), "User DB ID should be null");
 		return save(newUser);
@@ -266,8 +265,8 @@ public class UserApiController extends BaseController {
 	 * @param update update user
 	 * @return json message
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping("/{userId}")
+	@PreAuthorize("hasAnyRole('A')")
 	public User update(@PathVariable("userId") String userId, User update) {
 		update.setUserId(userId);
 		checkNull(update.getId(), "User DB ID should be null");
@@ -280,8 +279,8 @@ public class UserApiController extends BaseController {
 	 * @param userId user id
 	 * @return json message
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@DeleteMapping("/{userId}")
+	@PreAuthorize("hasAnyRole('A')")
 	public void delete(User user, @PathVariable("userId") String userId) {
 		if (!user.getUserId().equals(userId)) {
 			userService.delete(userId);
