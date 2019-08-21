@@ -13,12 +13,12 @@
  */
 package org.ngrinder.operation;
 
-import org.ngrinder.operation.cotroller.ScriptConsoleController;
+import org.ngrinder.operation.cotroller.ScriptConsoleApiController;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Profile("unit-test")
 @Component
-public class MockScriptConsoleController extends ScriptConsoleController {
+public class MockScriptConsoleController extends ScriptConsoleApiController {
 
 }

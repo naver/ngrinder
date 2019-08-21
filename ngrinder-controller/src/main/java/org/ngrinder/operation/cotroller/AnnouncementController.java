@@ -14,8 +14,6 @@
 package org.ngrinder.operation.cotroller;
 
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.operation.service.AnnouncementService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,28 +29,9 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AnnouncementController extends BaseController {
 
-	@Autowired
-	private AnnouncementService announcementService;
-
-	/**
-	 * Open the announcement editor.
-	 *
-	 * @return app
-	 */
 	@GetMapping("")
 	public String open() {
 		return "app";
 	}
 
-	/**
-	 * Save the announcement.
-	 *
-	 * @param content new announcement content
-	 * @return save result
-	 */
-	@ResponseBody
-	@PostMapping("/api")
-	public void save(@RequestParam String content) {
-		announcementService.save(content);
-	}
 }

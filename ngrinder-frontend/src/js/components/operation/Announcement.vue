@@ -39,7 +39,7 @@
         }
 
         pullAnnouncement() {
-            this.$http.get('/announcement/api')
+            this.$http.get('/operation/announcement/api')
             .then(res => this.$refs.editor.setValue(res.data));
         }
 
