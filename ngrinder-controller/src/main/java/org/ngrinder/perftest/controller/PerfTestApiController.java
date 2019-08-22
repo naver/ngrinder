@@ -268,29 +268,34 @@ public class PerfTestApiController extends BaseController {
 	 * @param id    perf test id
 	 * @return attributes for perftest detail
 	 */
-	@GetMapping({"/{id}/detail", "/create"})
-	public Map<String, Object> getOneDetail(User user, @PathVariable(required = false) Long id) {
-		Map<String, Object> model = new HashMap<>();
-		PerfTest test = null;
-		if (id != null) {
-			test = getOneWithPermissionCheck(user, id, true);
-		}
+	@GetMapping("/{id}/detail")
+	public Map<String, Object> getOneDetail(User user, @PathVariable Long id) {
+		Map<String, Object> result = new HashMap<>();
+		PerfTest test = getOneWithPermissionCheck(user, id, true);
 
-		if (test == null) {
-			test = new PerfTest(user);
-			test.init();
-		}
-
-		model.put(PARAM_TEST, test);
+		result.put(PARAM_TEST, test);
 		// Retrieve the agent count map based on create user, if the test is
 		// created by the others.
-		user = test.getCreatedUser() != null ? test.getCreatedUser() : user;
+		user = test.getCreatedUser();
+		result.putAll(getDefaultAttributes(user));
+		return result;
+	}
 
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
-		addDefaultAttributeOnModel(model);
-		return model;
+	/**
+	 * Get the new perf test detail
+	 * @param user user
+	 * @return attributes for new perftest detail
+	 */
+	@GetMapping("/create")
+	public Map<String, Object> create(User user) {
+		Map<String, Object> result = new HashMap<>();
+		PerfTest test = new PerfTest(user);
+		test.init();
+
+		result.put(PARAM_TEST, test);
+		result.putAll(getDefaultAttributes(user));
+
+		return result;
 	}
 
 	/**
@@ -357,10 +362,8 @@ public class PerfTestApiController extends BaseController {
 		perfTest.setScriptName(newEntry.getPath());
 		perfTest.setScriptRevision(newEntry.getRevision());
 		model.put(PARAM_TEST, perfTest);
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		model.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.put(PARAM_REGION_LIST, getRegions(agentCountMap));
-		addDefaultAttributeOnModel(model);
+
+		model.putAll(getDefaultAttributes(user));
 
 		return model;
 	}
@@ -392,12 +395,6 @@ public class PerfTestApiController extends BaseController {
 		return perfTest;
 	}
 
-	private ArrayList<String> getRegions(Map<String, MutableInt> agentCountMap) {
-		ArrayList<String> regions = new ArrayList<>(agentCountMap.keySet());
-		Collections.sort(regions);
-		return regions;
-	}
-
 	private Pair<Page<PerfTest>, Pageable> getPerfTests(User user, String query, String tag, String queryFilter, Pageable pageableParam) {
 		Pageable pageable = PageRequest.of(pageableParam.getPageNumber(), pageableParam.getPageSize(),
 			pageableParam.getSort().isUnsorted() ? new Sort(Direction.DESC, "id") : pageableParam.getSort());
@@ -413,17 +410,23 @@ public class PerfTestApiController extends BaseController {
 	/**
 	 * Add the various default configuration values on the model.
 	 *
-	 * @param model model to which put the default values
+	 * @param user user to get default attributes
 	 */
-	private void addDefaultAttributeOnModel(Map<String, Object> model) {
-		model.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
-		model.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
-		model.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+	private Map<String, Object> getDefaultAttributes(User user) {
+		Map<String, Object> attributes = new HashMap<>();
+
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		attributes.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		attributes.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
+
+		attributes.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
+		attributes.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		attributes.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		if (getConfig().isSecurityEnabled()) {
-			model.put(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
+			attributes.put(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
 		}
-		model.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
-		model.put(PARAM_SAFE_FILE_DISTRIBUTION,
+		attributes.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
+		attributes.put(PARAM_SAFE_FILE_DISTRIBUTION,
 			getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
 		String timeZone = getCurrentUser().getTimeZone();
 		int offset;
@@ -432,7 +435,9 @@ public class PerfTestApiController extends BaseController {
 		} else {
 			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
 		}
-		model.put(PARAM_TIMEZONE_OFFSET, offset);
+		attributes.put(PARAM_TIMEZONE_OFFSET, offset);
+
+		return attributes;
 	}
 
 	private void annotateDateMarker(Page<PerfTest> tests) {

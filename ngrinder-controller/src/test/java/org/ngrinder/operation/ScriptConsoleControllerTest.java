@@ -15,28 +15,34 @@ package org.ngrinder.operation;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+
 public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
-	MockScriptConsoleController scriptController;
+	MockScriptConsoleApiController scriptController;
 
 	@Test
 	public void runScriptTest() {
-		String result;
+		Map<String, Object> result;
 
-		result = scriptController.run("");
-		assertThat(result, nullValue());
-		String command = "print \'hello\'";
-		result = scriptController.run(command);
-		assertThat(result, notNullValue());
-		assertThat(result, containsString("hello"));
+		Map<String, Object> param = buildMap("script", "");
+		result = scriptController.run(param);
+		assertThat(result.get("result"), nullValue());
+		param.put("script", "print \'hello\'");
+		result = scriptController.run(param);
+		assertThat(result.get("result"), notNullValue());
+		assertThat((String) result.get("result"), containsString("hello"));
 
-		scriptController.run("int a = 1");
-		result = scriptController.run("print a");
-		assertThat(result, containsString("No such property"));
+		param.put("script", "int a = 1");
+		scriptController.run(param);
+		param.put("script", "print a");
+		result = scriptController.run(param);
+		assertThat((String) result.get("result"), containsString("No such property"));
 	}
 }
