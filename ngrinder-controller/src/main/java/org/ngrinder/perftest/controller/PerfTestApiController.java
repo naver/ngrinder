@@ -274,6 +274,10 @@ public class PerfTestApiController extends BaseController {
 		PerfTest test = getOneWithPermissionCheck(user, id, true);
 
 		result.put(PARAM_TEST, test);
+		if (test == null) {
+			return result;
+		}
+
 		// Retrieve the agent count map based on create user, if the test is
 		// created by the others.
 		user = test.getCreatedUser();
