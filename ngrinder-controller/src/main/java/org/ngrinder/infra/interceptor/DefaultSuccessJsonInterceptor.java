@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ngrinder.common.constant.WebConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -24,7 +25,8 @@ public class DefaultSuccessJsonInterceptor implements HandlerInterceptor, WebCon
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		if (modelAndView == null && response.isCommitted() == false) {
+		if (modelAndView == null && !response.isCommitted() &&
+			handler instanceof HandlerMethod && ((HandlerMethod) handler).isVoid()) {
 			objectMapper.writeValue(response.getWriter(), SUCCESS_JSON);
 			response.flushBuffer();
 		}
