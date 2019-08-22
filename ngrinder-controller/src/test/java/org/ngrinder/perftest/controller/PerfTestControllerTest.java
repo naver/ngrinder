@@ -77,18 +77,24 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 	}
 
 	@Test
-	public void testGetPerfTestDetail() {
-		Map<String, Object> response = perfTestApiController.getOneDetail(getTestUser(), null);
+	public void testCreatePerfTest() {
+		Map<String, Object> response = perfTestApiController.create(getTestUser());
 		assertNotNull(response.get(PARAM_TEST));
+	}
 
-		response = perfTestApiController.getOneDetail(getTestUser(), 0L);
-		assertNotNull(response.get(PARAM_TEST));
+	@Test
+	public void testInvalidPerfTest() {
+		Map<String, Object> response = perfTestApiController.getOneDetail(getTestUser(), 0L);
+		assertNull(response.get(PARAM_TEST));
 		long invalidId = 123123123123L;
 		response = perfTestApiController.getOneDetail(getTestUser(), invalidId);
-		assertNotNull(response.get(PARAM_TEST));
+		assertNull(response.get(PARAM_TEST));
+	}
 
+	@Test
+	public void testGetPerfTestDetail() {
 		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
-		response = perfTestApiController.getOneDetail(getTestUser(), createPerfTest.getId());
+		Map<String, Object> response = perfTestApiController.getOneDetail(getTestUser(), createPerfTest.getId());
 		assertNotNull(response.get(PARAM_TEST));
 	}
 
@@ -121,9 +127,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		perfTestApiController.delete(getTestUser(), delIds);
 
 		foundOne = perfTestOf.apply(perfTestApiController.getOneDetail(getTestUser(), test1.getId()));
-		assertNull(foundOne.getId());
+		assertNull(foundOne);
 		foundOne = perfTestOf.apply(perfTestApiController.getOneDetail(getTestUser(), test2.getId()));
-		assertNull(foundOne.getId());
+		assertNull(foundOne);
 	}
 
 	@Test
