@@ -24,6 +24,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
+
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
 /**
  * Script Runner for maintenance.
@@ -75,11 +78,12 @@ public class ScriptConsoleApiController extends BaseController {
 	/**
 	 * Run the given script. The run result is stored in "result" of the given model.
 	 *
-	 * @param script script
+	 * @param param script json
 	 * @return script run result
 	 */
-	@GetMapping({"/run", "/run/"})
-	public String run(@RequestParam(defaultValue = "") String script) {
+	@PostMapping({"", "/"})
+	public Map<String, Object> run(@RequestBody Map<String, Object> param) {
+		String script = (String) param.getOrDefault("script", "");
 		String result = null;
 
 		if (StringUtils.isNotBlank(script)) {
@@ -108,7 +112,7 @@ public class ScriptConsoleApiController extends BaseController {
 				result = out.toString() + "\n" + e.getMessage();
 			}
 		}
-		return result;
+		return buildMap("result", result);
 	}
 
 }

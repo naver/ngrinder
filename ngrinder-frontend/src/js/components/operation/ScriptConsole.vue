@@ -86,10 +86,10 @@
         }
 
         runScript() {
-            this.$http.get('/operation/script_console/api/run', {
-                params: { script: this.codemirror.getValue() },
+            this.$http.post('/operation/script_console/api', {
+                script: this.codemirror.getValue(),
             })
-            .then(res => this.result = res.data);
+            .then(res => this.result = res.data.result);
         }
     }
 </script>
