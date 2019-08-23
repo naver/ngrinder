@@ -28,7 +28,10 @@
         }
 
         formatPercentage(format, value) {
-            value = value || 0;
+            if (!value) {
+                return 'N/A';
+            }
+
             if (value < 10) {
                 return `${value.toFixed(1)}% `;
             } else {
