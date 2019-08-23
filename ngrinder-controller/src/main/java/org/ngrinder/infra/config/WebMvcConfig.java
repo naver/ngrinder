@@ -1,5 +1,6 @@
 package org.ngrinder.infra.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
 import org.ngrinder.infra.interceptor.DefaultSuccessJsonInterceptor;
 import org.ngrinder.infra.spring.ApiExceptionHandlerResolver;
@@ -7,6 +8,7 @@ import org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver;
 import org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -128,4 +130,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		registry.addResourceHandler(staticPathPatterns).addResourceLocations(this.resourceProperties.getStaticLocations()).setCachePeriod(3600);
 	}
 
+
+	@Bean
+	public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+		return customizer -> {
+			customizer.serializationInclusion(JsonInclude.Include.NON_NULL);
+			customizer.indentOutput(true);
+			customizer.modules(new NumberModule());
+		};
+	}
 }

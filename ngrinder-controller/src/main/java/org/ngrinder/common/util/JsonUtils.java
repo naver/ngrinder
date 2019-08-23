@@ -4,11 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.infra.config.NumberModule;
 
 import java.io.IOException;
 
 public class JsonUtils {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	static {
+		objectMapper.registerModule(new NumberModule());
+	}
 
 	public static String serialize(Object object) {
 		try {
