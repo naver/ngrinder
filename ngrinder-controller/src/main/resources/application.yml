@@ -29,6 +29,3 @@ spring:
     add-mappings: false
   mvc:
     throw-exception-if-no-handler-found: true
-  jackson:
-    default-property-inclusion: non_null
-    serialization.INDENT_OUTPUT: true
