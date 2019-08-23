@@ -6,11 +6,11 @@
         formatNetwork(format, value) {
             value = value || 0;
             if (value < 1024) {
-                return `${value.toFixed(1)}B `;
+                return `${value.toFixed(1)}B`;
             } else if (value < 1048576) { // 1024 * 1024
-                return `${(value / 1024).toFixed(1)}K `;
+                return `${(value / 1024).toFixed(1)}K`;
             } else {
-                return `${(value / 1048576).toFixed(2)}M `;
+                return `${(value / 1048576).toFixed(2)}M`;
             }
         }
 
@@ -28,38 +28,25 @@
         }
 
         formatPercentage(format, value) {
-            if (!value) {
+            if (value === undefined || value === null) {
                 return 'N/A';
             }
 
             if (value < 10) {
-                return `${value.toFixed(1)}% `;
+                return `${value.toFixed(1)}%`;
             } else {
-                return `${value.toFixed(0)}% `;
-            }
-        }
-
-        formatMemoryInByte(format, value) {
-            value = value || 0;
-            if (value < 1024) {
-                return `${value.toFixed(1)}B `;
-            } else if (value < 1048576) { // 1024 * 1024
-                return `${(value / 1024).toFixed(1)}K `;
-            } else if (value < 1073741824) { // 1024 * 1024 * 1024
-                return `${(value / 1048576).toFixed(2)}M `;
-            } else {
-                return `${(value / 1073741824).toFixed(3)}G `;
+                return `${value.toFixed(0)}%`;
             }
         }
 
         formatMemory(format, value) {
             value = value || 0;
             if (value < 1024) {
-                return `${value.toFixed(1)}K `;
+                return `${value.toFixed(1)}K`;
             } else if (value < 1048576) { // 1024 * 1024
-                return `${(value / 1024).toFixed(1)}M `;
+                return `${(value / 1024).toFixed(1)}M`;
             } else {
-                return `${(value / 1048576).toFixed(2)}G `;
+                return `${(value / 1048576).toFixed(2)}G`;
             }
         }
     }
