@@ -3,7 +3,7 @@
         <nav class="navbar navbar-expand bg-dark navbar-dark fixed-top">
             <div class="container">
                 <router-link class="navbar-brand" to="/home">
-                    <img src="/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/>
+                    <img :src="`${contextPath}/img/logo_ngrinder_a_header_inv.png`" alt="nGrinder"/>
                 </router-link>
                 <ul class="navbar-nav link-nav">
                     <li class="nav-item" :class="{ active : $route.name === 'perfTestList' }">
@@ -15,7 +15,7 @@
                 </ul>
                 <ul class="navbar-nav user-nav">
                     <li v-if="ngrinder.config.clustered" class="nav-item cluster-icon-container" >
-                        <img src="/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode">
+                        <img :src="`${contextPath}/img/cluster_icon.png`" title="Cluster Mode" alt="Cluster Mode">
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">

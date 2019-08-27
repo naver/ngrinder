@@ -14,7 +14,7 @@
                 },
                 {
                     name: '__slot:fileIcon',
-                    title: '<router-link :to="baseDirectory" target="_self"><img src="/img/up_folder.png"/></router-link>',
+                    title: `<router-link :to="baseDirectory" target="_self"><img src="${this.contextPath}/img/up_folder.png"/></router-link>`,
                     dataClass: 'center aligned',
                     width: '32px',
                 },

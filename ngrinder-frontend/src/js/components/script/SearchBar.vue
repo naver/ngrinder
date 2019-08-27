@@ -141,7 +141,7 @@
         }
 
         .uneditable-input {
-            a {
+            a:first-of-type {
                 margin-left: 7px;
             }
         }

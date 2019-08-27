@@ -6,7 +6,7 @@
         </a>
         <ul class="dropdown-menu">
             <li v-show="ngrinder.config.userSwitchMode">
-                <a class="dropdown-item" href="/user/switch?to=" v-text="i18n('common.button.return')"></a>
+                <a class="dropdown-item" :href="`${contextPath}/user/switch?to=`" v-text="i18n('common.button.return')"></a>
             </li>
             <template v-show="!ngrinder.config.userSwitchMode">
                 <li>
@@ -24,12 +24,12 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li v-for="region in regions">
-                            <a class="dropdown-item" :href="`/agent/download?region=${region}`" v-text="region"></a>
+                            <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${region}`" v-text="region"></a>
                         </li>
                     </ul>
                 </li>
                 <li v-else>
-                    <a class="dropdown-item" href="/agent/download" v-text="i18n('navigator.dropDown.downloadAgent')"></a>
+                    <a class="dropdown-item" :href="`${contextPath}/agent/download`" v-text="i18n('navigator.dropDown.downloadAgent')"></a>
                 </li>
             </template>
             <template v-else>
@@ -39,16 +39,16 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li v-for="region in regions">
-                            <a class="dropdown-item" :href="`/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="region"></a>
+                            <a class="dropdown-item" :href="`${contextPath}/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="region"></a>
                         </li>
                     </ul>
                 </li>
                 <li v-else>
-                    <a class="dropdown-item" :href="`/agent/download?owner=${ngrinder.currentUser.id}`" v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></a>
+                    <a class="dropdown-item" :href="`${contextPath}/agent/download?owner=${ngrinder.currentUser.id}`" v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></a>
                 </li>
             </template>
             <li>
-                <a class="dropdown-item" href="/monitor/download" v-text="i18n('navigator.dropDown.downloadMonitor')"></a>
+                <a class="dropdown-item" :href="`${contextPath}/monitor/download`" v-text="i18n('navigator.dropDown.downloadMonitor')"></a>
             </li>
             <li>
                 <a class="dropdown-item" href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank" v-text="i18n('navigator.dropDown.downloadRecorder')"></a>
@@ -68,7 +68,7 @@
             </template>
             <li class="dropdown-divider"></li>
             <li>
-                <a class="dropdown-item" href="/logout" v-text="i18n('navigator.dropDown.logout')"></a>
+                <a class="dropdown-item" :href="`${contextPath}/logout`" v-text="i18n('navigator.dropDown.logout')"></a>
             </li>
         </ul>
     </li>

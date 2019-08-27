@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <vue-headful title="Script"></vue-headful>
-        <div class="script-img-unit"></div>
+        <div class="script-img-unit" :style="`background-image: url('${contextPath}/img/bg_script_banner_en.png')`"></div>
 
         <search-bar :currentPath="currentPath" @deleteFile="deleteFile"></search-bar>
 
@@ -34,7 +34,7 @@
                              :title="props.rowData.path" target="_self"
                              v-text="props.rowData.fileName">
                 </router-link>
-                <a v-else :href="`/script/download/${props.rowData.path}`"
+                <a v-else :href="`${contextPath}/script/download/${props.rowData.path}`"
                    :title="props.rowData.path" target="_blank"
                    v-text="props.rowData.fileName">
                 </a>
@@ -224,7 +224,6 @@
 
 <style lang="less" scoped>
     .script-img-unit {
-        background-image: url('/img/bg_script_banner_en.png');
         height: 110px;
         padding: 0;
         margin-top: 0;

@@ -82,19 +82,35 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.css$/,
-                    use: [MiniCssExtractPlugin.loader, {
+                    use: [{
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../',
+                        },
+                    }, {
                         loader: 'css-loader',
-                        options: { sourceMap: devMode },
+                        options: {
+                            sourceMap: devMode,
+                        },
                     }],
                 },
                 {
                     test: /\.less$/,
-                    use: [MiniCssExtractPlugin.loader, {
+                    use: [{
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../',
+                        },
+                    }, {
                         loader: 'css-loader',
-                        options: { sourceMap: devMode },
+                        options: {
+                            sourceMap: devMode,
+                        },
                     }, {
                         loader: 'less-loader',
-                        options: { sourceMap: devMode },
+                        options: {
+                            sourceMap: devMode,
+                        },
                     }],
                 },
                 {
