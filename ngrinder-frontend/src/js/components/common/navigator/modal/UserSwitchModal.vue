@@ -44,7 +44,7 @@
                 this.option = {
                     minimumInputLength: 2,
                     ajax: {
-                        url: '/user/api/switch_options',
+                        url: `${this.contextPath}/user/api/switch_options`,
                         dataType: 'json',
                         quietMillis: 1000,
                         data: term => ({ keywords: term }),
@@ -66,7 +66,7 @@
         }
 
         switchUser() {
-            document.location.href = `/user/switch?to=${this.switchTargetUserId}`;
+            document.location.href = `${this.contextPath}/user/switch?to=${this.switchTargetUserId}`;
         }
     }
 </script>

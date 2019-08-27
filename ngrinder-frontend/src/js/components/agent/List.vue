@@ -49,7 +49,7 @@
 
             <template slot="state" slot-scope="props">
                 <div class="ball" data-html="true" rel="popover">
-                    <img class="status" :src="`/img/ball/${props.rowData.state.iconName}`"/>
+                    <img class="status" :src="`${contextPath}/img/ball/${props.rowData.state.iconName}`"/>
                 </div>
             </template>
 
@@ -115,6 +115,7 @@
 
         created() {
             this.table.css = this.tableCss;
+            this.downloadLink = this.contextPath;
         }
 
         mounted() {
@@ -151,7 +152,7 @@
         }
 
         updateDownloadLink() {
-            this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => this.downloadLink = res.data);
+            this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => this.downloadLink += res.data);
         }
 
         updateStates(initialize) {
@@ -167,7 +168,7 @@
                     }
                     this.$refs.vuetable.reload();
                 })
-                .then(() => history.replaceState('', '', this.region ? `/agent?region=${this.region}` : '/agent'))
+                .then(() => history.replaceState('', '', this.region ? `${this.contextPath}/agent?region=${this.region}` : `${this.contextPath}/agent`))
                 .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
         }
 

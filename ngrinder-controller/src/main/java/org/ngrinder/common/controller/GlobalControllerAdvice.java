@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.ServletContext;
+
 import static org.ngrinder.common.constant.WebConstants.PARAM_PROCESS_THREAD_POLICY_SCRIPT;
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -29,11 +31,15 @@ public class GlobalControllerAdvice {
 	private PerfTestService perfTestService;
 
 	@Autowired
+	private ServletContext servletContext;
+
+	@Autowired
 	private Config config;
 
 	@ModelAttribute
     public void globalAttributes(Model model) {
 		model.addAttribute("version", version);
+		model.addAttribute("contextPath", servletContext.getContextPath());
 		model.addAttribute("clustered", config.isClustered());
 		model.addAttribute("helpUrl", config.getHelpUrl());
 		model.addAttribute("signUpEnabled", config.isSignUpEnabled());

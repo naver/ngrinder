@@ -3,10 +3,10 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <meta charset="UTF-8">
-
-        <link href="/css/introjs.min.css" rel="stylesheet"/>
-        <link href="/css/app.css" rel="stylesheet"/>
-        <link href="/css/ngrinder.css" rel="stylesheet"/>
+        <link rel="shortcut icon" type="image/png" href="{{ contextPath }}/img/favicon.png"/>
+        <link href="{{ contextPath }}/css/introjs.min.css" rel="stylesheet"/>
+        <link href="{{ contextPath }}/css/app.css" rel="stylesheet"/>
+        <link href="{{ contextPath }}/css/ngrinder.css" rel="stylesheet"/>
     </head>
     <body>
         <main id="ngrinder">
@@ -17,6 +17,7 @@
         </main>
         <script>
             window.ngrinder = {
+                contextPath: '{{ contextPath }}',
                 version: '{{ version }}',
                 currentUser: {
                     name: '{{ currentUser.userName }}',
@@ -43,7 +44,7 @@
             {{{ vuserCalcScript }}}
 
         </script>
-        <script type="text/javascript" src="/js/app.js"></script>
+        <script type="text/javascript" src="{{ contextPath }}/js/app.js"></script>
     </body>
 </html>
 

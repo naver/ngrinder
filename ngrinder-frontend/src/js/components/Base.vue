@@ -16,6 +16,10 @@
             return I18n.i18n(key, args);
         }
 
+        get contextPath() {
+            return this.ngrinder.contextPath;
+        }
+
         get isAdmin() {
             return this.ngrinder.currentUser.role === 'A';
         }
