@@ -43,7 +43,7 @@
                                       message="perfTest.config.vuserPerAgent">
                         </input-append>
                     </div>
-                    <i class="pointer-cursor expand" @click="display.vuserPanel = !display.vuserPanel"></i>
+                    <i class="pointer-cursor expand" :style="`background: url('${contextPath}/img/icon_expand.png') no-repeat`" @click="display.vuserPanel = !display.vuserPanel"></i>
                     <div class="float-right">
                         <span class="badge badge-info float-right">
                             <span v-text="i18n('perfTest.config.availVuser')"></span>
@@ -522,7 +522,6 @@
 
         i {
             &.expand {
-                background: url('/img/icon_expand.png') no-repeat;
                 display: inline-block;
                 height: 16px;
                 width: 16px;

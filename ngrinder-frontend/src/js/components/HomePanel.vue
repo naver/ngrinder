@@ -21,7 +21,7 @@
                     </template>
                     <tr>
                         <td v-if="askQuestionUrl">
-                            <img src="/img/asksupport.gif" />
+                            <img :src="`${contextPath}/img/asksupport.gif`" />
                             <a :href="askQuestionUrl" target="_blank" v-text="i18n('home.button.ask')"></a>
                         </td>
                         <td v-if="seeMoreQuestionUrl" :colspan="askQuestionUrl ? 1 : 2" class="text-right">

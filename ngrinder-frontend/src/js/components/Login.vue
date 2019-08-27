@@ -3,17 +3,17 @@
         <sign-up-modal v-if="ngrinder.config.signUpEnabled" ref="signUpModal"></sign-up-modal>
         <header>
             <vue-headful title="Login"/>
-            <img src="/img/logo_ngrinder_a.png" width="400" alt="nGrinder logo">
+            <img :src="`${contextPath}/img/logo_ngrinder_a.png`" width="400" alt="nGrinder logo">
         </header>
         <section>
-            <form ref="loginForm" action="/form_login" method="post">
+            <form ref="loginForm" :action="`${contextPath}/form_login`" method="post">
                 <fieldset>
                     <div class="login-input-container">
                         <div>
                             <input v-focus type="text" class="form-control d-block" name="j_username" placeholder="User ID">
                             <input type="password" class="form-control" name="j_password" placeholder="Password">
                         </div>
-                        <input type="image" src="/img/login.gif" alt="Login" class="login-btn">
+                        <input type="image" :src="`${contextPath}/img/login.gif`" alt="Login" class="login-btn">
                     </div>
 
                     <div class="prompt">

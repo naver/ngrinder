@@ -1,7 +1,7 @@
 <template>
     <div class="container perftest-list-container p-0">
         <vue-headful title="Performance Test"></vue-headful>
-        <div class="img-unit"></div>
+        <div class="img-unit" :style="`background-image: url('${contextPath}/img/bg_perftest_banner_en.png')`"></div>
         <div class="current-running-status-container">
             <code v-text="runningSummary"></code>
         </div>
@@ -11,10 +11,10 @@
         <vuetable
             v-show="showTable"
             ref="vuetable"
-            api-url="/perftest/api/list"
             data-path="tests"
             pagination-path=""
             detail-row-component="small-chart"
+            :api-url="`${contextPath}/perftest/api/list`"
             :append-params="table.appendParams"
             :query-params="{ sort: 'sort', page: 'page.page', perPage: 'page.size' }"
             :per-page="table.pagination.perPage"
@@ -34,7 +34,7 @@
                    :id="`ball_${props.rowData.id}`"
                    :title="props.rowData.status.name"
                    :data-content="`${props.rowData.progressMessage}<br><b>${props.rowData.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
-                    <img :src="`/img/ball/${props.rowData.status.iconName}`">
+                    <img :src="`${contextPath}/img/ball/${props.rowData.status.iconName}`">
                 </a>
             </template>
 
@@ -212,7 +212,6 @@
 
         transform(data) {
             this.tests = data.tests;
-            console.log(this.tests);
             return data;
         }
 
@@ -253,7 +252,7 @@
         }
 
         makeQueryString(page, pageSize, query, queryFilter, sort, tag) {
-            return `/perftest?page.page=${page}&page.size=${pageSize}&query=${query}&queryFilter=${queryFilter}&sort=${sort}&tag=${tag}`;
+            return `${this.contextPath}/perftest?page.page=${page}&page.size=${pageSize}&query=${query}&queryFilter=${queryFilter}&sort=${sort}&tag=${tag}`;
         }
 
         isFinishedStatusType(test) {
@@ -403,7 +402,6 @@
         margin-bottom: 80px;
 
         .img-unit {
-            background-image: url('/img/bg_perftest_banner_en.png');
             height: 110px;
             padding: 0;
             margin-top: 0;

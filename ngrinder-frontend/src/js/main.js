@@ -40,7 +40,11 @@ import 'bootstrap/dist/js/bootstrap.js';
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap-slider/dist/css/bootstrap-slider.css';
 
-axios.interceptors.request.use(config => {
+let axiosInstance = axios.create({
+    baseURL: window.ngrinder.contextPath,
+});
+
+axiosInstance.interceptors.request.use(config => {
     if (typeof config.params === 'undefined') {
         config.params = {};
     }
@@ -62,7 +66,7 @@ Vue.use(bFormSlider);
 
 Vue.prototype.$bootbox = bootbox;
 Vue.prototype.$moment = moment;
-Vue.prototype.$http = axios;
+Vue.prototype.$http = axiosInstance;
 Vue.prototype.$utils = Utils;
 Vue.prototype.$EventBus = new Vue();
 Vue.prototype.$Event = Event;
@@ -113,6 +117,7 @@ const routes = [
 
 const router = new VueRouter({
     mode: 'history',
+    base: window.ngrinder.contextPath,
     routes,
 });
 

@@ -72,9 +72,9 @@
                 </fieldSet>
                 <div>
                     <div v-for="log in logs" class="ellipsis w-100">
-                        <a :href="`/perftest/${report.test.id}/show_log/${log}`" target="log" title="open the log in the new window">
-                            <img src="/img/open_external.png"></a>
-                        <a :href="`/perftest/${report.test.id}/download_log/${log}`" v-text="log"></a>
+                        <a :href="`${contextPath}/perftest/${report.test.id}/show_log/${log}`" target="log" title="open the log in the new window">
+                            <img :src="`${contextPath}/img/open_external.png`"></a>
+                        <a :href="`${contextPath}/perftest/${report.test.id}/download_log/${log}`" v-text="log"></a>
                     </div>
                 </div>
                 <div v-if="logs.length <= 0" v-text="i18n('perfTest.report.message.noLog')"></div>

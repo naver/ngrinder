@@ -30,10 +30,10 @@
         <vuetable
             v-show="showTable"
             ref="vuetable"
-            api-url="/user/api/list"
             data-path="content"
             pagination-path=""
             track-by="userId"
+            :api-url="`${contextPath}/user/api/list`"
             :append-params="table.appendParams"
             :query-params="{ sort: 'sort', page: 'page.page', perPage: 'page.size' }"
             :per-page="table.pagination.perPage"
@@ -169,7 +169,7 @@
         }
 
         makeQueryString(page, pageSize, keyword, sort, role) {
-            let queryString = `/user?page.page=${page}&page.size=${pageSize}&keywords=${keyword}&sort=${sort}`;
+            let queryString = `${this.contextPath}/user?page.page=${page}&page.size=${pageSize}&keywords=${keyword}&sort=${sort}`;
             if (role) {
                 queryString += `&role=${role}`;
             }
@@ -201,7 +201,7 @@
             this.keywords = '';
             this.$refs.vuetable.currentPage = 1;
             const queryParam = this.role.name ? `?role=${this.role.name}` : '';
-            history.replaceState('', '', `${this.$route.path}${queryParam}`);
+            history.replaceState('', '', `${this.contextPath}${this.$route.path}${queryParam}`);
             this.$refs.vuetable.refresh();
         }
 
