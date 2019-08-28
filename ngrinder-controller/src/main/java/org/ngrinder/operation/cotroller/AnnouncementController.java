@@ -13,7 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import org.ngrinder.common.controller.BaseController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +20,12 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Announcement message management controller.
  *
- * @author Alex Qin
  * @since 3.1
  */
 @Controller
 @RequestMapping("/operation/announcement")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class AnnouncementController extends BaseController {
+public class AnnouncementController {
 
 	@GetMapping("")
 	public String open() {

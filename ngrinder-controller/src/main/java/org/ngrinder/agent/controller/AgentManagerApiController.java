@@ -23,7 +23,7 @@ import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -45,7 +45,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/agent/api")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class AgentManagerApiController extends BaseController {
+public class AgentManagerApiController {
 
 	@Autowired
 	private AgentManagerService agentManagerService;
@@ -56,10 +56,13 @@ public class AgentManagerApiController extends BaseController {
 	@Autowired
 	private AgentPackageService agentPackageService;
 
+	@Autowired
+	private Config config;
+
 	@GetMapping("/regions")
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public List<String> getAvailableRegions(final User user) {
-		return availRegions();
+		return regionService.getAllVisibleRegionNames();
 	}
 
 	@GetMapping("/download_link")
@@ -67,13 +70,13 @@ public class AgentManagerApiController extends BaseController {
 	public String getDownloadLink(final User user,  @RequestParam(value = "region", required = false) final String region) {
 		String downloadLink = "";
 		File agentPackage = null;
-		if (isClustered()) {
+		if (config.isClustered()) {
 			if (StringUtils.isNotBlank(region)) {
 				final RegionInfo regionInfo = regionService.getOne(region);
 				agentPackage = agentPackageService.createAgentPackage(region, regionInfo.getIp(), regionInfo.getControllerPort(), null);
 			}
 		} else {
-			agentPackage = agentPackageService.createAgentPackage("", "", getConfig().getControllerPort(), null);
+			agentPackage = agentPackageService.createAgentPackage("", "", config.getControllerPort(), null);
 		}
 		if (agentPackage != null) {
 			downloadLink = "/agent/download/" + agentPackage.getName();

@@ -14,8 +14,6 @@
 package org.ngrinder.operation.cotroller;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +31,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/stat")
-public class StatisticsApiController extends BaseController implements ControllerConstants {
+public class StatisticsApiController {
 
 	@Autowired
 	private Config config;

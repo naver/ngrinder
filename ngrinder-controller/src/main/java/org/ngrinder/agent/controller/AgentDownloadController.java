@@ -14,8 +14,8 @@
 package org.ngrinder.agent.controller;
 
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +42,16 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @Controller
 @RequestMapping("/agent/download")
-public class AgentDownloadController extends BaseController {
+public class AgentDownloadController {
 
 	@Autowired
 	private AgentPackageService agentPackageService;
 
 	@Autowired
 	private RegionService regionService;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Download agent.
@@ -58,7 +61,7 @@ public class AgentDownloadController extends BaseController {
 	 */
 	@GetMapping("/{fileName:[a-zA-Z0-9\\.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
-		File home = getConfig().getHome().getDownloadDirectory();
+		File home = config.getHome().getDownloadDirectory();
 		File ngrinderFile = new File(home, fileName);
 		FileDownloadUtils.downloadFile(response, ngrinderFile);
 	}
@@ -97,9 +100,9 @@ public class AgentDownloadController extends BaseController {
 
 	private String downloadFile(String owner, String region, ModelMap modelMap, HttpServletRequest request) {
 		String connectingIP = request.getServerName();
-		int port = getConfig().getControllerPort();
+		int port = config.getControllerPort();
 		try {
-			if (isClustered()) {
+			if (config.isClustered()) {
 				checkNotEmpty(region, "region should be provided to download agent in cluster mode.");
 				RegionInfo regionInfo = checkNotNull(regionService.getOne(region), "selecting region '" + region + "'" +
 						" is not valid");

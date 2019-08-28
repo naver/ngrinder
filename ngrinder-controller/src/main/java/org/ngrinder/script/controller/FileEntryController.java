@@ -15,7 +15,6 @@ package org.ngrinder.script.controller;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
@@ -41,7 +40,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 @Controller
 @RequestMapping("/script")
-public class FileEntryController extends BaseController {
+public class FileEntryController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryController.class);
 

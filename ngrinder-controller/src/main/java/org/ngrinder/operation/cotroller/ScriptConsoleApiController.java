@@ -3,7 +3,7 @@ package org.ngrinder.operation.cotroller;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -11,6 +11,7 @@ import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -40,7 +41,7 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 @RestController
 @RequestMapping("/operation/script_console/api")
 @PreAuthorize("hasAnyRole('A')")
-public class ScriptConsoleApiController extends BaseController {
+public class ScriptConsoleApiController {
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -75,6 +76,12 @@ public class ScriptConsoleApiController extends BaseController {
 	@Autowired
 	private CacheManager cacheManager;
 
+	@Autowired
+	private UserContext userContext;
+
+	@Autowired
+	private Config config;
+
 	/**
 	 * Run the given script. The run result is stored in "result" of the given model.
 	 *
@@ -97,10 +104,10 @@ public class ScriptConsoleApiController extends BaseController {
 			engine.put("perfTestService", this.perfTestService);
 			engine.put("tagService", this.tagService);
 			engine.put("fileEntryService", this.fileEntryService);
-			engine.put("config", getConfig());
+			engine.put("config", this.config);
 			engine.put("pluginManager", this.pluginManager);
 			engine.put("cacheManager", this.cacheManager);
-			engine.put("user", getCurrentUser());
+			engine.put("user", this.userContext.getCurrentUser());
 			final StringWriter out = new StringWriter();
 			PrintWriter writer = new PrintWriter(out);
 			engine.getContext().setWriter(writer);

@@ -16,7 +16,6 @@ package org.ngrinder.perftest.controller;
 import net.grinder.util.LogCompressUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -44,7 +43,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Controller
 @RequestMapping("/perftest")
-public class PerfTestController extends BaseController {
+public class PerfTestController {
 
 	@Autowired
 	private PerfTestService perfTestService;

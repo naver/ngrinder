@@ -14,7 +14,6 @@
 package org.ngrinder.agent.controller;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/monitor")
-public class MonitorManagerController extends BaseController {
+public class MonitorManagerController {
 
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;

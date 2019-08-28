@@ -13,7 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import org.ngrinder.common.controller.BaseController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/operation/system_config")
 @PreAuthorize("hasAnyRole('A')")
-public class SystemConfigController extends BaseController {
+public class SystemConfigController {
 
 	@GetMapping("")
 	public String systemConfig() {
