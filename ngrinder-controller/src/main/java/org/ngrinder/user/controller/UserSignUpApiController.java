@@ -14,7 +14,6 @@
 package org.ngrinder.user.controller;
 
 
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -26,6 +25,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.ngrinder.common.constant.WebConstants.JSON_SUCCESS;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.Preconditions.checkTrue;
 
@@ -35,7 +35,7 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
  */
 @RestController
 @RequestMapping("/sign_up/api")
-public class UserSignUpApiController extends BaseController {
+public class UserSignUpApiController {
 
 	@Autowired
 	private UserService userService;

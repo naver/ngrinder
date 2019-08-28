@@ -15,13 +15,14 @@ package org.ngrinder.home.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Controller
-public class HomeController extends BaseController implements ControllerConstants {
+public class HomeController implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
@@ -60,6 +61,12 @@ public class HomeController extends BaseController implements ControllerConstant
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
+
+	@Autowired
+	private UserContext userContext;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Return nGrinder index page.
@@ -81,7 +88,7 @@ public class HomeController extends BaseController implements ControllerConstant
 			try {
 				recordReferrer(region);
 				// set local language
-				setLanguage(getCurrentUser().getUserLanguage(), response, request);
+				setLanguage(userContext.getCurrentUser().getUserLanguage(), response, request);
 				role = user.getRole();
 			} catch (AuthenticationCredentialsNotFoundException e) {
 				return "app";
@@ -120,7 +127,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	@ResponseBody
 	@GetMapping("/check/healthcheck")
 	public Map<String, Object> healthCheck(HttpServletResponse response) {
-		if (getConfig().hasShutdownLock()) {
+		if (config.hasShutdownLock()) {
 			try {
 				response.sendError(503, "nGrinder is about to down");
 			} catch (IOException e) {
@@ -155,7 +162,7 @@ public class HomeController extends BaseController implements ControllerConstant
 				"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
 		String language = StringUtils.defaultIfBlank(lan,
-				getConfig().getControllerProperties().getProperty(PROP_CONTROLLER_DEFAULT_LANG));
+				config.getControllerProperties().getProperty(PROP_CONTROLLER_DEFAULT_LANG));
 		localeEditor.setAsText(language);
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
@@ -169,7 +176,7 @@ public class HomeController extends BaseController implements ControllerConstant
 	@GetMapping("/login")
 	public String login(ModelMap model) {
 		try {
-			getCurrentUser();
+			userContext.getCurrentUser();
 		} catch (Exception e) {
 			CoreLogger.LOGGER.info("Login Failure " + e.getMessage());
 			return "app";

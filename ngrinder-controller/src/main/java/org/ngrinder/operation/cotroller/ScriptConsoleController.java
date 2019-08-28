@@ -13,7 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import org.ngrinder.common.controller.BaseController;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/operation/script_console")
 @PreAuthorize("hasAnyRole('A')")
-public class ScriptConsoleController extends BaseController {
+public class ScriptConsoleController {
 
 	@GetMapping({"", "/"})
 	public String scriptConsole() {

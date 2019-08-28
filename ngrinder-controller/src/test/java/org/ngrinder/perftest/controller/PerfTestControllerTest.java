@@ -15,13 +15,13 @@ package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.ngrinder.common.constant.WebConstants.PARAM_TEST;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.config.Config;
@@ -54,7 +54,7 @@ import java.util.function.Function;
  * @author mavlarn
  * @since 3.0
  */
-public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest implements WebConstants {
+public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private PerfTestController controller;

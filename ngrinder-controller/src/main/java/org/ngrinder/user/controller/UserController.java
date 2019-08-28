@@ -14,7 +14,6 @@
 package org.ngrinder.user.controller;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -36,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/user")
-public class UserController extends BaseController {
+public class UserController {
 
 	@Autowired
 	private UserService userService;

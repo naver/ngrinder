@@ -20,13 +20,13 @@ import static org.apache.commons.lang3.StringUtils.*;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -41,18 +41,17 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.script.service.ScriptValidationService;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * FileEntry manipulation API controller.
@@ -61,7 +60,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/script/api")
-public class FileEntryApiController extends BaseController {
+public class FileEntryApiController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryApiController.class);
 
@@ -83,6 +82,12 @@ public class FileEntryApiController extends BaseController {
 
 	@Autowired
 	private ScriptValidationService scriptValidationService;
+
+	@Autowired
+	private MessageSource messageSource;
+
+	@Autowired
+	private UserContext userContext;
 
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
@@ -139,6 +144,23 @@ public class FileEntryApiController extends BaseController {
 			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
 		}
 		return encodePathWithUTF8(basePath);
+	}
+
+	/**
+	 * Get the message from messageSource by the given key.
+	 *
+	 * @param key key of message
+	 * @return the found message. If not found, the error message will return.
+	 */
+	private String getMessages(String key) {
+		String userLanguage = "en";
+		try {
+			userLanguage = userContext.getCurrentUser().getUserLanguage();
+		} catch (Exception e) {
+			noOp();
+		}
+		Locale locale = new Locale(userLanguage);
+		return messageSource.getMessage(key, null, locale);
 	}
 
 	/**

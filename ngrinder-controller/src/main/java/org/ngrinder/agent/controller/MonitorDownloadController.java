@@ -14,7 +14,6 @@
 package org.ngrinder.agent.controller;
 
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.MonitorPackageHandler;
@@ -40,7 +39,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 @Controller
 @RequestMapping("/monitor/download")
-public class MonitorDownloadController extends BaseController {
+public class MonitorDownloadController {
 
 	@Autowired
 	private AgentPackageService agentPackageService;
@@ -61,7 +60,7 @@ public class MonitorDownloadController extends BaseController {
 
 	@GetMapping("/{fileName:[a-zA-Z0-9\\.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
-		File home = getConfig().getHome().getDownloadDirectory();
+		File home = config.getHome().getDownloadDirectory();
 		File monitorFile = new File(home, fileName);
 		FileDownloadUtils.downloadFile(response, monitorFile);
 	}
