@@ -13,8 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.AopUtils;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
@@ -37,10 +37,13 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @RestController
 @RequestMapping("/monitor/api")
-public class MonitorManagerApiController extends BaseController {
+public class MonitorManagerApiController {
 
 	@Autowired
 	private MonitorInfoStore monitorInfoStore;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Get the target's monitored data by the given IP.
@@ -50,7 +53,7 @@ public class MonitorManagerApiController extends BaseController {
 	 */
 	@GetMapping("/state")
 	public SystemDataModel getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
-		int port = getConfig().getMonitorPort();
+		int port = config.getMonitorPort();
 		Future<SystemInfo> systemInfoFuture = AopUtils.proxy(this).getAsyncSystemInfo(ip, port);
 		SystemInfo systemInfo = checkNotNull(systemInfoFuture.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
 		return new SystemDataModel(systemInfo, "UNKNOWN");

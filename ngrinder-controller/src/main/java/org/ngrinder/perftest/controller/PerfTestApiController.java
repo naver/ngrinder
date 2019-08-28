@@ -20,7 +20,6 @@ import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.JsonUtils;
 import org.ngrinder.infra.config.Config;
@@ -36,9 +35,11 @@ import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,9 +57,11 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
+import static org.ngrinder.common.constant.WebConstants.*;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.*;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
@@ -70,7 +73,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 @Profile("production")
 @RestController
 @RequestMapping("/perftest/api")
-public class PerfTestApiController extends BaseController {
+public class PerfTestApiController {
 
 	@Autowired
 	private PerfTestService perfTestService;
@@ -98,6 +101,15 @@ public class PerfTestApiController extends BaseController {
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
+
+	@Autowired
+	private UserContext userContext;
+
+	@Autowired
+	private Config config;
+
+	@Autowired
+	private MessageSource messageSource;
 
 	/**
 	 * Get the perf test lists.
@@ -130,6 +142,18 @@ public class PerfTestApiController extends BaseController {
 		result.put("tests", tests.getContent());
 		putPageIntoModelMap(result, pageable);
 		return result;
+	}
+
+	protected void putPageIntoModelMap(Map<String, Object> result, Pageable pageable) {
+		Map<String, Object> page = new HashMap<>();
+		page.put("pageNumber", pageable.getPageNumber());
+		page.put("pageSize", pageable.getPageSize());
+		result.put("page", page);
+		final Iterator<Sort.Order> iterator = pageable.getSort().iterator();
+		if (iterator.hasNext()) {
+			Sort.Order sortProp = iterator.next();
+			result.put("sort", sortProp.getProperty() + "," + sortProp.getDirection());
+		}
 	}
 
 	/**
@@ -426,13 +450,13 @@ public class PerfTestApiController extends BaseController {
 		attributes.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
 		attributes.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		attributes.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		if (getConfig().isSecurityEnabled()) {
-			attributes.put(PARAM_SECURITY_LEVEL, getConfig().getSecurityLevel());
+		if (config.isSecurityEnabled()) {
+			attributes.put(PARAM_SECURITY_LEVEL, config.getSecurityLevel());
 		}
 		attributes.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		attributes.put(PARAM_SAFE_FILE_DISTRIBUTION,
-			getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
-		String timeZone = getCurrentUser().getTimeZone();
+			config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
+		String timeZone = userContext.getCurrentUser().getTimeZone();
 		int offset;
 		if (StringUtils.isNotBlank(timeZone)) {
 			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
@@ -445,13 +469,13 @@ public class PerfTestApiController extends BaseController {
 	}
 
 	private void annotateDateMarker(Page<PerfTest> tests) {
-		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
+		TimeZone userTZ = TimeZone.getTimeZone(userContext.getCurrentUser().getTimeZone());
 		Calendar userToday = Calendar.getInstance(userTZ);
 		Calendar userYesterday = Calendar.getInstance(userTZ);
 		userYesterday.add(Calendar.DATE, -1);
 		for (PerfTest test : tests) {
 			Calendar localedModified = Calendar.getInstance(userTZ);
-			localedModified.setTime(DateUtils.convertToUserDate(getCurrentUser().getTimeZone(),
+			localedModified.setTime(DateUtils.convertToUserDate(userContext.getCurrentUser().getTimeZone(),
 				test.getLastModifiedDate()));
 			if (org.apache.commons.lang.time.DateUtils.isSameDay(userToday, localedModified)) {
 				test.setDateString("today");
@@ -505,7 +529,7 @@ public class PerfTestApiController extends BaseController {
 				"duration should be equal to or less than %s", agentManager.getMaxRunHour());
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		MutableInt agentCountObj = agentCountMap.get(isClustered() ? newOne.getRegion() : Config.NONE_REGION);
+		MutableInt agentCountObj = agentCountMap.get(config.isClustered() ? newOne.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
 		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
@@ -516,7 +540,7 @@ public class PerfTestApiController extends BaseController {
 
 		checkArgument(newOne.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 			"vuserPerAgent should be equal to or less than %s", agentManager.getMaxVuserPerAgent());
-		if (getConfig().isSecurityEnabled() && GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL.equals(getConfig().getSecurityLevel())) {
+		if (config.isSecurityEnabled() && GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL.equals(config.getSecurityLevel())) {
 			checkArgument(StringUtils.isNotEmpty(newOne.getTargetHosts()),
 				"targetHosts should be provided when security mode is enabled");
 		}
@@ -815,7 +839,7 @@ public class PerfTestApiController extends BaseController {
 			newOne.setAgentCount(0);
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
+		MutableInt agentCountObj = agentCountMap.get(config.isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
 		checkArgument(newOne.getAgentCount() != 0, "test agent should not be %s", agentMaxCount);
@@ -826,4 +850,20 @@ public class PerfTestApiController extends BaseController {
 		return savePerfTest;
 	}
 
+	/**
+	 * Get the message from messageSource by the given key.
+	 *
+	 * @param key key of message
+	 * @return the found message. If not found, the error message will return.
+	 */
+	private String getMessages(String key) {
+		String userLanguage = "en";
+		try {
+			userLanguage = userContext.getCurrentUser().getUserLanguage();
+		} catch (Exception e) {
+			noOp();
+		}
+		Locale locale = new Locale(userLanguage);
+		return messageSource.getMessage(key, null, locale);
+	}
 }

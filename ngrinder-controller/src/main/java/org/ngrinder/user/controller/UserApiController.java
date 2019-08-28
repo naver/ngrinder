@@ -2,12 +2,12 @@ package org.ngrinder.user.controller;
 
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID;
+import static org.ngrinder.common.constant.WebConstants.JSON_SUCCESS;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user/api")
-public class UserApiController extends BaseController {
+public class UserApiController {
 	public static final Sort DEFAULT_SORT = new Sort(Sort.Direction.ASC, "userName");
 
 	@Autowired
