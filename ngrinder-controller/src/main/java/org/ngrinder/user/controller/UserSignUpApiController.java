@@ -14,11 +14,11 @@
 package org.ngrinder.user.controller;
 
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
@@ -35,12 +35,11 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
  */
 @RestController
 @RequestMapping("/sign_up/api")
+@AllArgsConstructor
 public class UserSignUpApiController {
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private Config config;
 
 	/**

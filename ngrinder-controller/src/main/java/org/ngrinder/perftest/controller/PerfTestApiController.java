@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.controller;
 
+import lombok.AllArgsConstructor;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -38,7 +39,6 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -73,42 +73,31 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 @Profile("production")
 @RestController
 @RequestMapping("/perftest/api")
+@AllArgsConstructor
 public class PerfTestApiController {
 
-	@Autowired
 	private PerfTestService perfTestService;
 
-	@Autowired
 	private TagService tagService;
 
-	@Autowired
 	private AgentManager agentManager;
 
-	@Autowired
 	private RegionService regionService;
 
-	@Autowired
 	private AgentManagerService agentManagerService;
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private HazelcastService hazelcastService;
 
-	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
-	@Autowired
 	private UserContext userContext;
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private MessageSource messageSource;
 
 	/**

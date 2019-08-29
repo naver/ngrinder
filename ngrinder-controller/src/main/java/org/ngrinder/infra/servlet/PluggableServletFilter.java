@@ -24,9 +24,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.extension.OnServletFilter;
 import org.ngrinder.infra.plugin.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CompositeFilter;
@@ -39,10 +39,10 @@ import org.springframework.web.filter.CompositeFilter;
  */
 @Profile("production")
 @Component("pluggableServletFilter")
+@RequiredArgsConstructor
 public class PluggableServletFilter implements Filter {
 
-	@Autowired
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
 	private CompositeFilter compositeFilter;
 

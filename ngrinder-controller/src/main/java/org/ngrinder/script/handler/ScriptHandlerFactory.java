@@ -1,8 +1,9 @@
 package org.ngrinder.script.handler;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.script.model.FileEntry;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,11 +21,12 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * @since 3.2
  */
 @Component
+@RequiredArgsConstructor
 public class ScriptHandlerFactory {
 
-	@Autowired
-	private List<ScriptHandler> scriptHandlers;
+	private final List<ScriptHandler> scriptHandlers;
 
+	@Getter
 	private List<ScriptHandler> visibleHandlers;
 
 	/**
@@ -55,15 +57,6 @@ public class ScriptHandlerFactory {
 			}
 		});
 
-	}
-
-	/**
-	 * Get the all handlers except NullScriptHandler.
-	 * 
-	 * @return all handlers but NullScriptHandler
-	 */
-	public List<ScriptHandler> getVisibleHandlers() {
-		return visibleHandlers;
 	}
 
 	/**

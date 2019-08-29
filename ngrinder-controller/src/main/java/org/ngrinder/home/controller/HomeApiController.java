@@ -1,5 +1,6 @@
 package org.ngrinder.home.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
@@ -28,22 +29,18 @@ import static org.ngrinder.common.util.NoOp.noOp;
  */
 @RestController
 @RequestMapping("/home/api")
+@RequiredArgsConstructor
 public class HomeApiController {
 
-	@Autowired
-	private HomeService homeService;
+	private final HomeService homeService;
 
-	@Autowired
-	private ScriptHandlerFactory scriptHandlerFactory;
+	private final ScriptHandlerFactory scriptHandlerFactory;
 
-	@Autowired
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
 	private List<TimeZone> timeZones = null;
 

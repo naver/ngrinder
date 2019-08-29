@@ -18,8 +18,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -34,12 +34,11 @@ import org.pf4j.DefaultPluginManager;
  */
 @Profile("production")
 @Component
+@AllArgsConstructor
 public class PluginManager {
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private DefaultPluginManager manager;
 
 	/**

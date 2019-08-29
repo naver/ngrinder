@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.controller;
 
+import lombok.AllArgsConstructor;
 import net.grinder.util.LogCompressUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,7 +22,6 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.*;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -37,15 +37,12 @@ import static org.ngrinder.common.util.Preconditions.*;
 /**
  * Performance Test Controller.
  *
- * @author Mavlarn
- * @author JunHo Yoon
  */
-@SuppressWarnings("SpringJavaAutowiringInspection")
 @Controller
 @RequestMapping("/perftest")
+@AllArgsConstructor
 public class PerfTestController {
 
-	@Autowired
 	private PerfTestService perfTestService;
 
 	/**

@@ -13,7 +13,7 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("/dev")
+@AllArgsConstructor
 public class DevController {
 
-	@Autowired
 	private ReloadableResourceBundleMessageSource messageSource;
 
 	/**

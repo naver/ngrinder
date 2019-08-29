@@ -13,9 +13,9 @@
  */
 package org.ngrinder.agent.controller;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/monitor")
+@AllArgsConstructor
 public class MonitorManagerController {
 
-	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
 	/**

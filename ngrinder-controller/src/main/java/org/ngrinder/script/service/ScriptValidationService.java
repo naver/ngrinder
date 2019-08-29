@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.service;
 
+import lombok.AllArgsConstructor;
 import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
@@ -30,7 +31,6 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.service.AbstractScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -50,20 +50,17 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @since 3.0
  */
 @Service
+@AllArgsConstructor
 public class ScriptValidationService extends AbstractScriptValidationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptValidationService.class);
 
-	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
 	/*

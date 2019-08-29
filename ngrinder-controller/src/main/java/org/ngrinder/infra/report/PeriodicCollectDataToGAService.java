@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra.report;
 
+import lombok.AllArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
@@ -22,7 +23,6 @@ import org.ngrinder.http.MeasureProtocolRequest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,12 +38,11 @@ import java.util.Random;
  * @since 3.2
  */
 @Service
+@AllArgsConstructor
 public class PeriodicCollectDataToGAService {
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private PerfTestService perfTestService;
 
 	/**
@@ -84,12 +83,4 @@ public class PeriodicCollectDataToGAService {
 		return perfTests.size();
 	}
 
-	/**
-	 * For unit test.
-	 *
-	 * @param config config
-	 */
-	void setConfig(Config config) {
-		this.config = config;
-	}
 }

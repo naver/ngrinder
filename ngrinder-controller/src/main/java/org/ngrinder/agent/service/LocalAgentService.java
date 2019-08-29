@@ -13,13 +13,13 @@
  */
 package org.ngrinder.agent.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -32,15 +32,14 @@ import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithR
 import static org.ngrinder.common.constant.CacheConstants.CACHE_LOCAL_AGENTS;
 
 @Component
+@RequiredArgsConstructor
 public class LocalAgentService {
-
-	@Autowired
-	private AgentManagerRepository agentManagerRepository;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalAgentService.class);
 
-	@Autowired
-	private Config config;
+	private final AgentManagerRepository agentManagerRepository;
+
+	private final Config config;
 
 	private boolean clustered;
 	private String region;

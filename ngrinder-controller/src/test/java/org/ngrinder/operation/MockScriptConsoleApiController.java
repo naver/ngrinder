@@ -13,7 +13,20 @@
  */
 package org.ngrinder.operation;
 
+import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.operation.cotroller.ScriptConsoleApiController;
+import org.ngrinder.perftest.service.AgentManager;
+import org.ngrinder.perftest.service.ConsoleManager;
+import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.region.service.RegionService;
+import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.user.service.UserContext;
+import org.ngrinder.user.service.UserService;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -21,4 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MockScriptConsoleApiController extends ScriptConsoleApiController {
 
+	public MockScriptConsoleApiController(ApplicationContext applicationContext, AgentManager agentManager, AgentManagerService agentManagerService, ConsoleManager consoleManager, PerfTestService perfTestService, FileEntryService fileEntryService, UserService userService, RegionService regionService, PluginManager pluginManager, TagService tagService, CacheManager cacheManager, UserContext userContext, Config config) {
+		super(applicationContext, agentManager, agentManagerService, consoleManager, perfTestService, fileEntryService, userService, regionService, pluginManager, tagService, cacheManager, userContext, config);
+	}
 }

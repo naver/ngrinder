@@ -13,7 +13,9 @@
  */
 package org.ngrinder.script.repository;
 
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
+import org.ngrinder.user.service.UserContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,10 @@ import java.io.File;
 public class MockFileEntityRepository extends FileEntryRepository {
 
 	private File userRepoDir;
+
+	public MockFileEntityRepository(Config config, UserContext userContext) {
+		super(config, userContext);
+	}
 
 	@Override
 	public File getUserRepoDirectory(User user) {

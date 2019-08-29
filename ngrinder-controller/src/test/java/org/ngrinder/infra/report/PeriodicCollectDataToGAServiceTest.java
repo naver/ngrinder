@@ -15,7 +15,7 @@ public class PeriodicCollectDataToGAServiceTest {
 		Config configMock = mock(Config.class);
 		when(configMock.isUsageReportEnabled()).thenReturn(true);
 		when(configMock.getVersion()).thenReturn("test-0.0.1");
-		PeriodicCollectDataToGAService gaService = new PeriodicCollectDataToGAService() {
+		PeriodicCollectDataToGAService gaService = new PeriodicCollectDataToGAService(configMock, null) {
 			@Override
 			protected int getUsage(Date start, Date end) {
 				return 10;
@@ -25,7 +25,6 @@ public class PeriodicCollectDataToGAServiceTest {
 				// No delay for unit test.
 			};
 		};
-		gaService.setConfig(configMock);
 		gaService.reportUsage();
 	}
 

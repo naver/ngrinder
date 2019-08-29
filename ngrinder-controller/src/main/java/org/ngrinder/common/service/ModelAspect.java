@@ -13,6 +13,7 @@
  */
 package org.ngrinder.common.service;
 
+import lombok.AllArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -21,7 +22,6 @@ import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -31,25 +31,20 @@ import static org.ngrinder.user.repository.UserSpecification.idEqual;
 /**
  * Aspect to inject the created/modified user and date to the model.
  *
- * @author Liu Zhifei
- * @author JunHo Yoon
  * @since 3.0
  */
 @Aspect
 @Service
+@AllArgsConstructor
 public class ModelAspect {
 
 	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
 
-	@Autowired
 	private UserContext userContext;
 
-	@Autowired
 	private SpringContext springContext;
 
-	@Autowired
 	private UserRepository userRepository;
-
 
 	/**
 	 * Inject the created/modified user and date to the model. It's only applied

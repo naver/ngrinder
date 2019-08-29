@@ -13,6 +13,9 @@
  */
 package org.ngrinder.security;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
@@ -20,7 +23,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -55,23 +57,31 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
 
-	@Autowired
+	@Getter
+	@Setter
 	private PluginManager pluginManager;
 
-	@Autowired
 	private DefaultLoginPlugin defaultLoginPlugin;
 	// ~ Instance fields
 	// ================================================================================================
 
-	@Autowired
-	@Lazy
+	@Getter(AccessLevel.PROTECTED)
 	private ShaPasswordEncoder passwordEncoder;
 
-	@Autowired
+	@Getter(AccessLevel.PROTECTED)
+	@Setter
 	private UserDetailsService userDetailsService;
 
-	@Autowired
 	private UserService userService;
+
+	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin,
+										  @Lazy ShaPasswordEncoder passwordEncoder, UserDetailsService userDetailsService, UserService userService) {
+		this.pluginManager = pluginManager;
+		this.defaultLoginPlugin = defaultLoginPlugin;
+		this.passwordEncoder = passwordEncoder;
+		this.userDetailsService = userDetailsService;
+		this.userService = userService;
+	}
 
 	// ~ Methods
 	// ========================================================================================================
@@ -124,8 +134,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	/**
 	 * Add new user into local db.
 	 * 
-	 * @param securedUser
-	 *            user
+	 * @param securedUser user
 	 */
 	@Transactional
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
@@ -167,28 +176,4 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		return loadedUser;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> T cast(Object passwordEncoder) {
-		return (T) passwordEncoder;
-	}
-
-	protected ShaPasswordEncoder getPasswordEncoder() {
-		return passwordEncoder;
-	}
-
-	public void setUserDetailsService(UserDetailsService userDetailsService) {
-		this.userDetailsService = userDetailsService;
-	}
-
-	protected UserDetailsService getUserDetailsService() {
-		return userDetailsService;
-	}
-
-	public PluginManager getPluginManager() {
-		return pluginManager;
-	}
-
-	public void setPluginManager(PluginManager pluginManager) {
-		this.pluginManager = pluginManager;
-	}
 }

@@ -19,13 +19,12 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.core.BooleanTypeEx;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.datatype.DataTypeFactory;
-import liquibase.datatype.core.BooleanType;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.sqlgenerator.core.LockDatabaseChangeLogGenerator;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ResourceLoader;
@@ -45,10 +44,10 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 @Service
 @DependsOn("dataSource")
+@RequiredArgsConstructor
 public class DatabaseUpdater implements ResourceLoaderAware {
 
-	@Autowired
-	private BasicDataSource dataSource;
+	private final BasicDataSource dataSource;
 
 	private ResourceLoader resourceLoader;
 

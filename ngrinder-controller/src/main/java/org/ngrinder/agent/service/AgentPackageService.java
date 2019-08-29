@@ -8,7 +8,6 @@ import org.ngrinder.packages.AgentPackageHandler;
 import org.ngrinder.packages.PackageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +32,14 @@ import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 public class AgentPackageService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentPackageService.class);
 
-	@Autowired
 	private Config config;
 
-	@Autowired
-	@Qualifier("agentPackageHandler")
 	private AgentPackageHandler agentPackageHandler;
+
+	public AgentPackageService(Config config, @Qualifier("agentPackageHandler") AgentPackageHandler agentPackageHandler) {
+		this.config = config;
+		this.agentPackageHandler = agentPackageHandler;
+	}
 
 	/**
 	 * Create package from PackageHandler.

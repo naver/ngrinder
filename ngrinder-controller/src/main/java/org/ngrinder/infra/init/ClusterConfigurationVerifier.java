@@ -13,11 +13,11 @@
  */
 package org.ngrinder.infra.init;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.common.constant.DatabaseConstants;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -32,14 +32,13 @@ import static org.ngrinder.common.util.Preconditions.checkState;
  * @since3.2
  */
 @Component
+@AllArgsConstructor
 public class ClusterConfigurationVerifier {
 
 	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterConfigurationVerifier.class);
 
-	@Autowired
 	private Config config;
-
 
 	/**
 	 * Check cluster configurations.

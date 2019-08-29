@@ -13,6 +13,7 @@
  */
 package org.ngrinder.home.controller;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.ThreadUtils;
@@ -25,7 +26,6 @@ import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -52,20 +52,17 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Controller
+@AllArgsConstructor
 public class HomeController implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
-	@Autowired
 	private RegionService regionService;
 
-	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
-	@Autowired
 	private UserContext userContext;
 
-	@Autowired
 	private Config config;
 
 	/**

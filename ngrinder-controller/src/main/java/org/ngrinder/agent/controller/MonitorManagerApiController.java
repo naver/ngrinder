@@ -13,12 +13,12 @@
  */
 package org.ngrinder.agent.controller;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.common.util.AopUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,12 +37,11 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @RestController
 @RequestMapping("/monitor/api")
+@AllArgsConstructor
 public class MonitorManagerApiController {
 
-	@Autowired
 	private MonitorInfoStore monitorInfoStore;
 
-	@Autowired
 	private Config config;
 
 	/**

@@ -13,11 +13,11 @@
  */
 package org.ngrinder.script.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
@@ -59,13 +59,13 @@ import java.util.*;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 @Controller("svnDavServlet")
+@RequiredArgsConstructor
 public class SvnDavController implements HttpRequestHandler, ServletConfig, ServletContextAware {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(SvnDavController.class);
 	public static final String XML_CONTENT_TYPE = "text/xml; charset=UTF-8";
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Initialize. Set the SVNParentPath as $(NGRINDER_HOME)/repos
