@@ -96,9 +96,11 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
+    import MessageMixin from '../../common/mixin/MessagesMixin.vue';
     import Chart from '../../../chart.js';
 
     @Component({
@@ -111,7 +113,7 @@
         },
         components: { ControlGroup },
     })
-    export default class Report extends Base {
+    export default class Report extends Mixins(Base, MessageMixin) {
         report = {
             test: {
                 tps: 0,
@@ -145,7 +147,7 @@
                         $('[data-toggle="popover"]').popover();
                         new Chart('tps-chart', [this.report.tps], this.report.interval).plot();
                     });
-                }).catch(error => console.log(error));
+                }).catch(() => this.showErrorMsg(this.i18n('perfTest.report.message.fetch.basicReport.error')));
         }
 
         leaveComment() {
@@ -154,9 +156,9 @@
                 tagString: this.$parent.selectedTag,
             }).then(res => {
                 if (res.data.success) {
-                    alert(this.i18n('perfTest.report.message.leaveComment'));
+                    this.showSuccessMsg(this.i18n('perfTest.report.message.leaveComment'));
                 }
-            }).catch(error => console.log(error));
+            }).catch(() => this.showErrorMsg(this.i18n('perfTest.report.message.leaveComment.error')));
         }
     }
 </script>
