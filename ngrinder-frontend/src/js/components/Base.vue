@@ -24,6 +24,10 @@
             return this.ngrinder.currentUser.role === 'A';
         }
 
+        get isSuperUser() {
+            return this.ngrinder.currentUser.role === 'S';
+        }
+
         get isAdminOrSuperUser() {
             return this.ngrinder.currentUser.role === 'A' || this.ngrinder.currentUser.role === 'S';
         }

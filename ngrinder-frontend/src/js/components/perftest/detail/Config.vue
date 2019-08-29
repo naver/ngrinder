@@ -65,12 +65,18 @@
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script">
                     <select2 v-model="test.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
+                             @change="changeScript"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
-                        <option v-for="script in scripts" :data-validate="script.validated" v-text="script.pathInShort" :value="script.path"></option>
+                        <option v-for="script in scripts"
+                                :data-revision="script.revision"
+                                :data-validate="script.validated"
+                                v-text="script.pathInShort"
+                                :value="script.path">
+                        </option>
                     </select2>
                     <input type="hidden" name="scriptRevision" :value="test.scriptRevision">
-                    <button class="btn btn-info float-right btn-script-revision" type="button">
+                    <button v-show="display.showScriptBtn" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
                         R <span v-if="test.scriptRevision !== -1" v-text="test.scriptRevision"></span>
                         <span v-else v-text="test.quickScriptRevision ? test.quickScriptRevision : 'HEAD'"></span>
@@ -248,6 +254,7 @@
         display = {
             vuserPanel: false,
             detailConfig: false,
+            showScriptBtn: true,
         };
 
         durationMaxHour = 0;
@@ -293,6 +300,7 @@
             if (!scripts.some(script => script.pathInShort === selectedScript)) {
                 if (selectedScript) {
                     scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
+                    this.display.showScriptBtn = false;
                 }
             }
             this.scripts = scripts;
@@ -306,6 +314,7 @@
                 this.setScripts(res.data, this.test.scriptName);
                 this.$nextTick(() => {
                     this.$refs.scriptSelect.selectValue(this.test.scriptName);
+                    this.$validator.validate('scriptName');
                 });
             }).catch(() => this.showErrorMsg(this.i18n('navigator.script')));
         }
@@ -322,6 +331,38 @@
             })
             .then(res => this.resources = res.data.resources)
             .catch(() => this.showErrorMsg(this.i18n('perfTest.config.scriptResources')));
+        }
+
+        showScript() {
+            let showScriptUrl = `${this.contextPath}/script/detail/${this.test.scriptName}?r=${this.test.scriptRevision}`;
+            if (this.isAdmin || this.isSuperUser) {
+                showScriptUrl += `&ownerId=${this.test.createdUser.userId}`;
+            }
+            const openedWindow = window.open(showScriptUrl, 'scriptSource');
+            openedWindow.focus();
+        }
+
+        changeScript(revision) {
+            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
+                this.test.scriptRevision = revision;
+                this.updateScriptResource();
+                this.getScriptResource();
+                this.display.showScriptBtn = true;
+            } else {
+                this.test.scriptRevision = -1;
+                this.targetHosts = [];
+                this.resources = [];
+                this.display.showScriptBtn = false;
+            }
+        }
+
+        updateScriptResource() {
+            this.$http.get(`/script/api/detail/${this.test.scriptName}?r=${this.test.scriptRevision}`)
+                .then(res => {
+                    if (res.data.file && res.data.file.properties.targetHosts) {
+                        this.targetHosts = res.data.file.properties.targetHosts.split(',');
+                    }
+                });
         }
 
         setCustomValidationRules() {
@@ -477,7 +518,7 @@
             }
 
             .vuser-per-agent-container {
-                width: 145px;
+                width: 155px;
                 display: inline-block;
             }
         }

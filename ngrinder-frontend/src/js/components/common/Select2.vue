@@ -52,7 +52,7 @@
                 .select2(this.option, [])
                 .change(function() {
                     self.$emit('input', this.value);
-                    self.$emit('change');
+                    self.$emit('change', self.$refs.select2.options[self.selectedIndex()].dataset.revision);
                     self.$nextTick(() => self.$validator.validate(self.name));
                 });
         }
@@ -63,7 +63,11 @@
 
         // for only type 'select'
         getSelectedOptionValidate() {
-            return this.$refs.select2.options[this.$refs.select2.options.selectedIndex].dataset.validate;
+            return this.$refs.select2.options[this.selectedIndex()].dataset.validate;
+        }
+
+        selectedIndex() {
+            return this.$refs.select2.options.selectedIndex;
         }
     }
 
