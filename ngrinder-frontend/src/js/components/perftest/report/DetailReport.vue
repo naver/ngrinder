@@ -157,15 +157,17 @@
 
         created() {
             this.props.id = this.id;
+        }
+
+        mounted() {
+            this.showProgressBar();
+            this.currentActiveNavMenu = this.$refs.perftestNavMenu;
             this.$http.get(`/perftest/api/${this.id}/detail_report`).then(res => {
                 this.test = res.data.test;
                 this.plugins = res.data.plugins;
             })
-            .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error'), { content: this.i18n('perfTest.report.detailedReport') }));
-        }
-
-        mounted() {
-            this.currentActiveNavMenu = this.$refs.perftestNavMenu;
+            .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error'), { content: this.i18n('perfTest.report.detailedReport') }))
+            .finally(this.hideProgressBar);
         }
 
         showMonitorMenu($event, ip) {
