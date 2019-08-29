@@ -123,7 +123,7 @@
     import SamplingTable from './SamplingTable.vue';
     import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
-    import FormatMixin from '../mixin/FormatMixin.vue';
+    import FormatMixin from '../../common/mixin/FormatMixin.vue';
 
     @Component({
         name: 'running',

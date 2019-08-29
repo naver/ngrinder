@@ -8,32 +8,32 @@
                 <div class="summary form-horizontal form-horizontal-3">
                     <fieldset>
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.totalVusers">
-                            <strong v-text="report.test.agentCount * report.test.vuserPerAgent"></strong>
+                            <strong v-text="formatNumber(report.test.agentCount * report.test.vuserPerAgent)"></strong>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.tps">
-                            <strong v-text="report.test.tps.toFixed(1)"></strong>
+                            <strong v-text="formatNumber(report.test.tps, 1)"></strong>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.peakTPS">
-                            <span v-text="report.test.peakTps.toFixed(1)"></span>
+                            <span v-text="formatNumber(report.test.peakTps, 1)"></span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.meantime">
-                            <span v-text="report.test.meanTestTime.toFixed(2)"></span>
+                            <span v-text="formatNumber(report.test.meanTestTime, 2)"></span>
                             <code>MS</code>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.totalTests">
-                            <span v-text="report.test.tests + report.test.errors"></span>
+                            <span v-text="formatNumber(report.test.tests + report.test.errors)"></span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.successfulTests">
-                            <span v-text="report.test.tests"></span>
+                            <span v-text="formatNumber(report.test.tests)"></span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.errors">
-                            <span v-text="report.test.errors"></span>
+                            <span v-text="formatNumber(report.test.errors)"></span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.runtime">
@@ -168,6 +168,10 @@
         .control-label {
             width: 170px;
         }
+
+        .controls {
+            margin-top: 0;
+        }
     }
 </style>
 
@@ -203,12 +207,13 @@
         }
 
         .control-group {
+            padding-top: 6px;
+
             label {
                 &.control-label {
                     width: 170px
                 }
             }
-            padding-top: 6px;
         }
 
         #tps-chart {

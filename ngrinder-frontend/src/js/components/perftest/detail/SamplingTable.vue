@@ -41,7 +41,7 @@
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
-    import FormatMixin from '../mixin/FormatMixin.vue';
+    import FormatMixin from '../../common/mixin/FormatMixin.vue';
 
     @Component({
         name: 'samplingTable',
