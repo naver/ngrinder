@@ -26,7 +26,6 @@ import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -64,7 +63,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * This class is responsible for creating user svn repository whenever a user is
  * created and connect the user to the underlying svn.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Service
@@ -72,24 +70,25 @@ public class FileEntryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryService.class);
 
+	private final Config config;
+
+	private final CacheManager cacheManager;
+
+	private final FileEntryRepository fileEntityRepository;
+
+	private final ScriptHandlerFactory scriptHandlerFactory;
+
 	private SVNClientManager svnClientManager;
 
-	@Autowired
-	private Config config;
-
-
-	@Autowired
-	@Qualifier("cacheManager")
-	private CacheManager cacheManager;
-
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	@Autowired
-	private FileEntryRepository fileEntityRepository;
-
-	@Autowired
-	private ScriptHandlerFactory scriptHandlerFactory;
-
 	private Cache fileEntryCache;
+
+	public FileEntryService(Config config, @Qualifier("cacheManager") CacheManager cacheManager,
+							FileEntryRepository fileEntityRepository, ScriptHandlerFactory scriptHandlerFactory) {
+		this.config = config;
+		this.cacheManager = cacheManager;
+		this.fileEntityRepository = fileEntityRepository;
+		this.scriptHandlerFactory = scriptHandlerFactory;
+	}
 
 	/**
 	 * Initialize {@link FileEntryService}.

@@ -13,12 +13,12 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -30,13 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Used to save JMX connect for every request that want to observe monitor real-time system information.
  */
 @Service
+@RequiredArgsConstructor
 public class MonitorInfoStore implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorInfoStore.class);
 
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
-	private Map<String, MonitorClientService> monitorClientMap = new ConcurrentHashMap<String, MonitorClientService>();
+	private static final Map<String, MonitorClientService> monitorClientMap = new ConcurrentHashMap<>();
 
+	private final ScheduledTaskService scheduledTaskService;
 
 	@PostConstruct
 	public void init() {

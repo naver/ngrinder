@@ -16,6 +16,10 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -30,6 +34,10 @@ import org.springframework.stereotype.Component;
 public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
+
+	public MockPerfTestRunnableForCancellation(PerfTestService perfTestService, AgentManager agentManager, ConsoleManager consoleManager, PluginManager pluginManager, Config config, ScheduledTaskService scheduledTaskService, HazelcastService hazelcastService) {
+		super(perfTestService, agentManager, consoleManager, pluginManager, config, scheduledTaskService, hazelcastService);
+	}
 
 	@Override
 	public void startPeriodically() {

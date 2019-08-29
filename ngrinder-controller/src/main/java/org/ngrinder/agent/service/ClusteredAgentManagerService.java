@@ -23,18 +23,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.ClusteredAgentRequest;
 import org.ngrinder.agent.model.ClusteredAgentRequest.RequestType;
+import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.AgentStateTask;
 import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.region.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -54,20 +57,25 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 /**
  * Cluster enabled version of {@link AgentManagerService}.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 public class ClusteredAgentManagerService extends AgentManagerService implements TopicListener<ClusteredAgentRequest> {
 	private final Logger LOGGER = LoggerFactory.getLogger(ClusteredAgentManagerService.class);
 
-	@Autowired
 	private TopicSubscriber topicSubscriber;
 
-	@Autowired
 	private HazelcastService hazelcastService;
 
-	@Autowired
 	private RegionService regionService;
+
+	public ClusteredAgentManagerService(AgentManager agentManager, AgentManagerRepository agentManagerRepository,
+										LocalAgentService cachedLocalAgentService, Config config, ScheduledTaskService scheduledTaskService,
+										TopicSubscriber topicSubscriber, HazelcastService hazelcastService, RegionService regionService) {
+		super(agentManager, agentManagerRepository, cachedLocalAgentService, config, scheduledTaskService);
+		this.topicSubscriber = topicSubscriber;
+		this.hazelcastService = hazelcastService;
+		this.regionService = regionService;
+	}
 
 	/**
 	 * Initialize.

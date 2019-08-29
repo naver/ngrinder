@@ -7,13 +7,13 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,13 +29,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user/api")
+@AllArgsConstructor
 public class UserApiController {
 	public static final Sort DEFAULT_SORT = new Sort(Sort.Direction.ASC, "userName");
 
-	@Autowired
 	protected Config config;
 
-	@Autowired
 	private UserService userService;
 
 	/**

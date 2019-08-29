@@ -23,12 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.ngrinder.user.service.MockUserContext.TEST_USER_ID;
 import static org.ngrinder.user.service.MockUserContext.TEST_USER_PASSWORD;
 
-/**
- * Class description.
- * 
- * @author Mavlarn
- * @since
- */
 public class DefaultLoginPluginTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
@@ -36,7 +30,7 @@ public class DefaultLoginPluginTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testValidateUser() {
-		DefaultLoginPlugin plugin = new DefaultLoginPlugin();
+		DefaultLoginPlugin plugin = new DefaultLoginPlugin(null);
 		String salt = TEST_USER_ID;
 
 		try {

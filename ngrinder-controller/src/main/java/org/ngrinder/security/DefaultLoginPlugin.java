@@ -13,13 +13,13 @@
  */
 package org.ngrinder.security;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.SpringSecurityMessageSource;
@@ -30,18 +30,17 @@ import org.springframework.stereotype.Service;
  * The default login plugin.
  *
  * This retrieves the user
- *
- * @author JunHo Yoon
  */
 @Service
+@AllArgsConstructor
 public class DefaultLoginPlugin implements OnLoginRunnable {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(DefaultLoginPlugin.class);
 
-	@Autowired
+	private static final MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+
 	private UserService userService;
 
-	private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
 	@Override
 	public User loadUser(String userId) {

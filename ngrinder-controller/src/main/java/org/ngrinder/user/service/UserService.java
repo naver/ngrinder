@@ -23,10 +23,8 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.AbstractUserService;
-import org.ngrinder.user.controller.UserApiController;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -59,29 +57,31 @@ import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
 @Service
 public class UserService extends AbstractUserService {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	@Autowired
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
-	@Autowired
-	private FileEntryService scriptService;
+	private final FileEntryService scriptService;
 
-	@Lazy
-	@Autowired
-	private ShaPasswordEncoder passwordEncoder;
+	private final ShaPasswordEncoder passwordEncoder;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private CacheManager cacheManager;
+	private final CacheManager cacheManager;
 
 	private Cache userCache;
 
 	private Cache userModelCache;
+
+	public UserService(UserRepository userRepository, PerfTestService perfTestService, FileEntryService scriptService,
+					   @Lazy ShaPasswordEncoder passwordEncoder, Config config, CacheManager cacheManager) {
+		this.userRepository = userRepository;
+		this.perfTestService = perfTestService;
+		this.scriptService = scriptService;
+		this.passwordEncoder = passwordEncoder;
+		this.config = config;
+		this.cacheManager = cacheManager;
+	}
 
 	@PostConstruct
 	public void init() {

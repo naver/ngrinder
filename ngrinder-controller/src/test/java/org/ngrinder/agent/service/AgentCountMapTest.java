@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.service;
 
@@ -26,27 +26,25 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	AgentManager agentManager;
+	private AgentManager agentManager;
 
 	@Autowired
-	AgentManagerRepository agentManagerRepository;
+	private AgentManagerRepository agentManagerRepository;
 
-	Config config;
+	private ClusteredAgentManagerService agentManagerService;
 
-	ClusteredAgentManagerService agentManagerService;
 
 	public AgentInfo createAgentInfo(String region, boolean approved, AgentControllerState status) {
 		AgentInfo agentInfo1 = new AgentInfo();
@@ -58,49 +56,37 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
 	@Before
 	public void init() {
-		agentManagerService = new ClusteredAgentManagerService() {
-			@SuppressWarnings("serial")
-			@Override
-			public List<AgentInfo> getAllActive() {
-				return new ArrayList<AgentInfo>() {
-					{
-						add(createAgentInfo("hello", true, AgentControllerState.READY));
-						add(createAgentInfo("hello", true, AgentControllerState.READY));
-						add(createAgentInfo("hello_owned_wow", true, AgentControllerState.READY));
-						add(createAgentInfo("haha", true, AgentControllerState.READY));
-						add(createAgentInfo("haha", true, AgentControllerState.READY));
-						add(createAgentInfo("haha", true, AgentControllerState.READY));
-						add(createAgentInfo("haha", false, AgentControllerState.READY));
-						add(createAgentInfo("haha", true, AgentControllerState.READY));
-						add(createAgentInfo("haha_owned_my", true, AgentControllerState.READY));
-						add(createAgentInfo("woowo_owned_my", true, AgentControllerState.READY));
-						add(createAgentInfo("wowo", true, AgentControllerState.READY));
-						add(createAgentInfo("wowo", true, AgentControllerState.READY));
-						add(createAgentInfo("wowo", true, AgentControllerState.READY));
-						add(createAgentInfo("wowo", false, AgentControllerState.READY));
-						add(createAgentInfo("kiki", false, AgentControllerState.READY));
-
-					}
-				};
-			}
-
-			@Override
-			protected Set<String> getRegions() {
-				Set<String> regions = Sets.newHashSet("hello", "haha", "wowo");
-				return regions;
-			}
-
-			@Override
-			int getMaxAgentSizePerConsole() {
-				return 3;
-			}
-		};
-
-		config = mock(Config.class);
+		Config config = mock(Config.class);
 		when(config.isClustered()).thenReturn(true);
-		agentManagerService.setConfig(config);
-		agentManagerService.setAgentManager(this.agentManager);
-		agentManagerService.setAgentManagerRepository(this.agentManagerRepository);
+
+		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig(config, applicationContext);
+		agentManagerService = (ClusteredAgentManagerService) spy(serviceConfig.agentManagerService());
+
+		setField(agentManagerService, "config", config);
+		setField(agentManagerService, "agentManager", agentManager);
+		setField(agentManagerService, "agentManagerRepository", agentManagerRepository);
+
+		List<AgentInfo> agents = asList(
+			createAgentInfo("hello", true, AgentControllerState.READY),
+			createAgentInfo("hello", true, AgentControllerState.READY),
+			createAgentInfo("hello_owned_wow", true, AgentControllerState.READY),
+			createAgentInfo("haha", true, AgentControllerState.READY),
+			createAgentInfo("haha", true, AgentControllerState.READY),
+			createAgentInfo("haha", true, AgentControllerState.READY),
+			createAgentInfo("haha", false, AgentControllerState.READY),
+			createAgentInfo("haha", true, AgentControllerState.READY),
+			createAgentInfo("haha_owned_my", true, AgentControllerState.READY),
+			createAgentInfo("woowo_owned_my", true, AgentControllerState.READY),
+			createAgentInfo("wowo", true, AgentControllerState.READY),
+			createAgentInfo("wowo", true, AgentControllerState.READY),
+			createAgentInfo("wowo", true, AgentControllerState.READY),
+			createAgentInfo("wowo", false, AgentControllerState.READY),
+			createAgentInfo("kiki", false, AgentControllerState.READY)
+		);
+
+		doReturn(agents).when(agentManagerService).getAllActive();
+		doReturn(Sets.newHashSet("hello", "haha", "wowo")).when(agentManagerService).getRegions();
+		doReturn(3).when(agentManagerService).getMaxAgentSizePerConsole();
 	}
 
 	@Test

@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.controller;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.HttpContainerContext;
@@ -22,7 +23,6 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,14 +40,13 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 @Controller
 @RequestMapping("/script")
+@AllArgsConstructor
 public class FileEntryController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryController.class);
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
-	@Autowired
 	HttpContainerContext httpContainerContext;
 
 	@GetMapping({"/list/**", ""})

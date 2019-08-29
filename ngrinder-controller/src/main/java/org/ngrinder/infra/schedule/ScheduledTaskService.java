@@ -13,10 +13,10 @@
  */
 package org.ngrinder.infra.schedule;
 
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.infra.transaction.TransactionService;
 import org.ngrinder.service.IScheduledTaskService;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -29,22 +29,19 @@ import static net.grinder.util.NoOp.noOp;
 /**
  * Convenient class which makes scheduled task.
  *
- * @author JunHo Yoon
  * @since 3.3
  */
 @Service
+@RequiredArgsConstructor
 public class ScheduledTaskService implements IScheduledTaskService {
 
-	@Autowired
-	private TaskScheduler taskScheduler;
+	private final TaskScheduler taskScheduler;
 
-	@Autowired
-	private InternalAsyncTaskService internalAsyncTaskService;
+	private final InternalAsyncTaskService internalAsyncTaskService;
+
+	private final TransactionService transactionService;
 
 	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
-
-	@Autowired
-	private TransactionService transactionService;
 
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);

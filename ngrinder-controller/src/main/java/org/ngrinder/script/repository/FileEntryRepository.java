@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -29,7 +30,6 @@ import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.*;
@@ -67,12 +67,14 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @Profile("production")
 @Component
+@RequiredArgsConstructor
 public class FileEntryRepository {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryRepository.class);
 
-	@Autowired
-	private Config config;
+	private final Config config;
+
+	final UserContext userContext;
 
 	private Home home;
 
@@ -88,9 +90,6 @@ public class FileEntryRepository {
 		home = config.getHome();
 		subversionHome = home.getSubFile("subversion");
 	}
-
-	@Autowired
-	private UserRepository userRepository;
 
 	/**
 	 * Get user repository.
@@ -444,9 +443,6 @@ public class FileEntryRepository {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
 	}
-
-	@Autowired
-	UserContext userContext;
 
 	/**
 	 * Get svn client manager with the designated subversionHome.

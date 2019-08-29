@@ -64,11 +64,9 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		Config spiedConfig = spy(config);
 		when(spiedConfig.isClustered()).thenReturn(true);
 
-		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig();
-		setField(serviceConfig, "config", spiedConfig);
-		serviceConfig.setApplicationContext(applicationContext);
-
+		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig(spiedConfig, applicationContext);
 		agentManagerService = (ClusteredAgentManagerService) serviceConfig.agentManagerService();
+
 		setField(agentManagerService, "config", spiedConfig);
 		setField(regionService, "config", spiedConfig);
 

@@ -15,12 +15,12 @@ package org.ngrinder.security;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,14 +34,13 @@ import org.springframework.stereotype.Service;
  * @author JunHo Yoon
  */
 @Service("ngrinderUserDetailsService")
+@AllArgsConstructor
 public class NGrinderUserDetailsService implements UserDetailsService {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderUserDetailsService.class);
 
-	@Autowired
 	private PluginManager pluginManager;
 
-	@Autowired
 	private DefaultLoginPlugin defaultPlugin;
 
 	@Override

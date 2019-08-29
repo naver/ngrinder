@@ -13,12 +13,12 @@
  */
 package org.ngrinder.infra.init;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -38,17 +38,15 @@ import static org.ngrinder.model.Role.*;
  * @since 3.0
  */
 @Component
+@AllArgsConstructor
 public class DBInit {
-	@Autowired
+
 	private UserRepository userRepository;
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private ShaPasswordEncoder passwordEncoder;
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
 	/**

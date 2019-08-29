@@ -13,11 +13,10 @@
  */
 package org.ngrinder.agent.service;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -31,9 +30,9 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 @Profile("production")
-public class AgentManagerServiceConfig implements ApplicationContextAware {
+@AllArgsConstructor
+public class AgentManagerServiceConfig {
 
-	@Autowired
 	protected Config config;
 
 	private ApplicationContext applicationContext;
@@ -47,11 +46,6 @@ public class AgentManagerServiceConfig implements ApplicationContextAware {
 	public AgentManagerService agentManagerService() {
 		return (AgentManagerService) applicationContext.getAutowireCapableBeanFactory()
 				.autowire(config.isClustered() ? ClusteredAgentManagerService.class : AgentManagerService.class,
-						AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, true);
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
+						AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true);
 	}
 }

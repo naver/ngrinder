@@ -15,6 +15,9 @@ package org.ngrinder.agent.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
@@ -31,7 +34,6 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.service.AbstractAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -47,26 +49,23 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 /**
  * Agent manager service.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
+@RequiredArgsConstructor
 public class AgentManagerService extends AbstractAgentManagerService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
-	@Autowired
-	private AgentManager agentManager;
+	@Getter(AccessLevel.PACKAGE)
+	private final AgentManager agentManager;
 
-	@Autowired
-	protected AgentManagerRepository agentManagerRepository;
+	protected final AgentManagerRepository agentManagerRepository;
 
-	@Autowired
-	protected LocalAgentService cachedLocalAgentService;
+	protected final LocalAgentService cachedLocalAgentService;
 
-	@Autowired
-	private Config config;
+	@Getter
+	private final Config config;
 
-	@Autowired
-	protected ScheduledTaskService scheduledTaskService;
+	protected final ScheduledTaskService scheduledTaskService;
 
 	private Runnable runnable;
 
@@ -449,26 +448,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
 		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(ip, name);
 		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();
-	}
-
-	AgentManager getAgentManager() {
-		return agentManager;
-	}
-
-	void setAgentManager(AgentManager agentManager) {
-		this.agentManager = agentManager;
-	}
-
-	public void setAgentManagerRepository(AgentManagerRepository agentManagerRepository) {
-		this.agentManagerRepository = agentManagerRepository;
-	}
-
-	public Config getConfig() {
-		return config;
-	}
-
-	public void setConfig(Config config) {
-		this.config = config;
 	}
 
 	/*

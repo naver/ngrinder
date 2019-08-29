@@ -21,11 +21,13 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.spi.merge.LatestUpdateMergePolicy;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import com.hazelcast.spring.context.SpringManagedContext;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.grinder.util.NetworkUtils;
 import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.CompositeCacheManager;
@@ -52,9 +54,11 @@ import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
  * @since 3.1
  */
 @Configuration
+@AllArgsConstructor
 public class DynamicCacheConfig implements ClusterConstants {
 
-	@Autowired
+	@Getter
+	@Setter
 	private Config config;
 
 	private static final int DAY = 24 * 60 * 60;
@@ -231,11 +235,4 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return port;
 	}
 
-	public Config getConfig() {
-		return config;
-	}
-
-	public void setConfig(Config config) {
-		this.config = config;
-	}
 }

@@ -20,6 +20,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
 import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
@@ -29,7 +30,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
@@ -45,18 +45,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/agent/api")
 @PreAuthorize("hasAnyRole('A', 'S')")
+@AllArgsConstructor
 public class AgentManagerApiController {
 
-	@Autowired
 	private AgentManagerService agentManagerService;
 
-	@Autowired
 	private RegionService regionService;
 
-	@Autowired
 	private AgentPackageService agentPackageService;
 
-	@Autowired
 	private Config config;
 
 	@GetMapping("/regions")

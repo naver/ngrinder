@@ -13,6 +13,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.StopReason;
@@ -36,7 +38,6 @@ import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -66,31 +67,26 @@ import static org.ngrinder.model.Status.*;
  */
 @Profile("production")
 @Component
+@RequiredArgsConstructor
 public class PerfTestRunnable implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	@Autowired
-	private PerfTestService perfTestService;
+	@Getter
+	private final PerfTestService perfTestService;
 
-	@Autowired
-	private ConsoleManager consoleManager;
+	@Getter
+	private final AgentManager agentManager;
 
-	@Autowired
-	private AgentManager agentManager;
+	private final ConsoleManager consoleManager;
 
-	@Autowired
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
+	private final ScheduledTaskService scheduledTaskService;
 
-	@Autowired
-	private HazelcastService hazelcastService;
+	private final HazelcastService hazelcastService;
 
 	private Runnable startRunnable;
 
@@ -549,14 +545,6 @@ public class PerfTestRunnable implements ControllerConstants {
 			LOG.debug("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
-	}
-
-	public PerfTestService getPerfTestService() {
-		return perfTestService;
-	}
-
-	public AgentManager getAgentManager() {
-		return agentManager;
 	}
 
 }

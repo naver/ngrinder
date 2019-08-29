@@ -1,10 +1,10 @@
 package org.ngrinder.common.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.user.service.UserContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,25 +16,21 @@ import static org.ngrinder.common.constant.WebConstants.PARAM_PROCESS_THREAD_POL
 import static org.ngrinder.common.util.NoOp.noOp;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalControllerAdvice {
 
 	@Value("${ngrinder.version}")
 	private String version;
 
-	@Autowired
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	@Autowired
-	private AnnouncementService announcementService;
+	private final AnnouncementService announcementService;
 
-	@Autowired
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
-	@Autowired
-	private ServletContext servletContext;
+	private final ServletContext servletContext;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
 	@ModelAttribute
     public void globalAttributes(Model model) {

@@ -16,13 +16,13 @@ package org.ngrinder.operation.service;
 import java.io.IOException;
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,11 +32,11 @@ import org.springframework.stereotype.Service;
  * @since 3.1
  */
 @Service
+@AllArgsConstructor
 public class AnnouncementService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnnouncementService.class);
 
-	@Autowired
 	private Config config;
 
 	/**

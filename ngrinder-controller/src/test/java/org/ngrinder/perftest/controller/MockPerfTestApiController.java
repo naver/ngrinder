@@ -16,8 +16,17 @@ package org.ngrinder.perftest.controller;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.perftest.service.AgentManager;
+import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.region.service.RegionService;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
+import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
+import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,6 +47,10 @@ public class MockPerfTestApiController extends PerfTestApiController {
 
 	@Autowired
 	private Config config;
+
+	public MockPerfTestApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager, RegionService regionService, AgentManagerService agentManagerService, FileEntryService fileEntryService, UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory, UserContext userContext, Config config, MessageSource messageSource) {
+		super(perfTestService, tagService, agentManager, regionService, agentManagerService, fileEntryService, userService, hazelcastService, scriptHandlerFactory, userContext, config, messageSource);
+	}
 
 	@PostConstruct
 	public void init() {

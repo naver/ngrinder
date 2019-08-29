@@ -1,5 +1,6 @@
 package org.ngrinder.operation.cotroller;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -13,7 +14,6 @@ import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
@@ -41,45 +41,33 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 @RestController
 @RequestMapping("/operation/script_console/api")
 @PreAuthorize("hasAnyRole('A')")
+@AllArgsConstructor
 public class ScriptConsoleApiController {
 
-	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Autowired
 	private AgentManager agentManager;
 
-	@Autowired
 	private AgentManagerService agentManagerService;
 
-	@Autowired
 	private ConsoleManager consoleManager;
 
-	@Autowired
 	private PerfTestService perfTestService;
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private RegionService regionService;
 
-	@Autowired
 	private PluginManager pluginManager;
 
-	@Autowired
 	private TagService tagService;
 
-	@Autowired
 	private CacheManager cacheManager;
 
-	@Autowired
 	private UserContext userContext;
 
-	@Autowired
 	private Config config;
 
 	/**
