@@ -88,7 +88,7 @@
         }
 
         downloadCSV() {
-            location.href = `/perftest/${this.id}/download_csv`;
+            location.href = `${this.contextPath}/perftest/${this.id}/download_csv`;
         }
     }
 </script>
