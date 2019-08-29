@@ -259,10 +259,6 @@
         }
 
         updateStatus(id, statusType, name, icon, deletable, stoppable, message) {
-            if (!this.isUpdatableStatus()) {
-                window.clearInterval(this.$refs.running.samplingIntervalId);
-            }
-
             this.$testStatusImage.attr('data-original-title', name);
             this.$testStatusImage.attr('data-content', message);
 
@@ -279,8 +275,10 @@
                 this.$nextTick(() => this.$refs.runningTab.click());
                 return;
             }
-
             if (!this.isUpdatableStatus()) {
+                if (this.$refs.running) {
+                    window.clearInterval(this.$refs.running.samplingIntervalId);
+                }
                 this.tab.display.report = true;
                 this.tab.display.running = false;
                 this.$nextTick(() => this.$refs.reportTab.click());
