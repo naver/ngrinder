@@ -150,6 +150,7 @@
         tpsChart = {};
 
         test = {};
+        shownBsTab = true;
 
         created() {
             this.test = this.testProps;
@@ -176,7 +177,9 @@
                     this.runningThread = perfTestSample.thread;
                     this.testTime = perfTestSample.testTime;
                     this.tpsQueue.enQueue(perfTestSample.tpsChartData);
-                    this.tpsChart.plot();
+                    if (this.shownBsTab) {
+                        this.tpsChart.plot();
+                    }
                 }
                 this.agentState = res.data.agent || {};
                 this.monitorState = res.data.monitor || {};
