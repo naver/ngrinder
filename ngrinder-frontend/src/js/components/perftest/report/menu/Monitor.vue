@@ -56,7 +56,7 @@
     import Component from 'vue-class-component';
     import Base from '../../../Base.vue';
     import MenuChartMixin from './MenuChartMixin.vue';
-    import FormatMixin from '../../mixin/FormatMixin.vue';
+    import FormatMixin from '../../../common/mixin/FormatMixin.vue';
     import MessagesMixin from '../../../common/mixin/MessagesMixin.vue';
 
     @Component({

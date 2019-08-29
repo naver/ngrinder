@@ -24,7 +24,7 @@
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import ModalBase from '../../common/modal/ModalBase.vue';
-    import FormatMixin from '../mixin/FormatMixin.vue';
+    import FormatMixin from '../../common/mixin/FormatMixin.vue';
     import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
 
