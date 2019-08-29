@@ -13,9 +13,9 @@
  */
 package org.ngrinder.common.util;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -32,9 +32,10 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @since 3.0
  */
 @Component
+@AllArgsConstructor
 public class HttpContainerContext {
 	private static final int DEFAULT_WEB_PORT = 80;
-	@Autowired
+
 	private Config config;
 
 	/**

@@ -15,6 +15,10 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -30,6 +34,10 @@ import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
 @Profile("unit-test")
 @Component
 public class MockPerfTestRunnable extends PerfTestRunnable {
+
+	public MockPerfTestRunnable(PerfTestService perfTestService, AgentManager agentManager, ConsoleManager consoleManager, PluginManager pluginManager, Config config, ScheduledTaskService scheduledTaskService, HazelcastService hazelcastService) {
+		super(perfTestService, agentManager, consoleManager, pluginManager, config, scheduledTaskService, hazelcastService);
+	}
 
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {

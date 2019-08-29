@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.DatabaseConstants;
@@ -21,7 +22,6 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -36,14 +36,13 @@ import javax.persistence.Entity;
 /**
  * Dynamic datasource bean configuration.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Configuration
+@AllArgsConstructor
 public class DatabaseConfig implements DatabaseConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
 
-	@Autowired
 	private Config config;
 
 	/**

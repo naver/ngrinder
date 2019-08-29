@@ -13,10 +13,9 @@
  */
 package org.ngrinder.perftest.service;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,9 +28,9 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 @Profile("production")
-public class PerfTestServiceConfig implements ApplicationContextAware {
+@AllArgsConstructor
+public class PerfTestServiceConfig {
 
-	@Autowired
 	private Config config;
 
 	private ApplicationContext applicationContext;
@@ -48,10 +47,5 @@ public class PerfTestServiceConfig implements ApplicationContextAware {
 		} else {
 			return applicationContext.getAutowireCapableBeanFactory().createBean(PerfTestService.class);
 		}
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
 	}
 }

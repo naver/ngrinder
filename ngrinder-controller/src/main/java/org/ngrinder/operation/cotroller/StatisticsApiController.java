@@ -13,9 +13,9 @@
  */
 package org.ngrinder.operation.cotroller;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,12 +31,11 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/stat")
+@AllArgsConstructor
 public class StatisticsApiController {
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private BasicDataSource dataSource;
 
 	/**

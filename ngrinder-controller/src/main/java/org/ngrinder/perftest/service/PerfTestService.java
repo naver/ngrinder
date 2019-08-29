@@ -14,6 +14,9 @@
 package org.ngrinder.perftest.service;
 
 import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.grinder.SingleConsole;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
@@ -54,7 +57,6 @@ import org.ngrinder.service.AbstractPerfTestService;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -85,10 +87,9 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
  * <p/>
  * This class contains various method which mainly get the {@link PerfTest} matching specific conditions from DB.
  *
- * @author JunHo Yoon
- * @author Mavlarn
  * @since 3.0
  */
+@AllArgsConstructor
 public class PerfTestService extends AbstractPerfTestService implements ControllerConstants, GrinderConstants {
 
 	private static final int MAX_POINT_COUNT = 100;
@@ -97,28 +98,23 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	private static final String DATA_FILE_EXTENSION = ".data";
 
-	@Autowired
+	@Getter
 	private PerfTestRepository perfTestRepository;
 
-	@Autowired
 	private ConsoleManager consoleManager;
 
-	@Autowired
 	private AgentManager agentManager;
 
-	@Autowired
+	@Getter
+	@Setter
 	private Config config;
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
-	@Autowired
 	private TagService tagService;
 
-	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
-	@Autowired
 	private HazelcastService hazelcastService;
 
 	/**
@@ -1089,19 +1085,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		perfTestRepository.flush();
 		tagService.deleteTags(user);
 		return perfTestList;
-	}
-
-
-	public PerfTestRepository getPerfTestRepository() {
-		return perfTestRepository;
-	}
-
-	public Config getConfig() {
-		return config;
-	}
-
-	public void setConfig(Config config) {
-		this.config = config;
 	}
 
 	/**

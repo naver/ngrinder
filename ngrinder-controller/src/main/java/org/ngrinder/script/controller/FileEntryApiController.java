@@ -26,6 +26,7 @@ import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
@@ -44,7 +45,6 @@ import org.ngrinder.script.service.ScriptValidationService;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +60,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/script/api")
+@AllArgsConstructor
 public class FileEntryApiController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryApiController.class);
@@ -71,22 +72,16 @@ public class FileEntryApiController {
 		return (o1.getFileName().compareTo(o2.getFileName()));
 	};
 
-	@Autowired
 	private FileEntryService fileEntryService;
 
-	@Autowired
 	private ScriptHandlerFactory handlerFactory;
 
-	@Autowired
 	HttpContainerContext httpContainerContext;
 
-	@Autowired
 	private ScriptValidationService scriptValidationService;
 
-	@Autowired
 	private MessageSource messageSource;
 
-	@Autowired
 	private UserContext userContext;
 
 	@GetMapping("/handlers")

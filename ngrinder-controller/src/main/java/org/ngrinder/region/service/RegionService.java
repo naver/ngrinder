@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.region.service;
 
@@ -28,9 +28,7 @@ import org.ngrinder.infra.hazelcast.task.RegionInfoTask;
 import org.ngrinder.region.model.RegionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -53,15 +51,19 @@ public class RegionService {
 	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
 
-	@Autowired
 	private Config config;
 
-	@Autowired
 	private HazelcastService hazelcastService;
 
-	@Autowired
-	@Qualifier("embeddedHazelcast")
 	private HazelcastInstance hazelcastInstance;
+
+	public RegionService(Config config,
+						 HazelcastService hazelcastService,
+						 @Qualifier("embeddedHazelcast") HazelcastInstance hazelcastInstance) {
+		this.config = config;
+		this.hazelcastService = hazelcastService;
+		this.hazelcastInstance = hazelcastInstance;
+	}
 
 	private Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
 		@Override
@@ -69,7 +71,7 @@ public class RegionService {
 			Map<String, RegionInfo> regions = Maps.newHashMap();
 			if (config.isClustered()) {
 				List<RegionInfo> regionInfos = hazelcastService.submitToAllRegion(REGION_EXECUTOR_SERVICE_NAME, new RegionInfoTask());
-				for (RegionInfo regionInfo: regionInfos) {
+				for (RegionInfo regionInfo : regionInfos) {
 					regions.put(regionInfo.getRegionName(), regionInfo);
 				}
 			}
@@ -82,7 +84,7 @@ public class RegionService {
 		public List<String> get() {
 			Set<Member> members = hazelcastInstance.getCluster().getMembers();
 			List<String> regionNames = new ArrayList<>();
-			for (Member member: members) {
+			for (Member member : members) {
 				if (member.getAttributes().containsKey(REGION_ATTR_KEY)) {
 					regionNames.add((String) member.getAttributes().get(REGION_ATTR_KEY));
 				}
@@ -108,10 +110,10 @@ public class RegionService {
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
 		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getClusterProperties().getProperty
-				(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
+			(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
 			throw processException("The region name, " + localRegion
-					+ ", is already used by other controller " + regionInfo.getIp()
-					+ ". Please set the different region name in this controller.");
+				+ ", is already used by other controller " + regionInfo.getIp()
+				+ ". Please set the different region name in this controller.");
 		}
 	}
 

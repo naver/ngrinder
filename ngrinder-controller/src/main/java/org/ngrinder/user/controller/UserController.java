@@ -13,11 +13,11 @@
  */
 package org.ngrinder.user.controller;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +35,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/user")
+@AllArgsConstructor
 public class UserController {
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	protected Config config;
 
 	/**

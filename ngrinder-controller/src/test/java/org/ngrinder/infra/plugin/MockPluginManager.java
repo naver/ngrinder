@@ -13,6 +13,8 @@
  */
 package org.ngrinder.infra.plugin;
 
+import org.ngrinder.infra.config.Config;
+import org.pf4j.DefaultPluginManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,10 @@ import javax.annotation.PreDestroy;
 @Profile("unit-test")
 @Component
 public class MockPluginManager extends PluginManager {
+
+	public MockPluginManager(Config config, DefaultPluginManager manager) {
+		super(config, manager);
+	}
 
 	@PostConstruct
 	public void init() {

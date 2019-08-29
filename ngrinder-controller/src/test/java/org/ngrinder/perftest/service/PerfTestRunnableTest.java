@@ -51,7 +51,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	@Autowired
 	private AgentManagerService agentService;
 
-
 	@Autowired
 	public MockFileEntityRepository fileEntityRepository;
 

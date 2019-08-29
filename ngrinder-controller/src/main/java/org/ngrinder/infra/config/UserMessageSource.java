@@ -10,12 +10,12 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.ngrinder.common.util.EncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.stereotype.Component;
 
@@ -29,11 +29,12 @@ import com.google.common.collect.Maps;
  * @since 3.1
  */
 @Component("userMessageSource")
+@RequiredArgsConstructor
 public class UserMessageSource extends AbstractMessageSource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserMessageSource.class);
-	@Autowired
-	private Config config;
+
+	private final Config config;
 
 	// It's safe to use hash map in multi thread here. because it's read only.
 	private Map<LocaleAndCode, MessageFormat> langMessageMap = Maps.newHashMap();

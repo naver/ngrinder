@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.controller;
 
@@ -17,7 +17,6 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.MonitorPackageHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,15 +40,18 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 @RequestMapping("/monitor/download")
 public class MonitorDownloadController {
 
-	@Autowired
 	private AgentPackageService agentPackageService;
 
-	@Autowired
 	private Config config;
 
-	@Autowired
-	@Qualifier("monitorPackageHandler")
 	private MonitorPackageHandler monitorPackageHandler;
+
+	public MonitorDownloadController(AgentPackageService agentPackageService, Config config,
+									 @Qualifier("monitorPackageHandler") MonitorPackageHandler monitorPackageHandler) {
+		this.agentPackageService = agentPackageService;
+		this.config = config;
+		this.monitorPackageHandler = monitorPackageHandler;
+	}
 
 	/**
 	 * Download monitor.

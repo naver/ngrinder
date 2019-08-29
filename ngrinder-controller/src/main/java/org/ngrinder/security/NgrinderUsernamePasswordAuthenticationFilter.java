@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;

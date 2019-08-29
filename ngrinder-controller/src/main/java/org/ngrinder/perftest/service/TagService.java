@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
@@ -20,7 +21,6 @@ import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +37,11 @@ import static org.ngrinder.perftest.repository.TagSpecification.*;
  * 
  */
 @Service
+@AllArgsConstructor
 public class TagService {
 
-	@Autowired
 	private TagRepository tagRepository;
 
-	@Autowired
 	private PerfTestRepository perfTestRepository;
 
 	/**

@@ -13,12 +13,12 @@
  */
 package org.ngrinder.agent.controller;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,15 +42,13 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @Controller
 @RequestMapping("/agent/download")
+@AllArgsConstructor
 public class AgentDownloadController {
 
-	@Autowired
 	private AgentPackageService agentPackageService;
 
-	@Autowired
 	private RegionService regionService;
 
-	@Autowired
 	private Config config;
 
 	/**

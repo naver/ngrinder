@@ -15,6 +15,7 @@ package org.ngrinder.agent.service;
 
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 
@@ -23,10 +24,7 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
 import org.python.google.common.base.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -43,14 +41,13 @@ import javax.annotation.PostConstruct;
  * @since 3.1.2
  */
 @Service
+@AllArgsConstructor
 public class PeriodicWorkingAgentCheckService implements Runnable {
-	@Autowired
+
 	private PluginManager pluginManager;
 
-	@Autowired
 	private AgentManager agentManager;
 
-	@Autowired
 	private ScheduledTaskService scheduledTaskService;
 
 	@PostConstruct

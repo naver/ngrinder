@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import lombok.RequiredArgsConstructor;
 import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
@@ -42,7 +43,6 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -66,19 +66,17 @@ import java.util.concurrent.ExecutorService;
  */
 @SuppressWarnings("UnusedDeclaration")
 @Component
+@RequiredArgsConstructor
 public class AgentManager implements ControllerConstants, AgentDownloadRequestListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 	private static final int NUMBER_OF_THREAD = 3;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private AgentPackageService agentPackageService;
+	private final AgentPackageService agentPackageService;
 
-	@Autowired
-	private LocalAgentService cachedLocalAgentService;
+	private final LocalAgentService cachedLocalAgentService;
 
 	/**
 	 * Initialize agent manager.

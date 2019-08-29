@@ -1,7 +1,7 @@
 package org.ngrinder.operation.cotroller;
 
+import lombok.AllArgsConstructor;
 import org.ngrinder.operation.service.SystemConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 @RestController
 @RequestMapping("/operation/system_config/api")
 @PreAuthorize("hasAnyRole('A')")
+@AllArgsConstructor
 public class SystemConfigApiController {
 
-	@Autowired
 	private SystemConfigService systemConfigService;
 
 	/**
