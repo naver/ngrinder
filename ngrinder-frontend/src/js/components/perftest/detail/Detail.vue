@@ -229,11 +229,13 @@
             $(this.$refs.configTab).on('shown.bs.tab', this.$refs.config.$refs.rampUp.updateRampUpChart);
 
             $(this.$refs.runningTab).on('shown.bs.tab', () => {
+                this.$refs.running.shownBsTab = true;
                 this.$refs.running.tpsChart.plot();
                 if (this.$refs.running.samplingIntervalId === -1) {
                     this.$refs.running.startSamplingInterval();
                 }
             });
+            $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
 
             $(this.$refs.reportTab).on('shown.bs.tab', this.$refs.report.fetchReportData);
         }
