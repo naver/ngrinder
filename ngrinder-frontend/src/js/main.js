@@ -7,6 +7,7 @@ import axios from 'axios';
 import VueSession from 'vue-session';
 import bFormSlider from 'vue-bootstrap-slider';
 import numFormat from 'vue-filter-number-format';
+import numeral from 'numeral';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
@@ -80,7 +81,7 @@ Vue.directive('focus', {
     inserted: el => el.focus(),
 });
 
-Vue.filter('numFormat', numFormat);
+Vue.filter('numFormat', numFormat(numeral));
 Vue.filter('dateFormat', (value, format) => {
     if (value) {
         return moment(new Date(value)).tz(ngrinder.currentUser.timeZone).format(format);
