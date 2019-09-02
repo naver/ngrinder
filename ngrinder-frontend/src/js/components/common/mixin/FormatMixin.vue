@@ -49,18 +49,5 @@
                 return `${(value / 1048576).toFixed(2)}G`;
             }
         }
-
-        formatNumber(num, fixedPoint) {
-            if (!num && num !== 0) {
-                return '';
-            }
-
-            if (fixedPoint) {
-                num = num.toFixed(fixedPoint);
-            }
-
-            const regex = /\B(?=(\d{3})+(?!\d))/g;
-            return num.toString().replace(regex, ',');
-        }
     }
 </script>

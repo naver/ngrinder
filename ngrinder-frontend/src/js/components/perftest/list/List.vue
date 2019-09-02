@@ -81,13 +81,13 @@
 
             <template slot="tps" slot-scope="props">
                 <div class="tps">
-                    <div v-if="$utils.exists(props.rowData.tps)" v-text="formatNumber(props.rowData.tps.toFixed(1))"></div>
+                    <div v-if="$utils.exists(props.rowData.tps)">{{ props.rowData.tps | numFormat('0,0.0') }}</div>
                 </div>
             </template>
 
             <template slot="meanTestTime" slot-scope="props">
                 <div class="meanTestTime">
-                    <div v-if="$utils.exists(props.rowData.meanTestTime)" v-text="formatNumber(props.rowData.meanTestTime.toFixed(1))"></div>
+                    <div v-if="$utils.exists(props.rowData.meanTestTime)">{{ props.rowData.meanTestTime | numFormat('0,0.0') }}</div>
                 </div>
             </template>
 
@@ -108,8 +108,8 @@
                      data-html="true"
                      data-trigger="hover"
                      data-placement="left"
-                     :data-content="getVuserPopoverContent(props.rowData)"
-                     v-text="formatNumber((props.rowData.vuserPerAgent) * (props.rowData.agentCount))">
+                     :data-content="getVuserPopoverContent(props.rowData)">
+                    {{ props.rowData.vuserPerAgent * props.rowData.agentCount | numFormat}}
                 </div>
             </template>
 
@@ -143,7 +143,6 @@
     import SearchBar from './Searchbar.vue';
     import IntroButton from '../../common/IntroButton.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
-    import FormatMixin from '../../common/mixin/FormatMixin.vue';
     import SmallChart from './SmallChart.vue';
     import TableConfig from './mixin/TableConfig.vue';
 
@@ -153,7 +152,7 @@
         name: 'perfTestList',
         components: { IntroButton, vueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
-    export default class PerfTestList extends Mixins(Base, MessagesMixin, FormatMixin, TableConfig) {
+    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig) {
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
         tests = [];
         autoUpdateTargets = [];
