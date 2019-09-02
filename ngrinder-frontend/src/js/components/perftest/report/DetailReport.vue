@@ -14,7 +14,7 @@
                         </colgroup>
                         <tr>
                             <th v-text="i18n('perfTest.report.totalVusers')"></th>
-                            <td><strong v-text="formatNumber(test.vuserPerAgent * test.agentCount)"></strong></td>
+                            <td><strong>{{ test.vuserPerAgent * test.agentCount | numFormat }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.agent')"></th>
@@ -29,37 +29,37 @@
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.ignoreSampleCount')"></th>
-                            <td><span v-text="formatNumber(test.ignoreSampleCount || 0)"></span></td>
+                            <td><span>{{ test.ignoreSampleCount | numFormat }}</span></td>
                         </tr>
                         <tr>
                             <td colspan=2></td>
                         </tr>
                         <tr>
                             <th v-text="'TPS'"></th>
-                            <td><strong v-text="formatNumber(test.tps, 1)"></strong></td>
+                            <td><strong>{{ test.tps | numFormat('0,0.0') }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.peakTPS')"></th>
-                            <td><strong v-text="formatNumber(test.peakTps)"></strong></td>
+                            <td><strong>{{ test.peakTps | numFormat }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.meantime')"></th>
                             <td>
-                                <span v-text="formatNumber(test.meanTestTime, 2)"></span>
+                                <span>{{ test.meanTestTime | numFormat('0,0.00') }}</span>
                                 <code class="ml-1">ms</code>
                             </td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.totalTests')"></th>
-                            <td v-text="formatNumber(test.tests + test.errors)"></td>
+                            <td>{{ test.tests + test.errors | numFormat }}</td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.successfulTests')"></th>
-                            <td v-text="formatNumber(test.tests)"></td>
+                            <td>{{ test.tests | numFormat }}</td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.errors')"></th>
-                            <td v-text="formatNumber(test.error || 0)"></td>
+                            <td>{{ test.error | numFormat }}</td>
                         </tr>
                     </table>
                     <div class="card bg-light py-1">
@@ -134,7 +134,6 @@
     import PerfTest from './menu/PerfTest.vue';
     import Monitor from './menu/Monitor.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
-    import FormatMixin from '../../common/mixin/FormatMixin.vue';
 
     @Component({
         name: 'detailReport',
@@ -146,7 +145,7 @@
             },
         },
     })
-    export default class DetailReport extends Mixins(Base, MessagesMixin, FormatMixin) {
+    export default class DetailReport extends Mixins(Base, MessagesMixin) {
         props = {};
         test = {
             targetHosts: '',

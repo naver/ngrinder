@@ -8,32 +8,32 @@
                 <div class="summary form-horizontal form-horizontal-3">
                     <fieldset>
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.totalVusers">
-                            <strong v-text="formatNumber(report.test.agentCount * report.test.vuserPerAgent)"></strong>
+                            <strong>{{ report.test.agentCount * report.test.vuserPerAgent | numFormat }}</strong>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.tps">
-                            <strong v-text="formatNumber(report.test.tps, 1)"></strong>
+                            <strong>{{ report.test.tps | numFormat('0,0.0') }}</strong>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.peakTPS">
-                            <span v-text="formatNumber(report.test.peakTps, 1)"></span>
+                            <span>{{ report.test.peakTps | numFormat('0,0.0') }}</span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.meantime">
-                            <span v-text="formatNumber(report.test.meanTestTime, 2)"></span>
+                            <span>{{ report.test.meanTestTime | numFormat('0,0.00') }}</span>
                             <code>MS</code>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.totalTests">
-                            <span v-text="formatNumber(report.test.tests + report.test.errors)"></span>
+                            <span>{{ report.test.tests + report.test.errors | numFormat }}</span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.successfulTests">
-                            <span v-text="formatNumber(report.test.tests)"></span>
+                            <span>{{ report.test.tests | numFormat }}</span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.errors">
-                            <span v-text="formatNumber(report.test.errors)"></span>
+                            <span>{{ report.test.errors | numFormat }}</span>
                         </control-group>
 
                         <control-group lable_extra_class="control-label-wide non-cursor" labelMessageKey="perfTest.report.runtime">
