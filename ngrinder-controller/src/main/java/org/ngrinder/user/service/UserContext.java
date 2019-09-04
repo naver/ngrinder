@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 /**
  * User Context which return current user.
  *
- * @author Tobi
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")

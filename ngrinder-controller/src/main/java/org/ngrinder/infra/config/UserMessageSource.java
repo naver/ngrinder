@@ -25,7 +25,6 @@ import com.google.common.collect.Maps;
  * Custom user defined message source handler. User can defines its own message translations in
  * ${NGRINDER_HOME}/messages/messages_{langcode}.properties.
  * 
- * @author JunHo Yoon
  * @since 3.1
  */
 @Component("userMessageSource")
@@ -42,8 +41,7 @@ public class UserMessageSource extends AbstractMessageSource {
 	/**
 	 * Message key holder with local and code.
 	 * 
-	 * @author JunHo Yoon
-	 * @since 3.1
+		 * @since 3.1
 	 */
 	static class LocaleAndCode {
 		

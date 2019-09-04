@@ -23,12 +23,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-/**
- * Region Service Test class.
- *
- * @author mavlarn
- * @since 3.1
- */
 public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired

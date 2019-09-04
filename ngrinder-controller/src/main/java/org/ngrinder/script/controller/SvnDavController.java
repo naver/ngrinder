@@ -54,7 +54,6 @@ import java.util.*;
  * <p/>
  * This implementation is borrowed from SVNKit-DAV project.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings({"unchecked", "rawtypes"})

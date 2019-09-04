@@ -30,7 +30,6 @@ import java.util.List;
  * In addition {@link org.ngrinder.AbstractNGrinderTransactionalTest}, this class provides basic function to
  * create {@link org.ngrinder.model.PerfTest} and run the test.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {

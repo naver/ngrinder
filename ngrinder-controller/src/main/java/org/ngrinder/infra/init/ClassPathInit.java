@@ -32,7 +32,6 @@ import java.util.Collection;
  * grinder-dcr-agent-javadoc and sources file as javaagent. So.. This class deletes out the sources
  * and javadoc files of grinder-dcr-agent existing in class path.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Component

@@ -61,7 +61,6 @@ import java.util.concurrent.ExecutorService;
  * <p/>
  * This class has {@link AgentControllerServerDaemon} internally and manage to the agent connection.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings("UnusedDeclaration")

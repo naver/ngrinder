@@ -30,8 +30,6 @@ import org.springframework.stereotype.Service;
  * NGrinder {@link UserDetailsService}.
  *
  * This resolves user info using plugins implementing {@link OnLoginRunnable}.
- *
- * @author JunHo Yoon
  */
 @Service("ngrinderUserDetailsService")
 @AllArgsConstructor

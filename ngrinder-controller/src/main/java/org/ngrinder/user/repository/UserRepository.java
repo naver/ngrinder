@@ -28,7 +28,6 @@ import java.util.List;
 /**
  * User repository.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Repository

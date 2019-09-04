@@ -39,8 +39,6 @@ import java.util.List;
  * This class is used as base class for test case,and it will initialize the DB
  * related config, like datasource, and it will start a transaction for every
  * test function, and rollback after the execution.
- *
- * @author Mavlarn
  */
 @ActiveProfiles("unit-test")
 @SpringBootTest(classes = NGrinderControllerStarter.class)

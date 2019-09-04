@@ -25,7 +25,6 @@ import java.util.Map;
  *
  * This class is to ignore the default {@link SingleConsole} behavior.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class NullSingleConsole extends SingleConsole {

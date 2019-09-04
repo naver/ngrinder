@@ -28,10 +28,9 @@ import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_
 
 /**
  * Database handler for supported databases.
- * <p/>
+ *
  * You can easily add the more database type into {@link Database} enum.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public enum Database {

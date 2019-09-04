@@ -20,11 +20,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- */
 public class EncodingUtilsTest {
 
 	/**

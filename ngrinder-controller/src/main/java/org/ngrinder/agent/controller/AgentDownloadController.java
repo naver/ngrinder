@@ -37,7 +37,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 /**
  * Agent Download Controller.
  *
- * @author Tobi
  * @since 3.0
  */
 @Controller

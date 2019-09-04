@@ -35,7 +35,6 @@ import org.springframework.web.servlet.HandlerMapping;
  * 
  * When hello/world/1 url is called, world/1 will be provided in path.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public class RemainedPathMethodArgumentResolver implements HandlerMethodArgumentResolver {

@@ -52,8 +52,6 @@ import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_U
 /**
  * Some User want to have more secured password. Provide the enhanced pw with sha256 if a user
  * specifies ngrinder.security.sha256 in system.conf
- *
- * @author JunHo Yoon
  */
 @Configuration
 @EnableWebSecurity

@@ -29,7 +29,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * nGrinder customized login authentication filter. This checks not only auth but also timezone and
  * locale.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

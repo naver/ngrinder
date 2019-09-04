@@ -26,7 +26,6 @@ import java.util.Map;
 /**
  * Statistics API Controller
  *
- * @author Gisoo Gwon
  * @since 3.3.1
  */
 @RestController

@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * User management controller.
  *
- * @author JunHo Yoon
- * @author Alex Quin
  * @since 3.0
  */
 @Controller

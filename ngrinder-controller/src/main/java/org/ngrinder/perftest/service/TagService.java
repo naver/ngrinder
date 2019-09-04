@@ -32,7 +32,6 @@ import static org.ngrinder.perftest.repository.TagSpecification.*;
 /**
  * Tag Service. Tag support which is used to categorize {@link PerfTest}
  * 
- * @author JunHo Yoon
  * @since 3.0
  * 
  */

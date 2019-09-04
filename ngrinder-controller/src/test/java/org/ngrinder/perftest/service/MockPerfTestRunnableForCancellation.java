@@ -26,8 +26,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Mock PerfTest which disable spring task schedule.
- *
- * @author JunHo Yoon
  */
 @Profile("unit-test")
 @Component

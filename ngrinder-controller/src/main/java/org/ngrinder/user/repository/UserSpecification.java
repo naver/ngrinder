@@ -18,14 +18,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
  * User entity Specification Holder.
- * 
- * @author JunHo Yoon
  */
 public abstract class UserSpecification {
 

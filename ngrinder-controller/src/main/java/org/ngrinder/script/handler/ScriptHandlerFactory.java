@@ -17,7 +17,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 /**
  * ScriptHanderFactory which returns appropriate hander for the given {@link FileEntry}.
  * 
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component

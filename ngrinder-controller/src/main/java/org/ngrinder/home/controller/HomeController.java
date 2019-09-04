@@ -48,7 +48,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 /**
  * Home index page controller.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Controller

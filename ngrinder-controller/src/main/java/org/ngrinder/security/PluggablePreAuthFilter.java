@@ -15,7 +15,6 @@ package org.ngrinder.security;
 
 import org.ngrinder.extension.OnPreAuthServletFilter;
 import org.ngrinder.infra.plugin.PluginManager;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CompositeFilter;
 
@@ -26,7 +25,6 @@ import java.util.List;
 /**
  * Proxy filter which run combined preauth plugins.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Component

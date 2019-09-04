@@ -24,13 +24,7 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
-
-/**
- * {@link ClusteredPerfTestService} test.
- * 
- */
 
 public class ClusteredPerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired

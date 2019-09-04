@@ -41,8 +41,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 /**
  * Region service class. This class responsible to keep the status of available regions.
  *
- * @author Mavlarn
- * @author JunHo Yoon
  * @since 3.1
  */
 @Service

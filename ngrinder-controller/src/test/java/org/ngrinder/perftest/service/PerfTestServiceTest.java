@@ -44,12 +44,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.data.domain.Pageable.unpaged;
 
-/**
- * {@link PerfTestService} test.
- *
- * @author Mavlarn
- * @since 3.0
- */
 public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired

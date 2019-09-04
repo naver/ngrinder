@@ -20,7 +20,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 /**
  * Convenient class to determine if the current runtime is in the spring context.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")

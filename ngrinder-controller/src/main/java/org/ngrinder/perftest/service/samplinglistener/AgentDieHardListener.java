@@ -29,7 +29,6 @@ import java.io.File;
 /**
  * Agent crash detector.
  *
- * @author JunHo Yoon
  * @since 3.1.2
  */
 public class AgentDieHardListener implements SamplingLifeCycleListener, Runnable {
