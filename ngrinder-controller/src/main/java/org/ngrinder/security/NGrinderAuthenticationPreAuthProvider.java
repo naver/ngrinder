@@ -38,18 +38,13 @@ import org.springframework.transaction.annotation.Transactional;
  * {@link NGrinderAuthenticationPreAuthProvider} will take this Authentication Object and handles user language and
  * timezone settings and user save
  * 
- * @author JunHo Yoon
  * @since 3.0
- * 
  */
 public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthenticationProvider {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationPreAuthProvider.class);
 
 	private UserService userService;
-
-	// ~ Methods
-	// ========================================================================================================
 
 	/**
 	 * Authenticate the given PreAuthenticatedAuthenticationToken.

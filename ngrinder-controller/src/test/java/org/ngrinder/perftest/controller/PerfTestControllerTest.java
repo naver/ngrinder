@@ -48,12 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * PerfTest Controller Test.
- *
- * @author mavlarn
- * @since 3.0
- */
 public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired

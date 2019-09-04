@@ -22,7 +22,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 /**
  * Processing Result PrintStream to store the result of the execution and logs.
  * 
- * @author JunHo Yoon
  * @since 3.2
  */
 public class ProcessingResultPrintStream extends PrintStream {

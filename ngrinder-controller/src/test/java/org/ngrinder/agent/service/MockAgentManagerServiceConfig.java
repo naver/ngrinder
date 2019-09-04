@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Dynamically create a subclass of {@link AgentManagerService} depending on the cluster activation
  * status.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 @Configuration

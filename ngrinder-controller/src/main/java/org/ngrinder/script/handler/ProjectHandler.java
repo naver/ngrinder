@@ -16,7 +16,6 @@ package org.ngrinder.script.handler;
 /**
  * Marker interface to represent the subclass is the ProjectHandler.
  * 
- * @author JunHo Yoon
  * @since 3.2
  */
 public interface ProjectHandler {

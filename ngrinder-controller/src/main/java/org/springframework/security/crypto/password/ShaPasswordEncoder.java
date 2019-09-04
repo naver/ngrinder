@@ -5,6 +5,7 @@ import org.springframework.security.crypto.codec.Utf8;
 
 /**
  * Support password encryption based on SHA algorithm.
+ *
  * @since 3.5.0
  */
 @SuppressWarnings("deprecation")

@@ -34,8 +34,7 @@ import static org.junit.Assert.assertThat;
 /**
  * {@link PerfTestController} test with repository supports.
  * 
- * @author mavlarn
- * @Since 3.0
+ * @since 3.0
  */
 public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 

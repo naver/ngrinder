@@ -38,8 +38,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * DB Data Updater. This class is used to update DB automatically when System restarted through log
  * file db.changelog.xml
  *
- * @author Matt
- * @author JunHo Yoon
  * @since 3.0
  */
 @Service

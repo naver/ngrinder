@@ -30,12 +30,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 
-/**
- * {@link TagService} test.
- *
- * @author JunHo Yoon
- * @since 3.0
- */
 public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired

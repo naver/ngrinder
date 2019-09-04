@@ -15,6 +15,11 @@ import javax.servlet.ServletContext;
 import static org.ngrinder.common.constant.WebConstants.PARAM_PROCESS_THREAD_POLICY_SCRIPT;
 import static org.ngrinder.common.util.NoOp.noOp;
 
+/**
+ * Includes common model attributes. These attributes uses in app.html
+ *
+ * @since 3.5
+ */
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {

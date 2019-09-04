@@ -37,7 +37,6 @@ import javax.annotation.PostConstruct;
  * It's separated from {@link AgentManagerService} to get rid of cyclic
  * injection.
  *
- * @author JunHo Yoon
  * @since 3.1.2
  */
 @Service

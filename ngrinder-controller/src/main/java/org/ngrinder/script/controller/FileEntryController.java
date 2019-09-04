@@ -35,7 +35,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 /**
  * FileEntry manipulation controller.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Controller

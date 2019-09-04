@@ -28,7 +28,6 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 /**
  * Utility component which provides various Http Container values.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Component

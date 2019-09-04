@@ -25,7 +25,6 @@ import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 /**
  * Agent package service.
  *
- * @author Matt
  * @since 3.3
  */
 @Service

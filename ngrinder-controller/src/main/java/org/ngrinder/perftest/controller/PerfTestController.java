@@ -36,7 +36,6 @@ import static org.ngrinder.common.util.Preconditions.*;
 
 /**
  * Performance Test Controller.
- *
  */
 @Controller
 @RequestMapping("/perftest")

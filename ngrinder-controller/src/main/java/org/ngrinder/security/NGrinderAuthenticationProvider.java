@@ -47,9 +47,7 @@ import java.util.Date;
  * {@link OnLoginRunnable}. If you want to extend user authentification, please create the plugin implementing
  * {@link OnLoginRunnable} interface.
  * 
- * @author JunHo Yoon
  * @since 3.0
- * 
  */
 @SuppressWarnings("UnusedDeclaration")
 @Service("ngrinderAuthenticationProvider")
@@ -62,8 +60,6 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	private PluginManager pluginManager;
 
 	private DefaultLoginPlugin defaultLoginPlugin;
-	// ~ Instance fields
-	// ================================================================================================
 
 	@Getter(AccessLevel.PROTECTED)
 	private ShaPasswordEncoder passwordEncoder;
@@ -82,9 +78,6 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		this.userDetailsService = userDetailsService;
 		this.userService = userService;
 	}
-
-	// ~ Methods
-	// ========================================================================================================
 
 	@SuppressWarnings("deprecation")
 	@Override

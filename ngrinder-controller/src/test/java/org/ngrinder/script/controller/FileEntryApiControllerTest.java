@@ -34,12 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- * @since 3.0
- */
 public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired

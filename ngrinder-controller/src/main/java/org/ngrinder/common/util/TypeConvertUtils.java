@@ -16,7 +16,6 @@ package org.ngrinder.common.util;
 /**
  * Convenient type conversion utility.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 public abstract class TypeConvertUtils {

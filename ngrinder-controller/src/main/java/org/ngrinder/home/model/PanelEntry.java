@@ -22,7 +22,6 @@ import org.ngrinder.common.util.DateUtils;
 /**
  * Panel entry which will be shown in main page.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Getter

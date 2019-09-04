@@ -46,7 +46,6 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 /**
  * Script Validation Service.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Service

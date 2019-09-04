@@ -8,6 +8,11 @@ import org.ngrinder.infra.config.NumberModule;
 
 import java.io.IOException;
 
+/**
+ * Util class that handling json without checked exception
+ *
+ * @since 3.5
+ */
 public class JsonUtils {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

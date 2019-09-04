@@ -38,7 +38,6 @@ import java.util.Map;
 /**
  * Api exception handler which emits the exception message in the form of json.
  *
- * @author junoyoon
  * @since 3.2.3
  */
 public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Ordered {

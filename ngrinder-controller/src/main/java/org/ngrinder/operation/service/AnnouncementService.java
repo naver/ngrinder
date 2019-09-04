@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 /**
  * Announcement operating service.
  * 
- * @author AlexQin
  * @since 3.1
  */
 @Service

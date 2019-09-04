@@ -29,9 +29,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  */
 @Getter
 public class ClusteredAgentRequest implements Serializable {
-	/**
-	 * UUID.
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	private final String agentIp;
@@ -41,11 +39,6 @@ public class ClusteredAgentRequest implements Serializable {
 	@Setter
 	private RequestType requestType;
 
-	/**
-	 * Request Type.
-	 *
-	 * @author JunHo Yoon
-	 */
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
@@ -73,23 +66,10 @@ public class ClusteredAgentRequest implements Serializable {
 		RequestType() {
 		}
 
-		/**
-		 * Process the request.
-		 *
-		 * @param agentManagerService agentManagerService
-		 * @param agentIdentity       agentIdentity
-		 */
 		public abstract void process(ClusteredAgentManagerService agentManagerService,
 		                             AgentControllerIdentityImplementation agentIdentity);
 	}
 
-	/**
-	 * Constructor.
-	 *
-	 * @param agentIp     agent ip
-	 * @param agentName   agent name
-	 * @param requestType request type
-	 */
 	public ClusteredAgentRequest(String agentIp, String agentName, RequestType requestType) {
 		this.agentIp = agentIp;
 		this.agentName = agentName;

@@ -22,8 +22,6 @@ import javax.persistence.criteria.*;
 /**
  * Agent Manager JPA Specification.
  *
- * @author Mavlarn
- * @author JunHo Yoon
  * @since 3.1
  */
 public abstract class AgentManagerSpecification {

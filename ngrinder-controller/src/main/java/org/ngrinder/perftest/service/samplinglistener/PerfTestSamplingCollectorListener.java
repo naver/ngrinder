@@ -24,7 +24,6 @@ import java.io.File;
 /**
  * Perf Test Sampling collection class.
  *
- * @author JunHo Yoon
  * @since 3.1.1
  */
 public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListener {

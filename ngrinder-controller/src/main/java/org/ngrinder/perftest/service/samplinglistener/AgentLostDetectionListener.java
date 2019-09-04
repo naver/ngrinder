@@ -26,7 +26,6 @@ import java.io.File;
 /**
  * Agent Lost Detector.
  *
- * @author JunHo Yoon
  * @since 3.1.2
  */
 public class AgentLostDetectionListener implements SamplingLifeCycleListener {

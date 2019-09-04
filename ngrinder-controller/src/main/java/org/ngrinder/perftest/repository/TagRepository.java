@@ -20,7 +20,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 /**
  * {@link Tag} Repository.
  * 
- * @author junHo Yoon
  * @since 3.0
  */
 

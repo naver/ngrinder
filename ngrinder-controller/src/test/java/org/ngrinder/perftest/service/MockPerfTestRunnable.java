@@ -28,8 +28,6 @@ import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
 
 /**
  * Mock PerfTest which disable spring task schedule.
- *
- * @author JunHo Yoon
  */
 @Profile("unit-test")
 @Component

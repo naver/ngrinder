@@ -62,7 +62,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  *
  * This class save and retrieve {@link FileEntry} from Local SVN folders.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")

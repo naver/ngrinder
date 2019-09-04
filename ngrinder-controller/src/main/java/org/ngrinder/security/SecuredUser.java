@@ -28,7 +28,6 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
 /**
  * {@link UserDetails} implementation.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class SecuredUser implements UserDetails {

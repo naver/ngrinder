@@ -1,6 +1,5 @@
 package org.ngrinder.common.util;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;

@@ -42,12 +42,6 @@ import static org.junit.Assert.*;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
-/**
- * Agent service test.
- *
- * @author Tobi
- * @since 3.0
- */
 public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired

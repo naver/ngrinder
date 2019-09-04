@@ -25,12 +25,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- * @since
- */
 public class FileDownloadUtilsTest {
 
 	@Test

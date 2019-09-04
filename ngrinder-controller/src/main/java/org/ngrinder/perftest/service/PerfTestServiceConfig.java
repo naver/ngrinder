@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Profile;
 /**
  * Dynamic creation of {@link PerfTestService} depending on the cluster enable or disable.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 @Configuration

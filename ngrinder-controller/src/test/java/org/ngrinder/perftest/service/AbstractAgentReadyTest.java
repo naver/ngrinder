@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 /**
  * In addition {@link AbstractPerfTestTransactionalTest}, this class provides running agent.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransactionalTest implements AgentConstants {

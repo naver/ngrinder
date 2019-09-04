@@ -28,7 +28,6 @@ import java.util.List;
 /**
  * Sampling LifeCycle listener to run the pluings implementing {@link OnTestSamplingRunnable}.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 public class PluginRunListener implements SamplingLifeCycleListener {

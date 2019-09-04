@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 /**
  * Null {@link ScriptHandler} which implements Null object pattern.
  *
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component

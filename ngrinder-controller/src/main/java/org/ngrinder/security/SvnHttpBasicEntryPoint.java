@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 /**
  * Dynamic Realm returnable HttpBasic {@link AuthenticationEntryPoint}.
  * 
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component("svnHttpBasicEntryPoint")

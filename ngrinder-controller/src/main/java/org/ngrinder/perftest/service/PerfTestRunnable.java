@@ -62,7 +62,6 @@ import static org.ngrinder.model.Status.*;
  * started from {@link #doStart()}  and {@link #doFinish()} method. These
  * methods are scheduled by Spring Task.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")

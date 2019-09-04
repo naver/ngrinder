@@ -23,12 +23,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
-/**
- * Class description.
- * 
- * @author Mavlarn
- * @since
- */
 public class PerfTestTest {
 
 	@Test

@@ -28,7 +28,6 @@ import org.springframework.data.jpa.domain.Specification;
 /**
  * {@link Tag} Specification for more elaborated {@link org.ngrinder.model.PerfTest} search.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class TagSpecification {

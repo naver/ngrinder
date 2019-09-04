@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 /**
  * System configuration operation service.
  * 
- * @author Alex Qin
  * @since 3.1
  */
 @Service

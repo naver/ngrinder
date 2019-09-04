@@ -33,7 +33,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  * 
  * It passes the current user instance on {@link User} argument.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -44,28 +43,11 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	@Autowired
 	private UserService userService;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
-	 * supportsParameter(org .springframework.core.MethodParameter)
-	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterIndex() == 0 && parameter.getParameterType().equals(User.class);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
-	 * resolveArgument(org. springframework.core.MethodParameter,
-	 * org.springframework.web.method.support.ModelAndViewContainer,
-	 * org.springframework.web.context.request.NativeWebRequest,
-	 * org.springframework.web.bind.support.WebDataBinderFactory)
-	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {

@@ -16,7 +16,6 @@ package org.ngrinder.security;
 /**
  * DataHolder for user language and timezone.
  * 
- * @author JunHo Yoon
  * @since 3.0.2
  */
 public class LanguageAndTimezone {

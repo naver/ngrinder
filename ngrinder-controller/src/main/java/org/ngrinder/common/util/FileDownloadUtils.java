@@ -23,7 +23,6 @@ import java.io.*;
 /**
  * File download utilities.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class FileDownloadUtils {

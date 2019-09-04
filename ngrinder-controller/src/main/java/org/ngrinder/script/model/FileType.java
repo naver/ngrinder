@@ -19,7 +19,6 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * File type of FileEntity.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public enum FileType {
