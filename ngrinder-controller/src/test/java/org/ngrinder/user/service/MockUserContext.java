@@ -25,12 +25,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-/**
- * user util
- *
- * @author Tobi
- * @date 2012-6-28
- */
 @Profile("unit-test")
 @Component
 public class MockUserContext extends UserContext {

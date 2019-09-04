@@ -36,7 +36,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * Home class which enables the easy resource access in ${NGRINDER_HOME}
  * directory.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class Home {

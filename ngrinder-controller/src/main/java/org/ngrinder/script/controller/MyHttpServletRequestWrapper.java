@@ -26,8 +26,6 @@ import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
  * Customized Version of {@link HttpServletRequest} Tomcat's version has bug...
  * 
  * getPathInfo() translates encoded path wrongly..
- * 
- * @author JunHo Yoon
  */
 public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 

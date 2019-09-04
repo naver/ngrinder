@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  * Check every now and then that a certain file has not changed. If it has, then
  * call the {@link #doOnChange} method.
  * 
- * @author JunHo Yoon
  * @since 3.1.1
  */
 public abstract class FileWatchdog extends Thread {
@@ -102,11 +101,6 @@ public abstract class FileWatchdog extends Thread {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Thread#run()
-	 */
 	@Override
 	public void run() {
 		while (!interrupted && !isInterrupted()) {

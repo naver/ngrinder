@@ -48,12 +48,6 @@ import static org.hibernate.Hibernate.initialize;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
 
-/**
- * The Class UserService.
- *
- * @author Yubin Mao
- * @author AlexQin
- */
 @Service
 public class UserService extends AbstractUserService {
 

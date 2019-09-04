@@ -30,7 +30,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
 /**
  * Groovy {@link ScriptHandler}.
  *
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component

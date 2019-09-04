@@ -27,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * {@link PerfTest} Service Class for cluster mode.
  * 
- * @author JunHo Yoon
- * @author Mavlarn
  * @since 3.0
  */
 public class ClusteredPerfTestService extends PerfTestService {

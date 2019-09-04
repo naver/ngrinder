@@ -27,7 +27,6 @@ import org.springframework.data.jpa.domain.Specification;
 /**
  * {@link PerfTest} Specification for the more elaborated PerfTest query.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class PerfTestSpecification {

@@ -29,7 +29,6 @@ import org.pf4j.DefaultPluginManager;
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
  * It is built on Plugin Framework for Java.
  *
- * @author JunHo Yoon ,GeunWoo Son
  * @since 3.0
  */
 @Profile("production")

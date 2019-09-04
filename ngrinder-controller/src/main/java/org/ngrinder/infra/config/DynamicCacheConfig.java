@@ -49,8 +49,6 @@ import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
 /**
  * Dynamic cache configuration. it creates local cache or dist cache.
  *
- * @author Mavlarn
- * @author JunHo Yoon
  * @since 3.1
  */
 @Configuration

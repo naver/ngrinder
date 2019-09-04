@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 /**
  * Convenient class to determine spring context. It's mocked version which will be used in unit test
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("unit-test")

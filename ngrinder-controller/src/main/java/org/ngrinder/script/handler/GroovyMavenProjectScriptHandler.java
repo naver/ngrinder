@@ -42,7 +42,6 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 /**
  * Groovy Maven project {@link ScriptHandler}.
  *
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component

@@ -34,7 +34,6 @@ import org.springframework.web.filter.CompositeFilter;
 /**
  * Proxy filter which run combined servlet plugins.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")

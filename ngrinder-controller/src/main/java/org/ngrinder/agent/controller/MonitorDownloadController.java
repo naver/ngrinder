@@ -33,7 +33,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 /**
  * Monitor Download Controller.
  *
- * @author Tobi
  * @since 3.0
  */
 @Controller

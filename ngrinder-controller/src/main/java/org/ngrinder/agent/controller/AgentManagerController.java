@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * Agent management controller.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 @Controller

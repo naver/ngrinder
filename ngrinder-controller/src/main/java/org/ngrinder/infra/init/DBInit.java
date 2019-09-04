@@ -34,7 +34,6 @@ import static org.ngrinder.model.Role.*;
  *
  * And... It's the perfect place to upgrade DB.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Component

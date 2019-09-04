@@ -23,7 +23,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * Console information which containing console attributes.<br/>
  * {@link #port} is the most important attribute of this class.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class ConsoleEntry {

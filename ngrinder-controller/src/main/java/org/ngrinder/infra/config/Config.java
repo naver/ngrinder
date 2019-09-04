@@ -59,7 +59,6 @@ package org.ngrinder.infra.config;
 /**
  * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 

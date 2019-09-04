@@ -44,7 +44,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * requires a new console, it gets the one {@link ConsoleEntry} from the pool and creates new console with the
  * {@link ConsoleEntry}. Currently using consoles are kept in {@link #consoleInUse} member variable.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Component

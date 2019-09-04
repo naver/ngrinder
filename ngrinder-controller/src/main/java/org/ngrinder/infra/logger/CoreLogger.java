@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * 
  * This logger is subject to used to report the major execution steps of each perftest.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class CoreLogger {

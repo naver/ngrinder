@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
  * path.
  * 
  * @see RemainedPathMethodArgumentResolver
- * @author JunHo Yoon
  * @since 3.0
  */
 @Target(ElementType.PARAMETER)

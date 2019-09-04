@@ -16,7 +16,6 @@ package org.ngrinder.common.constant;
 /**
  * Web related Constants.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public interface WebConstants {

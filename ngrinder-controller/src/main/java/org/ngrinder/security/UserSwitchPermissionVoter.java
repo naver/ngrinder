@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 /**
  * User Switch Recognized Voter for SVN.
  *
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component("userSwitchPermissionVoter")

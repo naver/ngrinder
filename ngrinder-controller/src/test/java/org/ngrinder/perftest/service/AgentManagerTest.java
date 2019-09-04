@@ -19,12 +19,6 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- * @since
- */
 public class AgentManagerTest extends AbstractNGrinderTransactionalTest {
 	
 	@Autowired

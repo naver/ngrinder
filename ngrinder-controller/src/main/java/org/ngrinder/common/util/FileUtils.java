@@ -26,7 +26,6 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * Convenient File utilities.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 public abstract class FileUtils {

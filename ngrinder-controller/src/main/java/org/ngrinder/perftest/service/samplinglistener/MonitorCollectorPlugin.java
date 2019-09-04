@@ -44,7 +44,6 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 /**
  * Monitor data collector plugin.
  *
- * @author JunHo Yoon
  * @since 3.3
  */
 public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable, MonitorConstants {

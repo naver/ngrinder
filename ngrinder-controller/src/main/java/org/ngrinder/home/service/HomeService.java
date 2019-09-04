@@ -38,7 +38,6 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 /**
  * nGrinder index page data retrieval service.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 @Component

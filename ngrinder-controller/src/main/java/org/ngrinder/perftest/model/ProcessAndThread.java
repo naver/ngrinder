@@ -20,7 +20,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * Processes and Threads count model.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Getter

@@ -31,6 +31,7 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
 
 /**
  * User sign up api controller.
+ *
  * @since 3.5.0
  */
 @RestController

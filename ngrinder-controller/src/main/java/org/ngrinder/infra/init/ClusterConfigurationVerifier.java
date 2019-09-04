@@ -29,7 +29,7 @@ import static org.ngrinder.common.util.Preconditions.checkState;
  * Verify clustering is set up well. such as check the region is not duplicated. check if they use
  * same home.
  *
- * @since3.2
+ * @since 3.2
  */
 @Component
 @AllArgsConstructor

@@ -23,12 +23,6 @@ import java.io.File;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
- * {@link Home} Test Class
- * 
- * @author JunHo Yoon
- * 
- */
 public class HomeTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired

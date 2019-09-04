@@ -28,7 +28,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 /**
  * Automatic encoding detection utility.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class EncodingUtils {
