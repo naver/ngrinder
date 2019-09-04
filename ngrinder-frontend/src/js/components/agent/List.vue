@@ -71,7 +71,6 @@
                     </button>
                 </div>
             </template>
-
         </vuetable>
         <vuetable-pagination
             ref="pagination"
@@ -260,6 +259,7 @@
 
             this.$http.put(`/agent/api/${agent.id}?action=approve`)
                 .then(() => {
+                    this.showSuccessMsg(this.i18n('agent.message.approve'));
                     agent.approved = true;
                     this.$refs.vuetable.reload();
                 });
@@ -272,6 +272,7 @@
 
             this.$http.put(`/agent/api/${agent.id}?action=disapprove`)
                 .then(() => {
+                    this.showSuccessMsg(this.i18n('agent.message.disapprove'));
                     agent.approved = false;
                     this.$refs.vuetable.reload();
                 });
