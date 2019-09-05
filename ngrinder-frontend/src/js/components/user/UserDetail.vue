@@ -9,14 +9,16 @@
                 </button>
             </legend>
         </fieldset>
-        <user-info :user-props="user" :config="config" @saved="$router.push({ name: 'userList' })"></user-info>
+        <user-info :user-props="user" :config="config" @saved="showSuccessMsg(i18n('user.message.save.success'))"></user-info>
     </div>
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
     import UserInfo from './UserInfo.vue';
+    import MessageMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'userDetail',
@@ -27,7 +29,7 @@
         },
         components: { UserInfo },
     })
-    export default class extends Base {
+    export default class extends Mixins(Base, MessageMixin) {
         user = {};
         config = {};
         dataLoaded = false;
