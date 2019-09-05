@@ -34,18 +34,18 @@
             '\n' +
             'Following variables are available.\n' +
             '\n' +
-            '- applicationContext (org.springframework.context.ApplicationContext)\n' +
-            '- agentManager (org.ngrinder.perftest.service.AgentManager)\n' +
+            '- applicationContext  (org.springframework.context.ApplicationContext)\n' +
+            '- agentManager        (org.ngrinder.perftest.service.AgentManager)\n' +
             '- agentManagerService (org.ngrinder.agent.service.AgentManagerService)\n' +
-            '- regionService (org.ngrinder.region.service.RegionService)\n' +
-            '- consoleManager (org.ngrinder.perftest.service.ConsoleManager)\n' +
-            '- userService (org.ngrinder.user.service.UserService)\n' +
-            '- perfTestService  (org.ngrinder.perftest.service.PerfTestService)\n' +
-            '- tagService (org.ngrinder.perftest.service.TagService)\n' +
-            '- fileEntryService\t(org.ngrinder.script.service.FileEntryService)\n' +
-            '- config (org.ngrinder.infra.config.Config)\n' +
-            '- pluginManager (org.ngrinder.infra.plugin.PluginManager)\n' +
-            '- cacheManager (org.springframework.cache.CacheManager)\n' +
+            '- regionService       (org.ngrinder.region.service.RegionService)\n' +
+            '- consoleManager      (org.ngrinder.perftest.service.ConsoleManager)\n' +
+            '- userService         (org.ngrinder.user.service.UserService)\n' +
+            '- perfTestService     (org.ngrinder.perftest.service.PerfTestService)\n' +
+            '- tagService          (org.ngrinder.perftest.service.TagService)\n' +
+            '- fileEntryService    (org.ngrinder.script.service.FileEntryService)\n' +
+            '- config              (org.ngrinder.infra.config.Config)\n' +
+            '- pluginManager       (org.ngrinder.infra.plugin.PluginManager)\n' +
+            '- cacheManager        (org.springframework.cache.CacheManager)\n' +
             '\n' +
             'Please type following and click the Submit button as a example\n' +
             '\n' +
@@ -86,8 +86,13 @@
         }
 
         runScript() {
+            const script = this.codemirror.getValue().trim();
+            if (!script) {
+                return;
+            }
+
             this.$http.post('/operation/script_console/api', {
-                script: this.codemirror.getValue(),
+                script,
             })
             .then(res => this.result = res.data.result);
         }
