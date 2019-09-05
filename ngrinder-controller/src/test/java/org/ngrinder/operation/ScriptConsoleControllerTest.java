@@ -33,7 +33,7 @@ public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTe
 
 		Map<String, Object> param = buildMap("script", "");
 		result = scriptController.run(param);
-		assertThat(result.get("result"), nullValue());
+		assertThat((String) result.get("result"), isEmptyString());
 		param.put("script", "print \'hello\'");
 		result = scriptController.run(param);
 		assertThat(result.get("result"), notNullValue());
