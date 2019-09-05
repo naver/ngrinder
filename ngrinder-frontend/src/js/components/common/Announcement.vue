@@ -54,10 +54,18 @@
         }
 
         setAnnouncement(announcement) {
-            this.announcement = announcement.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+            this.announcement = announcement.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
         }
     }
 </script>
+
+<style lang="less">
+    .announcement-content {
+        li {
+            line-height: 20px;
+        }
+    }
+</style>
 
 <style lang="less" scoped>
     .container {
