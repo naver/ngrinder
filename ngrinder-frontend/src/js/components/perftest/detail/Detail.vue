@@ -73,7 +73,7 @@
                             <a v-show="tab.display.report" href="#report-section" class="nav-link"
                                data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                         </li>
-                        <a v-if="isAdmin" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUserId}`" v-text="switchUserTitle"></a>
+                        <a v-if="isAdmin" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="test-config-section">
