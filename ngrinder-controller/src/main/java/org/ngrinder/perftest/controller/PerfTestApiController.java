@@ -153,7 +153,7 @@ public class PerfTestApiController {
 	 * @param ids  comma operated IDs
 	 * @return success json messages if succeeded.
 	 */
-	@DeleteMapping("/")
+	@DeleteMapping("")
 	public void delete(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
