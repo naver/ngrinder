@@ -1,6 +1,6 @@
 package org.ngrinder.operation.cotroller;
 
-import org.apache.commons.lang.ObjectUtils;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
@@ -17,7 +17,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -25,8 +28,7 @@ import javax.script.ScriptException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
 
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
@@ -80,7 +82,7 @@ public class ScriptConsoleApiController {
 	@PostMapping({"", "/"})
 	public Map<String, Object> run(@RequestBody Map<String, Object> param) {
 		String script = (String) param.getOrDefault("script", "");
-		String result = null;
+		String result = "";
 
 		if (StringUtils.isNotBlank(script)) {
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("Groovy");
@@ -101,11 +103,17 @@ public class ScriptConsoleApiController {
 			PrintWriter writer = new PrintWriter(out);
 			engine.getContext().setWriter(writer);
 			engine.getContext().setErrorWriter(writer);
+
 			try {
 				Object evalResult = engine.eval(script);
-				result = out.toString() + "\n" + ObjectUtils.defaultIfNull(evalResult, "");
+				result = Objects.toString(evalResult, "");
 			} catch (ScriptException e) {
-				result = out.toString() + "\n" + e.getMessage();
+				result = e.getMessage();
+			} finally {
+				String outString = out.toString();
+				if (StringUtils.isNotEmpty(outString)) {
+					result = outString + "\n" + result;
+				}
 			}
 		}
 		return buildMap("result", result);
