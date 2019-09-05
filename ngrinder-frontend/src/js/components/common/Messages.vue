@@ -1,6 +1,6 @@
 <template>
     <div id="message-container">
-        <div class="message-div alert alert-info"
+        <div class="message-div alert"
              :class="msgClass"
              v-show="showMsgDiv"
              v-text="alertMessage">
@@ -60,6 +60,11 @@
         showSuccessMsg(msg) {
             msg = msg || '';
             this.showMsg('alert-success', msg);
+        }
+
+        showInfoMsg(msg) {
+            msg = msg || '';
+            this.showMsg('alert-info', msg);
         }
 
         showErrorMsg(msg) {

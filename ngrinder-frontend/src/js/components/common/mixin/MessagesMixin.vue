@@ -8,6 +8,10 @@
             this.$root.$refs.messages.showSuccessMsg(msg);
         }
 
+        showInfoMsg(msg) {
+            this.$root.$refs.messages.showInfoMsg(msg);
+        }
+
         showErrorMsg(msg) {
             this.$root.$refs.messages.showErrorMsg(msg);
         }
