@@ -14,8 +14,8 @@
 package org.ngrinder.infra.spring;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Convenient class to determine if the current runtime is in the spring context.
@@ -30,8 +30,8 @@ public class SpringContext {
 	 *
 	 * @return true if it's servlet context.
 	 */
-	public boolean isServletRequestContext() {
-		return RequestContextHolder.getRequestAttributes() != null;
+	public boolean isAuthenticationContext() {
+		return SecurityContextHolder.getContext().getAuthentication() != null;
 	}
 
 	/**

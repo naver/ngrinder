@@ -59,7 +59,7 @@ public class ModelAspect {
 			// context, It's not executed by task scheduling.
 			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
-					&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
+					&& (springContext.isAuthenticationContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
