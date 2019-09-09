@@ -71,7 +71,7 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 		user.setUserId("new_user");
 		user.setPassword("new_user");
 		user.setUserName("new_user");
-		provider.addNewUserIntoLocal(new SecuredUser(user, null)).get();
+		provider.addNewUserIntoLocal(new SecuredUser(user, null));
 		UserDetails userDetails = userDetailService.loadUserByUsername(user.getUserId());
 		assertThat(userDetails.getUsername(), equalTo(user.getUserId()));
 	}

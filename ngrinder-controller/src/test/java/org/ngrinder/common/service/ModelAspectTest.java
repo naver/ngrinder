@@ -37,7 +37,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testModelAspect() {
-		Assume.assumeThat(springContext.isServletRequestContext(), is(false));
+		Assume.assumeThat(springContext.isAuthenticationContext(), is(false));
 		JoinPoint joinPoint = mock(JoinPoint.class);
 		@SuppressWarnings("unchecked")
 		BaseModel<Object> baseModel = mock(BaseModel.class);
@@ -49,7 +49,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testModelAspectOnServletContext() {
 		springContext = spy(springContext);
-		when(springContext.isServletRequestContext()).thenReturn(true);
+		when(springContext.isAuthenticationContext()).thenReturn(true);
 		JoinPoint joinPoint = mock(JoinPoint.class);
 		@SuppressWarnings("unchecked")
 		BaseModel<Object> baseModel = mock(BaseModel.class);

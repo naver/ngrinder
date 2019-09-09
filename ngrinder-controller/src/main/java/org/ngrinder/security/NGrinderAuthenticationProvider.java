@@ -121,7 +121,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		// If It's the first time to login
 		if (user.getUser().getId() == null) {
-			proxy(this).addNewUserIntoLocal(user);
+			addNewUserIntoLocal(user);
 			LOG.info("{} is saved by password {}", user.getUser().getId(), user.getUser().getPassword());
 		}
 	}
@@ -132,9 +132,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	 * @param securedUser
 	 *            user
 	 */
-	@Async
 	@Transactional
-	public Future<SecuredUser> addNewUserIntoLocal(SecuredUser securedUser) {
+	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setCreatedDate(new Date());
@@ -147,8 +146,6 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 		User savedUser = userService.save(user);
 		securedUser.setUser(savedUser);
-
-		return new AsyncResult<>(securedUser);
 	}
 
 	@Override
