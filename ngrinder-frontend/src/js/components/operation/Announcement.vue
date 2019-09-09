@@ -33,18 +33,27 @@
         components: { CodeMirror },
     })
     export default class Announcement extends Mixins(Base, MessagesMixin) {
+        originContent = '';
+
         mounted() {
             this.pullAnnouncement();
             this.$refs.editor.codemirror.setSize(null, 500);
         }
 
+        beforeDestroy() {
+            this.$EventBus.$emit(this.$Event.CHANGE_ANNOUNCEMENT, this.originContent);
+        }
+
         pullAnnouncement() {
             this.$http.get('/operation/announcement/api')
-            .then(res => this.$refs.editor.setValue(res.data));
+            .then(res => {
+                this.originContent = res.data;
+                this.$refs.editor.setValue(this.originContent);
+            });
         }
 
         test() {
-            const content = this.$refs.editor.getValue();
+            const content = this.$refs.editor.getValue().trim();
             if (!content) {
                 return;
             }
@@ -53,14 +62,13 @@
         }
 
         save() {
-            const formData = new FormData();
-            formData.append('content', this.$refs.editor.getValue());
-
-            this.$http.post('/operation/announcement/api', formData)
+            const content = this.$refs.editor.getValue().trim();
+            this.$http.post('/operation/announcement/api', { content })
             .then(res => {
                 if (res.data.success) {
+                    this.originContent = content;
                     this.showSuccessMsg(this.i18n('common.message.alert.save.success'));
-                    this.$EventBus.$emit(this.$Event.CHANGE_ANNOUNCEMENT, this.$refs.editor.getValue());
+                    this.$EventBus.$emit(this.$Event.CHANGE_ANNOUNCEMENT, content);
                 } else {
                     this.showErrorMsg(this.i18n('common.message.alert.save.error'));
                 }
