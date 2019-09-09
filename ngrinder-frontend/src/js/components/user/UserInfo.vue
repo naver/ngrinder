@@ -1,5 +1,5 @@
 <template>
-    <form class="form-horizontal form-horizontal-left user-form">
+    <div class="form-horizontal form-horizontal-left user-info">
         <fieldset>
             <control-group :class="{error: errors.has('userId')}" name="userId" labelMessageKey="user.info.userId" required>
                 <input-append name="userId" ref="userId"
@@ -82,7 +82,7 @@
                 </button>
             </div>
         </fieldset>
-    </form>
+    </div>
 </template>
 
 <script>
@@ -226,7 +226,7 @@
 
 <style lang="less">
     #ngrinder {
-        .user-form {
+        .user-info {
             .input-group {
                 input {
                     width: 100%;
@@ -238,7 +238,7 @@
 </style>
 
 <style lang="less">
-    .user-form {
+    .user-info {
         .controls {
             display: flex;
         }
@@ -254,7 +254,7 @@
 </style>
 
 <style lang="less" scoped>
-    .user-form {
+    .user-info {
         textarea {
             resize: none;
         }

@@ -63,8 +63,12 @@
 
         save() {
             const content = this.$refs.editor.getValue().trim();
-            this.$http.post('/operation/announcement/api', { content })
-            .then(res => {
+            this.$http({
+                method: 'post',
+                url: '/operation/announcement/api',
+                data: content,
+                headers: { 'Content-Type': 'text/plain' },
+            }).then(res => {
                 if (res.data.success) {
                     this.originContent = content;
                     this.showSuccessMsg(this.i18n('common.message.alert.save.success'));

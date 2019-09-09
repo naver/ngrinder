@@ -1,95 +1,89 @@
 <template>
     <div v-if="dataLoadFinished" class="perftest-detail-container">
         <div class="container">
-            <form ref="configForm">
-                <div class="card bg-light">
-                    <input type="hidden" name="id" :value="test.id">
-                    <div class="form-horizontal info">
-                        <fieldset>
-                            <div class="control-group">
-                                <div class="row">
-                                    <div class="test-name-container" data-step="1" :data-intro="i18n('intro.detail.testName')">
-                                        <control-group :class="{ error: errors.has('testName') }" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
-                                            <input class="required form-control float-left" name="testName"
-                                                   maxlength="80" size="30" type="text"
-                                                   v-validate="{ required: true }"
-                                                   v-model="test.testName"/>
-                                            <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
-                                        </control-group>
-                                    </div>
-                                    <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
-                                        <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                            <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 175px" type="input" name="tagString"
-                                                     :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
-                                                      maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
-                                            </select2>
-                                        </control-group>
-                                    </div>
-                                    <div class="status-image-container">
-                                        <img ref="testStatusImage" class="ball"
-                                             data-html="true"
-                                             data-toggle="popover"
-                                             data-trigger="hover"
-                                             data-placement="bottom"
-                                             :title="i18n(test.springMessageKey)"
-                                             :src="`${contextPath}${perftestStatus.iconPath}`"/>
-                                    </div>
-                                    <div class="start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
-                                        <div class="control-group">
-                                            <input type="hidden" name="isClone" :value="isClone"/>
-                                            <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
-                                                <i class="fa fa-clone mr-1"></i>
-                                                <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
-                                            </button>
-                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart">
-                                                <i class="fa fa-play mr-1"></i>
-                                                <span v-text="saveScheduleBtnTitle"></span>
-                                            </button>
-                                        </div>
+            <div class="card bg-light">
+                <div class="form-horizontal info">
+                    <fieldset>
+                        <div class="control-group">
+                            <div class="row">
+                                <div class="test-name-container" data-step="1" :data-intro="i18n('intro.detail.testName')">
+                                    <control-group :class="{ error: errors.has('testName') }" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
+                                        <input class="required form-control float-left" name="testName"
+                                               maxlength="80" size="30" type="text"
+                                               v-validate="{ required: true }"
+                                               v-model="test.testName"/>
+                                        <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
+                                    </control-group>
+                                </div>
+                                <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
+                                    <control-group name="tagString" labelMessageKey="perfTest.config.tags">
+                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 175px" type="input" name="tagString"
+                                                 :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
+                                                  maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
+                                        </select2>
+                                    </control-group>
+                                </div>
+                                <div class="status-image-container">
+                                    <img ref="testStatusImage" class="ball"
+                                         data-html="true"
+                                         data-toggle="popover"
+                                         data-trigger="hover"
+                                         data-placement="bottom"
+                                         :title="i18n(test.springMessageKey)"
+                                         :src="`${contextPath}${perftestStatus.iconPath}`"/>
+                                </div>
+                                <div class="start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
+                                    <div class="control-group">
+                                        <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
+                                            <i class="fa fa-clone mr-1"></i>
+                                            <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
+                                        </button>
+                                        <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart">
+                                            <i class="fa fa-play mr-1"></i>
+                                            <span v-text="saveScheduleBtnTitle"></span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="control-group description-container">
-                                <label for="description" class="control-label" v-text="i18n('common.label.description')"></label>
-                                <div class="controls">
-                                    <textarea class="form-control" id="description" rows="2" name="description" v-text="test.description"></textarea>
-                                </div>
+                        </div>
+                        <div class="control-group description-container">
+                            <label for="description" class="control-label" v-text="i18n('common.label.description')"></label>
+                            <div class="controls">
+                                <textarea class="form-control" id="description" rows="2" name="description" v-model="test.description"></textarea>
                             </div>
-                        </fieldset>
-                    </div>
+                        </div>
+                    </fieldset>
                 </div>
+            </div>
 
-                <div class="tabbable tab-container">
-                    <ul class="nav nav-tabs home-tab">
-                        <li class="nav-item">
-                            <a v-show="tab.display.config" href="#test-config-section" class="nav-link"
-                               data-toggle="tab" ref="configTab" v-text="i18n('perfTest.config.testConfiguration')"></a>
-                        </li>
-                        <li class="nav-item">
-                            <a v-show="tab.display.running" href="#running-section" class="nav-link"
-                               data-toggle="tab" ref="runningTab" v-text="i18n('perfTest.running.title')"></a>
-                        </li>
-                        <li class="nav-item">
-                            <a v-show="tab.display.report" href="#report-section" class="nav-link"
-                               data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
-                        </li>
-                        <a v-if="isAdmin" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane" id="test-config-section">
-                            <config ref="config" :testProps="test" :config="config"></config>
-                        </div>
-                        <div class="tab-pane" id="running-section">
-                            <running ref="running" :testProps="test"></running>
-                        </div>
-                        <div class="tab-pane" id="report-section">
-                            <report :id="id" ref="report"></report>
-                        </div>
+            <div class="tabbable tab-container">
+                <ul class="nav nav-tabs home-tab">
+                    <li class="nav-item">
+                        <a v-show="tab.display.config" href="#test-config-section" class="nav-link"
+                           data-toggle="tab" ref="configTab" v-text="i18n('perfTest.config.testConfiguration')"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a v-show="tab.display.running" href="#running-section" class="nav-link"
+                           data-toggle="tab" ref="runningTab" v-text="i18n('perfTest.running.title')"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a v-show="tab.display.report" href="#report-section" class="nav-link"
+                           data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
+                    </li>
+                    <a v-if="isAdmin" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" id="test-config-section">
+                        <config ref="config" :testProps="test" :config="config"></config>
                     </div>
-                    <input v-if="scheduledTime" type="hidden" name="scheduledTime" :value="scheduledTime">
-                    <input type="hidden" name="status" :value="params.testStatus">
+                    <div class="tab-pane" id="running-section">
+                        <running ref="running" :testProps="test"></running>
+                    </div>
+                    <div class="tab-pane" id="report-section">
+                        <report :id="id" ref="report"></report>
+                    </div>
                 </div>
-            </form>
+            </div>
             <intro-button></intro-button>
         </div>
         <schedule-modal ref="scheduleModal" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
@@ -166,6 +160,29 @@
                 config: false,
             },
         };
+
+        getParams() {
+            const params = {
+                id: this.test.id,
+                testName: this.test.testName,
+                tagString: this.test.tagString,
+                description: this.test.description,
+                status: this.params.testStatus,
+            };
+
+            if (this.scheduledTime) {
+                params.scheduledTime = this.scheduledTime;
+            }
+
+            if (this.ngrinder.config.isClustered) {
+                params.region = this.$refs.config.test.region;
+            }
+
+            Object.assign(params, this.$refs.config.getParams());
+            Object.assign(params, this.$refs.config.$refs.rampUp.getParams());
+
+            return params;
+        }
 
         created() {
             $('[data-toggle="popover"]').popover('hide');
@@ -250,6 +267,7 @@
 
                 if (this.test.status.name !== status.status_id) {
                     this.test.status.name = status.status_id;
+                    this.isClone = this.test.status.name !== 'SAVED';
                     this.updateStatus(status.status_id, status.status_type, status.name, status.icon, status.deletable, status.stoppable, status.message);
                 }
                 if (this.test.status.category !== status.status_type) {
@@ -333,7 +351,7 @@
                 } else {
                     this.params.testStatus = 'SAVED';
                     this.$nextTick(() => {
-                        this.$http.post('/perftest/api/save', $(this.$refs.configForm).serialize())
+                        this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, this.getParams())
                             .then(() => this.$router.push('/perftest'))
                             .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
                     });
@@ -361,7 +379,7 @@
             this.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
-                this.$http.post('/perftest/api/save', $(this.$refs.configForm).serialize())
+                this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, this.getParams())
                     .then(res => {
                         this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
                         this.$router.push(`/perftest/${res.data.id}`);

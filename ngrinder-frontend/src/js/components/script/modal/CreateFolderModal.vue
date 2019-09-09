@@ -39,7 +39,6 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
-    import querystring from 'querystring';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
 
@@ -63,13 +62,12 @@
             this.$validator.validate('folderName')
                 .then(result => {
                     if (result) {
-                        const params = querystring.stringify({
-                            type: 'folder',
-                            folderName: this.folderName,
-                        });
-
-                        this.$http.post(`/script/api/new/${this.currentPath}`, params)
-                            .then(() => {
+                        this.$http({
+                            method: 'post',
+                            url: `/script/api/new/${this.currentPath}?type=folder`,
+                            data: this.folderName,
+                            headers: { 'Content-Type': 'text/plain' },
+                        }).then(() => {
                                 $(this.$refs.createFolderModal).modal('hide');
                                 this.folderName = '';
                                 this.errors.clear();

@@ -167,7 +167,7 @@
                     <div class="row">
                         <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
                                        labelHelpMessageKey="perfTest.config.safeDistribution">
-                            <input type="checkbox" name="safeDistribution" :checked="test.safeDistribution">
+                            <input type="checkbox" name="safeDistribution" v-model="test.safeDistribution">
                         </control-group>
                         <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
                                        controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
@@ -184,7 +184,7 @@
                 </div>
             </div>
         </div>
-        <ramp-up ref="rampUp" :test="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
+        <ramp-up ref="rampUp" :testProps="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
     </div>
@@ -267,8 +267,8 @@
         agentCountValidationRules = { required: true, agentCountValidation: true, min_value: 0 };
 
         created() {
+            Object.assign(this.test, this.testProps);
             this.setCustomValidationRules();
-            this.test = this.testProps;
             this.changeMaxAgentCount();
             this.initDurationFromDurationStr();
             this.changeDuration();
@@ -294,6 +294,26 @@
                 return;
             }
             this.maxAgentCount = 0;
+        }
+
+        getParams() {
+            return {
+                param: this.test.param,
+                region: this.test.region,
+                ignoreSampleCount: this.test.ignoreSampleCount,
+                scriptName: this.test.scriptName,
+                scriptRevision: this.test.scriptRevision,
+                targetHosts: this.targetHosts.join(','),
+                threshold: this.test.threshold,
+                runCount: this.test.runCount,
+                processes: this.test.processes,
+                agentCount: this.test.agentCount,
+                threads: this.test.threads,
+                safeDistribution: this.test.safeDistribution,
+                vuserPerAgent: this.test.vuserPerAgent,
+                samplingInterval: this.test.samplingInterval,
+                duration: this.durationMs,
+            };
         }
 
         setScripts(scripts, selectedScript) {
@@ -508,7 +528,7 @@
                     width: 300px;
 
                     .input-append {
-                        width: 130px;
+                        width: 145px;
                     }
                 }
 

@@ -153,7 +153,7 @@
         shownBsTab = true;
 
         created() {
-            this.test = this.testProps;
+            Object.assign(this.test, this.testProps);
             this.tpsQueue = new Queue(60 / this.test.samplingInterval);
             this.tpsChart = new Chart('running-tps-chart', [this.tpsQueue.getArray()], this.test.samplingInterval);
         }

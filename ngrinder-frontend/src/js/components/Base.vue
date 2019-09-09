@@ -200,9 +200,9 @@
         }
     }
 
-    @media only screen and (max-height: 800px) {
+    @media only screen and (max-height: 950px) {
         body {
-            margin-bottom: 45px;
+            margin-bottom: 50px !important;
         }
     }
 </style>
