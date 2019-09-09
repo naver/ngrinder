@@ -18,6 +18,7 @@
                                      :data-content="i18n('script.message.upload.content')">
                                     <input type="file"
                                            ref="file"
+                                           name="file"
                                            class="d-block"
                                            @change="file = $event.target"
                                            v-validate="{ required: true }"/>

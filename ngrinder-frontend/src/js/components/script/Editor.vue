@@ -99,7 +99,6 @@
 <script>
     import { Component, Watch } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
-    import querystring from 'querystring';
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
@@ -206,14 +205,16 @@
         }
 
         saveScript() {
-            const params = querystring.stringify({
-                path: this.file.path,
-                description: this.file.description ? this.file.description : '',
-                content: this.$refs.editor.getValue(),
+            const params = {
+                fileEntry: {
+                    path: this.file.path,
+                    description: this.file.description ? this.file.description : '',
+                    content: this.$refs.editor.getValue(),
+                },
                 validated: this.validated,
                 createLibAndResource: this.createLibAndResource,
                 targetHosts: this.targetHosts.join(','),
-            });
+            };
 
             this.$http.post('/script/api/save', params)
             .then(res => {
@@ -232,11 +233,13 @@
 
             this.showProgressBar(this.i18n('script.editor.message.validate'));
 
-            const params = querystring.stringify({
-                path: this.file.path,
-                content: this.$refs.editor.getValue(),
+            const params = {
+                fileEntry: {
+                    path: this.file.path,
+                    content: this.$refs.editor.getValue(),
+                },
                 hostString: this.targetHosts.join(','),
-            });
+            };
 
             this.$http.post('/script/api/validate', params)
             .then(res => {

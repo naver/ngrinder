@@ -109,7 +109,7 @@
                      data-trigger="hover"
                      data-placement="left"
                      :data-content="getVuserPopoverContent(props.rowData)">
-                    {{ props.rowData.vuserPerAgent * props.rowData.agentCount | numFormat}}
+                     {{ props.rowData.vuserPerAgent * props.rowData.agentCount | numFormat }}
                 </div>
             </template>
 

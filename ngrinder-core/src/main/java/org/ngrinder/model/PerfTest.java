@@ -239,7 +239,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "region")
 	private String region;
 
-	@JsonIgnore
 	@Column(name = "safe_distribution", columnDefinition = "char(1)")
 	@Cloneable
 	@Type(type = "true_false")

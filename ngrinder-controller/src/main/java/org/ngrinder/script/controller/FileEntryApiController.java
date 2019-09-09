@@ -35,9 +35,7 @@ import org.ngrinder.script.handler.NullScriptHandler;
 import org.ngrinder.script.handler.ProjectHandler;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
-import org.ngrinder.script.model.FileCategory;
-import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.model.FileType;
+import org.ngrinder.script.model.*;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.script.service.ScriptValidationService;
 import org.ngrinder.user.service.UserContext;
@@ -111,28 +109,24 @@ public class FileEntryApiController {
 	 * Save a fileEntry and return to the the path.
 	 *
 	 * @param user                 current user
-	 * @param fileEntry            file to be saved
-	 * @param targetHosts          target host parameter
-	 * @param validated            validated the script or not, 1 is validated, 0 is not.
-	 * @param createLibAndResource true if lib and resources should be created as well.
+	 * @param fileSaveParams       model for params
 	 * @return basePath
 	 */
 	@PostMapping("/save/**")
-	public String save(User user, FileEntry fileEntry,
-					   @RequestParam String targetHosts,
-					   @RequestParam(defaultValue = "0") String validated,
-					   @RequestParam(defaultValue = "false") boolean createLibAndResource) {
+	public String save(User user, @RequestBody FileSaveParams fileSaveParams) {
+		FileEntry fileEntry = fileSaveParams.getFileEntry();
+
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
 			Map<String, String> map = buildMap(
-				"validated", validated,
-				"targetHosts", trimToEmpty(targetHosts)
+				"validated", fileSaveParams.getValidated(),
+				"targetHosts", trimToEmpty(fileSaveParams.getTargetHosts())
 			);
 			fileEntry.setProperties(map);
 		}
 		fileEntryService.save(user, fileEntry);
 
 		String basePath = getPath(fileEntry.getPath());
-		if (createLibAndResource) {
+		if (fileSaveParams.isCreateLibAndResource()) {
 			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
 			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
 		}
@@ -161,20 +155,18 @@ public class FileEntryApiController {
 	 *
 	 * @param user                  current user
 	 * @param path                  path in which a file will be added
-	 * @param testUrl               url which the script may use
-	 * @param fileName              fileName
-	 * @param scriptType            Type of script. optional
-	 * @param createLibAndResource true if libs and resources should be created as well.
+	 * @param scriptCreationParams  model for params
 	 * @return response map
 	 */
 	@PostMapping(value = "/new/**", params = "type=script")
 	public Map<String, Object> createScript(User user,
 											@RemainedPath String path,
-											@RequestParam("fileName") String fileName,
-											@RequestParam(required = false) String testUrl,
-											@RequestParam(required = false) String options,
-											@RequestParam(required = false) String scriptType,
-											@RequestParam(defaultValue = "false") boolean createLibAndResource) {
+											@RequestBody ScriptCreationParams scriptCreationParams) {
+		String fileName = scriptCreationParams.getFileName();
+		String testUrl = scriptCreationParams.getTestUrl();
+		String options = scriptCreationParams.getOptions();
+		boolean createLibAndResource = scriptCreationParams.isCreateLibAndResource();
+
 		fileName = trimToEmpty(fileName);
 		String name = "Test1";
 		if (isEmpty(testUrl)) {
@@ -182,7 +174,7 @@ public class FileEntryApiController {
 		} else {
 			name = UrlUtils.getHost(testUrl);
 		}
-		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
+		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptCreationParams.getScriptType());
 		FileEntry entry;
 		if (scriptHandler instanceof ProjectHandler) {
 			path += isEmpty(path) ? "" : "/";
@@ -207,7 +199,7 @@ public class FileEntryApiController {
 			}
 		}
 
-		save(user, entry, null, "0", createLibAndResource);
+		save(user, new FileSaveParams(entry, null, "0", createLibAndResource));
 
 		return buildMap("file", entry);
 	}
@@ -222,7 +214,7 @@ public class FileEntryApiController {
 	@PostMapping(value = "/new/**", params = "type=folder")
 	public void addFolder(User user,
 							@RemainedPath String path,
-							@RequestParam String folderName) {
+							@RequestBody String folderName) {
 		fileEntryService.addFolder(user, path, trimToEmpty(folderName), "");
 	}
 
@@ -263,7 +255,6 @@ public class FileEntryApiController {
 	 *
 	 * @param user        user
 	 * @param paths 	list of file paths to be deleted
-	 * @return json string
 	 */
 	@PostMapping("/delete")
 	public void delete(User user, @RequestBody List<String> paths) {
@@ -307,7 +298,6 @@ public class FileEntryApiController {
 	 *
 	 * @param user      user
 	 * @param fileEntry file entry
-	 * @return success json string
 	 */
 	@PostMapping({"/", ""})
 	public void create(User user, FileEntry fileEntry) {
@@ -321,7 +311,6 @@ public class FileEntryApiController {
 	 * @param path        path
 	 * @param description description
 	 * @param file        multi part file
-	 * @return success json string
 	 */
 	@PostMapping(value = "/**", params = "action=upload")
 	public void uploadAPI(User user,
@@ -380,7 +369,6 @@ public class FileEntryApiController {
 	 *
 	 * @param user user
 	 * @param path path
-	 * @return json string
 	 */
 	@DeleteMapping("/**")
 	public void deleteOne(User user, @RemainedPath String path) {
@@ -390,15 +378,14 @@ public class FileEntryApiController {
 	/**
 	 * Validate the script.
 	 *
-	 * @param user       current user
-	 * @param fileEntry  fileEntry
-	 * @param hostString hostString
+	 * @param user                    current user
+	 * @param scriptValidationParams  model for params
 	 * @return validation Result string
 	 */
 	@PostMapping("/validate")
-	public String validate(User user, FileEntry fileEntry,
-									   @RequestParam(required = false) String hostString) {
+	public String validate(User user, @RequestBody ScriptValidationParams scriptValidationParams) {
+		FileEntry fileEntry = scriptValidationParams.getFileEntry();
 		fileEntry.setCreatedUser(user);
-		return scriptValidationService.validate(user, fileEntry, false, hostString);
+		return scriptValidationService.validate(user, fileEntry, false, scriptValidationParams.getHostString());
 	}
 }

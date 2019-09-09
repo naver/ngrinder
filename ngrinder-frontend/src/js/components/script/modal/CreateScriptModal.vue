@@ -21,7 +21,7 @@
                     </div>
                 </header>
                 <div class="modal-body">
-                    <form class="form-horizontal" method="post" target="_self">
+                    <div class="form-horizontal">
                         <control-group :class="{ error: errors.has('fileName') }" name="fileName" labelMessageKey="script.info.name">
                             <select name="scriptType" class="form-control ml-2" v-model="scriptHandler">
                                 <option v-for="handler in handlers"
@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                     <div class="d-flex align-items-center flex-column">
                         <div>
                             <a class="pointer-cursor" @click="showScriptOption = !showScriptOption"
@@ -103,7 +103,6 @@
 
 <script>
     import { Component } from 'vue-property-decorator';
-    import querystring from 'querystring';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import ScriptOption from './ScriptOption.vue';
@@ -176,16 +175,15 @@
                 }
             }
 
-            const params = querystring.stringify({
+            const params = {
                 fileName: this.fileName,
                 testUrl: this.testUrl,
                 options: JSON.stringify(this.$refs.scriptOption.toJson),
                 scriptType: this.scriptHandler.key,
                 createLibAndResource: this.createLibAndResource,
-                type: 'script',
-            });
+            };
 
-            this.$http.post(`/script/api/new/${this.currentPath}`, params)
+            this.$http.post(`/script/api/new/${this.currentPath}?type=script`, params)
                 .then(res => {
                     this.hide();
                     if (res.data.message) {

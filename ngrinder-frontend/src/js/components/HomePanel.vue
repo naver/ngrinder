@@ -24,7 +24,7 @@
                             <img :src="`${contextPath}/img/asksupport.gif`" />
                             <a :href="askQuestionUrl" target="_blank" v-text="i18n('home.button.ask')"></a>
                         </td>
-                        <td v-if="seeMoreQuestionUrl" :colspan="askQuestionUrl ? 1 : 2" class="text-right">
+                        <td v-if="seeMoreQuestionUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="text-right">
                             <a :href="seeMoreQuestionUrl" target="_blank">
                                 <i class="fa fa-share"></i>
                                 <span v-text="i18n('home.button.more')"></span>
