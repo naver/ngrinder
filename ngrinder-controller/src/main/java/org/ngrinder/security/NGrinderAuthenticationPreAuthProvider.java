@@ -13,14 +13,19 @@
  */
 package org.ngrinder.security;
 
+import static org.ngrinder.common.util.AopUtils.proxy;
+
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.Future;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +83,7 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		// If It's the first time to login
 		// means.. If the user info provider is not defaultLoginPlugin..
 		if (securedUser.getUser().getId() == null) {
-			addNewUserIntoLocal(securedUser);
+			proxy(this).addNewUserIntoLocal(securedUser);
 		}
 		return authenticate;
 	}
@@ -89,8 +94,9 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 	 * @param securedUser
 	 *            user
 	 */
+	@Async
 	@Transactional
-	public void addNewUserIntoLocal(SecuredUser securedUser) {
+	public Future<SecuredUser> addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setCreatedDate(new Date());
@@ -103,6 +109,8 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		}
 		User savedUser = userService.save(user);
 		securedUser.setUser(savedUser);
+
+		return new AsyncResult<>(securedUser);
 	}
 
 	public UserService getUserService() {

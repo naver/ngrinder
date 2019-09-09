@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.*;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -197,6 +198,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private PluggablePreAuthFilter pluggablePreAuthFilter;
+
+		@Bean
+		@Override
+		protected AuthenticationManager authenticationManager() throws Exception {
+			return super.authenticationManager();
+		}
 
 		@Bean
 		public AbstractAccessDecisionManager accessDecisionManager() {

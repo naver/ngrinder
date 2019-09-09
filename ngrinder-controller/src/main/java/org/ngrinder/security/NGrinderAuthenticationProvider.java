@@ -13,6 +13,8 @@
  */
 package org.ngrinder.security;
 
+import static org.ngrinder.common.util.AopUtils.proxy;
+
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
@@ -22,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Date;
+import java.util.concurrent.Future;
 
 /**
  * nGrinder UserDetailsAuthenticationProvider.
@@ -116,7 +121,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		// If It's the first time to login
 		if (user.getUser().getId() == null) {
-			addNewUserIntoLocal(user);
+			proxy(this).addNewUserIntoLocal(user);
 			LOG.info("{} is saved by password {}", user.getUser().getId(), user.getUser().getPassword());
 		}
 	}
@@ -127,8 +132,9 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	 * @param securedUser
 	 *            user
 	 */
+	@Async
 	@Transactional
-	public void addNewUserIntoLocal(SecuredUser securedUser) {
+	public Future<SecuredUser> addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setCreatedDate(new Date());
@@ -141,6 +147,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 		User savedUser = userService.save(user);
 		securedUser.setUser(savedUser);
+
+		return new AsyncResult<>(securedUser);
 	}
 
 	@Override

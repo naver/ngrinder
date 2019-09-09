@@ -65,13 +65,13 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
     }
 
 	@Test
-	public void testAddNewUserIntoLocal() {
+	public void testAddNewUserIntoLocal() throws Exception {
 		User user = User.createNew();
 		user.setEmail("aaa@hello.com");
 		user.setUserId("new_user");
 		user.setPassword("new_user");
 		user.setUserName("new_user");
-		provider.addNewUserIntoLocal(new SecuredUser(user, null));
+		provider.addNewUserIntoLocal(new SecuredUser(user, null)).get();
 		UserDetails userDetails = userDetailService.loadUserByUsername(user.getUserId());
 		assertThat(userDetails.getUsername(), equalTo(user.getUserId()));
 	}
