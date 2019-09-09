@@ -2,9 +2,9 @@
     <div class="ramp-up-container intro">
         <fieldset>
             <legend class="border-bottom">
-                <input type="checkbox" class="use-ramp-up" name="useRampUp" v-model="enableRampUp" :checked="test.useRampUp"/>
+                <input type="checkbox" class="use-ramp-up" name="useRampUp" v-model="useRampUp" />
                 <span v-text="i18n('perfTest.config.rampUp.enable')"></span>
-                <select class="pull-right form-control" name="rampUpType" :disabled="!enableRampUp" v-model="test.rampUpType" @change="updateRampUpChart">
+                <select class="pull-right form-control" name="rampUpType" :disabled="!useRampUp" v-model="rampUpType" @change="updateRampUpChart">
                     <option v-for="rampUpType in rampUpTypes" :value="rampUpType" v-text="i18n(`perfTest.config.rampUp.${rampUpType.toLowerCase()}`)"></option>
                 </select>
             </legend>
@@ -74,7 +74,7 @@
         name: 'rampUp',
         components: { InputLabel },
         props: {
-            test: {
+            testProps: {
                 type: Object,
                 required: true,
             },
@@ -86,16 +86,35 @@
     })
     export default class RampUp extends Base {
         plotObj = '';
-        enableRampUp = false;
+        useRampUp = false;
+        rampUpType = 'PROCESS';
+        test = {};
+
+        created() {
+            Object.assign(this.test, this.testProps);
+            this.useRampUp = this.test.useRampUp;
+            this.rampUpType = this.test.rampUpType;
+        }
 
         mounted() {
             this.$watchAll(['test.rampUpStep', 'test.rampUpInitCount', 'test.rampUpInitSleepTime', 'test.rampUpIncrementInterval'], this.updateRampUpChart);
         }
 
-        @Watch('enableRampUp')
-        watchEnableRampUp(val) {
+        @Watch('useRampUp')
+        watchUseRampUp(val) {
             this.$refs.rampUpConfig.forEach(component => component.readonly = !val);
             this.updateRampUpChart();
+        }
+
+        getParams() {
+            return {
+                useRampUp: this.useRampUp,
+                rampUpType: this.rampUpType,
+                rampUpInitCount: this.test.rampUpInitCount,
+                rampUpStep: this.test.rampUpStep,
+                rampUpInitSleepTime: this.test.rampUpInitSleepTime,
+                rampUpIncrementInterval: this.test.rampUpIncrementInterval,
+            };
         }
 
         updateRampUpChart() {
@@ -106,7 +125,7 @@
             let base;
             let factor;
 
-            if (this.test.rampUpType === 'PROCESS') {
+            if (this.rampUpType === 'PROCESS') {
                 base = this.test.processes;
                 factor = this.test.threads;
             } else {
@@ -145,7 +164,7 @@
 
             const seriesArray = [];
 
-            if (this.enableRampUp) {
+            if (this.useRampUp) {
                 let curX = initialSleepTime;
                 let curY = initialCount;
                 if (initialSleepTime > 0) {

@@ -13,7 +13,7 @@
                @focus="$emit('focus')"/>
         <div v-if="append !== null" class="input-group-append">
             <span class="input-group-text">
-                <span v-text="i18n(appendPrefix)"></span>
+                <span class="mr-1" v-text="i18n(appendPrefix)"></span>
                 <span v-html="append"></span>
             </span>
         </div>

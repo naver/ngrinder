@@ -263,15 +263,12 @@ public class PerfTestApiController {
 	 * @return saved perftest
 	 */
 	@PostMapping("/save")
-	public PerfTest saveOne(User user, PerfTest perfTest, @RequestParam(defaultValue = "false") boolean isClone) {
+	public PerfTest saveOne(User user, @RequestBody PerfTest perfTest, @RequestParam(defaultValue = "false") boolean isClone) {
 		validate(user, null, perfTest);
 
-		// Point to the head revision
 		perfTest.setTestName(StringUtils.trimToEmpty(perfTest.getTestName()));
-		perfTest.setScriptRevision(-1L);
 		perfTest.prepare(isClone);
 		perfTest = perfTestService.save(user, perfTest);
-
 		return perfTest;
 	}
 

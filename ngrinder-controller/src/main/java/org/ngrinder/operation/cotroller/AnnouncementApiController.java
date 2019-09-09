@@ -20,7 +20,7 @@ public class AnnouncementApiController {
 
 	@PostMapping("")
 	@PreAuthorize("hasAnyRole('A', 'S')")
-	public void save(@RequestParam String content) {
+	public void save(@RequestBody String content) {
 		announcementService.save(content);
 	}
 }
