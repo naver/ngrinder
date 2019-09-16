@@ -38,7 +38,7 @@ public enum Database {
 	/**
 	 * MYSQL.
 	 */
-	mysql(com.mysql.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8&serverTimezone=%s&%s") {
+	mysql(com.mysql.cj.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8&serverTimezone=%s&%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String databaseUrlOption = databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION);
