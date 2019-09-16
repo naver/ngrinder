@@ -11,7 +11,7 @@ allprojects  {
     }
   }
 
-  if(project.convention.findPlugin(JavaPluginConvention)) {
+  if (project.convention.findPlugin(JavaPluginConvention)) {
     // Change the output directory for the main and test source sets back to the old path
     sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
     sourceSets.test.java.outputDir = new File(buildDir, "classes/test")
@@ -28,16 +28,15 @@ subprojects {
   targetCompatibility = 1.8
 
   ext {
-    slf4j_version = "1.6.4"
-    jetty_version = "9.2.17.v20160517"
-    spring_security_version = "5.0.11.RELEASE"
-    spring_boot_version = "2.0.8.RELEASE"
+    slf4j_version = "1.7.28"
+    spring_security_version = "5.1.6.RELEASE"
+    spring_boot_version = "2.1.8.RELEASE"
     svnkit_version = "1.8.3-scm1"
-    hibernate_version = "5.2.17.Final"
+    hibernate_version = "5.3.11.Final"
     hazelcast_version = "3.11.1"
-    mockito_version = "2.15.0"
+    mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
-    jackson_version = "2.9.0"
+    jackson_version = "2.9.9"
   }
 
   repositories {
