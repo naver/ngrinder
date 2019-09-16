@@ -13,19 +13,14 @@
  */
 package org.ngrinder.security;
 
-import static org.ngrinder.common.util.AopUtils.proxy;
-
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.Future;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.transaction.annotation.Transactional;
