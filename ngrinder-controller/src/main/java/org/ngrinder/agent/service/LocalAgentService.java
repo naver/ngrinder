@@ -60,7 +60,6 @@ public class LocalAgentService {
 		}
 	}
 
-
 	@Transactional
 	public void updateAgents(List<AgentInfo> newAgents,
 							 List<AgentInfo> updatedAgents,

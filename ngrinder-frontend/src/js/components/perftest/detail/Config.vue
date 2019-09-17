@@ -22,7 +22,7 @@
                     </div>
                     <div v-if="ngrinder.config.clustered" class="agent-region-container">
                         <control-group :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
-                                       labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -30px; width: 80px;">
+                                       labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -20px; width: 80px;">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
                                      class="float-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
                                 <option v-for="region in config.regions" :value="region" :selected="region === test.region" v-text="region"></option>
