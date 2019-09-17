@@ -38,7 +38,7 @@
 <style lang="less" scoped>
     .intro-button-container {
         .intro-button-title {
-            margin-right: -29px;
+            margin-right: -32px;
         }
     }
 </style>

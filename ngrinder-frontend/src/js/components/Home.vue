@@ -147,5 +147,9 @@
         .intro-button-container {
             margin-top: -21px;
         }
+
+        .row {
+            justify-content: space-between;
+        }
     }
 </style>
