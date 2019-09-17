@@ -1,4 +1,4 @@
- <template>
+<template>
     <div class="container">
         <fieldSet>
             <legend class="header border-bottom d-flex">
@@ -31,7 +31,7 @@
                         <a :href="downloadLink" v-html="downloadLink"></a>
                     </template>
                     <template v-else>
-                        Please select the region in advance to download agent.
+                        <span class="ml-2 text-muted">Please select the region in advance to download agent.</span>
                     </template>
                 </div>
             </div>
@@ -114,7 +114,6 @@
 
         created() {
             this.table.css = this.tableCss;
-            this.downloadLink = this.contextPath;
         }
 
         mounted() {
@@ -151,7 +150,13 @@
         }
 
         updateDownloadLink() {
-            this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => this.downloadLink += res.data);
+            if (this.ngrinder.config.clustered && !this.region) {
+                this.downloadLink = '';
+                return;
+            }
+            this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => {
+                this.downloadLink = `${this.contextPath}${res.data}`;
+            });
         }
 
         updateStates(initialize) {
@@ -323,7 +328,7 @@
     }
 
     .uneditable-input {
-        width: 530px;
+        width: 580px;
 
         a {
             margin-left: 7px;

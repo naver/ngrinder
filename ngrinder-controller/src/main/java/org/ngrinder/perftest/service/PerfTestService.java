@@ -947,7 +947,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));
 		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue());
 		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue());
-
 	}
 
 	/**
