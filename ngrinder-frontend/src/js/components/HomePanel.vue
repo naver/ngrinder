@@ -68,7 +68,6 @@
 <style lang="less" scoped>
     .panel-container {
         width: 460px;
-        margin-left: 10px;
 
         .card {
             padding: 10px;
