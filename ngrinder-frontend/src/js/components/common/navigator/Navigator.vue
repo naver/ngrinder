@@ -56,7 +56,7 @@
 <style lang="less" scoped>
     header {
         .navbar {
-            padding: 1px 0;
+            height: 40px;
 
             .container {
                 padding: 0;
@@ -87,6 +87,14 @@
                 .nav-item {
                     display: flex;
                     align-items: center;
+
+                    &.active {
+                        background-color: #555555
+                    }
+
+                    a {
+                        padding: 10px 15px 10px;
+                    }
                 }
             }
         }
