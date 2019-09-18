@@ -89,6 +89,7 @@
             .control-group {
                 display: flex;
                 align-items: center;
+                margin-bottom: 20px;
 
                 .control-label {
                     margin-right: 20px;
