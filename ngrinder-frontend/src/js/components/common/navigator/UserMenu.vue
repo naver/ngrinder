@@ -3,10 +3,12 @@
         <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name}(${ngrinder.currentUser.factualUser.name})`"></span>
         <span v-else v-text="ngrinder.currentUser.name"></span>
         <ul class="dropdown-menu">
-            <li v-show="ngrinder.config.userSwitchMode">
-                <a class="dropdown-item" :href="`${contextPath}/user/switch?to=`" v-text="i18n('common.button.return')"></a>
-            </li>
-            <template v-show="!ngrinder.config.userSwitchMode">
+            <template v-if="ngrinder.config.userSwitchMode">
+                <li>
+                    <a class="dropdown-item" :href="`${contextPath}/user/switch?to=`" v-text="i18n('common.button.return')"></a>
+                </li>
+            </template>
+            <template v-else>
                 <li>
                     <a @click.prevent="$emit('showUserProfileModal')" class="dropdown-item" v-text="i18n('navigator.dropDown.profile')"></a>
                 </li>
