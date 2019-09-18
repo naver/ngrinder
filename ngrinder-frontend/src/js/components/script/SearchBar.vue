@@ -25,7 +25,7 @@
                                      :data-content="i18n('script.message.svn')">
                                     <div class="input-group-text">SVN</div>
                                     <div class="border uneditable-input">
-                                        <router-link v-text="basePath" to="/script/list"></router-link><!--
+                                        <router-link v-text="svnPath" to="/script/list"></router-link><!--
                                         --><template v-if="currentPath !== ''"
                                                      v-for="(each, index) in currentPath.split('/')"><!--
                                             -->/<!--
@@ -98,10 +98,10 @@
     })
     export default class SearchBar extends Base {
         query = '';
-        basePath = '';
+        svnPath = '';
 
         created() {
-            this.basePath = `${window.location.hostname}:${window.location.port}/svn/${this.ngrinder.currentUser.id}`;
+            this.svnPath = `${window.location.protocol}//${window.location.host}/svn/${this.ngrinder.currentUser.id}`;
         }
 
         mounted() {
