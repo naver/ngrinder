@@ -101,7 +101,8 @@
         svnPath = '';
 
         created() {
-            this.svnPath = `${window.location.protocol}//${window.location.host}/svn/${this.ngrinder.currentUser.id}`;
+            const userId = this.ngrinder.config.userSwitchMode ? this.ngrinder.currentUser.factualUser.id : this.ngrinder.currentUser.id;
+            this.svnPath = `${window.location.protocol}//${window.location.host}/svn/${userId}`;
         }
 
         mounted() {
