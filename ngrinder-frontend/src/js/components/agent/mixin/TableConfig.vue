@@ -29,21 +29,19 @@
                     width: '60px',
                 },
                 {
-                    name: 'name',
+                    name: '__slot:name',
                     title: this.i18n('agent.list.name'),
                     sortField: 'name',
                 },
                 {
-                    name: 'version',
+                    name: '__slot:version',
                     title: this.i18n('agent.list.version'),
                     sortField: 'version',
-                    width: '100px',
                 },
                 {
-                    name: 'region',
+                    name: '__slot:region',
                     title: this.i18n('agent.list.region'),
                     sortField: 'region',
-                    width: '150px',
                 },
                 {
                     name: '__slot:approved',

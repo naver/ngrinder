@@ -48,7 +48,8 @@
             @vuetable:pagination-data="beforePagination">
 
             <template slot="state" slot-scope="props">
-                <div class="ball" data-html="true" rel="popover">
+                <div class="ball"
+                     :title="props.rowData.state.name">
                     <img class="status" :src="`${contextPath}/img/ball/${props.rowData.state.iconName}`"/>
                 </div>
             </template>
@@ -57,6 +58,18 @@
                 <router-link :to="{ name: 'agentDetail', params: { agentId: props.rowData.id, agentProp: props.rowData } }"
                              :value="props.rowData.ip" v-text="props.rowData.ip">
                 </router-link>
+            </template>
+
+            <template slot="name" slot-scope="props">
+                <div class="ellipsis name" :title="props.rowData.name" v-text="props.rowData.name"></div>
+            </template>
+
+            <template slot="version" slot-scope="props">
+                <div class="ellipsis version" :title="props.rowData.version" v-text="props.rowData.version"></div>
+            </template>
+
+            <template slot="region" slot-scope="props">
+                <div class="ellipsis region" :title="props.rowData.region" v-text="props.rowData.region"></div>
             </template>
 
             <template slot="approved" slot-scope="props">
@@ -300,6 +313,14 @@
 
         input[type='checkbox'] {
             vertical-align: bottom;
+        }
+
+        .version, .region {
+            width: 100px;
+        }
+
+        .name {
+            width: 230px;
         }
     }
 
