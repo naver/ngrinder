@@ -23,6 +23,7 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +37,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.EXPIRE_LOCAL_CACHE;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 /**
@@ -54,9 +56,6 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	private Config config;
 
 	@Autowired
-	private RegionService regionService;
-
-	@Autowired
 	private TopicSubscriber topicSubscriber;
 
 	@Before
@@ -64,11 +63,16 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		Config spiedConfig = spy(config);
 		when(spiedConfig.isClustered()).thenReturn(true);
 
+		RegionInfo testRegion = new RegionInfo(config.getRegion(), config.getCurrentIP(), 9999, null);
+
+		RegionService mockRegionService = mock(RegionService.class);
+		when(mockRegionService.getAll()).thenReturn(buildMap(testRegion.getRegionName(), testRegion));
+
 		AgentManagerServiceConfig serviceConfig = new AgentManagerServiceConfig(spiedConfig, applicationContext);
 		agentManagerService = (ClusteredAgentManagerService) serviceConfig.agentManagerService();
 
 		setField(agentManagerService, "config", spiedConfig);
-		setField(regionService, "config", spiedConfig);
+		setField(agentManagerService, "regionService", mockRegionService);
 
 		agentRepository.deleteAll();
 		agentManagerService.expireLocalCache();
