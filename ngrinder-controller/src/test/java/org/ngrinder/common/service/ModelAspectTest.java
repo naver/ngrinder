@@ -26,6 +26,7 @@ import java.util.Date;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 
@@ -55,7 +56,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 		BaseModel<Object> baseModel = mock(BaseModel.class);
 		when(baseModel.exist()).thenReturn(true);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { baseModel });
-		modelAspect.setSpringContext(springContext);
+		setField(modelAspect, "springContext", springContext);
 		modelAspect.beforeSave(joinPoint);
 		verify(baseModel, times(1)).setLastModifiedDate(any(Date.class));
 	}

@@ -43,6 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.data.domain.Pageable.unpaged;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
@@ -155,18 +156,18 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
-		Config mockConfig = spy(config);
-		when(mockConfig.getHome()).thenReturn(mockHome);
-		PerfTestService mockService = spy(testService);
-		mockService.setConfig(mockConfig);
+		Config spiedConfig = spy(config);
+		when(spiedConfig.getHome()).thenReturn(mockHome);
+		PerfTestService spiedService = spy(testService);
+		setField(spiedService, "config", spiedConfig);
 
 		// When
 		// TPS,Errors,Mean_Test_Time_(ms)
-		int interval = mockService.getReportDataInterval(testId, "TPS", 700);
+		int interval = spiedService.getReportDataInterval(testId, "TPS", 700);
 
 		// Then
-		assertThat(mockService.getSingleReportDataAsJson(testId, "TPS", interval).length(), greaterThan(100));
-		assertThat(mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval).length(),
+		assertThat(spiedService.getSingleReportDataAsJson(testId, "TPS", interval).length(), greaterThan(100));
+		assertThat(spiedService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval).length(),
 				greaterThan(100));
 	}
 
@@ -177,14 +178,14 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
-		Config mockConfig = spy(config);
-		when(mockConfig.getHome()).thenReturn(mockHome);
-		PerfTestService mockService = spy(testService);
-		mockService.setConfig(mockConfig);
+		Config spiedConfig = spy(config);
+		when(spiedConfig.getHome()).thenReturn(mockHome);
+		PerfTestService spiedService = spy(testService);
+		setField(spiedService, "config", spiedConfig);
 
 		// When
-		int interval = mockService.getMonitorGraphInterval(testId, "127.0.0.1", 700);
-		Map<String, String> reportDataMap = mockService.getMonitorGraph(testId, "127.0.0.1", interval);
+		int interval = spiedService.getMonitorGraphInterval(testId, "127.0.0.1", 700);
+		Map<String, String> reportDataMap = spiedService.getMonitorGraph(testId, "127.0.0.1", interval);
 
 		// Then
 		assertThat(reportDataMap.get("cpu").length(), greaterThanOrEqualTo(300));

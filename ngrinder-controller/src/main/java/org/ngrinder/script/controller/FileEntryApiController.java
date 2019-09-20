@@ -26,9 +26,7 @@ import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
-import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
-import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -53,6 +51,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * FileEntry manipulation API controller.
  *
@@ -60,7 +60,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/script/api")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileEntryApiController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryApiController.class);
@@ -72,17 +72,15 @@ public class FileEntryApiController {
 		return (o1.getFileName().compareTo(o2.getFileName()));
 	};
 
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
-	private ScriptHandlerFactory handlerFactory;
+	private final ScriptHandlerFactory handlerFactory;
 
-	HttpContainerContext httpContainerContext;
+	private final ScriptValidationService scriptValidationService;
 
-	private ScriptValidationService scriptValidationService;
+	private final MessageSource messageSource;
 
-	private MessageSource messageSource;
-
-	private UserContext userContext;
+	private final UserContext userContext;
 
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {

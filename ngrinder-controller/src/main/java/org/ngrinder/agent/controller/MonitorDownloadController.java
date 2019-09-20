@@ -39,11 +39,11 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 @RequestMapping("/monitor/download")
 public class MonitorDownloadController {
 
-	private AgentPackageService agentPackageService;
+	private final AgentPackageService agentPackageService;
 
-	private Config config;
+	private final Config config;
 
-	private MonitorPackageHandler monitorPackageHandler;
+	private final MonitorPackageHandler monitorPackageHandler;
 
 	public MonitorDownloadController(AgentPackageService agentPackageService, Config config,
 									 @Qualifier("monitorPackageHandler") MonitorPackageHandler monitorPackageHandler) {

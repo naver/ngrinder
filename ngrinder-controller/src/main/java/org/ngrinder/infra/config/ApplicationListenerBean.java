@@ -14,12 +14,13 @@
 
 package org.ngrinder.infra.config;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.model.Home;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Application life-cycle event listener.
@@ -29,17 +30,11 @@ import org.springframework.stereotype.Service;
  * @since 3.1
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ApplicationListenerBean implements ApplicationListener<ContextRefreshedEvent> {
 
-	private Config config;
+	private final Config config;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context
-	 * .ApplicationEvent)
-	 */
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		Home exHome = config.getExHome();

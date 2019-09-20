@@ -13,9 +13,7 @@
  */
 package org.ngrinder.user.controller;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +24,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * User management controller.
  *
@@ -33,12 +33,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/user")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserController {
 
-	private UserService userService;
-
-	protected Config config;
+	private final UserService userService;
 
 	/**
 	 * Get user list page.

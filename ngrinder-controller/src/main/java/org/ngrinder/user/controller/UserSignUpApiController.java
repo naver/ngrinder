@@ -13,8 +13,8 @@
  */
 package org.ngrinder.user.controller;
 
+import lombok.RequiredArgsConstructor;
 
-import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -36,12 +36,12 @@ import static org.ngrinder.common.util.Preconditions.checkTrue;
  */
 @RestController
 @RequestMapping("/sign_up/api")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserSignUpApiController {
 
-	private UserService userService;
+	private final UserService userService;
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * New user sign up form login page.

@@ -1,6 +1,5 @@
 package org.ngrinder.operation.cotroller;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -27,6 +26,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
 /**
@@ -41,34 +42,34 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 @RestController
 @RequestMapping("/operation/script_console/api")
 @PreAuthorize("hasAnyRole('A')")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScriptConsoleApiController {
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	private AgentManager agentManager;
+	private final AgentManager agentManager;
 
-	private AgentManagerService agentManagerService;
+	private final AgentManagerService agentManagerService;
 
-	private ConsoleManager consoleManager;
+	private final ConsoleManager consoleManager;
 
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
-	private UserService userService;
+	private final UserService userService;
 
-	private RegionService regionService;
+	private final RegionService regionService;
 
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
-	private TagService tagService;
+	private final TagService tagService;
 
-	private CacheManager cacheManager;
+	private final CacheManager cacheManager;
 
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Run the given script. The run result is stored in "result" of the given model.

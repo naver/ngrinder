@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.ArrayList;
 
@@ -54,7 +55,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		mockLoginPlugin = mock(MockLoginPlugin.class);
 		manager = mock(PluginManager.class);
 		authProvider.setPluginManager(manager);
-		ngrinderUserDetailsService.setPluginManager(manager);
+		setField(ngrinderUserDetailsService, "pluginManager", manager);
 	}
 
 	@SuppressWarnings({ "unchecked", "serial" })

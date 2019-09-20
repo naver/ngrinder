@@ -1,16 +1,17 @@
 package org.ngrinder.operation.cotroller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.ngrinder.operation.service.AnnouncementService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/operation/announcement/api")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AnnouncementApiController {
 
-	private AnnouncementService announcementService;
+	private final AnnouncementService announcementService;
 
 	@GetMapping("")
 	public String getAnnouncement() {

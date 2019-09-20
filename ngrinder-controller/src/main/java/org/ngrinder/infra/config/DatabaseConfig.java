@@ -13,7 +13,6 @@
  */
 package org.ngrinder.infra.config;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.DatabaseConstants;
@@ -33,17 +32,19 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.persistence.Entity;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Dynamic datasource bean configuration.
  *
  * @since 3.0
  */
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DatabaseConfig implements DatabaseConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Create the dataSource based on the database configuration.

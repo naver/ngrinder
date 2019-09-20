@@ -7,7 +7,8 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
@@ -29,13 +30,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user/api")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserApiController {
-	public static final Sort DEFAULT_SORT = new Sort(Sort.Direction.ASC, "userName");
+	private static final Sort DEFAULT_SORT = new Sort(Sort.Direction.ASC, "userName");
 
-	protected Config config;
+	private final Config config;
 
-	private UserService userService;
+	private final UserService userService;
 
 	/**
 	 * Get the follower list.

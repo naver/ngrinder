@@ -31,11 +31,13 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 @Service
 public class HazelcastService {
 
-	private Logger LOGGER = LoggerFactory.getLogger(HazelcastService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HazelcastService.class);
 
-	@Autowired
-	@Qualifier("embeddedHazelcast")
-	private HazelcastInstance hazelcastInstance;
+	private final HazelcastInstance hazelcastInstance;
+
+	public HazelcastService(@Qualifier("embeddedHazelcast") HazelcastInstance hazelcastInstance) {
+		this.hazelcastInstance = hazelcastInstance;
+	}
 
 	protected Member findClusterMember(String region) {
 		Set<Member> clusterMember = hazelcastInstance.getCluster().getMembers();

@@ -49,11 +49,11 @@ public class RegionService {
 	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
 
-	private Config config;
+	private final Config config;
 
-	private HazelcastService hazelcastService;
+	private final HazelcastService hazelcastService;
 
-	private HazelcastInstance hazelcastInstance;
+	private final HazelcastInstance hazelcastInstance;
 
 	public RegionService(Config config,
 						 HazelcastService hazelcastService,

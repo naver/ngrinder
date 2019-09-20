@@ -13,7 +13,6 @@
  */
 package org.ngrinder.infra.init;
 
-import lombok.AllArgsConstructor;
 import org.ngrinder.common.constant.DatabaseConstants;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
@@ -25,6 +24,8 @@ import java.io.IOException;
 
 import static org.ngrinder.common.util.Preconditions.checkState;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Verify clustering is set up well. such as check the region is not duplicated. check if they use
  * same home.
@@ -32,13 +33,13 @@ import static org.ngrinder.common.util.Preconditions.checkState;
  * @since 3.2
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ClusterConfigurationVerifier {
 
 	@SuppressWarnings("UnusedDeclaration")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterConfigurationVerifier.class);
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Check cluster configurations.
