@@ -74,7 +74,7 @@
 
         getConfig() {
             this.$http.get('home/api/config')
-                .then(res => this.userLanguage = res.data.userLanguage)
+                .then(res => this.userLanguage = res.data.userLanguage || 'en')
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }
