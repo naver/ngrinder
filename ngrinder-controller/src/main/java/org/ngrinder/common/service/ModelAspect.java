@@ -39,7 +39,7 @@ import static org.ngrinder.user.repository.UserSpecification.idEqual;
 @RequiredArgsConstructor
 public class ModelAspect {
 
-	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
+	private static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
 
 	private final UserContext userContext;
 

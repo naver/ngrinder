@@ -24,14 +24,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Base Model which has following attribute.
  *
  * @param <M> wrapped entity
- * @author Liu Zhifei
- * @author JunHo Yoon
  * @since 3.0
  */
+@Getter
+@Setter
 @MappedSuperclass
 public class BaseModel<M> extends BaseEntity<M> {
 
@@ -57,35 +60,4 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@NotFound(action = NotFoundAction.IGNORE)
 	private User lastModifiedUser;
 
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public User getCreatedUser() {
-		return createdUser;
-	}
-
-	public void setCreatedUser(User createdUser) {
-		this.createdUser = createdUser;
-	}
-
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public User getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-
-	public void setLastModifiedUser(User lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
 }

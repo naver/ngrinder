@@ -13,9 +13,12 @@
  */
 package org.ngrinder.monitor.share.domain;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import java.io.Serializable;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Network Usage Calculation Class. This class get the bandwidth so far and calc RX, TX.
@@ -23,6 +26,9 @@ import java.io.Serializable;
  * @author JunHo Yoon
  * 
  */
+@Getter
+@Setter
+@ToString
 public class BandWidth implements Serializable {
 
 	/**
@@ -30,6 +36,7 @@ public class BandWidth implements Serializable {
 	 */
 	private static final long serialVersionUID = 7655104078722834344L;
 
+	@Setter(AccessLevel.NONE)
 	private long time;
 
 	/**
@@ -67,47 +74,4 @@ public class BandWidth implements Serializable {
 		return this;
 	}
 
-	public long getTime() {
-		return time;
-	}
-
-	public long getSentPerSec() {
-		return sentPerSec;
-	}
-
-	public void setSentPerSec(long sentPerSec) {
-		this.sentPerSec = sentPerSec;
-	}
-
-	public long getReceivedPerSec() {
-		return receivedPerSec;
-	}
-
-	public void setReceivedPerSec(long receivedPerSec) {
-		this.receivedPerSec = receivedPerSec;
-	}
-
-	public long getReceived() {
-		return received;
-	}
-
-	public void setReceived(long received) {
-		this.received = received;
-	}
-
-	public long getSent() {
-		return sent;
-	}
-
-	public void setSent(long sent) {
-		this.sent = sent;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
 }

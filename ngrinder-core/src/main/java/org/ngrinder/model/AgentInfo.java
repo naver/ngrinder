@@ -18,8 +18,11 @@ import javax.persistence.*;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
@@ -31,25 +34,21 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @since 3.0
  */
 @SuppressWarnings({"deprecation", "UnusedDeclaration", "JpaDataSourceORMInspection"})
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "AGENT")
 public class AgentInfo extends BaseEntity<AgentInfo> {
 
-	/**
-	 * UUID.
-	 */
 	private static final long serialVersionUID = 677610999461391813L;
 
-	/**
-	 * Agent IP.
-	 */
 	private String ip;
 
 	/**
 	 * agent application port. It's only available when the connection is
 	 * re-established.
 	 */
-
 	private Integer port;
 
 	@Transient
@@ -58,22 +57,16 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	/**
 	 * Host name of the agent machine.
 	 */
-
-	private String hostName;
+	@Column(name = "hostName")
+	private String name;
 
 	@Enumerated(EnumType.STRING)
 	private AgentControllerState state;
 
-
 	@Column(name = "system_stat", length = 2000)
 	private String systemStat;
 
-
 	private String region;
-
-	@Transient
-	private Integer number;
-
 
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1) default 'F'")
@@ -86,30 +79,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.approved = getSafe(this.approved, false);
 		this.version = getSafe(this.version, "");
 		this.region = getSafe(this.region, "");
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public AgentControllerState getState() {
-		return state;
-	}
-
-	public void setState(AgentControllerState status) {
-		this.state = status;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
 	}
 
 	@Override
@@ -143,97 +112,18 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		return true;
 	}
 
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	/**
-	 * Get host name.
-	 *
-	 * @return host name
-	 * @deprecated use {@link #getName()} instead.
-	 */
+	@Deprecated
 	public String getHostName() {
-		return hostName;
+		return getName();
 	}
 
-	/**
-	 * Set host name.
-	 *
-	 * @param hostName host name
-	 * @deprecated use {@link #setName(String)} instead
-	 */
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
-
-	public String getName() {
-		return getHostName();
-	}
-
-	/**
-	 * Set name.
-	 *
-	 * @param name name
-	 */
-	public void setName(String name) {
-		setHostName(name);
-	}
-
-	public AgentIdentity getAgentIdentity() {
-		return agentIdentity;
-	}
-
-	public void setAgentIdentity(AgentIdentity agentIdentity) {
-		this.agentIdentity = agentIdentity;
+	@Deprecated
+	public void setHostName(String name) {
+		setName(name);
 	}
 
 	public boolean isApproved() {
 		return approved == null ? false : approved;
 	}
 
-	public Boolean getApproved() {
-		return approved;
-	}
-
-	public void setApproved(Boolean approved) {
-		this.approved = approved;
-	}
-
-	/**
-	 * @return the number
-	 * @deprecated unused now.
-	 */
-	public Integer getNumber() {
-		return number;
-	}
-
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-
-	public String getSystemStat() {
-		return systemStat;
-	}
-
-	public void setSystemStat(String systemStat) {
-		this.systemStat = systemStat;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public String getVersion() {
-		return this.version;
-	}
 }

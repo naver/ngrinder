@@ -93,7 +93,7 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			BandWidth networkUsage = getNetworkUsage();
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
 			systemInfo.setBandWidth(bandWidth);
-			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			systemInfo.setCpuUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
 			Cpu cpu = sigar.getCpu();
 			systemInfo.setTotalCpuValue(cpu.getTotal());
 			systemInfo.setIdleCpuValue(cpu.getIdle());

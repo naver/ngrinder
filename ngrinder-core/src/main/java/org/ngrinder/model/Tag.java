@@ -23,6 +23,9 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Tag class for categorization of {@link PerfTest}.
  *
@@ -30,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
  * @since 3.0
  */
 @SuppressWarnings("JpaDataSourceORMInspection")
+@Getter
+@Setter
 @Entity
 @Table(name = "TAG")
 public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<Tag> {
@@ -42,41 +47,13 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
 	private Set<PerfTest> perfTests;
 
-	/**
-	 * Tag value.
-	 */
 	private String tagValue;
 
-	/**
-	 * Default constructor.
-	 */
 	public Tag() {
 	}
 
-	/**
-	 * Constructor.
-	 *
-	 * @param tagValue tag value
-	 */
 	public Tag(String tagValue) {
 		this.tagValue = StringUtils.trimToEmpty(tagValue);
-
-	}
-
-	public String getTagValue() {
-		return tagValue;
-	}
-
-	public void setTagValue(String tagValue) {
-		this.tagValue = tagValue;
-	}
-
-	public Set<PerfTest> getPerfTests() {
-		return perfTests;
-	}
-
-	public void setPerfTests(Set<PerfTest> perfTests) {
-		this.perfTests = perfTests;
 	}
 
 	@Override

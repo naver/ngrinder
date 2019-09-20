@@ -23,16 +23,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Base Entity. This has a long type ID field
  *
  * @param <M> wrapped entity type
- * @author Liu Zhifei
- * @author JunHo Yoon
  * @since 3.0
  */
+@Getter
+@Setter
 @MappedSuperclass
 public class BaseEntity<M> implements Serializable {
 
@@ -42,14 +45,6 @@ public class BaseEntity<M> implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
 	private Long id;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Override
 	public String toString() {

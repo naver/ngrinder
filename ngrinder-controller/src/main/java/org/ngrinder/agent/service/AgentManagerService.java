@@ -172,13 +172,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 				agentInfo.getState() == agentManager.getAgentState(agentIdentity);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getAvailableAgentCountMap
-	 * (org.ngrinder .model.User)
-	 */
 	@Override
 	public Map<String, MutableInt> getAvailableAgentCountMap(User user) {
 		int availableShareAgents = 0;
@@ -210,11 +203,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return getAgentManager().getMaxAgentSizePerConsole();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.ngrinder.service.IAgentManagerService#getAllLocalWithFullInfo()
-	 */
 	@Override
 	@Transactional
 	public List<AgentInfo> getAllLocalWithFullInfo() {
@@ -236,25 +224,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return agentInfoMap;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#createKey(org.ngrinder
-	 * .agent.model.AgentInfo )
-	 */
 	@Override
 	public String createKey(AgentInfo agentInfo) {
 		return createAgentKey(agentInfo.getIp(), agentInfo.getName());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#createKey(net.grinder
-	 * .engine.controller .AgentControllerIdentityImplementation)
-	 */
 	@Override
 	public String createKey(AgentControllerIdentityImplementation agentIdentity) {
 		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
@@ -264,12 +238,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return ip + "_" + name;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.service.IAgentManagerService#
-	 * getAgentIdentityByIpAndName(java.lang .String, java.lang.String)
-	 */
 	@Override
 	public AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name) {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
@@ -287,14 +255,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return Collections.unmodifiableList(cachedLocalAgentService.getLocalAgents());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getAllActive
-	 * ()
-	 *
-	 */
 	@Override
 	public List<AgentInfo> getAllActive() {
 		List<AgentInfo> agents = Lists.newArrayList();
@@ -307,13 +267,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return agents;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getAllVisible
-	 * ()
-	 */
 	@Override
 	public List<AgentInfo> getAllVisible() {
 		List<AgentInfo> agents = Lists.newArrayList();
@@ -359,23 +312,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return agentInfo;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.ngrinder.service.IAgentManagerService#getAll(long,
-	 * boolean)
-	 */
 	@Override
 	public AgentInfo getOne(Long id) {
 		return getOne(id, false);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.service.IAgentManagerService#getAll(long,
-	 * boolean)
-	 */
 	@Override
 	public AgentInfo getOne(Long id, boolean includeAgentIdentity) {
 		Optional<AgentInfo> findOne = agentManagerRepository.findOne(idEqual(id));
@@ -437,26 +378,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		noOp();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#getSystemDataModel
-	 * (java.lang.String, java.lang.String)
-	 */
 	@Override
 	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
 		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(ip, name);
 		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.ngrinder.service.IAgentManagerService#updateAgentLib
-	 * (java.lang.String)
-	 */
 	@Override
 	public void update(Long id) {
 		AgentInfo agent = getOne(id, true);

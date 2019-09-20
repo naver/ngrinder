@@ -68,7 +68,7 @@ import java.util.concurrent.ExecutorService;
 @RequiredArgsConstructor
 public class AgentManager implements ControllerConstants, AgentDownloadRequestListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
-	private AgentControllerServerDaemon agentControllerServerDaemon;
+
 	private static final int NUMBER_OF_THREAD = 3;
 
 	private final Config config;
@@ -76,6 +76,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	private final AgentPackageService agentPackageService;
 
 	private final LocalAgentService cachedLocalAgentService;
+
+	private AgentControllerServerDaemon agentControllerServerDaemon;
 
 	/**
 	 * Initialize agent manager.

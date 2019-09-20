@@ -35,10 +35,10 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 * Find a {@link AgentInfo} by ip and host name.
 	 *
 	 * @param ip       ip
-	 * @param hostName host name
+	 * @param name     host name
 	 * @return found agent
 	 */
-	AgentInfo findByIpAndHostName(String ip, String hostName);
+	AgentInfo findByIpAndName(String ip, String name);
 
 	/**
 	 * Find a {@link AgentInfo} by ip.
@@ -65,7 +65,7 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 * @param s    status string
 	 */
 	@Modifying
-	@Query("update AgentInfo p set p.systemStat=?3 where p.ip=?1 and p.hostName=?2")
+	@Query("update AgentInfo p set p.systemStat=?3 where p.ip=?1 and p.name=?2")
 	void updateSystemStat(String ip, String name, String s);
 
 	/**

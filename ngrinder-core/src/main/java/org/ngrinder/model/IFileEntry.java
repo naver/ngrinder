@@ -19,8 +19,6 @@ package org.ngrinder.model;
  *
  * It's little bit out of convention. However I separate this interface on model because of backward
  * compatibility.
- * 
- * @author JunHo Yoon
  */
 public interface IFileEntry {
 

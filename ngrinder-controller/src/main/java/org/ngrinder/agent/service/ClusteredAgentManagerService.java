@@ -62,11 +62,11 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 public class ClusteredAgentManagerService extends AgentManagerService implements TopicListener<ClusteredAgentRequest> {
 	private final Logger LOGGER = LoggerFactory.getLogger(ClusteredAgentManagerService.class);
 
-	private TopicSubscriber topicSubscriber;
+	private final TopicSubscriber topicSubscriber;
 
-	private HazelcastService hazelcastService;
+	private final HazelcastService hazelcastService;
 
-	private RegionService regionService;
+	private final RegionService regionService;
 
 	public ClusteredAgentManagerService(AgentManager agentManager, AgentManagerRepository agentManagerRepository,
 										LocalAgentService cachedLocalAgentService, Config config, ScheduledTaskService scheduledTaskService,
@@ -146,7 +146,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			AgentInfo agentInfo = agentManagerRepository.findByIpAndHostName(
+			AgentInfo agentInfo = agentManagerRepository.findByIpAndName(
 					agentIdentity.getIp(),
 					agentIdentity.getName());
 			if (agentInfo == null) {
