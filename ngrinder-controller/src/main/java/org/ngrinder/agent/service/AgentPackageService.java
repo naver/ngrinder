@@ -8,7 +8,6 @@ import org.ngrinder.packages.AgentPackageHandler;
 import org.ngrinder.packages.PackageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -17,6 +16,8 @@ import java.net.URLClassLoader;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import lombok.RequiredArgsConstructor;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.util.CompressionUtils.*;
@@ -28,17 +29,13 @@ import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
  * @since 3.3
  */
 @Service
+@RequiredArgsConstructor
 public class AgentPackageService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentPackageService.class);
 
 	private final Config config;
 
 	private final AgentPackageHandler agentPackageHandler;
-
-	public AgentPackageService(Config config, @Qualifier("agentPackageHandler") AgentPackageHandler agentPackageHandler) {
-		this.config = config;
-		this.agentPackageHandler = agentPackageHandler;
-	}
 
 	/**
 	 * Create package from PackageHandler.

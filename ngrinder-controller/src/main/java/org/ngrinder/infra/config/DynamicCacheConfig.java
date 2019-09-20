@@ -78,7 +78,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 	}
 
 	private HazelcastCacheManager createDistCacheManager() {
-		return new HazelcastCacheManager(embeddedHazelcast());
+		return new HazelcastCacheManager(hazelcastInstance());
 	}
 
 	@Bean
@@ -87,7 +87,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 	}
 
 	@Bean
-	public HazelcastInstance embeddedHazelcast() {
+	public HazelcastInstance hazelcastInstance() {
 		com.hazelcast.config.Config hazelcastConfig = new com.hazelcast.config.Config();
 		hazelcastConfig.setManagedContext(managedContext());
 		hazelcastConfig.getMemberAttributeConfig().setAttributes(getClusterMemberAttributes());

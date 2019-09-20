@@ -8,8 +8,6 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +18,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import lombok.RequiredArgsConstructor;
+
 import static org.ngrinder.common.constant.CacheConstants.REGION_ATTR_KEY;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -29,15 +29,12 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.5.0
  */
 @Service
+@RequiredArgsConstructor
 public class HazelcastService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HazelcastService.class);
 
 	private final HazelcastInstance hazelcastInstance;
-
-	public HazelcastService(@Qualifier("embeddedHazelcast") HazelcastInstance hazelcastInstance) {
-		this.hazelcastInstance = hazelcastInstance;
-	}
 
 	protected Member findClusterMember(String region) {
 		Set<Member> clusterMember = hazelcastInstance.getCluster().getMembers();
