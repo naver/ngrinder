@@ -13,7 +13,8 @@
  */
 package org.ngrinder.script.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
@@ -49,18 +50,18 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @since 3.0
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScriptValidationService extends AbstractScriptValidationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptValidationService.class);
 
-	private LocalScriptTestDriveService localScriptTestDriveService;
+	private final LocalScriptTestDriveService localScriptTestDriveService;
 
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
-	private Config config;
+	private final Config config;
 
-	private ScriptHandlerFactory scriptHandlerFactory;
+	private final ScriptHandlerFactory scriptHandlerFactory;
 
 	/*
 	 * (non-Javadoc)

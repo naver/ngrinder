@@ -13,7 +13,8 @@
  */
 package org.ngrinder.agent.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -29,12 +30,12 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 @Profile("production")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AgentManagerServiceConfig {
 
-	protected Config config;
+	protected final Config config;
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	/**
 	 * Create a subclass of {@link AgentManagerService} depending on the cluster activation status.

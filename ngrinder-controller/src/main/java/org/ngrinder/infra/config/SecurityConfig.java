@@ -54,29 +54,29 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.google.common.collect.Maps;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @Order(2)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private AuthenticatedVoter authenticatedVoter;
+	private final AuthenticatedVoter authenticatedVoter;
 
-	private NGrinderUserDetailsService ngrinderUserDetailsService;
+	private final NGrinderUserDetailsService ngrinderUserDetailsService;
 
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	private NGrinderAuthenticationProvider nGrinderAuthenticationProvider;
+	private final NGrinderAuthenticationProvider nGrinderAuthenticationProvider;
 
-	private NGrinderAuthenticationPreAuthProvider nGrinderAuthenticationPreAuthProvider;
+	private final NGrinderAuthenticationPreAuthProvider nGrinderAuthenticationPreAuthProvider;
 
-	private DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler;
+	private final DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler;
 
-	private PluggablePreAuthFilter pluggablePreAuthFilter;
+	private final PluggablePreAuthFilter pluggablePreAuthFilter;
 
 	@Bean
 	@Override

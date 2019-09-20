@@ -13,12 +13,13 @@
  */
 package org.ngrinder.perftest.service;
 
-import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Dynamic creation of {@link PerfTestService} depending on the cluster enable or disable.
@@ -27,12 +28,12 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 @Profile("production")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PerfTestServiceConfig {
 
-	private Config config;
+	private final Config config;
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	/**
 	 * Create PerTest service depending on cluster mode.

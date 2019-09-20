@@ -13,7 +13,8 @@
  */
 package org.ngrinder.security;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.model.User;
@@ -32,15 +33,14 @@ import org.springframework.stereotype.Service;
  * This retrieves the user
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DefaultLoginPlugin implements OnLoginRunnable {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(DefaultLoginPlugin.class);
 
 	private static final MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
-	private UserService userService;
-
+	private final UserService userService;
 
 	@Override
 	public User loadUser(String userId) {

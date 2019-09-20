@@ -13,7 +13,6 @@
  */
 package org.ngrinder.home.controller;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.ThreadUtils;
@@ -45,24 +44,26 @@ import java.util.Map;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Home index page controller.
  *
  * @since 3.0
  */
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HomeController implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
-	private RegionService regionService;
+	private final RegionService regionService;
 
-	private ScriptHandlerFactory scriptHandlerFactory;
+	private final ScriptHandlerFactory scriptHandlerFactory;
 
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Return nGrinder index page.

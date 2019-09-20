@@ -13,7 +13,8 @@
  */
 package org.ngrinder.common.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -35,16 +36,16 @@ import static org.ngrinder.user.repository.UserSpecification.idEqual;
  */
 @Aspect
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ModelAspect {
 
 	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
 
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	private SpringContext springContext;
+	private final SpringContext springContext;
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
 	/**
 	 * Inject the created/modified user and date to the model. It's only applied
@@ -57,7 +58,6 @@ public class ModelAspect {
 		for (Object object : joinPoint.getArgs()) {
 			// If the object is base model and it's on the servlet
 			// context, It's not executed by task scheduling.
-			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
 					&& (springContext.isAuthenticationContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
@@ -78,14 +78,6 @@ public class ModelAspect {
 				}
 			}
 		}
-	}
-
-	public SpringContext getSpringContext() {
-		return springContext;
-	}
-
-	public void setSpringContext(SpringContext springContext) {
-		this.springContext = springContext;
 	}
 
 }

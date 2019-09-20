@@ -13,7 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.infra.config.Config;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Statistics API Controller
  *
@@ -30,12 +31,12 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/stat")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StatisticsApiController {
 
-	private Config config;
+	private final Config config;
 
-	private BasicDataSource dataSource;
+	private final BasicDataSource dataSource;
 
 	/**
 	 * Get collect current statistics.

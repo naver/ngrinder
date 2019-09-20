@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.controller;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.perftest.service.monitor.MonitorInfoStore;
 import org.springframework.stereotype.Controller;
@@ -22,6 +21,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Controller which gets the target host system information.
  *
@@ -29,10 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/monitor")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MonitorManagerController {
 
-	private MonitorInfoStore monitorInfoStore;
+	private final MonitorInfoStore monitorInfoStore;
 
 	/**
 	 * Get the target's monitor info page for the given IP.

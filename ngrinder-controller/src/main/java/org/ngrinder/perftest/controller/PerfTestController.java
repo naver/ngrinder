@@ -13,7 +13,8 @@
  */
 package org.ngrinder.perftest.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import net.grinder.util.LogCompressUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -39,10 +40,10 @@ import static org.ngrinder.common.util.Preconditions.*;
  */
 @Controller
 @RequestMapping("/perftest")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PerfTestController {
 
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
 	/**
 	 * Get the perf test lists.

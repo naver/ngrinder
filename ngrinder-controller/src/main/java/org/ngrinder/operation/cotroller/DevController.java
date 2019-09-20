@@ -13,12 +13,13 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import lombok.AllArgsConstructor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Developer Feature.
@@ -27,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("/dev")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DevController {
 
-	private ReloadableResourceBundleMessageSource messageSource;
+	private final ReloadableResourceBundleMessageSource messageSource;
 
 	/**
 	 * Refresh the messages.

@@ -13,7 +13,6 @@
  */
 package org.ngrinder.infra.init;
 
-import lombok.AllArgsConstructor;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -28,6 +27,8 @@ import java.util.Date;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ADMIN_PASSWORD_RESET;
 import static org.ngrinder.model.Role.*;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Database Initialization.
  * When the first boot-up, some data(ex: user account) should be inserted into DB.
@@ -37,16 +38,16 @@ import static org.ngrinder.model.Role.*;
  * @since 3.0
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DBInit {
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	private Config config;
+	private final Config config;
 
-	private ShaPasswordEncoder passwordEncoder;
+	private final ShaPasswordEncoder passwordEncoder;
 
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
 	/**
 	 * Initialize DB.

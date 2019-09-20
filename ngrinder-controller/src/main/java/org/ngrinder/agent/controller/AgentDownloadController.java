@@ -13,7 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
@@ -41,14 +42,14 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @Controller
 @RequestMapping("/agent/download")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AgentDownloadController {
 
-	private AgentPackageService agentPackageService;
+	private final AgentPackageService agentPackageService;
 
-	private RegionService regionService;
+	private final RegionService regionService;
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Download agent.

@@ -31,9 +31,9 @@ import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 public class AgentPackageService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentPackageService.class);
 
-	private Config config;
+	private final Config config;
 
-	private AgentPackageHandler agentPackageHandler;
+	private final AgentPackageHandler agentPackageHandler;
 
 	public AgentPackageService(Config config, @Qualifier("agentPackageHandler") AgentPackageHandler agentPackageHandler) {
 		this.config = config;
