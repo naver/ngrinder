@@ -151,7 +151,6 @@ public class PerfTestApiController {
 	 *
 	 * @param user user
 	 * @param ids  comma operated IDs
-	 * @return success json messages if succeeded.
 	 */
 	@DeleteMapping("")
 	public void delete(User user, @RequestParam(defaultValue = "") String ids) {
@@ -165,7 +164,6 @@ public class PerfTestApiController {
 	 *
 	 * @param user user
 	 * @param ids  comma separated perf test IDs
-	 * @return success json if succeeded.
 	 */
 	@PutMapping(value="/", params = "action=stop")
 	public void stop(User user, @RequestParam(defaultValue = "") String ids) {
@@ -354,7 +352,6 @@ public class PerfTestApiController {
 	 * @param id          testId
 	 * @param user        user
 	 * @param params	  {testComment, tagString}
-	 * @return JSON
 	 */
 	@PostMapping("/{id}/leave_comment")
 	public void leaveComment(User user, @PathVariable Long id, @RequestBody Map<String, Object> params) {
@@ -671,9 +668,10 @@ public class PerfTestApiController {
 	 * @return json message
 	 */
 	@GetMapping("/{id}/plugin/{plugin}")
-	public Map<String, Object> getPluginGraph(@PathVariable("id") long id,
-											 @PathVariable("plugin") String plugin,
-											 @RequestParam("kind") String kind, @RequestParam int imgWidth) {
+	public Map<String, Object> getPluginGraph(@PathVariable long id,
+											  @PathVariable String plugin,
+											  @RequestParam String kind,
+											  @RequestParam int imgWidth) {
 		return getReportPluginGraphData(id, plugin, kind, imgWidth);
 	}
 
@@ -699,8 +697,8 @@ public class PerfTestApiController {
 	 * @return json string
 	 */
 	@GetMapping({"/last", "", "/"})
-	public List<PerfTest> getAll(User user, @RequestParam(value = "page", defaultValue = "0") int page,
-									 @RequestParam(value = "size", defaultValue = "1") int size) {
+	public List<PerfTest> getAll(User user, @RequestParam(defaultValue = "0") int page,
+								 @RequestParam(defaultValue = "1") int size) {
 		PageRequest pageRequest = PageRequest.of(page, size, new Sort(Direction.DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPagedAll(user, null, null, null, pageRequest);
 		return testList.getContent();
@@ -726,7 +724,7 @@ public class PerfTestApiController {
 	 * @return json message containing test info.
 	 */
 	@PostMapping({"/", ""})
-	public PerfTest create(User user, PerfTest perfTest) {
+	public PerfTest create(User user, @RequestBody PerfTest perfTest) {
 		checkNull(perfTest.getId(), "id should be null");
 		// Make the vuser count optional.
 		if (perfTest.getVuserPerAgent() == null && perfTest.getThreads() != null && perfTest.getProcesses() != null) {
@@ -741,10 +739,9 @@ public class PerfTestApiController {
 	 *
 	 * @param user user
 	 * @param id   perf test id
-	 * @return json success message if succeeded
 	 */
 	@DeleteMapping("/{id}")
-	public void delete(User user, @PathVariable("id") Long id) {
+	public void delete(User user, @PathVariable Long id) {
 		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id);
 		perfTestService.delete(user, id);
@@ -760,7 +757,7 @@ public class PerfTestApiController {
 	 * @return json message
 	 */
 	@PutMapping("/{id}")
-	public PerfTest update(User user, @PathVariable("id") Long id, PerfTest perfTest) {
+	public PerfTest update(User user, @PathVariable Long id, @RequestBody PerfTest perfTest) {
 		PerfTest existingPerfTest = getOneWithPermissionCheck(user, id, false);
 		perfTest.setId(id);
 		validate(user, existingPerfTest, perfTest);
@@ -772,7 +769,6 @@ public class PerfTestApiController {
 	 *
 	 * @param user user
 	 * @param id   perf test id
-	 * @return json success message if succeeded
 	 */
 	@PutMapping(value = "/{id}", params = "action=stop")
 	public void stop(User user, @PathVariable Long id) {
@@ -788,7 +784,7 @@ public class PerfTestApiController {
 	 * @return json message
 	 */
 	@PutMapping(value = "/{id}", params = "action=status")
-	public PerfTest updateStatus(User user, @PathVariable("id") Long id, Status status) {
+	public PerfTest updateStatus(User user, @PathVariable Long id, @RequestBody Status status) {
 		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id).setStatus(status);
 		validate(user, null, perfTest);
@@ -803,9 +799,8 @@ public class PerfTestApiController {
 	 * @param perftest option to override while cloning.
 	 * @return json string
 	 */
-	@SuppressWarnings("MVCPathVariableInspection")
 	@GetMapping({"/{id}/clone_and_start", /* for backward compatibility */ "/{id}/cloneAndStart"})
-	public PerfTest cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {
+	public PerfTest cloneAndStart(User user, @PathVariable Long id, PerfTest perftest) {
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(test, "no perftest for %s exits", id);
 		PerfTest newOne = test.cloneTo(new PerfTest());
@@ -835,6 +830,14 @@ public class PerfTestApiController {
 		PerfTest savePerfTest = perfTestService.save(user, newOne);
 		CoreLogger.LOGGER.info("test {} is created through web api by {}", savePerfTest.getId(), user.getUserId());
 		return savePerfTest;
+	}
+
+	/**
+	 * Clone and start the given perf test using post method.
+	 */
+	@PostMapping({"/{id}/clone_and_start", /* for backward compatibility */ "/{id}/cloneAndStart"})
+	public PerfTest cloneAndStartPost(User user, @PathVariable Long id, @RequestBody PerfTest perftest) {
+		return this.cloneAndStart(user, id, perftest);
 	}
 
 	/**

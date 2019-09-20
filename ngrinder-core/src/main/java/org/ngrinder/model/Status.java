@@ -14,7 +14,14 @@
 package org.ngrinder.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +33,7 @@ import java.util.List;
  * @since 3.0
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@JsonDeserialize(using = Status.StatusDeserializer.class)
 public enum Status {
 	/**
 	 * Just Saved.. not ready to run
@@ -166,7 +174,7 @@ public enum Status {
 	 * @return status array.
 	 */
 	public static Status[] getProcessingOrTestingTestStatus() {
-		List<Status> status = new ArrayList<Status>();
+		List<Status> status = new ArrayList<>();
 		for (Status each : values()) {
 			if (isWorkingStatus(each)) {
 				status.add(each);
@@ -191,7 +199,7 @@ public enum Status {
 	 * @return status list
 	 */
 	public static Status[] getTestingTestStates() {
-		List<Status> status = new ArrayList<Status>();
+		List<Status> status = new ArrayList<>();
 		for (Status each : values()) {
 			if (each.getCategory() == StatusCategory.TESTING) {
 				status.add(each);
@@ -207,5 +215,21 @@ public enum Status {
 	 */
 	public String getSpringMessageKey() {
 		return "perftest.status." + name().toLowerCase();
+	}
+
+	public static class StatusDeserializer extends JsonDeserializer<Status> {
+		@Override
+		public Status deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
+			JsonNode node = parser.getCodec().readTree(parser);
+			try {
+				return Status.valueOf(node.textValue());
+			} catch (IllegalArgumentException e) {
+				if (node.get("status") != null) {
+					return Status.valueOf(node.get("status").asText());
+				} else {
+					throw new NGrinderRuntimeException("Status must present. you can use 'status' for data key");
+				}
+			}
+		}
 	}
 }
