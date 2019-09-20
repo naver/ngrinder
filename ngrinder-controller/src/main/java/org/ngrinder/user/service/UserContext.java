@@ -29,8 +29,6 @@ import org.springframework.stereotype.Component;
 @Profile("production")
 @Component
 public class UserContext {
-
-
 	/**
 	 * Get current user object from context.
 	 *

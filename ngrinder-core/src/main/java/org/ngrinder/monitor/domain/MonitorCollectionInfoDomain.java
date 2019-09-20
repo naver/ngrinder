@@ -15,12 +15,15 @@ package org.ngrinder.monitor.domain;
 
 import javax.management.ObjectName;
 
+import lombok.Getter;
+
 /**
  * Monitor collection info domain.
  *
  * @author Mavlarn
  * @since 2.0
  */
+@Getter
 public class MonitorCollectionInfoDomain {
 	private ObjectName objectName;
 	private String attrName;
@@ -34,14 +37,6 @@ public class MonitorCollectionInfoDomain {
 	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName) {
 		this.objectName = objectName;
 		this.attrName = attrName;
-	}
-
-	public ObjectName getObjectName() {
-		return objectName;
-	}
-
-	public String getAttrName() {
-		return attrName;
 	}
 
 }

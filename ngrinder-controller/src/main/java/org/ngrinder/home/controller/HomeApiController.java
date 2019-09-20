@@ -32,6 +32,8 @@ import static org.ngrinder.common.util.NoOp.noOp;
 @RequiredArgsConstructor
 public class HomeApiController {
 
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+
 	private final HomeService homeService;
 
 	private final ScriptHandlerFactory scriptHandlerFactory;
@@ -43,8 +45,6 @@ public class HomeApiController {
 	private final MessageSource messageSource;
 
 	private List<TimeZone> timeZones = null;
-
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
 	@PostConstruct
 	public void init() {

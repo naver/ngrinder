@@ -33,6 +33,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
@@ -42,6 +45,8 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author Mavlarn
  * @since 3.0
  */
+@Getter
+@Setter
 @Entity
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -130,7 +135,6 @@ public class User extends BaseModel<User> {
 		this.password = password;
 		this.userName = name;
 		this.role = role;
-		isEnabled();
 	}
 
 	@PrePersist
@@ -166,7 +170,6 @@ public class User extends BaseModel<User> {
 		this.userName = name;
 		this.email = email;
 		this.role = role;
-		isEnabled();
 	}
 
 	/**
@@ -208,132 +211,16 @@ public class User extends BaseModel<User> {
 		return true;
 	}
 
-	public String getMobilePhone() {
-		return mobilePhone;
-	}
-
-	public void setMobilePhone(String mobilePhone) {
-		this.mobilePhone = mobilePhone;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
 	public Boolean isEnabled() {
 		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public String getEmail() {
-		return email;
 	}
 
 	public void setEmail(String email) {
 		this.email = email.toLowerCase();
 	}
 
-	public String getTimeZone() {
-		return timeZone;
-	}
-
-	public void setTimeZone(String timeZone) {
-		this.timeZone = timeZone;
-	}
-
-	public String getUserLanguage() {
-		return userLanguage;
-	}
-
-	public void setUserLanguage(String userLanguage) {
-		this.userLanguage = userLanguage;
-	}
-
 	public boolean isExternal() {
 		return getSafe(external);
-	}
-
-	public void setExternal(boolean external) {
-		this.external = external;
-	}
-
-	public String getAuthProviderClass() {
-		return authProviderClass;
-	}
-
-	public void setAuthProviderClass(String authProviderClass) {
-		this.authProviderClass = authProviderClass;
-	}
-
-	public List<User> getFollowers() {
-		return followers;
-	}
-
-	public void setFollowers(List<User> followers) {
-		this.followers = followers;
-	}
-
-	public List<User> getOwners() {
-		return owners;
-	}
-
-	public void setOwners(List<User> owners) {
-		this.owners = owners;
-	}
-
-	public User getOwnerUser() {
-		return ownerUser;
-	}
-
-	public void setOwnerUser(User ownerUser) {
-		this.ownerUser = ownerUser;
-	}
-
-	public User getFollower() {
-		return follower;
-	}
-
-	public void setFollower(User follower) {
-		this.follower = follower;
 	}
 
 	@JsonIgnore
@@ -368,14 +255,6 @@ public class User extends BaseModel<User> {
 	@Override
 	public String toString() {
 		return "User[ID=" + this.getId() + ",name=" + this.getUserId() + ",Role=" + this.getRole() + "]";
-	}
-
-	public String getFollowersStr() {
-		return followersStr;
-	}
-
-	public void setFollowersStr(String followersStr) {
-		this.followersStr = followersStr;
 	}
 
 	private static class UserReferenceListSerializer extends StdSerializer<List<User>> {

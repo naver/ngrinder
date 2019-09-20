@@ -37,8 +37,8 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public UserRepository userRepository;
-	@Autowired
 
+	@Autowired
 	private PerfTestRepository perfTestRepository;
 
 	@Autowired

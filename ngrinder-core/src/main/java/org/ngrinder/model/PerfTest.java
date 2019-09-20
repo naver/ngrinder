@@ -30,6 +30,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -37,6 +40,8 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  */
 
 @SuppressWarnings({"JpaDataSourceORMInspection", "UnusedDeclaration", "JpaAttributeTypeInspection"})
+@Getter
+@Setter
 @Entity
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
@@ -119,14 +124,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "use_rampup", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean useRampUp;
-
-	public RampUp getRampUpType() {
-		return rampUpType;
-	}
-
-	public void setRampUpType(RampUp rampUpType) {
-		this.rampUpType = rampUpType;
-	}
 
 	/**
 	 * Use rampUp or not.
@@ -326,70 +323,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return getAgentCount() * getThreads() * getProcesses() * (long) getRunCount();
 	}
 
-	public String getTestName() {
-		return testName;
-	}
-
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
-
-	public Date getScheduledTime() {
-		return scheduledTime;
-	}
-
-	public void setScheduledTime(Date scheduledTime) {
-		this.scheduledTime = scheduledTime;
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	public Date getFinishTime() {
-		return finishTime;
-	}
-
-	public void setFinishTime(Date finishTime) {
-		this.finishTime = finishTime;
-	}
-
-	public Integer getRunCount() {
-		return runCount;
-	}
-
-	public void setRunCount(Integer runCount) {
-		this.runCount = runCount;
-	}
-
-	public Long getDuration() {
-		return duration;
-	}
-
-	public void setDuration(Long duration) {
-		this.duration = duration;
-	}
-
-	public String getScriptName() {
-		return scriptName;
-	}
-
-	public void setScriptName(String scriptName) {
-		this.scriptName = scriptName;
-	}
-
-	public Integer getIgnoreSampleCount() {
-		return ignoreSampleCount;
-	}
-
-	public void setIgnoreSampleCount(Integer ignoreSampleCount) {
-		this.ignoreSampleCount = ignoreSampleCount;
-	}
-
 	public String getDescription() {
 		return StringUtils.abbreviate(description, MAX_LONG_STRING_SIZE - MARGIN_FOR_ABBREVIATION);
 	}
@@ -397,14 +330,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@JsonIgnore
 	public String getLastModifiedDateToStr() {
 		return DateUtils.dateToString(getLastModifiedDate());
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getTargetHosts() {
-		return targetHosts;
 	}
 
 	/**
@@ -429,14 +354,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return targetIPList;
 	}
 
-	public void setTargetHosts(String theTarget) {
-		this.targetHosts = theTarget;
-	}
-
-	public String getThreshold() {
-		return threshold;
-	}
-
 	@JsonIgnore
 	public Boolean isThresholdDuration() {
 		return "D".equals(getThreshold());
@@ -445,169 +362,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@JsonIgnore
 	public Boolean isThresholdRunCount() {
 		return "R".equals(getThreshold());
-	}
-
-
-	public void setThreshold(String threshold) {
-		this.threshold = threshold;
-	}
-
-	public void setGrinderProperties(GrinderProperties properties) {
-		this.grinderProperties = properties;
-	}
-
-	public GrinderProperties getGrinderProperties() {
-		return grinderProperties;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public Integer getAgentCount() {
-		return agentCount;
-	}
-
-
-	public void setAgentCount(Integer agentCount) {
-		this.agentCount = agentCount;
-	}
-
-	public Integer getVuserPerAgent() {
-		return vuserPerAgent;
-	}
-
-
-	public void setVuserPerAgent(Integer vuserPerAgent) {
-		this.vuserPerAgent = vuserPerAgent;
-	}
-
-	public Integer getProcesses() {
-		return processes;
-	}
-
-
-	public void setProcesses(Integer processes) {
-		this.processes = processes;
-	}
-
-	public Integer getRampUpInitCount() {
-		return rampUpInitCount;
-	}
-
-	public void setRampUpInitCount(Integer initProcesses) {
-		this.rampUpInitCount = initProcesses;
-	}
-
-	public Integer getRampUpInitSleepTime() {
-		return rampUpInitSleepTime;
-	}
-
-	public void setRampUpInitSleepTime(Integer initSleepTime) {
-		this.rampUpInitSleepTime = initSleepTime;
-	}
-
-	public Integer getRampUpStep() {
-		return rampUpStep;
-	}
-
-
-	public void setRampUpStep(Integer processIncrement) {
-		this.rampUpStep = processIncrement;
-	}
-
-	public Integer getRampUpIncrementInterval() {
-		return rampUpIncrementInterval;
-	}
-
-
-	public void setRampUpIncrementInterval(Integer processIncrementInterval) {
-		this.rampUpIncrementInterval = processIncrementInterval;
-	}
-
-	public Integer getThreads() {
-		return threads;
-	}
-
-
-	public void setThreads(Integer threads) {
-		this.threads = threads;
-	}
-
-	public Long getTests() {
-		return tests;
-	}
-
-	public void setTests(Long tests) {
-		this.tests = tests;
-	}
-
-	public Long getErrors() {
-		return errors;
-	}
-
-	public void setErrors(Long errors) {
-		this.errors = errors;
-	}
-
-	public Double getMeanTestTime() {
-		return meanTestTime;
-	}
-
-	public void setMeanTestTime(Double meanTestTime) {
-		this.meanTestTime = meanTestTime;
-	}
-
-	public Double getTestTimeStandardDeviation() {
-		return testTimeStandardDeviation;
-	}
-
-	public void setTestTimeStandardDeviation(Double testTimeStandardDeviation) {
-		this.testTimeStandardDeviation = testTimeStandardDeviation;
-	}
-
-	public Double getTps() {
-		return tps;
-	}
-
-	public void setTps(Double tps) {
-		this.tps = tps;
-	}
-
-	public Double getPeakTps() {
-		return peakTps;
-	}
-
-	public void setPeakTps(Double peakTps) {
-		this.peakTps = peakTps;
-	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	public Status getTestErrorCause() {
-		return testErrorCause;
-	}
-
-	public void setTestErrorCause(Status errorCause) {
-		this.testErrorCause = errorCause;
-	}
-
-	public String getDistributionPath() {
-		return distributionPath;
-	}
-
-	public void setDistributionPath(String distributionPath) {
-		this.distributionPath = distributionPath;
 	}
 
 	/**
@@ -627,8 +381,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	@JsonProperty("runtime")
 	public String getRuntimeStr() {
-		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
-				- this.startTime.getTime();
+		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime() - this.startTime.getTime();
 		return DateUtils.ms2Time(ms);
 	}
 
@@ -637,24 +390,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return ReflectionToStringBuilder.toStringExclude(this, "tags");
 	}
 
-	public String getProgressMessage() {
-		return progressMessage;
-	}
-
 	public void setProgressMessage(String progressMessage) {
 		this.progressMessage = StringUtils.defaultIfEmpty(StringUtils.right(progressMessage, MAX_STRING_SIZE), "");
-	}
-
-	public Boolean getStopRequest() {
-		return stopRequest;
-	}
-
-	public void setStopRequest(Boolean stopRequest) {
-		this.stopRequest = stopRequest;
-	}
-
-	public String getLastProgressMessage() {
-		return lastProgressMessage;
 	}
 
 	/**
@@ -679,29 +416,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.lastProgressMessage = lastProgressMessage;
 	}
 
-	public String getTestComment() {
-		return testComment;
-	}
-
 	public void setTestComment(String testComment) {
 		this.testComment = StringUtils.trimToEmpty(StringUtils.right(testComment, MAX_STRING_SIZE));
-	}
-
-	public Long getScriptRevision() {
-		return scriptRevision;
-	}
-
-
-	public void setScriptRevision(Long scriptRevision) {
-		this.scriptRevision = scriptRevision;
-	}
-
-	public String getDateString() {
-		return dateString;
-	}
-
-	public void setDateString(String dateString) {
-		this.dateString = dateString;
 	}
 
 	/**
@@ -712,73 +428,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		setProgressMessage("");
 	}
 
-	public Boolean getUseRampUp() {
-		return useRampUp;
-	}
-
-
-	public void setUseRampUp(Boolean useRampUp) {
-		this.useRampUp = useRampUp;
-	}
-
-	public Boolean getSendMail() {
-		return sendMail;
-	}
-
-
-	public void setSendMail(Boolean sendMail) {
-		this.sendMail = sendMail;
-	}
-
-	public String getTagString() {
-		return tagString;
-	}
-
-
-	public void setTagString(String tagString) {
-		this.tagString = tagString;
-	}
-
-	public SortedSet<Tag> getTags() {
-		return tags;
-	}
-
-	public void setTags(SortedSet<Tag> tags) {
-		this.tags = tags;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-
-	public void setRegion(String region) {
-		this.region = region;
-	}
-
 	public Boolean getSafeDistribution() {
 		return safeDistribution == null ? Boolean.FALSE : safeDistribution;
-	}
-
-
-	public void setSafeDistribution(Boolean safeDistribution) {
-		this.safeDistribution = safeDistribution;
-	}
-
-	public Integer getSamplingInterval() {
-		return samplingInterval;
-	}
-
-	public void setSamplingInterval(Integer samplingInterval) {
-		this.samplingInterval = samplingInterval;
-	}
-
-	public String getParam() {
-		return param;
-	}
-
-	public void setParam(String param) {
-		this.param = param;
 	}
 
 	public void prepare(boolean isClone) {
