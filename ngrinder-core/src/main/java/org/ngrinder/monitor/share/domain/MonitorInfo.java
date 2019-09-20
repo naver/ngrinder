@@ -15,22 +15,20 @@ package org.ngrinder.monitor.share.domain;
 
 import javax.management.openmbean.CompositeData;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
  * Abstract class for monitor info.
  * 
- * @author Mavlarn
  * @since 2.0
  */
+@Getter
+@Setter
+@ToString
 public abstract class MonitorInfo {
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-	}
 
 	private long collectTime;
 
@@ -66,11 +64,4 @@ public abstract class MonitorInfo {
 		return cd.containsKey(itemName);
 	}
 
-	public long getCollectTime() {
-		return collectTime;
-	}
-
-	public void setCollectTime(long collectTime) {
-		this.collectTime = collectTime;
-	}
 }

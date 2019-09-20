@@ -19,8 +19,12 @@ import java.util.Date;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.util.DateUtils;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Tolerate;
 
 /**
  * System info object to save date collected by monitor.
@@ -28,6 +32,9 @@ import org.ngrinder.common.util.DateUtils;
  * @author Mavlarn
  * @since 2.0
  */
+@Getter
+@Setter
+@ToString(callSuper = true)
 public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
@@ -78,10 +85,10 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			String string = getString(cd, "system");
 			this.system = System.valueOf(string);
 			this.totalCpuValue = getLong(cd, "totalCpuValue");
-			this.idleCpuValue = getLong(cd, "idlecpu");
+			this.idleCpuValue = getLong(cd, "idleCpuValue");
 			this.freeMemory = getLong(cd, "freeMemory");
 			this.totalMemory = getLong(cd, "totalMemory");
-			this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
+			this.cpuUsedPercentage = getFloat(cd, "cpuUsedPercentage");
 
 			if (containsKey(cd, "bandWidth")) {
 				CompositeData bandWidth = (CompositeData) getObject(cd, "bandWidth");
@@ -100,87 +107,9 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		}
 	}
 
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public System getSystem() {
-		return system;
-	}
-
-	public void setSystem(System system) {
-		this.system = system;
-	}
-
+	@Tolerate
 	public void setSystem(String system) {
 		this.system = System.valueOf(system);
-	}
-
-	public void setCPUUsedPercentage(float cpuUsedPercentage) {
-		this.cpuUsedPercentage = cpuUsedPercentage;
-	}
-
-	public float getCPUUsedPercentage() {
-		return cpuUsedPercentage;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public long getIdlecpu() {
-		return idleCpuValue;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public long getTotalCpuValue() {
-		return totalCpuValue;
-	}
-
-	public long getFreeMemory() {
-		return freeMemory;
-	}
-
-	public void setTotalCpuValue(long totalCpuValue) {
-		this.totalCpuValue = totalCpuValue;
-	}
-
-	public void setIdleCpuValue(long idleCpuValue) {
-		this.idleCpuValue = idleCpuValue;
-	}
-
-	public void setFreeMemory(long freeMemory) {
-		this.freeMemory = freeMemory;
-	}
-
-	public long getTotalMemory() {
-		return totalMemory;
-	}
-
-	public void setTotalMemory(long totalMemory) {
-		this.totalMemory = totalMemory;
-	}
-
-	public BandWidth getBandWidth() {
-		return bandWidth;
-	}
-
-	public void setBandWidth(BandWidth bandWidth) {
-		this.bandWidth = bandWidth;
-	}
-
-	public String getCustomValues() {
-		return customValues;
-	}
-
-	public void setCustomValues(String customValues) {
-		this.customValues = customValues;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
 	}
 
 	/**

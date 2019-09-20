@@ -21,7 +21,6 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.spi.merge.LatestUpdateMergePolicy;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import com.hazelcast.spring.context.SpringManagedContext;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.ngrinder.common.constant.ClusterConstants;
@@ -54,7 +53,6 @@ import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
 @RequiredArgsConstructor
 public class DynamicCacheConfig implements ClusterConstants {
 
-	@Getter
 	private final Config config;
 
 	private static final int DAY = 24 * 60 * 60;

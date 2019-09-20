@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -38,6 +41,9 @@ public class SecuredUser implements UserDetails {
 	 * Plugin class name from which {@link User} instance is provided.
 	 */
 	private final String userInfoProviderClass;
+
+	@Getter
+	@Setter
 	private User user;
 
 	/**
@@ -118,13 +124,5 @@ public class SecuredUser implements UserDetails {
 			return getUser().getAuthProviderClass();
 		}
 		return userInfoProviderClass;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 }

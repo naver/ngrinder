@@ -25,6 +25,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.Setter;
+
 /**
  * nGrinder {@link PreAuthenticatedAuthenticationProvider}.
  * 
@@ -44,6 +46,7 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationPreAuthProvider.class);
 
+	@Setter
 	private UserService userService;
 
 	/**
@@ -98,14 +101,6 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		}
 		User savedUser = userService.save(user);
 		securedUser.setUser(savedUser);
-	}
-
-	public UserService getUserService() {
-		return userService;
-	}
-
-	public void setUserService(UserService userService) {
-		this.userService = userService;
 	}
 
 }

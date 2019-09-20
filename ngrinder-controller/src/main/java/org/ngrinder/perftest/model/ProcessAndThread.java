@@ -15,7 +15,7 @@ package org.ngrinder.perftest.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import lombok.ToString;
 
 /**
  * Processes and Threads count model.
@@ -24,6 +24,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 @Getter
 @Setter
+@ToString
 public class ProcessAndThread {
 
 	private int processCount;
@@ -34,8 +35,4 @@ public class ProcessAndThread {
 		this.threadCount = threadCount;
 	}
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
 }

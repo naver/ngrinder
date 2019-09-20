@@ -25,6 +25,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import lombok.Setter;
+
 /**
  * nGrinder customized login authentication filter. This checks not only auth but also timezone and
  * locale.
@@ -33,6 +35,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+	@Setter
 	private UserRepository userRepository;
 
 	/**
@@ -78,10 +81,6 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 	                                          AuthenticationException failed) throws IOException, ServletException {
 		super.unsuccessfulAuthentication(request, response, failed);
-	}
-
-	public void setUserRepository(UserRepository userRepository) {
-		this.userRepository = userRepository;
 	}
 
 }
