@@ -104,7 +104,6 @@ public class FileEntryApiController {
 			.collect(toList());
 	}
 
-
 	/**
 	 * Save a fileEntry and return to the the path.
 	 *
