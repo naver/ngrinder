@@ -13,10 +13,8 @@
  */
 package org.ngrinder.script.controller;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -32,6 +30,8 @@ import java.io.*;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * FileEntry manipulation controller.
  *
@@ -39,14 +39,12 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 @Controller
 @RequestMapping("/script")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileEntryController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryController.class);
 
-	private FileEntryService fileEntryService;
-
-	HttpContainerContext httpContainerContext;
+	private final FileEntryService fileEntryService;
 
 	@GetMapping({"/list/**", ""})
 	public String getAll(User user) {

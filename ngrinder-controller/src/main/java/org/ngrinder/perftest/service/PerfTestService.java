@@ -14,9 +14,10 @@
 package org.ngrinder.perftest.service;
 
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+
 import net.grinder.SingleConsole;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
@@ -25,6 +26,7 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 import net.grinder.util.Pair;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
@@ -66,6 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -89,7 +92,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
  *
  * @since 3.0
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PerfTestService extends AbstractPerfTestService implements ControllerConstants, GrinderConstants {
 
 	private static final int MAX_POINT_COUNT = 100;
@@ -99,23 +102,22 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private static final String DATA_FILE_EXTENSION = ".data";
 
 	@Getter
-	private PerfTestRepository perfTestRepository;
+	private final PerfTestRepository perfTestRepository;
 
-	private ConsoleManager consoleManager;
+	private final ConsoleManager consoleManager;
 
-	private AgentManager agentManager;
+	private final AgentManager agentManager;
 
 	@Getter
-	@Setter
-	private Config config;
+	private final Config config;
 
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
-	private TagService tagService;
+	private final TagService tagService;
 
-	private ScriptHandlerFactory scriptHandlerFactory;
+	private final ScriptHandlerFactory scriptHandlerFactory;
 
-	private HazelcastService hazelcastService;
+	private final HazelcastService hazelcastService;
 
 	/**
 	 * Get {@link PerfTest} list for the given user.
@@ -273,7 +275,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	private void attachTags(User user, PerfTest perfTest, String tagString) {
 		SortedSet<Tag> tags = tagService.addTags(user,
-				StringUtils.split(StringUtils.trimToEmpty(tagString), ","));
+			StringUtils.split(StringUtils.trimToEmpty(tagString), ","));
 		perfTest.setTags(tags);
 		perfTest.setTagString(buildTagString(tags));
 	}
@@ -377,7 +379,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public PerfTest markPerfTestConsoleStart(PerfTest perfTest, int consolePort) {
 		perfTest.setPort(consolePort);
 		return markProgressAndStatus(perfTest, Status.START_CONSOLE_FINISHED, "Console is started on port "
-				+ consolePort);
+			+ consolePort);
 	}
 
 
@@ -559,7 +561,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			// Get all files in the script path
 			String scriptName = perfTest.getScriptName();
 			FileEntry userDefinedGrinderProperties = fileEntryService.getOne(user,
-					FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES), -1L);
+				FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES), -1L);
 			if (!config.isSecurityEnabled() && userDefinedGrinderProperties != null) {
 				// Make the property overridden by user property.
 				GrinderProperties userProperties = new GrinderProperties();
@@ -605,7 +607,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
-			grinderProperties.setProperty(GRINDER_PROP_SECURITY_LEVEL,  config.getSecurityLevel());
+			grinderProperties.setProperty(GRINDER_PROP_SECURITY_LEVEL, config.getSecurityLevel());
 			// For backward agent compatibility.
 			// If the security is not enabled, pass it as jvm argument.
 			// If enabled, pass it to grinder.param. In this case, I drop the

@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.controller;
 
-import lombok.AllArgsConstructor;
 import org.ngrinder.common.util.AopUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -28,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.*;
 
+import lombok.RequiredArgsConstructor;
+
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -37,12 +38,12 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 @RestController
 @RequestMapping("/monitor/api")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MonitorManagerApiController {
 
-	private MonitorInfoStore monitorInfoStore;
+	private final MonitorInfoStore monitorInfoStore;
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Get the target's monitored data by the given IP.

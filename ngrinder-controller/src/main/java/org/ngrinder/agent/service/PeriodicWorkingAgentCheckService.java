@@ -15,7 +15,8 @@ package org.ngrinder.agent.service;
 
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 
@@ -40,14 +41,14 @@ import javax.annotation.PostConstruct;
  * @since 3.1.2
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PeriodicWorkingAgentCheckService implements Runnable {
 
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
-	private AgentManager agentManager;
+	private final AgentManager agentManager;
 
-	private ScheduledTaskService scheduledTaskService;
+	private final ScheduledTaskService scheduledTaskService;
 
 	@PostConstruct
 	public void init() {

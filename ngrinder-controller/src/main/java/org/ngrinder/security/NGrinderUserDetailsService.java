@@ -15,7 +15,6 @@ package org.ngrinder.security;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
-import lombok.AllArgsConstructor;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.User;
@@ -26,20 +25,24 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * NGrinder {@link UserDetailsService}.
  *
  * This resolves user info using plugins implementing {@link OnLoginRunnable}.
  */
 @Service("ngrinderUserDetailsService")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NGrinderUserDetailsService implements UserDetailsService {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderUserDetailsService.class);
 
-	private PluginManager pluginManager;
+	@Getter
+	private final PluginManager pluginManager;
 
-	private DefaultLoginPlugin defaultPlugin;
+	private final DefaultLoginPlugin defaultPlugin;
 
 	@Override
 	public UserDetails loadUserByUsername(String userId) {
@@ -54,13 +57,5 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 			}
 		}
 		throw new UsernameNotFoundException(userId + " is not found.");
-	}
-
-	public PluginManager getPluginManager() {
-		return pluginManager;
-	}
-
-	public void setPluginManager(PluginManager pluginManager) {
-		this.pluginManager = pluginManager;
 	}
 }

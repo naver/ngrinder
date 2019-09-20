@@ -13,7 +13,6 @@
  */
 package org.ngrinder.common.util;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
@@ -25,17 +24,19 @@ import javax.servlet.http.HttpServletRequest;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_URL;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Utility component which provides various Http Container values.
  *
  * @since 3.0
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HttpContainerContext {
 	private static final int DEFAULT_WEB_PORT = 80;
 
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Get current container nGrinder context base path.

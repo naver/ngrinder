@@ -20,7 +20,6 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
 import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
@@ -39,22 +38,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * @since 3.5.0
  */
 @RestController
 @RequestMapping("/agent/api")
 @PreAuthorize("hasAnyRole('A', 'S')")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AgentManagerApiController {
 
-	private AgentManagerService agentManagerService;
+	private final AgentManagerService agentManagerService;
 
-	private RegionService regionService;
+	private final RegionService regionService;
 
-	private AgentPackageService agentPackageService;
+	private final AgentPackageService agentPackageService;
 
-	private Config config;
+	private final Config config;
 
 	@GetMapping("/regions")
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")

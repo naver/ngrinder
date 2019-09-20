@@ -39,7 +39,7 @@ import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Some User want to have more secured password. Provide the enhanced pw with sha256 if a user
@@ -48,20 +48,20 @@ import lombok.AllArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @Order(1)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SvnSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private Config config;
+	private final Config config;
 
-	private NGrinderUserDetailsService ngrinderUserDetailsService;
+	private final NGrinderUserDetailsService ngrinderUserDetailsService;
 
-	private UserSwitchPermissionVoter userSwitchPermissionVoter;
+	private final UserSwitchPermissionVoter userSwitchPermissionVoter;
 
-	private SvnHttpBasicEntryPoint svnHttpBasicEntryPoint;
+	private final SvnHttpBasicEntryPoint svnHttpBasicEntryPoint;
 
-	private NGrinderAuthenticationProvider nGrinderAuthenticationProvider;
+	private final NGrinderAuthenticationProvider nGrinderAuthenticationProvider;
 
-	private UserService userService;
+	private final UserService userService;
 
 	/**
 	 * Provide the appropriate shaPasswordEncoder depending on the ngrinder.security.sha256 config.

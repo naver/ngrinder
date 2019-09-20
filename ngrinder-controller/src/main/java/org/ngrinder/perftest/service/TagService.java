@@ -13,7 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
@@ -29,6 +28,8 @@ import java.util.*;
 
 import static org.ngrinder.perftest.repository.TagSpecification.*;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Tag Service. Tag support which is used to categorize {@link PerfTest}
  * 
@@ -36,12 +37,12 @@ import static org.ngrinder.perftest.repository.TagSpecification.*;
  * 
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TagService {
 
-	private TagRepository tagRepository;
+	private final TagRepository tagRepository;
 
-	private PerfTestRepository perfTestRepository;
+	private final PerfTestRepository perfTestRepository;
 
 	/**
 	 * Add tags.

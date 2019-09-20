@@ -13,7 +13,6 @@
  */
 package org.ngrinder.perftest.controller;
 
-import lombok.AllArgsConstructor;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -53,6 +52,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
@@ -73,32 +74,32 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 @Profile("production")
 @RestController
 @RequestMapping("/perftest/api")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PerfTestApiController {
 
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
-	private TagService tagService;
+	private final TagService tagService;
 
-	private AgentManager agentManager;
+	private final AgentManager agentManager;
 
-	private RegionService regionService;
+	private final RegionService regionService;
 
-	private AgentManagerService agentManagerService;
+	private final AgentManagerService agentManagerService;
 
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
-	private UserService userService;
+	private final UserService userService;
 
-	private HazelcastService hazelcastService;
+	private final HazelcastService hazelcastService;
 
-	private ScriptHandlerFactory scriptHandlerFactory;
+	private final ScriptHandlerFactory scriptHandlerFactory;
 
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	private Config config;
+	private final Config config;
 
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
 	/**
 	 * Get the perf test lists.

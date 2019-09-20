@@ -13,7 +13,6 @@
  */
 package org.ngrinder.infra.report;
 
-import lombok.AllArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
@@ -32,18 +31,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Send the ngrinder usage data to GA. It executes only once each day at midnight
  *
  * @since 3.2
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PeriodicCollectDataToGAService {
 
-	private Config config;
+	private final Config config;
 
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
 	/**
 	 * Send the number of executed test.
