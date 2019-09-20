@@ -28,12 +28,13 @@ import org.ngrinder.infra.hazelcast.task.RegionInfoTask;
 import org.ngrinder.region.model.RegionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import lombok.RequiredArgsConstructor;
 
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -44,6 +45,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * @since 3.1
  */
 @Service
+@RequiredArgsConstructor
 public class RegionService {
 
 	@SuppressWarnings("UnusedDeclaration")
@@ -54,14 +56,6 @@ public class RegionService {
 	private final HazelcastService hazelcastService;
 
 	private final HazelcastInstance hazelcastInstance;
-
-	public RegionService(Config config,
-						 HazelcastService hazelcastService,
-						 @Qualifier("embeddedHazelcast") HazelcastInstance hazelcastInstance) {
-		this.config = config;
-		this.hazelcastService = hazelcastService;
-		this.hazelcastInstance = hazelcastInstance;
-	}
 
 	private Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
 		@Override
