@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_FILE_ENTRIES;
@@ -66,6 +68,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Service
+@RequiredArgsConstructor
 public class FileEntryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryService.class);
@@ -81,14 +84,6 @@ public class FileEntryService {
 	private SVNClientManager svnClientManager;
 
 	private Cache fileEntryCache;
-
-	public FileEntryService(Config config, @Qualifier("cacheManager") CacheManager cacheManager,
-							FileEntryRepository fileEntityRepository, ScriptHandlerFactory scriptHandlerFactory) {
-		this.config = config;
-		this.cacheManager = cacheManager;
-		this.fileEntityRepository = fileEntityRepository;
-		this.scriptHandlerFactory = scriptHandlerFactory;
-	}
 
 	/**
 	 * Initialize {@link FileEntryService}.

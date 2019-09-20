@@ -17,7 +17,6 @@ import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.MonitorPackageHandler;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.net.URLClassLoader;
 
+import lombok.RequiredArgsConstructor;
+
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
@@ -37,6 +38,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 @Controller
 @RequestMapping("/monitor/download")
+@RequiredArgsConstructor
 public class MonitorDownloadController {
 
 	private final AgentPackageService agentPackageService;
@@ -44,13 +46,6 @@ public class MonitorDownloadController {
 	private final Config config;
 
 	private final MonitorPackageHandler monitorPackageHandler;
-
-	public MonitorDownloadController(AgentPackageService agentPackageService, Config config,
-									 @Qualifier("monitorPackageHandler") MonitorPackageHandler monitorPackageHandler) {
-		this.agentPackageService = agentPackageService;
-		this.config = config;
-		this.monitorPackageHandler = monitorPackageHandler;
-	}
 
 	/**
 	 * Download monitor.

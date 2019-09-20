@@ -57,7 +57,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	private LocalAgentService localAgentService;
 
 	@Autowired
-	@Qualifier("agentPackageHandler")
 	private AgentPackageHandler agentPackageHandler;
 
 	@Autowired
