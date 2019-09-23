@@ -44,7 +44,6 @@ public class MockConfig extends Config {
 
 	@Override
 	public boolean isClustered() {
-		// TODO Auto-generated method stub
 		return cluster;
 	}
 
