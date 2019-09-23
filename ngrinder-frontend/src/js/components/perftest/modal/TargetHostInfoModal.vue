@@ -74,7 +74,10 @@
                 this.currentIntervalId = setInterval(this.getState, this.INTERVAL * 1000);
             });
 
-            $(this.$refs.targetHostInfoModal).on('hide.bs.modal', () => clearInterval(this.currentIntervalId));
+            $(this.$refs.targetHostInfoModal).on('hide.bs.modal', () => {
+                clearInterval(this.currentIntervalId);
+                this.closeMonitorConnection();
+            });
         }
 
         getState() {
@@ -87,6 +90,14 @@
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
                 this.cpu.chart.plot();
                 this.memory.chart.plot();
+            });
+        }
+
+        closeMonitorConnection() {
+            this.$http.get('/monitor/api/close', {
+                params: {
+                    ip: this.ip
+                },
             });
         }
     }

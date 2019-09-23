@@ -35,9 +35,6 @@ public class NullScriptHandler extends ScriptHandler {
 
 	private Map<FileType, String> codeMirrorKey = newHashMap();
 
-	/**
-	 * Constructor.
-	 */
 	public NullScriptHandler() {
 		super("", "", null, null);
 		codeMirrorKey.put(FileType.PROPERTIES, "properties");
@@ -84,7 +81,6 @@ public class NullScriptHandler extends ScriptHandler {
 
 	@Override
 	public String checkSyntaxErrors(String path, String content) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
