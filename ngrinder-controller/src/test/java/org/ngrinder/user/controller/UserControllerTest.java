@@ -96,7 +96,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testUpdate() {		// TODO: Resolve lazy initialize exception
+	public void testUpdate() {
 		// test update the role of current user.
 		User currUser = getTestUser();
 		assertThat(currUser.getRole(), is(Role.USER)); // current test user is "USER"

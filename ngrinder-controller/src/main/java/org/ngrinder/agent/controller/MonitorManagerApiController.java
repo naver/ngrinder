@@ -63,4 +63,15 @@ public class MonitorManagerApiController {
 	public Future<SystemInfo> getAsyncSystemInfo(String ip, int port) {
 		return new AsyncResult<>(monitorInfoStore.getSystemInfo(ip, port));
 	}
+
+	/**
+	 * Close the monitor JXM connection to the given target.
+	 *
+	 * @param ip target host IP
+	 * @return success if succeeded.
+	 */
+	@GetMapping("/close")
+	public void closeMonitorConnection(@RequestParam String ip) {
+		monitorInfoStore.close(ip);
+	}
 }
