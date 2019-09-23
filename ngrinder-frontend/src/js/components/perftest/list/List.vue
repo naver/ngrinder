@@ -64,6 +64,10 @@
                 </div>
             </template>
 
+            <template v-if="ngrinder.config.clustered" slot="region" slot-scope="props">
+                <div class="ellipsis region" :title="props.rowData.region" v-text="props.rowData.region"></div>
+            </template>
+
             <template slot="createUser" slot-scope="props">
                 <div class="createUser" v-text="props.rowData.createdUser.userName"></div>
             </template>
@@ -429,6 +433,14 @@
 
             .testName, .scriptName {
                 width: 90px;
+            }
+
+            .region {
+                width: 55px;
+            }
+
+            .errorRate {
+                width: 58px;
             }
 
             .startTime {

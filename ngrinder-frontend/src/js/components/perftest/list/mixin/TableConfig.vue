@@ -78,10 +78,9 @@
 
             if (this.ngrinder.config.clustered) {
                 fields.splice(5, 0, {
-                    name: 'region',
+                    name: '__slot:region',
                     title: this.i18n('common.region'),
                     sortField: 'region',
-                    width: '70px',
                 });
             }
 
