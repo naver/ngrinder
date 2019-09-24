@@ -1,6 +1,6 @@
 <template>
     <div class="input-label-container">
-        <label :for="name" class="control-label"><span v-text="i18n(message)"></span></label>
+        <label :for="name" class="control-label pointer-cursor"><span v-text="i18n(message)"></span></label>
         <div class="controls">
             <input type="text" class="input form-control" :id="name" :name="name" :style="extraCss"
                    :value="value" @input="$emit('input', $event.target.value)" :readonly="readonly"/>
