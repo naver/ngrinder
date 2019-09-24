@@ -24,20 +24,19 @@
                     width: '120px',
                 },
                 {
-                    name: 'email',
+                    name: '__slot:email',
                     title: this.i18n('user.info.email'),
                     sortField: 'email',
-                    width: '160px',
                 },
                 {
-                    name: 'description',
+                    name: '__slot:description',
                     title: this.i18n('common.label.description'),
                 },
                 {
                     name: '__slot:createdDate',
                     title: this.i18n('user.list.table.date'),
                     sortField: 'createdDate',
-                    width: '180px',
+                    width: '140px',
                 },
                 {
                     name: '__slot:edit',
