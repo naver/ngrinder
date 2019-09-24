@@ -52,6 +52,14 @@
                 <div :title="props.rowData.role.fullName" v-text="props.rowData.role ? props.rowData.role.fullName : ''"></div>
             </template>
 
+            <template slot="email" slot-scope="props">
+                <div class="ellipsis email" :title="props.rowData.email" v-text="props.rowData.email"></div>
+            </template>
+
+            <template slot="description" slot-scope="props">
+                <div class="ellipsis description" :title="props.rowData.description" v-text="props.rowData.description"></div>
+            </template>
+
             <template slot="createdDate" slot-scope="props">
                 {{ props.rowData.createdDate | dateFormat('YYYY-MM-DD HH:mm') }}
             </template>
@@ -236,6 +244,14 @@
 
         .role-select {
             width: 220px;
+        }
+
+        .email {
+            width: 160px;
+        }
+
+        .description {
+            width: 260px;
         }
     }
 </style>
