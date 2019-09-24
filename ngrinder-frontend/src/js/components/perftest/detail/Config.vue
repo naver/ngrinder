@@ -9,7 +9,7 @@
             <div class="form-horizontal form-horizontal-2">
                 <div class="row intro agent-config-container" data-step="4" :data-intro="i18n('intro.config.basic.agent')">
                     <div class="agent-count-container">
-                        <control-group :class="{ error: errors.has('agentCount') }" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
+                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') }" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
                                           v-model="test.agentCount"
                                           :validationRules="agentCountValidationRules"
@@ -21,7 +21,7 @@
                         </control-group>
                     </div>
                     <div v-if="ngrinder.config.clustered" class="agent-region-container">
-                        <control-group :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
+                        <control-group id="region" :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
                                        labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -20px; width: 80px;">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
                                      class="float-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
@@ -30,7 +30,7 @@
                         </control-group>
                     </div>
                 </div>
-                <control-group :class="{ error: errors.has('vuserPerAgent') }" labelMessageKey="perfTest.config.vuserPerAgent"
+                <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }" labelMessageKey="perfTest.config.vuserPerAgent"
                                ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
                     <div class="vuser-per-agent-container">
                         <input-append name="vuserPerAgent" ref="vuserPerAgent"
@@ -127,7 +127,7 @@
                         <duration-slider @change="changeDurationSlider" ref="durationSlider" :durationMs="durationMs" :maxRunHour="config.maxRunHour"></duration-slider>
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
-                    <control-group :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.threshold === 'R' }" v-model="test.threshold"
+                    <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.threshold === 'R' }" v-model="test.threshold"
                                    labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
@@ -237,6 +237,7 @@
             threads: 0,
             vuserPerAgent: 0,
             samplingInterval: 2,
+            threshold: 'D',
         };
 
         scripts = [];
@@ -418,6 +419,8 @@
                     this.$refs.runCount.errors.clear();
                     this.$refs.runCountControlGroup.hasError = false;
                 }
+            } else {
+                this.$refs.runCount.focus();
             }
         }
 
