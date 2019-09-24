@@ -15,6 +15,8 @@ package org.ngrinder.home.model;
 
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.ngrinder.common.util.DateUtils;
 
 /**
@@ -23,45 +25,15 @@ import org.ngrinder.common.util.DateUtils;
  * @author JunHo Yoon
  * @since 3.0
  */
+@Getter
+@Setter
 public class PanelEntry implements Comparable<PanelEntry> {
 	private static final int NEW_LIMIT = 5;
+
 	private String title;
 	private Date lastUpdatedDate;
 	private String link;
 	private String author;
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public Date getLastUpdatedDate() {
-		return lastUpdatedDate;
-	}
-
-	public void setLastUpdatedDate(Date lastUpdatedDate) {
-		this.lastUpdatedDate = lastUpdatedDate;
-	}
-
-	public String getLink() {
-		return link;
-	}
-
-	public void setLink(String link) {
-		this.link = link;
-	}
-
-	public String getAuthor() {
-		return author;
-	}
-
-	public void setAuthor(String author) {
-		this.author = author;
-	}
 
 	public boolean isNew() {
 		return DateUtils.addDay(lastUpdatedDate, NEW_LIMIT).compareTo(new Date()) > 0;

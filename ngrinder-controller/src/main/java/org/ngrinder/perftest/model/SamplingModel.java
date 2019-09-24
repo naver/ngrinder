@@ -1,5 +1,7 @@
 package org.ngrinder.perftest.model;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 
 /**
@@ -7,6 +9,7 @@ import java.io.Serializable;
  *
  * @since 3.5.0
  */
+@Getter
 public class SamplingModel implements Serializable {
 	private String runningSample;
 	private String agentState;
@@ -14,13 +17,5 @@ public class SamplingModel implements Serializable {
 	public SamplingModel(String runningSample, String agentState) {
 		this.runningSample = runningSample;
 		this.agentState = agentState;
-	}
-
-	public String getRunningSample() {
-		return runningSample;
-	}
-
-	public String getAgentState() {
-		return agentState;
 	}
 }
