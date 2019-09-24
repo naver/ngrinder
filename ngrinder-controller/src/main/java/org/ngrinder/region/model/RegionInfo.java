@@ -13,6 +13,8 @@
  */
 package org.ngrinder.region.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.grinder.common.processidentity.AgentIdentity;
 
 import java.io.Serializable;
@@ -21,16 +23,19 @@ import java.util.Set;
 /**
  * Region info to be shared b/w controllers.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
+@Getter
 @SuppressWarnings("UnusedDeclaration")
 public class RegionInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	@Setter
 	private String ip;
 	private Integer controllerPort;
+	@Setter
 	private boolean visible = true;
+	@Setter
 	private Set<AgentIdentity> agentIdentities;
 	private String regionName;
 
@@ -79,35 +84,4 @@ public class RegionInfo implements Serializable {
 		this.regionName = regionName;
 	}
 
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public Set<AgentIdentity> getAgentIdentities() {
-		return agentIdentities;
-	}
-
-	public void setAgentIdentities(Set<AgentIdentity> agentIdentities) {
-		this.agentIdentities = agentIdentities;
-	}
-
-	public Integer getControllerPort() {
-		return controllerPort;
-	}
-
-	public String getRegionName() {
-		return this.regionName;
-	}
 }

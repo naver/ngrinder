@@ -13,6 +13,8 @@
  */
 package org.ngrinder.agent.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.ngrinder.agent.service.ClusteredAgentManagerService;
 
@@ -23,20 +25,21 @@ import static org.ngrinder.common.util.NoOp.noOp;
 /**
  * Agent control request b/w controllers in the clustered nGrinder installation.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
+@Getter
 public class ClusteredAgentRequest implements Serializable {
 	/**
 	 * UUID.
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private RequestType requestType;
-
 	private final String agentIp;
 
 	private final String agentName;
+
+	@Setter
+	private RequestType requestType;
 
 	/**
 	 * Request Type.
@@ -93,20 +96,4 @@ public class ClusteredAgentRequest implements Serializable {
 		this.requestType = requestType;
 	}
 
-	public RequestType getRequestType() {
-		return requestType;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void setRequestType(RequestType requestType) {
-		this.requestType = requestType;
-	}
-
-	public String getAgentIp() {
-		return agentIp;
-	}
-
-	public String getAgentName() {
-		return agentName;
-	}
 }

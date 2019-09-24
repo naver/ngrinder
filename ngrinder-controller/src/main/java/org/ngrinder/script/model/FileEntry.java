@@ -18,6 +18,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.util.PathUtils;
@@ -34,10 +36,10 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 /**
  * File entity which will be stored in SVN.
  *
- * @author Liu Zhifei
- * @author JunHo Yoon
  * @since 3.0
  */
+@Getter
+@Setter
 public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	private static final long serialVersionUID = -2422243194192027508L;
@@ -61,6 +63,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	@JsonIgnore
 	private byte[] contentBytes;
 
+	@JsonSerialize(using = UnixPathSerializer.class)
 	private String path;
 
 	private FileType fileType;
@@ -69,36 +72,14 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	private long lastRevision;
 
-	/**
-	 * Get path of entry.
-	 *
-	 * @return path
-	 */
 	@JsonSerialize(using = UnixPathSerializer.class)
-	public String getPath() {
-		return path;
-	}
-
-	@JsonSerialize(using = UnixPathSerializer.class)
+	@SuppressWarnings("UnusedDeclaration")
 	public String getPathInShort() {
 		return PathUtils.getShortPath(path);
 	}
 
 	public String getFileName() {
 		return FilenameUtils.getName(checkNotEmpty(getPath()));
-	}
-
-	public long getFileSize() {
-		return fileSize;
-	}
-
-	public void setFileSize(long fileSize) {
-		this.fileSize = fileSize;
-	}
-
-
-	public byte[] getContentBytes() {
-		return contentBytes;
 	}
 
 	/**
@@ -111,16 +92,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.contentBytes = contentBytes;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.ngrinder.script.model.IFileEntry#getContent()
-	 */
-	@Override
-	public String getContent() {
-		return content;
-	}
-
 	/**
 	 * Set content in string form.
 	 *
@@ -129,14 +100,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	public void setContent(String content) {
 		this.fileSize = content.length();
 		this.content = content;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
@@ -157,40 +120,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		return fileType;
 	}
 
-	public void setFileType(FileType fileType) {
-		this.fileType = fileType;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
-	/**
-	 * Get current revision.
-	 *
-	 * @return the revision
-	 */
-	public long getRevision() {
-		return revision;
-	}
-
-	/**
-	 * Set current revision.
-	 *
-	 * @param revision the revision to set
-	 */
-	public void setRevision(long revision) {
-		this.revision = revision;
-	}
-
 	/**
 	 * Get properties.
 	 *
@@ -203,18 +132,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		return this.properties;
 	}
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
-
-	public long getLastRevision() {
-		return lastRevision;
-	}
-
-	public void setLastRevision(long lastRevision) {
-		this.lastRevision = lastRevision;
-	}
-
+	@SuppressWarnings("UnusedDeclaration")
 	public int getValidated() {
 		String validateValue = this.getProperties().getOrDefault("validated", "0");
 		if (NumberUtils.isNumber(validateValue)) {

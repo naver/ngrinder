@@ -74,10 +74,16 @@ dependencies {
     compile (group: "com.hazelcast", name: "hazelcast", version: hazelcast_version)
     compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
 
+    compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+
     providedRuntime (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: spring_boot_version)
 
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
     testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: spring_boot_version)
+
+    testCompileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    testAnnotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
 }
 
 

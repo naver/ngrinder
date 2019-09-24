@@ -13,16 +13,18 @@
  */
 package org.ngrinder.perftest.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 
 /**
  * Current running perf test info of {@link PerfTest} per user.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings("UnusedDeclaration")
+@Getter
+@Setter
 public class PerfTestStatistics {
 	private User user;
 	private int agentCount;
@@ -47,29 +49,5 @@ public class PerfTestStatistics {
 	public void addPerfTest(PerfTest perfTest) {
 		testCount++;
 		agentCount += perfTest.getAgentCount();
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public int getAgentCount() {
-		return agentCount;
-	}
-
-	public void setAgentCount(int agentCount) {
-		this.agentCount = agentCount;
-	}
-
-	public int getTestCount() {
-		return testCount;
-	}
-
-	public void setTestCount(int testCount) {
-		this.testCount = testCount;
 	}
 }
