@@ -2,32 +2,32 @@ var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var VueLoaderPlugin = require('vue-loader/lib/plugin');
-var webpack = require("webpack");
+var webpack = require('webpack');
 
-var outputDir = path.resolve("../ngrinder-controller/build/classes/main/static");
+var outputDir = path.resolve('../ngrinder-controller/build/classes/main/static');
 
 var argv = require('yargs').argv;
 var productionBuild = argv.p || false;
 var devMode = process.env.NODE_ENV !== 'production';
 
 if (productionBuild) {
-    console.log("### production build is enabled. ga is included and javascript is optmized\r");
+    console.log('### production build is enabled. ga is included and javascript is optmized\r');
 } else {
-    console.log("### production build is disabled.\r");
+    console.log('### production build is disabled.\r');
 }
 
 if (argv.w || argv.watch) {
-    console.log("### watch is enabled");
+    console.log('### watch is enabled');
 }
 // If we omit the following line, the env var for module.exports will be undefined. It's weired.
-console.log("### passed env is " + JSON.stringify(argv.env));
+console.log('### passed env is ' + JSON.stringify(argv.env));
 
 module.exports = function (env) {
-    var ngrinderVersion = "3.5.0-SNAPSHOT";
+    var ngrinderVersion = '3.5.0-SNAPSHOT';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
     }
-    console.log("### frontend version is " + ngrinderVersion + "\r");
+    console.log('### frontend version is ' + ngrinderVersion + '\r');
 
     var webpackConfig = {
         mode: 'production',
@@ -39,18 +39,18 @@ module.exports = function (env) {
         },
         output: {
             path: outputDir,
-            publicPath: "/",
-            filename: "./js/[name].js",
+            publicPath: '/',
+            filename: './js/[name].js',
             chunkFilename: './js/[name].bundle.js',
         },
         resolve: {
             modules: [
-                path.join(__dirname, "src/js"),
-                "./src/js/components",
-                "./src/js/modules",
-                "node_modules",
-                "./src/less",
-                path.join(__dirname, "./../ngrinder-controller/src/main/resources"),
+                path.join(__dirname, 'src/js'),
+                './src/js/components',
+                './src/js/modules',
+                'node_modules',
+                './src/less',
+                path.join(__dirname, './../ngrinder-controller/src/main/resources'),
             ],
             alias: {
                 'vue$': 'vue/dist/vue.esm.js',
@@ -69,14 +69,14 @@ module.exports = function (env) {
                 },
                 {
                     test: /.properties$/,
-                    loader: "java-properties-flat-loader",
+                    loader: 'java-properties-flat-loader',
                 },
                 {
                     test: /\.js$/,
                     exclude: [/node_modules/, /3rd-party/],
                     loader: 'babel-loader?cacheDirectory=true',
                     query: {
-                        presets: ['es2015', 'es2017', "stage-0"],
+                        presets: ['es2015', 'es2017', 'stage-0'],
                         plugins: ['transform-decorators-legacy'],
                     },
                 },
@@ -166,7 +166,7 @@ module.exports = function (env) {
                 options: {
                     context: __dirname,
                     htmlLoader: {
-                        ignoreCustomFragments: "[/\{\{.*?}}/]",
+                        ignoreCustomFragments: '[/\{\{.*?}}/]',
                     },
                 },
             }),
@@ -177,10 +177,10 @@ module.exports = function (env) {
     };
 
     if (!productionBuild) {
-        console.log("### sourcemap is enabled.\r");
+        console.log('### sourcemap is enabled.\r');
         webpackConfig.devtool = "#inline-source-map";
     } else {
-        console.log("### sourcemap is disabled.\r");
+        console.log('### sourcemap is disabled.\r');
     }
 
     return webpackConfig;
