@@ -8,6 +8,7 @@
                :value="value"
                v-validate="validationRules"
                class="form-control"
+               ref="input"
                @input="$emit('input', $event.target.value)"
                @change="$emit('change')"
                @focus="$emit('focus')"/>
@@ -63,6 +64,10 @@
 
         get inputType() {
             return this.type ? this.type : 'text';
+        }
+
+        focus() {
+            this.$refs.input.focus();
         }
     }
 
