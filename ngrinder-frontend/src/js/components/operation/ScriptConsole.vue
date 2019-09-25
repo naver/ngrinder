@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <vue-headful :title="i18n('operation.script.title')"/>
         <fieldset>
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('navigator.dropDown.scriptConsole')"></span>
@@ -23,11 +24,13 @@
 
     import { codemirror } from 'vue-codemirror';
     import Component from 'vue-class-component';
+    import VueHeadful from 'vue-headful';
+
     import Base from '../Base.vue';
 
     @Component({
         name: 'scriptConsole',
-        components: { codemirror },
+        components: { codemirror, VueHeadful },
     })
     export default class ScriptConsole extends Base {
         result = 'You can write groovy code to monitor the ngrinder internal state.\n' +

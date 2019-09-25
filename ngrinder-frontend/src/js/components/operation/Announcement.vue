@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <vue-headful :title="i18n('operation.announcement.title')"/>
         <fieldset class="mb-0">
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('navigator.dropDown.announcement')"></span>
@@ -23,14 +24,15 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
-    import Base from '../Base.vue';
+    import VueHeadful from 'vue-headful';
 
+    import Base from '../Base.vue';
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'announcement',
-        components: { CodeMirror },
+        components: { CodeMirror, VueHeadful },
     })
     export default class Announcement extends Mixins(Base, MessagesMixin) {
         originContent = '';
