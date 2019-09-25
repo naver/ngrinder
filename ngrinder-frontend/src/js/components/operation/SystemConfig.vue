@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <vue-headful :title="i18n('operation.config.title')"/>
         <fieldset>
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('navigator.dropDown.systemConfig')"></span>
@@ -23,12 +24,14 @@
 
     import { codemirror } from 'vue-codemirror';
     import Component from 'vue-class-component';
+    import VueHeadful from 'vue-headful';
+
     import Base from '../Base.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'systemConfig',
-        components: { codemirror },
+        components: { codemirror, VueHeadful },
     })
     export default class SystemConfig extends Mixins(Base, MessagesMixin) {
         cmOptions = {

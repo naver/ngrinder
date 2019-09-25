@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <vue-headful :title="i18n('agent.title')"></vue-headful>
         <fieldSet>
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('agent.list.title')"></span>
@@ -99,13 +100,15 @@
     import _ from 'lodash';
     import Vuetable from 'vuetable-2';
     import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue';
+    import VueHeadful from 'vue-headful';
+
     import Base from '../Base.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'agentList',
-        components: { Vuetable, VuetablePagination },
+        components: { Vuetable, VuetablePagination, VueHeadful },
     })
     export default class AgentList extends Mixins(Base, MessagesMixin, TableConfig) {
         agents = [];
