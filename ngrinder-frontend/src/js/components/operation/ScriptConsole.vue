@@ -10,27 +10,21 @@
                 </button>
             </legend>
         </fieldset>
-        <codemirror ref="editor" :options="cmOptions"></codemirror>
+        <code-mirror ref="editor"></code-mirror>
         <pre class="rounded border" v-text="result"></pre>
     </div>
 </template>
 
 <script>
-    import 'codemirror/mode/groovy/groovy.js';
-    import 'codemirror/addon/display/fullscreen.js';
-    import 'codemirror/addon/dialog/dialog.js';
-    import 'codemirror/addon/search/search.js';
-    import 'codemirror/addon/selection/active-line.js';
-
-    import { codemirror } from 'vue-codemirror';
     import Component from 'vue-class-component';
     import VueHeadful from 'vue-headful';
 
     import Base from '../Base.vue';
+    import CodeMirror from '../common/CodeMirror.vue';
 
     @Component({
         name: 'scriptConsole',
-        components: { codemirror, VueHeadful },
+        components: { CodeMirror, VueHeadful },
     })
     export default class ScriptConsole extends Base {
         result = 'You can write groovy code to monitor the ngrinder internal state.\n' +
@@ -56,30 +50,6 @@
             '\n' +
             'please refer nGrinder javadoc to find out more APIs on the given variables.\n';
 
-        cmOptions = {
-            mode: 'groovy',
-            theme: 'eclipse',
-            line: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            indentUnit: 4,
-            tabSize: 4,
-            indentWithTabs: true,
-            smartIndent: false,
-            visibleTab: true,
-            readOnly: false,
-            styleActiveLine: true,
-            extraKeys: {
-                'F11': function(cm) {
-                    cm.setOption('fullScreen', !cm.getOption('fullScreen'));
-                },
-                'Esc': function(cm) {
-                    if (cm.getOption('fullScreen')) cm.setOption('fullScreen', false);
-                },
-                Tab: 'indentMore',
-            },
-        };
-
         mounted() {
             this.codemirror.setSize(null, 400);
         }
@@ -102,14 +72,6 @@
     }
 </script>
 <style lang="less" scoped>
-    @import '~codemirror/lib/codemirror.css';
-    @import '~codemirror/theme/eclipse.css';
-    @import '~codemirror/addon/display/fullscreen.css';
-    @import '~codemirror/addon/dialog/dialog.css';
-
-    .CodeMirror {
-        border: 1px solid #dddddd;
-    }
 
     pre {
         height: 250px;
@@ -119,10 +81,6 @@
         overflow-y: scroll;
         font-size: 12px;
         background-color: #f5f5f5;
-    }
-
-    .cm-tab {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=) no-repeat right;
     }
 
     button {
