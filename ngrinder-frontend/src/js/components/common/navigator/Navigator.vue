@@ -19,7 +19,11 @@
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <user-menu class="nav-link" @showUserProfileModal="showUserProfileModal = true"
+                        <a data-toggle="dropdown" class="dropdown-toggle pointer-cursor">
+                            <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name}(${ngrinder.currentUser.factualUser.name})`"></span>
+                            <span v-else v-text="ngrinder.currentUser.name"></span>
+                        </a>
+                        <user-menu class="user-menu" @showUserProfileModal="showUserProfileModal = true"
                                    @showUserSwitchModal="$refs.userSwitchModal.show()">
                         </user-menu>
                     </li>
@@ -32,7 +36,7 @@
         </nav>
         <announcement></announcement>
         <user-switch-modal ref="userSwitchModal"></user-switch-modal>
-        <user-profile-modal v-if="showUserProfileModal" @hidden="showUserProfileModal = false"  ref="userProfileModal"></user-profile-modal>
+        <user-profile-modal v-if="showUserProfileModal" @hidden="showUserProfileModal = false" ref="userProfileModal"></user-profile-modal>
     </header>
 </template>
 
@@ -93,8 +97,24 @@
                     }
 
                     a {
+                        &:hover {
+                            color: white !important;
+                        }
                         padding: 10px 15px 10px;
                     }
+
+                    &.show {
+                        a {
+                            color: white;
+                        }
+                        background-color: #111111;
+                    }
+                }
+
+                .user-menu {
+                    position: relative;
+                    top: 20px;
+                    left: -60px;
                 }
             }
         }
@@ -104,9 +124,6 @@
 
             a {
                 color: #999;
-                &.active, &:hover {
-                    color: white;
-                }
             }
         }
     }

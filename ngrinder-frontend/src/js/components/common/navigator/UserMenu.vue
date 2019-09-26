@@ -1,7 +1,5 @@
 <template>
-    <a data-toggle="dropdown" class="dropdown dropdown-toggle pointer-cursor">
-        <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name}(${ngrinder.currentUser.factualUser.name})`"></span>
-        <span v-else v-text="ngrinder.currentUser.name"></span>
+    <li class="dropdown">
         <ul class="dropdown-menu">
             <template v-if="ngrinder.config.userSwitchMode">
                 <li>
@@ -71,7 +69,7 @@
                 <a class="dropdown-item" :href="`${contextPath}/logout`" v-text="i18n('navigator.dropDown.logout')"></a>
             </li>
         </ul>
-    </a>
+    </li>
 </template>
 
 <script>
@@ -94,11 +92,6 @@
 
 <style lang="less" scoped>
     .dropdown {
-        .dropdown-toggle {
-            &:hover {
-                color: white;
-            }
-        }
 
         .dropdown-item {
             cursor: pointer;
