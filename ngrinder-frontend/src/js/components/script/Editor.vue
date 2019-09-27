@@ -149,7 +149,8 @@
                         confirm: { label: this.i18n('common.button.ok') },
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
-                    callback: result => (result ? (window.onbeforeunload = null & next()) : next(false)),
+                    onConfirm: () => window.onbeforeunload = null & next(),
+                    onCancel: () => next(false),
                 });
             } else {
                 window.onbeforeunload = null;
@@ -210,11 +211,7 @@
                         confirm: { label: this.i18n('common.button.ok') },
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
-                    callback: result => {
-                        if (result) {
-                            this.saveScript();
-                        }
-                    },
+                    onConfirm: this.saveScript,
                 });
             } else {
                 this.saveScript();

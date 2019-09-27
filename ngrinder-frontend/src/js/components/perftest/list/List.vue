@@ -6,8 +6,10 @@
             <code v-text="runningSummary"></code>
         </div>
 
-        <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter" @create="$router.push('/perftest/new')"
-                    @search="updateTableWithUrl" @change-tag="updateTableWithUrl" @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))"></search-bar>
+        <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter"
+                    @create="$router.push('/perftest/new')"
+                    @search="updateTableWithUrl" @change-tag="updateTableWithUrl"
+                    @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))"></search-bar>
         <vuetable
             v-show="showTable"
             ref="vuetable"
@@ -329,8 +331,8 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result && ids) {
+                onConfirm: () => {
+                    if (ids) {
                         this.$http.delete('/perftest/api', {
                             params: {
                                 ids,
@@ -353,15 +355,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result) {
-                        this.$http.put(`/perftest/api/${id}?action=stop`).then(res => {
-                            if (res.data.success) {
-                                this.showSuccessMsg(this.i18n('perfTest.message.stop.success'));
-                            }
-                        }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error')));
-                    }
-                },
+                onConfirm: () => this.$http.put(`/perftest/api/${id}?action=stop`)
+                    .then(() => this.showSuccessMsg(this.i18n('perfTest.message.stop.success')))
+                    .catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error'))),
             });
         }
 

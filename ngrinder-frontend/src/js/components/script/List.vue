@@ -159,14 +159,8 @@
                         confirm: { label: this.i18n('common.button.ok') },
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
-                    callback: result => {
-                        if (!result) {
-                            return;
-                        }
-
-                        this.$http.post('/script/api/delete', this.$refs.vuetable.selectedTo)
-                            .then(() => this.refreshScriptList());
-                    },
+                    onConfirm: () => this.$http.post('/script/api/delete', this.$refs.vuetable.selectedTo)
+                        .then(() => this.refreshScriptList()),
                 });
             }
         }
