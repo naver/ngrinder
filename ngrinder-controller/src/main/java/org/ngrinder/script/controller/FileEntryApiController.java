@@ -105,14 +105,13 @@ public class FileEntryApiController {
 	}
 
 	/**
-	 * Save a fileEntry and return to the the path.
+	 * Save a fileEntry.
 	 *
 	 * @param user                 current user
 	 * @param fileSaveParams       model for params
-	 * @return basePath
 	 */
 	@PostMapping("/save/**")
-	public String save(User user, @RequestBody FileSaveParams fileSaveParams) {
+	public void save(User user, @RequestBody FileSaveParams fileSaveParams) {
 		FileEntry fileEntry = fileSaveParams.getFileEntry();
 
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
@@ -129,7 +128,6 @@ public class FileEntryApiController {
 			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libFolder"));
 			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourceFolder"));
 		}
-		return encodePathWithUTF8(basePath);
 	}
 
 	/**
