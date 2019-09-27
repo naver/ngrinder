@@ -132,24 +132,42 @@
         validationResultExpanded = false;
         validationResult = '';
 
-        saved = false;
-
         cmOptions = {};
 
         mounted() {
+            this.setConfirmBeforeLeave();
             this.initScriptDetail();
 
             $('[data-toggle="popover"]').popover();
         }
 
-        get basePath() {
-            const getBaseDirectory = s => s.substring(0, s.lastIndexOf('/'));
-
-            return getBaseDirectory(this.$route.path.replace('/script/detail/', ''));
+        beforeRouteLeave(to, from, next) {
+            if (this.contentChanged()) {
+                this.$bootbox.confirm({
+                    message: this.i18n('script.editor.message.exitWithoutSave'),
+                    buttons: {
+                        confirm: { label: this.i18n('common.button.ok') },
+                        cancel: { label: this.i18n('common.button.cancel') },
+                    },
+                    callback: result => (result ? (window.onbeforeunload = null & next()) : next(false)),
+                });
+            } else {
+                window.onbeforeunload = null;
+                next();
+            }
         }
 
-        get breadcrumbPathUrl() {
-            return ['/script/list', ...this.basePath.split('/')];
+        setConfirmBeforeLeave() {
+            window.onbeforeunload = () => {
+                if (this.contentChanged()) {
+                    return this.i18n('script.editor.message.exitWithoutSave');
+                }
+                return null;
+            };
+        }
+
+        contentChanged() {
+            return this.$refs.editor.getValue() !== this.file.content;
         }
 
         initScriptDetail() {
@@ -181,8 +199,7 @@
         }
 
         save() {
-            const newContent = this.$refs.editor.getValue();
-            if (this.file.content !== newContent) {
+            if (this.contentChanged()) {
                 this.validated = false;
             }
 
@@ -217,9 +234,9 @@
             };
 
             this.$http.post('/script/api/save', params)
-            .then(res => {
-                this.saved = true;
-                this.$router.push(`/script/list/${res.data}`);
+            .then(() => {
+                this.showSuccessMsg(this.i18n('common.message.alert.save.success'));
+                this.file.content = this.$refs.editor.getValue();
             })
             .catch(() => this.showErrorMsg(this.i18n('script.message.save.error')));
         }
@@ -283,37 +300,14 @@
             }
         }
 
-        changed() {
-            return this.$refs.editor.getValue() !== this.file.content;
+        get basePath() {
+            const getBaseDirectory = s => s.substring(0, s.lastIndexOf('/'));
+
+            return getBaseDirectory(this.$route.path.replace('/script/detail/', ''));
         }
 
-        beforeRouteLeave(to, from, next) {
-            if (!this.saved && this.changed()) {
-                this.$bootbox.confirm({
-                    message: this.i18n('script.editor.message.exitWithoutSave'),
-                    buttons: {
-                        confirm: { label: this.i18n('common.button.ok') },
-                        cancel: { label: this.i18n('common.button.cancel') },
-                    },
-                    callback: result => (result ? (window.onbeforeunload = null & next()) : next(false)),
-                });
-            } else {
-                window.onbeforeunload = null;
-                next();
-            }
-        }
-
-        beforeMount() {
-            window.onbeforeunload = () => {
-                if (!this.changed()) {
-                    return null;
-                }
-                return this.i18n('script.editor.message.exitWithoutSave');
-            };
-        }
-
-        beforeDestroy() {
-            window.onbeforeunload = null;
+        get breadcrumbPathUrl() {
+            return ['/script/list', ...this.basePath.split('/')];
         }
 
         get showValidationResult() {
