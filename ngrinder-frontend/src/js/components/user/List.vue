@@ -191,13 +191,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result) {
-                        this.$http.delete('/user/api/', { params: { userIds } })
-                            .then(this.$refs.vuetable.refresh)
-                            .catch(() => this.showErrorMsg(this.i18n('user.message.delete.error')));
-                    }
-                },
+                onConfirm: () => this.$http.delete('/user/api/', { params: { userIds } })
+                    .then(this.$refs.vuetable.refresh)
+                    .catch(() => this.showErrorMsg(this.i18n('user.message.delete.error'))),
             });
         }
 
