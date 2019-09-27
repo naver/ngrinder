@@ -193,15 +193,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result) {
-                        this.$http.put(`/perftest/api/${this.test.id}?action=stop`).then(res => {
-                            if (res.data.success) {
-                                this.showSuccessMsg(this.i18n('perfTest.message.stop.success'));
-                            }
-                        }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error')));
-                    }
-                },
+                onConfirm: () => this.$http.put(`/perftest/api/${this.test.id}?action=stop`)
+                    .then(() => this.showSuccessMsg(this.i18n('perfTest.message.stop.success')))
+                    .catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error'))),
             });
         }
 

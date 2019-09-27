@@ -217,13 +217,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result) {
-                        this.$http.put('/agent/api?action=update', null, this.getParams())
-                            .then(() => this.showSuccessMsg(this.i18n('agent.message.update.success')))
-                            .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error')));
-                    }
-                },
+                onConfirm: () => this.$http.put('/agent/api?action=update', null, this.getParams())
+                    .then(() => this.showSuccessMsg(this.i18n('agent.message.update.success')))
+                    .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error'))),
             });
             $confirm.children('.modal-body').addClass('error-color');
         }
@@ -235,13 +231,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result) {
-                        this.$http.post('/agent/api?action=cleanup', null, this.getParams())
-                            .then(() => this.showSuccessMsg(this.i18n('agent.message.cleanup.success')))
-                            .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error')));
-                    }
-                },
+                onConfirm: () => this.$http.post('/agent/api?action=cleanup', null, this.getParams())
+                    .then(() => this.showSuccessMsg(this.i18n('agent.message.cleanup.success')))
+                    .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error'))),
             });
         }
 
@@ -262,13 +254,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                callback: result => {
-                    if (result) {
-                        this.$http.put('/agent/api?action=stop', null, this.getParams())
-                            .then(() => this.showSuccessMsg(this.i18n('agent.message.stop.success')))
-                            .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error')));
-                    }
-                },
+                onConfirm: () => this.$http.put('/agent/api?action=stop', null, this.getParams())
+                    .then(() => this.showSuccessMsg(this.i18n('agent.message.stop.success')))
+                    .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error'))),
             });
             $confirm.children('.modal-body').addClass('error-color');
         }

@@ -31,7 +31,7 @@ import Messages from 'common/Messages.vue';
 
 import VeeValidateInitializer from 'vee-validate-initializer.js';
 import Utils from 'utils.js';
-import bootbox from 'bootbox';
+import BootBox from 'boot-box.js';
 
 import 'moment-duration-format';
 import 'moment-timezone';
@@ -65,7 +65,7 @@ Vue.use(VueRouter);
 Vue.use(VeeValidate, {inject: false});
 Vue.use(bFormSlider);
 
-Vue.prototype.$bootbox = bootbox;
+Vue.prototype.$bootbox = BootBox;
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axiosInstance;
 Vue.prototype.$utils = Utils;
