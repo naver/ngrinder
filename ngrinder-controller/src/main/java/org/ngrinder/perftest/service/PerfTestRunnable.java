@@ -96,19 +96,9 @@ public class PerfTestRunnable implements ControllerConstants {
 		// Clean up db first.
 		doFinish(true);
 
-		this.startRunnable = new Runnable() {
-			@Override
-			public void run() {
-				startPeriodically();
-			}
-		};
+		this.startRunnable = this::startPeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTask(startRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
-		this.finishRunnable = new Runnable() {
-			@Override
-			public void run() {
-				finishPeriodically();
-			}
-		};
+		this.finishRunnable = this::finishPeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTask(finishRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
 
 	}

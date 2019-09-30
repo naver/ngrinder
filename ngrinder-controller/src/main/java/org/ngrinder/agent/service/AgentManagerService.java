@@ -71,12 +71,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	@PostConstruct
 	public void init() {
-		runnable = new Runnable() {
-			@Override
-			public void run() {
-				checkAgentStatePeriodically();
-			}
-		};
+		runnable = this::checkAgentStatePeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(runnable, 1000);
 	}
 

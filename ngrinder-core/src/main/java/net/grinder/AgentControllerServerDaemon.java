@@ -30,11 +30,11 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
@@ -108,11 +108,7 @@ public class AgentControllerServerDaemon {
 	 * Start {@link AgentControllerServer} in the daemon thread.
 	 */
 	public void start() {
-		thread = new Thread(new Runnable() {
-			public void run() {
-				startSync();
-			}
-		});
+		thread = new Thread(this::startSync);
 		thread.setName("Agent controller server thread");
 		thread.setDaemon(true);
 		thread.start();

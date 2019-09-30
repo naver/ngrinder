@@ -30,13 +30,13 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
 
@@ -49,9 +49,9 @@ import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
 public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private final ConsoleCommunication m_consoleCommunication;
-	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<AgentIdentity, AgentStatus>();
-	private final ListenerSupport<Listener> m_listeners = new ListenerSupport<Listener>();
-	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<LogArrivedListener>();
+	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<>();
+	private final ListenerSupport<Listener> m_listeners = new ListenerSupport<>();
+	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<>();
 	private AgentDownloadRequestListener m_agentDownloadListener;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
@@ -162,7 +162,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
 			public void inform(Listener l) {
-				l.update(new ConcurrentHashMap<AgentIdentity, AgentStatus>(m_agentMap));
+				l.update(new ConcurrentHashMap<>(m_agentMap));
 			}
 		});
 	}
@@ -190,7 +190,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 */
 	private void purge(Map<? extends ProcessIdentity, ? extends Purgable> purgableMap) {
 
-		final Set<ProcessIdentity> zombies = new HashSet<ProcessIdentity>();
+		final Set<ProcessIdentity> zombies = new HashSet<>();
 
 		for (Entry<? extends ProcessIdentity, ? extends Purgable> entry : purgableMap.entrySet()) {
 			if (entry.getValue().shouldPurge()) {
@@ -389,7 +389,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		count = count == 0 ? Integer.MAX_VALUE : count;
 		synchronized (m_agentMap) {
 			int i = 0;
-			Set<AgentIdentity> agents = new HashSet<AgentIdentity>();
+			Set<AgentIdentity> agents = new HashSet<>();
 			for (Map.Entry<AgentIdentity, AgentStatus> each : m_agentMap.entrySet()) {
 				if (each.getValue().getAgentControllerState().equals(state) && ++i <= count) {
 					agents.add(each.getKey());
@@ -467,7 +467,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
 		Set<AgentStatus> statusSet = newLinkedHashSet();
 		for (Entry<AgentIdentity, AgentStatus> each : m_agentMap.entrySet()) {
-			if (predicate.apply(each.getValue())) {
+			if (predicate.test(each.getValue())) {
 				statusSet.add(each.getValue());
 			}
 		}
