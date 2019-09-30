@@ -71,12 +71,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	@PostConstruct
 	public void init() {
-		runnable = new Runnable() {
-			@Override
-			public void run() {
-				checkAgentStatePeriodically();
-			}
-		};
+		runnable = this::checkAgentStatePeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(runnable, 1000);
 	}
 
@@ -194,7 +189,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 		int maxAgentSizePerConsole = getMaxAgentSizePerConsole();
 		availableShareAgents = (Math.min(availableShareAgents, maxAgentSizePerConsole));
-		Map<String, MutableInt> result = new HashMap<String, MutableInt>(1);
+		Map<String, MutableInt> result = new HashMap<>(1);
 		result.put(Config.NONE_REGION, new MutableInt(availableShareAgents + availableUserOwnAgent));
 		return result;
 	}

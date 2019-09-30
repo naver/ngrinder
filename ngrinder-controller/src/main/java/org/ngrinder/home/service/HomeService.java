@@ -84,7 +84,7 @@ public class HomeService {
 		XmlReader reader = null;
 		HttpURLConnection feedConnection = null;
 		try {
-			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
+			List<PanelEntry> panelEntries = new ArrayList<>();
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
 			feedConnection.setConnectTimeout(8000);

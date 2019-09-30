@@ -17,14 +17,12 @@ import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 
-import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 
 import org.ngrinder.extension.OnPeriodicWorkingAgentCheckRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
-import org.python.google.common.base.Predicate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -57,13 +55,7 @@ public class PeriodicWorkingAgentCheckService implements Runnable {
 
 	@Override
 	public void run() {
-		Set<AgentStatus> workingAgents = agentManager
-				.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
-					@Override
-					public boolean apply(AgentStatus agentStatus) {
-						return agentStatus.getConnectingPort() != 0;
-					}
-				});
+		Set<AgentStatus> workingAgents = agentManager.getAgentStatusSet(agentStatus -> agentStatus.getConnectingPort() != 0);
 		for (OnPeriodicWorkingAgentCheckRunnable runnable : pluginManager
 				.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
 			runnable.checkWorkingAgent(workingAgents);

@@ -82,8 +82,6 @@ public class AgentDieHardListener implements SamplingLifeCycleListener, Runnable
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-
-
 	}
 
 	@Override

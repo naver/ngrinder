@@ -105,7 +105,6 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 		mBeanClient.disconnect();
 	}
 
-
 	public SystemInfo getSystemInfo() {
 		return systemInfo;
 	}
