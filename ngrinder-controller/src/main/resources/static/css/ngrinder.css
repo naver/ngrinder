@@ -10,19 +10,19 @@ body > .container {
 }
 
 thead tr th {
-    background-color: #eeeeee !important;
+	background-color: #eeeeee !important;
 }
 
 #wrap {
-    min-height: 100%;
-    height: auto !important;
-    margin: 0 auto -40px;
+	min-height: 100%;
+	height: auto !important;
+	margin: 0 auto -40px;
 }
 
 #foot_div.container:before, .container:after {
-    display: table;
-    line-height: 0;
-    content: "";
+	display: table;
+	line-height: 0;
+	content: "";
 }
 
 .navbar .brand {
@@ -72,7 +72,7 @@ h1, h2, h3, h4  {
 .form-horizontal-2 .control-label {
 	width: 110px;
 	text-align: left;
-    padding-top:0;
+	padding-top:0;
 }
 
 .form-horizontal-2 .controls {
@@ -164,15 +164,15 @@ table.ellipsis td.ellipsis {
 *:first-child+html .table TH {padding-left:2px;padding-right:2px}
 
 .message-div {
-    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-    left: 50%;
-    margin-left: -280px;
-    overflow: auto;
-    position: fixed;
-    top: 40%;
-    width: 540px;
-    z-index: 1050;
-    opacity:0.9
+	box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+	left: 50%;
+	margin-left: -280px;
+	overflow: auto;
+	position: fixed;
+	top: 40%;
+	width: 540px;
+	z-index: 1050;
+	opacity:0.9
 }
 
 .hidden {
@@ -192,7 +192,7 @@ table td.center {
 }
 
 table th.center {
-    text-align: center
+	text-align: center
 }
 
 .center {
@@ -204,15 +204,15 @@ table th.center {
 }
 
 .select2-search-choice div {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .select2-result-label {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .header-control-label {
@@ -229,23 +229,23 @@ table th.center {
 }
 
 .left-float {
- 	float: left ;
+	float: left ;
 }
 
 .right-float {
-    float: right ;
+	float: right ;
 }
 
 div.ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 span.ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 legend {
@@ -286,13 +286,13 @@ legend a {
 	line-height: 12px;
 	margin-bottom:-10px;
 	width:330px;
-    padding-left: 0;
-    margin-top: 2px;
+	padding-left: 0;
+	margin-top: 2px;
 }
 
 .small-error-box span.help-inline {
-    height: 15px;
-    padding-left:0;
+	height: 15px;
+	padding-left:0;
 }
 
 hr.small {

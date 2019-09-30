@@ -54,12 +54,12 @@ public class TagService {
 	@Transactional
 	public SortedSet<Tag> addTags(User user, String[] tags) {
 		if (ArrayUtils.isEmpty(tags)) {
-			return new TreeSet<Tag>();
+			return new TreeSet<>();
 		}
 
 		Specification<Tag> spec = Specification.where(lastModifiedOrCreatedBy(user)).and(valueIn(tags));
 		List<Tag> foundTags = tagRepository.findAll(spec);
-		SortedSet<Tag> allTags = new TreeSet<Tag>(foundTags);
+		SortedSet<Tag> allTags = new TreeSet<>(foundTags);
 		for (String each : tags) {
 			Tag newTag = new Tag(StringUtils.trimToEmpty(StringUtils.replace(each, ",", "")));
 			if (allTags.contains(newTag)) {
@@ -96,7 +96,7 @@ public class TagService {
 	 * @return found tag string lists
 	 */
 	public List<String> getAllTagStrings(User user, String query) {
-		List<String> allString = new ArrayList<String>();
+		List<String> allString = new ArrayList<>();
 		for (Tag each : getAllTags(user, query)) {
 			allString.add(each.getTagValue());
 		}

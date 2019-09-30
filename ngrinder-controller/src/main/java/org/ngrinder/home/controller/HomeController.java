@@ -132,7 +132,7 @@ public class HomeController implements ControllerConstants {
 				LOG.error("Details : ", e);
 			}
 		}
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("current", regionService.getCurrent());
 		map.put("regions", regionService.getAll());
 		return map;

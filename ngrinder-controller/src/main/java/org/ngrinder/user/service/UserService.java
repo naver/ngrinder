@@ -184,7 +184,7 @@ public class UserService extends AbstractUserService {
 
 
 	private List<User> getFollowers(String followersStr) {
-		List<User> newShareUsers = new ArrayList<User>();
+		List<User> newShareUsers = new ArrayList<>();
 		String[] userIds = StringUtils.split(StringUtils.trimToEmpty(followersStr), ',');
 		for (String userId : userIds) {
 			User shareUser = userRepository.findOneByUserId(userId.trim());

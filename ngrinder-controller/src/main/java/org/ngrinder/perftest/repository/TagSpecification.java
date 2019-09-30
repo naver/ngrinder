@@ -40,12 +40,7 @@ public abstract class TagSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> valueIn(final String[] values) {
-		return new Specification<Tag>() {
-			@Override
-			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("tagValue").in((Object[]) values);
-			}
-		};
+		return (Specification<Tag>) (root, query, cb) -> root.get("tagValue").in((Object[]) values);
 	}
 
 	/**
@@ -56,12 +51,7 @@ public abstract class TagSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> lastModifiedOrCreatedBy(final User user) {
-		return new Specification<Tag>() {
-			@Override
-			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.or(cb.equal(root.get("lastModifiedUser"), user), cb.equal(root.get("createdUser"), user));
-			}
-		};
+		return (Specification<Tag>) (root, query, cb) -> cb.or(cb.equal(root.get("lastModifiedUser"), user), cb.equal(root.get("createdUser"), user));
 	}
 
 	/**
@@ -70,13 +60,10 @@ public abstract class TagSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> hasPerfTest() {
-		return new Specification<Tag>() {
-			@Override
-			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				SetJoin<Object, Object> join = root.joinSet("perfTests");
-				query.groupBy(root.get("id"));
-				return join.get("id").isNotNull();
-			}
+		return (Specification<Tag>) (root, query, cb) -> {
+			SetJoin<Object, Object> join = root.joinSet("perfTests");
+			query.groupBy(root.get("id"));
+			return join.get("id").isNotNull();
 		};
 	}
 
@@ -87,13 +74,10 @@ public abstract class TagSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> isStartWith(final String queryString) {
-		return new Specification<Tag>() {
-			@Override
-			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
-				return cb.like(cb.lower(root.get("tagValue").as(String.class)),
-						StringUtils.lowerCase(replacedQueryString) + "%");
-			}
+		return (Specification<Tag>) (root, query, cb) -> {
+			String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
+			return cb.like(cb.lower(root.get("tagValue").as(String.class)),
+					StringUtils.lowerCase(replacedQueryString) + "%");
 		};
 	}
 

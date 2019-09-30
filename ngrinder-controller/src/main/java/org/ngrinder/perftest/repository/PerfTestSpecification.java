@@ -38,12 +38,7 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("status").in((Object[]) statuses);
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> root.get("status").in((Object[]) statuses);
 	}
 
 	/**
@@ -53,12 +48,9 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> hasTag(final String tagValue) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				SetJoin<Object, Object> join = root.joinSet("tags");
-				return cb.equal(join.get("tagValue"), tagValue);
-			}
+		return (Specification<PerfTest>) (root, query, cb) -> {
+			SetJoin<Object, Object> join = root.joinSet("tags");
+			return cb.equal(join.get("tagValue"), tagValue);
 		};
 	}
 
@@ -69,12 +61,7 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idSetEqual(final Long[] ids) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("id").in((Object[]) ids);
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> root.get("id").in((Object[]) ids);
 	}
 
 	/**
@@ -84,12 +71,7 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idEqual(final Long id) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.equal(root.get("id"), id);
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> cb.equal(root.get("id"), id);
 	}
 
 	/**
@@ -100,12 +82,7 @@ public abstract class PerfTestSpecification {
 	 * @since 3.1
 	 */
 	public static Specification<PerfTest> idRegionEqual(final String region) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.or(cb.equal(root.get("region"), region), cb.equal(root.get("region"), ""));
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> cb.or(cb.equal(root.get("region"), region), cb.equal(root.get("region"), ""));
 	}
 
 	/**
@@ -116,12 +93,7 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idEmptyPredicate() {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("id").isNotNull();
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> root.get("id").isNotNull();
 	}
 
 	/**
@@ -131,12 +103,7 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> scheduledTimeNotEmptyPredicate() {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("scheduledTime").isNotNull();
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> root.get("scheduledTime").isNotNull();
 	}
 
 	/**
@@ -146,13 +113,10 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> likeTestNameOrDescription(final String queryString) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				String queryStr = ("%" + queryString + "%").toLowerCase();
-				return cb.or(cb.like(cb.lower(root.get("testName").as(String.class)), queryStr),
-						cb.like(root.get("description").as(String.class), queryStr));
-			}
+		return (Specification<PerfTest>) (root, query, cb) -> {
+			String queryStr = ("%" + queryString + "%").toLowerCase();
+			return cb.or(cb.like(cb.lower(root.get("testName").as(String.class)), queryStr),
+					cb.like(root.get("description").as(String.class), queryStr));
 		};
 	}
 
@@ -163,12 +127,7 @@ public abstract class PerfTestSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> createdBy(final User user) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.or(cb.equal(root.get("createdUser"), user));
-			}
-		};
+		return (Specification<PerfTest>) (root, query, cb) -> cb.or(cb.equal(root.get("createdUser"), user));
 	}
 
 }

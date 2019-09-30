@@ -96,19 +96,9 @@ public class PerfTestRunnable implements ControllerConstants {
 		// Clean up db first.
 		doFinish(true);
 
-		this.startRunnable = new Runnable() {
-			@Override
-			public void run() {
-				startPeriodically();
-			}
-		};
+		this.startRunnable = this::startPeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTask(startRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
-		this.finishRunnable = new Runnable() {
-			@Override
-			public void run() {
-				finishPeriodically();
-			}
-		};
+		this.finishRunnable = this::finishPeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTask(finishRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
 
 	}
@@ -457,19 +447,19 @@ public class PerfTestRunnable implements ControllerConstants {
 				&& singleConsoleInUse.isCurrentRunningTimeOverDuration(perfTest.getDuration())) {
 			LOG.debug(
 					"Test {} is ready to finish. Current : {}, Planned : {}",
-					new Object[]{perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
-							perfTest.getDuration()});
+				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
+				perfTest.getDuration());
 			return true;
 		} else if (perfTest.isThresholdRunCount()
 				&& singleConsoleInUse.getCurrentExecutionCount() >= perfTest.getTotalRunCount()) {
 			LOG.debug("Test {} is ready to finish. Current : {}, Planned : {}",
-					new Object[]{perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
-							perfTest.getTotalRunCount()});
+				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
+				perfTest.getTotalRunCount());
 			return true;
 		} else if (singleConsoleInUse instanceof NullSingleConsole) {
 			LOG.debug("Test {} is ready to finish. Current : {}, Planned : {}",
-					new Object[]{perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
-							perfTest.getTotalRunCount()});
+				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
+				perfTest.getTotalRunCount());
 			return true;
 		}
 
