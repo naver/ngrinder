@@ -27,9 +27,7 @@ import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 import net.grinder.util.Pair;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -72,7 +70,9 @@ import javax.script.ScriptException;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constants.MonitorConstants.MONITOR_FILE_PREFIX;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
@@ -435,14 +435,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		for (PerfTest each : currentlyRunningTests) {
 			currentlyRunningTestOwners.add(each.getCreatedUser());
 		}
-		CollectionUtils.filter(perfTestLists, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				PerfTest perfTest = (PerfTest) object;
-				return !currentlyRunningTestOwners.contains(perfTest.getCreatedUser());
-			}
-		});
-		return perfTestLists;
+		return perfTestLists.stream()
+			.filter(perfTest -> !currentlyRunningTestOwners.contains(perfTest.getCreatedUser()))
+			.collect(toList());
 	}
 
 	@Override
@@ -521,14 +516,11 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		customClassPath.append(".");
 		if (libFolder.exists()) {
 			customClassPath.append(File.pathSeparator).append("lib");
-			libFolder.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator).append("lib/").append(name);
-					}
-					return true;
+			libFolder.list((dir, name) -> {
+				if (name.endsWith(".jar")) {
+					customClassPath.append(File.pathSeparator).append("lib/").append(name);
 				}
+				return true;
 			});
 		}
 		return customClassPath.toString();
@@ -1013,13 +1005,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@Override
 	public List<PerfTest> getAllStopRequested() {
 		final List<PerfTest> perfTests = getAll(null, config.getRegion(), getProcessingOrTestingTestStatus());
-		CollectionUtils.filter(perfTests, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				return (((PerfTest) object).getStopRequest() == Boolean.TRUE);
-			}
-		});
-		return perfTests;
+		return perfTests.stream()
+			.filter(PerfTest::getStopRequest)
+			.collect(toList());
 	}
 
 	/*
@@ -1474,13 +1462,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		FileFilter fileFilter = new WildcardFileFilter(key + "*.data");
 		File[] files = reportFolder.listFiles(fileFilter);
-		Arrays.sort(files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return FilenameUtils.getBaseName(o1.getName()).compareTo(FilenameUtils.getBaseName(o2.getName()));
-			}
-		});
-		return Arrays.asList(files);
+		return Arrays.stream(files)
+			.sorted(Comparator.comparing(o -> FilenameUtils.getBaseName(o.getName())))
+			.collect(toList());
 	}
 
 	/**

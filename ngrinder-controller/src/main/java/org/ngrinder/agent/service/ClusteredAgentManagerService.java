@@ -13,9 +13,6 @@
  */
 package org.ngrinder.agent.service;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -43,8 +40,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
 import static net.grinder.message.console.AgentControllerState.INACTIVE;
 import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
@@ -185,13 +184,10 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 
 	private List<AgentInfo> filterOnlyActiveRegion(List<AgentInfo> agents) {
 		final Set<String> regions = getRegions();
-		return Lists.newArrayList(Iterables.filter(agents,
-				new Predicate<AgentInfo>() {
-					@Override
-					public boolean apply(AgentInfo input) {
-						return input != null && regions.contains(extractRegionFromAgentRegion(input.getRegion()));
-					}
-				}));
+		return agents.stream()
+			.filter(Objects::nonNull)
+			.filter(agentInfo -> regions.contains(extractRegionKey(agentInfo.getRegion())))
+			.collect(toList());
 	}
 
 	/**

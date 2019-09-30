@@ -7,7 +7,6 @@ import org.ngrinder.script.model.FileEntry;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -34,12 +33,7 @@ public class ScriptHandlerFactory {
 	@PostConstruct
 	public void init() {
 		// Sort by the order of scriptHandlers..
-		Collections.sort(scriptHandlers, new Comparator<ScriptHandler>() {
-			@Override
-			public int compare(ScriptHandler o1, ScriptHandler o2) {
-				return o1.order().compareTo(o2.order());
-			}
-		});
+		scriptHandlers.sort(Comparator.comparing(ScriptHandler::order));
 
 		// Sort by the order of scriptHandlers..
 
@@ -49,12 +43,7 @@ public class ScriptHandlerFactory {
 				visibleHandlers.add(each);
 			}
 		}
-		Collections.sort(visibleHandlers, new Comparator<ScriptHandler>() {
-			@Override
-			public int compare(ScriptHandler o1, ScriptHandler o2) {
-				return o1.displayOrder().compareTo(o2.displayOrder());
-			}
-		});
+		visibleHandlers.sort(Comparator.comparing(ScriptHandler::displayOrder));
 
 	}
 

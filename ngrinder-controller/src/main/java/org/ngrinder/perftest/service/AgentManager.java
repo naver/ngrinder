@@ -19,7 +19,6 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentDownloadRequestListener;
-import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleCommunicationSetting;
@@ -40,7 +39,6 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -55,6 +53,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Predicate;
 
 /**
  * Agent manager.
@@ -140,12 +139,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @since 3.1.2
 	 */
 	public Set<AgentStatus> getAllAgentStatusSet() {
-		return agentControllerServerDaemon.getAgentStatusSet(new Predicate<AgentStatus>() {
-			@Override
-			public boolean apply(AgentStatus arg0) {
-				return true;
-			}
-		});
+		return agentControllerServerDaemon.getAgentStatusSet(agentStatus -> true);
 	}
 
 	/**
@@ -315,14 +309,14 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		}
 
 
-		Set<String> ips = new HashSet<String>();
+		Set<String> ips = new HashSet<>();
 
 		for (AgentInfo each : cachedLocalAgentService.getLocalAgents()) {
 			if (each.isApproved()) {
 				ips.add(each.getIp() + each.getName());
 			}
 		}
-		Set<AgentIdentity> approvedAgent = new HashSet<AgentIdentity>();
+		Set<AgentIdentity> approvedAgent = new HashSet<>();
 		for (AgentIdentity each : agents) {
 			if (ips.contains(((AgentControllerIdentityImplementation) each).getIp() + each.getName())) {
 				approvedAgent.add(each);
@@ -339,7 +333,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 */
 	public Set<AgentIdentity> filterSharedAgents(Set<AgentIdentity> agents) {
 
-		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
+		Set<AgentIdentity> userAgent = new HashSet<>();
 		for (AgentIdentity each : agents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
 
@@ -359,7 +353,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 */
 	public Set<AgentIdentity> filterUserAgents(Set<AgentIdentity> agents, String userId) {
 
-		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
+		Set<AgentIdentity> userAgent = new HashSet<>();
 		for (AgentIdentity each : agents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
 			if (StringUtils.endsWith(region, "owned_" + userId) || !StringUtils.contains(region, "owned_")) {
@@ -411,12 +405,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
 			execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
 			for (final AgentIdentity eachAgentIdentity : necessaryAgents) {
-				execService.submit(new Runnable() {
-					@Override
-					public void run() {
-						agentControllerServerDaemon.startAgent(grinderProperties, eachAgentIdentity);
-					}
-				});
+				execService.submit(() -> agentControllerServerDaemon.startAgent(grinderProperties, eachAgentIdentity));
 			}
 		} finally {
 			if (execService != null) {
@@ -434,7 +423,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return selected agent.
 	 */
 	public Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
-		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
+		Set<AgentIdentity> userAgent = new HashSet<>();
 		for (AgentIdentity each : allFreeAgents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
 			if (StringUtils.endsWith(region, "owned_" + user.getUserId())) {
@@ -497,12 +486,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return {@link AgentStatus} set
 	 */
 	public Set<AgentStatus> getAgentStatusSetConnectingToPort(final int singleConsolePort) {
-		return getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
-			@Override
-			public boolean apply(AgentStatus status) {
-				return status.getConnectingPort() == singleConsolePort;
-			}
-		});
+		return getAgentStatusSet(status -> status.getConnectingPort() == singleConsolePort);
 	}
 
 	@Override

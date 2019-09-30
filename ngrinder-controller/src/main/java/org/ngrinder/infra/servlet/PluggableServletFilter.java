@@ -57,23 +57,12 @@ public class PluggableServletFilter implements Filter {
 		this.compositeFilter.setFilters(enabledModulesByClass);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
-	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 		ServletException {
 		this.compositeFilter.doFilter(request, response, chain);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.Filter#destroy()
-	 */
 	@Override
 	public void destroy() {
 		this.compositeFilter.destroy();

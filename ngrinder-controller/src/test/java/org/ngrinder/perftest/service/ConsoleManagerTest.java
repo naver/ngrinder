@@ -30,6 +30,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.ngrinder.common.util.NoOp.noOp;
 
 public class ConsoleManagerTest extends AbstractAgentReadyTest {
 	@Autowired
@@ -69,15 +70,12 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 		elapseTime.stop();
 		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		// Let's try the case when console is returned back.
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(1000);
-					manager.returnBackConsole("test", lastConsole);
-				} catch (InterruptedException e) {
-				}
-
+		Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(1000);
+				manager.returnBackConsole("test", lastConsole);
+			} catch (InterruptedException e) {
+				noOp();
 			}
 		});
 		elapseTime = new StopWatch();

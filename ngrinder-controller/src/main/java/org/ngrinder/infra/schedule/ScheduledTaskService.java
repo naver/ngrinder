@@ -50,16 +50,11 @@ public class ScheduledTaskService implements IScheduledTaskService {
 
 
 	public void addFixedDelayedScheduledTaskInTransactionContext(final Runnable runnable, int delay) {
-		final Runnable transactionalRunnable = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					transactionService.runInTransaction(runnable);
-				} catch (IllegalStateException e) {
-					noOp();
-				} catch (BeanCreationNotAllowedException e) {
-					noOp();
-				}
+		final Runnable transactionalRunnable = () -> {
+			try {
+				transactionService.runInTransaction(runnable);
+			} catch (IllegalStateException | BeanCreationNotAllowedException e) {
+				noOp();
 			}
 		};
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(transactionalRunnable, delay);

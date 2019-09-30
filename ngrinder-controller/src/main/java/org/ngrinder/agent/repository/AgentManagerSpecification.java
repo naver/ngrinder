@@ -33,13 +33,10 @@ public abstract class AgentManagerSpecification {
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> startWithRegion(final String region) {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<String> regionField = root.get("region").as(String.class);
-				return cb.or(cb.like(regionField, region + "/_owned%", cb.literal('/')), cb.equal(regionField,
-						region));
-			}
+		return (Specification<AgentInfo>) (root, query, cb) -> {
+			Expression<String> regionField = root.get("region").as(String.class);
+			return cb.or(cb.like(regionField, region + "/_owned%", cb.literal('/')), cb.equal(regionField,
+					region));
 		};
 	}
 
@@ -49,14 +46,11 @@ public abstract class AgentManagerSpecification {
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> active() {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
-				return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
-						cb.notEqual(status, AgentControllerState.UNKNOWN),
-						cb.notEqual(status, AgentControllerState.WRONG_REGION));
-			}
+		return (Specification<AgentInfo>) (root, query, cb) -> {
+			Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
+			return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
+					cb.notEqual(status, AgentControllerState.UNKNOWN),
+					cb.notEqual(status, AgentControllerState.WRONG_REGION));
 		};
 	}
 
@@ -67,12 +61,9 @@ public abstract class AgentManagerSpecification {
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> visible() {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
-				return cb.notEqual(status, AgentControllerState.INACTIVE);
-			}
+		return (Specification<AgentInfo>) (root, query, cb) -> {
+			Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
+			return cb.notEqual(status, AgentControllerState.INACTIVE);
 		};
 	}
 	
@@ -83,14 +74,10 @@ public abstract class AgentManagerSpecification {
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> ready() {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query,
-				CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("state").as(
-					AgentControllerState.class);
-				return cb.and(cb.equal(status, AgentControllerState.READY));
-			}
+		return (Specification<AgentInfo>) (root, query, cb) -> {
+			Expression<AgentControllerState> status = root.get("state").as(
+				AgentControllerState.class);
+			return cb.and(cb.equal(status, AgentControllerState.READY));
 		};
 	}
 
@@ -101,12 +88,7 @@ public abstract class AgentManagerSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<AgentInfo> idEqual(final Long id) {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.equal(root.get("id"), id);
-			}
-		};
+		return (Specification<AgentInfo>) (root, query, cb) -> cb.equal(root.get("id"), id);
 	}
 	
 }
