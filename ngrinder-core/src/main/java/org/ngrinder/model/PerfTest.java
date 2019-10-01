@@ -19,8 +19,7 @@ import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtils;
 
@@ -257,7 +256,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@JoinTable(name = "PERF_TEST_TAG", /** join column */
 			joinColumns = @JoinColumn(name = "perf_test_id"), /** inverse join column */
 			inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
+	@SortNatural
 	private SortedSet<Tag> tags;
 
 	@Cloneable
