@@ -13,7 +13,6 @@
  */
 package org.ngrinder.model;
 
-import java.util.Comparator;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -29,7 +28,6 @@ import lombok.Setter;
 /**
  * Tag class for categorization of {@link PerfTest}.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings("JpaDataSourceORMInspection")
@@ -37,7 +35,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "TAG")
-public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<Tag> {
+public class Tag extends BaseModel<Tag> implements Comparable<Tag> {
 
 	/**
 	 * UUID.
@@ -57,11 +55,6 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 	}
 
 	@Override
-	public int compare(Tag o1, Tag o2) {
-		return o1.tagValue.compareTo(o2.getTagValue());
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof Tag && StringUtils.equalsIgnoreCase(this.getTagValue(), ((Tag) obj).getTagValue());
 	}
@@ -72,8 +65,8 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 	}
 
 	@Override
-	public int compareTo(Tag o) {
-		return compare(this, o);
+	public int compareTo(Tag other) {
+		return this.tagValue.compareTo(other.getTagValue());
 	}
 
 }
