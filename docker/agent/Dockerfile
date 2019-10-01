@@ -12,7 +12,7 @@ ENV BASE_DIR=/opt \
 VOLUME $NGRINDER_AGENT_BASE
 
 # Copy initial execution script
-ADD scripts /scripts
+COPY scripts /scripts
 
 # Excution
 ENTRYPOINT ["/scripts/run.sh"]
