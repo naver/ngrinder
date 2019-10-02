@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.repository;
 
-import net.grinder.message.console.AgentControllerState;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -68,13 +67,4 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	@Query("update AgentInfo p set p.systemStat=?3 where p.ip=?1 and p.name=?2")
 	void updateSystemStat(String ip, String name, String s);
 
-	/**
-	 * Update agent state.
-	 *
-	 * @param id    id
-	 * @param state state
-	 */
-	@Modifying
-	@Query("update AgentInfo p set p.state=?2 where p.id = ?1")
-	void updateState(Long id, AgentControllerState state);
 }

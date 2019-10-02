@@ -308,7 +308,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			return agents;
 		}
 
-
 		Set<String> ips = new HashSet<>();
 
 		for (AgentInfo each : cachedLocalAgentService.getLocalAgents()) {

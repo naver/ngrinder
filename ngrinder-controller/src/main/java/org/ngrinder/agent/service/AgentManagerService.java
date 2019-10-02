@@ -87,7 +87,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public void checkAgentState() {
 		List<AgentInfo> newAgents = newArrayList(0);
 		List<AgentInfo> updatedAgents = newArrayList(0);
-		List<AgentInfo> stateUpdatedAgents = newArrayList(0);
 		List<AgentInfo> removedAgents = newArrayList(0);
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
@@ -116,16 +115,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(agentKey);
 			if (agentIdentity == null) {
 				// this agent is not attached to controller
-				agentInfo.setState(AgentControllerState.INACTIVE);
-				stateUpdatedAgents.add(agentInfo);
 			} else if (!hasSameInfo(agentInfo, agentIdentity)) {
 				agentInfo.setRegion(agentIdentity.getRegion());
 				agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 				agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 				updatedAgents.add(agentInfo);
-			} else if (!hasSameState(agentInfo, agentIdentity)) {
-				agentInfo.setState(agentManager.getAgentState(agentIdentity));
-				stateUpdatedAgents.add(agentInfo);
 			}
 		}
 
@@ -135,7 +129,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			final AgentInfo agentInfo = fillUp(new AgentInfo(), agentIdentity);
 			newAgents.add(agentInfo);
 		}
-		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, stateUpdatedAgents, removedAgents);
+		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, removedAgents);
 		if (!newAgents.isEmpty() || !removedAgents.isEmpty()) {
 			expireLocalCache();
 		}
@@ -160,11 +154,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 				StringUtils.equals(agentInfo.getRegion(), agentIdentity.getRegion()) &&
 				StringUtils.equals(StringUtils.trimToNull(agentInfo.getVersion()),
 						StringUtils.trimToNull(agentManager.getAgentVersion(agentIdentity)));
-	}
-
-	protected boolean hasSameState(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
-		return agentInfo != null &&
-				agentInfo.getState() == agentManager.getAgentState(agentIdentity);
 	}
 
 	@Override
@@ -203,7 +192,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public List<AgentInfo> getAllLocalWithFullInfo() {
 		Map<String, AgentInfo> agentInfoMap = createLocalAgentMap();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
+		List<AgentInfo> agentList = new ArrayList<>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = cast(eachAgentIdentity);
 			agentList.add(createAgentInfo(agentControllerIdentity, agentInfoMap));
@@ -253,7 +242,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Override
 	public List<AgentInfo> getAllActive() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllLocal()) {
+		for (AgentInfo agentInfo : getAllLocalWithFullInfo()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
@@ -265,7 +254,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Override
 	public List<AgentInfo> getAllVisible() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllLocal()) {
+		for (AgentInfo agentInfo : getAllLocalWithFullInfo()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
@@ -425,7 +414,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	List<AgentInfo> getAllReady() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllLocal()) {
+		for (AgentInfo agentInfo : getAllLocalWithFullInfo()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isReady()) {
 				agents.add(agentInfo);
