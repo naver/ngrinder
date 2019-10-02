@@ -60,7 +60,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@Column(name = "hostName")
 	private String name;
 
-	@Enumerated(EnumType.STRING)
+	@Transient
 	private AgentControllerState state;
 
 	@Column(name = "system_stat", length = 2000)
