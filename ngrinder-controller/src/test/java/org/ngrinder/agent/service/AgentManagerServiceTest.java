@@ -13,6 +13,8 @@
  */
 package org.ngrinder.agent.service;
 
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -24,23 +26,22 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.packages.AgentPackageHandler;
+import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
@@ -62,8 +63,15 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private Config config;
 
+	private AgentManager mockAgentManager;
+
+	private Map<String, AgentIdentity> attachedAgentsMap = new HashMap<>();
+
 	@Before
 	public void before() {
+		mockAgentManager = mock(AgentManager.class);
+		setField(agentManagerService, "agentManager", mockAgentManager);
+
 		agentRepository.deleteAll();
 		localAgentService.expireCache();
 	}
@@ -74,21 +82,27 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agent.setName(key);
 		agent.setPort(8080);
 		agent.setRegion(key);
-		agent.setState(agentStatus);
 		agent.setApproved(true);
 		agentRepository.save(agent);
+
+		AgentControllerIdentityImplementation identity = new AgentControllerIdentityImplementation(agent.getName(), agent.getIp());
+		identity.setRegion(agent.getRegion());
+		when(mockAgentManager.getAgentState(identity)).thenReturn(agentStatus);
+
+		// Because we can not override identity's equals method, mock the identity set by custom key map.
+		attachedAgentsMap.put(identity.getIp() + "_" + identity.getName(), identity);
+		when(mockAgentManager.getAllAttachedAgents()).thenReturn(new HashSet<>(attachedAgentsMap.values()));
 	}
 
 	@Test
 	public void testSaveGetDeleteAgent() {
-		List<AgentInfo> agents = new ArrayList<>();
 		String currRegion = config.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
 
 		saveAgent("agentSave", AgentControllerState.BUSY);
 		saveAgent("agentSave", AgentControllerState.UNKNOWN);
 		localAgentService.expireCache();
-		agents = agentManagerService.getAllLocal();
+		List<AgentInfo> agents = agentManagerService.getAllLocal();
 		assertThat(agents.size(), is(oriCount + 2));
 
 		agentRepository.deleteAll();
@@ -104,19 +118,15 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
-		agentInfo.setState(AgentControllerState.READY);
 		agentRepository.save(agentInfo);
+
 		localAgentService.expireCache();
 		agentManagerService.checkAgentState();
 
-		Optional<AgentInfo> findOne = agentRepository.findOne(idEqual(agentInfo.getId()));
-		if (!findOne.isPresent()) {
-			fail();
-		}
-		AgentInfo agentInDB = findOne.get();
-		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
-		assertThat(agentInDB.getName(), is(agentInfo.getName()));
-		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
+		AgentInfo foundOne = agentManagerService.getOne(agentInfo.getId());
+		assertThat(foundOne.getIp(), is(agentInfo.getIp()));
+		assertThat(foundOne.getName(), is(agentInfo.getName()));
+		assertNull(foundOne.getState());
 	}
 
 	@Test
@@ -167,7 +177,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testReadyAgentCountPublicAgentAllInactivy() {
+	public void testReadyAgentCountPublicAgentAllInactive() {
 		String currRegion = config.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
 
@@ -199,7 +209,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testReadyAgentCountPublicAgentInactivy() {
+	public void testReadyAgentCountPublicAgentInactive() {
 		String currRegion = config.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
 

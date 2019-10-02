@@ -15,7 +15,9 @@ package org.ngrinder.agent.service;
 
 import com.google.common.collect.Maps;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
+import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.ClusteredAgentRequest;
@@ -38,16 +40,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
-import static net.grinder.message.console.AgentControllerState.INACTIVE;
-import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
+import static net.grinder.message.console.AgentControllerState.*;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.*;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
@@ -99,9 +99,10 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	 */
 	@Override
 	public void checkAgentState() {
+		updateAgentState();
+
 		List<AgentInfo> newAgents = newArrayList(0);
 		List<AgentInfo> updatedAgents = newArrayList(0);
-		List<AgentInfo> stateUpdatedAgents = newArrayList(0);
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
@@ -109,69 +110,87 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 			AgentControllerIdentityImplementation existingAgent = cast(agentIdentity);
 			attachedAgentMap.put(createKey(existingAgent), existingAgent);
 		}
-		Map<String, AgentInfo> agentsInDBMap = Maps.newHashMap();
+
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
 		for (AgentInfo eachAgentInDB : getAllLocal()) {
 			String keyOfAgentInDB = createKey(eachAgentInDB);
-			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
 			if (agentIdentity != null) {
 				// if the agent attached to current controller
 				if (!isCurrentRegion(agentIdentity)) {
-					if (eachAgentInDB.getState() != WRONG_REGION) {
-						eachAgentInDB.setApproved(false);
-						eachAgentInDB.setRegion(getConfig().getRegion());
-						eachAgentInDB.setState(WRONG_REGION);
-						updatedAgents.add(eachAgentInDB);
-					}
+					eachAgentInDB.setApproved(false);
+					eachAgentInDB.setRegion(getConfig().getRegion());
+					updatedAgents.add(eachAgentInDB);
 				} else if (!hasSameInfo(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
 					updatedAgents.add(eachAgentInDB);
-				} else if (!hasSameState(eachAgentInDB, agentIdentity)) {
-					eachAgentInDB.setState(getAgentManager().getAgentState(agentIdentity));
-					stateUpdatedAgents.add(eachAgentInDB);
 				} else if (eachAgentInDB.getApproved() == null) {
 					updatedAgents.add(fillUpApproval(eachAgentInDB));
 				}
 			} else { // the agent in DB is not attached to current controller
-				if (eachAgentInDB.getState() != INACTIVE) {
-					eachAgentInDB.setState(INACTIVE);
-					stateUpdatedAgents.add(eachAgentInDB);
-				}
+				hazelcastService.delete(DIST_MAP_NAME_AGENT_STATE, keyOfAgentInDB);
 			}
 		}
 
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			AgentInfo agentInfo = agentManagerRepository.findByIpAndName(
-					agentIdentity.getIp(),
-					agentIdentity.getName());
+			AgentInfo agentInfo = agentManagerRepository.findByIpAndName(agentIdentity.getIp(), agentIdentity.getName());
+
 			if (agentInfo == null) {
 				agentInfo = new AgentInfo();
 				newAgents.add(fillUp(agentInfo, agentIdentity));
 			} else {
 				updatedAgents.add(fillUp(agentInfo, agentIdentity));
 			}
+
 			if (!isCurrentRegion(agentIdentity)) {
-				agentInfo.setState(WRONG_REGION);
 				agentInfo.setApproved(false);
 			}
 		}
 
-		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, stateUpdatedAgents, null);
+		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, null);
 		if (!newAgents.isEmpty() || !updatedAgents.isEmpty()) {
 			expireLocalCache();
 		}
 	}
 
+	private void updateAgentState() {
+		for (AgentProcessControlImplementation.AgentStatus status : getAgentManager().getAllAgentStatusSet()) {
+			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
+			AgentControllerState state = status.getAgentControllerState();
+			hazelcastService.put(DIST_MAP_NAME_AGENT_STATE, createKey(agentIdentity), state);
+		}
+	}
+
+	private List<AgentInfo> getAllWithCurrentState() {
+		List<AgentInfo> agentsInDB = agentManagerRepository.findAll();
+		List<AgentInfo> currentAgents = new ArrayList<>();
+		for (AgentInfo agentInfo : agentsInDB) {
+			AgentControllerState state = hazelcastService.get(DIST_MAP_NAME_AGENT_STATE, createKey(agentInfo));
+			if (state != null) {
+				agentInfo.setState(state);
+				currentAgents.add(agentInfo);
+			}
+		}
+		return currentAgents;
+	}
+
 	public List<AgentInfo> getAllActive() {
-		return filterOnlyActiveRegion(agentManagerRepository.findAll(active()));
+		return getAllWithCurrentState()
+			.stream()
+			.filter(agentInfo -> !agentInfo.getState().equals(UNKNOWN))
+			.filter(agentInfo -> !agentInfo.getState().equals(WRONG_REGION))
+			.filter(this::activeRegionOnly)
+			.collect(toList());
 	}
 
 	public List<AgentInfo> getAllVisible() {
-		return filterOnlyActiveRegion(agentManagerRepository.findAll(visible()));
+		return getAllWithCurrentState()
+			.stream()
+			.filter(this::activeRegionOnly)
+			.collect(toList());
 	}
 
 	/**
@@ -179,15 +198,16 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	 */
 	@Override
 	public List<AgentInfo> getAllReady() {
-		return filterOnlyActiveRegion(agentManagerRepository.findAll(ready()));
+		return getAllWithCurrentState()
+			.stream()
+			.filter(agentInfo -> agentInfo.getState().equals(READY))
+			.filter(this::activeRegionOnly)
+			.collect(toList());
 	}
 
-	private List<AgentInfo> filterOnlyActiveRegion(List<AgentInfo> agents) {
+	private boolean activeRegionOnly(AgentInfo agentInfo) {
 		final Set<String> regions = getRegions();
-		return agents.stream()
-			.filter(Objects::nonNull)
-			.filter(agentInfo -> regions.contains(extractRegionKey(agentInfo.getRegion())))
-			.collect(toList());
+		return agentInfo != null && regions.contains(extractRegionKey(agentInfo.getRegion()));
 	}
 
 	/**

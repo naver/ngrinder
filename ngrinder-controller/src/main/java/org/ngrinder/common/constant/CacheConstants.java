@@ -22,6 +22,7 @@ package org.ngrinder.common.constant;
 public interface CacheConstants {
 	String DIST_MAP_NAME_SAMPLING = "sampling";
 	String DIST_MAP_NAME_MONITORING = "monitoring";
+	String DIST_MAP_NAME_AGENT_STATE = "agent_state";
 
 	String CACHE_USERS = "users";
 	String CACHE_FILE_ENTRIES = "file_entries";
