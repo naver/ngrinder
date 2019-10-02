@@ -71,18 +71,5 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("NAVER"));
 		assertThat(findAll.size(), is(2));
 	}
-
-	@Test
-	public void testAgentStateByReady() {
-		//add ready state
-		addAgent("hello5", "stateTest", AgentControllerState.READY);
-		addAgent("hello6", "stateTest", AgentControllerState.READY);
-		//add order state
-		addAgent("hello7", "stateTest", AgentControllerState.STARTED);
-		addAgent("hello8", "stateTest", AgentControllerState.FINISHED);
-		assertThat(agentRepository.findAll().size(), is(5));
-		List<AgentInfo> readyAgentList = agentRepository.findAll(AgentManagerSpecification.ready());
-		assertThat(readyAgentList.size(), is(2));
-	}
 	
 }

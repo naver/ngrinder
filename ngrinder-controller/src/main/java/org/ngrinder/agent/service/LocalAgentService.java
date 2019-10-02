@@ -63,16 +63,12 @@ public class LocalAgentService {
 	@Transactional
 	public void updateAgents(List<AgentInfo> newAgents,
 							 List<AgentInfo> updatedAgents,
-							 List<AgentInfo> stateUpdatedAgents,
 							 List<AgentInfo> removedAgents) {
 		if (CollectionUtils.isNotEmpty(newAgents)) {
 			agentManagerRepository.saveAll(newAgents);
 		}
 		if (CollectionUtils.isNotEmpty(updatedAgents)) {
 			agentManagerRepository.saveAll(updatedAgents);
-		}
-		for (AgentInfo each : stateUpdatedAgents) {
-			agentManagerRepository.updateState(each.getId(), each.getState());
 		}
 		if (CollectionUtils.isNotEmpty(removedAgents)) {
 			agentManagerRepository.deleteAll(removedAgents);

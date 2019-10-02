@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
 import org.ngrinder.model.AgentInfo;
@@ -29,14 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.EXPIRE_LOCAL_CACHE;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_AGENT_STATE;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -58,6 +58,9 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Autowired
 	private TopicSubscriber topicSubscriber;
 
+	@Autowired
+	private HazelcastService hazelcastService;
+
 	@Before
 	public void before() {
 		Config spiedConfig = spy(config);
@@ -73,6 +76,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 		setField(agentManagerService, "config", spiedConfig);
 		setField(agentManagerService, "regionService", mockRegionService);
+		setField(agentManagerService, "hazelcastService", hazelcastService);
 
 		agentRepository.deleteAll();
 		agentManagerService.expireLocalCache();
@@ -110,18 +114,16 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
-		agentInfo.setState(AgentControllerState.READY);
 		agentRepository.save(agentInfo);
+		setAgentState(agentInfo, AgentControllerState.READY);
+
 		agentManagerService.expireLocalCache();
 		agentManagerService.checkAgentState();
-		Optional<AgentInfo> findOne = agentRepository.findOne(idEqual(agentInfo.getId()));
-		if (!findOne.isPresent()) {
-			fail();
-		}
-		AgentInfo agentInDB = findOne.get();
-		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
-		assertThat(agentInDB.getName(), is(agentInfo.getName()));
-		assertThat(agentInDB.getState(), is(AgentControllerState.INACTIVE));
+
+		AgentInfo foundOne = agentManagerService.getOne(agentInfo.getId());
+		assertThat(foundOne.getIp(), is(agentInfo.getIp()));
+		assertThat(foundOne.getName(), is(agentInfo.getName()));
+		assertNull(foundOne.getState());
 	}
 
 	@Test
@@ -163,7 +165,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPublishTopic() {
-		AgentInfo agent_1 = createAgent("agent_1", config.getRegion(), AgentControllerState.READY);
+		AgentInfo agent_1 = createAgent("agent_1", config.getRegion());
 		ClusteredAgentManagerService clusteredAgentManagerServiceMock = mock(ClusteredAgentManagerService.class);
 
 		topicSubscriber.addListener("unit_test_listener", clusteredAgentManagerServiceMock);
@@ -173,17 +175,23 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		verify(clusteredAgentManagerServiceMock, times(1)).execute(any(TopicEvent.class));
 	}
 
-	private AgentInfo saveAgent(String name, String region, AgentControllerState status) {
-		return agentRepository.save(createAgent(name, region, status));
+	private AgentInfo saveAgent(String name, String region, AgentControllerState state) {
+		AgentInfo agent = agentRepository.save(createAgent(name, region));
+		setAgentState(agent, state);
+
+		return agent;
 	}
 
-	private AgentInfo createAgent(String name, String region, AgentControllerState status) {
+	private void setAgentState(AgentInfo agentInfo, AgentControllerState state) {
+		hazelcastService.put(DIST_MAP_NAME_AGENT_STATE, agentManagerService.createKey(agentInfo), state);
+	}
+
+	private AgentInfo createAgent(String name, String region) {
 		AgentInfo agent = new AgentInfo();
 		agent.setIp("1.1.1.1");
 		agent.setName(config.getRegion() + name);
 		agent.setPort(8080);
 		agent.setRegion(region);
-		agent.setState(status);
 		agent.setApproved(true);
 		return agent;
 	}
