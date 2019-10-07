@@ -29,7 +29,7 @@
             @vuetable:loaded="tableLoaded">
 
             <template slot="status" slot-scope="props">
-                <a class="ball"
+                <div class="ball"
                    data-toggle="popover"
                    data-html="true"
                    data-trigger="hover"
@@ -37,7 +37,7 @@
                    :title="props.rowData.status.name"
                    :data-content="`${props.rowData.progressMessage}<br><b>${props.rowData.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
                     <img :src="`${contextPath}/img/ball/${props.rowData.status.iconName}`">
-                </a>
+                </div>
             </template>
 
             <template slot="testName" slot-scope="props">
@@ -71,7 +71,7 @@
             </template>
 
             <template slot="createUser" slot-scope="props">
-                <div class="createUser" v-text="props.rowData.createdUser.userName"></div>
+                <div class="ellipsis createUser" :title="props.rowData.createdUser.userName" v-text="props.rowData.createdUser.userName"></div>
             </template>
 
             <template slot="threshold" slot-scope="props">
@@ -397,6 +397,17 @@
     }
 </script>
 
+<style lang="less">
+    .perftest-list-container {
+        table {
+            th {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+    }
+</style>
+
 <style lang="less" scoped>
     .perftest-list-container {
         margin-bottom: 80px;
@@ -408,16 +419,9 @@
         }
 
         table {
-            th, td {
-                padding: 8px;
-            }
-
-            th {
-                border-bottom: none;
-            }
-
             font-size: 12px;
             width: 940px;
+            table-layout: fixed;
             margin-bottom: 6px;
 
             .ball {
@@ -425,26 +429,6 @@
                     width: 23px;
                     height: 23px;
                 }
-            }
-
-            .testName, .scriptName {
-                width: 90px;
-            }
-
-            .region {
-                width: 55px;
-            }
-
-            .errorRate {
-                width: 58px;
-            }
-
-            .startTime {
-                width: 110px;
-            }
-
-            .tps, .meanTestTime {
-                width: 45px;
             }
         }
 

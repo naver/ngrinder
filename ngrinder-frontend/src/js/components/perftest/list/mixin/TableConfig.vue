@@ -16,29 +16,31 @@
                     name: '__slot:status',
                     title: this.i18n('common.label.status'),
                     dataClass: 'center aligned',
-                    width: '30px',
+                    width: '50px',
                 },
                 {
                     name: '__slot:testName',
                     title: this.i18n('perfTest.list.testName'),
                     sortField: 'testName',
+                    width: this.ngrinder.config.clustered ? '110px' : '140px',
                 },
                 {
                     name: '__slot:scriptName',
                     title: this.i18n('perfTest.list.scriptName'),
                     sortField: 'scriptName',
+                    width: this.ngrinder.config.clustered ? '105px' : '140px',
                 },
                 {
                     name: '__slot:createUser',
                     title: this.isAdmin ? this.i18n('perfTest.list.owner') :
                         this.i18n('perfTest.list.modifier.oneLine'),
-                    width: '70px',
+                    width: '55px',
                 },
                 {
                     name: '__slot:startTime',
                     title: this.i18n('perfTest.list.startTime'),
                     sortField: 'startTime',
-                    width: '140px',
+                    width: '130px',
                 },
                 {
                     name: '__slot:threshold',
@@ -49,30 +51,28 @@
                     name: '__slot:tps',
                     title: this.i18n('perfTest.list.tps'),
                     sortField: 'tps',
-                    width: '70px',
                 },
                 {
                     name: '__slot:meanTestTime',
                     title: 'MTT',
                     sortField: 'meanTestTime',
-                    width: '65px',
                 },
                 {
                     name: '__slot:errorRate',
                     title: this.i18n('perfTest.list.errorRate'),
                     sortField: 'errors',
-                    width: '85px',
+                    width: '75px',
                 },
                 {
                     name: '__slot:vuser',
                     title: this.i18n('perfTest.list.vusers'),
-                    width: '60px',
+                    width: '55px',
                 },
                 {
                     name: '__slot:actions',
                     title: this.i18n('common.label.actions'),
                     dataClass: 'center aligned',
-                    width: '60px',
+                    width: '55px',
                 },
             ];
 
@@ -81,6 +81,7 @@
                     name: '__slot:region',
                     title: this.i18n('common.region'),
                     sortField: 'region',
+                    width: '65px',
                 });
             }
 
