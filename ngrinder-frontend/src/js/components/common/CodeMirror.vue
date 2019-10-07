@@ -51,7 +51,6 @@
                 tabSize: 4,
                 indentWithTabs: true,
                 smartIndent: false,
-                lineSeparator: navigator.platform.includes('Win') ? '\r\n' : '\n',
                 visibleTab: true,
                 readOnly: false,
                 styleActiveLine: true,
