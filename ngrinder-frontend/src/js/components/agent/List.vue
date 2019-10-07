@@ -305,14 +305,6 @@
         input[type='checkbox'] {
             vertical-align: bottom;
         }
-
-        .version, .region {
-            width: 100px;
-        }
-
-        .name {
-            width: 230px;
-        }
     }
 
     .change-region {
