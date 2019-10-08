@@ -93,7 +93,7 @@
                 table: {
                     ascendingIcon: 'fa fa-arrow-up',
                         descendingIcon: 'fa fa-arrow-down',
-                        tableClass: 'table table-bordered',
+                        tableClass: 'table table-bordered table-striped',
                 },
                 pagination: {
                     infoClass: 'float-left',

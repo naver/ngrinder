@@ -1,6 +1,5 @@
 <template>
-    <div class="control-group" :class="{success: success}"
-         :data-step="dataStep" :data-intro="dataIntro" data-html="true">
+    <div class="control-group" :class="{success: success}" :data-step="dataStep" :data-intro="dataIntro" data-html="true">
         <label class="control-label pointer-cursor" :for="id ? id : name" :style="labelStyle">
             <input v-if="radio"
                    type="radio"

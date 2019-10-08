@@ -25,8 +25,9 @@
                     width: '230px',
                 },
                 {
-                    name: 'description',
+                    name: '__slot:description',
                     title: this.i18n('script.list.commit'),
+                    width: '230px',
                 },
                 {
                     name: '__slot:lastModifiedDate',
