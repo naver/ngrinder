@@ -1,9 +1,9 @@
 <template>
     <table class="table table-bordered ellipsis">
         <colgroup>
-            <col width="30px">
+            <col width="45px">
             <col width="85px">
-            <col width="85px">
+            <col width="70px">
             <col width="55px">
             <col width="60px">
             <col width="65px">
@@ -16,21 +16,23 @@
                 <th v-text="i18n('perfTest.running.testName')"></th>
                 <th v-text="i18n('perfTest.running.success')"></th>
                 <th v-text="i18n('perfTest.running.errors')"></th>
-                <th v-text="'MTT'" :title="i18n('perfTest.running.meantime')"></th>
+                <th :title="i18n('perfTest.running.meantime')">MTT</th>
                 <th v-text="i18n('perfTest.running.tps')"></th>
-                <th v-text="i18n('perfTest.running.peakTPS')" :title="i18n('perfTest.running.peakTPS.full')"></th>
+                <th v-if="type === 'last'" :title="i18n('perfTest.running.meanTimeToFirstByte')">MTTFB</th>
+                <th v-else v-text="i18n('perfTest.running.peakTPS')" :title="i18n('perfTest.running.peakTPS.full')"></th>
                 <th v-text="i18n('perfTest.running.responseBytePerSecond')" :title="i18n('perfTest.running.responseBytePerSecond.full')"></th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="statistic in statistics">
-                <td v-text="statistic.testNumber.toFixed(0)"></td>
+                <td class="ellipsis" :title="statistic.testNumber">{{ statistic.testNumber | numFormat }}</td>
                 <td class="ellipsis" :title="` ${statistic.testDescription} `" v-text="statistic.testDescription"></td>
-                <td v-text="statistic.Tests.toFixed(0)"></td>
-                <td v-text="statistic.Errors.toFixed(0)"></td>
-                <td v-text="statistic['Mean_Test_Time_(ms)'].toFixed(0)"></td>
-                <td v-text="statistic.TPS.toFixed(0)"></td>
-                <td v-text="statistic['Mean_time_to_first_byte'].toFixed(0)"></td>
+                <td>{{ statistic.Tests | numFormat }}</td>
+                <td>{{ statistic.Errors | numFormat }}</td>
+                <td>{{ statistic['Mean_Test_Time_(ms)'] | numFormat }}</td>
+                <td>{{ statistic.TPS | numFormat }}</td>
+                <td v-if="type === 'last'">{{ statistic['Mean_time_to_first_byte'] | numFormat }}</td>
+                <td v-else>{{ statistic.Peak_TPS | numFormat }}</td>
                 <td v-text="formatNetwork(null, statistic['Response_bytes_per_second'])"></td>
             </tr>
         </tbody>
@@ -49,6 +51,10 @@
             statistics: {
                 type: [Array, Object],
                 required: true,
+            },
+            type: {
+                type: String,
+                default: 'last',
             },
         },
     })
