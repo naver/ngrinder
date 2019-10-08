@@ -80,6 +80,10 @@
                     }
                 });
         }
+
+        reset() {
+            this.folderName = '';
+        }
     }
 </script>
 
