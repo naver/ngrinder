@@ -165,6 +165,8 @@
             this.method = 'GET';
             this.testUrl = '';
             this.createLibAndResource = false;
+            this.showScriptOption = false;
+            this.$refs.scriptOption.reset();
         }
 
         sendCreateScriptRequest() {
