@@ -100,6 +100,10 @@
             this.showProgressBar();
             this.refreshScriptList(this.hideProgressBar);
             this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
+
+            this.$nextTick(() => {
+                document.getElementById('file-icon-back').onclick = () => this.$router.push(`${this.baseDirectory}`);
+            });
         }
 
         dataManager(sortOrder) {
