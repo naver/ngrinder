@@ -70,6 +70,7 @@
         width: 460px;
 
         .card {
+            height: 300px;
             padding: 10px;
         }
 

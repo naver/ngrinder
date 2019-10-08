@@ -5,7 +5,7 @@
                 <h5 class="my-0" v-text="i18n('script.option.header.title')"></h5>
             </div>
             <div>
-                <div v-show="showContentTypeHeader">
+                <div v-show="showContentTypeHeader" class="mb-2">
                     <input type="text" class="form-control" placeholder="name" disabled="disabled"
                            v-model="contentTypeHeader.name"> =
                     <autocomplete placeholder="value"
@@ -196,6 +196,7 @@
         .option-title {
             width: 60px;
             margin-left: 50px;
+            margin-right: 15px;
         }
 
         input[type="text"] {

@@ -23,25 +23,27 @@
                                         </select2>
                                     </control-group>
                                 </div>
-                                <div class="status-image-container">
-                                    <img ref="testStatusImage" class="ball"
-                                         data-html="true"
-                                         data-toggle="popover"
-                                         data-trigger="hover"
-                                         data-placement="bottom"
-                                         :title="i18n(test.springMessageKey)"
-                                         :src="`${contextPath}${perftestStatus.iconPath}`"/>
-                                </div>
-                                <div class="start-button-container" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
-                                    <div class="control-group">
-                                        <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
-                                            <i class="fa fa-clone mr-1"></i>
-                                            <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
-                                        </button>
-                                        <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart">
-                                            <i class="fa fa-play mr-1"></i>
-                                            <span v-text="saveScheduleBtnTitle"></span>
-                                        </button>
+                                <div class="d-flex">
+                                    <div v-visible="isClone" class="flex-grow-1 text-center">
+                                        <img ref="testStatusImage" class="ball"
+                                             data-html="true"
+                                             data-toggle="popover"
+                                             data-trigger="hover"
+                                             data-placement="bottom"
+                                             :title="i18n(test.springMessageKey)"
+                                             :src="`${contextPath}${perftestStatus.iconPath}`"/>
+                                    </div>
+                                    <div class="ml-auto" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
+                                        <div class="control-group">
+                                            <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
+                                                <i class="fa fa-clone mr-1"></i>
+                                                <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
+                                            </button>
+                                            <button class="btn btn-primary" :disabled="disabled" @click.prevent="saveAndStart">
+                                                <i class="fa fa-play mr-1"></i>
+                                                <span v-text="saveScheduleBtnTitle"></span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -411,6 +413,12 @@
             }
         }
 
+        fieldset {
+            .d-flex {
+                width: 275px;
+            }
+        }
+
         .controls {
             margin-left: 120px;
         }
@@ -428,10 +436,10 @@
         }
 
         .test-name-container {
-            width: 340px;
+            width: 360px;
 
             input {
-                width: 220px;
+                width: 240px;
             }
         }
 
@@ -467,11 +475,6 @@
             padding: 5px;
             margin-bottom: 5px;
             margin-top: 0;
-        }
-
-        .status-image-container {
-            text-align: center;
-            margin: 0 20px;
         }
 
         #description {

@@ -145,7 +145,7 @@
         }
 
         .intro-button-container {
-            margin-top: -21px;
+            margin-top: -19px;
         }
 
         .row {
