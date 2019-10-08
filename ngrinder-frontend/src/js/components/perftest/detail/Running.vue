@@ -36,7 +36,7 @@
                         <code>HH:MM:SS</code>
                         <div class="badge badge-success float-right">
                             <span v-text="i18n('perfTest.running.runCount')"></span>
-                            <span v-text="(totalStatistics.Tests + totalStatistics.Errors).toFixed(0)"></span>
+                            <span>{{ (totalStatistics.Tests + totalStatistics.Errors) | numFormat }}</span>
                         </div>
                     </div>
                     <div v-else class="my-4">
@@ -44,7 +44,7 @@
                         <span v-text="test.runCount * test.agentCount * test.vuserPerAgent"></span>
                         <div class="badge badge-success float-right">
                             <span v-text="i18n('perfTest.running.runCount')"></span>
-                            <span v-text="(totalStatistics.Tests + totalStatistics.Errors).toFixed(0)"></span>
+                            <span>{{ (totalStatistics.Tests + totalStatistics.Errors) | numFormat }}</span>
                         </div>
                     </div>
                     <div>
@@ -106,7 +106,7 @@
                         <sampling-table :statistics="lastSampleStatistics"></sampling-table>
                     </div>
                     <div class="tab-pane" id="accumulated-sample-tab">
-                        <sampling-table :statistics="cumulativeStatistics"></sampling-table>
+                        <sampling-table :type="'accumulated'" :statistics="cumulativeStatistics"></sampling-table>
                     </div>
                 </div>
             </div>
