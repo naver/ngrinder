@@ -270,7 +270,6 @@
         created() {
             Object.assign(this.test, this.testProps);
             this.setCustomValidationRules();
-            this.changeMaxAgentCount();
             this.initDurationFromDurationStr();
             this.changeDuration();
             this.setTargetHosts(this.test.targetHosts);
@@ -279,6 +278,7 @@
 
         mounted() {
             this.getScripts();
+            this.changeMaxAgentCount();
 
             const durationHour = parseInt(this.durationMs / 3600000) + 1;
             this.durationMaxHour = (durationHour > this.config.maxRunHour) ? durationHour : this.config.maxRunHour;
@@ -292,9 +292,10 @@
         changeMaxAgentCount() {
             if (this.test.region && this.config.regionAgentCountMap[this.test.region]) {
                 this.maxAgentCount = this.config.regionAgentCountMap[this.test.region];
-                return;
+            } else {
+                this.maxAgentCount = 0;
             }
-            this.maxAgentCount = 0;
+            this.$validator.validate('agentCount');
         }
 
         getParams() {
