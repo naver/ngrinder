@@ -58,7 +58,8 @@
                         <div class="d-flex justify-content-center">
                             <div>
                                 <div class="d-flex align-items-center mb-2">
-                                    <input type="checkbox"
+                                    <input id="createLibAndResource"
+                                           type="checkbox"
                                            name="createLibAndResource"
                                            data-toggle="popover"
                                            data-trigger="focus"
@@ -66,11 +67,11 @@
                                            v-model="createLibAndResource"
                                            :title="i18n('script.action.createResourceAndLib')"
                                            :data-content="i18n('script.message.libAndResource.help')">
-                                    <span class="ml-1" v-text="i18n('script.action.createResourceAndLib')"></span>
+                                    <label for="createLibAndResource" class="pointer-cursor ml-1 mb-0" v-text="i18n('script.action.createResourceAndLib')"></label>
                                 </div>
                                 <div class="card bg-light mb-2 create-script-help-message">
                                     <div>
-                                        {{ i18n('script.action.createResourceAndLib.help') }}
+                                        <span v-html="i18n('script.action.createResourceAndLib.help')"></span>
                                         <a href="https://github.com/naver/ngrinder/wiki/How-to-use-lib-and-resources"
                                            target="_blank" class="ml-2" v-text="'guide'">
                                         </a>
@@ -230,7 +231,6 @@
 
     .create-script-help-message {
         padding: 10px 15px;
-        width: 350px;
     }
 
     input[type="text"] {

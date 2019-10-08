@@ -81,6 +81,10 @@ Vue.directive('focus', {
     inserted: el => el.focus(),
 });
 
+Vue.directive('visible', (el, binding) => {
+    el.style.visibility = !!binding.value ? 'visible' : 'hidden';
+});
+
 Vue.filter('numFormat', numFormat(numeral));
 Vue.filter('dateFormat', (value, format) => {
     if (value) {

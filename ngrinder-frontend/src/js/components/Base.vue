@@ -40,6 +40,11 @@
     html {
         font-size: 12px !important;
 
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+            font-size: 12px !important;
+        }
+
         #ngrinder {
             .container {
                 width: 940px;
@@ -114,6 +119,10 @@
         .vuetable {
             .sort-icon {
                 padding-top: 4px;
+            }
+
+            &.table-striped tbody > tr:nth-child(odd) > td {
+                background-color: #f9f9f9;
             }
         }
 
