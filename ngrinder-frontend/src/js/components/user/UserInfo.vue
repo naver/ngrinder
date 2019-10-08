@@ -185,6 +185,7 @@
             for (const prop in this.user) {
                 this.user[prop] = '';
             }
+            this.confirmPassword = '';
             this.$nextTick(() => this.$validator.validateAll());
         }
 

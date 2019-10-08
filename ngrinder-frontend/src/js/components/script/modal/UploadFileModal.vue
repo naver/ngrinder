@@ -87,6 +87,11 @@
                     }
                 });
         }
+
+        reset() {
+            this.description = '';
+            this.$refs.file.value = '';
+        }
     }
 </script>
 

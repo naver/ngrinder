@@ -167,6 +167,15 @@
             this.parameters.splice(index, 1);
         }
 
+        reset() {
+            this.headers = [];
+            this.cookies = [];
+            this.parameters = [];
+            this.requestBody = '';
+            this.showContentTypeHeader = false;
+            this.showRequestBody = false;
+        }
+
         get toJson() {
             const json = {
                 method: this.method,
