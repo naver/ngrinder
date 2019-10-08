@@ -24,20 +24,28 @@
             </template>
 
             <template slot="path" slot-scope="props">
-                <router-link v-if="props.rowData.editable"
-                             :to="`/script/detail/${props.rowData.path}`"
-                             :title="props.rowData.path" target="_self"
-                             v-text="props.rowData.fileName">
-                </router-link>
-                <router-link v-else-if="props.rowData.fileType === 'DIR'"
-                             :to="`/script/list/${props.rowData.path}`"
-                             :title="props.rowData.path" target="_self"
-                             v-text="props.rowData.fileName">
-                </router-link>
-                <a v-else :href="`${contextPath}/script/download/${props.rowData.path}`"
-                   :title="props.rowData.path" target="_blank"
-                   v-text="props.rowData.fileName">
-                </a>
+                <div class="ellipsis path">
+                    <router-link v-if="props.rowData.editable"
+                                 :to="`/script/detail/${props.rowData.path}`"
+                                 :title="props.rowData.path" target="_self"
+                                 v-text="props.rowData.fileName">
+                    </router-link>
+                    <router-link v-else-if="props.rowData.fileType === 'DIR'"
+                                 :to="`/script/list/${props.rowData.path}`"
+                                 :title="props.rowData.path" target="_self"
+                                 v-text="props.rowData.fileName">
+                    </router-link>
+                    <a v-else :href="`${contextPath}/script/download/${props.rowData.path}`"
+                       :title="props.rowData.path" target="_blank"
+                       v-text="props.rowData.fileName">
+                    </a>
+                </div>
+            </template>
+
+            <template slot="description" slot-scope="props">
+                <div class="ellipsis description">
+                    <span v-text="props.rowData.description" :title="props.rowData.description"></span>
+                </div>
             </template>
 
             <template slot="lastModifiedDate" slot-scope="props">
@@ -233,6 +241,10 @@
 
         th, td {
             padding: 8px;
+
+            .description, .path {
+                width: 230px;
+            }
         }
     }
 </style>

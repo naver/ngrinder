@@ -20,9 +20,9 @@
                             </input-append>
                         </control-group>
                     </div>
-                    <div v-if="ngrinder.config.clustered" class="agent-region-container">
+                    <div v-if="ngrinder.config.clustered" class="agent-region-container ml-auto">
                         <control-group id="region" :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
-                                       labelHelpMessageKey="perfTest.config.region" labelStyle="margin-left: -20px; width: 80px;">
+                                       labelHelpMessageKey="perfTest.config.region">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
                                      class="float-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
                                 <option v-for="region in config.regions" :value="region" :selected="region === test.region" v-text="region"></option>
@@ -522,26 +522,28 @@
                 font-size: 12px;
                 padding: 7px 20px;
                 border-radius: 20px;
+                max-width: 145px;
                 -webkit-border-radius: 20px;
                 -moz-border-radius: 20px;
             }
 
             .agent-config-container {
                 .agent-count-container {
-                    width: 300px;
+                    max-width: 285px;
+                    height: 61px;
 
                     .input-append {
-                        width: 145px;
+                        width: 155px;
                     }
                 }
 
                 .agent-region-container {
-                    width: 158px;
+                    max-width: 175px;
                 }
             }
 
             .vuser-per-agent-container {
-                width: 155px;
+                width: 173px;
                 display: inline-block;
             }
         }
@@ -650,7 +652,7 @@
         }
 
         .control-group {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
 
             &.script-control-group.error {
                 margin-bottom: 20px;
