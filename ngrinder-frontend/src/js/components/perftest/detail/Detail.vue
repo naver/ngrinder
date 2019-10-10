@@ -226,7 +226,6 @@
                 this.test.region = '';
             }
             this.dataLoadFinished = true;
-            this.updateTabDisplay();
             this.$nextTick(() => {
                 if (this.test.status.category === 'TESTING') {
                     this.$refs.running.startSamplingInterval();
@@ -236,6 +235,7 @@
                 this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
                 $('[data-toggle="popover"]').popover();
                 this.setTabEvent();
+                this.updateTabDisplay();
             });
         }
 
@@ -245,7 +245,15 @@
         }
 
         setTabEvent() {
-            $(this.$refs.configTab).on('shown.bs.tab', this.$refs.config.$refs.rampUp.updateRampUpChart);
+            $(this.$refs.configTab).on('shown.bs.tab', () => {
+                this.$refs.config.shownBsTab = true;
+                this.$refs.config.$refs.rampUp.updateRampUpChart();
+            });
+
+            $(this.$refs.reportTab).on('shown.bs.tab', () => {
+                this.$refs.report.shownBsTab = true;
+                this.$refs.report.fetchReportData();
+            });
 
             $(this.$refs.runningTab).on('shown.bs.tab', () => {
                 this.$refs.running.shownBsTab = true;
@@ -254,9 +262,10 @@
                     this.$refs.running.startSamplingInterval();
                 }
             });
-            $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
 
-            $(this.$refs.reportTab).on('shown.bs.tab', this.$refs.report.fetchReportData);
+            $(this.$refs.configTab).on('hidden.bs.tab', () => this.$refs.config.shownBsTab = false);
+            $(this.$refs.reportTab).on('hidden.bs.tab', () => this.$refs.report.shownBsTab = false);
+            $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
         }
 
         refreshPerftestStatus() {
@@ -448,7 +457,7 @@
         }
 
         .intro-button-container {
-            margin-top: -28px;
+            margin-top: -32px;
         }
 
         .select2-choices {
