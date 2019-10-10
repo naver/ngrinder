@@ -249,7 +249,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		attachFileRevision(user, perfTest);
 		attachTags(user, perfTest, perfTest.getTagString());
 		return save(perfTest);
-
 	}
 
 	private PerfTest save(PerfTest perfTest) {
