@@ -88,7 +88,12 @@
         plotObj = '';
         useRampUp = false;
         rampUpType = 'PROCESS';
-        test = {};
+        test = {
+            rampUpStep: 0,
+            rampUpInitCount: 0,
+            rampUpInitSleepTime: 0,
+            rampUpIncrementInterval: 0,
+        };
 
         created() {
             Object.assign(this.test, this.testProps);
@@ -126,11 +131,11 @@
             let factor;
 
             if (this.rampUpType === 'PROCESS') {
-                base = this.test.processes;
-                factor = this.test.threads;
+                base = this.$parent.test.processes;
+                factor = this.$parent.test.threads;
             } else {
-                base = this.test.threads;
-                factor = this.test.processes;
+                base = this.$parent.test.threads;
+                factor = this.$parent.test.processes;
             }
 
             const factorVar = parseInt(factor, 10);

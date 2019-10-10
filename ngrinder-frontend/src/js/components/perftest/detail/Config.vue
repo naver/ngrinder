@@ -75,7 +75,6 @@
                                 :value="script.path">
                         </option>
                     </select2>
-                    <input type="hidden" name="scriptRevision" :value="test.scriptRevision">
                     <button v-show="display.showScriptBtn" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
                         R <span v-if="test.scriptRevision !== -1" v-text="test.scriptRevision"></span>
