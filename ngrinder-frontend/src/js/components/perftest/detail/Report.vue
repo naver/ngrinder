@@ -1,7 +1,9 @@
 <template>
     <div v-show="dataLoadFinished" id="report-container">
         <div class="row m-0">
-            <div class="intro summary-chart-container" data-step="4" :data-intro="i18n('intro.report.summary')">
+            <div class="intro summary-chart-container"
+                 :data-step="shownBsTab ? 4 : undefined"
+                 :data-intro="shownBsTab ? i18n('intro.report.summary') : undefined">
                 <fieldset>
                     <legend class="border-bottom" v-text="i18n('perfTest.report.summary')"></legend>
                 </fieldset>
@@ -42,7 +44,9 @@
                     </fieldset>
                 </div>
             </div>
-            <div class="pl-4 intro tps-chart-container" data-step="5" :data-intro="i18n('intro.report.tpsGraph')">
+            <div class="pl-4 intro tps-chart-container"
+                 :data-step="shownBsTab ? 5 : undefined"
+                 :data-intro="shownBsTab ? i18n('intro.report.tpsGraph') : undefined">
                 <fieldSet>
                     <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.tpsGraph')"></span>
@@ -79,7 +83,9 @@
                 </div>
                 <div v-if="logs.length <= 0" v-text="i18n('perfTest.report.message.noLog')"></div>
             </div>
-            <div class="pl-4 intro comment-container" data-step="6" :data-intro="i18n('intro.report.testComment')">
+            <div class="pl-4 intro comment-container"
+                 :data-step="shownBsTab ? 6 : undefined"
+                 :data-intro="shownBsTab ? i18n('intro.report.testComment') : undefined">
                 <fieldSet>
                     <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.testComment')"></span>
@@ -125,6 +131,7 @@
         };
 
         dataLoadFinished = false;
+        shownBsTab = false;
         logs = [];
 
         created() {
