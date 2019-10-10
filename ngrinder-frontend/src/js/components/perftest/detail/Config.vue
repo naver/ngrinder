@@ -7,7 +7,9 @@
                 </legend>
             </fieldset>
             <div class="form-horizontal form-horizontal-2">
-                <div class="row intro agent-config-container" data-step="4" :data-intro="i18n('intro.config.basic.agent')">
+                <div class="row intro agent-config-container"
+                     :data-step="shownBsTab ? 4 : undefined"
+                     :data-intro="shownBsTab ? i18n('intro.config.basic.agent') : undefined">
                     <div class="agent-count-container">
                         <control-group id="agentCount" :class="{ error: errors.has('agentCount') }" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
@@ -31,7 +33,9 @@
                     </div>
                 </div>
                 <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }" labelMessageKey="perfTest.config.vuserPerAgent"
-                               ref="vuserPerAgentControlGroup" dataStep="5" :dataIntro="i18n('intro.config.basic.vuser')">
+                               ref="vuserPerAgentControlGroup"
+                               :data-step="shownBsTab ? 5 : undefined"
+                               :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
                     <div class="vuser-per-agent-container">
                         <input-append name="vuserPerAgent" ref="vuserPerAgent"
                                       v-model="test.vuserPerAgent"
@@ -62,7 +66,9 @@
                     </div>
                 </control-group>
 
-                <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script">
+                <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
+                               :data-step="shownBsTab ? 6 : undefined"
+                               :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
                     <select2 v-model="test.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
@@ -82,13 +88,17 @@
                     </button>
                 </control-group>
 
-                <control-group labelMessageKey="perfTest.config.scriptResources">
+                <control-group labelMessageKey="perfTest.config.scriptResources"
+                               :data-step="shownBsTab ? 7 : undefined"
+                               :data-intro="shownBsTab ? i18n('intro.config.basic.scriptResources') : undefined">
                     <div class="div-resources">
                         <div class="resource" v-for="resource in resources" v-text="resource"></div>
                     </div>
                 </control-group>
 
-                <control-group labelMessageKey="perfTest.config.targetHost">
+                <control-group labelMessageKey="perfTest.config.targetHost"
+                               :data-step="shownBsTab ? 8 : undefined"
+                               :data-intro="shownBsTab ? i18n('intro.config.basic.target') : undefined">
                     <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
                         <i class="fa fa-plus"></i>
                         <span v-text="i18n('perfTest.config.add')"></span>
@@ -111,7 +121,9 @@
 
                 <div class="threshold-container">
                     <control-group :class="{ error: errors.has('duration') }" :radio="{ radioValue: 'D', checked: test.threshold === 'D' }" v-model="test.threshold"
-                                   ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration">
+                                   ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration"
+                                   :data-step="shownBsTab ? 9 : undefined"
+                                   :data-intro="shownBsTab ? i18n('intro.config.basic.duration') : undefined">
                         <select class="select-item form-control" v-model="duration.hour" @change="changeDuration({ focus: true, updateSlider: true })">
                             <option v-for="(v, h) in durationMaxHour" :value="h" v-text="h"></option>
                         </select> :
@@ -127,7 +139,9 @@
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
                     <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.threshold === 'R' }" v-model="test.threshold"
-                                   labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold">
+                                   labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold"
+                                   :data-step="shownBsTab ? 10 : undefined"
+                                   :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
                                       v-model="test.runCount"
@@ -183,7 +197,10 @@
                 </div>
             </div>
         </div>
-        <ramp-up ref="rampUp" :testProps="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
+        <div :data-step="shownBsTab ? 11 : undefined"
+             :data-intro="shownBsTab ? i18n('intro.config.rampup') : undefined">
+            <ramp-up ref="rampUp" :testProps="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
+        </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
     </div>
@@ -250,6 +267,7 @@
 
         maxAgentCount = 0;
         durationMs = 0;
+        shownBsTab = false;
 
         display = {
             vuserPanel: false,
@@ -543,7 +561,7 @@
             }
 
             .vuser-per-agent-container {
-                width: 173px;
+                max-width: 173px;
                 display: inline-block;
             }
         }

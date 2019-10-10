@@ -1,6 +1,8 @@
 <template>
     <div class="row d-flex" id="running-container">
-        <div class="intro left-panel" data-step="4" :data-intro="i18n('intro.running.summary')">
+        <div class="intro left-panel"
+             :data-step="shownBsTab ? 4 : undefined"
+             :data-intro="shownBsTab ? i18n('intro.running.summary') : undefined">
             <fieldSet>
                 <legend class="border-bottom" v-text="i18n('perfTest.running.summaryTitle')"></legend>
             </fieldSet>
@@ -82,15 +84,18 @@
                 <legend class="border-bottom">
                     <span v-text="i18n('perfTest.running.tpsGraph')"></span>
                     <span class="badge badge-success" v-text="formatTestTime(testTime)"></span>
-                    <button @click.prevent="stopRunningTest" class="btn btn-danger float-right intro" data-step="5"
-                       :data-intro="i18n('intro.running.stopButton')">
+                    <button @click.prevent="stopRunningTest" class="btn btn-danger float-right intro"
+                            :data-step="shownBsTab ? 5 : undefined"
+                            :data-intro="shownBsTab ? i18n('intro.running.stopButton') : undefined">
                         <i class="fa fa-stop mr-1"></i>
                         <span v-text="i18n('common.button.stop')"></span>
                     </button>
                 </legend>
             </fieldSet>
             <div id="running-tps-chart" class="chart w-100"></div>
-            <div class="intro mt-1" data-step="6" :data-intro="i18n('intro.running.accumulated')">
+            <div class="intro mt-1"
+                 :data-step="shownBsTab ? 6 : undefined"
+                 :data-intro="shownBsTab ? i18n('intro.running.accumulated') : undefined">
                 <ul class="nav nav-tabs border-bottom-0">
                     <li class="nav-item">
                         <a href="#last-sample-tab" data-toggle="tab" class="nav-link active"
@@ -150,7 +155,7 @@
         tpsChart = {};
 
         test = {};
-        shownBsTab = true;
+        shownBsTab = false;
 
         created() {
             Object.assign(this.test, this.testProps);
