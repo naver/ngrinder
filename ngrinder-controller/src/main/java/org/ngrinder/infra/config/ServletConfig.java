@@ -26,10 +26,10 @@ public class ServletConfig {
 	@Bean
 	@SuppressWarnings("unchecked")
 	public ServletRegistrationBean svnDavServletRegisterBean() {
-		ServletRegistrationBean SvnDavServletRegistrationBean = new ServletRegistrationBean(new HttpRequestHandlerServlet(), "/svn/*");
-		SvnDavServletRegistrationBean.setLoadOnStartup(1);
-		SvnDavServletRegistrationBean.setName("svnDavServlet");
-		return SvnDavServletRegistrationBean;
+		ServletRegistrationBean svnDavServletRegistrationBean = new ServletRegistrationBean(new HttpRequestHandlerServlet(), "/svn/*");
+		svnDavServletRegistrationBean.setLoadOnStartup(1);
+		svnDavServletRegistrationBean.setName("svnDavServlet");
+		return svnDavServletRegistrationBean;
 	}
 
 	@Bean
