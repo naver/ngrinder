@@ -38,15 +38,15 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
-	@Autowired
 	private AgentManagerService agentManagerService;
+
+	@Autowired
+	private AgentManagerRepository agentManagerRepository;
 
 	@Autowired
 	private AgentPackageService agentPackageService;
@@ -70,7 +70,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Before
 	public void before() {
 		mockAgentManager = mock(AgentManager.class);
-		setField(agentManagerService, "agentManager", mockAgentManager);
+		this.agentManagerService = new AgentManagerService(mockAgentManager, agentManagerRepository, localAgentService, config, null);
 
 		agentRepository.deleteAll();
 		localAgentService.expireCache();
