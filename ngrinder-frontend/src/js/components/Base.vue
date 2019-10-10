@@ -116,6 +116,12 @@
             }
         }
 
+        .introjs-helperNumberLayer {
+            padding: 0;
+            width: 23px;
+            height: 23px;
+        }
+
         .vuetable {
             .sort-icon {
                 padding-top: 4px;
