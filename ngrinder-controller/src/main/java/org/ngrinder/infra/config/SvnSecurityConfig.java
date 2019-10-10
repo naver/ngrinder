@@ -13,22 +13,17 @@
  */
 package org.ngrinder.infra.config;
 
-import static org.ngrinder.common.constant.ControllerConstants.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ngrinder.security.NGrinderAuthenticationPreAuthProvider;
-import org.ngrinder.security.NGrinderAuthenticationProvider;
-import org.ngrinder.security.NGrinderUserDetailsService;
-import org.ngrinder.security.SvnHttpBasicEntryPoint;
-import org.ngrinder.security.UserSwitchPermissionVoter;
+import lombok.RequiredArgsConstructor;
+import org.ngrinder.security.*;
 import org.ngrinder.user.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.vote.*;
+import org.springframework.security.access.vote.AuthenticatedVoter;
+import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -38,8 +33,17 @@ import org.springframework.security.core.userdetails.UserDetailsByNameServiceWra
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256;
 
 /**
  * Some User want to have more secured password. Provide the enhanced pw with sha256 if a user
@@ -151,6 +155,27 @@ public class SvnSecurityConfig extends WebSecurityConfigurerAdapter {
 		UserDetailsByNameServiceWrapper<org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken> userDetailsByNameServiceWrapper = new UserDetailsByNameServiceWrapper<>();
 		userDetailsByNameServiceWrapper.setUserDetailsService(ngrinderUserDetailsService);
 		return userDetailsByNameServiceWrapper;
+	}
+
+	@Bean
+	public HttpFirewall strictHttpFirewall() {
+		List<String> svnAllowedHttpMethods = asList("PROPFIND", "REPORT");
+		List<String> defaultAllowedHttpMethods = asList(
+			HttpMethod.DELETE.name(),
+			HttpMethod.GET.name(),
+			HttpMethod.HEAD.name(),
+			HttpMethod.OPTIONS.name(),
+			HttpMethod.PATCH.name(),
+			HttpMethod.POST.name(),
+			HttpMethod.PUT.name()
+		);
+		List<String> allowedHttpMethods = Stream.of(svnAllowedHttpMethods, defaultAllowedHttpMethods)
+			.flatMap(Collection::stream)
+			.collect(toList());
+
+		StrictHttpFirewall firewall = new StrictHttpFirewall();
+		firewall.setAllowedHttpMethods(allowedHttpMethods);
+		return firewall;
 	}
 
 }
