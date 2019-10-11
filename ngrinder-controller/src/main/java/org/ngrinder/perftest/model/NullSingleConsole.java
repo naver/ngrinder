@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class NullSingleConsole extends SingleConsole {
 
-	private static final Map<String, Object> EMPTY_RESULT = new HashMap<String, Object>(1);
+	private static final Map<String, Object> EMPTY_RESULT = new HashMap<>(1);
 
 	static {
 		EMPTY_RESULT.put("test_time", 0);

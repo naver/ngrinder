@@ -62,8 +62,8 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testShareUser() {
-		List<User> sharedUsers = new ArrayList<User>();
-		List<User> shareUsers = new ArrayList<User>();
+		List<User> sharedUsers = new ArrayList<>();
+		List<User> shareUsers = new ArrayList<>();
 
 		User user = new User();
 		user.setUserName("MyName1");

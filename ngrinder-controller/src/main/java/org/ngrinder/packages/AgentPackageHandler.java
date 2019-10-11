@@ -26,12 +26,7 @@ public class AgentPackageHandler extends PackageHandler {
 	public void cleanUpCachedPackageDir() {
 		cleanUpPackageDir(true);
 
-		scheduledTaskService.addFixedDelayedScheduledTask(new Runnable() {
-			@Override
-			public void run() {
-				cleanUpPackageDir(false);
-			}
-		}, TIME_MILLIS_OF_DAY);
+		scheduledTaskService.addFixedDelayedScheduledTask(() -> cleanUpPackageDir(false), TIME_MILLIS_OF_DAY);
 	}
 
 	@Override
