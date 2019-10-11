@@ -81,7 +81,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testSaveGetDeleteAgent() {
-		List<AgentInfo> agents = new ArrayList<AgentInfo>();
+		List<AgentInfo> agents = new ArrayList<>();
 		String currRegion = config.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
 
@@ -134,7 +134,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testGetAllReady() {
-		List<AgentInfo> agents = new ArrayList<AgentInfo>();
+		List<AgentInfo> agents = new ArrayList<>();
 		String currRegion = config.getRegion();
 		int oriCount = getAvailableAgentCountBy(currRegion);
 

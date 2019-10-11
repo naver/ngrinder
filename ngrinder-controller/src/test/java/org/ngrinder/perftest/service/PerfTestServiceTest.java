@@ -201,7 +201,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		tempRepo.deleteOnExit();
 		MonitorClientService client = new MonitorClientService("127.0.0.1", 13243);
 		client.init();
-		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
+		Map<String, SystemDataModel> rtnMap = new HashMap<>();
 
 		Random random = new Random();
 		for (int i = 0; i < 80; i++) {

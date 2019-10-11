@@ -64,7 +64,7 @@ public class SecuredUser implements UserDetails {
 	 */
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>(1);
+		List<GrantedAuthority> roles = new ArrayList<>(1);
 		roles.add(new SimpleGrantedAuthority(getUser().getRole().getShortName()));
 		return roles;
 	}

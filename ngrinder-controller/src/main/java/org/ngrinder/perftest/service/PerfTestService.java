@@ -281,7 +281,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	private String buildTagString(Set<Tag> tags) {
-		List<String> tagStringResult = new ArrayList<String>();
+		List<String> tagStringResult = new ArrayList<>();
 		for (Tag each : tags) {
 			tagStringResult.add(each.getTagValue());
 		}
@@ -1340,7 +1340,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			StringBuilder headerSB = new StringBuilder("[");
 			String[] headers = StringUtils.split(header, ",");
 			String[] refinedHeaders = StringUtils.split(header, ",");
-			List<StringBuilder> dataStringBuilders = new ArrayList<StringBuilder>(headers.length);
+			List<StringBuilder> dataStringBuilders = new ArrayList<>(headers.length);
 
 			for (int i = 0; i < headers.length; i++) {
 				dataStringBuilders.add(new StringBuilder("["));
@@ -1411,8 +1411,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return list containing label and tps value list
 	 */
 	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, boolean onlyTotal, int interval) {
-		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<String>(),
-				new ArrayList<String>());
+		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<>(), new ArrayList<>());
 		List<File> reportDataFiles = onlyTotal ? Lists.newArrayList(getReportDataFile(testId, key)) : getReportDataFiles(testId, key);
 		for (File file : reportDataFiles) {
 			String buildReportName = buildReportName(key, file);

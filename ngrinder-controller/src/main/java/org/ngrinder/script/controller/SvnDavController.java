@@ -80,7 +80,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 	}
 
-	private Map<String, String> initParam = new HashMap<String, String>();
+	private Map<String, String> initParam = new HashMap<>();
 	private DAVConfig myDAVConfig;
 	private ServletContext servletContext;
 
@@ -268,7 +268,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		StringBuffer xmlBuffer = new StringBuffer();
 		SVNXMLUtil.addXMLHeader(xmlBuffer);
 
-		Collection namespaces = new ArrayList();
+		Collection<String> namespaces = new ArrayList<>();
 		namespaces.add(DAVElement.DAV_NAMESPACE);
 		namespaces.add(DAVElement.SVN_APACHE_PROPERTY_NAMESPACE);
 		if (namespace != null) {

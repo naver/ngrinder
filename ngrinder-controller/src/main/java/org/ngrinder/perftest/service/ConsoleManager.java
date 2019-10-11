@@ -52,7 +52,7 @@ public class ConsoleManager {
 	private static final int MAX_PORT_NUMBER = 65000;
 	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
 	private volatile ArrayBlockingQueue<ConsoleEntry> consoleQueue;
-	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
+	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<>());
 
 	private final Config config;
 
@@ -64,7 +64,7 @@ public class ConsoleManager {
 	@PostConstruct
 	public void init() {
 		int consoleSize = getConsoleSize();
-		consoleQueue = new ArrayBlockingQueue<ConsoleEntry>(consoleSize);
+		consoleQueue = new ArrayBlockingQueue<>(consoleSize);
 		final String currentIP = config.getCurrentIP();
 		for (int each : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
 			final ConsoleEntry e = new ConsoleEntry(config.getCurrentIP(), each);

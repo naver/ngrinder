@@ -307,7 +307,7 @@ public class FileEntryService {
 		if (!"http://please_modify_this.com".equals(url)) {
 			fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
 		} else {
-			fileEntry.setProperties(new HashMap<String, String>());
+			fileEntry.setProperties(new HashMap<>());
 		}
 		return fileEntry;
 	}
