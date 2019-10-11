@@ -13,11 +13,11 @@
  */
 package org.ngrinder.perftest.model;
 
+import com.google.common.collect.ImmutableMap;
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -29,11 +29,7 @@ import java.util.Map;
  */
 public class NullSingleConsole extends SingleConsole {
 
-	private static final Map<String, Object> EMPTY_RESULT = new HashMap<>(1);
-
-	static {
-		EMPTY_RESULT.put("test_time", 0);
-	}
+	private static final Map<String, Object> EMPTY_RESULT = ImmutableMap.of("test_time", 0);
 
 	@Override
 	protected void init(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting,
