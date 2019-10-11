@@ -203,7 +203,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	public List<AgentInfo> getAllLocalWithFullInfo() {
 		Map<String, AgentInfo> agentInfoMap = createLocalAgentMap();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
+		List<AgentInfo> agentList = new ArrayList<>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = cast(eachAgentIdentity);
 			agentList.add(createAgentInfo(agentControllerIdentity, agentInfoMap));

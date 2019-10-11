@@ -41,7 +41,7 @@ public class ScheduledTaskService implements IScheduledTaskService {
 
 	private final TransactionService transactionService;
 
-	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
+	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<>();
 
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);

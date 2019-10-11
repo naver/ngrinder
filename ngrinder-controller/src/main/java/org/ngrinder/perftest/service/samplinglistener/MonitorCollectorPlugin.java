@@ -49,7 +49,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable, MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorPlugin.class);
 	private final int port;
-	private Map<MonitorClientService, BufferedWriter> clientMap = new ConcurrentHashMap<MonitorClientService, BufferedWriter>();
+	private Map<MonitorClientService, BufferedWriter> clientMap = new ConcurrentHashMap<>();
 
 	private final IScheduledTaskService scheduledTaskService;
 	private final PerfTestService perfTestService;

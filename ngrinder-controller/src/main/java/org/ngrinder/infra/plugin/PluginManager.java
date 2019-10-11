@@ -91,7 +91,7 @@ public class PluginManager {
 	 * @return plugin list
 	 */
 	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
-		ArrayList<M> pluginClasses = new ArrayList<M>();
+		ArrayList<M> pluginClasses = new ArrayList<>();
 		if (defaultPlugin != null) {
 			pluginClasses.add(defaultPlugin);
 		}
