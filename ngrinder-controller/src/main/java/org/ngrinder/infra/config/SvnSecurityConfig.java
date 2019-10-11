@@ -19,7 +19,6 @@ import org.ngrinder.user.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
@@ -33,16 +32,12 @@ import org.springframework.security.core.userdetails.UserDetailsByNameServiceWra
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_USER_PASSWORD_SHA256;
 
 /**
@@ -158,23 +153,9 @@ public class SvnSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	public HttpFirewall strictHttpFirewall() {
-		List<String> svnAllowedHttpMethods = asList("PROPFIND", "REPORT");
-		List<String> defaultAllowedHttpMethods = asList(
-			HttpMethod.DELETE.name(),
-			HttpMethod.GET.name(),
-			HttpMethod.HEAD.name(),
-			HttpMethod.OPTIONS.name(),
-			HttpMethod.PATCH.name(),
-			HttpMethod.POST.name(),
-			HttpMethod.PUT.name()
-		);
-		List<String> allowedHttpMethods = Stream.of(svnAllowedHttpMethods, defaultAllowedHttpMethods)
-			.flatMap(Collection::stream)
-			.collect(toList());
-
-		StrictHttpFirewall firewall = new StrictHttpFirewall();
-		firewall.setAllowedHttpMethods(allowedHttpMethods);
+	public HttpFirewall defaultHttpFirewall() {
+		DefaultHttpFirewall firewall = new DefaultHttpFirewall();
+		firewall.setAllowUrlEncodedSlash(true);
 		return firewall;
 	}
 
