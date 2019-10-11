@@ -40,6 +40,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
@@ -202,13 +203,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Transactional
 	public List<AgentInfo> getAllLocalWithFullInfo() {
 		Map<String, AgentInfo> agentInfoMap = createLocalAgentMap();
-		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		List<AgentInfo> agentList = new ArrayList<>(allAttachedAgents.size());
-		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = cast(eachAgentIdentity);
-			agentList.add(createAgentInfo(agentControllerIdentity, agentInfoMap));
-		}
-		return agentList;
+		return getAgentManager().getAllAttachedAgents()
+			.stream()
+			.map(identity -> createAgentInfo(cast(identity), agentInfoMap))
+			.collect(toList());
 	}
 
 	private Map<String, AgentInfo> createLocalAgentMap() {

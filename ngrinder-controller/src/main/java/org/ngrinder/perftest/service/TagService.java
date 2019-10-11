@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.ngrinder.perftest.repository.TagSpecification.*;
 
 import lombok.RequiredArgsConstructor;
@@ -96,12 +97,10 @@ public class TagService {
 	 * @return found tag string lists
 	 */
 	public List<String> getAllTagStrings(User user, String query) {
-		List<String> allString = new ArrayList<>();
-		for (Tag each : getAllTags(user, query)) {
-			allString.add(each.getTagValue());
-		}
-		Collections.sort(allString);
-		return allString;
+		return getAllTags(user, query).stream()
+			.map(Tag::getTagValue)
+			.sorted()
+			.collect(toList());
 	}
 
 	/**
