@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -50,10 +50,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Agent manager.
@@ -69,6 +72,12 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 
 	private static final int NUMBER_OF_THREAD = 3;
+
+	private static final Function<String, Predicate<AgentIdentity>> isOwnedAgent =
+		userId -> identity -> StringUtils.endsWith(convert(identity).getRegion(), "owned_" + userId);
+
+	private static final Predicate<AgentIdentity> isCommonAgent =
+		identity -> !StringUtils.contains(convert(identity).getRegion(), "owned_");
 
 	private final Config config;
 
@@ -229,7 +238,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param identity identity
 	 * @return converted identity.
 	 */
-	AgentControllerIdentityImplementation convert(AgentIdentity identity) {
+	static AgentControllerIdentityImplementation convert(AgentIdentity identity) {
 		return (AgentControllerIdentityImplementation) identity;
 	}
 
@@ -308,21 +317,16 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			return agents;
 		}
 
+		Set<String> ips = cachedLocalAgentService.getLocalAgents()
+			.stream()
+			.filter(AgentInfo::isApproved)
+			.map(agentInfo -> agentInfo.getIp() + agentInfo.getName())
+			.collect(toSet());
 
-		Set<String> ips = new HashSet<>();
-
-		for (AgentInfo each : cachedLocalAgentService.getLocalAgents()) {
-			if (each.isApproved()) {
-				ips.add(each.getIp() + each.getName());
-			}
-		}
-		Set<AgentIdentity> approvedAgent = new HashSet<>();
-		for (AgentIdentity each : agents) {
-			if (ips.contains(((AgentControllerIdentityImplementation) each).getIp() + each.getName())) {
-				approvedAgent.add(each);
-			}
-		}
-		return approvedAgent;
+		return agents.stream()
+			.map(AgentManager::convert)
+			.filter(identity -> ips.contains(identity.getIp() + identity.getName()))
+			.collect(toSet());
 	}
 
 	/**
@@ -332,16 +336,10 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return userOwned agents.
 	 */
 	public Set<AgentIdentity> filterSharedAgents(Set<AgentIdentity> agents) {
-
-		Set<AgentIdentity> userAgent = new HashSet<>();
-		for (AgentIdentity each : agents) {
-			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-
-			if (StringUtils.containsNone(region, "owned_")) {
-				userAgent.add(each);
-			}
-		}
-		return userAgent;
+		return agents.stream()
+			.map(AgentManager::convert)
+			.filter(identity -> StringUtils.containsNone(identity.getRegion(), "owned_"))
+			.collect(toSet());
 	}
 
 	/**
@@ -352,15 +350,9 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return userOwned agents.
 	 */
 	public Set<AgentIdentity> filterUserAgents(Set<AgentIdentity> agents, String userId) {
-
-		Set<AgentIdentity> userAgent = new HashSet<>();
-		for (AgentIdentity each : agents) {
-			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-			if (StringUtils.endsWith(region, "owned_" + userId) || !StringUtils.contains(region, "owned_")) {
-				userAgent.add(each);
-			}
-		}
-		return userAgent;
+		return agents.stream()
+			.filter(isOwnedAgent.apply(userId).or(isCommonAgent))
+			.collect(toSet());
 	}
 
 	/**
@@ -423,27 +415,12 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return selected agent.
 	 */
 	public Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
-		Set<AgentIdentity> userAgent = new HashSet<>();
-		for (AgentIdentity each : allFreeAgents) {
-			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-			if (StringUtils.endsWith(region, "owned_" + user.getUserId())) {
-				userAgent.add(each);
-				if (userAgent.size() == agentCount) {
-					return userAgent;
-				}
-			}
-		}
+		Stream<AgentIdentity> ownedFreeAgentStream = allFreeAgents.stream().filter(isOwnedAgent.apply(user.getUserId()));
+		Stream<AgentIdentity> freeAgentStream = allFreeAgents.stream().filter(isCommonAgent);
 
-		for (AgentIdentity each : allFreeAgents) {
-			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-			if (!StringUtils.contains(region, "owned_")) {
-				userAgent.add(each);
-				if (userAgent.size() == agentCount) {
-					return userAgent;
-				}
-			}
-		}
-		return userAgent;
+		return Stream.concat(ownedFreeAgentStream, freeAgentStream)
+			.limit(agentCount)
+			.collect(toSet());
 	}
 
 	/**
