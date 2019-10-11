@@ -198,7 +198,7 @@
         }
 
         downloadScript(path) {
-            window.location.href = `/script/download/${path}`;
+            window.location.href = `${this.contextPath}/script/download/${path}`;
         }
 
         getFileSize(size) {
