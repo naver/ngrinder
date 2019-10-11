@@ -13,23 +13,22 @@
  */
 package org.ngrinder.infra.spring;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RemainedPathResolverTest {
 
 	@Test
 	public void testResolveArgument() throws Exception {
-
 		MethodParameter mock2 = mock(MethodParameter.class);
 		RequestMapping requestMapping = mock(RequestMapping.class);
 		when(mock2.getMethodAnnotation(RequestMapping.class)).thenReturn(requestMapping);
@@ -42,9 +41,16 @@ public class RemainedPathResolverTest {
 				return requestMappingOnType;
 			}
 		};
-		NativeWebRequest nativeWebRequestMock = mock(NativeWebRequest.class);
-		when(nativeWebRequestMock.getAttribute(anyString(), anyInt())).thenReturn("/list/script/hello/world");
-		assertThat((String) resolver.resolveArgument(mock2, null, nativeWebRequestMock, null), is("hello/world"));
+		HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
+		when(httpServletRequestMock.getRequestURI()).thenReturn("/script/list/hello/world");
+		when(httpServletRequestMock.getContextPath()).thenReturn("");
+		assertThat(resolver.resolveArgument(mock2, null,
+			new ServletWebRequest(httpServletRequestMock), null), is("hello/world"));
+
+		when(httpServletRequestMock.getRequestURI()).thenReturn("ngrinder/script/list/hello/world");
+		when(httpServletRequestMock.getContextPath()).thenReturn("ngrinder");
+		assertThat(resolver.resolveArgument(mock2, null,
+			new ServletWebRequest(httpServletRequestMock), null), is("hello/world"));
 
 	}
 }
