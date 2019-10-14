@@ -26,6 +26,7 @@
                         <control-group id="region" :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
                                        labelHelpMessageKey="perfTest.config.region">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
+                                     errStyle="position: absolute; max-width: 170px; margin-left: -51px;"
                                      class="float-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
                                 <option v-for="region in config.regions" :value="region" :selected="region === test.region" v-text="region"></option>
                             </select2>
@@ -41,7 +42,7 @@
                                       v-model="test.vuserPerAgent"
                                       :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                       @change="changeVuserPerAgent"
-                                      errStyle="margin: 0; width: 140px;"
+                                      errStyle="white-space: nowrap; width: 130px;"
                                       appendPrefix="perfTest.config.max"
                                       :append="config.maxVuserPerAgent"
                                       message="perfTest.config.vuserPerAgent">
@@ -140,6 +141,7 @@
                     </control-group>
                     <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.threshold === 'R' }" v-model="test.threshold"
                                    labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold"
+                                   controlsStyle="height: 45px;"
                                    :data-step="shownBsTab ? 10 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
@@ -173,6 +175,7 @@
                                            name="ignoreSampleCount"
                                            message="perfTest.config.ignoreSampleCount"
                                            extraCss="input-mini"
+                                           errStyle="white-space: nowrap;"
                                            :validationRules="{ numeric: true }">
                             </input-popover>
                         </control-group>
@@ -190,6 +193,7 @@
                                            v-model="test.param"
                                            message="perfTest.config.param"
                                            customStyle="width: 125px;"
+                                           errStyle="white-space: nowrap;"
                                            :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }">
                             </input-popover>
                         </control-group>
@@ -517,6 +521,7 @@
             margin-top: 10px;
 
             .row {
+                height: 48px;
                 width: 480px;
 
                 .control-group {
@@ -561,14 +566,13 @@
             }
 
             .vuser-per-agent-container {
+                height: 48px;
                 max-width: 173px;
                 display: inline-block;
             }
         }
 
         .vuser-panel {
-            margin-top: 10px;
-
             .input-prepend-container {
                 width: 130px;
             }
@@ -670,9 +674,9 @@
         }
 
         .control-group {
-            margin-bottom: 15px;
+            margin-bottom: 5px;
 
-            &.script-control-group.error {
+            &.script-control-group {
                 margin-bottom: 20px;
             }
 
