@@ -9,6 +9,11 @@
                    :value="value"
                    v-validate="validationRules"
                    class="form-control"
+                   data-html="true"
+                   data-trigger="hover"
+                   data-toggle="popover"
+                   :data-content="messageContent ? messageContent : i18n(`${message}.help`)"
+                   :data-placement="dataPlacement"
                    ref="input"
                    @input="$emit('input', $event.target.value)"
                    @change="$emit('change')"
@@ -48,6 +53,10 @@
                 type: String,
                 default: 'text',
             },
+            dataPlacement: {
+                type: String,
+                default: 'right',
+            },
             append: {
                 type: [String, Number],
                 default: null,
@@ -57,6 +66,7 @@
                 default: false,
             },
             validationRules: Object,
+            messageContent: String,
             appendPrefix: String,
             errStyle: String,
         },
