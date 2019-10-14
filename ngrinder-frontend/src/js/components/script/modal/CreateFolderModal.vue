@@ -9,8 +9,10 @@
                 <div class="modal-body">
                     <div class="form-horizontal">
                         <fieldset>
-                            <control-group :class="{ error: errors.has('folderName') }" name="folderName"
-                                           label-message-key="script.info.folderName" ref="folderNameControlGroup">
+                            <control-group :class="{ error: errors.has('folderName') }"
+                                           name="folderName"
+                                           label-message-key="script.info.folderName"
+                                           ref="folderNameControlGroup">
                                 <input type="text"
                                        class="form-control d-block"
                                        id="folderName"
@@ -21,7 +23,7 @@
                                        v-model="folderName"
                                        v-validate="{ required: true, regex: '^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){2,19}$' }"/>
                             </control-group>
-                            <span v-show="errors.has('folderName')" class="validation-message mt-1" v-text="errors.first('folderName')"></span>
+                            <span v-visible="errors.has('folderName')" class="validation-message mt-1" v-text="errors.first('folderName')"></span>
                         </fieldset>
                     </div>
                 </div>

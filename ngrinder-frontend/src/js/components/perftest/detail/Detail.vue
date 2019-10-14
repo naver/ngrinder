@@ -12,7 +12,7 @@
                                                maxlength="80" size="30" type="text"
                                                v-validate="{ required: true }"
                                                v-model="test.testName"/>
-                                        <div v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></div>
+                                        <span v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></span>
                                     </control-group>
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
@@ -222,7 +222,7 @@
             this.timezoneOffset = res.data.timezone_offset;
             this.isClone = this.test.status.name !== 'SAVED';
             this.perftestStatus.iconPath = `/img/ball/${this.test.status.iconName}`;
-            if (this.ngrinder.config.clustered && this.test.region.name === 'NONE') {
+            if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                 this.test.region = '';
             }
             this.dataLoadFinished = true;
@@ -426,6 +426,10 @@
             .d-flex {
                 width: 275px;
             }
+
+            .control-group {
+                height: 48px;
+            }
         }
 
         .controls {
@@ -584,7 +588,7 @@
 
         .form-horizontal {
             .control-group {
-                margin-bottom: 10px;
+                margin-bottom: 5px;
             }
         }
 
