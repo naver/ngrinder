@@ -18,19 +18,25 @@
                     </div>
                     <div>
                         <template v-if="scriptHandler && scriptHandler.validatable">
-                            <button class="btn btn-success" @click="save">
+                            <button class="btn btn-success" @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
+                            </button>
+                            <button class="btn btn-success" @click="save(true)">
+                                <i class="fa fa-undo mr-1"></i>
+                                <span v-text="i18n('common.button.save.and.close')"></span>
                             </button>
                             <button class="btn btn-primary" @click="validate">
                                 <i class="fa fa-check mr-1"></i>
                                 <span v-text="i18n('script.editor.button.validate')"></span>
                             </button>
                         </template>
-                        <button v-else class="btn btn-success" @click="save">
-                            <i class="fa fa-save mr-1"></i>
-                            <span v-text="i18n('common.button.save')"></span>
-                        </button>
+                        <template v-else>
+                            <button class="btn btn-success" @click="save(false)">
+                                <i class="fa fa-save mr-1"></i>
+                                <span v-text="i18n('common.button.save')"></span>
+                            </button>
+                        </template>
                     </div>
                 </div>
                 <div class="flex-box">
@@ -199,7 +205,7 @@
             this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
 
-        save() {
+        save(isClose) {
             if (this.contentChanged()) {
                 this.validated = false;
             }
@@ -211,14 +217,16 @@
                         confirm: { label: this.i18n('common.button.ok') },
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
-                    onConfirm: this.saveScript,
+                    onConfirm: () => {
+                        this.saveScript(isClose);
+                    },
                 });
             } else {
-                this.saveScript();
+                this.saveScript(isClose);
             }
         }
 
-        saveScript() {
+        saveScript(isClose) {
             const params = {
                 fileEntry: {
                     path: this.file.path,
@@ -234,6 +242,9 @@
             .then(() => {
                 this.showSuccessMsg(this.i18n('common.message.alert.save.success'));
                 this.file.content = this.$refs.editor.getValue();
+                if (isClose) {
+                    this.$router.push('/script/list/');
+                }
             })
             .catch(() => this.showErrorMsg(this.i18n('script.message.save.error')));
         }
