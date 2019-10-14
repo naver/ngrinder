@@ -11,7 +11,8 @@
                      :data-step="shownBsTab ? 4 : undefined"
                      :data-intro="shownBsTab ? i18n('intro.config.basic.agent') : undefined">
                     <div class="agent-count-container">
-                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') }" labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
+                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') }"
+                                       labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
                                           v-model="test.agentCount"
                                           :validationRules="agentCountValidationRules"
