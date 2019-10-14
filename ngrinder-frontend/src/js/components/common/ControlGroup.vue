@@ -18,7 +18,7 @@
                   :data-content="i18n(`${labelHelpMessageKey}.help`)"
                   :title="i18n(labelHelpMessageKey)"
                   data-placement='top'>
-				<i class="icon-question-sign align-middle"></i>
+				<i class="fa fa-question-circle align-middle"></i>
 			</span>
         </label>
         <div class="controls" :style="controlsStyle">
@@ -63,6 +63,12 @@
     .control-group {
         i {
             vertical-align: middle;
+
+            &.fa-question-circle {
+                width: 14px;
+                height: 14px;
+                color: black;
+            }
         }
 
         .required-mark {
