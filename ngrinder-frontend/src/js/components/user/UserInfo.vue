@@ -1,7 +1,10 @@
 <template>
     <div class="form-horizontal form-horizontal-left user-info">
         <fieldset>
-            <control-group :class="{error: errors.has('userId')}" name="userId" labelMessageKey="user.info.userId" required>
+            <control-group :class="{error: errors.has('userId')}"
+                           name="userId"
+                           controlsStyle="height: 68px;"
+                           labelMessageKey="user.info.userId" required>
                 <input-append name="userId" ref="userId"
                               v-model="user.userId"
                               :readonly="!config.allowUserIdChange"
@@ -9,7 +12,10 @@
                               message="user.info.userId"/>
             </control-group>
 
-            <control-group :class="{ error: errors.has('userName') }" name="userName" labelMessageKey="user.info.name" required>
+            <control-group :class="{ error: errors.has('userName') }" required
+                           name="userName"
+                           controlsStyle="height: 45px;"
+                           labelMessageKey="user.info.name">
                 <input-append name="userName" ref="userName"
                               v-model="user.userName"
                               :validationRules="{ required: true, max: 20 }"
@@ -24,7 +30,10 @@
                 </select>
             </control-group>
 
-            <control-group :class="{ error: errors.has('email') }" name="email" labelMessageKey="user.info.email">
+            <control-group :class="{ error: errors.has('email') }"
+                           name="email"
+                           controlsStyle="height: 45px;"
+                           labelMessageKey="user.info.email">
                 <input-append name="email" ref="email"
                               v-model="user.email"
                               :validationRules="{ email: true }"
@@ -39,7 +48,10 @@
                           v-model="user.description"></textarea>
             </control-group>
 
-            <control-group :class="{ error: errors.has('mobilePhone') }" name="mobilePhone" labelMessageKey="user.info.phone">
+            <control-group :class="{ error: errors.has('mobilePhone') }"
+                           name="mobilePhone"
+                           controlsStyle="height: 55px;"
+                           labelMessageKey="user.info.phone">
                 <input-append name="mobilePhone" ref="mobilePhone"
                               errStyle="width: 285px;"
                               v-model="user.mobilePhone"
@@ -59,14 +71,22 @@
 
             <template v-if="config.allowPasswordChange">
                 <div v-show="displayPasswordField" class="password-container border-top mt-1">
-                    <control-group :class="{ error: errors.has('password') }" name="password" labelMessageKey="user.info.pwd" :required="config.showPasswordByDefault">
+                    <control-group :class="{ error: errors.has('password') }"
+                                   name="password"
+                                   controlsStyle="height: 45px;"
+                                   labelMessageKey="user.info.pwd"
+                                   :required="config.showPasswordByDefault">
                         <input-append name="password" ref="password"
                                       v-model="user.password"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15] }"
                                       type="password" message="user.info.pwd"/>
                     </control-group>
 
-                    <control-group :class="{ error: errors.has('confirmPassword') }" name="confirmPassword" labelMessageKey="user.info.cpwd" :required="config.showPasswordByDefault">
+                    <control-group :class="{ error: errors.has('confirmPassword') }"
+                                   name="confirmPassword"
+                                   controlsStyle="height: 45px;"
+                                   labelMessageKey="user.info.cpwd"
+                                   :required="config.showPasswordByDefault">
                         <input-append name="confirmPassword" ref="confirmPassword"
                                       v-model="confirmPassword"
                                       :validationRules="{ required: config.showPasswordByDefault, lengthRange: [6, 15], confirmed: user.password}"
@@ -262,7 +282,7 @@
 
         .control-group {
             width: 450px;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .controls {
