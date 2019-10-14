@@ -4,7 +4,12 @@ import VeeValidate from 'vee-validate';
 class VeeValidateInitializer {
     initValidationMessages() {
         const dictionary = {
-            required: () => I18n.i18n('common.message.validate.empty'),
+            required: name => {
+                switch (name) {
+                    case 'region': return I18n.i18n('perfTest.message.region');
+                    default: return I18n.i18n('common.message.validate.empty');
+                }
+            },
             regex: name => {
                 switch (name) {
                     case 'domain': return I18n.i18n('perfTest.config.addHost.inputTargetDomain');

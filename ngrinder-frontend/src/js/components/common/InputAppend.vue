@@ -1,24 +1,26 @@
 <template>
-    <div class="input-group input-append">
-        <input :id="name"
-               :type="inputType"
-               :readonly="readonly"
-               :name="name"
-               :title='i18n(message)'
-               :value="value"
-               v-validate="validationRules"
-               class="form-control"
-               ref="input"
-               @input="$emit('input', $event.target.value)"
-               @change="$emit('change')"
-               @focus="$emit('focus')"/>
-        <div v-if="append !== null" class="input-group-append">
-            <span class="input-group-text">
-                <span class="mr-1" v-text="i18n(appendPrefix)"></span>
-                <span v-html="append"></span>
-            </span>
+    <div class="w-100">
+        <div class="input-group input-append">
+            <input :id="name"
+                   :type="inputType"
+                   :readonly="readonly"
+                   :name="name"
+                   :title='i18n(message)'
+                   :value="value"
+                   v-validate="validationRules"
+                   class="form-control"
+                   ref="input"
+                   @input="$emit('input', $event.target.value)"
+                   @change="$emit('change')"
+                   @focus="$emit('focus')"/>
+            <div v-if="append !== null" class="input-group-append">
+                <span class="input-group-text">
+                    <span class="mr-1" v-text="i18n(appendPrefix)"></span>
+                    <span v-html="append"></span>
+                </span>
+            </div>
         </div>
-        <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
+        <div v-visible="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </div>
 </template>
 

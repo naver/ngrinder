@@ -61,6 +61,8 @@
 
             .validation-message {
                 color: @error-color;
+                line-height: 12px;
+                margin-top: 2px;
             }
 
             .pagination {
