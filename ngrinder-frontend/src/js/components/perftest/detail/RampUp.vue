@@ -123,7 +123,7 @@
         }
 
         updateRampUpChart() {
-            if (!this.isPlotTargetExist()) {
+            if (!this.isPlotTargetExist() || this.$parent.errors.has('vuserPerAgent')) {
                 return;
             }
 
