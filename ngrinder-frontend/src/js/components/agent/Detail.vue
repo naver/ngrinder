@@ -147,10 +147,14 @@
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
                 this.cpu.chart.plot();
                 this.memory.chart.plot();
-            }).catch(err => console.error(err));
+            });
         }
 
         refreshInterval() {
+            if (this.interval < 1 || isNaN(this.interval)) {
+                this.interval = 1;
+            }
+
             clearInterval(this.intervalTimer);
             this.intervalTimer = setInterval(this.getState, (Number(this.interval) || 1) * 1000);
         }
