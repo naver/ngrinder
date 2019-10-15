@@ -459,9 +459,14 @@
 
         changeProcessThreadCount() {
             this.updateVuserPerAgent();
+
             if (this.$refs.rampUp.enableRampUp) {
                 this.$refs.rampUp.updateRampUpChart();
             }
+
+            this.$nextTick(() => {
+                this.$validator.validate('vuserPerAgent');
+            });
         }
 
         updateVuserPerAgent() {
