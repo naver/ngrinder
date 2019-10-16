@@ -1,6 +1,6 @@
 <template>
     <div class="search-bar card card-header">
-        <table>
+        <table class="w-100">
             <tr>
                 <td>
                     <table class="w-100">
@@ -130,6 +130,8 @@
 
 <style lang="less" scoped>
     .search-bar {
+        height: 92px;
+
         .search-btn {
             height: 32px;
             vertical-align: baseline;

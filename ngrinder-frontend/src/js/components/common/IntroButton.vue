@@ -40,5 +40,10 @@
         .intro-button-title {
             margin-right: -30px;
         }
+
+        code {
+            position: absolute;
+            padding: 0 4px !important;
+        }
     }
 </style>

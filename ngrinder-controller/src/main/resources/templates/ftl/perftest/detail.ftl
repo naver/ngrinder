@@ -115,7 +115,7 @@
 	}
 
 	.form-horizontal .control-group {
-		margin-bottom:10px;
+		margin-bottom: 10px;
 	}
 
 	.controls .span3 {

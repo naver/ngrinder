@@ -5,7 +5,7 @@ import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
 import VueSession from 'vue-session';
-import bFormSlider from 'vue-bootstrap-slider';
+import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
 
