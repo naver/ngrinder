@@ -94,6 +94,8 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
+    import axios from 'axios';
+
     import Base from '../../Base.vue';
     import Config from './Config.vue';
     import Report from './Report.vue';
@@ -104,6 +106,7 @@
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
+    Component.registerHooks(['beforeRouteEnter']);
     @Component({
         name: 'perfTestDetail',
         props: {
@@ -187,10 +190,14 @@
         }
 
         created() {
+            console.log('Created hook');
+
             $('[data-toggle="popover"]').popover('hide');
         }
 
         mounted() {
+            console.log('Mounted hook');
+
             this.showProgressBar();
             if (this.$route.name === 'quickStart') {
                 this.$http.post('/perftest/api/quickstart', {
@@ -207,6 +214,24 @@
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
                 .finally(this.hideProgressBar);
             }
+        }
+
+        beforeRouteEnter(to, from, next) {
+            if (to.name === 'quickStart') {
+                next();
+            }
+
+            const apiPath = to.params.id ? `/perftest/api/${to.params.id}/detail` : '/perftest/api/create';
+            const promise = axios.get(`${window.ngrinder.contextPath}${apiPath}`);
+            console.log('Axios called');
+
+            promise.then(res => {
+                console.log('Received response');
+                next(vm => {
+                    console.log('Data set in next()');
+                    vm.initPerfTestDetail(res);
+                });
+            });
         }
 
         initPerfTestDetail(res) {
