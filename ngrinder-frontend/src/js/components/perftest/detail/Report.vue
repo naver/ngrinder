@@ -209,6 +209,7 @@
             width: 638px;
 
             textarea {
+                height: 64px;
                 resize: none;
             }
         }

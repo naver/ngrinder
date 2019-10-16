@@ -1,15 +1,11 @@
 {
-  "presets": [
-    ["es2015", { "modules": false }],
-    ["env", { "modules": false }],
-    "stage-2"
-  ],
-  "plugins": ["syntax-dynamic-import", "transform-runtime" , "transform-decorators-legacy",
-    ["component", [
-    {
-      "libraryName": "element-ui",
-      "styleLibraryName": "theme-chalk"
-    }
-  ]]],
-  "comments": true
+    "presets": ["@babel/preset-env"],
+    "plugins": [
+        ["@babel/plugin-proposal-decorators", { "legacy" : true }],
+        ["@babel/plugin-proposal-class-properties", { "loose" : true }],
+        "@babel/plugin-transform-arrow-functions",
+        "@babel/plugin-transform-runtime",
+        "@babel/plugin-syntax-dynamic-import"
+    ],
+    "comments": true
 }
