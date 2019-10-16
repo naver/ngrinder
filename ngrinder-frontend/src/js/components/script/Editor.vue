@@ -114,9 +114,6 @@
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
-    let file = {};
-    let scriptHandler = {};
-
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
@@ -124,35 +121,46 @@
     })
     export default class Editor extends Mixins(Base, MessagesMixin) {
 
+        file = {};
+
+        scriptHandler = {};
+
+        codemirrorKey = '';
+
         createLibAndResource = false;
 
-        targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
+        targetHosts = [];
         targetHostIp = '';
 
         editorSize = 0;
 
-        validated = this.file.validated;
+        validated = false;
         validating = false;
         validationResultExpanded = false;
         validationResult = '';
 
         cmOptions = {};
 
+        created() {
+            this.file = this.$route.params.file;
+            this.scriptHandler = this.$route.params.scriptHandler;
+            this.codemirrorKey = this.$route.params.codemirrorKey;
+
+            this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
+            this.validated = this.file.validated;
+        }
+
         mounted() {
-            this.setConfirmBeforeLeave();
-            this.initCodeMirror();
+            this.init();
 
             $('[data-toggle="popover"]').popover();
         }
 
-        async beforeRouteEnter(to, from, next) {
+        beforeRouteEnter(to, from, next) {
             const path = to.path.replace('/script/detail/', '');
-            const response = await axios.get(`${window.ngrinder.contextPath}/script/api/detail/${path}?r=${to.query.r ? to.query.r : -1}`);
-
-            file = response.data.file;
-            scriptHandler = response.data.scriptHandler;
-
-            next();
+            axios.get(`${window.ngrinder.contextPath}/script/api/detail/${path}?r=${to.query.r ? to.query.r : -1}`)
+                .then(res => Object.assign(to.params, res.data))
+                .then(next);
         }
 
         beforeRouteLeave(to, from, next) {
@@ -172,6 +180,14 @@
             }
         }
 
+        init() {
+            this.setConfirmBeforeLeave();
+
+            this.cmOptions = { mode: this.codemirrorKey };
+            this.editorSize = 500;
+            this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
+        }
+
         setConfirmBeforeLeave() {
             window.onbeforeunload = () => {
                 if (this.contentChanged()) {
@@ -183,12 +199,6 @@
 
         contentChanged() {
             return this.$refs.editor.getValue() !== this.file.content;
-        }
-
-        initCodeMirror() {
-            this.cmOptions = { mode: this.scriptHandler.codemirrorKey };
-            this.editorSize = 500;
-            this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
 
         save(isClose) {
@@ -292,14 +302,6 @@
             } else {
                 this.editorSize += 200;
             }
-        }
-
-        get file() {
-            return file;
-        }
-
-        get scriptHandler() {
-            return scriptHandler;
         }
 
         get basePath() {
