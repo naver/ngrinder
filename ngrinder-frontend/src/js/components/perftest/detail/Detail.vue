@@ -426,10 +426,6 @@
             .d-flex {
                 width: 275px;
             }
-
-            .control-group {
-                height: 48px;
-            }
         }
 
         .controls {
@@ -450,6 +446,7 @@
 
         .test-name-container {
             width: 360px;
+            height: 48px;
 
             input {
                 width: 240px;
@@ -461,7 +458,7 @@
         }
 
         .intro-button-container {
-            margin-top: -32px;
+            margin-top: -28px;
         }
 
         .select2-choices {

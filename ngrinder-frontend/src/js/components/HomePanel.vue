@@ -4,12 +4,12 @@
             <h4 :data-step="introJsDataSetp" :data-intro="introJsDataIntro" v-text="title"></h4>
         </header>
         <div class="card bg-light">
-            <br>
-            <table class="table ellipsis">
-                <colgroup>
-                    <col width="350">
-                </colgroup>
-                <tbody>
+            <div class="table-container">
+                <table class="table ellipsis">
+                    <colgroup>
+                        <col width="350">
+                    </colgroup>
+                    <tbody>
                     <template v-for="(entry, index) in entries">
                         <tr v-if="index < panelSize">
                             <td class="ellipsis">
@@ -19,20 +19,21 @@
                             <td>{{ entry.lastUpdatedDate | dateFormat('YYYY-MM-DD') }}</td>
                         </tr>
                     </template>
-                    <tr>
-                        <td v-if="askQuestionUrl">
-                            <img :src="`${contextPath}/img/asksupport.gif`" />
-                            <a :href="askQuestionUrl" target="_blank" v-text="i18n('home.button.ask')"></a>
-                        </td>
-                        <td v-if="seeMoreQuestionUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="text-right">
-                            <a :href="seeMoreQuestionUrl" target="_blank">
-                                <i class="fa fa-share"></i>
-                                <span v-text="i18n('home.button.more')"></span>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex">
+                <div v-if="askQuestionUrl">
+                    <img :src="`${contextPath}/img/asksupport.gif`" />
+                    <a :href="askQuestionUrl" target="_blank" v-text="i18n('home.button.ask')"></a>
+                </div>
+                <div v-if="seeMoreQuestionUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="ml-auto">
+                    <a :href="seeMoreQuestionUrl" target="_blank">
+                        <i class="fa fa-share"></i>
+                        <span v-text="i18n('home.button.more')"></span>
+                    </a>
+                </div>
+            </div>
         </div>
     </article>
 </template>
@@ -74,13 +75,23 @@
             padding: 10px;
         }
 
-        table {
-            background-color: #f8f9fa;
-            font-size: 12px;
+        .table-container {
+            height: 215px;
+            margin-top: 14px;
 
-            td, th {
-                padding: 8px;
+            table {
+                background-color: #f8f9fa;
+                font-size: 12px;
+
+                td, th {
+                    padding: 8px;
+                    border-bottom: 1px solid #dee2e6;
+                }
             }
+        }
+
+        .d-flex {
+            padding: 0 6px;
         }
     }
 </style>

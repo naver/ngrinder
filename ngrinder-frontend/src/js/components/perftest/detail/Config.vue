@@ -24,7 +24,10 @@
                         </control-group>
                     </div>
                     <div v-if="ngrinder.config.clustered" class="agent-region-container ml-auto">
-                        <control-group id="region" :class="{ error: errors.has('region') }" ref="regionControlGroup" labelMessageKey="perfTest.config.region"
+                        <control-group id="region" :class="{ error: errors.has('region') }"
+                                       ref="regionControlGroup"
+                                       labelStyle="position: absolute;"
+                                       labelMessageKey="perfTest.config.region"
                                        labelHelpMessageKey="perfTest.config.region">
                             <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
                                      errStyle="position: absolute; max-width: 170px; margin-left: -51px;"
@@ -535,6 +538,14 @@
                 }
             }
         }
+
+        .input-append {
+            input {
+                @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+                    max-width: 74px;
+                }
+            }
+        }
     }
 </style>
 
@@ -567,6 +578,7 @@
                 }
 
                 .agent-region-container {
+                    width: 175px;
                     max-width: 175px;
                 }
             }

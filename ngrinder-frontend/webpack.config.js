@@ -1,7 +1,6 @@
 var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
-var VueLoaderPlugin = require('vue-loader/lib/plugin');
 var webpack = require('webpack');
 
 var outputDir = path.resolve('../ngrinder-controller/build/classes/main/static');
@@ -34,9 +33,7 @@ module.exports = function (env) {
         performance: {
             hints: false,
         },
-        entry: {
-            'app': 'entries/app.js',
-        },
+        entry: { 'app': ['@babel/polyfill', 'entries/app.js']},
         output: {
             path: outputDir,
             publicPath: '/',
@@ -45,12 +42,11 @@ module.exports = function (env) {
         },
         resolve: {
             modules: [
+                path.join(__dirname, './../ngrinder-controller/src/main/resources'),
                 path.join(__dirname, 'src/js'),
                 './src/js/components',
                 './src/js/modules',
                 'node_modules',
-                './src/less',
-                path.join(__dirname, './../ngrinder-controller/src/main/resources'),
             ],
             alias: {
                 'vue$': 'vue/dist/vue.esm.js',
@@ -64,21 +60,22 @@ module.exports = function (env) {
         module: {
             rules: [
                 {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    loader: 'babel-loader',
+                },
+                {
                     test: /\.vue$/,
                     loader: 'vue-loader',
+                    options: {
+                        loaders: {
+                            js: { loader: 'babel-loader', options: {'presets': ['@babel/preset-env']}}
+                        },
+                    },
                 },
                 {
                     test: /.properties$/,
                     loader: 'java-properties-flat-loader',
-                },
-                {
-                    test: /\.js$/,
-                    exclude: [/node_modules/, /3rd-party/],
-                    loader: 'babel-loader?cacheDirectory=true',
-                    query: {
-                        presets: ['es2015', 'es2017', 'stage-0'],
-                        plugins: ['transform-decorators-legacy'],
-                    },
                 },
                 {
                     test: /\.css$/,
@@ -133,7 +130,6 @@ module.exports = function (env) {
             new MiniCssExtractPlugin({
                 filename: 'css/[name].css',
             }),
-            new VueLoaderPlugin(),
             new CopyWebpackPlugin([
                 {
                     context: 'src/html',
