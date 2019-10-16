@@ -105,6 +105,8 @@
 <script>
     import { Component, Watch } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
+    import axios from 'axios';
+
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
@@ -112,28 +114,24 @@
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
-    Component.registerHooks(['beforeRouteLeave']);
+    let file = {};
+    let scriptHandler = {};
+
+    Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
         components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror },
     })
     export default class Editor extends Mixins(Base, MessagesMixin) {
-        file = {
-            fileName: '',
-            description: '',
-            content: '',
-            validated: false,
-        };
-        scriptHandler = {};
 
         createLibAndResource = false;
 
-        targetHosts = [];
+        targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
         targetHostIp = '';
 
         editorSize = 0;
 
-        validated = false;
+        validated = this.file.validated;
         validating = false;
         validationResultExpanded = false;
         validationResult = '';
@@ -142,9 +140,19 @@
 
         mounted() {
             this.setConfirmBeforeLeave();
-            this.initScriptDetail();
+            this.initCodeMirror();
 
             $('[data-toggle="popover"]').popover();
+        }
+
+        async beforeRouteEnter(to, from, next) {
+            const path = to.path.replace('/script/detail/', '');
+            const response = await axios.get(`${window.ngrinder.contextPath}/script/api/detail/${path}?r=${to.query.r ? to.query.r : -1}`);
+
+            file = response.data.file;
+            scriptHandler = response.data.scriptHandler;
+
+            next();
         }
 
         beforeRouteLeave(to, from, next) {
@@ -175,28 +183,6 @@
 
         contentChanged() {
             return this.$refs.editor.getValue() !== this.file.content;
-        }
-
-        initScriptDetail() {
-            const path = this.$route.path.replace('/script/detail/', '');
-            this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
-                .then(res => {
-                    if (!res.data.file) {
-                        this.$router.push({ path: '/script/' });
-                    }
-
-                    Object.assign(this.file, res.data.file);
-                    Object.assign(this.scriptHandler, res.data.scriptHandler);
-                    this.scriptHandler.codemirrorKey = res.data.codemirrorKey;
-
-                    if (this.file.properties.targetHosts) {
-                        this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
-                    }
-
-                    this.validated = this.file.validated;
-
-                    this.initCodeMirror();
-                });
         }
 
         initCodeMirror() {
@@ -306,6 +292,14 @@
             } else {
                 this.editorSize += 200;
             }
+        }
+
+        get file() {
+            return file;
+        }
+
+        get scriptHandler() {
+            return scriptHandler;
         }
 
         get basePath() {
