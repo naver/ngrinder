@@ -72,24 +72,29 @@
 
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component, Prop } from 'vue-property-decorator';
     import VueHeadful from 'vue-headful';
     import _ from 'lodash';
     import Vuetable from 'vuetable-2';
     import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue';
+
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import Base from '../Base.vue';
     import SearchBar from './SearchBar.vue';
 
-    const removePrependedSlash = path => (path.endsWith('/') ? path.slice(0, path.length - 1) : path);
-
+    Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'scriptList',
         components: { VueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
     export default class ScriptList extends Mixins(Base, MessagesMixin, TableConfig) {
-        scripts = [];
+        @Prop({ type: Array, required: true })
+        scripts;
+
+        @Prop({ type: String, required: false, default: '' })
+        remainedPath;
+
         table = {
             css: {},
             renderingData: {
@@ -100,18 +105,37 @@
             },
         };
 
+        beforeRouteEnter(to, from, next) {
+            ScriptList.prepareScripts(to).then(next);
+        }
+
+        beforeRouteUpdate(to, from, next) {
+            ScriptList.prepareScripts(to).then(next);
+        }
+
         created() {
             this.table.css = this.tableCss;
         }
 
         mounted() {
-            this.showProgressBar();
-            this.refreshScriptList(this.hideProgressBar);
+            this.initTableData();
             this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
 
             this.$nextTick(() => {
                 document.getElementById('file-icon-back').onclick = () => this.$router.push(`${this.baseDirectory}`);
             });
+        }
+
+        static prepareScripts(route) {
+            let promise;
+            if (route.name === 'scriptSearch') {
+                const query = route.query.query || -1;
+                promise = Base.prototype.$http.get(`/script/api/search?query=${query}`);
+            } else {
+                promise = Base.prototype.$http.get(`/script/api/${route.params.remainedPath || ''}`);
+            }
+
+            return promise.then(res => route.params.scripts = res.data);
         }
 
         dataManager(sortOrder) {
@@ -136,23 +160,15 @@
             this.$refs.pagination.setPaginationData(paginationData);
         }
 
-        refreshScriptList(callback) {
+        refreshScriptList() {
             if (this.$route.name === 'scriptSearch') {
                 this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
-                    .then(res => this.initTableData(res.data))
-                    .finally(() => {
-                        if (typeof callback === 'function') {
-                            callback();
-                        }
-                    });
+                    .then(res => this.scripts.splice(0, this.scripts.length, ...res.data))
+                    .then(this.initTableData);
             } else {
                 this.$http.get(`/script/api/${this.currentPath}`)
-                    .then(res => this.initTableData(res.data))
-                    .finally(() => {
-                        if (typeof callback === 'function') {
-                            callback();
-                        }
-                    });
+                    .then(res => this.scripts.splice(0, this.scripts.length, ...res.data))
+                    .then(this.initTableData);
             }
         }
 
@@ -178,7 +194,6 @@
         }
 
         initTableData(data) {
-            this.scripts = data;
             this.table.renderingData.data = _.slice(this.scripts, 0, this.table.renderingData.pagination.perPage);
             this.table.renderingData.pagination.total = this.scripts.length;
             this.table.renderingData.pagination.last_page =
@@ -191,7 +206,7 @@
             if (this.$route.name === 'scriptSearch') {
                 return '';
             }
-            return removePrependedSlash(this.$route.path).replace('/script', '').replace('/list', '').replace('/', '');
+            return this.remainedPath;
         }
 
         get baseDirectory() {
@@ -199,14 +214,6 @@
                 return '/script/list';
             }
             return `/script/list/${this.currentPath.slice(0, this.currentPath.lastIndexOf('/'))}`;
-        }
-
-        @Watch('$route')
-        watchRoute(newValue, oldValue) {
-            if ((newValue.name === 'scriptList' && newValue.path !== oldValue.path) ||
-                (newValue.name === 'scriptSearch' && newValue.query.query !== oldValue.query.query)) {
-                this.refreshScriptList();
-            }
         }
 
         downloadScript(path) {

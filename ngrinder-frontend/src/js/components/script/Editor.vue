@@ -103,8 +103,9 @@
 </template>
 
 <script>
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component, Prop, Watch } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
+
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
     import HostModal from '../perftest/modal/HostModal.vue';
@@ -112,19 +113,23 @@
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
-    Component.registerHooks(['beforeRouteLeave']);
+    Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
         components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror },
     })
     export default class Editor extends Mixins(Base, MessagesMixin) {
-        file = {
-            fileName: '',
-            description: '',
-            content: '',
-            validated: false,
-        };
-        scriptHandler = {};
+        @Prop({ type: Object, required: true })
+        file;
+
+        @Prop({ type: Object, required: true })
+        scriptHandler;
+
+        @Prop({ type: String, required: true })
+        codemirrorKey;
+
+        @Prop({ type: String, required: true })
+        remainedPath;
 
         createLibAndResource = false;
 
@@ -140,9 +145,20 @@
 
         cmOptions = {};
 
+        beforeRouteEnter(to, from, next) {
+            const path = to.params.remainedPath;
+            const revision = to.query.r || -1;
+
+            Base.prototype.$http.get(`/script/api/detail/${path}?r=${revision}`)
+                .then(res => res.data.file ? res : Promise.reject()) // eslint-disable-line no-confusing-arrow
+                .then(res => Object.assign(to.params, res.data))
+                .then(next)
+                .catch(() => next('/script'));
+        }
+
         mounted() {
             this.setConfirmBeforeLeave();
-            this.initScriptDetail();
+            this.init();
 
             $('[data-toggle="popover"]').popover();
         }
@@ -164,6 +180,15 @@
             }
         }
 
+        init() {
+            this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
+            this.validated = this.file.validated;
+
+            this.cmOptions = { mode: this.codemirrorKey };
+            this.editorSize = 500;
+            this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
+        }
+
         setConfirmBeforeLeave() {
             window.onbeforeunload = () => {
                 if (this.contentChanged()) {
@@ -175,34 +200,6 @@
 
         contentChanged() {
             return this.$refs.editor.getValue() !== this.file.content;
-        }
-
-        initScriptDetail() {
-            const path = this.$route.path.replace('/script/detail/', '');
-            this.$http.get(`/script/api/detail/${path}?r=${this.$route.query.r ? this.$route.query.r : -1}`)
-                .then(res => {
-                    if (!res.data.file) {
-                        this.$router.push({ path: '/script/' });
-                    }
-
-                    Object.assign(this.file, res.data.file);
-                    Object.assign(this.scriptHandler, res.data.scriptHandler);
-                    this.scriptHandler.codemirrorKey = res.data.codemirrorKey;
-
-                    if (this.file.properties.targetHosts) {
-                        this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
-                    }
-
-                    this.validated = this.file.validated;
-
-                    this.initCodeMirror();
-                });
-        }
-
-        initCodeMirror() {
-            this.cmOptions = { mode: this.scriptHandler.codemirrorKey };
-            this.editorSize = 500;
-            this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
 
         save(isClose) {
@@ -309,9 +306,7 @@
         }
 
         get basePath() {
-            const getBaseDirectory = s => s.substring(0, s.lastIndexOf('/'));
-
-            return getBaseDirectory(this.$route.path.replace('/script/detail/', ''));
+            return this.remainedPath.substring(0, this.remainedPath.lastIndexOf('/'));
         }
 
         get breadcrumbPathUrl() {

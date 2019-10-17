@@ -106,10 +106,10 @@ const routes = [
     {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail', props: true},
     {path: '/perftest/:id/detail_report', component: PerfTestDetailReport, name: 'perfTestDetailReport', props: true},
     {path: '/perftest/:id/report', redirect: '/perftest/:id/detail_report'}, // backward compatibility
-    {path: '/script', component: ScriptList, name: 'scriptList', alias: ['/script/list/(.*)?']},
-    {path: '/script/search', component: ScriptList, name: 'scriptSearch'},
+    {path: '/script/list/:remainedPath(.*)?', component: ScriptList, name: 'scriptList', alias: ['/script'], props: true},
+    {path: '/script/search', component: ScriptList, name: 'scriptSearch', props: true},
     {path: '/script/new', component: ScriptEditor, name: 'scriptEditor', props: true},
-    {path: '/script/detail(.*)?', component: ScriptEditor, name: 'scriptEditorDetail'},
+    {path: '/script/detail/:remainedPath(.*)?', component: ScriptEditor, name: 'scriptEditorDetail', props: true},
     {path: '/operation/script_console', component: ScriptConsole, name: 'scriptConsole'},
     {path: '/operation/system_config', component: SystemConfig, name: 'systemConfig'},
     {path: '/operation/announcement', component: Announcement, name: 'announcement'},
