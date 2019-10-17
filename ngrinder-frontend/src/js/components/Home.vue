@@ -96,7 +96,7 @@
                     scriptType: this.scriptType,
                     url: this.quickStartUrl,
                 };
-                this.$router.push({ name: 'quickStart', params });
+                this.$router.push({ name: 'quickStart', query: params });
             });
         }
     }
