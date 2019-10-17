@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoadFinished" class="perftest-detail-container">
+    <div class="perftest-detail-container">
         <div class="container">
             <div class="card bg-light">
                 <div class="form-horizontal info">
@@ -93,7 +93,8 @@
 </template>
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import Component from 'vue-class-component';
+    import { Component, Prop } from 'vue-property-decorator';
+
     import Base from '../../Base.vue';
     import Config from './Config.vue';
     import Report from './Report.vue';
@@ -104,48 +105,34 @@
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
+    Component.registerHooks(['beforeRouteEnter']);
     @Component({
         name: 'perfTestDetail',
-        props: {
-            id: {
-                type: String,
-                default: '',
-            },
-            url: String,
-            scriptType: String,
-        },
         components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
         $_veeValidate: {
             validator: 'new',
         },
     })
     export default class PerfTestDetail extends Mixins(Base, MessagesMixin) {
-        config = {};
-        test = {
-            id: '',
-            status: {
-                name: '',
-                iconName: '',
-                springMessageKey: '',
-            },
-            testName: '',
-            progressMessage: '',
-            description: '',
-            createdUser: {
-                userId: '',
-            },
-            lastProgressMessage: '',
-        };
+        @Prop({ type: String, required: false })
+        id;
+
+        @Prop({ type: Object, required: true })
+        config;
+
+        @Prop({ type: Object, required: true })
+        test;
+
+        @Prop({ type: Number, required: true })
+        timezoneOffset;
 
         perftestStatus = {
             message: '',
             iconPath: '',
         };
 
-        dataLoadFinished = false;
         isClone = false;
         scheduledTime = 0;
-        timezoneOffset = 0;
 
         currentRefreshStatusTimeoutId = 0;
 
@@ -186,46 +173,38 @@
             return params;
         }
 
+        beforeRouteEnter(to, from, next) {
+            let promise;
+            if (to.name === 'quickStart') {
+                promise = Base.prototype.$http.post('/perftest/api/quickstart', {
+                    url: to.query.url,
+                    scriptType: to.query.scriptType,
+                });
+            } else {
+                const apiPath = to.params.id ? `/perftest/api/${to.params.id}/detail` : '/perftest/api/create';
+                promise = Base.prototype.$http.get(apiPath);
+            }
+
+            promise
+                .then(res => Object.assign(to.params, res.data))
+                .then(next)
+                .catch(() => next('/perftest'));
+        }
+
         created() {
             $('[data-toggle="popover"]').popover('hide');
         }
 
         mounted() {
-            this.showProgressBar();
-            if (this.$route.name === 'quickStart') {
-                this.$http.post('/perftest/api/quickstart', {
-                    url: this.url,
-                    scriptType: this.scriptType,
-                })
-                .then(res => this.initPerfTestDetail(res))
-                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
-                .finally(this.hideProgressBar);
-            } else {
-                const apiPath = this.id ? `/perftest/api/${this.id}/detail` : '/perftest/api/create';
-                this.$http.get(apiPath)
-                .then(res => this.initPerfTestDetail(res))
-                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('common.button.test') })))
-                .finally(this.hideProgressBar);
-            }
+            this.initPerfTestDetail();
         }
 
-        initPerfTestDetail(res) {
-            this.config = {
-                regions: res.data.regions,
-                regionAgentCountMap: res.data.regionAgentCountMap,
-                rampUpTypes: res.data.availRampUpType,
-                maxRunCount: res.data.maxRunCount,
-                maxRunHour: res.data.maxRunHour,
-                maxVuserPerAgent: res.data.maxVuserPerAgent,
-            };
-            this.test = res.data.test;
-            this.timezoneOffset = res.data.timezone_offset;
+        initPerfTestDetail() {
             this.isClone = this.test.status.name !== 'SAVED';
             this.perftestStatus.iconPath = `/img/ball/${this.test.status.iconName}`;
             if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                 this.test.region = '';
             }
-            this.dataLoadFinished = true;
             this.$nextTick(() => {
                 if (this.test.status.category === 'TESTING') {
                     this.$refs.running.startSamplingInterval();

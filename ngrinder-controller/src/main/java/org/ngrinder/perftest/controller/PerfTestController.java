@@ -62,6 +62,14 @@ public class PerfTestController {
 	}
 
 	/**
+	 * Open the new perf test quickstart.
+	 */
+	@GetMapping("/quickstart")
+	public String quickstart(User user) {
+		return "app";
+	}
+
+	/**
 	 * perf test detail on the given perf test id.
 	 *
 	 * @param id perf test id

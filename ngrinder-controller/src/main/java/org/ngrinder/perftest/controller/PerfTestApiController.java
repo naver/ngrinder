@@ -427,17 +427,21 @@ public class PerfTestApiController {
 	private Map<String, Object> getDefaultAttributes(User user) {
 		Map<String, Object> attributes = new HashMap<>();
 
+		Map<String, Object> testConfig = new HashMap<>();
 		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
-		attributes.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		attributes.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
+		testConfig.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		testConfig.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
 
-		attributes.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
-		attributes.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
-		attributes.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		testConfig.put(PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
+		testConfig.put(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		testConfig.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
+		testConfig.put(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+
+		attributes.put("config", testConfig);
+
 		if (config.isSecurityEnabled()) {
 			attributes.put(PARAM_SECURITY_LEVEL, config.getSecurityLevel());
 		}
-		attributes.put(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		attributes.put(PARAM_SAFE_FILE_DISTRIBUTION,
 			config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
 		String timeZone = userContext.getCurrentUser().getTimeZone();
