@@ -248,7 +248,10 @@
                     this.autoUpdateTargets.push({ 'id': test.id, 'index': index });
                 }
             });
-            this.$nextTick(() => $('[data-toggle="popover"]').popover());
+            this.$nextTick(() => {
+                $('[data-toggle="popover"]').popover('dispose');
+                $('[data-toggle="popover"]').popover();
+            });
         }
 
         updateTableWithUrl() {
@@ -373,21 +376,22 @@
                         ids,
                     },
                 }).then(res => {
-                    const status = res.data.status.reverse();
+                    const statuses = res.data.status.reverse();
+
                     this.autoUpdateTargets.forEach((target, index) => {
-                        if (status[index].reportable) {
+                        const updatedStatus = statuses[index].status;
+                        const message = statuses[index].message;
+
+                        if (updatedStatus.reportable) {
                             this.$refs.vuetable.refresh();
                         }
-                        this.tests[target.index].status.iconName = status[index].icon;
-                        this.tests[target.index].status.reportable = status[index].reportable;
-                        this.tests[target.index].status.deletable = status[index].deletable;
-                        this.tests[target.index].status.stoppable = status[index].stoppable;
-                        this.tests[target.index].status.name = status[index].status_id;
+
+                        this.tests[target.index].status = updatedStatus;
                         this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
 
-                        const $ball = $(`#ball_${this.tests[target.index].id}`);
-                        $ball.attr('title', status[index].name);
-                        $ball.attr('data-content', status[index].message);
+                        const $ball = $(`#ball_${target.id}`);
+                        $ball.attr('title', updatedStatus.name);
+                        $ball.attr('data-content', message);
                     });
                 }).finally(() => this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000));
             } else {

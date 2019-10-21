@@ -50,11 +50,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -475,24 +475,14 @@ public class PerfTestApiController {
 		}
 	}
 
-	private List<Map<String, Object>> getStatus(List<PerfTest> perfTests) {
-		List<Map<String, Object>> statuses = newArrayList();
-		for (PerfTest each : perfTests) {
-			Map<String, Object> result = newHashMap();
-			result.put("id", each.getId());
-			result.put("status_id", each.getStatus());
-			result.put("status_type", each.getStatus().getCategory());
-			result.put("name", getMessages(each.getStatus().getSpringMessageKey()));
-			result.put("icon", each.getStatus().getIconName());
-			result.put("message",
-				StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage() + "</b>\n"
-					+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
-			result.put("deletable", each.getStatus().isDeletable());
-			result.put("stoppable", each.getStatus().isStoppable());
-			result.put("reportable", each.getStatus().isReportable());
-			statuses.add(result);
-		}
-		return statuses;
+	private Map<String, Object> getStatus(PerfTest perfTest) {
+		Map<String, Object> result = newHashMap();
+		result.put("id", perfTest.getId());
+		result.put("status", perfTest.getStatus());
+		result.put("message",
+			StringUtils.replace(perfTest.getProgressMessage() + "\n<b>" + perfTest.getLastProgressMessage() + "</b>\n"
+				+ perfTest.getLastModifiedDateToStr(), "\n", "<br/>"));
+		return result;
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -549,8 +539,14 @@ public class PerfTestApiController {
 	@GetMapping("/status")
 	public Map<String, Object> getStatuses(User user, @RequestParam(defaultValue = "") String ids) {
 		List<PerfTest> perfTests = perfTestService.getAll(user, convertString2Long(ids));
-		return buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(),
-			"status", getStatus(perfTests));
+		List<Map<String, Object>> statuses = perfTests.stream()
+			.map(this::getStatus)
+			.collect(toList());
+
+		return buildMap(
+			"perfTestInfo", perfTestService.getCurrentPerfTestStatistics(),
+			"status", statuses
+		);
 	}
 
 	private Long[] convertString2Long(String ids) {
@@ -578,7 +574,7 @@ public class PerfTestApiController {
 		return fileEntryService.getAll(user)
 			.stream()
 			.filter(input -> input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT)
-			.collect(Collectors.toList());
+			.collect(toList());
 	}
 
 	/**
@@ -590,8 +586,8 @@ public class PerfTestApiController {
 	 */
 	@GetMapping("/{id}/status")
 	public Map<String, Object> getStatus(User user, @PathVariable Long id) {
-		List<PerfTest> perfTests = perfTestService.getAll(user, new Long[]{id});
-		return buildMap("status", getStatus(perfTests));
+		PerfTest perfTest = perfTestService.getOne(user, id);
+		return getStatus(perfTest);
 	}
 
 	/**
