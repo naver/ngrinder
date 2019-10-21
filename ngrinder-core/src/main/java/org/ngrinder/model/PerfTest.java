@@ -287,6 +287,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 			this.ignoreSampleCount = getSafe(this.ignoreSampleCount);
 		}
 		this.runCount = getSafe(this.runCount);
+		this.stopRequest = getSafe(this.stopRequest, false);
 		this.duration = getSafe(this.duration, 60000L);
 		this.samplingInterval = getSafe(this.samplingInterval, 2);
 		this.scriptRevision = getSafe(this.scriptRevision, -1L);
