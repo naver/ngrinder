@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.repository;
 
-import net.grinder.message.console.AgentControllerState;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -37,47 +36,6 @@ public abstract class AgentManagerSpecification {
 			Expression<String> regionField = root.get("region").as(String.class);
 			return cb.or(cb.like(regionField, region + "/_owned%", cb.literal('/')), cb.equal(regionField,
 					region));
-		};
-	}
-
-	/**
-	 * Query specification to query the active agents.
-	 *
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> active() {
-		return (Specification<AgentInfo>) (root, query, cb) -> {
-			Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
-			return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
-					cb.notEqual(status, AgentControllerState.UNKNOWN),
-					cb.notEqual(status, AgentControllerState.WRONG_REGION));
-		};
-	}
-
-	/**
-	 * Query specification to query the visible agents. "visible" means.. it's
-	 * visible by the agent monitor.
-	 *
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> visible() {
-		return (Specification<AgentInfo>) (root, query, cb) -> {
-			Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
-			return cb.notEqual(status, AgentControllerState.INACTIVE);
-		};
-	}
-	
-	/**
-	 * Query specification to query the ready agents.
-	 * (state in READY,FINISHED,STARTED)
-	 *
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> ready() {
-		return (Specification<AgentInfo>) (root, query, cb) -> {
-			Expression<AgentControllerState> status = root.get("state").as(
-				AgentControllerState.class);
-			return cb.and(cb.equal(status, AgentControllerState.READY));
 		};
 	}
 

@@ -17,8 +17,6 @@ import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -55,16 +53,5 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 * @return agent count
 	 */
 	long count(Specification<AgentInfo> spec);
-
-	/**
-	 * Update system stat.
-	 *
-	 * @param ip   ip
-	 * @param name name
-	 * @param s    status string
-	 */
-	@Modifying
-	@Query("update AgentInfo p set p.systemStat=?3 where p.ip=?1 and p.name=?2")
-	void updateSystemStat(String ip, String name, String s);
 
 }
