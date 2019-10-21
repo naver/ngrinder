@@ -30,7 +30,7 @@
                                              data-toggle="popover"
                                              data-trigger="hover"
                                              data-placement="bottom"
-                                             :title="i18n(test.springMessageKey)"
+                                             :title="i18n(test.status.springMessageKey)"
                                              :src="`${contextPath}${perftestStatus.iconPath}`"/>
                                     </div>
                                     <div class="ml-auto" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
@@ -105,7 +105,7 @@
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
-    Component.registerHooks(['beforeRouteEnter']);
+    Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'perfTestDetail',
         components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
@@ -174,19 +174,13 @@
         }
 
         beforeRouteEnter(to, from, next) {
-            let promise;
-            if (to.name === 'quickStart') {
-                promise = Base.prototype.$http.post('/perftest/api/quickstart', {
-                    url: to.query.url,
-                    scriptType: to.query.scriptType,
-                });
-            } else {
-                const apiPath = to.params.id ? `/perftest/api/${to.params.id}/detail` : '/perftest/api/create';
-                promise = Base.prototype.$http.get(apiPath);
-            }
+            PerfTestDetail.preparePerfTest(to)
+                .then(next)
+                .catch(() => next('/perftest'));
+        }
 
-            promise
-                .then(res => Object.assign(to.params, res.data))
+        beforeRouteUpdate(to, from, next) {
+            PerfTestDetail.preparePerfTest(to)
                 .then(next)
                 .catch(() => next('/perftest'));
         }
@@ -197,6 +191,21 @@
 
         mounted() {
             this.initPerfTestDetail();
+        }
+
+        static preparePerfTest(route) {
+            let promise;
+            if (route.name === 'quickStart') {
+                promise = Base.prototype.$http.post('/perftest/api/quickstart', {
+                    url: route.query.url,
+                    scriptType: route.query.scriptType,
+                });
+            } else {
+                const apiPath = route.params.id ? `/perftest/api/${route.params.id}/detail` : '/perftest/api/create';
+                promise = Base.prototype.$http.get(apiPath);
+            }
+
+            return promise.then(res => Object.assign(route.params, res.data));
         }
 
         initPerfTestDetail() {
@@ -253,23 +262,24 @@
             }
 
             this.$http.get(`/perftest/api/${this.test.id}/status`).then(res => {
-                const status = res.data.status[0];
+                const status = res.data.status;
+                const message = res.data.message;
 
-                if (this.test.status.name !== status.status_id) {
-                    this.test.status.name = status.status_id;
+                if (this.test.status.name !== status.name) {
+                    this.test.status.name = status.name;
                     this.isClone = this.test.status.name !== 'SAVED';
-                    this.updateStatus(status.status_id, status.status_type, status.name, status.icon, status.deletable, status.stoppable, status.message);
+                    this.updateStatus(status.springMessageKey, message, status.iconName);
                 }
-                if (this.test.status.category !== status.status_type) {
-                    this.test.status.category = status.status_type;
+                if (this.test.status.category !== status.category) {
+                    this.test.status.category = status.category;
                     this.updateTabDisplay();
                 }
                 this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
             });
         }
 
-        updateStatus(id, statusType, name, icon, deletable, stoppable, message) {
-            this.$testStatusImage.attr('data-original-title', name);
+        updateStatus(messageKey, message, icon) {
+            this.$testStatusImage.attr('data-original-title', this.i18n(messageKey));
             this.$testStatusImage.attr('data-content', message);
 
             if (this.perftestStatus.iconPath !== `/img/ball/${icon}`) {
