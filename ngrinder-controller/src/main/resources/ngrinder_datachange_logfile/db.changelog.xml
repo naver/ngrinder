@@ -39,4 +39,5 @@
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_27.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_28.xml" />
 	<include file="ngrinder_datachange_logfile/db.changelog_schema_29.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_30.xml" />
 </databaseChangeLog>

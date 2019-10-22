@@ -3,5 +3,8 @@
     "running_sample",
     "agent_stat",
     "monitor_stat"
+  ],
+  "AGENT": [
+    "state"
   ]
 }
