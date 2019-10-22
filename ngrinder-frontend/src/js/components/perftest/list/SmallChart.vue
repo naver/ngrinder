@@ -42,9 +42,7 @@
                     imgWidth: 100,
                     onlyTotal: true,
                 },
-            }).then(res => {
-                this.initCharts(res.data);
-            });
+            }).then(res => this.initCharts(res.data));
         }
 
         initCharts(data) {

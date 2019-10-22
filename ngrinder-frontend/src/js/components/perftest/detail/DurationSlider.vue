@@ -27,10 +27,10 @@
         durationMap = [];
 
         mounted() {
-            this.initDuration();
+            this.init();
         }
 
-        initDuration() {
+        init() {
             this.durationMap[0] = 0;
 
             for (let i = 1; i <= this.sliderMax; i++) {
@@ -58,7 +58,7 @@
                 }
             }
 
-            this.initSliderFromDurationMs(this.durationMs);
+            this.setDurationMs(this.durationMs);
         }
 
         changeSlider(values) {
@@ -72,7 +72,7 @@
             this.$emit('change', durationSec);
         }
 
-        initSliderFromDurationMs(durationMs) {
+        setDurationMs(durationMs) {
             for (let i = 0; i <= this.sliderMax; i++) {
                 if (this.durationMap[i] * 60000 >= durationMs) {
                     this.value = i;

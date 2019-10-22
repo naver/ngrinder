@@ -295,7 +295,7 @@
         created() {
             Object.assign(this.test, this.testProps);
             this.setCustomValidationRules();
-            this.initDurationFromDurationStr();
+            this.setDurationFromDurationStr();
             this.changeDuration();
             this.setTargetHosts(this.test.targetHosts);
             this.getScriptResource();
@@ -430,7 +430,7 @@
         }
 
         // duration string format: '00:00:00'
-        initDurationFromDurationStr() {
+        setDurationFromDurationStr() {
             const durationTokens = this.test.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
             this.duration.min = parseInt(durationTokens[1]);
@@ -482,7 +482,7 @@
             }
             this.durationMs = (this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec) * 1000;
             if (options && options.updateSlider) {
-                this.$refs.durationSlider.initSliderFromDurationMs(this.durationMs);
+                this.$refs.durationSlider.setDurationMs(this.durationMs);
             }
         }
 
@@ -494,7 +494,7 @@
             if (durationSec < 60) {
                 this.test.duration = `00:${this.test.duration}`;
             }
-            this.initDurationFromDurationStr();
+            this.setDurationFromDurationStr();
             this.changeDuration({ focus: true });
         }
 
