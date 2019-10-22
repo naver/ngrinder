@@ -25,10 +25,10 @@
         value = '';
 
         mounted() {
-            this.initAutocomplete();
+            this.init();
         }
 
-        initAutocomplete() {
+        init() {
             $(this.$refs.autocomplete).autocomplete({
                 minLength: 0,
                 source: this.source,
@@ -54,7 +54,7 @@
         @Watch('source')
         sourceChanged() {
             this.value = '';
-            this.initAutocomplete();
+            this.init();
         }
     }
 </script>

@@ -190,7 +190,7 @@
         }
 
         mounted() {
-            this.initPerfTestDetail();
+            this.init();
         }
 
         static preparePerfTest(route) {
@@ -208,7 +208,7 @@
             return promise.then(res => Object.assign(route.params, res.data));
         }
 
-        initPerfTestDetail() {
+        init() {
             this.isClone = this.test.status.name !== 'SAVED';
             this.perftestStatus.iconPath = `/img/ball/${this.test.status.iconName}`;
             if (this.ngrinder.config.clustered && this.test.region === 'NONE') {

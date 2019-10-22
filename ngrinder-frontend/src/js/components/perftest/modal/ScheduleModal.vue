@@ -61,10 +61,10 @@
         validation = true;
 
         mounted() {
-            this.initScheduleDate();
+            this.init();
         }
 
-        initScheduleDate() {
+        init() {
             const date = this.getBrowserTimeApplyingTimezone();
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
