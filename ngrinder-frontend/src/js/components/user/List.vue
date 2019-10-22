@@ -125,7 +125,7 @@
         }
 
         mounted() {
-            this.initByQueryParams();
+            this.init();
             this.loadRoleSet().then(() => this.$refs.vuetable.reload().then(() => this.showTable = true));
         }
 
@@ -151,7 +151,7 @@
             this.table.appendParams.sort = this.$refs.vuetable.getSortParam().split('|').join(',');
         }
 
-        initByQueryParams() {
+        init() {
             this.keywords = this.$route.query.keywords || this.keywords;
             this.$refs.vuetable.currentPage = parseInt(this.$route.query['page.page']) || 1;
             this.table.pagination.perPage = parseInt(this.$route.query['page.size']) || this.table.pagination.perPage;

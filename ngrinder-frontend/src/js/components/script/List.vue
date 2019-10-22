@@ -118,8 +118,8 @@
         }
 
         mounted() {
-            this.initTableData();
-            this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refreshScriptList);
+            this.init();
+            this.$EventBus.$on(this.$Event.REFRESH_SCRIPT_LIST, this.refresh);
 
             this.$nextTick(() => {
                 document.getElementById('file-icon-back').onclick = () => this.$router.push(`${this.baseDirectory}`);
@@ -160,15 +160,15 @@
             this.$refs.pagination.setPaginationData(paginationData);
         }
 
-        refreshScriptList() {
+        refresh() {
             if (this.$route.name === 'scriptSearch') {
                 this.$http.get(`/script/api/search?query=${this.$route.query.query}`)
                     .then(res => this.scripts.splice(0, this.scripts.length, ...res.data))
-                    .then(this.initTableData);
+                    .then(this.init);
             } else {
                 this.$http.get(`/script/api/${this.currentPath}`)
                     .then(res => this.scripts.splice(0, this.scripts.length, ...res.data))
-                    .then(this.initTableData);
+                    .then(this.init);
             }
         }
 
@@ -188,12 +188,12 @@
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
                     onConfirm: () => this.$http.post('/script/api/delete', this.$refs.vuetable.selectedTo)
-                        .then(() => this.refreshScriptList()),
+                        .then(() => this.refresh()),
                 });
             }
         }
 
-        initTableData(data) {
+        init(data) {
             this.table.renderingData.data = _.slice(this.scripts, 0, this.table.renderingData.pagination.perPage);
             this.table.renderingData.pagination.total = this.scripts.length;
             this.table.renderingData.pagination.last_page =

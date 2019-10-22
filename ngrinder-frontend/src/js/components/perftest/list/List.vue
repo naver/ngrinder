@@ -181,7 +181,7 @@
         }
 
         mounted() {
-            this.initByQueryParams();
+            this.init();
             this.$refs.vuetable.reload().then(() => this.showTable = true);
             this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
         }
@@ -190,7 +190,7 @@
             clearTimeout(this.updateStatusTimeoutId);
         }
 
-        initByQueryParams() {
+        init() {
             this.$refs.searchBar.searchText = this.$route.query.query || '';
             this.$refs.searchBar.selectedTag = this.$route.query.tag || '';
             if (this.$route.query.queryFilter) {
