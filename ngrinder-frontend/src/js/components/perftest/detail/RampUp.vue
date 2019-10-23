@@ -56,7 +56,7 @@
 </template>
 
 <script>
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component, Prop, Watch } from 'vue-property-decorator';
     import 'jqplot/jquery.jqplot.min.js';
     import 'jqplot/jqplot.cursor.js';
     import 'jqplot/jqplot.donutRenderer.js';
@@ -73,30 +73,22 @@
     @Component({
         name: 'rampUp',
         components: { InputLabel },
-        props: {
-            testProps: {
-                type: Object,
-                required: true,
-            },
-            rampUpTypes: {
-                type: Array,
-                required: true,
-            },
-        },
     })
     export default class RampUp extends Base {
+        @Prop({ type: Object, required: true })
+        testProp;
+
+        @Prop({ type: Array, required: true })
+        rampUpTypes;
+
+        test = {};
+
         plotObj = '';
         useRampUp = false;
         rampUpType = 'PROCESS';
-        test = {
-            rampUpStep: 0,
-            rampUpInitCount: 0,
-            rampUpInitSleepTime: 0,
-            rampUpIncrementInterval: 0,
-        };
 
         created() {
-            Object.assign(this.test, this.testProps);
+            Object.assign(this.test, this.testProp);
             this.useRampUp = this.test.useRampUp;
             this.rampUpType = this.test.rampUpType;
         }
