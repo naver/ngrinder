@@ -340,20 +340,6 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 			extractRegionKey(agent.getRegion()), new ClusteredAgentRequest(agent.getIp(), agent.getName(), requestType)));
 	}
 
-	/**
-	 * Clean up the agents from db which belongs to the inactive regions.
-	 */
-	@Transactional
-	public void cleanup() {
-		super.cleanup();
-		final Set<String> regions = getRegions();
-		for (AgentInfo each : agentManagerRepository.findAll()) {
-			if (!regions.contains(extractRegionKey(each.getRegion()))) {
-				agentManagerRepository.delete(each);
-			}
-		}
-	}
-
 	@Override
 	public void execute(TopicEvent<ClusteredAgentRequest> event) {
 		ClusteredAgentRequest agentRequest = event.getData();

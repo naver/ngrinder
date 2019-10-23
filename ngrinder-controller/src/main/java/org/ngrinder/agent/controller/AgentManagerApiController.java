@@ -131,15 +131,6 @@ public class AgentManagerApiController {
 	}
 
 	/**
-	 * Clean up the agents in the inactive region
-	 */
-	@PreAuthorize("hasAnyRole('A')")
-	@PostMapping(value = "", params = "action=cleanup")
-	public void cleanUpAgentsInInactiveRegion() {
-		agentManagerService.cleanup();
-	}
-
-	/**
 	 * Get the current performance of the given agent.
 	 *
 	 * @param ip agent ip
