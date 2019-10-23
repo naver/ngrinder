@@ -88,8 +88,9 @@
                     </select2>
                     <button v-show="display.showScriptBtn" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
-                        R <span v-if="test.scriptRevision !== -1" v-text="test.scriptRevision"></span>
-                        <span v-else v-text="test.quickScriptRevision ? test.quickScriptRevision : 'HEAD'"></span>
+                        R
+                        <span v-if="test.scriptRevision !== -1" v-text="test.scriptRevision"></span>
+                        <span v-else v-text="'HEAD'"></span>
                     </button>
                 </control-group>
 
@@ -344,7 +345,7 @@
         }
 
         setScripts(scripts, selectedScript) {
-            if (!scripts.some(script => script.pathInShort === selectedScript)) {
+            if (!scripts.some(script => script.path === selectedScript)) {
                 if (selectedScript) {
                     scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
                     this.display.showScriptBtn = false;
@@ -390,7 +391,8 @@
         }
 
         changeScript(revision) {
-            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
+            console.log(this.$refs.scriptSelect.getSelectedOptionValidate());
+            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== -1) {
                 this.test.scriptRevision = revision;
                 this.updateScriptResource();
                 this.getScriptResource();

@@ -372,7 +372,7 @@ public class PerfTestApiController {
 		Map<String, Object> model = new HashMap<>();
 		PerfTest perfTest = createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost());
 		perfTest.setScriptName(newEntry.getPath());
-		perfTest.setScriptRevision(newEntry.getRevision());
+
 		model.put(PARAM_TEST, perfTest);
 
 		model.putAll(getDefaultAttributes(user));
@@ -393,6 +393,7 @@ public class PerfTestApiController {
 		test.init();
 		test.setTestName(testName);
 		test.setTargetHosts(targetHost);
+		test.setScriptRevision(-1L);
 		return test;
 	}
 
