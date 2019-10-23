@@ -120,8 +120,8 @@
 </template>
 
 <script>
+    import { Component, Prop } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
-    import Component from 'vue-class-component';
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
@@ -132,15 +132,12 @@
 
     @Component({
         name: 'running',
-        props: {
-            testProps: {
-                type: Object,
-                required: true,
-            },
-        },
         components: { ControlGroup, SamplingTable },
     })
     export default class Running extends Mixins(Base, FormatMixin, MessagesMixin) {
+        @Prop({ type: Object, required: true })
+        testProp;
+
         lastSampleStatistics = [];
         cumulativeStatistics = [];
         totalStatistics = { Tests: 0, Errors: 0 };
@@ -158,7 +155,7 @@
         shownBsTab = false;
 
         created() {
-            Object.assign(this.test, this.testProps);
+            Object.assign(this.test, this.testProp);
             this.tpsQueue = new Queue(60 / this.test.samplingInterval);
             this.tpsChart = new Chart('running-tps-chart', [this.tpsQueue.getArray()], this.test.samplingInterval);
         }

@@ -76,10 +76,10 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
-                        <config ref="config" :testProps="test" :config="config"></config>
+                        <config ref="config" :testProp="test" :config="config"></config>
                     </div>
                     <div class="tab-pane" id="running-section">
-                        <running ref="running" :testProps="test"></running>
+                        <running ref="running" :testProp="test"></running>
                     </div>
                     <div class="tab-pane" id="report-section">
                         <report :id="id" ref="report"></report>
@@ -174,13 +174,13 @@
         }
 
         beforeRouteEnter(to, from, next) {
-            PerfTestDetail.preparePerfTest(to)
+            PerfTestDetail.prepare(to)
                 .then(next)
                 .catch(() => next('/perftest'));
         }
 
         beforeRouteUpdate(to, from, next) {
-            PerfTestDetail.preparePerfTest(to)
+            PerfTestDetail.prepare(to)
                 .then(next)
                 .catch(() => next('/perftest'));
         }
@@ -193,7 +193,7 @@
             this.init();
         }
 
-        static preparePerfTest(route) {
+        static prepare(route) {
             let promise;
             if (route.name === 'quickStart') {
                 promise = Base.prototype.$http.post('/perftest/api/quickstart', {

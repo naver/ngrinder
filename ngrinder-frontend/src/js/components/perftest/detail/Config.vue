@@ -208,7 +208,7 @@
         </div>
         <div :data-step="shownBsTab ? 11 : undefined"
              :data-intro="shownBsTab ? i18n('intro.config.rampup') : undefined">
-            <ramp-up ref="rampUp" :testProps="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
+            <ramp-up ref="rampUp" :testProp="testProp" :rampUpTypes="config.rampUpTypes"></ramp-up>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
@@ -217,7 +217,7 @@
 
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import { Component, Watch, Inject } from 'vue-property-decorator';
+    import { Component, Prop, Watch, Inject } from 'vue-property-decorator';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
@@ -232,38 +232,18 @@
 
     @Component({
         name: 'config',
-        props: {
-            testProps: {
-                type: Object,
-                required: true,
-            },
-            config: {
-                type: Object,
-                required: true,
-            },
-        },
         components: { DurationSlider, TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, HostModal, Select2, RampUp },
     })
     export default class Config extends Mixins(Base, MessagesMixin) {
         @Inject() $validator;
 
-        test = {
-            param: '',
-            region: '',
-            testName: '',
-            agentCount: 0,
-            rampUpInitCount: 0,
-            rampUpStep: 0,
-            rampUpInitSleepTime: 0,
-            rampUpIncrementInterval: 0,
-            ignoreSampleCount: 0,
-            runCount: 0,
-            processes: 0,
-            threads: 0,
-            vuserPerAgent: 0,
-            samplingInterval: 2,
-            threshold: 'D',
-        };
+        @Prop({ type: Object, required: true })
+        testProp;
+
+        @Prop({ type: Object, required: true })
+        config;
+
+        test = {};
 
         scripts = [];
         resources = [];
@@ -294,7 +274,7 @@
         agentCountValidationRules = { required: true, agentCountValidation: true, min_value: 0 };
 
         created() {
-            Object.assign(this.test, this.testProps);
+            Object.assign(this.test, this.testProp);
             this.setCustomValidationRules();
             this.setDurationFromDurationStr();
             this.changeDuration();
