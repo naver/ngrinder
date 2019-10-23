@@ -106,11 +106,11 @@
         };
 
         beforeRouteEnter(to, from, next) {
-            ScriptList.prepareScripts(to).then(next);
+            ScriptList.prepare(to).then(next);
         }
 
         beforeRouteUpdate(to, from, next) {
-            ScriptList.prepareScripts(to).then(next);
+            ScriptList.prepare(to).then(next);
         }
 
         created() {
@@ -126,7 +126,7 @@
             });
         }
 
-        static prepareScripts(route) {
+        static prepare(route) {
             let promise;
             if (route.name === 'scriptSearch') {
                 const query = route.query.query || -1;
