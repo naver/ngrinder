@@ -16,10 +16,6 @@
                 <i class="mr-1 fa fa-arrow-up"></i>
                 <span v-text="i18n('agent.list.update')"></span>
             </button>
-            <button class="btn btn-primary mr-1" @click="cleanup">
-                <i class="mr-1 fa fa-trash"></i>
-                <span v-text="i18n('common.button.cleanup')"></span>
-            </button>
             <button class="btn btn-danger" @click="stopAgents">
                 <i class="mr-1 fa fa-stop"></i>
                 <span v-text="i18n('common.button.stop')"></span>
@@ -222,19 +218,6 @@
                     .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error'))),
             });
             $confirm.children('.modal-body').addClass('error-color');
-        }
-
-        cleanup() {
-            this.$bootbox.confirm({
-                message: this.i18n('agent.message.cleanup.confirm'),
-                buttons: {
-                    confirm: { label: this.i18n('common.button.ok') },
-                    cancel: { label: this.i18n('common.button.cancel') },
-                },
-                onConfirm: () => this.$http.post('/agent/api?action=cleanup', null, this.getParams())
-                    .then(() => this.showSuccessMsg(this.i18n('agent.message.cleanup.success')))
-                    .catch(() => this.showErrorMsg(this.i18n('agent.message.cleanup.error'))),
-            });
         }
 
         stopAgents() {
