@@ -199,6 +199,7 @@
             this.table.renderingData.pagination.last_page =
                 Math.ceil(this.table.renderingData.pagination.total / this.table.renderingData.pagination.perPage);
             this.$refs.vuetable.setData(this.table.renderingData);
+            this.$refs.vuetable.selectedTo = [];
             this.$refs.vuetable.reload();
         }
 
