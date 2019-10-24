@@ -193,6 +193,7 @@
                 },
                 onConfirm: () => this.$http.delete('/user/api/', { params: { userIds } })
                     .then(this.$refs.vuetable.refresh)
+                    .then(() => this.$refs.vuetable.selectedTo = [])
                     .catch(() => this.showErrorMsg(this.i18n('user.message.delete.error'))),
             });
         }
