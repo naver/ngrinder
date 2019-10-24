@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.service;
 
-import com.google.common.collect.Maps;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -37,7 +36,6 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.region.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -51,6 +49,7 @@ import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -119,9 +118,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 			if (agentIdentity != null) {
 				// if the agent attached to current controller
 				if (!isCurrentRegion(agentIdentity)) {
-					eachAgentInDB.setApproved(false);
-					eachAgentInDB.setRegion(getConfig().getRegion());
-					updatedAgents.add(eachAgentInDB);
+					noOp();
 				} else if (!hasSameInfo(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
 					updatedAgents.add(eachAgentInDB);
@@ -147,6 +144,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 
 			if (!isCurrentRegion(agentIdentity)) {
 				agentInfo.setApproved(false);
+				agentInfo.setRegion(getConfig().getRegion());
 			}
 		}
 
