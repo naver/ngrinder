@@ -24,7 +24,7 @@
                                     </control-group>
                                 </div>
                                 <div class="d-flex">
-                                    <div v-visible="isClone" class="flex-grow-1 text-center">
+                                    <div class="flex-grow-1 text-center">
                                         <img ref="testStatusImage" class="ball"
                                              data-html="true"
                                              data-toggle="popover"
@@ -76,7 +76,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
-                        <config ref="config" :testProp="test" :config="config"></config>
+                        <config ref="config" :testProp="test" :scriptsProp="scripts" :config="config"></config>
                     </div>
                     <div class="tab-pane" id="running-section">
                         <running ref="running" :testProp="test"></running>
@@ -125,6 +125,9 @@
 
         @Prop({ type: Number, required: true })
         timezoneOffset;
+
+        @Prop({ type: Array, required: true })
+        scripts;
 
         perftestStatus = {
             message: '',
@@ -194,6 +197,13 @@
         }
 
         static prepare(route) {
+            return Promise.all([
+                PerfTestDetail.preparePerfTest(route),
+                PerfTestDetail.prepareScripts(route),
+            ]);
+        }
+
+        static preparePerfTest(route) {
             let promise;
             if (route.name === 'quickStart') {
                 promise = Base.prototype.$http.post('/perftest/api/quickstart', {
@@ -204,8 +214,12 @@
                 const apiPath = route.params.id ? `/perftest/api/${route.params.id}/detail` : '/perftest/api/create';
                 promise = Base.prototype.$http.get(apiPath);
             }
-
             return promise.then(res => Object.assign(route.params, res.data));
+        }
+
+        static prepareScripts(route) {
+            return Base.prototype.$http.get('/perftest/api/script')
+                .then(res => route.params.scripts = res.data);
         }
 
         init() {
