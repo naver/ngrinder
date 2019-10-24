@@ -240,6 +240,9 @@
         @Prop({ type: Object, required: true })
         testProp;
 
+        @Prop({ type: Array, required: true })
+        scriptsProp;
+
         @Prop({ type: Object, required: true })
         config;
 
@@ -275,6 +278,7 @@
 
         created() {
             Object.assign(this.test, this.testProp);
+            this.scripts = this.scriptsProp;
             this.setCustomValidationRules();
             this.setDurationFromDurationStr();
             this.changeDuration();
@@ -283,7 +287,15 @@
         }
 
         mounted() {
-            this.getScripts();
+            if (!this.ngrinder.config.clustered) {
+                this.test.region = 'NONE';
+            }
+            this.setScripts(this.test.scriptName);
+            this.$nextTick(() => {
+                this.$refs.scriptSelect.selectValue(this.test.scriptName);
+                this.$validator.validate('scriptName');
+            });
+
             this.changeMaxAgentCount();
 
             const durationHour = parseInt(this.durationMs / 3600000) + 1;
@@ -324,27 +336,13 @@
             };
         }
 
-        setScripts(scripts, selectedScript) {
-            if (!scripts.some(script => script.path === selectedScript)) {
+        setScripts(selectedScript) {
+            if (!this.scripts.some(script => script.path === selectedScript)) {
                 if (selectedScript) {
-                    scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
+                    this.scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
                     this.display.showScriptBtn = false;
                 }
             }
-            this.scripts = scripts;
-        }
-
-        getScripts() {
-            this.$http.get('/perftest/api/script').then(res => {
-                if (!this.ngrinder.config.clustered) {
-                    this.test.region = 'NONE';
-                }
-                this.setScripts(res.data, this.test.scriptName);
-                this.$nextTick(() => {
-                    this.$refs.scriptSelect.selectValue(this.test.scriptName);
-                    this.$validator.validate('scriptName');
-                });
-            }).catch(() => this.showErrorMsg(this.i18n('navigator.script')));
         }
 
         getScriptResource() {
@@ -371,10 +369,9 @@
         }
 
         changeScript(revision) {
-            console.log(this.$refs.scriptSelect.getSelectedOptionValidate());
-            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== -1) {
+            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
                 this.test.scriptRevision = revision;
-                this.updateScriptResource();
+                this.getTargetHosts();
                 this.getScriptResource();
                 this.display.showScriptBtn = true;
             } else {
@@ -385,7 +382,7 @@
             }
         }
 
-        updateScriptResource() {
+        getTargetHosts() {
             this.$http.get(`/script/api/detail/${this.test.scriptName}?r=${this.test.scriptRevision}`)
                 .then(res => {
                     if (res.data.file && res.data.file.properties.targetHosts) {
