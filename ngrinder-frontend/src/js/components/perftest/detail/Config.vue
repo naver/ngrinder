@@ -387,6 +387,8 @@
                 .then(res => {
                     if (res.data.file && res.data.file.properties.targetHosts) {
                         this.targetHosts = res.data.file.properties.targetHosts.split(',');
+                    } else {
+                        this.targetHosts = [];
                     }
                 });
         }
