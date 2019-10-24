@@ -89,8 +89,8 @@
                     <button v-show="display.showScriptBtn" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
                         R
-                        <span v-if="test.scriptRevision !== -1" v-text="test.scriptRevision"></span>
-                        <span v-else v-text="'HEAD'"></span>
+                        <span v-if="test.scriptRevision === -1 || testProp.scriptRevision !== test.scriptRevision" v-text="'HEAD'"></span>
+                        <span v-else v-text="test.scriptRevision"></span>
                     </button>
                 </control-group>
 
@@ -264,7 +264,7 @@
         display = {
             vuserPanel: false,
             detailConfig: false,
-            showScriptBtn: true,
+            showScriptBtn: false,
         };
 
         durationMaxHour = 0;
@@ -337,11 +337,13 @@
         }
 
         setScripts(selectedScript) {
-            if (!this.scripts.some(script => script.path === selectedScript)) {
-                if (selectedScript) {
-                    this.scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
-                    this.display.showScriptBtn = false;
-                }
+            if (!selectedScript) {
+                this.display.showScriptBtn = false;
+            } else if (!this.scripts.some(script => script.path === selectedScript)) {
+                this.scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
+                this.display.showScriptBtn = false;
+            } else {
+                this.display.showScriptBtn = true;
             }
         }
 
