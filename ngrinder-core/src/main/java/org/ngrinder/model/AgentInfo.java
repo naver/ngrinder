@@ -63,9 +63,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@Transient
 	private AgentControllerState state;
 
-	@Column(name = "system_stat", length = 2000)
-	private String systemStat;
-
 	private String region;
 
 	@Type(type = "true_false")
