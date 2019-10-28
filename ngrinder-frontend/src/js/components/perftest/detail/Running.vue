@@ -26,10 +26,10 @@
                     </div>
                     <hr>
                     <div class="my-4">
-                        <label v-text="i18n('perfTest.config.targetHost')"></label>
-                        <template v-if="test.targetHosts" v-for="host in test.targetHosts.split(',')">
-                            <span v-text="host.trim()"></span><br/>
-                        </template>
+                        <label class="mb-1 align-top" v-text="i18n('perfTest.config.targetHost')"></label>
+                        <div class="d-inline-block">
+                            <div v-for="host in test.targetHosts.split(',')" v-text="host.trim()"></div>
+                        </div>
                     </div>
                     <hr>
                     <div v-if="test.threshold === 'D'" class="my-4">
