@@ -5,6 +5,7 @@
     "monitor_stat"
   ],
   "AGENT": [
-    "state"
+    "state",
+    "system_stat"
   ]
 }
