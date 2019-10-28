@@ -665,7 +665,6 @@
 
                 .host {
                     color: #666;
-                    display: inline-block;
                     margin: 2px 0 2px 7px;
                 }
             }
