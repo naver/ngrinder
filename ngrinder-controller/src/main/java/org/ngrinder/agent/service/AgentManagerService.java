@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,21 +9,21 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.service;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
@@ -40,11 +40,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.idEqual;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.NoOp.noOp;
+import static java.util.Objects.requireNonNull;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -56,15 +52,14 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 public class AgentManagerService extends AbstractAgentManagerService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
-	@Getter(AccessLevel.PACKAGE)
-	private final AgentManager agentManager;
+	protected final AgentManager agentManager;
 
 	protected final AgentManagerRepository agentManagerRepository;
 
-	protected final LocalAgentService cachedLocalAgentService;
-
 	@Getter
 	private final Config config;
+
+	protected final AgentInfoStore agentInfoStore;
 
 	protected final ScheduledTaskService scheduledTaskService;
 
@@ -72,7 +67,8 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	@PostConstruct
 	public void init() {
-		runnable = this::checkAgentStatePeriodically;
+		initAgentIMap();
+		runnable = this::updateSharedAgentInfo;
 		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(runnable, 1000);
 	}
 
@@ -81,62 +77,55 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		scheduledTaskService.removeScheduledJob(runnable);
 	}
 
-	public void checkAgentStatePeriodically() {
-		checkAgentState();
-	}
-
-	public void checkAgentState() {
-		List<AgentInfo> newAgents = newArrayList(0);
-		List<AgentInfo> updatedAgents = newArrayList(0);
-		List<AgentInfo> removedAgents = newArrayList(0);
-
-		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
-		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = cast(agentIdentity);
-			attachedAgentMap.put(createKey(agentControllerIdentity), agentControllerIdentity);
+	protected void initAgentIMap() {
+		boolean approved = getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAgentStatusSet()) {
+			AgentInfo agentInfo = new AgentInfo();
+			fillUpAgentInfo(agentInfo, status);
+			agentInfo.setApproved(approved);
+			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
 		}
 
-		// If region is not specified retrieved all
-		Map<String, AgentInfo> agentInDBMap = newHashMap();
-		// step1. check all agents in DB, whether they are attached to
-		// controller.
-		for (AgentInfo each : getAllLocal()) {
-			final String agentKey = createKey(each);
-			if (!agentInDBMap.containsKey(agentKey)) {
-				agentInDBMap.put(agentKey, each);
-			} else {
-				removedAgents.add(each);
+		List<AgentInfo> agentsInDB = agentManagerRepository.findAll();
+		for (AgentInfo agentInfoInBD : agentsInDB) {
+			AgentInfo agentInfo = agentInfoStore.getAgentInfo(agentInfoInBD.getAgentKey());
+			if (agentInfo != null) {
+				agentInfo.setApproved(agentInfoInBD.getApproved());
+				agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
 			}
-		}
-
-		for (Map.Entry<String, AgentInfo> each : agentInDBMap.entrySet()) {
-			String agentKey = each.getKey();
-			AgentInfo agentInfo = each.getValue();
-			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(agentKey);
-			if (agentIdentity == null) {
-				// this agent is not attached to controller
-			} else if (!hasSameInfo(agentInfo, agentIdentity)) {
-				agentInfo.setRegion(agentIdentity.getRegion());
-				agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
-				agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
-				updatedAgents.add(agentInfo);
-			}
-		}
-
-		// step2. check all attached agents, whether they are new, and not saved
-		// in DB.
-		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			final AgentInfo agentInfo = fillUp(new AgentInfo(), agentIdentity);
-			newAgents.add(agentInfo);
-		}
-		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, removedAgents);
-		if (!newAgents.isEmpty() || !removedAgents.isEmpty()) {
-			expireLocalCache();
 		}
 	}
 
-	public String extractRegionKey(String agentRegion) {
+	/**
+	 * Run a scheduled task to check the agent statuses.
+	 *
+	 * @since 3.5.0
+	 */
+	protected void updateSharedAgentInfo() {
+		boolean approved = getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+		Set<AgentInfo> agentInfoSet = getVisibleAsSet();
+
+		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAgentStatusSet()) {
+			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
+			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(agentIdentity));
+			// check new agent
+			if (agentInfo == null) {
+				agentInfo = new AgentInfo();
+				agentInfo.setApproved(approved);
+			}
+
+			fillUpAgentInfo(agentInfo, status);
+			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
+			agentInfoSet.remove(agentInfo);
+		}
+
+		// delete disconnected agent.
+		for (AgentInfo agentInfo : agentInfoSet) {
+			agentInfoStore.deleteAgentInfo(agentInfo.getAgentKey());
+		}
+	}
+
+	protected String extractRegionKey(String agentRegion) {
 		if (agentRegion != null && agentRegion.contains("_owned_")) {
 			return agentRegion.substring(0, agentRegion.indexOf("_owned_"));
 		}
@@ -147,14 +136,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			return Config.NONE_REGION;
 		}
 		return agentRegion;
-	}
-
-	protected boolean hasSameInfo(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
-		return agentInfo != null &&
-				agentInfo.getPort() == agentManager.getAgentConnectingPort(agentIdentity) &&
-				StringUtils.equals(agentInfo.getRegion(), agentIdentity.getRegion()) &&
-				StringUtils.equals(StringUtils.trimToNull(agentInfo.getVersion()),
-						StringUtils.trimToNull(agentManager.getAgentVersion(agentIdentity)));
 	}
 
 	@Override
@@ -185,25 +166,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 	int getMaxAgentSizePerConsole() {
-		return getAgentManager().getMaxAgentSizePerConsole();
-	}
-
-	@Override
-	@Transactional
-	public List<AgentInfo> getAllLocalWithFullInfo() {
-		Map<String, AgentInfo> agentInfoMap = createLocalAgentMap();
-		return getAgentManager().getAllAttachedAgents()
-			.stream()
-			.map(identity -> createAgentInfo(cast(identity), agentInfoMap))
-			.collect(toList());
-	}
-
-	private Map<String, AgentInfo> createLocalAgentMap() {
-		Map<String, AgentInfo> agentInfoMap = Maps.newHashMap();
-		for (AgentInfo each : getAllLocal()) {
-			agentInfoMap.put(createKey(each), each);
-		}
-		return agentInfoMap;
+		return agentManager.getMaxAgentSizePerConsole();
 	}
 
 	@Override
@@ -222,7 +185,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	@Override
 	public AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name) {
-		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
+		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentIdentity = cast(eachAgentIdentity);
 			if (StringUtils.equals(ip, agentIdentity.getIp()) && StringUtils.equals(name, agentIdentity.getName())) {
@@ -233,14 +196,14 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 
-	public List<AgentInfo> getAllLocal() {
-		return Collections.unmodifiableList(cachedLocalAgentService.getLocalAgents());
+	public List<AgentInfo> getAllAttached() {
+		return Collections.unmodifiableList(agentInfoStore.getAllAgentInfo());
 	}
 
 	@Override
 	public List<AgentInfo> getAllActive() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllLocalWithFullInfo()) {
+		for (AgentInfo agentInfo : getAllAttached()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
@@ -252,7 +215,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Override
 	public List<AgentInfo> getAllVisible() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllLocalWithFullInfo()) {
+		for (AgentInfo agentInfo : getAllAttached()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isActive()) {
 				agents.add(agentInfo);
@@ -261,118 +224,87 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return agents;
 	}
 
-	private AgentInfo createAgentInfo(AgentControllerIdentityImplementation agentIdentity,
-	                                  Map<String, AgentInfo> agentInfoMap) {
-		AgentInfo agentInfo = agentInfoMap.get(createKey(agentIdentity));
-		if (agentInfo == null) {
-			agentInfo = new AgentInfo();
-		}
-		return fillUp(agentInfo, agentIdentity);
+	protected Set<AgentInfo> getVisibleAsSet() {
+		return new HashSet<>(getAllAttached());
 	}
 
-	protected AgentInfo fillUp(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
-		fillUpApproval(agentInfo);
-		if (agentIdentity != null) {
-			agentInfo.setAgentIdentity(agentIdentity);
-			agentInfo.setName(agentIdentity.getName());
-			agentInfo.setRegion(agentIdentity.getRegion());
-			agentInfo.setIp(agentIdentity.getIp());
-			AgentManager agentManager = getAgentManager();
-			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
-			agentInfo.setState(agentManager.getAgentState(agentIdentity));
-			agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
+	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
+		if (agentInfo == null || status == null) {
+			return;
 		}
-		return agentInfo;
-	}
 
-	protected AgentInfo fillUpApproval(AgentInfo agentInfo) {
-		if (agentInfo.getApproved() == null) {
-			final boolean approved = config.getControllerProperties().getPropertyBoolean(ControllerConstants
-					.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
-			agentInfo.setApproved(approved);
-		}
-		return agentInfo;
+		AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
+		AgentControllerState state = status.getAgentControllerState();
+
+		agentInfo.setState(state);
+		agentInfo.setIp(requireNonNull(agentIdentity).getIp());
+		agentInfo.setRegion(getConfig().getRegion());
+		agentInfo.setName(agentIdentity.getName());
+		agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
+		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 	}
 
 	@Override
-	public AgentInfo getOne(Long id) {
-		return getOne(id, false);
-	}
-
-	@Override
-	public AgentInfo getOne(Long id, boolean includeAgentIdentity) {
-		Optional<AgentInfo> findOne = agentManagerRepository.findOne(idEqual(id));
-		if (!findOne.isPresent()) {
-			return null;
-		}
-
-		AgentInfo agentInfo = findOne.get();
-		if (includeAgentIdentity) {
-			AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIpAndName(agentInfo.getIp(),
-				agentInfo.getName());
-			return fillUp(agentInfo, agentIdentityByIp);
-		} else {
-			return agentInfo;
-		}
+	public AgentInfo getOne(String ip, String name) {
+		return agentInfoStore.getAgentInfo(createAgentKey(ip, name));
 	}
 
 	/**
 	 * Approve/disapprove the agent on given id.
 	 *
-	 * @param id      id
+	 * @param ip      ip
+	 * @param name	  host name
 	 * @param approve true/false
 	 */
 	@Transactional
-	public AgentInfo approve(Long id, boolean approve) {
-		Optional<AgentInfo> found = agentManagerRepository.findOne(idEqual(id));
-		AgentInfo agentInfo = null;
+	public void approve(String ip, String name, boolean approve) {
+		AgentInfo agentInfoInDB = agentManagerRepository.findByIpAndName(ip, name);
 
-		if (found.isPresent()) {
-			agentInfo = found.get();
-			agentInfo.setApproved(approve);
-			expireLocalCache();
+		if (agentInfoInDB != null) {
+			agentInfoInDB.setApproved(approve);
+		} else {
+			agentInfoInDB = new AgentInfo();
+			agentInfoInDB.setIp(ip);
+			agentInfoInDB.setName(name);
+			agentInfoInDB.setApproved(approve);
+			agentManagerRepository.save(agentInfoInDB);
 		}
+		agentManagerRepository.flush();
 
-		return agentInfo;
+		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		agentInfo.setApproved(approve);
+		agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
 	}
 
 	/**
 	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache.
 	 * otherwise, it send stop message to the agent.
 	 *
-	 * @param id identity of agent to stop.
+	 * @param ip ip of agent to stop.
+	 * @param name host name of agent to stop.
 	 */
-	@Transactional
-	public void stopAgent(Long id) {
-		AgentInfo agent = getOne(id, true);
-		if (agent == null) {
+	@Override
+	public void stop(String ip, String name) {
+		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		if (agentInfo == null) {
 			return;
 		}
-		getAgentManager().stopAgent(agent.getAgentIdentity());
+		agentManager.stopAgent(getAgentIdentityByIpAndName(ip, name));
 	}
 
-	/**
-	 * Add the agent system data model share request on cache.
-	 *
-	 * @param id agent id.
-	 */
-	public void requestShareAgentSystemDataModel(Long id) {
-		noOp();
+	@Override
+	public void update(String ip, String name) {
+		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		if (agentInfo == null) {
+			return;
+		}
+		updateAgent(getAgentIdentityByIpAndName(ip, name));
 	}
 
 	@Override
 	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
 		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(ip, name);
-		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();
-	}
-
-	@Override
-	public void update(Long id) {
-		AgentInfo agent = getOne(id, true);
-		if (agent == null) {
-			return;
-		}
-		updateAgent(agent.getAgentIdentity());
+		return agentIdentity != null ? agentManager.getSystemDataModel(agentIdentity) : new SystemDataModel();
 	}
 
 	/**
@@ -385,13 +317,8 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 
-	protected boolean shouldUpdateAgentAlways() {
+	private boolean shouldUpdateAgentAlways() {
 		return config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_AGENT_FORCE_UPDATE);
-	}
-
-
-	public void expireLocalCache() {
-		cachedLocalAgentService.expireCache();
 	}
 
 	/**
@@ -399,7 +326,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 */
 	List<AgentInfo> getAllReady() {
 		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllLocalWithFullInfo()) {
+		for (AgentInfo agentInfo : getAllAttached()) {
 			final AgentControllerState state = agentInfo.getState();
 			if (state != null && state.isReady()) {
 				agents.add(agentInfo);
@@ -430,5 +357,4 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		}
 		return readyAgentCnt;
 	}
-	
 }

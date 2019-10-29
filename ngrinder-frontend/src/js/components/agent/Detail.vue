@@ -82,7 +82,11 @@
         name: 'agentDetail',
         components: { VueHeadful },
         props: {
-            agentId: {
+            ip: {
+                type: String,
+                required: true,
+            },
+            name: {
                 type: String,
                 required: true,
             },
@@ -115,7 +119,7 @@
             if (this.agentProp) {
                 this.agent = this.agentProp;
             } else {
-                this.$http.get(`/agent/api/${this.agentId}`).then(res => this.agent = res.data);
+                this.$http.get(`/agent/api/${this.ip}/${this.name}`).then(res => this.agent = res.data);
             }
         }
 

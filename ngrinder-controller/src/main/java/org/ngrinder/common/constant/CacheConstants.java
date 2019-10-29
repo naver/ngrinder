@@ -22,7 +22,7 @@ package org.ngrinder.common.constant;
 public interface CacheConstants {
 	String DIST_MAP_NAME_SAMPLING = "sampling";
 	String DIST_MAP_NAME_MONITORING = "monitoring";
-	String DIST_MAP_NAME_AGENT_STATE = "agent_state";
+	String DIST_MAP_NAME_AGENT = "agent";
 
 	String CACHE_USERS = "users";
 	String CACHE_FILE_ENTRIES = "file_entries";
@@ -30,7 +30,6 @@ public interface CacheConstants {
 	String CACHE_RIGHT_PANEL_ENTRIES = "right_panel_entries";
 	String CACHE_LEFT_PANEL_ENTRIES = "left_panel_entries";
 	String CACHE_CURRENT_PERFTEST_STATISTICS = "current_perftest_statistics";
-	String CACHE_LOCAL_AGENTS = "local_agents";
 
 	String REGION_ATTR_KEY = "region";
 	String REGION_EXECUTOR_SERVICE_NAME = "region_executor";

@@ -117,7 +117,7 @@ const routes = [
     {path: '/user/new', component: UserDetail, name: 'createNewUser'},
     {path: '/user/:userId', component: UserDetail, name: 'userDetail', props: true},
     {path: '/agent', component: AgentList, name: 'agentList'},
-    {path: '/agent/:agentId', component: AgentDetail, name: 'agentDetail', props: true},
+    {path: '/agent/:ip/:name', component: AgentDetail, name: 'agentDetail', props: true},
 ];
 
 const router = new VueRouter({

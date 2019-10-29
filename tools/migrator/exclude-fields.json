@@ -6,6 +6,9 @@
   ],
   "AGENT": [
     "state",
-    "system_stat"
+    "system_stat",
+    "region",
+    "port",
+    "version"
   ]
 }

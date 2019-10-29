@@ -15,9 +15,11 @@ package org.ngrinder.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 
 import lombok.Getter;
@@ -49,6 +51,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 * agent application port. It's only available when the connection is
 	 * re-established.
 	 */
+	@Transient
 	private Integer port;
 
 	@Transient
@@ -63,12 +66,14 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@Transient
 	private AgentControllerState state;
 
+	@Transient
 	private String region;
 
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1) default 'F'")
 	private Boolean approved;
 
+	@Transient
 	private String version;
 
 	@PrePersist
@@ -98,15 +103,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		AgentInfo other = (AgentInfo) obj;
-		if (ip == null) {
-			if (other.ip != null) {
-				return false;
-			}
-		} else if (!ip.equals(other.ip)) {
-			return false;
-		}
-		return true;
+		return StringUtils.equals(ip, other.ip) && StringUtils.equals(name, other.name);
 	}
 
 	@Deprecated
@@ -123,4 +122,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		return approved == null ? false : approved;
 	}
 
+	@JsonIgnore
+	public String getAgentKey() {
+		return ip + "_" + name;
+	}
 }

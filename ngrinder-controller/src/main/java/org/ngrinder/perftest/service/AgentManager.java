@@ -32,10 +32,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.agent.service.LocalAgentService;
+import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
@@ -57,6 +59,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_AGENT;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Agent manager.
@@ -83,7 +87,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 	private final AgentPackageService agentPackageService;
 
-	private final LocalAgentService cachedLocalAgentService;
+	private final AgentInfoStore agentInfoStore;
 
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 
@@ -317,9 +321,18 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			return agents;
 		}
 
-		Set<String> ips = cachedLocalAgentService.getLocalAgents()
+		boolean isClustered = config.isClustered();
+		String region = config.getRegion();
+
+		Set<String> ips = agentInfoStore.getAllAgentInfo()
 			.stream()
-			.filter(AgentInfo::isApproved)
+			.filter(agentInfo -> {
+				if (isClustered) {
+					return StringUtils.equals(region, agentInfo.getRegion()) && agentInfo.getApproved();
+				} else {
+					return agentInfo.getApproved();
+				}
+			})
 			.map(agentInfo -> agentInfo.getIp() + agentInfo.getName())
 			.collect(toSet());
 
