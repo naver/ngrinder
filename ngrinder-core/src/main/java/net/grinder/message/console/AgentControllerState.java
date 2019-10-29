@@ -40,15 +40,6 @@ public enum AgentControllerState {
 	 */
 	FINISHED(AgentStatusCategory.READY),
 	/**
-	 * When agent controller is down.
-	 */
-	// TODO: Remove INACTIVE. If agent state is shared by hazelcast, the agent not exist in shared state map is INACTIVE
-	INACTIVE(AgentStatusCategory.INACTIVE),
-	/**
-	 * When agent is attached wrong region.
-	 */
-	WRONG_REGION(AgentStatusCategory.INACTIVE),
-	/**
 	 * When agent is updating.
 	 */
 	UPDATING(AgentStatusCategory.PROGRESSING),
@@ -89,10 +80,6 @@ public enum AgentControllerState {
 
 	public boolean isActive() {
 		return category.isActive();
-	}
-
-	public boolean isVisible() {
-		return category != AgentStatusCategory.INACTIVE;
 	}
 
 	public boolean isReady() {

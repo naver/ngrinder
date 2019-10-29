@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -37,6 +38,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
 
 public class AgentManagerApiControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -51,6 +53,9 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 
 	@Autowired
 	private UserContext userContext;
+
+	@Autowired
+	private AgentInfoStore agentInfoStore;
 
 	@Before
 	public void setMockRequest() {
@@ -94,32 +99,32 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 	@Test
 	public void testApproveAgent() {
 		AgentInfo agent = new AgentInfo();
-		agent.setApproved(false);
 		agent.setName("Test-Host");
 		agent.setIp("127.0.0.1");
-		agent.setState(AgentControllerState.READY);
+		agent.setApproved(false);
 		agentManagerRepository.save(agent);
+		agentInfoStore.updateAgentInfo(agent.getAgentKey(), agent);
 
 		// test get agent
-		AgentInfo agentInDB = agentApiController.getOne(agent.getId());
+		AgentInfo agentInDB = agentApiController.getOneByIpAndName(agent.getIp(), agent.getName());
 		assertThat(agentInDB.getName(), is(agent.getName()));
 		assertThat(agentInDB.getIp(), is(agent.getIp()));
 		assertThat(agentInDB.isApproved(), is(false));
 
 		// test approve agent
-		agentApiController.approve(agentInDB.getId());
-		agentInDB = agentApiController.getOne(agent.getId());
+		agentApiController.approve(agent.getIp(), agent.getName());
+		agentInDB = agentApiController.getOneByIpAndName(agent.getIp(), agent.getName());
 		assertThat(agentInDB.isApproved(), is(true));
 
 		// test un-approve
-		agentApiController.disapprove(agentInDB.getId());
-		agentInDB = agentApiController.getOne(agent.getId());
+		agentApiController.disapprove(agent.getIp(), agent.getName());
+		agentInDB = agentApiController.getOneByIpAndName(agent.getIp(), agent.getName());
 		assertThat(agentInDB.isApproved(), is(false));
 	}
 
 	@Test
 	public void testStopAgent() {
-		agentApiController.stop("0");
+		agentApiController.stop("1.1.1.1", "test-agent-ncl");
 	}
 
 	@Test

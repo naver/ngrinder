@@ -10,13 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -83,6 +81,10 @@ public class HazelcastService {
 
 	public void delete(String map, Object key) {
 		hazelcastInstance.getMap(map).delete(key);
+	}
+
+	public List getValuesAsList(String map) {
+		return new ArrayList<>(hazelcastInstance.getMap(map).values());
 	}
 
 	public <K, V> V get(String map, K key) {

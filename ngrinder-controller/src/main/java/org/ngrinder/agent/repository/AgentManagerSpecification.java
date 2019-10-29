@@ -26,20 +26,6 @@ import javax.persistence.criteria.*;
 public abstract class AgentManagerSpecification {
 
 	/**
-	 * Query specification to query the agent existing in the specified region.
-	 *
-	 * @param region region to query
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> startWithRegion(final String region) {
-		return (Specification<AgentInfo>) (root, query, cb) -> {
-			Expression<String> regionField = root.get("region").as(String.class);
-			return cb.or(cb.like(regionField, region + "/_owned%", cb.literal('/')), cb.equal(regionField,
-					region));
-		};
-	}
-
-	/**
 	 * Get the {@link Specification} checking if the {@link AgentInfo} has the given ID.
 	 *
 	 * @param id agent id
