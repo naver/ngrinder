@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div v-if="announcement" class="alert alert-block">
+        <div class="alert alert-block">
             <div class="border-bottom">
                 <span>
                     <span v-if="ngrinder.config.hasNewAnnouncement" class="badge badge-danger" v-text="'new'"></span>
@@ -10,7 +10,7 @@
                     </span>
                 </span>
             </div>
-            <div v-if="!hide" class="announcement-content" v-html="announcement"></div>
+            <div v-show="!hide" class="announcement-content" v-html="announcement"></div>
         </div>
     </div>
 </template>
