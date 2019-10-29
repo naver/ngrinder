@@ -13,13 +13,7 @@
  */
 package org.ngrinder.agent.controller;
 
-import static java.util.stream.Collectors.toList;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
-import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
-
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.agent.service.AgentPackageService;
@@ -38,7 +32,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
+import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
 
 /**
  * @since 3.5.0
@@ -180,85 +177,87 @@ public class AgentManagerApiController {
 	}
 
 	/**
-	 * Get the agent for the given agent id.
+	 * Get the agent for the given agent ip and name.
 	 *
 	 * @return agentInfo
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@GetMapping(value = "/{id}")
-	public AgentInfo getOne(@PathVariable Long id) {
-		return agentManagerService.getOne(id);
+	@GetMapping(value = "/{ip}/{name}")
+	public AgentInfo getOneByIpAndName(@PathVariable String ip, @PathVariable String name) {
+		return agentManagerService.getOne(ip, name);
 	}
 
 	/**
 	 * Approve an agent.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@PutMapping(value = "/{id}", params = "action=approve")
-	public void approve(@PathVariable Long id) {
-		agentManagerService.approve(id, true);
+	@PutMapping(value = "/{ip}/{name}", params = "action=approve")
+	public void approve(@PathVariable String ip, @PathVariable String name) {
+		agentManagerService.approve(ip, name, true);
 	}
 
 	/**
 	 * Disapprove an agent.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@PutMapping(value = "/{id}", params = "action=disapprove")
-	public void disapprove(@PathVariable Long id) {
-		agentManagerService.approve(id, false);
+	@PutMapping(value = "/{ip}/{name}", params = "action=disapprove")
+	public void disapprove(@PathVariable String ip, @PathVariable String name) {
+		agentManagerService.approve(ip, name, false);
 	}
 
 	/**
 	 * Stop the given agent.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@PutMapping(value = "/{id}", params = "action=stop")
-	public void stop(@PathVariable Long id) {
-		agentManagerService.stopAgent(id);
+	@PutMapping(value = "/{ip}/{name}", params = "action=stop")
+	public void stop(@PathVariable String ip, @PathVariable String name) {
+		agentManagerService.stop(ip, name);
 	}
 
 	/**
 	 * Stop the given agent.
 	 *
-	 * @param ids comma separated agent id list
+	 * @param agentInfos agent information list
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=stop")
-	public void stop(@RequestParam("ids") String ids) {
-		String[] split = StringUtils.split(ids, ",");
-		for (String each : split) {
-			stop(Long.parseLong(each));
+	public void stop(@RequestBody List<AgentInfo> agentInfos) {
+		for (AgentInfo agentInfo : agentInfos) {
+			agentManagerService.stop(agentInfo.getIp(), agentInfo.getName());
 		}
 	}
 
 	/**
 	 * Update the given agent.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@PutMapping(value = "/{id}", params = "action=update")
-	public void update(@PathVariable Long id) {
-		agentManagerService.update(id);
+	@PutMapping(value = "/{ip}/{name}", params = "action=update")
+	public void update(@PathVariable String ip, @PathVariable String name) {
+		agentManagerService.update(ip, name);
 	}
 
 	/**
 	 * Send update message to agent side
 	 *
-	 * @param ids comma separated agent id list
+	 * @param agentInfos agent information list
 	 */
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "", params = "action=update")
-	public void update(@RequestParam String ids) {
-		String[] split = StringUtils.split(ids, ",");
-		for (String each : split) {
-			update(Long.parseLong(each));
+	public void update(@RequestBody List<AgentInfo> agentInfos) {
+		for (AgentInfo agentInfo : agentInfos) {
+			agentManagerService.update(agentInfo.getIp(), agentInfo.getName());
 		}
 	}
 

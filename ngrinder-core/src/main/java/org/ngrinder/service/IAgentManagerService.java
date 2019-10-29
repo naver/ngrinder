@@ -42,20 +42,11 @@ public interface IAgentManagerService {
 	public abstract Map<String, MutableInt> getAvailableAgentCountMap(User user);
 
 	/**
-	 * Get all local agents. The agent list is obtained from db and cached.
+	 * Get all attached agents. The agent list is obtained from hazalcast IMap.
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getAllLocal();
-
-	/**
-	 * Get all local agent agents. The agent list is obtained by combining the data from
-	 * DB and {@link AgentManager}
-	 *
-	 * @return agent list
-	 */
-	@SuppressWarnings("UnusedDeclaration")
-	public abstract List<AgentInfo> getAllLocalWithFullInfo();
+	public abstract List<AgentInfo> getAllAttached();
 
 	/**
 	 * Create the agent key from the given agent info.
@@ -110,26 +101,17 @@ public interface IAgentManagerService {
 	 * Get the agent for the given id without agent identity info. If it's called from the other controller, only
 	 * limited info available in db will be return.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 * @return agent
 	 */
-	public abstract AgentInfo getOne(Long id);
-
-	/**
-	 * Get the agent for the given id. If it's called from the other controller, only
-	 * limited info available in db will be return.
-	 *
-	 * @param id                   agent id
-	 * @param includeAgentIdentity include agent identity field.
-	 * @return agent
-	 */
-	public abstract AgentInfo getOne(Long id, boolean includeAgentIdentity);
+	public abstract AgentInfo getOne(String ip, String name);
 
 	/**
 	 * Get the agent system data model for the given ip. This method is cluster
 	 * aware.
 	 *
-	 * @param ip   agent ip.
+	 * @param ip   agent ip
 	 * @param name agent name
 	 * @param region region name
 	 * @return {@link SystemDataModel} instance.
@@ -139,9 +121,18 @@ public interface IAgentManagerService {
 	/**
 	 * Update agent
 	 *
-	 * @param id ids.
+	 * @param ip   agent ip
+	 * @param name agent name
 	 */
-	public abstract void update(Long id) throws IOException;
+	public abstract void update(String ip, String name) throws IOException;
+
+	/**
+	 * Stop agent
+	 *
+	 * @param ip   agent ip
+	 * @param name agent name
+	 */
+	public abstract void stop(String ip, String name) throws IOException;
 	
 	/**
 	 * Get Ready agent state count return

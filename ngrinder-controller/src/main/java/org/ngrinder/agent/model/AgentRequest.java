@@ -28,7 +28,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @since 3.1
  */
 @Getter
-public class ClusteredAgentRequest implements Serializable {
+public class AgentRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -44,16 +44,8 @@ public class ClusteredAgentRequest implements Serializable {
 			@Override
 			public void process(ClusteredAgentManagerService agentManagerService,
 			                    AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.stopAgent(agentIdentity);
+				agentManagerService.stop(agentIdentity);
 			}
-		},
-		EXPIRE_LOCAL_CACHE {
-			@Override
-			public void process(ClusteredAgentManagerService agentManagerService,
-			                    AgentControllerIdentityImplementation agentIdentity) {
-				noOp();
-			}
-
 		},
 		UPDATE_AGENT {
 			@Override
@@ -70,7 +62,7 @@ public class ClusteredAgentRequest implements Serializable {
 		                             AgentControllerIdentityImplementation agentIdentity);
 	}
 
-	public ClusteredAgentRequest(String agentIp, String agentName, RequestType requestType) {
+	public AgentRequest(String agentIp, String agentName, RequestType requestType) {
 		this.agentIp = agentIp;
 		this.agentName = agentName;
 		this.requestType = requestType;

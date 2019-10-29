@@ -13,19 +13,15 @@
  */
 package org.ngrinder.agent.repository;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
-import net.grinder.message.console.AgentControllerState;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 
@@ -37,15 +33,13 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 	@Before
 	public void before() {
 		agentRepository.deleteAll();
-		addAgent("hello", "world1", AgentControllerState.BUSY);
+		addAgent("hello");
 	}
 
-	private void addAgent(String name, String region, AgentControllerState state) {
+	private void addAgent(String name) {
 		agentInfo = new AgentInfo();
 		agentInfo.setName(name);
 		agentInfo.setIp("127.0.0.1");
-		agentInfo.setRegion(region);
-		agentInfo.setState(state);
 		agentInfo.setApproved(false);
 		agentRepository.save(agentInfo);
 	}
@@ -60,16 +54,5 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(findByIp.isApproved(), is(true));
 		assertThat(findByIp, notNullValue());
 		assertThat(findByIp.getName(), is("hello"));
-		assertThat(findByIp.getRegion(), is("world1"));
 	}
-
-	@Test
-	public void testGetByOwner() {
-		addAgent("hello2", "NAVER", AgentControllerState.BUSY);
-		addAgent("hello3", "NAVER", AgentControllerState.BUSY);
-		assertThat(agentRepository.findAll().size(), is(3));
-		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("NAVER"));
-		assertThat(findAll.size(), is(2));
-	}
-	
 }

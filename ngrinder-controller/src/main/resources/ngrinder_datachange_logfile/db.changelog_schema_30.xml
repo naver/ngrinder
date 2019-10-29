@@ -3,8 +3,11 @@
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	<changeSet author="ngrinder.3.5.0" id="30" dbms="h2, mysql">
-		<comment>Drop agent state, it shared from hazalcast shared map.</comment>
+		<comment>Drop unnecessary field from AGENT table, it shared from hazalcast shared map.</comment>
 		<dropColumn tableName="AGENT" columnName="state"/>
 		<dropColumn tableName="AGENT" columnName="system_stat"/>
+		<dropColumn tableName="AGENT" columnName="region"/>
+		<dropColumn tableName="AGENT" columnName="port"/>
+		<dropColumn tableName="AGENT" columnName="version"/>
 	</changeSet>
 </databaseChangeLog>

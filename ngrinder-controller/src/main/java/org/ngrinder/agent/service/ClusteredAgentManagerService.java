@@ -13,15 +13,13 @@
  */
 package org.ngrinder.agent.service;
 
-import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
-import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.agent.model.ClusteredAgentRequest;
-import org.ngrinder.agent.model.ClusteredAgentRequest.RequestType;
+import org.ngrinder.agent.model.AgentRequest;
+import org.ngrinder.agent.model.AgentRequest.RequestType;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.AgentStateTask;
@@ -38,41 +36,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static net.grinder.message.console.AgentControllerState.*;
-import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.*;
+import static org.ngrinder.agent.model.AgentRequest.RequestType.*;
 import static org.ngrinder.common.constant.CacheConstants.*;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Cluster enabled version of {@link AgentManagerService}.
  *
  * @since 3.1
  */
-public class ClusteredAgentManagerService extends AgentManagerService implements TopicListener<ClusteredAgentRequest> {
+public class ClusteredAgentManagerService extends AgentManagerService implements TopicListener<AgentRequest> {
 	private final Logger LOGGER = LoggerFactory.getLogger(ClusteredAgentManagerService.class);
 
 	private final TopicSubscriber topicSubscriber;
 
-	private final HazelcastService hazelcastService;
-
 	private final RegionService regionService;
 
+	private final HazelcastService hazelcastService;
+
 	public ClusteredAgentManagerService(AgentManager agentManager, AgentManagerRepository agentManagerRepository,
-										LocalAgentService cachedLocalAgentService, Config config, ScheduledTaskService scheduledTaskService,
-										TopicSubscriber topicSubscriber, HazelcastService hazelcastService, RegionService regionService) {
-		super(agentManager, agentManagerRepository, cachedLocalAgentService, config, scheduledTaskService);
+										Config config, AgentInfoStore agentInfoStore, ScheduledTaskService scheduledTaskService,
+										TopicSubscriber topicSubscriber, RegionService regionService, HazelcastService hazelcastService) {
+		super(agentManager, agentManagerRepository, config, agentInfoStore, scheduledTaskService);
 		this.topicSubscriber = topicSubscriber;
-		this.hazelcastService = hazelcastService;
 		this.regionService = regionService;
+		this.hazelcastService = hazelcastService;
 	}
 
 	/**
@@ -81,114 +76,30 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	@PostConstruct
 	public void init() {
 		super.init();
-		if (getConfig().isClustered()) {
-			topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
-		}
-	}
-
-	@Override
-	public void checkAgentStatePeriodically() {
-		super.checkAgentStatePeriodically();
-	}
-
-	/**
-	 * Run a scheduled task to check the agent statuses.
-	 *
-	 * @since 3.1
-	 */
-	@Override
-	public void checkAgentState() {
-		updateAgentState();
-
-		List<AgentInfo> newAgents = newArrayList(0);
-		List<AgentInfo> updatedAgents = newArrayList(0);
-
-		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
-		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation existingAgent = cast(agentIdentity);
-			attachedAgentMap.put(createKey(existingAgent), existingAgent);
-		}
-
-		// step1. check all agents in DB, whether they are attached to
-		// controller.
-		for (AgentInfo eachAgentInDB : getAllLocal()) {
-			String keyOfAgentInDB = createKey(eachAgentInDB);
-			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
-			if (agentIdentity != null) {
-				// if the agent attached to current controller
-				if (!isCurrentRegion(agentIdentity)) {
-					noOp();
-				} else if (!hasSameInfo(eachAgentInDB, agentIdentity)) {
-					fillUp(eachAgentInDB, agentIdentity);
-					updatedAgents.add(eachAgentInDB);
-				} else if (eachAgentInDB.getApproved() == null) {
-					updatedAgents.add(fillUpApproval(eachAgentInDB));
-				}
-			} else { // the agent in DB is not attached to current controller
-				hazelcastService.delete(DIST_MAP_NAME_AGENT_STATE, keyOfAgentInDB);
-			}
-		}
-
-		// step2. check all attached agents, whether they are new, and not saved
-		// in DB.
-		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			AgentInfo agentInfo = agentManagerRepository.findByIpAndName(agentIdentity.getIp(), agentIdentity.getName());
-
-			if (agentInfo == null) {
-				agentInfo = new AgentInfo();
-				newAgents.add(fillUp(agentInfo, agentIdentity));
-			} else {
-				updatedAgents.add(fillUp(agentInfo, agentIdentity));
-			}
-
-			if (!isCurrentRegion(agentIdentity)) {
-				agentInfo.setApproved(false);
-				agentInfo.setRegion(getConfig().getRegion());
-			}
-		}
-
-		cachedLocalAgentService.updateAgents(newAgents, updatedAgents, null);
-		if (!newAgents.isEmpty() || !updatedAgents.isEmpty()) {
-			expireLocalCache();
-		}
-	}
-
-	private void updateAgentState() {
-		for (AgentProcessControlImplementation.AgentStatus status : getAgentManager().getAllAgentStatusSet()) {
-			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
-			AgentControllerState state = status.getAgentControllerState();
-			hazelcastService.put(DIST_MAP_NAME_AGENT_STATE, createKey(agentIdentity), state);
-		}
-	}
-
-	private List<AgentInfo> getAllWithCurrentState() {
-		List<AgentInfo> agentsInDB = agentManagerRepository.findAll();
-		List<AgentInfo> currentAgents = new ArrayList<>();
-		for (AgentInfo agentInfo : agentsInDB) {
-			AgentControllerState state = hazelcastService.get(DIST_MAP_NAME_AGENT_STATE, createKey(agentInfo));
-			if (state != null) {
-				agentInfo.setState(state);
-				currentAgents.add(agentInfo);
-			}
-		}
-		return currentAgents;
+		topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
 	}
 
 	public List<AgentInfo> getAllActive() {
-		return getAllWithCurrentState()
+		return getAllAttached()
 			.stream()
 			.filter(agentInfo -> !agentInfo.getState().equals(UNKNOWN))
-			.filter(agentInfo -> !agentInfo.getState().equals(WRONG_REGION))
 			.filter(this::activeRegionOnly)
 			.collect(toList());
 	}
 
 	public List<AgentInfo> getAllVisible() {
-		return getAllWithCurrentState()
+		return getAllAttached()
 			.stream()
 			.filter(this::activeRegionOnly)
 			.collect(toList());
+	}
+
+	@Override
+	protected Set<AgentInfo> getVisibleAsSet() {
+		return getAllAttached()
+			.stream()
+			.filter(agentInfo -> agentInfo.getRegion().equals(getConfig().getRegion()))
+			.collect(toSet());
 	}
 
 	/**
@@ -196,7 +107,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	 */
 	@Override
 	public List<AgentInfo> getAllReady() {
-		return getAllWithCurrentState()
+		return getAllAttached()
 			.stream()
 			.filter(agentInfo -> agentInfo.getState().equals(READY))
 			.filter(this::activeRegionOnly)
@@ -261,10 +172,6 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 		return regionService.getAll().keySet();
 	}
 
-	protected boolean isCurrentRegion(AgentControllerIdentityImplementation agentIdentity) {
-		return StringUtils.equals(extractRegionKey(agentIdentity.getRegion()), getConfig().getRegion());
-	}
-
 	private void incrementAgentCount(Map<String, MutableInt> agentMap, String region, String userId) {
 		if (!agentMap.containsKey(region)) {
 			LOGGER.warn("Region :{} not exist in cluster nor owned by user:{}.", region, userId);
@@ -273,28 +180,20 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 		}
 	}
 
-	@Override
-	public AgentInfo approve(Long id, boolean approve) {
-		AgentInfo agent = super.approve(id, approve);
-		if (agent != null) {
-			publishTopic(agent, AGENT_TOPIC_LISTENER_NAME, EXPIRE_LOCAL_CACHE);
-		}
-		return agent;
-	}
-
 	/**
 	 * Stop agent. In cluster mode, it queues the agent stop request to
 	 * agentRequestCache.
 	 *
-	 * @param id agent id in db
+	 * @param ip   agent ip
+	 * @param name agent host name
 	 */
 	@Override
-	public void stopAgent(Long id) {
-		AgentInfo agent = getOne(id);
-		if (agent == null) {
+	public void stop(String ip, String name) {
+		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		if (agentInfo == null) {
 			return;
 		}
-		publishTopic(agent, AGENT_TOPIC_LISTENER_NAME, STOP_AGENT);
+		publishTopic(agentInfo, AGENT_TOPIC_LISTENER_NAME, STOP_AGENT);
 	}
 
 	/**
@@ -315,38 +214,34 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	 *
 	 * @param agentIdentity agent identity to be stopped.
 	 */
-	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
-		getAgentManager().stopAgent(agentIdentity);
+	public void stop(AgentControllerIdentityImplementation agentIdentity) {
+		agentManager.stopAgent(agentIdentity);
 	}
 
 	/**
 	 * Update agent by id.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent host name
 	 */
 	@Override
-	public void update(Long id) {
-		AgentInfo agent = getOne(id);
-		if (agent == null) {
+	public void update(String ip, String name) {
+		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		if (agentInfo == null) {
 			return;
 		}
-		publishTopic(agent, AGENT_TOPIC_LISTENER_NAME, UPDATE_AGENT);
+		publishTopic(agentInfo, AGENT_TOPIC_LISTENER_NAME, UPDATE_AGENT);
 	}
 
-	protected void publishTopic(AgentInfo agent, String listener, RequestType requestType) {
+	protected void publishTopic(AgentInfo agentInfo, String listener, RequestType requestType) {
 		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(listener,
-			extractRegionKey(agent.getRegion()), new ClusteredAgentRequest(agent.getIp(), agent.getName(), requestType)));
+			extractRegionKey(agentInfo.getRegion()), new AgentRequest(agentInfo.getIp(), agentInfo.getName(), requestType)));
 	}
 
 	@Override
-	public void execute(TopicEvent<ClusteredAgentRequest> event) {
-		ClusteredAgentRequest agentRequest = event.getData();
-		if (agentRequest.getRequestType().equals(EXPIRE_LOCAL_CACHE)) {
-			expireLocalCache();
-			return;
-		}
-
+	public void execute(TopicEvent<AgentRequest> event) {
 		if (event.getKey().equals(getConfig().getRegion())) {
+			AgentRequest agentRequest = event.getData();
 			AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(agentRequest.getAgentIp(), agentRequest.getAgentName());
 			if (agentIdentity != null) {
 				agentRequest.getRequestType().process(ClusteredAgentManagerService.this, agentIdentity);

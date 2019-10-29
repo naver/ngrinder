@@ -31,6 +31,6 @@ public abstract class AbstractAgentManagerService implements IAgentManagerServic
 
 	@SuppressWarnings("UnusedDeclaration")
 	public List<AgentInfo> getLocalAgents() {
-		return getAllLocal();
+		return getAllAttached();
 	}
 }

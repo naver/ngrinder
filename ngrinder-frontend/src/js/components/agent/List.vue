@@ -37,6 +37,7 @@
             ref="vuetable"
             data-path="data"
             pagination-path="pagination"
+            track-by="key"
             :api-mode="false"
             :css="table.css.table"
             :fields="tableFields"
@@ -45,14 +46,13 @@
             @vuetable:pagination-data="beforePagination">
 
             <template slot="state" slot-scope="props">
-                <div class="ball"
-                     :title="props.rowData.state.name">
+                <div class="ball" :title="props.rowData.state.name">
                     <img class="status" :src="`${contextPath}/img/ball/${props.rowData.state.iconName}`"/>
                 </div>
             </template>
 
             <template slot="domain" slot-scope="props">
-                <router-link :to="{ name: 'agentDetail', params: { agentId: props.rowData.id, agentProp: props.rowData } }"
+                <router-link :to="{ name: 'agentDetail', params: { ip: props.rowData.ip, name: props.rowData.name, agentProp: props.rowData } }"
                              :value="props.rowData.ip" v-text="props.rowData.ip">
                 </router-link>
             </template>
@@ -174,7 +174,7 @@
         updateStates(initialize) {
             this.$http.get('/agent/api/list', { params: { region: this.region } })
                 .then(res => {
-                    this.agents = res.data;
+                    this.agents = this.appendAgentKey(res.data);
                     if (initialize) {
                         this.table.renderingData.data = _.slice(this.agents, 0, this.table.renderingData.pagination.perPage);
                         this.table.renderingData.pagination.total = this.agents.length;
@@ -186,6 +186,13 @@
                 })
                 .then(() => history.replaceState('', '', this.region ? `${this.contextPath}/agent?region=${this.region}` : `${this.contextPath}/agent`))
                 .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
+        }
+
+        appendAgentKey(agents) {
+            return agents.map(agent => {
+                agent.key = `${agent.ip},${agent.name}`;
+                return agent;
+            });
         }
 
         changeRegion(event) {
@@ -213,8 +220,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                onConfirm: () => this.$http.put('/agent/api?action=update', null, this.getParams())
+                onConfirm: () => this.$http.put('/agent/api?action=update', this.getData())
                     .then(() => this.showSuccessMsg(this.i18n('agent.message.update.success')))
+                    .then(() => this.$refs.vuetable.selectedTo = [])
                     .catch(() => this.showErrorMsg(this.i18n('agent.message.update.error'))),
             });
             $confirm.children('.modal-body').addClass('error-color');
@@ -237,8 +245,9 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                onConfirm: () => this.$http.put('/agent/api?action=stop', null, this.getParams())
+                onConfirm: () => this.$http.put('/agent/api?action=stop', this.getData())
                     .then(() => this.showSuccessMsg(this.i18n('agent.message.stop.success')))
+                    .then(() => this.$refs.vuetable.selectedTo = [])
                     .catch(() => this.showErrorMsg(this.i18n('agent.message.stop.error'))),
             });
             $confirm.children('.modal-body').addClass('error-color');
@@ -249,7 +258,7 @@
                 return;
             }
 
-            this.$http.put(`/agent/api/${agent.id}?action=approve`)
+            this.$http.put(`/agent/api/${agent.ip}/${agent.name}?action=approve`)
                 .then(() => {
                     this.showSuccessMsg(this.i18n('agent.message.approve'));
                     agent.approved = true;
@@ -262,7 +271,7 @@
                 return;
             }
 
-            this.$http.put(`/agent/api/${agent.id}?action=disapprove`)
+            this.$http.put(`/agent/api/${agent.ip}/${agent.name}?action=disapprove`)
                 .then(() => {
                     this.showSuccessMsg(this.i18n('agent.message.disapprove'));
                     agent.approved = false;
@@ -270,8 +279,11 @@
                 });
         }
 
-        getParams() {
-            return { params: { ids: this.$refs.vuetable.selectedTo.join(',') } };
+        getData() {
+            return this.$refs.vuetable.selectedTo.map(keyToken => {
+                const ipAndName = keyToken.split(',');
+                return { ip: ipAndName[0], name: ipAndName[1] };
+            });
         }
     }
 </script>

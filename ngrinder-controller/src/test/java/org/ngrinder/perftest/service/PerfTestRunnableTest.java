@@ -16,12 +16,15 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.AgentInfo;
@@ -35,10 +38,12 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 public class PerfTestRunnableTest extends AbstractAgentReadyTest implements ControllerConstants {
 
@@ -58,6 +63,9 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 	@Autowired
 	public ConsoleManager consoleManager;
+
+	@Autowired
+	private AgentInfoStore agentInfoStore;
 
 	@Before
 	public void before() throws IOException {
@@ -87,14 +95,21 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 			sleep(1000);
 		}
 
-		sleep(1000);
-		agentService.expireLocalCache();
-		agentService.checkAgentState();
-		List<AgentInfo> agentList = agentService.getAllLocal();
-		for (AgentInfo each : agentList) {
-			agentService.approve(each.getId(), true);
+		List<AgentIdentity> agentIdentities = new ArrayList<>(agentManager.getAllAttachedAgents());
+		for (AgentIdentity agentIdentity : agentIdentities) {
+			AgentControllerIdentityImplementation identity = cast(agentIdentity);
+			AgentInfo agentInfo = new AgentInfo();
+			agentInfo.setIp(identity.getIp());
+			agentInfo.setPort(0);
+			agentInfo.setName(identity.getName());
+			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
 		}
-		agentService.checkAgentState();
+
+		sleep(1000);
+		List<AgentInfo> agentList = agentService.getAllAttached();
+		for (AgentInfo each : agentList) {
+			agentService.approve(each.getIp(), each.getName(), true);
+		}
 	}
 
 	@Test
