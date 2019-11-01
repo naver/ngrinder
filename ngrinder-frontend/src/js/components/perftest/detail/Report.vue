@@ -107,7 +107,7 @@
     import Base from '../../Base.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import MessageMixin from '../../common/mixin/MessagesMixin.vue';
-    import Chart from '../../../chart.js';
+    import ChartMixin from '../../common/mixin/ChartMixin.vue';
 
     @Component({
         name: 'report',
@@ -119,7 +119,7 @@
         },
         components: { ControlGroup },
     })
-    export default class Report extends Mixins(Base, MessageMixin) {
+    export default class Report extends Mixins(Base, MessageMixin, ChartMixin) {
         report = {
             test: {
                 tps: 0,
@@ -152,7 +152,7 @@
                     this.dataLoadFinished = true;
                     this.$nextTick(() => {
                         $('[data-toggle="popover"]').popover();
-                        new Chart('tps-chart', [this.report.tps], this.report.interval).plot();
+                        this.drawChart('tps-chart', 'TPS', this.report.tps, this.report.interval);
                     });
                 }).catch(() => this.showErrorMsg(this.i18n('perfTest.report.message.fetch.basicReport.error')));
         }

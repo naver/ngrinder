@@ -55,7 +55,7 @@
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../../../Base.vue';
-    import MenuChartMixin from './MenuChartMixin.vue';
+    import ChartMixin from '../../../common/mixin/ChartMixin.vue';
     import FormatMixin from '../../../common/mixin/FormatMixin.vue';
     import MessagesMixin from '../../../common/mixin/MessagesMixin.vue';
 
@@ -72,7 +72,7 @@
             },
         },
     })
-    export default class Monitor extends Mixins(Base, MenuChartMixin, FormatMixin, MessagesMixin) {
+    export default class Monitor extends Mixins(Base, ChartMixin, FormatMixin, MessagesMixin) {
         optionalChart = {
             cpuUsageChart: true,
             memUsageChart: true,
@@ -93,25 +93,16 @@
                 },
             }).then(res => {
                 const interval = res.data.interval;
-                this.drawOptionalChart('cpu-usage-chart', [res.data.cpu], interval,
-                    { yAxisFormatter: this.formatPercentage }, { displayFlags: this.optionalChart, key: 'cpuUsageChart' });
-                this.drawOptionalChart('mem-usage-chart', [res.data.memory], interval,
-                    { yAxisFormatter: this.formatMemory }, { displayFlags: this.optionalChart, key: 'memUsageChart' });
-                this.drawOptionalChart('received-byte-per-sec-chart', [res.data.received], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'receivedBytePerSecChart' });
-                this.drawOptionalChart('sent-byte-per-sec-chart', [res.data.sent], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'sentBytePerSecChart' });
-                this.drawOptionalChart('custom-monitor-chart-1', [res.data.customData1], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'customMonitorChart1' });
-                this.drawOptionalChart('custom-monitor-chart-2', [res.data.customData2], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'customMonitorChart2' });
-                this.drawOptionalChart('custom-monitor-chart-3', [res.data.customData3], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'customMonitorChart3' });
-                this.drawOptionalChart('custom-monitor-chart-4', [res.data.customData4], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'customMonitorChart4' });
-                this.drawOptionalChart('custom-monitor-chart-5', [res.data.customData5], interval,
-                    { yAxisFormatter: this.formatNetwork }, { displayFlags: this.optionalChart, key: 'customMonitorChart5' });
-                this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
+
+                this.optionalChart.cpuUsageChart = !!this.drawChart('cpu-usage-chart', 'cpu', res.data.cpu, interval);
+                this.optionalChart.memUsageChart = !!this.drawChart('mem-usage-chart', 'memory', res.data.memory, interval);
+                this.optionalChart.receivedBytePerSecChart = !!this.drawChart('received-byte-per-sec-chart', 'received', res.data.received, interval);
+                this.optionalChart.sentBytePerSecChart = !!this.drawChart('sent-byte-per-sec-chart', 'sent', res.data.sent, interval);
+                this.optionalChart.customMonitorChart1 = !!this.drawChart('custom-monitor-chart-1', 'customData1', res.data.customData1, interval);
+                this.optionalChart.customMonitorChart2 = !!this.drawChart('custom-monitor-chart-1', 'customData2', res.data.customData2, interval);
+                this.optionalChart.customMonitorChart3 = !!this.drawChart('custom-monitor-chart-1', 'customData3', res.data.customData3, interval);
+                this.optionalChart.customMonitorChart4 = !!this.drawChart('custom-monitor-chart-1', 'customData4', res.data.customData4, interval);
+                this.optionalChart.customMonitorChart5 = !!this.drawChart('custom-monitor-chart-1', 'customData5', res.data.customData5, interval);
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }
@@ -119,10 +110,6 @@
 
 <style lang="less" scoped>
     .detail-report-monitor-menu {
-        h6 {
-            position: absolute;
-        }
-
         div {
             &.chart {
                 border: 1px solid #878988;

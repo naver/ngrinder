@@ -46,7 +46,7 @@
     import Component from 'vue-class-component';
     import Base from '../../../Base.vue';
     import MessagesMixin from '../../../common/mixin/MessagesMixin.vue';
-    import MenuChartMixin from './MenuChartMixin.vue';
+    import ChartMixin from '../../../common/mixin/ChartMixin.vue';
 
     @Component({
         name: 'perfTest',
@@ -57,7 +57,7 @@
             },
         },
     })
-    export default class PerfTest extends Mixins(Base, MenuChartMixin, MessagesMixin) {
+    export default class PerfTest extends Mixins(Base, ChartMixin, MessagesMixin) {
         optionalChart = {
             meantimeToFirstByte: true,
             userDefinedChart: true,
@@ -71,17 +71,23 @@
                 },
             }).then(res => {
                 const interval = res.data.chartInterval;
-                this.drawChart('tps-chart', res.data.TPS.data, interval, { labels: res.data.TPS.labels });
-                this.drawChart('mean-time-chart', res.data.Mean_Test_Time_ms.data, interval, { labels: res.data.Mean_Test_Time_ms.labels });
-                this.drawChart('vuser-chart', res.data.Vuser.data, interval, { labels: res.data.Vuser.labels });
-                this.drawChart('error-chart', res.data.Errors.data, interval, { labels: res.data.Errors.labels });
 
-                this.drawOptionalChart('min-time-first-byte-chart', res.data.Mean_time_to_first_byte.data, interval,
-                    { labels: res.data.Mean_time_to_first_byte.labels }, { displayFlags: this.optionalChart, key: 'meantimeToFirstByte' });
-                this.drawOptionalChart('user-defined-chart', res.data.User_defined.data, interval,
-                    { labels: res.data.User_defined.labels }, { displayFlags: this.optionalChart, key: 'userDefinedChart' });
+                this.drawChart('tps-chart', 'TPS', res.data.TPS, interval);
+                this.drawChart('mean-time-chart', 'Mean_Test_Time_ms', res.data.Mean_Test_Time_ms, interval);
+                this.drawChart('vuser-chart', 'Vuser', res.data.Vuser, interval);
+                this.drawChart('error-chart', 'Errors', res.data.Errors, interval);
 
-                this.createChartExportButton(this.i18n('perfTest.report.exportImg.button'), this.i18n('perfTest.report.exportImg.title'));
+                if (res.data.Mean_time_to_first_byte && res.data.Mean_time_to_first_byte.length > 0) {
+                    this.drawChart('min-time-first-byte-chart', 'Mean_time_to_first_byte', res.data.Mean_time_to_first_byte, interval);
+                } else {
+                    this.optionalChart.meantimeToFirstByte = false;
+                }
+
+                if (res.data.User_defined && res.data.User_defined.length > 0) {
+                    this.drawChart('user-defined-chart', 'User_defined', res.data.User_defined, interval);
+                } else {
+                    this.optionalChart.userDefinedChart = false;
+                }
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
 
             $('[data-toggle="popover"]').popover();
@@ -95,9 +101,6 @@
 
 <style lang="less" scoped>
     .detail-report-perftest-menu {
-        h6 {
-            position: absolute;
-        }
 
         .download-csv {
             margin-top: -36px;

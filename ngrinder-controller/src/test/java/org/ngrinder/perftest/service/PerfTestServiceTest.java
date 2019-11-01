@@ -36,8 +36,10 @@ import org.springframework.data.domain.Pageable;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
@@ -166,9 +168,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		int interval = spiedService.getReportDataInterval(testId, "TPS", 700);
 
 		// Then
-		assertThat(spiedService.getSingleReportDataAsJson(testId, "TPS", interval).length(), greaterThan(100));
-		assertThat(spiedService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval).length(),
-				greaterThan(100));
+		assertFalse(spiedService.getReportData(testId, "TPS", interval).isEmpty());
+		assertFalse(spiedService.getReportData(testId, "Mean_Test_Time_(ms)", interval).isEmpty());
 	}
 
 	@Test
@@ -185,13 +186,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		// When
 		int interval = spiedService.getMonitorGraphInterval(testId, "127.0.0.1", 700);
-		Map<String, String> reportDataMap = spiedService.getMonitorGraph(testId, "127.0.0.1", interval);
+		Map<String, Object> reportDataMap = spiedService.getMonitorGraph(testId, "127.0.0.1", interval);
+
+		Predicate<Object> listNotEmpty = obj -> !((List) obj).isEmpty();
 
 		// Then
-		assertThat(reportDataMap.get("cpu").length(), greaterThanOrEqualTo(300));
-		assertThat(reportDataMap.get("memory").length(), greaterThanOrEqualTo(300));
-		assertThat(reportDataMap.get("received").length(), greaterThanOrEqualTo(300));
-		assertThat(reportDataMap.get("sent").length(), greaterThanOrEqualTo(300));
+		assertTrue(listNotEmpty.test(reportDataMap.get("cpu")));
+		assertTrue(listNotEmpty.test(reportDataMap.get("memory")));
+		assertTrue(listNotEmpty.test(reportDataMap.get("received")));
+		assertTrue(listNotEmpty.test(reportDataMap.get("sent")));
 	}
 
 	@Test

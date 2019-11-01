@@ -9,9 +9,10 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
-    import Base from '../../Base.vue';
-    import Chart from '../../../chart.js';
+
+    import ChartMixin from '../../common/mixin/ChartMixin.vue';
 
     @Component({
         name: 'smallChart',
@@ -25,12 +26,7 @@
             },
         },
     })
-    export default class SmallChart extends Base {
-        CHART_GRID_PADDING = { top: 15, right: 10, bottom: 30, left: 40 };
-        CHART_NUM_X_TICKS = 7;
-        CHART_LEGEND_MARGIN = 1;
-        CHART_LEGEND_LOCATION = 'nw';
-
+    export default class SmallChart extends Mixins(ChartMixin) {
         created() {
             this.showChart();
         }
@@ -46,30 +42,11 @@
         }
 
         initCharts(data) {
-            if (data.TPS.labels.length >= 1) {
-                data.TPS.labels[0] = 'TPS';
-            }
-            this.makeNewChart(`tps_${this.rowData.id}`, data.TPS.data, data.chartInterval, data.TPS.labels);
+            const interval = data.chartInterval;
 
-            if (data.Mean_Test_Time_ms.labels.length >= 1) {
-                data.Mean_Test_Time_ms.labels[0] = 'MTT';
-            }
-            this.makeNewChart(`mtt_${this.rowData.id}`, data.Mean_Test_Time_ms.data, data.chartInterval, data.Mean_Test_Time_ms.labels);
-
-            if (data.Errors.labels.length >= 1) {
-                data.Errors.labels[0] = 'ERR';
-            }
-            this.makeNewChart(`err_${this.rowData.id}`, data.Errors.data, data.chartInterval, data.Errors.labels);
-        }
-
-        makeNewChart(id, data, interval, labels) {
-            new Chart(id, data, interval, {
-                    labels,
-                    gridPadding: this.CHART_GRID_PADDING,
-                    numXTicks: this.CHART_NUM_X_TICKS,
-                    legend_margin: this.CHART_LEGEND_MARGIN,
-                    legend_location: this.CHART_LEGEND_LOCATION,
-                }).plot();
+            this.drawChart(`tps_${this.rowData.id}`, 'TPS', data.TPS, interval);
+            this.drawChart(`mtt_${this.rowData.id}`, 'MTT', data.Mean_Test_Time_ms, interval);
+            this.drawChart(`err_${this.rowData.id}`, 'ERR', data.Errors, interval);
         }
     }
 </script>
