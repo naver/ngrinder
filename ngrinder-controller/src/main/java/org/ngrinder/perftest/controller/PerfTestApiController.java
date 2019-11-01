@@ -248,7 +248,7 @@ public class PerfTestApiController {
 		model.put(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
 		model.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.put(PARAM_TEST, test);
-		model.put(PARAM_TPS, perfTestService.getSingleReportDataAsJson(id, "TPS", interval));
+		model.put(PARAM_TPS, perfTestService.getReportData(id, "TPS", interval));
 		return model;
 	}
 
@@ -610,7 +610,7 @@ public class PerfTestApiController {
 	 * @param id       test id
 	 * @param dataType which data
 	 * @param imgWidth imageWidth
-	 * @return json string.
+	 * @return perf test result list.
 	 */
 	@GetMapping({"/{id}/perf", "/{id}/graph"})
 	public Map<String, Object> getPerfGraph(@PathVariable long id,
@@ -626,11 +626,9 @@ public class PerfTestApiController {
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		Map<String, Object> resultMap = Maps.newHashMap();
 		for (String each : dataTypes) {
-			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(id, each, onlyTotal, interval);
-			Map<String, Object> dataMap = Maps.newHashMap();
-			dataMap.put("labels", tpsResult.getFirst());
-			dataMap.put("data", tpsResult.getSecond());
-			resultMap.put(StringUtils.replaceChars(each, "()", ""), dataMap);
+			String key = StringUtils.replaceChars(each, "()", "");
+			List<Float> tpsResult = perfTestService.getReportData(id, each, interval);
+			resultMap.put(key, tpsResult);
 		}
 		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		return resultMap;
@@ -645,14 +643,10 @@ public class PerfTestApiController {
 	 * @return json message
 	 */
 	@GetMapping("/{id}/monitor")
-	public Map<String, String> getMonitorGraph(@PathVariable long id,
+	public Map<String, Object> getMonitorGraph(@PathVariable long id,
 											   @RequestParam String targetIP, @RequestParam int imgWidth) {
-		return getMonitorGraphData(id, targetIP, imgWidth);
-	}
-
-	private Map<String, String> getMonitorGraphData(long id, String targetIP, int imgWidth) {
 		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
-		Map<String, String> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
+		Map<String, Object> sysMonitorMap = perfTestService.getMonitorGraph(id, targetIP, interval);
 		PerfTest perfTest = perfTestService.getOne(id);
 		sysMonitorMap.put("interval", String.valueOf(interval * (perfTest != null ? perfTest.getSamplingInterval() : 1)));
 		return sysMonitorMap;

@@ -13,8 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import com.google.common.collect.Lists;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -70,7 +68,6 @@ import javax.script.ScriptException;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.CacheConstants.*;
@@ -100,6 +97,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private static final Logger LOGGER = LoggerFactory.getLogger(PerfTestService.class);
 
 	private static final String DATA_FILE_EXTENSION = ".data";
+
+	private static final String NULL_STRING = "null";
 
 	@Getter
 	private final PerfTestRepository perfTestRepository;
@@ -1153,22 +1152,21 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param dataInterval interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
-	public Map<String, String> getMonitorGraph(long testId, String targetIP, int dataInterval) {
-		Map<String, String> returnMap = Maps.newHashMap();
+	public Map<String, Object> getMonitorGraph(long testId, String targetIP, int dataInterval) {
+		Map<String, Object> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				MONITOR_FILE_PREFIX + targetIP + ".data");
 		BufferedReader br = null;
 		try {
-
-			StringBuilder sbUsedMem = new StringBuilder("[");
-			StringBuilder sbCPUUsed = new StringBuilder("[");
-			StringBuilder sbNetReceived = new StringBuilder("[");
-			StringBuilder sbNetSent = new StringBuilder("[");
-			StringBuilder customData1 = new StringBuilder("[");
-			StringBuilder customData2 = new StringBuilder("[");
-			StringBuilder customData3 = new StringBuilder("[");
-			StringBuilder customData4 = new StringBuilder("[");
-			StringBuilder customData5 = new StringBuilder("[");
+			List<Long> userMemoryMetrics = new ArrayList<>();
+			List<String> cpuUsedMetrics = new ArrayList<>();
+			List<String> networkReceivedMetrics = new ArrayList<>();
+			List<String> networkSentMetrics = new ArrayList<>();
+			List<String> customData1Metrics = new ArrayList<>();
+			List<String> customData2Metrics = new ArrayList<>();
+			List<String> customData3Metrics = new ArrayList<>();
+			List<String> customData4Metrics = new ArrayList<>();
+			List<String> customData5Metrics = new ArrayList<>();
 
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
@@ -1185,29 +1183,29 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					skipCount = 0;
 					String[] datalist = StringUtils.split(line, ",");
 					if ("null".equals(datalist[4]) || "undefined".equals(datalist[4])) {
-						sbUsedMem.append("null").append(",");
+						userMemoryMetrics.add(null);
 					} else {
-						sbUsedMem.append(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])).append(",");
+						userMemoryMetrics.add(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]));
 					}
-					addCustomData(sbCPUUsed, 5, datalist);
-					addCustomData(sbNetReceived, 6, datalist);
-					addCustomData(sbNetSent, 7, datalist);
-					addCustomData(customData1, 8, datalist);
-					addCustomData(customData2, 9, datalist);
-					addCustomData(customData3, 10, datalist);
-					addCustomData(customData4, 11, datalist);
-					addCustomData(customData5, 12, datalist);
+					addCustomData(cpuUsedMetrics, 5, datalist);
+					addCustomData(networkReceivedMetrics, 6, datalist);
+					addCustomData(networkSentMetrics, 7, datalist);
+					addCustomData(customData1Metrics, 8, datalist);
+					addCustomData(customData2Metrics, 9, datalist);
+					addCustomData(customData3Metrics, 10, datalist);
+					addCustomData(customData4Metrics, 11, datalist);
+					addCustomData(customData5Metrics, 12, datalist);
 				}
 			}
-			completeCustomData(returnMap, "cpu", sbCPUUsed);
-			completeCustomData(returnMap, "memory", sbUsedMem);
-			completeCustomData(returnMap, "received", sbNetReceived);
-			completeCustomData(returnMap, "sent", sbNetSent);
-			completeCustomData(returnMap, "customData1", customData1);
-			completeCustomData(returnMap, "customData2", customData2);
-			completeCustomData(returnMap, "customData3", customData3);
-			completeCustomData(returnMap, "customData4", customData4);
-			completeCustomData(returnMap, "customData5", customData5);
+			returnMap.put("cpu", cpuUsedMetrics);
+			returnMap.put("memory", userMemoryMetrics);
+			returnMap.put("received", networkReceivedMetrics);
+			returnMap.put("sent", networkSentMetrics);
+			returnMap.put("customData1", customData1Metrics);
+			returnMap.put("customData2", customData2Metrics);
+			returnMap.put("customData3", customData3Metrics);
+			returnMap.put("customData4", customData4Metrics);
+			returnMap.put("customData5", customData5Metrics);
 		} catch (IOException e) {
 			LOGGER.info("Error while getting monitor {} data file at {}", targetIP, monitorDataFile);
 		} finally {
@@ -1217,19 +1215,11 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 
-	private void addCustomData(StringBuilder customData, int index, String[] data) {
+	private <T> void addCustomData(List<T> list, int index, T[] data) {
 		if (data.length > index) {
-			customData.append(data[index]).append(",");
+			list.add(data[index]);
 		}
 	}
-
-	private void completeCustomData(Map<String, String> returnMap, String key, StringBuilder customData) {
-		if (customData.charAt(customData.length() - 1) == ',') {
-			customData.deleteCharAt(customData.length() - 1);
-		}
-		returnMap.put(key, customData.append("]").toString());
-	}
-
 
 	/**
 	 * Get report file directory for give test id .
@@ -1386,55 +1376,17 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		return returnMap;
 	}
 
-
-	/**
-	 * Get json string that contains test report data as a json string.
-	 *
-	 * @param testId   test id
-	 * @param key      key
-	 * @param interval interval to collect data
-	 * @return json list
-	 */
-	public String getSingleReportDataAsJson(long testId, String key, int interval) {
-		File reportDataFile = getReportDataFile(testId, key);
-		return getFileDataAsJson(reportDataFile, interval);
-	}
-
 	/**
 	 * Get list that contains test report data as a string.
 	 *
 	 * @param testId   test id
 	 * @param key      report key
-	 * @param onlyTotal true if only total show be passed
 	 * @param interval interval to collect data
 	 * @return list containing label and tps value list
 	 */
-	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, boolean onlyTotal, int interval) {
-		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<>(), new ArrayList<>());
-		List<File> reportDataFiles = onlyTotal ? Lists.newArrayList(getReportDataFile(testId, key)) : getReportDataFiles(testId, key);
-		for (File file : reportDataFiles) {
-			String buildReportName = buildReportName(key, file);
-			if (key.equals(buildReportName)) {
-				buildReportName = "Total";
-			} else {
-				buildReportName = buildReportName.replace("_", " ");
-			}
-			resultPair.getFirst().add(buildReportName);
-			resultPair.getSecond().add(getFileDataAsJson(file, interval));
-		}
-		return resultPair;
-	}
-
-	private String buildReportName(String key, File file) {
-		String reportName = FilenameUtils.removeExtension(file.getName());
-		if (key.equals(reportName)) {
-			return reportName;
-		}
-		String[] baseName = StringUtils.split(reportName, "-", 2);
-		if (SingleConsole.INTERESTING_PER_TEST_STATISTICS.contains(baseName[0]) && baseName.length >= 2) {
-			reportName = baseName[1];
-		}
-		return reportName;
+	public List<Float> getReportData(long testId, String key, int interval) {
+		File file = getReportDataFile(testId, key);
+		return getFileDataAsList(file, interval);
 	}
 
 	/**
@@ -1449,62 +1401,35 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		return new File(reportFolder, key + ".data");
 	}
 
-	/**
-	 * Get files respectively if there are multiple tests.
-	 *
-	 * @param testId test id
-	 * @param key    report key
-	 * @return return file list
-	 */
-	public List<File> getReportDataFiles(long testId, String key) {
-		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		FileFilter fileFilter = new WildcardFileFilter(key + "*.data");
-		File[] files = reportFolder.listFiles(fileFilter);
-		return Arrays.stream(files)
-			.sorted(Comparator.comparing(o -> FilenameUtils.getBaseName(o.getName())))
-			.collect(toList());
-	}
-
-	/**
-	 * Get the test report data as a json string.
-	 *
-	 * @param targetFile target file
-	 * @param interval   interval to collect data
-	 * @return json string
-	 */
-	private String getFileDataAsJson(File targetFile, int interval) {
+	private List<Float> getFileDataAsList(File targetFile, int interval) {
 		if (!targetFile.exists()) {
-			return "[]";
+			return Collections.emptyList();
 		}
-		StringBuilder reportData = new StringBuilder("[");
-		FileReader reader = null;
-		BufferedReader br = null;
-		try {
-			reader = new FileReader(targetFile);
-			br = new BufferedReader(reader);
+
+		List<Float> metrics = new ArrayList<>();
+		try (FileReader reader = new FileReader(targetFile);
+			 BufferedReader br = new BufferedReader(reader);){
+
 			String data = br.readLine();
 			int current = 0;
 			while (StringUtils.isNotBlank(data)) {
 				if (0 == current) {
-					reportData.append(data);
-					reportData.append(",");
+					if (data.equals(NULL_STRING)) {
+						metrics.add(null);
+					} else {
+						metrics.add(Float.parseFloat(data));
+					}
 				}
 				if (++current >= interval) {
 					current = 0;
 				}
 				data = br.readLine();
 			}
-			if (reportData.charAt(reportData.length() - 1) == ',') {
-				reportData.deleteCharAt(reportData.length() - 1);
-			}
 		} catch (IOException e) {
 			LOGGER.error("Report data retrieval is failed: {}", e.getMessage());
 			LOGGER.debug("Trace is : ", e);
-		} finally {
-			IOUtils.closeQuietly(reader);
-			IOUtils.closeQuietly(br);
 		}
-		return reportData.append("]").toString();
+		return metrics;
 	}
 
 	/*
