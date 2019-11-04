@@ -26,6 +26,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
+
+import static java.util.Objects.hash;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -85,11 +88,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + port;
-		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
-		return result;
+		return hash(ip, name);
 	}
 
 	@Override
