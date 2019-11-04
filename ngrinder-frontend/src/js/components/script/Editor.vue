@@ -148,8 +148,14 @@
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
             const revision = to.query.r || -1;
+            const ownerId = to.query.ownerId;
 
-            Base.prototype.$http.get(`/script/api/detail/${path}?r=${revision}`)
+            let apiUrl = `/script/api/detail/${path}?r=${revision}`;
+            if (ownerId) {
+                apiUrl += `&ownerId=${ownerId}`;
+            }
+
+            Base.prototype.$http.get(apiUrl)
                 .then(res => res.data.file ? res : Promise.reject()) // eslint-disable-line no-confusing-arrow
                 .then(res => Object.assign(to.params, res.data))
                 .then(next)
