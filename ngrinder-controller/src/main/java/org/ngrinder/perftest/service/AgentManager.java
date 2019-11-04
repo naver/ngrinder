@@ -36,8 +36,6 @@ import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.hazelcast.HazelcastService;
-import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
@@ -58,9 +56,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_AGENT;
-import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Agent manager.
@@ -310,6 +307,19 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		return filterApprovedAgents(allAgents);
 	}
 
+	public String extractRegionKey(String agentRegion) {
+		if (agentRegion != null && agentRegion.contains("_owned_")) {
+			return agentRegion.substring(0, agentRegion.indexOf("_owned_"));
+		}
+		if (agentRegion != null && agentRegion.contains("owned_")) {
+			return agentRegion.substring(0, agentRegion.indexOf("owned_"));
+		}
+		if (StringUtils.isEmpty(agentRegion)) {
+			return Config.NONE_REGION;
+		}
+		return agentRegion;
+	}
+
 	/**
 	 * Filter the approved agents from given agents.
 	 *
@@ -328,7 +338,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			.stream()
 			.filter(agentInfo -> {
 				if (isClustered) {
-					return StringUtils.equals(region, agentInfo.getRegion()) && agentInfo.getApproved();
+					return StringUtils.equals(region, extractRegionKey(agentInfo.getRegion())) && agentInfo.getApproved();
 				} else {
 					return agentInfo.getApproved();
 				}
@@ -431,9 +441,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		Stream<AgentIdentity> ownedFreeAgentStream = allFreeAgents.stream().filter(isOwnedAgent.apply(user.getUserId()));
 		Stream<AgentIdentity> freeAgentStream = allFreeAgents.stream().filter(isCommonAgent);
 
-		return Stream.concat(ownedFreeAgentStream, freeAgentStream)
-			.limit(agentCount)
-			.collect(toSet());
+		return Stream.concat(ownedFreeAgentStream, freeAgentStream).limit(agentCount).collect(toSet());
 	}
 
 	/**

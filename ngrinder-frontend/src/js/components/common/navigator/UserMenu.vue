@@ -51,10 +51,12 @@
             <li>
                 <a class="dropdown-item" href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank" v-text="i18n('navigator.dropDown.downloadRecorder')"></a>
             </li>
+            <li class="dropdown-divider"></li>
             <template v-if="isAdmin">
-                <li class="dropdown-divider"></li>
                 <li><router-link class="dropdown-item" to="/user" v-text="i18n('navigator.dropDown.userManagement')"></router-link></li>
-                <li><router-link class="dropdown-item" to="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></router-link></li>
+            </template>
+            <li><router-link class="dropdown-item" to="/agent/" v-text="i18n('navigator.dropDown.agentManagement')"></router-link></li>
+            <template v-if="isAdmin">
                 <li><router-link class="dropdown-item" to="/operation/script_console" v-text="i18n('navigator.dropDown.scriptConsole')"></router-link></li>
                 <li><router-link class="dropdown-item" to="/operation/system_config" v-text="i18n('navigator.dropDown.systemConfig')"></router-link></li>
             </template>
