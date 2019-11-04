@@ -71,35 +71,27 @@
 
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import Component from 'vue-class-component';
+    import { Component, Prop } from 'vue-property-decorator';
     import VueHeadful from 'vue-headful';
     import Base from '../Base.vue';
     import Chart from '../../chart.js';
     import Queue from '../../queue.js';
     import FormatMixin from '../common/mixin/FormatMixin.vue';
 
+    Component.registerHooks(['beforeRouteEnter']);
     @Component({
         name: 'agentDetail',
         components: { VueHeadful },
-        props: {
-            ip: {
-                type: String,
-                required: true,
-            },
-            name: {
-                type: String,
-                required: true,
-            },
-            agentProp: {
-                type: Object,
-                required: false,
-            },
-        },
     })
     export default class AgentDetail extends Mixins(Base, FormatMixin) {
-        agent = {
-            state: { name: '' },
-        };
+        @Prop({ type: Object, required: false })
+        agent;
+
+        @Prop({ type: String, required: true })
+        ip;
+
+        @Prop({ type: String, required: true })
+        name;
 
         interval = 1;
 
@@ -115,12 +107,8 @@
 
         intervalTimer = null;
 
-        created() {
-            if (this.agentProp) {
-                this.agent = this.agentProp;
-            } else {
-                this.$http.get(`/agent/api/${this.ip}/${this.name}`).then(res => this.agent = res.data);
-            }
+        beforeRouteEnter(to, from, next) {
+            AgentDetail.prepare(to).then(next);
         }
 
         mounted() {
@@ -137,6 +125,16 @@
 
         beforeDestroy() {
             clearInterval(this.intervalTimer);
+        }
+
+        static prepare(route) {
+            if (!route.params.agent) {
+                return Base.prototype.$http.get(`/agent/api/${route.params.ip}/${route.params.name}`)
+                    .then(res => route.params.agent = res.data)
+                    .then(() => Promise.resolve());
+            } else {
+                return Promise.resolve();
+            }
         }
 
         getState() {

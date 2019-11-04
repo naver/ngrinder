@@ -52,7 +52,7 @@
             </template>
 
             <template slot="domain" slot-scope="props">
-                <router-link :to="{ name: 'agentDetail', params: { ip: props.rowData.ip, name: props.rowData.name, agentProp: props.rowData } }"
+                <router-link :to="{ name: 'agentDetail', params: { ip: props.rowData.ip, name: props.rowData.name, agent: props.rowData } }"
                              :value="props.rowData.ip" v-text="props.rowData.ip">
                 </router-link>
             </template>
