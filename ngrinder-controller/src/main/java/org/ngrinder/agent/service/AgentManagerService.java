@@ -125,19 +125,6 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		}
 	}
 
-	protected String extractRegionKey(String agentRegion) {
-		if (agentRegion != null && agentRegion.contains("_owned_")) {
-			return agentRegion.substring(0, agentRegion.indexOf("_owned_"));
-		}
-		if (agentRegion != null && agentRegion.contains("owned_")) {
-			return agentRegion.substring(0, agentRegion.indexOf("owned_"));
-		}
-		if (StringUtils.isEmpty(agentRegion)) {
-			return Config.NONE_REGION;
-		}
-		return agentRegion;
-	}
-
 	@Override
 	public Map<String, MutableInt> getAvailableAgentCountMap(User user) {
 		int availableShareAgents = 0;
@@ -228,6 +215,21 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		return new HashSet<>(getAllAttached());
 	}
 
+	private String resolveRegion(String attachedAgentRegion) {
+		String controllerRegion = getConfig().getRegion();
+
+		if (attachedAgentRegion.contains("_owned_")) {
+			String[] regionTokens = attachedAgentRegion.split("_owned_", 2);
+			if (StringUtils.equals(controllerRegion, regionTokens[0])) {
+				return attachedAgentRegion;
+			} else {
+				return controllerRegion + "_owned_" + regionTokens[1];
+			}
+		}
+
+		return controllerRegion;
+	}
+
 	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
 		if (agentInfo == null || status == null) {
 			return;
@@ -238,7 +240,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 		agentInfo.setState(state);
 		agentInfo.setIp(requireNonNull(agentIdentity).getIp());
-		agentInfo.setRegion(getConfig().getRegion());
+		agentInfo.setRegion(resolveRegion(agentIdentity.getRegion()));
 		agentInfo.setName(agentIdentity.getName());
 		agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
 		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));

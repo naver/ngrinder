@@ -42,8 +42,10 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static net.grinder.message.console.AgentControllerState.*;
-import static org.ngrinder.agent.model.AgentRequest.RequestType.*;
+import static net.grinder.message.console.AgentControllerState.READY;
+import static net.grinder.message.console.AgentControllerState.UNKNOWN;
+import static org.ngrinder.agent.model.AgentRequest.RequestType.STOP_AGENT;
+import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
@@ -98,7 +100,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 	protected Set<AgentInfo> getVisibleAsSet() {
 		return getAllAttached()
 			.stream()
-			.filter(agentInfo -> agentInfo.getRegion().equals(getConfig().getRegion()))
+			.filter(agentInfo -> StringUtils.equals(agentManager.extractRegionKey(agentInfo.getRegion()), getConfig().getRegion()))
 			.collect(toSet());
 	}
 
@@ -116,7 +118,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 
 	private boolean activeRegionOnly(AgentInfo agentInfo) {
 		final Set<String> regions = getRegions();
-		return agentInfo != null && regions.contains(extractRegionKey(agentInfo.getRegion()));
+		return agentInfo != null && regions.contains(agentManager.extractRegionKey(agentInfo.getRegion()));
 	}
 
 	/**
@@ -145,7 +147,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 			}
 
 			String fullRegion = agentInfo.getRegion();
-			String region = extractRegionKey(fullRegion);
+			String region = agentManager.extractRegionKey(fullRegion);
 			if (StringUtils.isBlank(region) || !regions.contains(region)) {
 				continue;
 			}
@@ -235,7 +237,7 @@ public class ClusteredAgentManagerService extends AgentManagerService implements
 
 	protected void publishTopic(AgentInfo agentInfo, String listener, RequestType requestType) {
 		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(listener,
-			extractRegionKey(agentInfo.getRegion()), new AgentRequest(agentInfo.getIp(), agentInfo.getName(), requestType)));
+			agentManager.extractRegionKey(agentInfo.getRegion()), new AgentRequest(agentInfo.getIp(), agentInfo.getName(), requestType)));
 	}
 
 	@Override

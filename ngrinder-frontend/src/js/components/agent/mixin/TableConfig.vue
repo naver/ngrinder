@@ -5,7 +5,7 @@
     @Mixin
     export default class TableConfig extends Base {
         get tableFields() {
-            return [
+            const fields = [
                 {
                     name: '__checkbox',
                     titleClass: 'center aligned',
@@ -46,13 +46,18 @@
                     sortField: 'region',
                     width: '100px',
                 },
-                {
+            ];
+
+            if (this.isAdmin) {
+                fields.push({
                     name: '__slot:approved',
                     title: this.i18n('agent.list.approved'),
                     dataClass: 'center aligned',
                     width: '160px',
-                },
-            ];
+                });
+            }
+
+            return fields;
         }
 
         get tableCss() {
