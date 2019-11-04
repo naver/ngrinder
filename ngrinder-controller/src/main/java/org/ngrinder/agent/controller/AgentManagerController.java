@@ -40,14 +40,15 @@ public class AgentManagerController {
 	}
 
 	/**
-	 * Get the agent detail info for the given agent id.
+	 * Get the agent detail info for the given agent ip and name.
 	 *
 	 * @param user  current user
-	 * @param id    agent id
+	 * @param ip    agent ip
+	 * @param name  agent name
 	 * @return agent/agentDetail
 	 */
-	@GetMapping("/{id}")
-	public String getOne(final User user, @PathVariable Long id) {
+	@GetMapping("/{ip}/{name}")
+	public String getOne(final User user, @PathVariable String ip, @PathVariable String name) {
 		return "app";
 	}
 
