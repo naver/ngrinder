@@ -74,8 +74,8 @@
     import { Component, Prop } from 'vue-property-decorator';
     import VueHeadful from 'vue-headful';
     import Base from '../Base.vue';
-    import Chart from '../../chart.js';
     import Queue from '../../queue.js';
+    import ChartMixin from '../common/mixin/ChartMixin.vue';
     import FormatMixin from '../common/mixin/FormatMixin.vue';
 
     Component.registerHooks(['beforeRouteEnter']);
@@ -83,7 +83,7 @@
         name: 'agentDetail',
         components: { VueHeadful },
     })
-    export default class AgentDetail extends Mixins(Base, FormatMixin) {
+    export default class AgentDetail extends Mixins(Base, ChartMixin, FormatMixin) {
         @Prop({ type: Object, required: false })
         agent;
 
@@ -113,12 +113,10 @@
 
         mounted() {
             this.cpu.queue = new Queue(60);
-            this.cpu.chart = new Chart('cpu-usage-chart', [this.cpu.queue.getArray()], this.interval,
-                { yAxisFormatter: this.formatPercentage }).plot();
+            this.cpu.chart = this.drawChart('cpu-usage-chart', 'cpu-usage', this.cpu.queue.getArray(), this.interval, this.formatPercentage);
 
             this.memory.queue = new Queue(60);
-            this.memory.chart = new Chart('memory-usage-chart', [this.memory.queue.getArray()], this.interval,
-                { yAxisFormatter: this.formatMemory }).plot();
+            this.memory.chart = this.drawChart('memory-usage-chart', 'memory-usage', this.memory.queue.getArray(), this.interval, this.formatMemory);
 
             this.intervalTimer = setInterval(this.getState, this.interval * 1000);
         }
@@ -147,8 +145,8 @@
             }).then(res => {
                 this.cpu.queue.enQueue(res.data.cpuUsedPercentage);
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
-                this.cpu.chart.plot();
-                this.memory.chart.plot();
+                this.cpu.chart.load({ json: { 'cpu-usage': this.cpu.queue.getArray() } });
+                this.memory.chart.load({ json: { 'memory-usage': this.memory.queue.getArray() } });
             });
         }
 
