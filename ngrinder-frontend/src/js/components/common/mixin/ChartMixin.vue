@@ -28,11 +28,6 @@
         return array;
     };
 
-    const timeSeriesTickArray = [];
-    for (let i = 0; i < 60; i++) {
-        timeSeriesTickArray.push(i);
-    }
-
     const defaultChartOptions = {
         grid: {
             x: { show: true },
@@ -65,7 +60,7 @@
                     x: {
                         type: 'seconds',
                         tick: {
-                            values: timeSeriesTickArray,
+                            culling: true,
                             format: x => timeSeriesFormat(x * interval),
                         },
                     },
