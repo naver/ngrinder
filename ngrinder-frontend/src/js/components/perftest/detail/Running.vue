@@ -203,11 +203,11 @@
 
         // monitor or agent state
         getPackageState(targetPackage) {
-            let packageState = `CPU-${this.formatPercentage(null, targetPackage.cpuUsedPercentage)}
-            MEM-${this.formatPercentage(null, ((targetPackage.totalMemory - targetPackage.freeMemory) / targetPackage.totalMemory) * 100)}`;
+            let packageState = `CPU-${this.formatPercentage(targetPackage.cpuUsedPercentage)}
+            MEM-${this.formatPercentage(((targetPackage.totalMemory - targetPackage.freeMemory) / targetPackage.totalMemory) * 100)}`;
 
             if (targetPackage.receivedPerSec !== 0 || targetPackage.sentPerSec !== 0) {
-                packageState += ` RX-${this.formatNetwork(null, targetPackage.receivedPerSec)} TX-${this.formatNetwork(null, targetPackage.sentPerSec)}`;
+                packageState += ` RX-${this.formatNetwork(targetPackage.receivedPerSec)} TX-${this.formatNetwork(targetPackage.sentPerSec)}`;
             }
             return packageState;
         }
