@@ -3,7 +3,7 @@
 
     @Mixin
     export default class FormatMixin {
-        formatNetwork(format, value) {
+        formatNetwork(value) {
             value = value || 0;
             if (value < 1024) {
                 return `${value.toFixed(1)}B`;
@@ -27,7 +27,7 @@
             return ` ${parseInt(s / 86400)}d ${parseInt(s % 86400 / 3600)}h ${parseInt(s % 86400 % 3600 / 60)}m ${(s % 86400 % 3600 % 60)}s`;
         }
 
-        formatPercentage(format, value) {
+        formatPercentage(value) {
             if (value === undefined || value === null) {
                 return 'N/A';
             }
@@ -39,7 +39,7 @@
             }
         }
 
-        formatMemory(format, value) {
+        formatMemory(value) {
             value = value || 0;
             if (value < 1024) {
                 return `${value.toFixed(1)}K`;
