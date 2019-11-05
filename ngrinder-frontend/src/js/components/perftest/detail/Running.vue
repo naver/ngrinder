@@ -92,7 +92,7 @@
                     </button>
                 </legend>
             </fieldSet>
-            <div id="running-tps-chart" class="chart w-100"></div>
+            <div id="running-tps-chart" class="chart w-100" :v-visible="!!tpsChart"></div>
             <div class="intro mt-1"
                  :data-step="shownBsTab ? 6 : undefined"
                  :data-intro="shownBsTab ? i18n('intro.running.accumulated') : undefined">
@@ -126,15 +126,15 @@
     import ControlGroup from '../../common/ControlGroup.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import SamplingTable from './SamplingTable.vue';
-    import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
+    import ChartMixin from '../../common/mixin/ChartMixin.vue';
     import FormatMixin from '../../common/mixin/FormatMixin.vue';
 
     @Component({
         name: 'running',
         components: { ControlGroup, SamplingTable },
     })
-    export default class Running extends Mixins(Base, FormatMixin, MessagesMixin) {
+    export default class Running extends Mixins(Base, ChartMixin, FormatMixin, MessagesMixin) {
         @Prop({ type: Object, required: true })
         testProp;
 
@@ -157,7 +157,10 @@
         created() {
             Object.assign(this.test, this.testProp);
             this.tpsQueue = new Queue(60 / this.test.samplingInterval);
-            this.tpsChart = new Chart('running-tps-chart', [this.tpsQueue.getArray()], this.test.samplingInterval);
+        }
+
+        mounted() {
+            this.tpsChart = this.drawChart('running-tps-chart', 'tps', this.tpsQueue.getArray(), this.test.samplingInterval);
         }
 
         startSamplingInterval() {
@@ -180,7 +183,7 @@
                     this.testTime = perfTestSample.testTime;
                     this.tpsQueue.enQueue(perfTestSample.tpsChartData);
                     if (this.shownBsTab) {
-                        this.tpsChart.plot();
+                        this.tpsChart.load({ json: { tps: this.tpsQueue.getArray() } });
                     }
                 }
                 this.agentState = res.data.agent || {};
@@ -282,6 +285,7 @@
         }
 
         .chart {
+            min-width: 500px;
             width: 610px;
             height: 300px;
             border: 1px solid #666;

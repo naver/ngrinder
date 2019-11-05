@@ -259,7 +259,6 @@
 
             $(this.$refs.runningTab).on('shown.bs.tab', () => {
                 this.$refs.running.shownBsTab = true;
-                this.$refs.running.tpsChart.plot();
                 if (this.$refs.running.samplingIntervalId === -1) {
                     this.$refs.running.startSamplingInterval();
                 }
