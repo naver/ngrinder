@@ -4,50 +4,50 @@
             <h4 v-text="'Monitor'"></h4>
         </header>
 
-        <template v-if="optionalChart.cpuUsageChart">
+        <div v-show="optionalChart.cpuUsageChart">
             <h6 v-text="'CPU'"></h6>
             <div class="chart" ref="cpuUsageChart" id="cpu-usage-chart"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.memUsageChart">
+        <div v-show="optionalChart.memUsageChart">
             <h6 v-text="'Used Memory'"></h6>
             <div class="chart" id="mem-usage-chart"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.receivedBytePerSecChart">
+        <div v-show="optionalChart.receivedBytePerSecChart">
             <h6 v-text="'Received Byte Per Second'"></h6>
             <div class="chart" id="received-byte-per-sec-chart"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.sentBytePerSecChart">
+        <div v-show="optionalChart.sentBytePerSecChart">
             <h6 v-text="'Sent Byte Per Second'"></h6>
             <div class="chart" id="sent-byte-per-sec-chart"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.customMonitorChart1">
+        <div v-show="optionalChart.customMonitorChart1">
             <h6 v-text="'Custom Monitor Chart 1'"></h6>
             <div class="chart" id="custom-monitor-chart-1"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.customMonitorChart2">
+        <div v-show="optionalChart.customMonitorChart2">
             <h6 v-text="'Custom Monitor Chart 2'"></h6>
             <div class="chart" id="custom-monitor-chart-2"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.customMonitorChart3">
+        <div v-show="optionalChart.customMonitorChart3">
             <h6 v-text="'Custom Monitor Chart 3'"></h6>
             <div class="chart" id="custom-monitor-chart-3"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.customMonitorChart4">
+        <div v-show="optionalChart.customMonitorChart4">
             <h6 v-text="'Custom Monitor Chart 4'"></h6>
             <div class="chart" id="custom-monitor-chart-4"></div>
-        </template>
+        </div>
 
-        <template v-if="optionalChart.customMonitorChart5">
+        <div v-show="optionalChart.customMonitorChart5">
             <h6 v-text="'Custom Monitor Chart 5'"></h6>
             <div class="chart" id="custom-monitor-chart-5"></div>
-        </template>
+        </div>
     </div>
 </template>
 
@@ -74,15 +74,15 @@
     })
     export default class Monitor extends Mixins(Base, ChartMixin, FormatMixin, MessagesMixin) {
         optionalChart = {
-            cpuUsageChart: true,
-            memUsageChart: true,
-            receivedBytePerSecChart: true,
-            sentBytePerSecChart: true,
-            customMonitorChart1: true,
-            customMonitorChart2: true,
-            customMonitorChart3: true,
-            customMonitorChart4: true,
-            customMonitorChart5: true,
+            cpuUsageChart: false,
+            memUsageChart: false,
+            receivedBytePerSecChart: false,
+            sentBytePerSecChart: false,
+            customMonitorChart1: false,
+            customMonitorChart2: false,
+            customMonitorChart3: false,
+            customMonitorChart4: false,
+            customMonitorChart5: false,
         };
 
         mounted() {
@@ -94,15 +94,15 @@
             }).then(res => {
                 const interval = res.data.interval;
 
-                this.optionalChart.cpuUsageChart = !!this.drawChart('cpu-usage-chart', 'cpu', res.data.cpu, interval);
-                this.optionalChart.memUsageChart = !!this.drawChart('mem-usage-chart', 'memory', res.data.memory, interval);
-                this.optionalChart.receivedBytePerSecChart = !!this.drawChart('received-byte-per-sec-chart', 'received', res.data.received, interval);
-                this.optionalChart.sentBytePerSecChart = !!this.drawChart('sent-byte-per-sec-chart', 'sent', res.data.sent, interval);
-                this.optionalChart.customMonitorChart1 = !!this.drawChart('custom-monitor-chart-1', 'customData1', res.data.customData1, interval);
-                this.optionalChart.customMonitorChart2 = !!this.drawChart('custom-monitor-chart-1', 'customData2', res.data.customData2, interval);
-                this.optionalChart.customMonitorChart3 = !!this.drawChart('custom-monitor-chart-1', 'customData3', res.data.customData3, interval);
-                this.optionalChart.customMonitorChart4 = !!this.drawChart('custom-monitor-chart-1', 'customData4', res.data.customData4, interval);
-                this.optionalChart.customMonitorChart5 = !!this.drawChart('custom-monitor-chart-1', 'customData5', res.data.customData5, interval);
+                this.optionalChart.cpuUsageChart = !!this.drawChart('cpu-usage-chart', 'cpu', res.data.cpu, interval, this.formatPercentage);
+                this.optionalChart.memUsageChart = !!this.drawChart('mem-usage-chart', 'memory', res.data.memory, interval, this.formatMemory);
+                this.optionalChart.receivedBytePerSecChart = !!this.drawChart('received-byte-per-sec-chart', 'received', res.data.received, interval, this.formatNetwork);
+                this.optionalChart.sentBytePerSecChart = !!this.drawChart('sent-byte-per-sec-chart', 'sent', res.data.sent, interval, this.formatNetwork);
+                this.optionalChart.customMonitorChart1 = !!this.drawChart('custom-monitor-chart-1', 'customData1', res.data.customData1, interval, this.formatNetwork);
+                this.optionalChart.customMonitorChart2 = !!this.drawChart('custom-monitor-chart-2', 'customData2', res.data.customData2, interval, this.formatNetwork);
+                this.optionalChart.customMonitorChart3 = !!this.drawChart('custom-monitor-chart-3', 'customData3', res.data.customData3, interval, this.formatNetwork);
+                this.optionalChart.customMonitorChart4 = !!this.drawChart('custom-monitor-chart-4', 'customData4', res.data.customData4, interval, this.formatNetwork);
+                this.optionalChart.customMonitorChart5 = !!this.drawChart('custom-monitor-chart-5', 'customData5', res.data.customData5, interval, this.formatNetwork);
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
     }

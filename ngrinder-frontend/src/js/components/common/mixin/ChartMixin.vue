@@ -50,7 +50,7 @@
 
     @Mixin
     export default class ChartMixin {
-        drawChart(id, label, data, interval) {
+        drawChart(id, label, data, interval, yAxisFormatter) {
             if (data === undefined || data.length === 0) {
                 return null;
             }
@@ -70,7 +70,10 @@
                         },
                     },
                     y: {
-                        tick: { culling: true },
+                        tick: {
+                            culling: true,
+                            format: yAxisFormatter,
+                        },
                     },
                 },
                 ...defaultChartOptions,
