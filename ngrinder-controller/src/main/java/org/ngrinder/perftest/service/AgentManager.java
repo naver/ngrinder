@@ -20,17 +20,16 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
-import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
-import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.thread.ExecutorFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -49,14 +48,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -86,6 +83,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 	private final AgentInfoStore agentInfoStore;
 
+	private final AgentManagerRepository agentManagerRepository;
+
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 
 	/**
@@ -103,23 +102,20 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port, consoleCommunicationSetting);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.setAgentDownloadRequestListener(this);
-		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {
-			@Override
-			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
-				AgentControllerIdentityImplementation agentIdentity = convert(agentAddress.getIdentity());
-				if (ArrayUtils.isEmpty(logs)) {
-					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
-				}
-				File logFile = null;
-				try {
-					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")),
-							agentIdentity.getName() + "-" + agentIdentity.getRegion() + "-log.zip");
-					FileUtils.writeByteArrayToFile(logFile, logs);
-				} catch (IOException e) {
-					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
-							logFile.getAbsolutePath());
-					LOGGER.error("Error is following", e);
-				}
+		agentControllerServerDaemon.addLogArrivedListener((testId, agentAddress, logs) -> {
+			AgentControllerIdentityImplementation agentIdentity = convert(agentAddress.getIdentity());
+			if (ArrayUtils.isEmpty(logs)) {
+				LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
+			}
+			File logFile = null;
+			try {
+				logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")),
+						agentIdentity.getName() + "-" + agentIdentity.getRegion() + "-log.zip");
+				FileUtils.writeByteArrayToFile(logFile, logs);
+			} catch (IOException e) {
+				LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
+						logFile.getAbsolutePath());
+				LOGGER.error("Error is following", e);
 			}
 		});
 	}
@@ -138,7 +134,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param agentIdentity agent identity
 	 * @return port
 	 */
-	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
+	public int getAttachedAgentConnectingPort(AgentIdentity agentIdentity) {
 		return agentControllerServerDaemon.getAgentConnectingPort(agentIdentity);
 	}
 
@@ -148,7 +144,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
-	public Set<AgentStatus> getAllAgentStatusSet() {
+	public Set<AgentStatus> getAllAttachedAgentStatusSet() {
 		return agentControllerServerDaemon.getAgentStatusSet(agentStatus -> true);
 	}
 
@@ -159,7 +155,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
-	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
+	public Set<AgentStatus> getAttachedAgentStatusSet(Predicate<AgentStatus> predicate) {
 		return agentControllerServerDaemon.getAgentStatusSet(predicate);
 	}
 
@@ -169,7 +165,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param agentIdentity agentIdentity of one agent
 	 * @return status agent controller status of one agent
 	 */
-	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
+	public AgentControllerState getAttachedAgentState(AgentIdentity agentIdentity) {
 		return agentControllerServerDaemon.getAgentState(agentIdentity);
 	}
 
@@ -218,13 +214,17 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_MAX_RUN_HOUR);
 	}
 
+	public boolean getAgentForceUpdate() {
+		return config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_AGENT_FORCE_UPDATE);
+	}
+
 	/**
 	 * Get the {@link AgentIdentity} which has the given ip.
 	 *
 	 * @param agentIP agent ip
 	 * @return {@link AgentControllerIdentityImplementation}
 	 */
-	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
+	public AgentControllerIdentityImplementation getAttachedAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
 			if (StringUtils.equals(convert(agentIdentity).getIp(), agentIP)) {
 				return convert(agentIdentity);
@@ -248,7 +248,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 *
 	 * @return AgentIdentity set
 	 */
-	public Set<AgentIdentity> getAllFreeAgents() {
+	public Set<AgentIdentity> getAllAttachedFreeAgents() {
 		return agentControllerServerDaemon.getAllFreeAgents();
 	}
 
@@ -258,11 +258,11 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param user user
 	 * @return AgentIdentity set
 	 */
-	public Set<AgentIdentity> getAllFreeApprovedAgentsForUser(User user) {
+	public Set<AgentIdentity> getAllAttachedFreeApprovedAgentsForUser(User user) {
 		if (user == null) {
 			return Collections.emptySet();
 		}
-		return filterUserAgents(getAllFreeApprovedAgents(), user.getUserId());
+		return filterUserAgents(getAllAttachedFreeApprovedAgents(), user.getUserId());
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 *
 	 * @return AgentIdentity set
 	 */
-	public Set<AgentIdentity> getAllFreeApprovedAgents() {
+	public Set<AgentIdentity> getAllAttachedFreeApprovedAgents() {
 		Set<AgentIdentity> allFreeAgents = agentControllerServerDaemon.getAllFreeAgents();
 		return filterApprovedAgents(allFreeAgents);
 	}
@@ -281,11 +281,11 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param user user
 	 * @return AgentIdentity set
 	 */
-	public Set<AgentIdentity> getAllApprovedAgents(User user) {
+	public Set<AgentIdentity> getAllAttachedApprovedAgents(User user) {
 		if (user == null) {
 			return Collections.emptySet();
 		}
-		return filterUserAgents(getAllApprovedAgents(), user.getUserId());
+		return filterUserAgents(getAllAttachedApprovedAgents(), user.getUserId());
 	}
 
 	/**
@@ -293,8 +293,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 *
 	 * @return AgentIdentity set
 	 */
-	public Set<AgentIdentity> getAllSharedAgents() {
-		return filterSharedAgents(getAllApprovedAgents());
+	public Set<AgentIdentity> getAllAttachedSharedAgents() {
+		return filterSharedAgents(getAllAttachedApprovedAgents());
 	}
 
 	/**
@@ -302,7 +302,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 *
 	 * @return AgentIdentity set
 	 */
-	public Set<AgentIdentity> getAllApprovedAgents() {
+	public Set<AgentIdentity> getAllAttachedApprovedAgents() {
 		Set<AgentIdentity> allAgents = agentControllerServerDaemon.getAllAvailableAgents();
 		return filterApprovedAgents(allAgents);
 	}
@@ -331,18 +331,12 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			return agents;
 		}
 
-		boolean isClustered = config.isClustered();
+		boolean clustered = config.isClustered();
 		String region = config.getRegion();
 
 		Set<String> ips = agentInfoStore.getAllAgentInfo()
 			.stream()
-			.filter(agentInfo -> {
-				if (isClustered) {
-					return StringUtils.equals(region, extractRegionKey(agentInfo.getRegion())) && agentInfo.getApproved();
-				} else {
-					return agentInfo.getApproved();
-				}
-			})
+			.filter(agentInfo -> StringUtils.equals(region, extractRegionKey(agentInfo.getRegion())) && agentInfo.getApproved())
 			.map(agentInfo -> agentInfo.getIp() + agentInfo.getName())
 			.collect(toSet());
 
@@ -408,7 +402,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 */
 	public synchronized void runAgent(User user, final SingleConsole singleConsole,
 	                                  final GrinderProperties grinderProperties, final Integer agentCount) {
-		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
+		final Set<AgentIdentity> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user);
 		final Set<AgentIdentity> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
 		for (AgentIdentity each : necessaryAgents) {
@@ -437,7 +431,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param agentCount    number of agent
 	 * @return selected agent.
 	 */
-	public Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
+	private Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
 		Stream<AgentIdentity> ownedFreeAgentStream = allFreeAgents.stream().filter(isOwnedAgent.apply(user.getUserId()));
 		Stream<AgentIdentity> freeAgentStream = allFreeAgents.stream().filter(isCommonAgent);
 
@@ -459,14 +453,13 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param consolePort console port.
 	 */
 	public void stopAgent(int consolePort) {
-		Set<AgentStatus> agentStatusSetConnectingToPort = getAgentStatusSetConnectingToPort(consolePort);
+		Set<AgentStatus> agentStatusSetConnectingToPort = getAttachedAgentStatusSetConnectingToPort(consolePort);
 		for (AgentStatus each : agentStatusSetConnectingToPort) {
 			if (each.getAgentControllerState() == AgentControllerState.BUSY) {
 				agentControllerServerDaemon.stopAgent(each.getAgentIdentity());
 			}
 		}
 	}
-
 
 	/**
 	 * Update the given agent.
@@ -483,8 +476,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param singleConsolePort port
 	 * @return {@link AgentStatus} set
 	 */
-	public Set<AgentStatus> getAgentStatusSetConnectingToPort(final int singleConsolePort) {
-		return getAgentStatusSet(status -> status.getConnectingPort() == singleConsolePort);
+	public Set<AgentStatus> getAttachedAgentStatusSetConnectingToPort(final int singleConsolePort) {
+		return getAttachedAgentStatusSet(status -> status.getConnectingPort() == singleConsolePort);
 	}
 
 	@Override

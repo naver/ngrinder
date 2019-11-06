@@ -18,6 +18,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
+import lombok.RequiredArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ClusterConstants;
@@ -33,8 +34,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import lombok.RequiredArgsConstructor;
 
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -66,6 +65,9 @@ public class RegionService {
 				for (RegionInfo regionInfo : regionInfos) {
 					regions.put(regionInfo.getRegionName(), regionInfo);
 				}
+			} else {
+				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), regionIP, config.getControllerPort()));
 			}
 			return regions;
 		}
