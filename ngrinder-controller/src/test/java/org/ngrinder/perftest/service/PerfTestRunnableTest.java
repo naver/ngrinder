@@ -114,7 +114,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 	@Test
 	public void testDoTest() throws IOException {
-		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
+		assertThat(agentManager.getAllAttachedApprovedAgents().size(), is(1));
 		perfTestRunnable.doStart();
 		sleep(10000);
 		assertThat(perfTestService.getAllTesting().size(), is(1));

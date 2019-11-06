@@ -35,13 +35,13 @@ public class AgentManagerTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testGetAllFreeApprovedAgentsForUser() {
-		agentManager.getAllFreeApprovedAgentsForUser(getTestUser());
+	public void testgetAllAttachedFreeApprovedAgentsForUser() {
+		agentManager.getAllAttachedFreeApprovedAgentsForUser(getTestUser());
 	}
 
 	@Test
-	public void testGetAllSharedAgents() {
-		agentManager.getAllSharedAgents();
+	public void testgetAllAttachedSharedAgents() {
+		agentManager.getAllAttachedSharedAgents();
 	}
 
 	@Test

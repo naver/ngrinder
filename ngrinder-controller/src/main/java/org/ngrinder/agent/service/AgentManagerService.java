@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.service;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.grinder.common.processidentity.AgentIdentity;
@@ -22,34 +21,52 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
+import org.ngrinder.agent.model.AgentRequest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.store.AgentInfoStore;
-import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
+import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
+import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
-import org.ngrinder.service.AbstractAgentManagerService;
+import org.ngrinder.region.service.RegionService;
+import org.ngrinder.service.IAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.agent.model.AgentRequest.RequestType.STOP_AGENT;
+import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
+import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_LISTENER_NAME;
+import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_NAME;
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
+import static org.ngrinder.infra.config.Config.NONE_REGION;
 
 /**
  * Agent manager service.
  *
  * @since 3.0
  */
+@Service
 @RequiredArgsConstructor
-public class AgentManagerService extends AbstractAgentManagerService {
+public class AgentManagerService implements TopicListener<AgentRequest>, IAgentManagerService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
 	protected final AgentManager agentManager;
@@ -59,6 +76,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	@Getter
 	private final Config config;
 
+	private final RegionService regionService;
+
+	private final HazelcastService hazelcastService;
+
+	private final TopicSubscriber topicSubscriber;
+
 	protected final AgentInfoStore agentInfoStore;
 
 	protected final ScheduledTaskService scheduledTaskService;
@@ -67,9 +90,10 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	@PostConstruct
 	public void init() {
-		initAgentIMap();
+		initAgentInfoStore();
 		runnable = this::updateSharedAgentInfo;
 		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(runnable, 1000);
+		topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
 	}
 
 	@PreDestroy
@@ -77,9 +101,9 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		scheduledTaskService.removeScheduledJob(runnable);
 	}
 
-	protected void initAgentIMap() {
-		boolean approved = getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
-		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAgentStatusSet()) {
+	private void initAgentInfoStore() {
+		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAttachedAgentStatusSet()) {
 			AgentInfo agentInfo = new AgentInfo();
 			fillUpAgentInfo(agentInfo, status);
 			agentInfo.setApproved(approved);
@@ -96,16 +120,64 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		}
 	}
 
+	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
+		if (agentInfo == null || status == null) {
+			return;
+		}
+
+		AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
+		AgentControllerState state = status.getAgentControllerState();
+
+		agentInfo.setState(state);
+		agentInfo.setIp(requireNonNull(agentIdentity).getIp());
+		agentInfo.setRegion(resolveRegion(agentIdentity.getRegion()));
+		agentInfo.setAgentIdentity(agentIdentity);
+		agentInfo.setName(agentIdentity.getName());
+		agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
+		agentInfo.setPort(agentManager.getAttachedAgentConnectingPort(agentIdentity));
+	}
+
+	private String resolveRegion(String attachedAgentRegion) {
+		if (attachedAgentRegion == null) {
+			return NONE_REGION;
+		}
+
+		String controllerRegion = config.getRegion();
+		if (attachedAgentRegion.contains("_owned_")) {
+			String[] regionTokens = attachedAgentRegion.split("_owned_", 2);
+			if (StringUtils.equals(controllerRegion, regionTokens[0])) {
+				return attachedAgentRegion;
+			} else {
+				return controllerRegion + "_owned_" + regionTokens[1];
+			}
+		}
+		return controllerRegion;
+	}
+
+	public List<AgentInfo> getAllReady() {
+		return agentInfoStore.getAllAgentInfo()
+			.stream()
+			.filter(agentInfo -> agentInfo.getState() != null && agentInfo.getState().isReady())
+			.collect(toList());
+	}
+
+	public List<AgentInfo> getAllActive() {
+		return agentInfoStore.getAllAgentInfo()
+			.stream()
+			.filter(agentInfo -> agentInfo.getState() != null && agentInfo.getState().isActive())
+			.collect(toList());
+	}
+
 	/**
 	 * Run a scheduled task to check the agent statuses.
 	 *
 	 * @since 3.5.0
 	 */
 	protected void updateSharedAgentInfo() {
-		boolean approved = getConfig().getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
-		Set<AgentInfo> agentInfoSet = getVisibleAsSet();
+		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+		Set<AgentInfo> agentInfoSet = new HashSet<>(agentInfoStore.getAllAgentInfo());
 
-		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAgentStatusSet()) {
+		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAttachedAgentStatusSet()) {
 			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
 			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(agentIdentity));
 			// check new agent
@@ -125,125 +197,74 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		}
 	}
 
+	/**
+	 * Get the available agent count map in all regions of the user, including
+	 * the free agents and user specified agents.
+	 *
+	 * @param user current user
+	 * @return user available agent count map
+	 */
 	@Override
 	public Map<String, MutableInt> getAvailableAgentCountMap(User user) {
-		int availableShareAgents = 0;
-		int availableUserOwnAgent = 0;
+		Set<String> regions = getRegions();
+		Map<String, MutableInt> availShareAgents = newHashMap(regions);
+		Map<String, MutableInt> availUserOwnAgent = newHashMap(regions);
+		for (String region : regions) {
+			availShareAgents.put(region, new MutableInt(0));
+			availUserOwnAgent.put(region, new MutableInt(0));
+		}
 		String myAgentSuffix = "owned_" + user.getUserId();
+
 		for (AgentInfo agentInfo : getAllActive()) {
 			// Skip all agents which are disapproved, inactive or
 			// have no region prefix.
 			if (!agentInfo.isApproved()) {
 				continue;
 			}
+
 			String fullRegion = agentInfo.getRegion();
-			// It's this controller's agent
-			if (StringUtils.endsWithIgnoreCase(fullRegion, myAgentSuffix)) {
-				availableUserOwnAgent++;
-			} else if (!StringUtils.containsIgnoreCase(fullRegion, "owned_")) {
-				availableShareAgents++;
+			String region = agentManager.extractRegionKey(fullRegion);
+			if (StringUtils.isBlank(region) || !regions.contains(region)) {
+				continue;
+			}
+			// It's my own agent
+			if (fullRegion.endsWith(myAgentSuffix)) {
+				incrementAgentCount(availUserOwnAgent, region, user.getUserId());
+			} else if (!fullRegion.contains("owned_")) {
+				incrementAgentCount(availShareAgents, region, user.getUserId());
 			}
 		}
 
-		int maxAgentSizePerConsole = getMaxAgentSizePerConsole();
-		availableShareAgents = (Math.min(availableShareAgents, maxAgentSizePerConsole));
-		Map<String, MutableInt> result = new HashMap<>(1);
-		result.put(Config.NONE_REGION, new MutableInt(availableShareAgents + availableUserOwnAgent));
-		return result;
+		int maxAgentSizePerConsole = agentManager.getMaxAgentSizePerConsole();
+
+		for (String region : regions) {
+			MutableInt mutableInt = availShareAgents.get(region);
+			int shareAgentCount = mutableInt.intValue();
+			mutableInt.setValue(Math.min(shareAgentCount, maxAgentSizePerConsole));
+			mutableInt.add(availUserOwnAgent.get(region));
+		}
+		return availShareAgents;
 	}
 
-	int getMaxAgentSizePerConsole() {
-		return agentManager.getMaxAgentSizePerConsole();
+	private void incrementAgentCount(Map<String, MutableInt> agentMap, String region, String userId) {
+		if (!agentMap.containsKey(region)) {
+			LOGGER.warn("Region: {} not exist in cluster nor owned by user: {}.", region, userId);
+		} else {
+			agentMap.get(region).increment();
+		}
 	}
 
-	@Override
-	public String createKey(AgentInfo agentInfo) {
-		return createAgentKey(agentInfo.getIp(), agentInfo.getName());
-	}
-
-	@Override
-	public String createKey(AgentControllerIdentityImplementation agentIdentity) {
-		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
-	}
-
-	protected String createAgentKey(String ip, String name) {
-		return ip + "_" + name;
+	protected Set<String> getRegions() {
+		return regionService.getAll().keySet();
 	}
 
 	@Override
 	public AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name) {
-		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentIdentity = cast(eachAgentIdentity);
-			if (StringUtils.equals(ip, agentIdentity.getIp()) && StringUtils.equals(name, agentIdentity.getName())) {
-				return agentIdentity;
-			}
+		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		if (agentInfo != null) {
+			return cast(agentInfo.getAgentIdentity());
 		}
 		return null;
-	}
-
-
-	public List<AgentInfo> getAllAttached() {
-		return Collections.unmodifiableList(agentInfoStore.getAllAgentInfo());
-	}
-
-	@Override
-	public List<AgentInfo> getAllActive() {
-		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllAttached()) {
-			final AgentControllerState state = agentInfo.getState();
-			if (state != null && state.isActive()) {
-				agents.add(agentInfo);
-			}
-		}
-		return agents;
-	}
-
-	@Override
-	public List<AgentInfo> getAllVisible() {
-		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllAttached()) {
-			final AgentControllerState state = agentInfo.getState();
-			if (state != null && state.isActive()) {
-				agents.add(agentInfo);
-			}
-		}
-		return agents;
-	}
-
-	protected Set<AgentInfo> getVisibleAsSet() {
-		return new HashSet<>(getAllAttached());
-	}
-
-	private String resolveRegion(String attachedAgentRegion) {
-		String controllerRegion = getConfig().getRegion();
-
-		if (attachedAgentRegion.contains("_owned_")) {
-			String[] regionTokens = attachedAgentRegion.split("_owned_", 2);
-			if (StringUtils.equals(controllerRegion, regionTokens[0])) {
-				return attachedAgentRegion;
-			} else {
-				return controllerRegion + "_owned_" + regionTokens[1];
-			}
-		}
-
-		return controllerRegion;
-	}
-
-	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
-		if (agentInfo == null || status == null) {
-			return;
-		}
-
-		AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
-		AgentControllerState state = status.getAgentControllerState();
-
-		agentInfo.setState(state);
-		agentInfo.setIp(requireNonNull(agentIdentity).getIp());
-		agentInfo.setRegion(resolveRegion(agentIdentity.getRegion()));
-		agentInfo.setName(agentIdentity.getName());
-		agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
-		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 	}
 
 	@Override
@@ -291,8 +312,13 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		if (agentInfo == null) {
 			return;
 		}
-		agentManager.stopAgent(getAgentIdentityByIpAndName(ip, name));
+		publishTopic(agentInfo, STOP_AGENT);
 	}
+
+	public void stop(AgentControllerIdentityImplementation agentIdentity) {
+		agentManager.stopAgent(agentIdentity);
+	}
+
 
 	@Override
 	public void update(String ip, String name) {
@@ -300,7 +326,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 		if (agentInfo == null) {
 			return;
 		}
-		updateAgent(getAgentIdentityByIpAndName(ip, name));
+		publishTopic(agentInfo, UPDATE_AGENT);
 	}
 
 	@Override
@@ -315,26 +341,12 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * @param agentIdentity agent identity to be updated.
 	 */
 	public void updateAgent(AgentIdentity agentIdentity) {
-		agentManager.updateAgent(agentIdentity, shouldUpdateAgentAlways() ? "99.99" : config.getVersion());
+		agentManager.updateAgent(agentIdentity, agentManager.getAgentForceUpdate() ? "99.99" : config.getVersion());
 	}
 
 
-	private boolean shouldUpdateAgentAlways() {
-		return config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_AGENT_FORCE_UPDATE);
-	}
-
-	/**
-	 * All ready state agent return
-	 */
-	List<AgentInfo> getAllReady() {
-		List<AgentInfo> agents = Lists.newArrayList();
-		for (AgentInfo agentInfo : getAllAttached()) {
-			final AgentControllerState state = agentInfo.getState();
-			if (state != null && state.isReady()) {
-				agents.add(agentInfo);
-			}
-		}
-		return agents;
+	private String createAgentKey(String ip, String name) {
+		return ip + "_" + name;
 	}
 
 	/**
@@ -358,5 +370,46 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			}
 		}
 		return readyAgentCnt;
+	}
+
+	@Override
+	public List<AgentInfo> getAllVisible() {
+		return getAllActive();
+	}
+
+	@Override
+	public List<AgentInfo> getAllAttached() {
+		return agentInfoStore.getAllAgentInfo();
+	}
+
+	@Override
+	public List<AgentInfo> getLocalAgents() {
+		return getAllAttached();
+	}
+
+	@Override
+	public String createKey(AgentInfo agentInfo) {
+		return agentInfo.getAgentKey();
+	}
+
+	@Override
+	public String createKey(AgentControllerIdentityImplementation agentIdentity) {
+		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
+	}
+
+	private void publishTopic(AgentInfo agentInfo, AgentRequest.RequestType requestType) {
+		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(AGENT_TOPIC_LISTENER_NAME,
+			agentManager.extractRegionKey(agentInfo.getRegion()), new AgentRequest(agentInfo.getIp(), agentInfo.getName(), requestType)));
+	}
+
+	@Override
+	public void execute(TopicEvent<AgentRequest> event) {
+		if (event.getKey().equals(config.getRegion())) {
+			AgentRequest agentRequest = event.getData();
+			AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(agentRequest.getAgentIp(), agentRequest.getAgentName());
+			if (agentIdentity != null) {
+				agentRequest.getRequestType().process(AgentManagerService.this, agentIdentity);
+			}
+		}
 	}
 }

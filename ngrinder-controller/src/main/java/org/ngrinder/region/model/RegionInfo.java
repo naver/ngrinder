@@ -15,10 +15,8 @@ package org.ngrinder.region.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.grinder.common.processidentity.AgentIdentity;
 
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * Region info to be shared b/w controllers.
@@ -35,8 +33,6 @@ public class RegionInfo implements Serializable {
 	private Integer controllerPort;
 	@Setter
 	private boolean visible = true;
-	@Setter
-	private Set<AgentIdentity> agentIdentities;
 	private String regionName;
 
 
@@ -45,42 +41,37 @@ public class RegionInfo implements Serializable {
 	 *
 	 * @param ip              ip
 	 * @param controllerPort  controllerPort
-	 * @param agentIdentities agentIdentity Set
 	 */
-	public RegionInfo(String ip, int controllerPort, Set<AgentIdentity> agentIdentities) {
-		this(ip, controllerPort, agentIdentities, true);
+	public RegionInfo(String ip, int controllerPort) {
+		this(ip, controllerPort, true);
 	}
 
 	/**
 	 * Constructor.
 	 *
 	 * @param ip              ip
-	 * @param agentIdentities agentIdentity Set
 	 * @param visible         true if visible
 	 */
-	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities, boolean visible) {
-		this(ip, null, agentIdentities, visible);
+	public RegionInfo(String ip, boolean visible) {
+		this(ip, null, visible);
 	}
 
 	/**
 	 * Constructor.
 	 *
 	 * @param ip              ip
-	 * @param agentIdentities agentIdentity Set
 	 * @param controllerPort  controllerPort
 	 * @param visible         true if visible
 	 */
-	public RegionInfo(String ip, Integer controllerPort, Set<AgentIdentity> agentIdentities, boolean visible) {
+	public RegionInfo(String ip, Integer controllerPort, boolean visible) {
 		this.ip = ip;
 		this.controllerPort = controllerPort;
 		this.visible = visible;
-		this.agentIdentities = agentIdentities;
 	}
 
-	public RegionInfo(String regionName , String ip, Integer controllerPort, Set<AgentIdentity> agentIdentities) {
+	public RegionInfo(String regionName , String ip, Integer controllerPort) {
 		this.ip = ip;
 		this.controllerPort = controllerPort;
-		this.agentIdentities = agentIdentities;
 		this.regionName = regionName;
 	}
 

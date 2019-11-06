@@ -844,7 +844,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public String getProperSizedStatusString(SingleConsole singleConsole) {
 		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
 		final int singleConsolePort = singleConsole.getConsolePort();
-		for (AgentStatus each : agentManager.getAgentStatusSetConnectingToPort(singleConsolePort)) {
+		for (AgentStatus each : agentManager.getAttachedAgentStatusSetConnectingToPort(singleConsolePort)) {
 			agentStatusMap.put(each.getAgentName(), each.getSystemDataModel());
 		}
 		return getProperSizedStatusString(agentStatusMap);
