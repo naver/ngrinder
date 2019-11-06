@@ -67,6 +67,12 @@
                 return null;
             }
 
+            this.$nextTick(() => {
+                $('g.bb-axis.bb-axis-x text[style*="display: none;"]').siblings().css({
+                    'display': 'none',
+                });
+            });
+
             return bb.generate({
                 bindto: `#${id}`,
                 data: {
@@ -81,12 +87,18 @@
                             culling: true,
                             format: x => timeSeriesFormat(x * interval),
                         },
+                        padding: {
+                            left: 0,
+                        },
                     },
                     y: {
                         min: 0,
                         tick: {
                             culling: true,
                             format: yAxisFormatter,
+                        },
+                        padding: {
+                            bottom: 0,
                         },
                     },
                 },
