@@ -42,7 +42,7 @@ public interface IAgentManagerService {
 	public abstract Map<String, MutableInt> getAvailableAgentCountMap(User user);
 
 	/**
-	 * Get all attached agents. The agent list is obtained from hazalcast IMap.
+	 * Get all attached agents. The agent list is obtained from IMap.
 	 *
 	 * @return agent list
 	 */
@@ -74,7 +74,7 @@ public interface IAgentManagerService {
 	public abstract AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name);
 
 	/**
-	 * Get all active agents from DB.
+	 * Get all active agents from IMap.
 	 *
 	 * @return agent list
 	 */
@@ -91,7 +91,7 @@ public interface IAgentManagerService {
 	public abstract List<AgentInfo> getLocalAgents();
 
 	/**
-	 * Get all visible agents from DB.
+	 * Get all visible agents from IMap.
 	 *
 	 * @return agent list
 	 */

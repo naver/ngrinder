@@ -55,7 +55,7 @@ public class PeriodicWorkingAgentCheckService implements Runnable {
 
 	@Override
 	public void run() {
-		Set<AgentStatus> workingAgents = agentManager.getAgentStatusSet(agentStatus -> agentStatus.getConnectingPort() != 0);
+		Set<AgentStatus> workingAgents = agentManager.getAttachedAgentStatusSet(agentStatus -> agentStatus.getConnectingPort() != 0);
 		for (OnPeriodicWorkingAgentCheckRunnable runnable : pluginManager
 				.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
 			runnable.checkWorkingAgent(workingAgents);
