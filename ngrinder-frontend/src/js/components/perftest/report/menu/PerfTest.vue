@@ -8,7 +8,7 @@
             </button>
         </div>
 
-        <div v-show="optionalChart.tps">
+        <div v-show="tpsChart">
             <h6>
                 <span v-text="'TPS'"></span>
                 <span data-toggle="popover"
@@ -22,27 +22,27 @@
             <div class="bigchart" ref="tpsChart" id="tps-chart"></div>
         </div>
 
-        <div v-show="optionalChart.meanTime">
+        <div v-show="meanTimeChart">
             <h6 v-text="`${i18n('perfTest.report.header.meantime')} (ms)`"></h6>
             <div class="chart" id="mean-time-chart"></div>
         </div>
 
-        <div v-show="optionalChart.meantimeToFirstByte">
+        <div v-show="meantimeToFirstByteChart">
             <h6 v-text="`${i18n('perfTest.report.header.meantimeToFirstByte')} (ms)`"></h6>
             <div class="chart" id="min-time-first-byte-chart"></div>
         </div>
 
-        <div v-show="optionalChart.vuser">
+        <div v-show="vuserChart">
             <h6 v-text="i18n('perfTest.report.header.vuser')"></h6>
             <div class="chart" id="vuser-chart"></div>
         </div>
 
-        <div v-show="optionalChart.userDefinedChart">
+        <div v-show="userDefinedChart">
             <h6 v-text="i18n('perfTest.report.header.userDefinedChart')"></h6>
             <div class="chart" id="user-defined-chart"></div>
         </div>
 
-        <div v-show="optionalChart.error">
+        <div v-show="errorChart">
             <h6 v-text="i18n('perfTest.report.header.errors')"></h6>
             <div class="chart" id="error-chart"></div>
         </div>
@@ -66,14 +66,12 @@
         },
     })
     export default class PerfTest extends Mixins(Base, ChartMixin, MessagesMixin) {
-        optionalChart = {
-            tps: false,
-            meanTime: false,
-            meantimeToFirstByte: false,
-            vuser: false,
-            userDefinedChart: false,
-            error: false,
-        };
+        tpsChart = null;
+        meanTimeChart = null;
+        meantimeToFirstByteChart = null;
+        vuserChart = null;
+        userDefinedChart = null;
+        errorChart = null;
 
         mounted() {
             this.$http.get(`/perftest/api/${this.id}/perf`, {
@@ -84,12 +82,12 @@
             }).then(res => {
                 const interval = res.data.chartInterval;
 
-                this.optionalChart.tps = !!this.drawChart('tps-chart', 'TPS', res.data.TPS, interval);
-                this.optionalChart.meanTime = !!this.drawChart('mean-time-chart', 'Mean_Test_Time_ms', res.data.Mean_Test_Time_ms, interval);
-                this.optionalChart.meantimeToFirstByte = !!this.drawChart('min-time-first-byte-chart', 'Mean_time_to_first_byte', res.data.Mean_time_to_first_byte, interval);
-                this.optionalChart.vuser = !!this.drawChart('vuser-chart', 'Vuser', res.data.Vuser, interval);
-                this.optionalChart.userDefinedChart = !!this.drawChart('user-defined-chart', 'User_defined', res.data.User_defined, interval);
-                this.optionalChart.error = !!this.drawChart('error-chart', 'Errors', res.data.Errors, interval);
+                this.tpsChart = this.drawChart('tps-chart', 'TPS', res.data.TPS, interval);
+                this.meanTimeChart = this.drawChart('mean-time-chart', 'Mean_Test_Time_ms', res.data.Mean_Test_Time_ms, interval);
+                this.meantimeToFirstByteChart = this.drawChart('min-time-first-byte-chart', 'Mean_time_to_first_byte', res.data.Mean_time_to_first_byte, interval);
+                this.vuserChart = this.drawChart('vuser-chart', 'Vuser', res.data.Vuser, interval);
+                this.userDefinedChart = this.drawChart('user-defined-chart', 'User_defined', res.data.User_defined, interval);
+                this.errorChart = this.drawChart('error-chart', 'Errors', res.data.Errors, interval);
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
 
             $('[data-toggle="popover"]').popover();
@@ -114,7 +112,7 @@
 
         div {
             &.bigchart, &.chart {
-                border: 1px solid #878988;
+                border: 1px solid #c4c4c4;
                 height: 300px;
                 min-width: 615px;
                 margin-bottom: 20px;

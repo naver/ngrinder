@@ -75,7 +75,7 @@
         }
 
         div.small-chart {
-            border: 1px solid #878988;
+            border: 1px solid #c4c4c4;
             height: 150px;
             width: 289px;
         }
