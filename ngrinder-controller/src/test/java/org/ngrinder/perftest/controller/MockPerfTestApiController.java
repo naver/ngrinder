@@ -14,7 +14,7 @@
 package org.ngrinder.perftest.controller;
 
 import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.perftest.service.AgentManager;
@@ -48,16 +48,16 @@ public class MockPerfTestApiController extends PerfTestApiController {
 	@Autowired
 	private Config config;
 
-	public MockPerfTestApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager, RegionService regionService, AgentManagerService agentManagerService, FileEntryService fileEntryService, UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory, UserContext userContext, Config config, MessageSource messageSource) {
-		super(perfTestService, tagService, agentManager, regionService, agentManagerService, fileEntryService, userService, hazelcastService, scriptHandlerFactory, userContext, config, messageSource);
+	public MockPerfTestApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager, RegionService regionService, AgentService agentService, FileEntryService fileEntryService, UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory, UserContext userContext, Config config, MessageSource messageSource) {
+		super(perfTestService, tagService, agentManager, regionService, agentService, fileEntryService, userService, hazelcastService, scriptHandlerFactory, userContext, config, messageSource);
 	}
 
 	@PostConstruct
 	public void init() {
-		AgentManagerService agentManagerService = mock(AgentManagerService.class);
+		AgentService agentService = mock(AgentService.class);
 		Map<String, MutableInt> countMap = new HashMap<>(1);
 		countMap.put(config.getRegion(), new MutableInt(3));
-		when(agentManagerService.getAvailableAgentCountMap(userContext.getCurrentUser())).thenReturn(countMap);
-		ReflectionTestUtils.setField(this, "agentManagerService", agentManagerService);
+		when(agentService.getAvailableAgentCountMap(userContext.getCurrentUser())).thenReturn(countMap);
+		ReflectionTestUtils.setField(this, "agentService", agentService);
 	}
 }

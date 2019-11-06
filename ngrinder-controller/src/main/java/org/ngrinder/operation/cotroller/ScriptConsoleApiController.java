@@ -2,7 +2,7 @@ package org.ngrinder.operation.cotroller;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
@@ -51,7 +51,7 @@ public class ScriptConsoleApiController {
 
 	private final AgentManager agentManager;
 
-	private final AgentManagerService agentManagerService;
+	private final AgentService agentService;
 
 	private final ConsoleManager consoleManager;
 
@@ -88,7 +88,7 @@ public class ScriptConsoleApiController {
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("Groovy");
 			engine.put("applicationContext", this.applicationContext);
 			engine.put("agentManager", this.agentManager);
-			engine.put("agentManagerService", this.agentManagerService);
+			engine.put("agentService", this.agentService);
 			engine.put("regionService", this.regionService);
 			engine.put("consoleManager", this.consoleManager);
 			engine.put("userService", this.userService);

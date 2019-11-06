@@ -23,7 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CompressionUtils;
@@ -54,7 +54,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	private AgentManager agentManager;
 
 	@Autowired
-	private AgentManagerService agentService;
+	private AgentService agentService;
 
 	@Autowired
 	public MockFileEntityRepository fileEntityRepository;

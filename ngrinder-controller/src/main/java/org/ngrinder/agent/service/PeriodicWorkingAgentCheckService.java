@@ -33,7 +33,7 @@ import javax.annotation.PostConstruct;
  * This class runs the plugins implementing
  * {@link OnPeriodicWorkingAgentCheckRunnable}.
  * <p/>
- * It's separated from {@link AgentManagerService} to get rid of cyclic
+ * It's separated from {@link AgentService} to get rid of cyclic
  * injection.
  *
  * @since 3.1.2

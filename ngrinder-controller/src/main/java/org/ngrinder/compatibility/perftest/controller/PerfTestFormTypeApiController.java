@@ -1,6 +1,6 @@
 package org.ngrinder.compatibility.perftest.controller;
 
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.PerfTest;
@@ -35,8 +35,8 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 @Deprecated
 public class PerfTestFormTypeApiController extends PerfTestApiController {
 
-	public PerfTestFormTypeApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager, RegionService regionService, AgentManagerService agentManagerService, FileEntryService fileEntryService, UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory, UserContext userContext, Config config, MessageSource messageSource) {
-		super(perfTestService, tagService, agentManager, regionService, agentManagerService, fileEntryService, userService, hazelcastService, scriptHandlerFactory, userContext, config, messageSource);
+	public PerfTestFormTypeApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager, RegionService regionService, AgentService agentService, FileEntryService fileEntryService, UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory, UserContext userContext, Config config, MessageSource messageSource) {
+		super(perfTestService, tagService, agentManager, regionService, agentService, fileEntryService, userService, hazelcastService, scriptHandlerFactory, userContext, config, messageSource);
 	}
 
 	@PostMapping("/save")
