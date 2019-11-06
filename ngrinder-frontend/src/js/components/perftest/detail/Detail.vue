@@ -536,13 +536,13 @@
 
         div {
             &.chart {
-                border: 1px solid #878988;
+                border: 1px solid #c4c4c4;
                 margin-bottom: 12px;
             }
         }
 
         div.modal-body div.chart {
-            border: 1px solid #878988;
+            border: 1px solid #c4c4c4;
             height: 250px;
             min-width: 500px;
             margin-bottom: 12px;
