@@ -33,7 +33,7 @@
             '\n' +
             '- applicationContext  (org.springframework.context.ApplicationContext)\n' +
             '- agentManager        (org.ngrinder.perftest.service.AgentManager)\n' +
-            '- agentManagerService (org.ngrinder.agent.service.AgentManagerService)\n' +
+            '- agentService        (org.ngrinder.agent.service.AgentService)\n' +
             '- regionService       (org.ngrinder.region.service.RegionService)\n' +
             '- consoleManager      (org.ngrinder.perftest.service.ConsoleManager)\n' +
             '- userService         (org.ngrinder.user.service.UserService)\n' +

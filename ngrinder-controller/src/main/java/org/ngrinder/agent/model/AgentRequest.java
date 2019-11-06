@@ -16,7 +16,7 @@ package org.ngrinder.agent.model;
 import lombok.Getter;
 import lombok.Setter;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 
 import java.io.Serializable;
 
@@ -40,24 +40,24 @@ public class AgentRequest implements Serializable {
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
-			public void process(AgentManagerService agentManagerService,
+			public void process(AgentService agentService,
 								AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.stop(agentIdentity);
+				agentService.stop(agentIdentity);
 			}
 		},
 		UPDATE_AGENT {
 			@Override
-			public void process(AgentManagerService agentManagerService,
+			public void process(AgentService agentService,
 								AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.updateAgent(agentIdentity);
+				agentService.updateAgent(agentIdentity);
 			}
 		};
 
 		RequestType() {
 		}
 
-		public abstract void process(AgentManagerService agentManagerService,
-		                             AgentControllerIdentityImplementation agentIdentity);
+		public abstract void process(AgentService agentService,
+									 AgentControllerIdentityImplementation agentIdentity);
 	}
 
 	public AgentRequest(String agentIp, String agentName, RequestType requestType) {

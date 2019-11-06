@@ -66,8 +66,8 @@ import static org.ngrinder.infra.config.Config.NONE_REGION;
  */
 @Service
 @RequiredArgsConstructor
-public class AgentManagerService implements TopicListener<AgentRequest>, IAgentManagerService {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
+public class AgentService implements TopicListener<AgentRequest>, IAgentManagerService {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentService.class);
 
 	protected final AgentManager agentManager;
 
@@ -408,7 +408,7 @@ public class AgentManagerService implements TopicListener<AgentRequest>, IAgentM
 			AgentRequest agentRequest = event.getData();
 			AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(agentRequest.getAgentIp(), agentRequest.getAgentName());
 			if (agentIdentity != null) {
-				agentRequest.getRequestType().process(AgentManagerService.this, agentIdentity);
+				agentRequest.getRequestType().process(AgentService.this, agentIdentity);
 			}
 		}
 	}
