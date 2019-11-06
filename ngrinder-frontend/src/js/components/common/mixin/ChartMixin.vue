@@ -41,6 +41,17 @@
                 type: 'drag',
             },
         },
+        legend: {
+            show: false,
+        },
+        transition: {
+            duration: null,
+        },
+        padding: {
+            top: 10,
+            right: 16,
+            left: 58,
+        },
     };
 
     @Mixin
