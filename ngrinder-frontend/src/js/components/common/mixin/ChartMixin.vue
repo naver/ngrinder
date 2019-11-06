@@ -31,10 +31,11 @@
     const defaultChartOptions = {
         grid: {
             x: { show: true },
-            y: { show: true },
+            y: { show: true, ticks: 5 },
         },
         point: {
-            show: false,
+            show: true,
+            r: 1.0,
         },
         zoom: {
             enabled: {
@@ -52,6 +53,11 @@
             right: 16,
             left: 58,
         },
+        oninit() {
+            this.svg.select('g.bb-grid')
+                .insert('rect', ':first-child')
+                .attr('class', 'chart-background');
+        },
     };
 
     @Mixin
@@ -64,8 +70,9 @@
             return bb.generate({
                 bindto: `#${id}`,
                 data: {
-                    type: 'area',
+                    type: 'line',
                     json: { [label]: approximateFillUp(data) },
+                    colors: { [label]: '#4bb2c5' },
                 },
                 axis: {
                     x: {
@@ -76,6 +83,7 @@
                         },
                     },
                     y: {
+                        min: 0,
                         tick: {
                             culling: true,
                             format: yAxisFormatter,
@@ -91,4 +99,18 @@
 <style scoped>
     @import '../../../../../node_modules/billboard.js/dist/billboard.min.css';
     @import '../../../../../node_modules/billboard.js/dist/theme/insight.min.css';
+</style>
+
+<style>
+    .chart-background {
+        fill: #fffdf6;
+        fill-opacity: 1;
+        width: 100%;
+        height: 100%;
+        border: 2px solid #c4c4c4;
+    }
+
+    .bb-grid line {
+        stroke: #dddddd;
+    }
 </style>
