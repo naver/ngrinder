@@ -15,7 +15,7 @@ package org.ngrinder.agent.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
@@ -46,7 +46,7 @@ import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities
 @RequiredArgsConstructor
 public class AgentManagerApiController {
 
-	private final AgentManagerService agentManagerService;
+	private final AgentService agentService;
 
 	private final RegionService regionService;
 
@@ -86,7 +86,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public List<AgentInfo> getAll(final User user, @RequestParam(value = "region", required = false) final String region) {
 		final Collection<? extends GrantedAuthority> authorities = getCurrentAuthorities();
-		return agentManagerService.getAllVisible()
+		return agentService.getAllVisible()
 			.stream()
 			.filter(agent -> filterAgentByCluster(region, agent.getRegion()))
 			.filter(agent -> filterAgentByUserAuthorityAndUserId(authorities, user.getUserId(), region, agent.getRegion()))
@@ -139,7 +139,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/state")
 	public SystemDataModel getState(@RequestParam String ip, @RequestParam String name, @RequestParam String region) {
-		return agentManagerService.getSystemDataModel(ip, name, region);
+		return agentService.getSystemDataModel(ip, name, region);
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	@GetMapping(value = {"/states/", "/states"})
 	public List<Map<String, Object>> getStates() {
-		List<AgentInfo> agents = agentManagerService.getAllVisible();
+		List<AgentInfo> agents = agentService.getAllVisible();
 		List<Map<String, Object>> statuses = newArrayList(agents.size());
 
 		for (AgentInfo each : agents) {
@@ -173,7 +173,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = {"/", ""})
 	public List<AgentInfo> getAll() {
-		return agentManagerService.getAllVisible();
+		return agentService.getAllVisible();
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = "/{ip}/{name}")
 	public AgentInfo getOneByIpAndName(@PathVariable String ip, @PathVariable String name) {
-		return agentManagerService.getOne(ip, name);
+		return agentService.getOne(ip, name);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{ip}/{name}", params = "action=approve")
 	public void approve(@PathVariable String ip, @PathVariable String name) {
-		agentManagerService.approve(ip, name, true);
+		agentService.approve(ip, name, true);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{ip}/{name}", params = "action=disapprove")
 	public void disapprove(@PathVariable String ip, @PathVariable String name) {
-		agentManagerService.approve(ip, name, false);
+		agentService.approve(ip, name, false);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{ip}/{name}", params = "action=stop")
 	public void stop(@PathVariable String ip, @PathVariable String name) {
-		agentManagerService.stop(ip, name);
+		agentService.stop(ip, name);
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class AgentManagerApiController {
 	@PutMapping(value = "", params = "action=stop")
 	public void stop(@RequestBody List<AgentInfo> agentInfos) {
 		for (AgentInfo agentInfo : agentInfos) {
-			agentManagerService.stop(agentInfo.getIp(), agentInfo.getName());
+			agentService.stop(agentInfo.getIp(), agentInfo.getName());
 		}
 	}
 
@@ -245,7 +245,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@PutMapping(value = "/{ip}/{name}", params = "action=update")
 	public void update(@PathVariable String ip, @PathVariable String name) {
-		agentManagerService.update(ip, name);
+		agentService.update(ip, name);
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class AgentManagerApiController {
 	@PutMapping(value = "", params = "action=update")
 	public void update(@RequestBody List<AgentInfo> agentInfos) {
 		for (AgentInfo agentInfo : agentInfos) {
-			agentManagerService.update(agentInfo.getIp(), agentInfo.getName());
+			agentService.update(agentInfo.getIp(), agentInfo.getName());
 		}
 	}
 
@@ -271,6 +271,6 @@ public class AgentManagerApiController {
 	@GetMapping("/availableAgentCount")
 	@PreAuthorize("permitAll")
 	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
-		return buildMap("availableAgentCount", agentManagerService.getReadyAgentCount(user, targetRegion));
+		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user, targetRegion));
 	}
 }

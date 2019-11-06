@@ -1,7 +1,7 @@
 package org.ngrinder.infra.hazelcast.task;
 
 import com.hazelcast.spring.context.SpringAware;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,12 @@ public class AgentStateTask implements Callable<SystemDataModel>, Serializable {
 	}
 
 	@Autowired
-	private transient AgentManagerService agentManagerService;
+	private transient AgentService agentService;
 
 	@Autowired
 	private transient AgentManager agentManager;
 
 	public SystemDataModel call() {
-		return agentManager.getSystemDataModel(agentManagerService.getAgentIdentityByIpAndName(ip, name));
+		return agentManager.getSystemDataModel(agentService.getAgentIdentityByIpAndName(ip, name));
 	}
 }

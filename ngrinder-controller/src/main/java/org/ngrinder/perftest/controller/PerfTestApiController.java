@@ -17,7 +17,7 @@ import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.util.DateUtils;
@@ -85,7 +85,7 @@ public class PerfTestApiController {
 
 	private final RegionService regionService;
 
-	private final AgentManagerService agentManagerService;
+	private final AgentService agentService;
 
 	private final FileEntryService fileEntryService;
 
@@ -428,7 +428,7 @@ public class PerfTestApiController {
 		Map<String, Object> attributes = new HashMap<>();
 
 		Map<String, Object> testConfig = new HashMap<>();
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user);
 		testConfig.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		testConfig.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
 
@@ -506,7 +506,7 @@ public class PerfTestApiController {
 					3600000L),
 				"duration should be equal to or less than %s", agentManager.getMaxRunHour());
 		}
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(config.isClustered() ? newOne.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
@@ -820,7 +820,7 @@ public class PerfTestApiController {
 		if (newOne.getAgentCount() == null) {
 			newOne.setAgentCount(0);
 		}
-		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(config.isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
