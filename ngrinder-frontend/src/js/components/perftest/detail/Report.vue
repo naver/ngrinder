@@ -227,7 +227,7 @@
         #tps-chart {
             width: 620px;
             height: 300px;
-            border: 1px solid #666;
+            border: 1px solid #c4c4c4;
         }
     }
 </style>
