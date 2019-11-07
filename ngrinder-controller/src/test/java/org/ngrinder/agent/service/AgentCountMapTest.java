@@ -90,11 +90,6 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 			public void init() {
 				noOp();
 			}
-
-			@Override
-			public void destroy() {
-				noOp();
-			}
 		};
 	}
 

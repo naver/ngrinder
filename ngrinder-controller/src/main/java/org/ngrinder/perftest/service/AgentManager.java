@@ -20,6 +20,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -29,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -83,8 +83,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 	private final AgentInfoStore agentInfoStore;
 
-	private final AgentManagerRepository agentManagerRepository;
-
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 
 	/**
@@ -101,7 +99,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port, consoleCommunicationSetting);
 		agentControllerServerDaemon.start();
-		agentControllerServerDaemon.setAgentDownloadRequestListener(this);
+		agentControllerServerDaemon.addAgentDownloadRequestListener(this);
 		agentControllerServerDaemon.addLogArrivedListener((testId, agentAddress, logs) -> {
 			AgentControllerIdentityImplementation agentIdentity = convert(agentAddress.getIdentity());
 			if (ArrayUtils.isEmpty(logs)) {
@@ -507,5 +505,9 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 	private int getUpdateChunkSize() {
 		return config.getControllerProperties().getPropertyInt(ControllerConstants.PROP_CONTROLLER_UPDATE_CHUNK_SIZE);
+	}
+
+	public void addAgentStatusUpdateListener(AgentStatusUpdateListener agentStatusUpdateListener) {
+		agentControllerServerDaemon.addAgentStatusUpdateListener(agentStatusUpdateListener);
 	}
 }

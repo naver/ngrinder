@@ -16,7 +16,7 @@ package net.grinder.console.communication;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 
 /**
- * Listener for AgentDownloadGrinderMessage.
+ * AgentStatusUpdateListener for AgentDownloadGrinderMessage.
  *
  * @since 3.3
  */
