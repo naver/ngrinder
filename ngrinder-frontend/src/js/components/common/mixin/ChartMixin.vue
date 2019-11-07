@@ -109,8 +109,8 @@
 </script>
 
 <style scoped>
-    @import '../../../../../node_modules/billboard.js/dist/billboard.min.css';
-    @import '../../../../../node_modules/billboard.js/dist/theme/insight.min.css';
+    @import '~billboard.js/dist/billboard.min.css';
+    @import '~billboard.js/dist/theme/insight.min.css';
 </style>
 
 <style>
