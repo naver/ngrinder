@@ -130,19 +130,6 @@
     import ChartMixin from '../../common/mixin/ChartMixin.vue';
     import FormatMixin from '../../common/mixin/FormatMixin.vue';
 
-    const approximateFillUpArray = array => {
-        for (let i = 0; i < array.length; i++) {
-            if (i === 0 || i === array.length - 1) {
-                continue;
-            }
-
-            if (array[i] === null) {
-                array[i] = (array[i - 1] + array[i + 1]) / 2;
-            }
-        }
-        return array;
-    };
-
     @Component({
         name: 'running',
         components: { ControlGroup, SamplingTable },
@@ -173,8 +160,7 @@
         }
 
         mounted() {
-            const data = { Total: approximateFillUpArray(this.tpsQueue.getArray()) };
-            this.tpsChart = this.drawChart('running-tps-chart', data, this.test.samplingInterval, null, {
+            this.tpsChart = this.drawChart('running-tps-chart', { Total: this.tpsQueue.getArray() }, this.test.samplingInterval, null, {
                 legend: { show: false },
                 size: { width: 540 },
             });
@@ -200,7 +186,7 @@
                     this.testTime = perfTestSample.testTime;
                     this.tpsQueue.enQueue(perfTestSample.tpsChartData);
                     if (this.shownBsTab) {
-                        this.tpsChart.load({ json: { Total: approximateFillUpArray(this.tpsQueue.getArray()) } });
+                        this.tpsChart.load({ json: { Total: ChartMixin.approximateFillUpArray(this.tpsQueue.getArray()) } });
                     }
                 }
                 this.agentState = res.data.agent || {};

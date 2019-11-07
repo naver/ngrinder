@@ -13,34 +13,7 @@
     import bb from 'billboard.js';
 
     import Base from '../../Base.vue';
-
-    const DEFAULT_COLOR = '#4bb2c5';
-
-    const timeSeriesFormat = x => {
-        let minutes = Math.floor(x / 60);
-        let seconds = x % 60;
-
-        if (minutes < 10) {
-            minutes = `0${minutes}`;
-        }
-        if (seconds < 10) {
-            seconds = `0${seconds}`;
-        }
-        return `${minutes}:${seconds}`;
-    };
-
-    const approximateFillUpArray = array => {
-        for (let i = 0; i < array.length; i++) {
-            if (i === 0 || i === array.length - 1) {
-                continue;
-            }
-
-            if (array[i] === null) {
-                array[i] = (array[i - 1] + array[i + 1]) / 2;
-            }
-        }
-        return array;
-    };
+    import ChartMixin from '../../common/mixin/ChartMixin.vue';
 
     const defaultChartOptions = {
         grid: {
@@ -125,15 +98,15 @@
                 bindto: `#${id}`,
                 data: {
                     type: 'line',
-                    json: { [label]: approximateFillUpArray(data) },
-                    colors: { [label]: DEFAULT_COLOR },
+                    json: { [label]: ChartMixin.approximateFillUpArray(data) },
+                    colors: { [label]: ChartMixin.DEFAULT_COLOR },
                 },
                 axis: {
                     x: {
                         type: 'seconds',
                         tick: {
                             culling: { max: 5 },
-                            format: x => timeSeriesFormat(x * interval),
+                            format: x => ChartMixin.timeSeriesFormat(x * interval),
                         },
                         padding: {
                             left: 0,
