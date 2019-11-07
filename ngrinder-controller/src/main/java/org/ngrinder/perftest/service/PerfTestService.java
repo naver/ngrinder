@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -1377,18 +1378,55 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	/**
+	 * Get json string that contains test report data as a json string.
+	 *
+	 * @param testId   test id
+	 * @param key      key
+	 * @param interval interval to collect data
+	 * @return json list
+	 */
+	public List<Float> getSingleReportData(long testId, String key, int interval) {
+		File reportDataFile = getReportDataFile(testId, key);
+		return getFileDataAsList(reportDataFile, interval);
+	}
+
+	/**
 	 * Get list that contains test report data as a string.
 	 *
 	 * @param testId   test id
 	 * @param key      report key
+	 * @param onlyTotal true if only total show be passed
 	 * @param interval interval to collect data
 	 * @return list containing label and tps value list
 	 */
-	public List<Float> getReportData(long testId, String key, int interval) {
-		File file = getReportDataFile(testId, key);
-		return getFileDataAsList(file, interval);
+	public Map<String, List<Float>> getReportData(long testId, String key, boolean onlyTotal, int interval) {
+		Map<String, List<Float>> resultMap = new HashMap<>();
+		List<File> reportDataFiles = onlyTotal ? Lists.newArrayList(getReportDataFile(testId, key)) : getReportDataFiles(testId, key);
+		reportDataFiles.forEach(each -> {
+			String reportName = buildReportName(key, each);
+			if (key.equals(reportName)) {
+				reportName = "Total";
+			} else {
+				reportName = reportName.replace("_", " ");
+			}
+
+			resultMap.put(reportName, getFileDataAsList(each, interval));
+		});
+
+		return resultMap;
 	}
 
+	private String buildReportName(String key, File file) {
+		String reportName = FilenameUtils.removeExtension(file.getName());
+		if (key.equals(reportName)) {
+			return reportName;
+		}
+		String[] baseName = StringUtils.split(reportName, "-", 2);
+		if (SingleConsole.INTERESTING_PER_TEST_STATISTICS.contains(baseName[0]) && baseName.length >= 2) {
+			reportName = baseName[1];
+		}
+		return reportName;
+	}
 	/**
 	 * Get a single file for the given report key.
 	 *
@@ -1399,6 +1437,22 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public File getReportDataFile(long testId, String key) {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		return new File(reportFolder, key + ".data");
+	}
+
+	/**
+	 * Get files respectively if there are multiple tests.
+	 *
+	 * @param testId test id
+	 * @param key    report key
+	 * @return return file list
+	 */
+	public List<File> getReportDataFiles(long testId, String key) {
+		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
+		FileFilter fileFilter = new WildcardFileFilter(key + "*.data");
+		File[] files = reportFolder.listFiles(fileFilter);
+		return Arrays.stream(files)
+			.sorted(Comparator.comparing(o -> FilenameUtils.getBaseName(o.getName())))
+			.collect(toList());
 	}
 
 	private List<Float> getFileDataAsList(File targetFile, int interval) {

@@ -14,6 +14,7 @@
 
     import Base from '../../Base.vue';
 
+    const DEFAULT_COLOR = '#4bb2c5';
 
     const timeSeriesFormat = x => {
         let minutes = Math.floor(x / 60);
@@ -26,6 +27,19 @@
             seconds = `0${seconds}`;
         }
         return `${minutes}:${seconds}`;
+    };
+
+    const approximateFillUpArray = array => {
+        for (let i = 0; i < array.length; i++) {
+            if (i === 0 || i === array.length - 1) {
+                continue;
+            }
+
+            if (array[i] === null) {
+                array[i] = (array[i - 1] + array[i + 1]) / 2;
+            }
+        }
+        return array;
     };
 
     const defaultChartOptions = {
@@ -42,6 +56,14 @@
                 type: 'drag',
             },
         },
+        legend: {
+            position: 'inset',
+            inset: {
+                anchor: 'top-right',
+                x: 20,
+                y: 10,
+            },
+        },
         padding: {
             top: 10,
             right: 16,
@@ -51,14 +73,6 @@
             this.svg.select('g.bb-grid')
                 .insert('rect', ':first-child')
                 .attr('class', 'chart-background');
-        },
-        legend: {
-            position: 'inset',
-            inset: {
-                anchor: 'top-right',
-                x: 20,
-                y: 10,
-            },
         },
     };
 
@@ -82,7 +96,7 @@
         showChart() {
             this.$http.get(`/perftest/api/${this.rowData.id}/graph`, {
                 params: {
-                    dataType: 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
+                    dataType: 'TPS,Errors,Mean_Test_Time_(ms)',
                     imgWidth: 100,
                     onlyTotal: true,
                 },
@@ -92,13 +106,13 @@
         initCharts(data) {
             const interval = data.chartInterval;
 
-            this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data.TPS, interval);
-            this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data.Mean_Test_Time_ms, interval);
-            this.drawSmallChart(`err_${this.rowData.id}`, 'ERR', data.Errors, interval);
+            this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data.TPS.Total, interval);
+            this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data.Mean_Test_Time_ms.Total, interval);
+            this.drawSmallChart(`err_${this.rowData.id}`, 'ERR', data.Errors.Total, interval);
 
             this.$nextTick(() => {
                 $('g.bb-axis.bb-axis-x text[style*="display: none;"]').siblings().css({ display: 'none' });
-                $('rect.bb-zoom-rect').css({ opacity: 0.5});
+                $('rect.bb-zoom-rect').css({ opacity: 1 });
             });
         }
 
@@ -111,8 +125,8 @@
                 bindto: `#${id}`,
                 data: {
                     type: 'line',
-                    json: { [label]: data },
-                    colors: { [label]: '#4bb2c5' },
+                    json: { [label]: approximateFillUpArray(data) },
+                    colors: { [label]: DEFAULT_COLOR },
                 },
                 axis: {
                     x: {
