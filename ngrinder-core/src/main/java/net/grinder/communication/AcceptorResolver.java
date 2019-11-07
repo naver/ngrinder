@@ -28,14 +28,12 @@ public class AcceptorResolver {
 		socketSet.addListener(new ResourcePool.Listener() {
 			@Override
 			public void resourceAdded(ResourcePool.Resource resource) {
-				sockets.put((
-						(SocketWrapper) resource).getAddress(), resource);
+				sockets.put(((SocketWrapper) resource).getAddress(), resource);
 			}
 
 			@Override
 			public void resourceClosed(ResourcePool.Resource resource) {
-				sockets.remove((
-						(SocketWrapper) resource).getAddress());
+				sockets.remove(((SocketWrapper) resource).getAddress());
 			}
 		});
 	}

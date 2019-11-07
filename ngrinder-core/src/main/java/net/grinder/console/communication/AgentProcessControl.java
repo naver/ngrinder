@@ -22,7 +22,7 @@ package net.grinder.console.communication;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.console.communication.AgentProcessControlImplementation.Listener;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
 import net.grinder.message.console.AgentControllerState;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 
@@ -113,9 +113,9 @@ public interface AgentProcessControl {
 	int getAgentConnectingPort(AgentIdentity agentIdentity);
 
 	/**
-	 * Add agent status update listener.
+	 * Add agent status update agentStatusUpdateListener.
 	 *
-	 * @param listener	listener.
+	 * @param agentStatusUpdateListener	agentStatusUpdateListener.
 	 */
-	public void addListener(Listener listener);
+	public void addAgentStatusUpdateListener(AgentStatusUpdateListener agentStatusUpdateListener);
 }
