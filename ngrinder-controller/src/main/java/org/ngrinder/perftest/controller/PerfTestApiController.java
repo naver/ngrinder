@@ -248,7 +248,7 @@ public class PerfTestApiController {
 		model.put(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
 		model.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.put(PARAM_TEST, test);
-		model.put(PARAM_TPS, perfTestService.getReportData(id, "TPS", interval));
+		model.put(PARAM_TPS, perfTestService.getSingleReportData(id, "TPS", interval));
 		return model;
 	}
 
@@ -627,8 +627,8 @@ public class PerfTestApiController {
 		Map<String, Object> resultMap = Maps.newHashMap();
 		for (String each : dataTypes) {
 			String key = StringUtils.replaceChars(each, "()", "");
-			List<Float> tpsResult = perfTestService.getReportData(id, each, interval);
-			resultMap.put(key, tpsResult);
+			Map<String, List<Float>> result = perfTestService.getReportData(id, each, onlyTotal, interval);
+			resultMap.put(key, result);
 		}
 		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		return resultMap;

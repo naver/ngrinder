@@ -152,7 +152,7 @@
                     this.dataLoadFinished = true;
                     this.$nextTick(() => {
                         $('[data-toggle="popover"]').popover();
-                        this.drawChart('tps-chart', 'TPS', this.report.tps, this.report.interval);
+                        this.drawChart('tps-chart', { Total: this.report.tps }, this.report.interval, null, { legend: { show: false } });
                     });
                 }).catch(() => this.showErrorMsg(this.i18n('perfTest.report.message.fetch.basicReport.error')));
         }
