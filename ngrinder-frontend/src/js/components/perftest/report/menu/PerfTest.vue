@@ -66,12 +66,12 @@
         },
     })
     export default class PerfTest extends Mixins(Base, ChartMixin, MessagesMixin) {
-        tpsChart = null;
-        meanTimeChart = null;
-        meantimeToFirstByteChart = null;
-        vuserChart = null;
-        userDefinedChart = null;
-        errorChart = null;
+        tpsChart = {};
+        meanTimeChart = {};
+        meantimeToFirstByteChart = {};
+        vuserChart = {};
+        userDefinedChart = {};
+        errorChart = {};
 
         mounted() {
             this.$http.get(`/perftest/api/${this.id}/perf`, {
@@ -82,12 +82,12 @@
             }).then(res => {
                 const interval = res.data.chartInterval;
 
-                this.tpsChart = this.drawChart('tps-chart', 'TPS', res.data.TPS, interval);
-                this.meanTimeChart = this.drawChart('mean-time-chart', 'Mean_Test_Time_ms', res.data.Mean_Test_Time_ms, interval);
-                this.meantimeToFirstByteChart = this.drawChart('min-time-first-byte-chart', 'Mean_time_to_first_byte', res.data.Mean_time_to_first_byte, interval);
-                this.vuserChart = this.drawChart('vuser-chart', 'Vuser', res.data.Vuser, interval);
-                this.userDefinedChart = this.drawChart('user-defined-chart', 'User_defined', res.data.User_defined, interval);
-                this.errorChart = this.drawChart('error-chart', 'Errors', res.data.Errors, interval);
+                this.tpsChart = this.drawChart('tps-chart', res.data.TPS, interval);
+                this.meanTimeChart = this.drawChart('mean-time-chart', res.data.Mean_Test_Time_ms, interval);
+                this.meantimeToFirstByteChart = this.drawChart('min-time-first-byte-chart', res.data.Mean_time_to_first_byte, interval);
+                this.vuserChart = this.drawChart('vuser-chart', res.data.Vuser, interval);
+                this.userDefinedChart = this.drawChart('user-defined-chart', res.data.User_defined, interval);
+                this.errorChart = this.drawChart('error-chart', res.data.Errors, interval);
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
 
             $('[data-toggle="popover"]').popover();

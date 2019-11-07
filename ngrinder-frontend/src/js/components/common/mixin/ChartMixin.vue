@@ -2,6 +2,8 @@
     import { Mixin } from 'vue-mixin-decorator';
     import bb from 'billboard.js';
 
+    const DEFAULT_COLOR = '#4bb2c5';
+
     const timeSeriesFormat = x => {
         let minutes = Math.floor(x / 60);
         let seconds = x % 60;
@@ -15,7 +17,7 @@
         return `${minutes}:${seconds}`;
     };
 
-    const approximateFillUp = array => {
+    const approximateFillUpArray = array => {
         for (let i = 0; i < array.length; i++) {
             if (i === 0 || i === array.length - 1) {
                 continue;
@@ -26,6 +28,14 @@
             }
         }
         return array;
+    };
+
+    const approximateFillUp = data => {
+        for (const [key, value] of Object.entries(data)) {
+            data[key] = approximateFillUpArray(value);
+        }
+
+        return data;
     };
 
     const defaultChartOptions = {
@@ -43,7 +53,12 @@
             },
         },
         legend: {
-            show: false,
+            position: 'inset',
+            inset: {
+                anchor: 'top-right',
+                x: 20,
+                y: 10,
+            },
         },
         transition: {
             duration: null,
@@ -62,23 +77,29 @@
 
     @Mixin
     export default class ChartMixin {
-        drawChart(id, label, data, interval, yAxisFormatter) {
-            if (data === undefined || data.length === 0) {
+        drawChart(id, data, interval, yAxisFormatter, externalOptions) {
+            if (Object.keys(data).length === 0) {
                 return null;
             }
 
+            let colorsKey;
+            if (Object.keys(data).length === 1) {
+                colorsKey = Object.keys(data)[0];
+            } else {
+                colorsKey = 'Total';
+            }
+
             this.$nextTick(() => {
-                $('g.bb-axis.bb-axis-x text[style*="display: none;"]').siblings().css({
-                    'display': 'none',
-                });
+                $('g.bb-axis.bb-axis-x text[style*="display: none;"]').siblings().css({ display: 'none' });
+                $('rect.bb-zoom-rect').css({ opacity: 1 });
             });
 
             return bb.generate({
                 bindto: `#${id}`,
                 data: {
                     type: 'line',
-                    json: { [label]: approximateFillUp(data) },
-                    colors: { [label]: '#4bb2c5' },
+                    json: approximateFillUp(data),
+                    colors: { [colorsKey]: DEFAULT_COLOR },
                 },
                 axis: {
                     x: {
@@ -103,6 +124,7 @@
                     },
                 },
                 ...defaultChartOptions,
+                ...externalOptions,
             });
         }
     }

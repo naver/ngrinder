@@ -92,7 +92,7 @@
                     </button>
                 </legend>
             </fieldSet>
-            <div id="running-tps-chart" class="chart w-100" :v-visible="!!tpsChart"></div>
+            <div id="running-tps-chart" class="chart"></div>
             <div class="intro mt-1"
                  :data-step="shownBsTab ? 6 : undefined"
                  :data-intro="shownBsTab ? i18n('intro.running.accumulated') : undefined">
@@ -130,6 +130,19 @@
     import ChartMixin from '../../common/mixin/ChartMixin.vue';
     import FormatMixin from '../../common/mixin/FormatMixin.vue';
 
+    const approximateFillUpArray = array => {
+        for (let i = 0; i < array.length; i++) {
+            if (i === 0 || i === array.length - 1) {
+                continue;
+            }
+
+            if (array[i] === null) {
+                array[i] = (array[i - 1] + array[i + 1]) / 2;
+            }
+        }
+        return array;
+    };
+
     @Component({
         name: 'running',
         components: { ControlGroup, SamplingTable },
@@ -160,7 +173,11 @@
         }
 
         mounted() {
-            this.tpsChart = this.drawChart('running-tps-chart', 'tps', this.tpsQueue.getArray(), this.test.samplingInterval);
+            const data = { Total: approximateFillUpArray(this.tpsQueue.getArray()) };
+            this.tpsChart = this.drawChart('running-tps-chart', data, this.test.samplingInterval, null, {
+                legend: { show: false },
+                size: { width: 540 },
+            });
         }
 
         startSamplingInterval() {
@@ -183,7 +200,7 @@
                     this.testTime = perfTestSample.testTime;
                     this.tpsQueue.enQueue(perfTestSample.tpsChartData);
                     if (this.shownBsTab) {
-                        this.tpsChart.load({ json: { tps: this.tpsQueue.getArray() } });
+                        this.tpsChart.load({ json: { Total: approximateFillUpArray(this.tpsQueue.getArray()) } });
                     }
                 }
                 this.agentState = res.data.agent || {};
@@ -286,7 +303,7 @@
 
         .chart {
             min-width: 500px;
-            width: 610px;
+            width: 540px;
             height: 300px;
             border: 1px solid #666;
             margin-bottom: 12px;

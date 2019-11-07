@@ -78,6 +78,19 @@
     import ChartMixin from '../common/mixin/ChartMixin.vue';
     import FormatMixin from '../common/mixin/FormatMixin.vue';
 
+    const approximateFillUpArray = array => {
+        for (let i = 0; i < array.length; i++) {
+            if (i === 0 || i === array.length - 1) {
+                continue;
+            }
+
+            if (array[i] === null) {
+                array[i] = (array[i - 1] + array[i + 1]) / 2;
+            }
+        }
+        return array;
+    };
+
     Component.registerHooks(['beforeRouteEnter']);
     @Component({
         name: 'agentDetail',
@@ -113,10 +126,10 @@
 
         mounted() {
             this.cpu.queue = new Queue(60);
-            this.cpu.chart = this.drawChart('cpu-usage-chart', 'cpu-usage', this.cpu.queue.getArray(), this.interval, this.formatPercentage);
+            this.cpu.chart = this.drawChart('cpu-usage-chart', { 'cpu-usage': this.cpu.queue.getArray() }, this.interval, this.formatPercentage, { legend: { show: false } });
 
             this.memory.queue = new Queue(60);
-            this.memory.chart = this.drawChart('memory-usage-chart', 'memory-usage', this.memory.queue.getArray(), this.interval, this.formatMemory);
+            this.memory.chart = this.drawChart('memory-usage-chart', { 'memory-usage': this.memory.queue.getArray() }, this.interval, this.formatMemory, { legend: { show: false } });
 
             this.intervalTimer = setInterval(this.getState, this.interval * 1000);
         }
@@ -145,8 +158,8 @@
             }).then(res => {
                 this.cpu.queue.enQueue(res.data.cpuUsedPercentage);
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
-                this.cpu.chart.load({ json: { 'cpu-usage': this.cpu.queue.getArray() } });
-                this.memory.chart.load({ json: { 'memory-usage': this.memory.queue.getArray() } });
+                this.cpu.chart.load({ json: { 'cpu-usage': approximateFillUpArray(this.cpu.queue.getArray()) } });
+                this.memory.chart.load({ json: { 'memory-usage': approximateFillUpArray(this.memory.queue.getArray()) } });
             });
         }
 
