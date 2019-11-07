@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentProcessControlImplementation;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
@@ -43,13 +44,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.ngrinder.agent.model.AgentRequest.RequestType.STOP_AGENT;
 import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
 import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_LISTENER_NAME;
@@ -66,7 +66,7 @@ import static org.ngrinder.infra.config.Config.NONE_REGION;
  */
 @Service
 @RequiredArgsConstructor
-public class AgentService implements TopicListener<AgentRequest>, IAgentManagerService {
+public class AgentService implements TopicListener<AgentRequest>, IAgentManagerService, AgentStatusUpdateListener {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentService.class);
 
 	protected final AgentManager agentManager;
@@ -86,38 +86,10 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 
 	protected final ScheduledTaskService scheduledTaskService;
 
-	private Runnable runnable;
-
 	@PostConstruct
 	public void init() {
-		initAgentInfoStore();
-		runnable = this::updateSharedAgentInfo;
-		scheduledTaskService.addFixedDelayedScheduledTaskInTransactionContext(runnable, 1000);
+		agentManager.addAgentStatusUpdateListener(this);
 		topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
-	}
-
-	@PreDestroy
-	public void destroy() {
-		scheduledTaskService.removeScheduledJob(runnable);
-	}
-
-	private void initAgentInfoStore() {
-		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
-		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAttachedAgentStatusSet()) {
-			AgentInfo agentInfo = new AgentInfo();
-			fillUpAgentInfo(agentInfo, status);
-			agentInfo.setApproved(approved);
-			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
-		}
-
-		List<AgentInfo> agentsInDB = agentManagerRepository.findAll();
-		for (AgentInfo agentInfoInBD : agentsInDB) {
-			AgentInfo agentInfo = agentInfoStore.getAgentInfo(agentInfoInBD.getAgentKey());
-			if (agentInfo != null) {
-				agentInfo.setApproved(agentInfoInBD.getApproved());
-				agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
-			}
-		}
 	}
 
 	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
@@ -166,35 +138,6 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 			.stream()
 			.filter(agentInfo -> agentInfo.getState() != null && agentInfo.getState().isActive())
 			.collect(toList());
-	}
-
-	/**
-	 * Run a scheduled task to check the agent statuses.
-	 *
-	 * @since 3.5.0
-	 */
-	protected void updateSharedAgentInfo() {
-		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
-		Set<AgentInfo> agentInfoSet = new HashSet<>(agentInfoStore.getAllAgentInfo());
-
-		for (AgentProcessControlImplementation.AgentStatus status : agentManager.getAllAttachedAgentStatusSet()) {
-			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
-			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(agentIdentity));
-			// check new agent
-			if (agentInfo == null) {
-				agentInfo = new AgentInfo();
-				agentInfo.setApproved(approved);
-			}
-
-			fillUpAgentInfo(agentInfo, status);
-			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
-			agentInfoSet.remove(agentInfo);
-		}
-
-		// delete disconnected agent.
-		for (AgentInfo agentInfo : agentInfoSet) {
-			agentInfoStore.deleteAgentInfo(agentInfo.getAgentKey());
-		}
 	}
 
 	/**
@@ -410,6 +353,41 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 			if (agentIdentity != null) {
 				agentRequest.getRequestType().process(AgentService.this, agentIdentity);
 			}
+		}
+	}
+
+	@Override
+	public void update(Map<AgentIdentity, AgentProcessControlImplementation.AgentStatus> agentMap) {
+		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
+		Set<AgentInfo> agentInfoSet = agentInfoStore.getAllAgentInfo()
+			.stream()
+			.filter(agentInfo -> StringUtils.equals(agentManager.extractRegionKey(agentInfo.getRegion()), config.getRegion()))
+			.collect(toSet());
+
+		for (AgentProcessControlImplementation.AgentStatus status : agentMap.values()) {
+			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
+			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(agentIdentity));
+			// check new agent
+			if (agentInfo == null) {
+				agentInfo = new AgentInfo();
+			}
+
+			fillUpAgentInfo(agentInfo, status);
+
+			AgentInfo agentInfoInDB = agentManagerRepository.findByIpAndName(agentInfo.getIp(), agentInfo.getName());
+			if (agentInfoInDB != null) {
+				agentInfo.setApproved(agentInfoInDB.getApproved());
+			} else {
+				agentInfo.setApproved(approved);
+			}
+
+			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
+			agentInfoSet.remove(agentInfo);
+		}
+
+		// delete disconnected agent.
+		for (AgentInfo agentInfo : agentInfoSet) {
+			agentInfoStore.deleteAgentInfo(agentInfo.getAgentKey());
 		}
 	}
 }

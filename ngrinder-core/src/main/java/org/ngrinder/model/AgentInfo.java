@@ -13,20 +13,16 @@
  */
 package org.ngrinder.model;
 
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.message.console.AgentControllerState;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Type;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.message.console.AgentControllerState;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Type;
 
-import java.util.Objects;
+import javax.persistence.*;
 
 import static java.util.Objects.hash;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
