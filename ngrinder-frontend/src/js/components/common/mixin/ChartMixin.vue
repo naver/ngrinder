@@ -2,42 +2,6 @@
     import { Mixin } from 'vue-mixin-decorator';
     import bb from 'billboard.js';
 
-    const DEFAULT_COLOR = '#4bb2c5';
-
-    const timeSeriesFormat = x => {
-        let minutes = Math.floor(x / 60);
-        let seconds = x % 60;
-
-        if (minutes < 10) {
-            minutes = `0${minutes}`;
-        }
-        if (seconds < 10) {
-            seconds = `0${seconds}`;
-        }
-        return `${minutes}:${seconds}`;
-    };
-
-    const approximateFillUpArray = array => {
-        for (let i = 0; i < array.length; i++) {
-            if (i === 0 || i === array.length - 1) {
-                continue;
-            }
-
-            if (array[i] === null) {
-                array[i] = (array[i - 1] + array[i + 1]) / 2;
-            }
-        }
-        return array;
-    };
-
-    const approximateFillUp = data => {
-        for (const [key, value] of Object.entries(data)) {
-            data[key] = approximateFillUpArray(value);
-        }
-
-        return data;
-    };
-
     const defaultChartOptions = {
         grid: {
             x: { show: true },
@@ -77,6 +41,8 @@
 
     @Mixin
     export default class ChartMixin {
+        static DEFAULT_COLOR = '#4bb2c5';
+
         drawChart(id, data, interval, yAxisFormatter, externalOptions) {
             if (Object.keys(data).length === 0) {
                 return null;
@@ -98,15 +64,15 @@
                 bindto: `#${id}`,
                 data: {
                     type: 'line',
-                    json: approximateFillUp(data),
-                    colors: { [colorsKey]: DEFAULT_COLOR },
+                    json: this.approximateFillUp(data),
+                    colors: { [colorsKey]: ChartMixin.DEFAULT_COLOR },
                 },
                 axis: {
                     x: {
                         type: 'seconds',
                         tick: {
                             culling: true,
-                            format: x => timeSeriesFormat(x * interval),
+                            format: x => ChartMixin.timeSeriesFormat(x * interval),
                         },
                         padding: {
                             left: 0,
@@ -126,6 +92,40 @@
                 ...defaultChartOptions,
                 ...externalOptions,
             });
+        }
+
+        static timeSeriesFormat(x) {
+            let minutes = Math.floor(x / 60);
+            let seconds = x % 60;
+
+            if (minutes < 10) {
+                minutes = `0${minutes}`;
+            }
+            if (seconds < 10) {
+                seconds = `0${seconds}`;
+            }
+            return `${minutes}:${seconds}`;
+        }
+
+        static approximateFillUpArray(array) {
+            for (let i = 0; i < array.length; i++) {
+                if (i === 0 || i === array.length - 1) {
+                    continue;
+                }
+
+                if (array[i] === null) {
+                    array[i] = (array[i - 1] + array[i + 1]) / 2;
+                }
+            }
+            return array;
+        }
+
+        approximateFillUp(data) {
+            for (const [key, value] of Object.entries(data)) {
+                data[key] = ChartMixin.approximateFillUpArray(value);
+            }
+
+            return data;
         }
     }
 </script>

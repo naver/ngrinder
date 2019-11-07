@@ -158,8 +158,8 @@
             }).then(res => {
                 this.cpu.queue.enQueue(res.data.cpuUsedPercentage);
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
-                this.cpu.chart.load({ json: { 'cpu-usage': approximateFillUpArray(this.cpu.queue.getArray()) } });
-                this.memory.chart.load({ json: { 'memory-usage': approximateFillUpArray(this.memory.queue.getArray()) } });
+                this.cpu.chart.load({ json: { 'cpu-usage': ChartMixin.approximateFillUpArray(this.cpu.queue.getArray()) } });
+                this.memory.chart.load({ json: { 'memory-usage': ChartMixin.approximateFillUpArray(this.memory.queue.getArray()) } });
             });
         }
 
