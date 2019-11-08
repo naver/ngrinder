@@ -37,6 +37,9 @@
                 y: 10,
             },
         },
+        line: {
+            connectNull: true,
+        },
         padding: {
             top: 10,
             right: 16,
@@ -97,8 +100,7 @@
             return bb.generate({
                 bindto: `#${id}`,
                 data: {
-                    type: 'line',
-                    json: { [label]: ChartMixin.approximateFillUpArray(data) },
+                    json: { [label]: data },
                     colors: { [label]: ChartMixin.DEFAULT_COLOR },
                 },
                 axis: {

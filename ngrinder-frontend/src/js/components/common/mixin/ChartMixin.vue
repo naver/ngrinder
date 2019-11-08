@@ -27,6 +27,9 @@
         transition: {
             duration: null,
         },
+        line: {
+            connectNull: true,
+        },
         padding: {
             top: 10,
             right: 16,
@@ -63,8 +66,7 @@
             return bb.generate({
                 bindto: `#${id}`,
                 data: {
-                    type: 'line',
-                    json: this.approximateFillUp(data),
+                    json: data,
                     colors: { [colorsKey]: ChartMixin.DEFAULT_COLOR },
                 },
                 axis: {
@@ -105,27 +107,6 @@
                 seconds = `0${seconds}`;
             }
             return `${minutes}:${seconds}`;
-        }
-
-        static approximateFillUpArray(array) {
-            for (let i = 0; i < array.length; i++) {
-                if (i === 0 || i === array.length - 1) {
-                    continue;
-                }
-
-                if (array[i] === null) {
-                    array[i] = (array[i - 1] + array[i + 1]) / 2;
-                }
-            }
-            return array;
-        }
-
-        approximateFillUp(data) {
-            for (const [key, value] of Object.entries(data)) {
-                data[key] = ChartMixin.approximateFillUpArray(value);
-            }
-
-            return data;
         }
     }
 </script>
