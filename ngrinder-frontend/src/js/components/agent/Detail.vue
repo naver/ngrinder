@@ -78,19 +78,6 @@
     import ChartMixin from '../common/mixin/ChartMixin.vue';
     import FormatMixin from '../common/mixin/FormatMixin.vue';
 
-    const approximateFillUpArray = array => {
-        for (let i = 0; i < array.length; i++) {
-            if (i === 0 || i === array.length - 1) {
-                continue;
-            }
-
-            if (array[i] === null) {
-                array[i] = (array[i - 1] + array[i + 1]) / 2;
-            }
-        }
-        return array;
-    };
-
     Component.registerHooks(['beforeRouteEnter']);
     @Component({
         name: 'agentDetail',
@@ -158,8 +145,8 @@
             }).then(res => {
                 this.cpu.queue.enQueue(res.data.cpuUsedPercentage);
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
-                this.cpu.chart.load({ json: { 'cpu-usage': ChartMixin.approximateFillUpArray(this.cpu.queue.getArray()) } });
-                this.memory.chart.load({ json: { 'memory-usage': ChartMixin.approximateFillUpArray(this.memory.queue.getArray()) } });
+                this.cpu.chart.load({ json: { 'cpu-usage': this.cpu.queue.getArray() } });
+                this.memory.chart.load({ json: { 'memory-usage': this.memory.queue.getArray() } });
             });
         }
 

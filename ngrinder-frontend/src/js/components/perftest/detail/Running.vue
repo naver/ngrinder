@@ -186,7 +186,7 @@
                     this.testTime = perfTestSample.testTime;
                     this.tpsQueue.enQueue(perfTestSample.tpsChartData);
                     if (this.shownBsTab) {
-                        this.tpsChart.load({ json: { Total: ChartMixin.approximateFillUpArray(this.tpsQueue.getArray()) } });
+                        this.tpsChart.load({ json: { Total: this.tpsQueue.getArray() } });
                     }
                 }
                 this.agentState = res.data.agent || {};
