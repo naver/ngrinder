@@ -24,8 +24,8 @@
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import ModalBase from '../../common/modal/ModalBase.vue';
+    import ChartMixin from '../../common/mixin/ChartMixin.vue';
     import FormatMixin from '../../common/mixin/FormatMixin.vue';
-    import Chart from '../../../chart.js';
     import Queue from '../../../queue.js';
 
     @Component({
@@ -36,7 +36,7 @@
             },
         },
     })
-    export default class TargetHostInfoModal extends Mixins(ModalBase, FormatMixin) {
+    export default class TargetHostInfoModal extends Mixins(ModalBase, ChartMixin, FormatMixin) {
         INTERVAL = 3;
 
         currentIntervalId = -1;
@@ -66,10 +66,10 @@
                     this.memory.queue.clear();
                 }
 
-                this.cpu.chart = new Chart('cpu-usage-chart', [this.cpu.queue.getArray()]
-                    , this.INTERVAL, { yAxisFormatter: this.formatPercentage }).plot();
-                this.memory.chart = new Chart('memory-usage-chart', [this.memory.queue.getArray()]
-                    , this.INTERVAL, { yAxisFormatter: this.formatMemory }).plot();
+                this.cpu.chart = this.drawChart('cpu-usage-chart', { 'cpu-usage': this.cpu.queue.getArray() }
+                    , this.INTERVAL, this.formatPercentage);
+                this.memory.chart = this.drawChart('memory-usage-chart', { 'memory-usage': this.memory.queue.getArray() }
+                    , this.INTERVAL, this.formatMemory);
 
                 this.currentIntervalId = setInterval(this.getState, this.INTERVAL * 1000);
             });
@@ -88,8 +88,8 @@
             }).then(res => {
                 this.cpu.queue.enQueue(res.data.cpuUsedPercentage);
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
-                this.cpu.chart.plot();
-                this.memory.chart.plot();
+                this.cpu.chart.load({ json: { 'cpu-usage': ChartMixin.approximateFillUpArray(this.cpu.queue.getArray()) } });
+                this.memory.chart.load({ json: { 'memory-usage': ChartMixin.approximateFillUpArray(this.memory.queue.getArray()) } });
             });
         }
 

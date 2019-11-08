@@ -168,8 +168,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		int interval = spiedService.getReportDataInterval(testId, "TPS", 700);
 
 		// Then
-		assertFalse(spiedService.getReportData(testId, "TPS", interval).isEmpty());
-		assertFalse(spiedService.getReportData(testId, "Mean_Test_Time_(ms)", interval).isEmpty());
+		assertFalse(spiedService.getSingleReportData(testId, "TPS", interval).isEmpty());
+		assertFalse(spiedService.getSingleReportData(testId, "Mean_Test_Time_(ms)", interval).isEmpty());
 	}
 
 	@Test
