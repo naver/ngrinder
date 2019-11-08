@@ -44,7 +44,7 @@
         static DEFAULT_COLOR = '#4bb2c5';
 
         drawChart(id, data, interval, yAxisFormatter, externalOptions) {
-            if (Object.keys(data).length === 0) {
+            if (Object.keys(data).length === 0 || Object.values(data).flatMap(x => x).length === 0) {
                 return null;
             }
 
