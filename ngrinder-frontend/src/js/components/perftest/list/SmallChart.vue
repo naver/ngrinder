@@ -36,6 +36,9 @@
                 x: 20,
                 y: 10,
             },
+            item: {
+                onclick() { }, // disable default click event
+            },
         },
         line: {
             connectNull: true,
@@ -45,10 +48,17 @@
             right: 16,
             left: 36,
         },
+        tooltip: {
+            contents: {
+                template: '<span class={=CLASS_TOOLTIP}>{{<span>{=VALUE}</span></li>}}</span>',
+            },
+        },
         oninit() {
             this.svg.select('g.bb-grid')
                 .insert('rect', ':first-child')
                 .attr('class', 'chart-background');
+            this.svg.select('g.bb-legend-item > text')
+                .attr('y', 17);
         },
     };
 
@@ -107,11 +117,12 @@
                     x: {
                         type: 'seconds',
                         tick: {
-                            culling: { max: 5 },
+                            count: 5,
                             format: x => ChartMixin.timeSeriesFormat(x * interval),
                         },
                         padding: {
                             left: 0,
+                            right: 0,
                         },
                     },
                     y: {
@@ -145,29 +156,40 @@
         width: 100%;
 
         td {
-            background-color: #f9f9f9;
+            background-color: #ffffff;
         }
 
         div.small-chart {
             width: 290px;
             height: 150px;
             border: 1px solid #c4c4c4;
+            background-color: #ffffff;
         }
 
         th.small-border {
             padding-left: 3px;
             padding-right: 3px;
         }
+
+        rect.chart-background {
+            fill: #fffdf6;
+            fill-opacity: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        g.bb-legend-item {
+            text {
+                font-size: 0.8em;
+            }
+        }
+    }
+
+    .bb-tooltip {
+        padding: 3px;
     }
 
     tbody > tr:not([render="true"]) > td {
         padding: 0;
-    }
-
-    .chart-background {
-        fill: #fffdf6;
-        fill-opacity: 1;
-        width: 100%;
-        height: 100%;
     }
 </style>
