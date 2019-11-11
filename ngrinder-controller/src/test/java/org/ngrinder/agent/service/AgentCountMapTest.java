@@ -97,19 +97,19 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 	public void test() {
 		User user = new User();
 		user.setUserId("haha");
-		Map<String, MutableInt> userAvailableAgentCountMap = agentService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> userAvailableAgentCountMap = agentService.getAvailableAgentCountMap(user.getUserId());
 		System.out.println(userAvailableAgentCountMap);
 		assertThat(userAvailableAgentCountMap.containsKey("kiki"), is(false));
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
 
 		user.setUserId("wow");
-		userAvailableAgentCountMap = agentService.getAvailableAgentCountMap(user);
+		userAvailableAgentCountMap = agentService.getAvailableAgentCountMap(user.getUserId());
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(3));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
 
 		user.setUserId("my");
-		userAvailableAgentCountMap = agentService.getAvailableAgentCountMap(user);
+		userAvailableAgentCountMap = agentService.getAvailableAgentCountMap(user.getUserId());
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(4));
 		assertThat(userAvailableAgentCountMap.get("wowo").intValue(), is(3));
