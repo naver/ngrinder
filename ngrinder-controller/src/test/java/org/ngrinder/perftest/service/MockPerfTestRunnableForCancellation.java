@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
@@ -33,8 +34,11 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
 
-	public MockPerfTestRunnableForCancellation(PerfTestService perfTestService, AgentManager agentManager, ConsoleManager consoleManager, PluginManager pluginManager, Config config, ScheduledTaskService scheduledTaskService, HazelcastService hazelcastService) {
-		super(perfTestService, agentManager, consoleManager, pluginManager, config, scheduledTaskService, hazelcastService);
+	public MockPerfTestRunnableForCancellation(PerfTestService perfTestService, AgentManager agentManager,
+											   ConsoleManager consoleManager, PluginManager pluginManager,
+											   Config config, ScheduledTaskService scheduledTaskService,
+											   HazelcastService hazelcastService, AgentService agentService) {
+		super(perfTestService, agentManager, consoleManager, pluginManager, config, scheduledTaskService, hazelcastService, agentService);
 	}
 
 	@Override

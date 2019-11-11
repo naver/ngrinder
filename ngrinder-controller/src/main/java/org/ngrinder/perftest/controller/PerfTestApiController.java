@@ -428,7 +428,7 @@ public class PerfTestApiController {
 		Map<String, Object> attributes = new HashMap<>();
 
 		Map<String, Object> testConfig = new HashMap<>();
-		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user.getUserId());
 		testConfig.put(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		testConfig.put(PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
 
@@ -506,7 +506,7 @@ public class PerfTestApiController {
 					3600000L),
 				"duration should be equal to or less than %s", agentManager.getMaxRunHour());
 		}
-		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user.getUserId());
 		MutableInt agentCountObj = agentCountMap.get(config.isClustered() ? newOne.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
@@ -820,7 +820,7 @@ public class PerfTestApiController {
 		if (newOne.getAgentCount() == null) {
 			newOne.setAgentCount(0);
 		}
-		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user);
+		Map<String, MutableInt> agentCountMap = agentService.getAvailableAgentCountMap(user.getUserId());
 		MutableInt agentCountObj = agentCountMap.get(config.isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();

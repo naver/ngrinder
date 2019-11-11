@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.grinder.message.console.AgentControllerState.READY;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -102,6 +103,8 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 			agentInfo.setIp(identity.getIp());
 			agentInfo.setPort(0);
 			agentInfo.setName(identity.getName());
+			agentInfo.setApproved(true);
+			agentInfo.setState(READY);
 			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
 		}
 
@@ -114,7 +117,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 	@Test
 	public void testDoTest() throws IOException {
-		assertThat(agentManager.getAllAttachedApprovedAgents().size(), is(1));
+		assertThat(agentService.getAllAttachedFreeApprovedAgents().size(), is(1));
 		perfTestRunnable.doStart();
 		sleep(10000);
 		assertThat(perfTestService.getAllTesting().size(), is(1));
@@ -126,7 +129,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
-	boolean ended = false;
+	private boolean ended = false;
 
 	@Test
 	public void testStartConsole() throws IOException {

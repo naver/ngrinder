@@ -25,6 +25,7 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.UnitUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -86,6 +87,9 @@ public class PerfTestRunnable implements ControllerConstants {
 	private final ScheduledTaskService scheduledTaskService;
 
 	private final HazelcastService hazelcastService;
+
+	@Getter
+	private final AgentService agentService;
 
 	private Runnable startRunnable;
 
@@ -172,7 +176,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @return true if enough agents
 	 */
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
-		int size = agentManager.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedUser()).size();
+		int size = agentService.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedUser().getUserId()).size();
 		if (test.getAgentCount() != null && test.getAgentCount() > size) {
 			perfTestService.markProgress(test, "The test is tried to execute but there is not enough free agents."
 					+ "\n- Current free agent count : " + size + "  / Requested : " + test.getAgentCount() + "\n");
@@ -305,7 +309,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(perfTest.getAgentCount())
 				+ " agents are starting.");
-		agentManager.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties,
+		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties,
 				getSafe(perfTest.getAgentCount()));
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(perfTest.getAgentCount())

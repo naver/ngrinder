@@ -25,7 +25,6 @@ import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
-import net.grinder.util.thread.ExecutorFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -35,7 +34,7 @@ import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.User;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +46,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toSet;
+import static net.grinder.common.GrinderProperties.CONSOLE_PORT;
+import static net.grinder.message.console.AgentControllerState.BUSY;
+import static net.grinder.util.thread.ExecutorFactory.createThreadPool;
 
 /**
  * Agent manager.
@@ -70,12 +68,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 
 	private static final int NUMBER_OF_THREAD = 3;
-
-	private static final Function<String, Predicate<AgentIdentity>> isOwnedAgent =
-		userId -> identity -> StringUtils.endsWith(convert(identity).getRegion(), "owned_" + userId);
-
-	private static final Predicate<AgentIdentity> isCommonAgent =
-		identity -> !StringUtils.contains(convert(identity).getRegion(), "owned_");
 
 	private final Config config;
 
@@ -213,22 +205,11 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	}
 
 	public boolean getAgentForceUpdate() {
-		return config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_AGENT_FORCE_UPDATE);
+		return config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_AGENT_FORCE_UPDATE);
 	}
 
-	/**
-	 * Get the {@link AgentIdentity} which has the given ip.
-	 *
-	 * @param agentIP agent ip
-	 * @return {@link AgentControllerIdentityImplementation}
-	 */
-	public AgentControllerIdentityImplementation getAttachedAgentIdentityByIp(String agentIP) {
-		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
-			if (StringUtils.equals(convert(agentIdentity).getIp(), agentIP)) {
-				return convert(agentIdentity);
-			}
-		}
-		return null;
+	private int getUpdateChunkSize() {
+		return config.getControllerProperties().getPropertyInt(PROP_CONTROLLER_UPDATE_CHUNK_SIZE);
 	}
 
 	/**
@@ -237,72 +218,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 * @param identity identity
 	 * @return converted identity.
 	 */
-	static AgentControllerIdentityImplementation convert(AgentIdentity identity) {
+	public static AgentControllerIdentityImplementation convert(AgentIdentity identity) {
 		return (AgentControllerIdentityImplementation) identity;
-	}
-
-	/**
-	 * Get all agents which are not used now.
-	 *
-	 * @return AgentIdentity set
-	 */
-	public Set<AgentIdentity> getAllAttachedFreeAgents() {
-		return agentControllerServerDaemon.getAllFreeAgents();
-	}
-
-	/**
-	 * Get all approved agents for given user which are not used now.
-	 *
-	 * @param user user
-	 * @return AgentIdentity set
-	 */
-	public Set<AgentIdentity> getAllAttachedFreeApprovedAgentsForUser(User user) {
-		if (user == null) {
-			return Collections.emptySet();
-		}
-		return filterUserAgents(getAllAttachedFreeApprovedAgents(), user.getUserId());
-	}
-
-	/**
-	 * Get all approved agents which are not used now.
-	 *
-	 * @return AgentIdentity set
-	 */
-	public Set<AgentIdentity> getAllAttachedFreeApprovedAgents() {
-		Set<AgentIdentity> allFreeAgents = agentControllerServerDaemon.getAllFreeAgents();
-		return filterApprovedAgents(allFreeAgents);
-	}
-
-	/**
-	 * Get all approved agents for given user.
-	 *
-	 * @param user user
-	 * @return AgentIdentity set
-	 */
-	public Set<AgentIdentity> getAllAttachedApprovedAgents(User user) {
-		if (user == null) {
-			return Collections.emptySet();
-		}
-		return filterUserAgents(getAllAttachedApprovedAgents(), user.getUserId());
-	}
-
-	/**
-	 * Get all shared approved agents.
-	 *
-	 * @return AgentIdentity set
-	 */
-	public Set<AgentIdentity> getAllAttachedSharedAgents() {
-		return filterSharedAgents(getAllAttachedApprovedAgents());
-	}
-
-	/**
-	 * Get all approved agents.
-	 *
-	 * @return AgentIdentity set
-	 */
-	public Set<AgentIdentity> getAllAttachedApprovedAgents() {
-		Set<AgentIdentity> allAgents = agentControllerServerDaemon.getAllAvailableAgents();
-		return filterApprovedAgents(allAgents);
 	}
 
 	public String extractRegionKey(String agentRegion) {
@@ -316,58 +233,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			return Config.NONE_REGION;
 		}
 		return agentRegion;
-	}
-
-	/**
-	 * Filter the approved agents from given agents.
-	 *
-	 * @param agents all agents
-	 * @return approved agents.
-	 */
-	public Set<AgentIdentity> filterApprovedAgents(Set<AgentIdentity> agents) {
-		if (agents.size() == 0) {
-			return agents;
-		}
-
-		boolean clustered = config.isClustered();
-		String region = config.getRegion();
-
-		Set<String> ips = agentInfoStore.getAllAgentInfo()
-			.stream()
-			.filter(agentInfo -> StringUtils.equals(region, extractRegionKey(agentInfo.getRegion())) && agentInfo.getApproved())
-			.map(agentInfo -> agentInfo.getIp() + agentInfo.getName())
-			.collect(toSet());
-
-		return agents.stream()
-			.map(AgentManager::convert)
-			.filter(identity -> ips.contains(identity.getIp() + identity.getName()))
-			.collect(toSet());
-	}
-
-	/**
-	 * Filter the shared agents from given agents.
-	 *
-	 * @param agents all agents
-	 * @return userOwned agents.
-	 */
-	public Set<AgentIdentity> filterSharedAgents(Set<AgentIdentity> agents) {
-		return agents.stream()
-			.map(AgentManager::convert)
-			.filter(identity -> StringUtils.containsNone(identity.getRegion(), "owned_"))
-			.collect(toSet());
-	}
-
-	/**
-	 * Filter the user owned agents from given agents.
-	 *
-	 * @param agents all agents
-	 * @param userId userId
-	 * @return userOwned agents.
-	 */
-	public Set<AgentIdentity> filterUserAgents(Set<AgentIdentity> agents, String userId) {
-		return agents.stream()
-			.filter(isOwnedAgent.apply(userId).or(isCommonAgent))
-			.collect(toSet());
 	}
 
 	/**
@@ -393,47 +258,26 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	/**
 	 * Assign the agents on the given console.
 	 *
-	 * @param user              user
 	 * @param singleConsole     {@link SingleConsole} to which agents will be assigned
 	 * @param grinderProperties {@link GrinderProperties} to be distributed.
-	 * @param agentCount        the count of agents.
+	 * @param necessaryAgents   necessary agents for running test.
 	 */
-	public synchronized void runAgent(User user, final SingleConsole singleConsole,
-	                                  final GrinderProperties grinderProperties, final Integer agentCount) {
-		final Set<AgentIdentity> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user);
-		final Set<AgentIdentity> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
-		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
-		for (AgentIdentity each : necessaryAgents) {
-			LOGGER.info("- Agent {}", each.getName());
-		}
+	public synchronized void runAgent(final SingleConsole singleConsole,
+									  final GrinderProperties grinderProperties,
+									  final Set<AgentInfo> necessaryAgents) {
 		ExecutorService execService = null;
 		try {
 			// Make the agents connect to console.
-			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
-			execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
-			for (final AgentIdentity eachAgentIdentity : necessaryAgents) {
-				execService.submit(() -> agentControllerServerDaemon.startAgent(grinderProperties, eachAgentIdentity));
+			grinderProperties.setInt(CONSOLE_PORT, singleConsole.getConsolePort());
+			execService = createThreadPool("agentStarter", NUMBER_OF_THREAD);
+			for (final AgentInfo agentInfo : necessaryAgents) {
+				execService.submit(() -> agentControllerServerDaemon.startAgent(grinderProperties, agentInfo.getAgentIdentity()));
 			}
 		} finally {
 			if (execService != null) {
 				execService.shutdown();
 			}
 		}
-	}
-
-	/**
-	 * Select agent. This method return agent set which is belong to the given user first and then share agent set.
-	 *
-	 * @param user          user
-	 * @param allFreeAgents agents
-	 * @param agentCount    number of agent
-	 * @return selected agent.
-	 */
-	private Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
-		Stream<AgentIdentity> ownedFreeAgentStream = allFreeAgents.stream().filter(isOwnedAgent.apply(user.getUserId()));
-		Stream<AgentIdentity> freeAgentStream = allFreeAgents.stream().filter(isCommonAgent);
-
-		return Stream.concat(ownedFreeAgentStream, freeAgentStream).limit(agentCount).collect(toSet());
 	}
 
 	/**
@@ -453,7 +297,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	public void stopAgent(int consolePort) {
 		Set<AgentStatus> agentStatusSetConnectingToPort = getAttachedAgentStatusSetConnectingToPort(consolePort);
 		for (AgentStatus each : agentStatusSetConnectingToPort) {
-			if (each.getAgentControllerState() == AgentControllerState.BUSY) {
+			if (each.getAgentControllerState() == BUSY) {
 				agentControllerServerDaemon.stopAgent(each.getAgentIdentity());
 			}
 		}
@@ -501,10 +345,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			IOUtils.closeQuietly(agentPackageReader);
 		}
 		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
-	}
-
-	private int getUpdateChunkSize() {
-		return config.getControllerProperties().getPropertyInt(ControllerConstants.PROP_CONTROLLER_UPDATE_CHUNK_SIZE);
 	}
 
 	public void addAgentStatusUpdateListener(AgentStatusUpdateListener agentStatusUpdateListener) {
