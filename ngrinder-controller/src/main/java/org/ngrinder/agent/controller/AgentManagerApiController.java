@@ -86,7 +86,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public List<AgentInfo> getAll(final User user, @RequestParam(value = "region", required = false) final String region) {
 		final Collection<? extends GrantedAuthority> authorities = getCurrentAuthorities();
-		return agentService.getAllVisible()
+		return agentService.getAllActive()
 			.stream()
 			.filter(agent -> filterAgentByCluster(region, agent.getRegion()))
 			.filter(agent -> filterAgentByUserAuthorityAndUserId(authorities, user.getUserId(), region, agent.getRegion()))
@@ -150,7 +150,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	@GetMapping(value = {"/states/", "/states"})
 	public List<Map<String, Object>> getStates() {
-		List<AgentInfo> agents = agentService.getAllVisible();
+		List<AgentInfo> agents = agentService.getAllActive();
 		List<Map<String, Object>> statuses = newArrayList(agents.size());
 
 		for (AgentInfo each : agents) {
@@ -173,7 +173,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = {"/", ""})
 	public List<AgentInfo> getAll() {
-		return agentService.getAllVisible();
+		return agentService.getAllActive();
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class AgentManagerApiController {
 	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping(value = "/{ip}/{name}")
 	public AgentInfo getOneByIpAndName(@PathVariable String ip, @PathVariable String name) {
-		return agentService.getOne(ip, name);
+		return agentService.getAgent(ip, name);
 	}
 
 	/**
@@ -271,6 +271,6 @@ public class AgentManagerApiController {
 	@GetMapping("/availableAgentCount")
 	@PreAuthorize("permitAll")
 	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
-		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user, targetRegion));
+		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user.getUserId(), targetRegion));
 	}
 }

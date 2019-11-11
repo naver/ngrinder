@@ -57,7 +57,7 @@ public class MockPerfTestApiController extends PerfTestApiController {
 		AgentService agentService = mock(AgentService.class);
 		Map<String, MutableInt> countMap = new HashMap<>(1);
 		countMap.put(config.getRegion(), new MutableInt(3));
-		when(agentService.getAvailableAgentCountMap(userContext.getCurrentUser())).thenReturn(countMap);
+		when(agentService.getAvailableAgentCountMap(userContext.getCurrentUser().getUserId())).thenReturn(countMap);
 		ReflectionTestUtils.setField(this, "agentService", agentService);
 	}
 }

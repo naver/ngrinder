@@ -33,20 +33,4 @@ public class AgentManagerTest extends AbstractNGrinderTransactionalTest {
 	public void testConvert() {
 		agentManager.convert(new AgentControllerIdentityImplementation("test", "127.0.0.1"));
 	}
-
-	@Test
-	public void testgetAllAttachedFreeApprovedAgentsForUser() {
-		agentManager.getAllAttachedFreeApprovedAgentsForUser(getTestUser());
-	}
-
-	@Test
-	public void testgetAllAttachedSharedAgents() {
-		agentManager.getAllAttachedSharedAgents();
-	}
-
-	@Test
-	public void testFilterSharedAgents() {
-		agentManager.filterSharedAgents(agentManager.getAllAttachedAgents());
-	}
-
 }

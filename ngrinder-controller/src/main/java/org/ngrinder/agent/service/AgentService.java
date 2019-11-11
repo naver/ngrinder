@@ -15,6 +15,8 @@ package org.ngrinder.agent.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.grinder.SingleConsole;
+import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
@@ -36,20 +38,24 @@ import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.region.service.RegionService;
-import org.ngrinder.service.IAgentManagerService;
+import org.ngrinder.service.AbstractAgentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Stream.concat;
+import static org.apache.commons.lang.StringUtils.contains;
+import static org.apache.commons.lang.StringUtils.endsWith;
 import static org.ngrinder.agent.model.AgentRequest.RequestType.STOP_AGENT;
 import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
 import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_LISTENER_NAME;
@@ -66,7 +72,7 @@ import static org.ngrinder.infra.config.Config.NONE_REGION;
  */
 @Service
 @RequiredArgsConstructor
-public class AgentService implements TopicListener<AgentRequest>, IAgentManagerService, AgentStatusUpdateListener {
+public class AgentService extends AbstractAgentService implements TopicListener<AgentRequest>, AgentStatusUpdateListener {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentService.class);
 
 	protected final AgentManager agentManager;
@@ -126,7 +132,7 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 		return controllerRegion;
 	}
 
-	public List<AgentInfo> getAllReady() {
+	private List<AgentInfo> getAllReady() {
 		return agentInfoStore.getAllAgentInfo()
 			.stream()
 			.filter(agentInfo -> agentInfo.getState() != null && agentInfo.getState().isReady())
@@ -144,11 +150,11 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 	 * Get the available agent count map in all regions of the user, including
 	 * the free agents and user specified agents.
 	 *
-	 * @param user current user
+	 * @param userId current user id
 	 * @return user available agent count map
 	 */
 	@Override
-	public Map<String, MutableInt> getAvailableAgentCountMap(User user) {
+	public Map<String, MutableInt> getAvailableAgentCountMap(String userId) {
 		Set<String> regions = getRegions();
 		Map<String, MutableInt> availShareAgents = newHashMap(regions);
 		Map<String, MutableInt> availUserOwnAgent = newHashMap(regions);
@@ -156,7 +162,7 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 			availShareAgents.put(region, new MutableInt(0));
 			availUserOwnAgent.put(region, new MutableInt(0));
 		}
-		String myAgentSuffix = "owned_" + user.getUserId();
+		String myAgentSuffix = "owned_" + userId;
 
 		for (AgentInfo agentInfo : getAllActive()) {
 			// Skip all agents which are disapproved, inactive or
@@ -172,9 +178,9 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 			}
 			// It's my own agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
-				incrementAgentCount(availUserOwnAgent, region, user.getUserId());
+				incrementAgentCount(availUserOwnAgent, region, userId);
 			} else if (!fullRegion.contains("owned_")) {
-				incrementAgentCount(availShareAgents, region, user.getUserId());
+				incrementAgentCount(availShareAgents, region, userId);
 			}
 		}
 
@@ -203,15 +209,14 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 
 	@Override
 	public AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name) {
-		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		AgentInfo agentInfo = getAgent(ip, name);
 		if (agentInfo != null) {
 			return cast(agentInfo.getAgentIdentity());
 		}
 		return null;
 	}
 
-	@Override
-	public AgentInfo getOne(String ip, String name) {
+	public AgentInfo getAgent(String ip, String name) {
 		return agentInfoStore.getAgentInfo(createAgentKey(ip, name));
 	}
 
@@ -237,9 +242,98 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 		}
 		agentManagerRepository.flush();
 
-		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		updateApproveInStore(ip, name, approve);
+	}
+
+	private void updateApproveInStore(String ip, String name, boolean approve) {
+		AgentInfo agentInfo = getAgent(ip, name);
 		agentInfo.setApproved(approve);
 		agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
+	}
+
+	/**
+	 * Get all free approved agents
+	 *
+	 * @return AgentInfo set
+	 */
+	private Set<AgentInfo> getAllFreeApprovedAgents() {
+		return getAllReady()
+			.stream()
+			.filter(AgentInfo::isApproved)
+			.collect(toSet());
+	}
+
+	/**
+	 * Get all free approved agents attached to current node.
+	 *
+	 * @return AgentInfo set
+	 *
+	 */
+	public Set<AgentInfo> getAllAttachedFreeApprovedAgents() {
+		return getAllFreeApprovedAgents()
+			.stream()
+			.filter(this::isCurrentRegion)
+			.collect(toSet());
+	}
+
+	/**
+	 * Get all approved agents for given user which are not used now.
+	 *
+	 * @param  userId user id
+	 * @return AgentInfo set
+	 */
+	public Set<AgentInfo> getAllAttachedFreeApprovedAgentsForUser(String userId) {
+		return getAllFreeApprovedAgents()
+			.stream()
+			.filter(this::isCurrentRegion)
+			.filter(agentInfo -> isOwnedAgent(agentInfo, userId) || isCommonAgent(agentInfo))
+			.collect(toSet());
+	}
+
+	private boolean isCurrentRegion(AgentInfo agentInfo) {
+		String region = config.getRegion();
+		return StringUtils.equals(region, agentManager.extractRegionKey(agentInfo.getRegion()));
+	}
+
+	private boolean isOwnedAgent(AgentInfo agentInfo, String userId) {
+		return endsWith(agentInfo.getRegion(), "owned_" + userId);
+	}
+
+	private boolean isCommonAgent(AgentInfo agentInfo) {
+		return !contains(agentInfo.getRegion(), "owned_");
+	}
+
+	/**
+	 * Assign the agents on the given console.
+	 *
+	 * @param user              user
+	 * @param singleConsole     {@link SingleConsole} to which agents will be assigned
+	 * @param grinderProperties {@link GrinderProperties} to be distributed.
+	 * @param agentCount        the count of agents.
+	 */
+	public synchronized void runAgent(User user, final SingleConsole singleConsole,
+									  final GrinderProperties grinderProperties, final Integer agentCount) {
+		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId());
+		final Set<AgentInfo> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
+		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
+		for (AgentInfo agentInfo : necessaryAgents) {
+			LOGGER.info("- Agent {}", agentInfo.getName());
+		}
+		agentManager.runAgent(singleConsole, grinderProperties, necessaryAgents);
+	}
+
+	/**
+	 * Select agent. This method return agent set which is belong to the given user first and then share agent set.
+	 *
+	 * @param user          user
+	 * @param allFreeAgents agents
+	 * @param agentCount    number of agent
+	 * @return selected agent.
+	 */
+	private Set<AgentInfo> selectAgent(User user, Set<AgentInfo> allFreeAgents, int agentCount) {
+		Stream<AgentInfo> ownedFreeAgentStream = allFreeAgents.stream().filter(agentInfo -> isOwnedAgent(agentInfo, user.getUserId()));
+		Stream<AgentInfo> freeAgentStream = allFreeAgents.stream().filter(this::isCommonAgent);
+		return concat(ownedFreeAgentStream, freeAgentStream).limit(agentCount).collect(toSet());
 	}
 
 	/**
@@ -251,7 +345,7 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 	 */
 	@Override
 	public void stop(String ip, String name) {
-		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		AgentInfo agentInfo = getAgent(ip, name);
 		if (agentInfo == null) {
 			return;
 		}
@@ -265,7 +359,7 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 
 	@Override
 	public void update(String ip, String name) {
-		AgentInfo agentInfo = agentInfoStore.getAgentInfo(createAgentKey(ip, name));
+		AgentInfo agentInfo = getAgent(ip, name);
 		if (agentInfo == null) {
 			return;
 		}
@@ -295,14 +389,14 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 	/**
 	 * Ready agent state count return
 	 *
-	 * @param user The login user
+	 * @param userId The login user id
 	 * @param targetRegion targetRegion The name of target region
 	 * @return ready Agent count
 	 */
 	@Override
-	public int getReadyAgentCount(User user, String targetRegion) {
+	public int getReadyAgentCount(String userId, String targetRegion) {
 		int readyAgentCnt = 0;
-		String myOwnAgent = targetRegion + "_owned_" + user.getUserId();
+		String myOwnAgent = targetRegion + "_owned_" + userId;
 		for (AgentInfo agentInfo : getAllReady()) {
 			if (!agentInfo.isApproved()) {
 				continue;
@@ -316,23 +410,8 @@ public class AgentService implements TopicListener<AgentRequest>, IAgentManagerS
 	}
 
 	@Override
-	public List<AgentInfo> getAllVisible() {
-		return getAllActive();
-	}
-
-	@Override
 	public List<AgentInfo> getAllAttached() {
 		return agentInfoStore.getAllAgentInfo();
-	}
-
-	@Override
-	public List<AgentInfo> getLocalAgents() {
-		return getAllAttached();
-	}
-
-	@Override
-	public String createKey(AgentInfo agentInfo) {
-		return agentInfo.getAgentKey();
 	}
 
 	@Override
