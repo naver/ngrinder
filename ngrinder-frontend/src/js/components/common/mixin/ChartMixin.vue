@@ -1,6 +1,10 @@
 <script>
     import { Mixin } from 'vue-mixin-decorator';
     import bb from 'billboard.js';
+    import moment from 'moment';
+    import momentDurationFormatSetup from 'moment-duration-format';
+
+    momentDurationFormatSetup(moment);
 
     const defaultChartOptions = {
         grid: {
@@ -96,17 +100,15 @@
             });
         }
 
-        static timeSeriesFormat(x) {
-            let minutes = Math.floor(x / 60);
-            let seconds = (x % 60).toFixed(0);
+        static timeSeriesFormat(seconds) {
+            const duration = moment.duration(seconds, 'seconds');
+            const timeSeries = duration.format('d[d] hh:mm:ss', { forceLength: true });
 
-            if (minutes < 10) {
-                minutes = `0${minutes}`;
+            if (timeSeries.length < 3) {
+                return `00:${timeSeries}`;
+            } else {
+                return timeSeries;
             }
-            if (seconds < 10) {
-                seconds = `0${seconds}`;
-            }
-            return `${minutes}:${seconds}`;
         }
     }
 </script>
