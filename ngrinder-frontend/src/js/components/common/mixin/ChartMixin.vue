@@ -98,7 +98,7 @@
 
         static timeSeriesFormat(x) {
             let minutes = Math.floor(x / 60);
-            let seconds = x % 60;
+            let seconds = (x % 60).toFixed(0);
 
             if (minutes < 10) {
                 minutes = `0${minutes}`;
