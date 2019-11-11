@@ -57,18 +57,29 @@
 
 <script>
     import { Component, Prop, Watch } from 'vue-property-decorator';
-    import 'jqplot/jquery.jqplot.min.js';
-    import 'jqplot/jqplot.cursor.js';
-    import 'jqplot/jqplot.donutRenderer.js';
-    import 'jqplot/jqplot.highlighter.js';
-
-    import '../../../../plugins/jqplot/jqplot.canvasAxisTickRenderer.js';
-    import '../../../../plugins/jqplot/jqplot.canvasTextRenderer.js';
-    import '../../../../plugins/jqplot/jqplot.categoryAxisRenderer.js';
-    import '../../../../plugins/jqplot/jqplot.enhancedLegendRenderer.js';
+    import bb from 'billboard.js';
 
     import Base from '../../Base.vue';
     import InputLabel from '../../common/InputLabel.vue';
+
+    class CoordinationArray {
+        constructor() {
+            this.xArray = [];
+            this.yArray = [];
+        }
+
+        push(x, y) {
+            this.xArray.push(x);
+            this.yArray.push(y);
+        }
+
+        get() {
+            return {
+                x: this.xArray,
+                y: this.yArray,
+            };
+        }
+    }
 
     @Component({
         name: 'rampUp',
@@ -81,9 +92,14 @@
         @Prop({ type: Array, required: true })
         rampUpTypes;
 
-        test = {};
+        test = {
+            rampUpInitCount: 0,
+            rampUpStep: 1,
+            rampUpInitSleepTime: 0,
+            rampUpIncrementInterval: 1000,
+        };
 
-        plotObj = '';
+        chart = null;
         useRampUp = false;
         rampUpType = 'PROCESS';
 
@@ -114,21 +130,27 @@
             };
         }
 
-        updateRampUpChart() {
-            if (!this.isPlotTargetExist() || this.$parent.errors.has('vuserPerAgent')) {
-                return;
-            }
-
+        getCurrentBaseAndFactor() {
             let base;
             let factor;
 
             if (this.rampUpType === 'PROCESS') {
-                base = this.$parent.test.processes;
-                factor = this.$parent.test.threads;
+                base = this.test.processes;
+                factor = this.test.threads;
             } else {
-                base = this.$parent.test.threads;
-                factor = this.$parent.test.processes;
+                base = this.test.threads;
+                factor = this.test.processes;
             }
+
+            return { base, factor };
+        }
+
+        updateRampUpChart() {
+            if (this.$parent.errors.has('vuserPerAgent')) {
+                return;
+            }
+
+            const { base, factor } = this.getCurrentBaseAndFactor();
 
             const factorVar = parseInt(factor, 10);
             const destination = parseInt(base, 10) * factorVar;
@@ -159,108 +181,117 @@
                 return;
             }
 
-            const seriesArray = [];
+            const tail = arr => arr[arr.length - 1];
+
+            const coordinates = new CoordinationArray();
 
             if (this.useRampUp) {
                 let curX = initialSleepTime;
                 let curY = initialCount;
                 if (initialSleepTime > 0) {
-                    seriesArray.push([0, 0]);
-                    seriesArray.push([initialSleepTime, 0]);
+                    coordinates.push(0, 0);
+                    coordinates.push(initialSleepTime, 0);
                 }
-                seriesArray.push([curX + 0.01, curY]);
+                coordinates.push(curX + 0.01, curY);
+
                 curX += internalTime;
-                seriesArray.push([curX, curY]);
+                coordinates.push(curX, curY);
 
                 for (let step = 1; step <= Math.ceil(steps); step++) {
                     curY += increment;
                     if (curY > destination) {
                         curY = destination;
                     }
-                    seriesArray.push([curX + 0.01, curY]);
+                    coordinates.push(curX + 0.01, curY);
+
                     curX += internalTime;
-                    seriesArray.push([curX, curY]);
+                    coordinates.push(curX + 0.01, curY);
                 }
 
-                $('#ramp-up-chart').empty();
-
-                const maxX = seriesArray[seriesArray.length - 1][0];
-                const maxY = seriesArray[seriesArray.length - 1][1];
-                this.drawRampUp(seriesArray, internalTime, maxX, maxY);
+                const maxX = tail(coordinates.get().x);
+                const maxY = tail(coordinates.get().y);
+                this.drawRampUp(coordinates, internalTime, maxX, maxY);
             } else {
                 let curX = 0;
                 for (let step = 0; step <= steps; step++) {
-                    seriesArray.push([curX + 0.01, destination]);
+                    coordinates.push(curX + 0.01, destination);
                     curX += internalTime;
-                    seriesArray.push([curX, destination]);
+                    coordinates.push(curX + 0.01, destination);
                 }
 
-                if (this.plotObj) {
-                    this.plotObj.series[0].data = seriesArray;
-                    this.plotObj.replot();
-                } else {
-                    const maxX = seriesArray[seriesArray.length - 1][0];
-                    const maxY = seriesArray[seriesArray.length - 1][1];
-                    this.drawRampUp(seriesArray, internalTime, maxX, maxY);
-                }
+                const maxX = tail(coordinates.get().x);
+                const maxY = tail(coordinates.get().y);
+                this.drawRampUp(coordinates, internalTime, maxX, maxY);
             }
         }
 
-        drawRampUp(data, intervalTime, maxX, maxY) {
-            const numTicks = (Math.min(parseInt(data.length / 2) + 1, 8));
+        drawRampUp(coordinates, intervalTime, maxX, maxY) {
+            const numTicks = (Math.min(parseInt(coordinates.get().x.length / 2) + 1, 8));
             let pointCutter = 1;
             if (parseInt(intervalTime / 1000) === (intervalTime / 1000)) {
                 pointCutter = 0;
             }
-            this.plotObj = $.jqplot('ramp-up-chart', [data], {
-                axesDefaults: {
-                    tickRenderer: $.jqplot.AxisTickRenderer,
-                    tickOptions: {
-                        showMark: false,
-                    },
+
+            this.chart = bb.generate({
+                bindto: '#ramp-up-chart',
+                data: {
+                    json: coordinates.get(),
+                    xs: { 'y': 'x' },
                 },
-                seriesDefaults: {
-                    showMarker: false,
-                    lineWidth: 1.5,
-                },
-                axes: {
-                    xaxis: {
-                        min: 1,
-                        max: maxX,
-                        pad: 0,
-                        numberTicks: numTicks,
-                        tickOptions: {
-                            show: true,
-                            formatter: (format, value) => {
+                axis: {
+                    x: {
+                        tick: {
+                            format: value => {
                                 value = value || 0;
                                 return (value / 1000).toFixed(pointCutter);
                             },
+                            count: numTicks,
                         },
+                        padding: {
+                            left: 0,
+                            right: 0,
+                        },
+                        min: 1,
+                        max: maxX,
                     },
-                    yaxis: {
-                        min: 0,
-                        pad: 10,
-                        max: maxY,
-                        numberTicks: numTicks - 1,
-                        tickOptions: {
-                            show: true,
-                            formatter: (format, value) => {
+                    y: {
+                        tick: {
+                            format: value => {
                                 value = value || 0;
                                 return (value).toFixed(0);
                             },
+                            count: numTicks - 1,
                         },
+                        padding: {
+                            top: 0,
+                            bottom: 0,
+                        },
+                        min: 0,
+                        max: maxY,
                     },
                 },
+                line: { point: false },
+                tooltip: { show: false },
+                legend: { show: false },
+                grid: {
+                    x: { show: true },
+                    y: { show: true },
+                },
+                oninit() {
+                    $('rect.bb-zoom-rect').css({ opacity: 1 });
+                    this.svg.select('g.bb-grid')
+                        .insert('rect', ':first-child')
+                        .attr('class', 'chart-background');
+                },
             });
-        }
-
-        isPlotTargetExist() {
-            return $('#ramp-up-chart').length !== 0;
         }
     }
 </script>
 
 <style lang="less" scoped>
+    @import '~billboard.js/dist/billboard.min.css';
+    @import '~billboard.js/dist/theme/insight.min.css';
+
     .ramp-up-container {
         width: 460px;
         margin-left: 18px;
@@ -271,6 +302,14 @@
 
         #ramp-up-chart {
             margin-left: 20px;
+
+            .chart-background {
+                fill: #fffdf6;
+                fill-opacity: 1;
+                width: 100%;
+                height: 100%;
+                border: 2px solid #c4c4c4;
+            }
         }
 
         .ramp-up-config-item {
@@ -286,6 +325,13 @@
             input {
                 width: 54px !important;
             }
+        }
+    }
+</style>
+<style lang="less">
+    #ramp-up-chart {
+        .bb-line {
+            stroke-width: 1.5px
         }
     }
 </style>
