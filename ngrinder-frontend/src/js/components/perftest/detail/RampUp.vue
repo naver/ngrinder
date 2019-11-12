@@ -296,6 +296,10 @@
         width: 460px;
         margin-left: 18px;
 
+        .enable-checkbox {
+            vertical-align: text-bottom;
+        }
+
         .ramp-up-config-container {
             margin-top: 10px;
         }

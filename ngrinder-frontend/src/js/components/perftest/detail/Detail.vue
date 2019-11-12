@@ -420,6 +420,7 @@
             padding-top: 10px;
 
             .control-label {
+                padding-top: 5px;
                 width: 95px;
             }
         }
