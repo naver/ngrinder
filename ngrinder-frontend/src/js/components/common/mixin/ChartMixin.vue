@@ -79,9 +79,13 @@
                         tick: {
                             culling: true,
                             format: x => ChartMixin.timeSeriesFormat(x * interval),
+                            text: {
+                                position: { y: 10 },
+                            },
                         },
                         padding: {
                             left: 0,
+                            right: 0,
                         },
                     },
                     y: {
@@ -89,6 +93,9 @@
                         tick: {
                             culling: true,
                             format: yAxisFormatter,
+                            text: {
+                                position: { x: -5 },
+                            },
                         },
                         padding: {
                             bottom: 0,

@@ -246,6 +246,9 @@
                                 return (value / 1000).toFixed(pointCutter);
                             },
                             count: numTicks,
+                            text: {
+                                position: { y: 10 },
+                            },
                         },
                         padding: {
                             left: 0,
@@ -261,6 +264,9 @@
                                 return (value).toFixed(0);
                             },
                             count: numTicks - 1,
+                            text: {
+                                position: { x: -5 },
+                            },
                         },
                         padding: {
                             top: 0,
@@ -305,7 +311,6 @@
         }
 
         #ramp-up-chart {
-            margin-left: 20px;
 
             .chart-background {
                 fill: #fffdf6;
@@ -336,6 +341,10 @@
     #ramp-up-chart {
         .bb-line {
             stroke-width: 1.5px
+        }
+
+        g.tick > text > tspan {
+            font-size: 0.95em;
         }
     }
 </style>
