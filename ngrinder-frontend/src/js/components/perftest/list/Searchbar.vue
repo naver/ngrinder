@@ -14,11 +14,11 @@
                     <i class="fa fa-search mr-1"></i>
                     <span v-text="i18n('common.button.search')"></span>
                 </button>
-                <label class="checkbox">
+                <label class="checkbox-label">
                     <input type="checkbox" @click="$emit('filter-running', {enable: !running, token: 'R'})" v-model="running">
                     <span v-text="i18n('perfTest.action.running')"></span>
                 </label>
-                <label class="checkbox">
+                <label class="checkbox-label">
                     <input type="checkbox" @click="$emit('filter-schduled', {enable: !scheduled, token: 'S'})" v-model="scheduled">
                     <span v-text="i18n('perfTest.action.scheduled')"></span>
                 </label>
@@ -104,9 +104,10 @@
             width: 140px;
         }
 
-        .checkbox {
-            position:relative;
-            margin-left:5px;
+        .checkbox-label {
+            position: relative;
+            margin-left: 5px;
+            vertical-align: bottom;
         }
 
         * {

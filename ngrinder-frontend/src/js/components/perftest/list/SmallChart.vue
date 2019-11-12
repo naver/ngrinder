@@ -119,6 +119,9 @@
                         tick: {
                             count: 5,
                             format: x => ChartMixin.timeSeriesFormat(x * interval),
+                            text: {
+                                position: { y: 8 },
+                            },
                         },
                         padding: {
                             left: 0,
@@ -127,7 +130,12 @@
                     },
                     y: {
                         min: 0,
-                        tick: { culling: true },
+                        tick: {
+                            culling: true,
+                            text: {
+                                position: { x: -3 },
+                            },
+                        },
                         padding: {
                             bottom: 0,
                         },
@@ -182,6 +190,10 @@
             text {
                 font-size: 0.8em;
             }
+        }
+
+        g.tick > text > tspan {
+            font-size: 8px;
         }
     }
 

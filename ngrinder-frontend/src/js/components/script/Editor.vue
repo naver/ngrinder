@@ -357,6 +357,7 @@
         }
 
         label {
+            margin-top: 5px;
             margin-left: 20px;
             width: 120px;
         }
