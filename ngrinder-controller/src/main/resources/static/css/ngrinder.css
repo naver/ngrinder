@@ -72,7 +72,7 @@ h1, h2, h3, h4  {
 .form-horizontal-2 .control-label {
 	width: 110px;
 	text-align: left;
-	padding-top:0;
+	padding-top: 5px;
 }
 
 .form-horizontal-2 .controls {
