@@ -67,9 +67,9 @@
                 }
 
                 this.cpu.chart = this.drawChart('cpu-usage-chart', { 'cpu-usage': this.cpu.queue.getArray() }
-                    , this.INTERVAL, this.formatPercentage);
+                    , this.INTERVAL, this.formatPercentage, { transition: { duration: null } });
                 this.memory.chart = this.drawChart('memory-usage-chart', { 'memory-usage': this.memory.queue.getArray() }
-                    , this.INTERVAL, this.formatMemory);
+                    , this.INTERVAL, this.formatMemory, { transition: { duration: null } });
 
                 this.currentIntervalId = setInterval(this.getState, this.INTERVAL * 1000);
             });
