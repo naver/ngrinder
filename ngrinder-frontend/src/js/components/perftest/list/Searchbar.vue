@@ -107,7 +107,10 @@
         .checkbox-label {
             position: relative;
             margin-left: 5px;
-            vertical-align: bottom;
+
+            input[type="checkbox"] {
+                vertical-align: middle;
+            }
         }
 
         * {
