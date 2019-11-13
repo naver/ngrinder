@@ -284,7 +284,6 @@
                     y: { show: true },
                 },
                 oninit() {
-                    $('rect.bb-zoom-rect').css({ opacity: 1 });
                     this.svg.select('g.bb-grid')
                         .insert('rect', ':first-child')
                         .attr('class', 'chart-background');
