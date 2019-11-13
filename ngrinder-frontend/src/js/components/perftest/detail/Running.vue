@@ -161,6 +161,7 @@
 
         mounted() {
             this.tpsChart = this.drawChart('running-tps-chart', { Total: this.tpsQueue.getArray() }, this.test.samplingInterval, null, {
+                transition: { duration: null },
                 legend: { show: false },
                 size: { width: 540 },
             });
