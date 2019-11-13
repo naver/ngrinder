@@ -28,9 +28,6 @@
                 y: 10,
             },
         },
-        transition: {
-            duration: null,
-        },
         line: {
             connectNull: true,
         },

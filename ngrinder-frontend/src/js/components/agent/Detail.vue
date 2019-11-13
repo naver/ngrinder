@@ -113,10 +113,16 @@
 
         mounted() {
             this.cpu.queue = new Queue(60);
-            this.cpu.chart = this.drawChart('cpu-usage-chart', { 'cpu-usage': this.cpu.queue.getArray() }, this.interval, this.formatPercentage, { legend: { show: false } });
+            this.cpu.chart = this.drawChart('cpu-usage-chart', { 'cpu-usage': this.cpu.queue.getArray() }, this.interval, this.formatPercentage, {
+                transition: { duration: null },
+                legend: { show: false },
+            });
 
             this.memory.queue = new Queue(60);
-            this.memory.chart = this.drawChart('memory-usage-chart', { 'memory-usage': this.memory.queue.getArray() }, this.interval, this.formatMemory, { legend: { show: false } });
+            this.memory.chart = this.drawChart('memory-usage-chart', { 'memory-usage': this.memory.queue.getArray() }, this.interval, this.formatMemory, {
+                transition: { duration: null },
+                legend: { show: false },
+            });
 
             this.intervalTimer = setInterval(this.getState, this.interval * 1000);
         }
