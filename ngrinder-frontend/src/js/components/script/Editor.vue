@@ -1,6 +1,6 @@
 <template>
     <div class="container" ref="container">
-        <div class="top card card-header" ref="top">
+        <div class="file-desc-container">   <!-- card card-header -->
             <div class="form-horizontal">
                 <div class="mb-2 flex-box control-group">
                     <div>
@@ -326,9 +326,18 @@
 </script>
 
 <style lang="less" scoped>
-    .top {
-        margin-bottom: 10px;
-        margin-top: 0;
+
+    div.file-desc-container {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 0;
+        background-color: #f9f9f9;
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 0.25rem;
     }
 
     #description {
@@ -393,10 +402,7 @@
 
         .host {
             color: #666;
-            display: inline-block;
-            margin-left: 7px;
-            margin-top: 2px;
-            margin-bottom: 2px;
+            margin: 2px 0 2px 7px;
         }
     }
 
