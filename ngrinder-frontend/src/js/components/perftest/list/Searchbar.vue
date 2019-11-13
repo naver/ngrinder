@@ -15,11 +15,11 @@
                     <span v-text="i18n('common.button.search')"></span>
                 </button>
                 <label class="checkbox-label">
-                    <input type="checkbox" @click="$emit('filter-running', {enable: !running, token: 'R'})" v-model="running">
+                    <input type="checkbox" class="align-middle" @click="$emit('filter-running', {enable: !running, token: 'R'})" v-model="running">
                     <span v-text="i18n('perfTest.action.running')"></span>
                 </label>
                 <label class="checkbox-label">
-                    <input type="checkbox" @click="$emit('filter-schduled', {enable: !scheduled, token: 'S'})" v-model="scheduled">
+                    <input type="checkbox" class="align-middle" @click="$emit('filter-schduled', {enable: !scheduled, token: 'S'})" v-model="scheduled">
                     <span v-text="i18n('perfTest.action.scheduled')"></span>
                 </label>
             </div>
@@ -107,10 +107,6 @@
         .checkbox-label {
             position: relative;
             margin-left: 5px;
-
-            input[type="checkbox"] {
-                vertical-align: middle;
-            }
         }
 
         * {

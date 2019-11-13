@@ -2,7 +2,7 @@
     <div class="ramp-up-container intro">
         <fieldset>
             <legend class="border-bottom">
-                <input type="checkbox" name="useRampUp" v-model="useRampUp" />
+                <input type="checkbox" class="align-middle" name="useRampUp" v-model="useRampUp"/>
                 <span class="pointer-cursor" v-text="i18n('perfTest.config.rampUp.enable')" @click="useRampUp = !useRampUp"></span>
                 <select class="pull-right form-control" name="rampUpType" :disabled="!useRampUp" v-model="rampUpType" @change="updateRampUpChart">
                     <option v-for="rampUpType in rampUpTypes" :value="rampUpType" v-text="i18n(`perfTest.config.rampUp.${rampUpType.toLowerCase()}`)"></option>
@@ -309,10 +309,6 @@
     .ramp-up-container {
         width: 460px;
         margin-left: 18px;
-
-        .enable-checkbox {
-            vertical-align: text-bottom;
-        }
 
         .ramp-up-config-container {
             margin-top: 10px;
