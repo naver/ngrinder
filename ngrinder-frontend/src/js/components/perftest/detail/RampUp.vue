@@ -286,7 +286,16 @@
                 oninit() {
                     this.svg.select('g.bb-grid')
                         .insert('rect', ':first-child')
+                        .attr('width', '100%')
+                        .attr('height', '100%')
                         .attr('class', 'chart-background');
+                },
+                onrendered(ctx) {
+                    const zoomRect = ctx.$.svg.select('.bb-zoom-rect');
+
+                    ctx.$.svg.select('.chart-background')
+                        .attr('width', +zoomRect.attr('width'))
+                        .attr('height', +zoomRect.attr('height'));
                 },
             });
         }
@@ -313,10 +322,8 @@
 
             .chart-background {
                 fill: #fffdf6;
-                fill-opacity: 1;
-                width: 100%;
-                height: 100%;
-                border: 2px solid #c4c4c4;
+                stroke: #999999;
+                stroke-width: 1px;
             }
         }
 
