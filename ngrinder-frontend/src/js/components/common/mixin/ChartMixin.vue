@@ -64,7 +64,6 @@
 
             this.$nextTick(() => {
                 $('g.bb-axis.bb-axis-x text[style*="display: none;"]').siblings().css({ display: 'none' });
-                $('rect.bb-zoom-rect').css({ opacity: 1 });
             });
 
             return bb.generate({
