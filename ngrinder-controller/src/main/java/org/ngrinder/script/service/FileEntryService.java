@@ -52,7 +52,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
-import static org.apache.commons.lang.CharEncoding.UTF_8;
+import static org.apache.commons.compress.utils.CharsetNames.UTF_8;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_FILE_ENTRIES;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
@@ -260,7 +260,6 @@ public class FileEntryService {
 		checkNotEmpty(fileEntry.getPath());
 		fileEntityRepository.save(user, fileEntry, fileEntry.getEncoding());
 	}
-
 	/**
 	 * Delete file entries.
 	 *

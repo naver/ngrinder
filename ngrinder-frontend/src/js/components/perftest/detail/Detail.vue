@@ -246,6 +246,7 @@
             return Promise.all([
                 PerfTestDetail.preparePerfTest(route),
                 PerfTestDetail.prepareScripts(route),
+                PerfTestDetail.prepareGitConfig(route),
             ]);
         }
 
@@ -266,6 +267,11 @@
         static prepareScripts(route) {
             return Base.prototype.$http.get('/perftest/api/script')
                 .then(res => route.params.scripts = res.data);
+        }
+
+        static prepareGitConfig(route) {
+            return Base.prototype.$http.get('/git/api/config')
+                .then(res => route.params.config.git = res.data);
         }
 
         init() {

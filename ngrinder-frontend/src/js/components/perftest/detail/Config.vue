@@ -96,6 +96,15 @@
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
+                    <select2 v-model="scriptStorage" name="scriptStorage"
+                             ref="scriptStorageSelect" customStyle="width: 90px;"
+                             @change="changeScriptStorage">
+                        <option value="svn">svn</option>
+                        <option v-for="(gitConfig, index) in config.git"
+                                v-text="`${gitConfig.name} (git)`"
+                                :value="index">
+                        </option>
+                    </select2>
                     <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
@@ -278,6 +287,8 @@
         targetHostIp = '';
         targetHosts = [];
 
+        scriptStorage = 'svn';
+
         maxAgentCount = 0;
         shownBsTab = false;
 
@@ -322,6 +333,10 @@
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover();
             });
+        }
+
+        changeScriptStorage() {
+            // TODO change scripts.
         }
 
         @Watch('test.config.region')

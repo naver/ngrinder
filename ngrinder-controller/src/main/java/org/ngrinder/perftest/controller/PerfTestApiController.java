@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.controller;
 
+import lombok.RequiredArgsConstructor;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -50,8 +51,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.util.*;
-
-import lombok.RequiredArgsConstructor;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
@@ -571,6 +570,7 @@ public class PerfTestApiController {
 		if (StringUtils.isNotEmpty(ownerId)) {
 			user = userService.getOne(ownerId);
 		}
+
 		return fileEntryService.getAll(user)
 			.stream()
 			.filter(input -> input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT)
