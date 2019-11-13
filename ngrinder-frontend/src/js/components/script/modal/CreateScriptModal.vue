@@ -51,7 +51,7 @@
                                    data-placement="bottom"
                                    ref="testUrl"
                                    v-model="testUrl"
-                                   v-validate="scriptHandler.projectHandler ? null : { url: { require_protocol: true }, required: true }"
+                                   v-validate="scriptHandler.projectHandler ? null : { url: { require_protocol: true } }"
                                    :placeholder="i18n('home.placeholder.url')"
                                    :data-content="i18n('home.tip.url.content')">
                         </control-group>
