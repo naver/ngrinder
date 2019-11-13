@@ -13,6 +13,8 @@
  */
 package org.ngrinder.script.service;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.common.util.UrlUtils;
@@ -26,38 +28,39 @@ import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.internal.io.fs.FSHook;
-import org.tmatesoft.svn.core.internal.io.fs.FSHookEvent;
 import org.tmatesoft.svn.core.internal.io.fs.FSHooks;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
+import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_FILE_ENTRIES;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.script.model.FileType.YAML;
 
 /**
  * File entry service class.
@@ -85,24 +88,23 @@ public class FileEntryService {
 
 	private Cache fileEntryCache;
 
+	@Value("classpath:gitconfig_template/gitconfig.yml")
+	private Resource gitConfigTemplate;
+
 	/**
 	 * Initialize {@link FileEntryService}.
 	 */
 	@PostConstruct
 	public void init() {
 		// Add cache invalidation hook.
-		FSHooks.registerHook(new FSHook() {
-			@Override
-			public void onHook(FSHookEvent event) {
-				if (event.getType().equals(FSHooks.SVN_REPOS_HOOK_POST_COMMIT)) {
-					String name = event.getReposRootDir().getName();
-					invalidateCache(name);
-				}
+		FSHooks.registerHook(event -> {
+			if (event.getType().equals(FSHooks.SVN_REPOS_HOOK_POST_COMMIT)) {
+				String name = event.getReposRootDir().getName();
+				invalidateCache(name);
 			}
 		});
 		svnClientManager = fileEntityRepository.getSVNClientManager();
 		fileEntryCache = cacheManager.getCache(CACHE_FILE_ENTRIES);
-
 	}
 
 	/**
@@ -127,9 +129,26 @@ public class FileEntryService {
 		try {
 			if (!newUserDirectory.exists()) {
 				createUserRepo(user, newUserDirectory);
+				createGitConfig(user);
 			}
 		} catch (SVNException e) {
 			LOG.error("Error while prepare user {}'s repo", user.getUserName(), e);
+		}
+	}
+
+	private void createGitConfig(User user) {
+		try {
+			String content = IOUtils.toString(gitConfigTemplate.getURL());
+			FileEntry fileEntry = new FileEntry();
+			fileEntry.setPath("/.gitconfig.yml");
+			fileEntry.setContent(content);
+			fileEntry.setEncoding(UTF_8);
+			fileEntry.setFileType(YAML);
+			fileEntry.setContentBytes(content.getBytes());
+			fileEntry.setFileSize(fileEntry.getContent().length());
+			save(user, fileEntry);
+		} catch (IOException e) {
+			noOp();
 		}
 	}
 

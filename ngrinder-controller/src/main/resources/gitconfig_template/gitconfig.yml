@@ -1,0 +1,11 @@
+#name: # project name.
+#git-personal-access-token: # github personal access token.
+#git-url: # github web url.
+#---
+#name: ngrinder # ex1.
+#git-personal-access-token: e1a47e652762b60a...3ddc0713b07g13k
+#git-url: https://github.com/naver/ngrinder.git
+#---
+#name: linux # ex2.
+#git-personal-access-token: t9a47e6ff262b60a...3dac0713b07e82a
+#git-url: https://github.com/torvalds/linux.git
