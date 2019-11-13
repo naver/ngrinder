@@ -56,9 +56,18 @@
         oninit() {
             this.svg.select('g.bb-grid')
                 .insert('rect', ':first-child')
+                .attr('width', '100%')
+                .attr('height', '100%')
                 .attr('class', 'chart-background');
             this.svg.select('g.bb-legend-item > text')
                 .attr('y', 17);
+        },
+        onrendered(ctx) {
+            const zoomRect = ctx.$.svg.select('.bb-zoom-rect');
+
+            ctx.$.svg.select('.chart-background')
+                .attr('width', +zoomRect.attr('width'))
+                .attr('height', +zoomRect.attr('height'));
         },
     };
 
@@ -180,9 +189,8 @@
 
         rect.chart-background {
             fill: #fffdf6;
-            fill-opacity: 1;
-            width: 100%;
-            height: 100%;
+            stroke: #999999;
+            stroke-width: 1px;
         }
 
         g.bb-legend-item {
