@@ -26,6 +26,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Configuration
@@ -136,6 +137,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		return customizer -> {
 			customizer.serializationInclusion(JsonInclude.Include.NON_NULL);
 			customizer.indentOutput(true);
+			customizer.timeZone("GMT");
+			customizer.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 			customizer.modules(new NumberModule());
 		};
 	}
