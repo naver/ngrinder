@@ -100,6 +100,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private static final String DATA_FILE_EXTENSION = ".data";
 
 	private static final String NULL_STRING = "null";
+	private static final String UNDEFINED_STRING = "undefined";
 
 	@Getter
 	private final PerfTestRepository perfTestRepository;
@@ -1182,20 +1183,20 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					line = br.readLine();
 				} else {
 					skipCount = 0;
-					String[] datalist = StringUtils.split(line, ",");
-					if ("null".equals(datalist[4]) || "undefined".equals(datalist[4])) {
+					String[] dataList = StringUtils.split(line, ",");
+					if (NULL_STRING.equals(dataList[4]) || UNDEFINED_STRING.equals(dataList[4])) {
 						userMemoryMetrics.add(null);
 					} else {
-						userMemoryMetrics.add(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]));
+						userMemoryMetrics.add(Long.valueOf(dataList[4]) - Long.valueOf(dataList[3]));
 					}
-					addCustomData(cpuUsedMetrics, 5, datalist);
-					addCustomData(networkReceivedMetrics, 6, datalist);
-					addCustomData(networkSentMetrics, 7, datalist);
-					addCustomData(customData1Metrics, 8, datalist);
-					addCustomData(customData2Metrics, 9, datalist);
-					addCustomData(customData3Metrics, 10, datalist);
-					addCustomData(customData4Metrics, 11, datalist);
-					addCustomData(customData5Metrics, 12, datalist);
+					addCustomData(cpuUsedMetrics, 5, dataList);
+					addCustomData(networkReceivedMetrics, 6, dataList);
+					addCustomData(networkSentMetrics, 7, dataList);
+					addCustomData(customData1Metrics, 8, dataList);
+					addCustomData(customData2Metrics, 9, dataList);
+					addCustomData(customData3Metrics, 10, dataList);
+					addCustomData(customData4Metrics, 11, dataList);
+					addCustomData(customData5Metrics, 12, dataList);
 				}
 			}
 			returnMap.put("cpu", cpuUsedMetrics);
