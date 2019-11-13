@@ -245,7 +245,10 @@
 
         static prepare(route) {
            return PerfTestDetail.preparePerfTest(route)
-                .then(() => PerfTestDetail.prepareScripts(route));
+                .then(() => {
+                    PerfTestDetail.prepareScripts(route);
+                    PerfTestDetail.prepareGitConfig(route);
+                });
         }
 
         static preparePerfTest(route) {
@@ -269,6 +272,11 @@
             }
             return Base.prototype.$http.get(apiUrl)
                 .then(res => route.params.scripts = res.data);
+        }
+
+        static prepareGitConfig(route) {
+            return Base.prototype.$http.get('/git/api/config')
+                .then(res => route.params.config.git = res.data);
         }
 
         init() {
