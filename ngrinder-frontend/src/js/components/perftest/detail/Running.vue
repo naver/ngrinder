@@ -10,7 +10,7 @@
                 <fieldset class="w-100">
                     <div class="my-4">
                         <label v-text="i18n('perfTest.running.totalVusers')"></label>
-                        <strong v-text="test.vuserPerAgent * test.agentCount"></strong>
+                        <strong v-text="config.vuserPerAgent * config.agentCount"></strong>
                         <span class="badge badge-info pull-right">
                             <span v-text="i18n('perfTest.running.running')"></span>
                             <span v-text="runningThread"></span>
@@ -18,7 +18,7 @@
                     </div>
                     <div class="my-4">
                         <label v-text="i18n('perfTest.running.totalProcesses')"></label>
-                        <span v-text="test.processes * test.agentCount"></span>
+                        <span v-text="config.processes * config.agentCount"></span>
                         <span class="badge badge-info float-right">
                             <span v-text="i18n('perfTest.running.running')"></span>
                             <span v-text="runningProcess"></span>
@@ -28,13 +28,13 @@
                     <div class="my-4">
                         <label class="mb-1 align-top" v-text="i18n('perfTest.config.targetHost')"></label>
                         <div class="d-inline-block">
-                            <div v-for="host in test.targetHosts.split(',')" v-text="host.trim()"></div>
+                            <div v-for="host in config.targetHosts.split(',')" v-text="host.trim()"></div>
                         </div>
                     </div>
                     <hr>
-                    <div v-if="test.threshold === 'D'" class="my-4">
+                    <div v-if="config.threshold === 'D'" class="my-4">
                         <label v-text="i18n('perfTest.running.duration')"></label>
-                        <span v-text="test.duration" class="mr-2"></span>
+                        <span v-text="config.duration" class="mr-2"></span>
                         <code>HH:MM:SS</code>
                         <div class="badge badge-success float-right">
                             <span v-text="i18n('perfTest.running.runCount')"></span>
@@ -43,7 +43,7 @@
                     </div>
                     <div v-else class="my-4">
                         <label v-text="i18n('perfTest.running.totalRunCount')"></label>
-                        <span v-text="test.runCount * test.agentCount * test.vuserPerAgent"></span>
+                        <span v-text="config.runCount * config.agentCount * config.vuserPerAgent"></span>
                         <div class="badge badge-success float-right">
                             <span v-text="i18n('perfTest.running.runCount')"></span>
                             <span>{{ (totalStatistics.Tests + totalStatistics.Errors) | numFormat }}</span>
@@ -135,8 +135,11 @@
         components: { ControlGroup, SamplingTable },
     })
     export default class Running extends Mixins(Base, ChartMixin, FormatMixin, MessagesMixin) {
+        @Prop({ type: String, required: false })
+        id;
+
         @Prop({ type: Object, required: true })
-        testProp;
+        config;
 
         lastSampleStatistics = [];
         cumulativeStatistics = [];
@@ -151,16 +154,14 @@
         tpsQueue = {};
         tpsChart = {};
 
-        test = {};
         shownBsTab = false;
 
         created() {
-            Object.assign(this.test, this.testProp);
-            this.tpsQueue = new Queue(60 / this.test.samplingInterval);
+            this.tpsQueue = new Queue(60 / this.config.samplingInterval);
         }
 
         mounted() {
-            this.tpsChart = this.drawChart('running-tps-chart', { Total: this.tpsQueue.getArray() }, this.test.samplingInterval, null, {
+            this.tpsChart = this.drawChart('running-tps-chart', { Total: this.tpsQueue.getArray() }, this.config.samplingInterval, null, {
                 transition: { duration: null },
                 legend: { show: false },
                 size: { width: 540 },
@@ -169,14 +170,14 @@
 
         startSamplingInterval() {
             this.updateSamplingData();
-            this.samplingIntervalId = setInterval(this.updateSamplingData, 1000 * this.test.samplingInterval);
+            this.samplingIntervalId = setInterval(this.updateSamplingData, 1000 * this.config.samplingInterval);
         }
 
         updateSamplingData() {
-            if (!this.test.id) {
+            if (!this.id) {
                 return;
             }
-            this.$http.get(`/perftest/api/${this.test.id}/sample`).then(res => {
+            this.$http.get(`/perftest/api/${this.id}/sample`).then(res => {
                 const perfTestSample = res.data.perf;
                 if (perfTestSample) {
                     this.lastSampleStatistics = perfTestSample.lastSampleStatistics;
@@ -202,7 +203,7 @@
                     confirm: { label: this.i18n('common.button.ok') },
                     cancel: { label: this.i18n('common.button.cancel') },
                 },
-                onConfirm: () => this.$http.put(`/perftest/api/${this.test.id}?action=stop`)
+                onConfirm: () => this.$http.put(`/perftest/api/${this.id}?action=stop`)
                     .then(() => this.showSuccessMsg(this.i18n('perfTest.message.stop.success')))
                     .catch(() => this.showErrorMsg(this.i18n('perfTest.message.stop.error'))),
             });
