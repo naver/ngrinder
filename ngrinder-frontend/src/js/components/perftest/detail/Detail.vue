@@ -79,7 +79,7 @@
                         <config ref="config" :test="test" :scripts="scripts" :config="config"></config>
                     </div>
                     <div class="tab-pane" id="running-section">
-                        <!--<running ref="running" :testProp="test"></running>-->
+                        <running ref="running" :id="id" :config="test.config"></running>
                     </div>
                     <div class="tab-pane" id="report-section">
                         <report :id="id" ref="report"></report>
@@ -191,7 +191,7 @@
 
         $testStatusImage = null;
 
-        params = {
+        params = { // FIXME: can i remove this variable?
             testStatus: 'SAVED',
         };
 
@@ -242,10 +242,6 @@
                 .catch(() => next('/perftest'));
         }
 
-        created() {
-            $('[data-toggle="popover"]').popover('hide');
-        }
-
         mounted() {
             this.init();
         }
@@ -284,7 +280,7 @@
             }
             this.$nextTick(() => {
                 if (this.test.status.category === 'TESTING') {
-                    this.$refs.running.start();
+                    this.$refs.running.startSamplingInterval();
                 }
                 this.$testStatusImage = $(this.$refs.testStatusImage);
                 this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
@@ -297,7 +293,7 @@
 
         beforeDestroy() {
             window.clearTimeout(this.currentRefreshStatusTimeoutId);
-            // window.clearInterval(this.$refs.running.samplingIntervalId);
+            window.clearInterval(this.$refs.running.samplingIntervalId);
         }
 
         setTabEvent() {
@@ -311,16 +307,16 @@
                 this.$refs.report.fetchReportData();
             });
 
-            // $(this.$refs.runningTab).on('shown.bs.tab', () => {
-            //     this.$refs.running.shownBsTab = true;
-            //     if (this.$refs.running.samplingIntervalId === -1) {
-            //         this.$refs.running.startSamplingInterval();
-            //     }
-            // });
+            $(this.$refs.runningTab).on('shown.bs.tab', () => {
+                this.$refs.running.shownBsTab = true;
+                if (this.$refs.running.samplingIntervalId === -1) {
+                    this.$refs.running.startSamplingInterval();
+                }
+            });
 
             $(this.$refs.configTab).on('hidden.bs.tab', () => this.$refs.config.shownBsTab = false);
             $(this.$refs.reportTab).on('hidden.bs.tab', () => this.$refs.report.shownBsTab = false);
-            // $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
+            $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
         }
 
         refreshPerftestStatus() {
