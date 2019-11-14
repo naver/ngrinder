@@ -76,10 +76,10 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
-                        <config ref="config" :testProp="test" :scriptsProp="scripts" :config="config"></config>
+                        <config ref="config" :test="test" :scripts="scripts" :config="config"></config>
                     </div>
                     <div class="tab-pane" id="running-section">
-                        <running ref="running" :testProp="test"></running>
+                        <!--<running ref="running" :testProp="test"></running>-->
                     </div>
                     <div class="tab-pane" id="report-section">
                         <report :id="id" ref="report"></report>
@@ -105,6 +105,59 @@
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
+    class PerfTestSerializer {
+        static serialize(test) {
+            // TODO: implement serialize and remove getParams() methods
+            return test;
+        }
+
+        static deserialize(test) {
+            return {
+                id: test.id,
+                createdUser: test.createdUser,
+                lastProgressMessage: test.lastProgressMessage,
+                testName: test.testName,
+                tagString: test.tagString,
+                status: test.status,
+                description: test.description,
+                config: {
+                    agentCount: test.agentCount,
+                    region: test.region,
+                    vuserPerAgent: test.vuserPerAgent,
+                    processes: test.processes,
+                    threads: test.threads,
+                    scriptName: test.scriptName,
+                    scriptRevision: test.scriptRevision,
+                    targetHosts: test.targetHosts,
+                    threshold: test.threshold,
+                    duration: test.duration,
+                    runCount: test.runCount,
+                    samplingInterval: test.samplingInterval,
+                    ignoreSampleCount: test.ignoreSampleCount,
+                    safeDistribution: test.safeDistribution,
+                    param: test.param,
+                },
+                rampUp: {
+                    enable: test.useRampUp,
+                    type: test.rampUpType,
+                    initCount: test.rampUpInitCount,
+                    step: test.rampUpStep,
+                    initSleepTime: test.rampUpInitSleepTime,
+                    interval: test.rampUpIncrementInterval,
+                },
+                report: {
+                    tps: test.tps,
+                    peakTps: test.peakTps,
+                    meanTestTime: test.meanTestTime,
+                    tests: test.tests,
+                    errors: test.errors,
+                    runtime: test.runtime,
+                    testComment: test.testComment,
+                },
+            };
+        }
+    }
+
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'perfTestDetail',
@@ -119,9 +172,6 @@
 
         @Prop({ type: Object, required: true })
         config;
-
-        @Prop({ type: Object, required: true })
-        test;
 
         @Prop({ type: Number, required: true })
         timezoneOffset;
@@ -152,6 +202,10 @@
                 config: false,
             },
         };
+
+        data() {
+            return { test: PerfTestSerializer.deserialize(this.$route.params.test) };
+        }
 
         getParams() {
             const params = {
@@ -230,7 +284,7 @@
             }
             this.$nextTick(() => {
                 if (this.test.status.category === 'TESTING') {
-                    this.$refs.running.startSamplingInterval();
+                    this.$refs.running.start();
                 }
                 this.$testStatusImage = $(this.$refs.testStatusImage);
                 this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
@@ -243,7 +297,7 @@
 
         beforeDestroy() {
             window.clearTimeout(this.currentRefreshStatusTimeoutId);
-            window.clearInterval(this.$refs.running.samplingIntervalId);
+            // window.clearInterval(this.$refs.running.samplingIntervalId);
         }
 
         setTabEvent() {
@@ -257,16 +311,16 @@
                 this.$refs.report.fetchReportData();
             });
 
-            $(this.$refs.runningTab).on('shown.bs.tab', () => {
-                this.$refs.running.shownBsTab = true;
-                if (this.$refs.running.samplingIntervalId === -1) {
-                    this.$refs.running.startSamplingInterval();
-                }
-            });
+            // $(this.$refs.runningTab).on('shown.bs.tab', () => {
+            //     this.$refs.running.shownBsTab = true;
+            //     if (this.$refs.running.samplingIntervalId === -1) {
+            //         this.$refs.running.startSamplingInterval();
+            //     }
+            // });
 
             $(this.$refs.configTab).on('hidden.bs.tab', () => this.$refs.config.shownBsTab = false);
             $(this.$refs.reportTab).on('hidden.bs.tab', () => this.$refs.report.shownBsTab = false);
-            $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
+            // $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
         }
 
         refreshPerftestStatus() {
