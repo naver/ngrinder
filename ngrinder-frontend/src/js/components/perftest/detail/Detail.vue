@@ -76,7 +76,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
-                        <config ref="config" :test="test" :scripts="scripts" :config="config"></config>
+                        <config ref="config" :test="test" :scriptsMap="scriptsMap" :config="config"></config>
                     </div>
                     <div class="tab-pane" id="running-section">
                         <running ref="running" :id="id" :config="test.config"></running>
@@ -199,8 +199,8 @@
         @Prop({ type: Number, required: true })
         timezoneOffset;
 
-        @Prop({ type: Array, required: true })
-        scripts;
+        @Prop({ type: Object, required: true })
+        scriptsMap;
 
         perftestStatus = {
             message: '',
@@ -242,9 +242,10 @@
             this.init();
         }
 
-        static prepare(route) {
+        static async prepare(route) {
+            route.params.scriptsMap = {};
+            await PerfTestDetail.preparePerfTest(route);
             return Promise.all([
-                PerfTestDetail.preparePerfTest(route),
                 PerfTestDetail.prepareScripts(route),
                 PerfTestDetail.prepareGitConfig(route),
             ]);
@@ -266,7 +267,7 @@
 
         static prepareScripts(route) {
             return Base.prototype.$http.get('/perftest/api/script')
-                .then(res => route.params.scripts = res.data);
+                .then(res => route.params.scriptsMap.svn = res.data);
         }
 
         static prepareGitConfig(route) {

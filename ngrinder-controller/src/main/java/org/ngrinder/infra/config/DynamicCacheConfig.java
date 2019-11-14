@@ -36,9 +36,9 @@ import org.springframework.context.annotation.Configuration;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import static com.hazelcast.config.MaxSizeConfig.MaxSizePolicy.PER_NODE;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static net.grinder.util.NetworkUtils.selectLocalIp;
 import static org.ngrinder.common.constant.CacheConstants.*;
@@ -152,6 +152,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 2);
 		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 2);
 		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
+		cm.addLocalCache(CACHE_GITHUB_SCRIPTS, 10 * MIN, 1);
 		return cm;
 	}
 
@@ -161,7 +162,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 		void addLocalCache(String cacheName, int timeout, int count) {
 			Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-				.maximumSize(count).expireAfterWrite(timeout, TimeUnit.SECONDS);
+				.maximumSize(count).expireAfterWrite(timeout, SECONDS);
 			caffeineCacheConfig.put(cacheName, cacheBuilder);
 		}
 
