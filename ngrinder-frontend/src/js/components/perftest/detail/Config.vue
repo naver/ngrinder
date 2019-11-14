@@ -14,7 +14,7 @@
                         <control-group id="agentCount" :class="{ error: errors.has('agentCount') }"
                                        labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
-                                          v-model="test.agentCount"
+                                          v-model="test.config.agentCount"
                                           :validationRules="agentCountValidationRules"
                                           errStyle="width: 145px; word-break: break-all; white-space: normal;"
                                           appendPrefix="perfTest.config.max"
@@ -29,10 +29,10 @@
                                        labelStyle="position: absolute;"
                                        labelMessageKey="perfTest.config.region"
                                        labelHelpMessageKey="perfTest.config.region">
-                            <select2 name="region" ref="region" v-model="test.region" @change="changeMaxAgentCount"
+                            <select2 name="region" ref="region" v-model="test.config.region" @change="changeMaxAgentCount"
                                      errStyle="position: absolute; max-width: 170px; margin-left: -51px;"
                                      class="float-right required" customStyle="width: 110px;" :validationRules="{ required: true }">
-                                <option v-for="region in config.regions" :value="region" :selected="region === test.region" v-text="region"></option>
+                                <option v-for="region in config.regions" :value="region" :selected="region === test.config.region" v-text="region"></option>
                             </select2>
                         </control-group>
                     </div>
@@ -43,7 +43,7 @@
                                :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
                     <div class="vuser-per-agent-container">
                         <input-append name="vuserPerAgent" ref="vuserPerAgent"
-                                      v-model="test.vuserPerAgent"
+                                      v-model="test.config.vuserPerAgent"
                                       :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                       @change="changeVuserPerAgent"
                                       errStyle="white-space: nowrap; width: 130px;"
@@ -60,11 +60,11 @@
                         </span>
                     </div>
                     <div v-show="display.vuserPanel" class="vuser-panel">
-                        <input-prepend name="processes" v-model="test.processes"
+                        <input-prepend name="processes" v-model="test.config.processes"
                                        @change="changeProcessThreadCount"
                                        message="perfTest.config.process" extraCss="control-group">
                         </input-prepend>
-                        <input-prepend name="threads" v-model="test.threads"
+                        <input-prepend name="threads" v-model="test.config.threads"
                                        @change="changeProcessThreadCount"
                                        message="perfTest.config.thread" extraCss="control-group">
                         </input-prepend>
@@ -74,7 +74,7 @@
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
-                    <select2 v-model="test.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
+                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
@@ -89,8 +89,8 @@
                     <button v-show="display.showScriptBtn" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
                         R
-                        <span v-if="test.scriptRevision === -1 || testProp.scriptRevision !== test.scriptRevision" v-text="'HEAD'"></span>
-                        <span v-else v-text="test.scriptRevision"></span>
+                        <span v-if="test.config.scriptRevision === -1">HEAD</span>
+                        <span v-else v-text="test.config.scriptRevision"></span>
                     </button>
                 </control-group>
 
@@ -126,7 +126,7 @@
                 <hr>
 
                 <div class="threshold-container">
-                    <control-group :class="{ error: errors.has('duration') }" :radio="{ radioValue: 'D', checked: test.threshold === 'D' }" v-model="test.threshold"
+                    <control-group :class="{ error: errors.has('duration') }" :radio="{ radioValue: 'D', checked: test.config.threshold === 'D' }" v-model="test.config.threshold"
                                    ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration"
                                    :data-step="shownBsTab ? 9 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.duration') : undefined">
@@ -140,22 +140,22 @@
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
                         </select>
                         <code>HH:MM:SS</code>
-                        <input v-validate="{ min_value: test.threshold === 'D' ? 1 : 0 }" type="hidden" name="duration" v-model="durationMs"/>
+                        <input v-validate="{ min_value: test.config.threshold === 'D' ? 1 : 0 }" type="hidden" name="duration" v-model="durationMs"/>
                         <duration-slider @change="changeDurationSlider" ref="durationSlider" :durationMs="durationMs" :maxRunHour="config.maxRunHour"></duration-slider>
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
-                    <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.threshold === 'R' }" v-model="test.threshold"
+                    <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.config.threshold === 'R' }" v-model="test.config.threshold"
                                    labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold"
                                    controlsStyle="height: 45px;"
                                    :data-step="shownBsTab ? 10 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
                                       appendPrefix="perfTest.config.max"
-                                      v-model="test.runCount"
-                                      @focus="test.threshold = 'R'"
+                                      v-model="test.config.runCount"
+                                      @focus="test.config.threshold = 'R'"
                                       message="perfTest.config.runCount"
                                       :append="config.maxRunCount"
-                                      :validationRules="{ required: true, max_value: config.maxRunCount, min_value: test.threshold === 'R' ? 1 : 0 }">
+                                      :validationRules="{ required: true, max_value: config.maxRunCount, min_value: test.config.threshold === 'R' ? 1 : 0 }">
                         </input-append>
                     </control-group>
                 </div>
@@ -168,13 +168,13 @@
                 <div class="advanced-config" v-show="display.detailConfig">
                     <div class="row">
                         <control-group name="samplingInterval" labelMessageKey="perfTest.config.samplingInterval">
-                            <select class="select-item form-control" name="samplingInterval" v-model="test.samplingInterval">
+                            <select class="select-item form-control" name="samplingInterval" v-model="test.config.samplingInterval">
                                 <option v-for="interval in samplingIntervals" :value="interval" v-text="interval"></option>
                             </select>
                         </control-group>
                         <control-group :class="{ error: errors.has('ignoreSampleCount') }" name="ignoreSampleCount"
                                        labelMessageKey="perfTest.config.ignoreSampleCount">
-                            <input-popover v-model="test.ignoreSampleCount"
+                            <input-popover v-model="test.config.ignoreSampleCount"
                                            ref="ignoreSampleCount"
                                            dataPlacement="top"
                                            name="ignoreSampleCount"
@@ -188,14 +188,14 @@
                     <div class="row">
                         <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
                                        labelHelpMessageKey="perfTest.config.safeDistribution">
-                            <input type="checkbox" name="safeDistribution" v-model="test.safeDistribution">
+                            <input type="checkbox" name="safeDistribution" v-model="test.config.safeDistribution">
                         </control-group>
                         <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
                                        controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
                             <input-popover name="param"
                                            ref="param"
                                            dataPlacement="top"
-                                           v-model="test.param"
+                                           v-model="test.config.param"
                                            message="perfTest.config.param"
                                            customStyle="width: 125px;"
                                            errStyle="white-space: nowrap;"
@@ -208,7 +208,7 @@
         </div>
         <div :data-step="shownBsTab ? 11 : undefined"
              :data-intro="shownBsTab ? i18n('intro.config.rampup') : undefined">
-            <ramp-up ref="rampUp" :testProp="testProp" :rampUpTypes="config.rampUpTypes"></ramp-up>
+            <ramp-up ref="rampUp" :test="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
@@ -238,17 +238,14 @@
         @Inject() $validator;
 
         @Prop({ type: Object, required: true })
-        testProp;
+        test;
 
         @Prop({ type: Array, required: true })
-        scriptsProp;
+        scripts;
 
         @Prop({ type: Object, required: true })
         config;
 
-        test = {};
-
-        scripts = [];
         resources = [];
 
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
@@ -277,22 +274,20 @@
         agentCountValidationRules = { required: true, agentCountValidation: true, min_value: 0 };
 
         created() {
-            Object.assign(this.test, this.testProp);
-            this.scripts = this.scriptsProp;
             this.setCustomValidationRules();
             this.setDurationFromDurationStr();
             this.changeDuration();
-            this.setTargetHosts(this.test.targetHosts);
+            this.setTargetHosts(this.test.config.targetHosts);
             this.getScriptResource();
         }
 
         mounted() {
             if (!this.ngrinder.config.clustered) {
-                this.test.region = 'NONE';
+                this.test.config.region = 'NONE';
             }
-            this.setScripts(this.test.scriptName);
+            this.setScripts(this.test.config.scriptName);
             this.$nextTick(() => {
-                this.$refs.scriptSelect.selectValue(this.test.scriptName);
+                this.$refs.scriptSelect.selectValue(this.test.config.scriptName);
                 this.$validator.validate('scriptName');
             });
 
@@ -308,8 +303,8 @@
         }
 
         changeMaxAgentCount() {
-            if (this.test.region && this.config.regionAgentCountMap[this.test.region]) {
-                this.maxAgentCount = this.config.regionAgentCountMap[this.test.region];
+            if (this.test.config.region && this.config.regionAgentCountMap[this.test.config.region]) {
+                this.maxAgentCount = this.config.regionAgentCountMap[this.test.config.region];
             } else {
                 this.maxAgentCount = 0;
             }
@@ -318,20 +313,20 @@
 
         getParams() {
             return {
-                param: this.test.param,
-                region: this.test.region,
-                ignoreSampleCount: this.test.ignoreSampleCount,
-                scriptName: this.test.scriptName,
-                scriptRevision: this.test.scriptRevision,
+                param: this.test.config.param,
+                region: this.test.config.region,
+                ignoreSampleCount: this.test.config.ignoreSampleCount,
+                scriptName: this.test.config.scriptName,
+                scriptRevision: this.test.config.scriptRevision,
                 targetHosts: this.targetHosts.join(','),
-                threshold: this.test.threshold,
-                runCount: this.test.runCount,
-                processes: this.test.processes,
-                agentCount: this.test.agentCount,
-                threads: this.test.threads,
-                safeDistribution: this.test.safeDistribution,
-                vuserPerAgent: this.test.vuserPerAgent,
-                samplingInterval: this.test.samplingInterval,
+                threshold: this.test.config.threshold,
+                runCount: this.test.config.runCount,
+                processes: this.test.config.processes,
+                agentCount: this.test.config.agentCount,
+                threads: this.test.config.threads,
+                safeDistribution: this.test.config.safeDistribution,
+                vuserPerAgent: this.test.config.vuserPerAgent,
+                samplingInterval: this.test.config.samplingInterval,
                 duration: this.durationMs,
             };
         }
@@ -348,13 +343,13 @@
         }
 
         getScriptResource() {
-            if (!this.test.scriptName) {
+            if (!this.test.config.scriptName) {
                 return;
             }
 
             this.$http.get('/perftest/api/resource', {
                 params: {
-                    scriptPath: this.test.scriptName,
+                    scriptPath: this.test.config.scriptName,
                 },
             })
             .then(res => this.resources = res.data.resources)
@@ -362,9 +357,9 @@
         }
 
         showScript() {
-            let showScriptUrl = `${this.contextPath}/script/detail/${this.test.scriptName}?r=${this.test.scriptRevision}`;
+            let showScriptUrl = `${this.contextPath}/script/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`;
             if (this.isAdmin || this.isSuperUser) {
-                showScriptUrl += `&ownerId=${this.test.createdUser.userId}`;
+                showScriptUrl += `&ownerId=${this.test.config.createdUser.userId}`;
             }
             const openedWindow = window.open(showScriptUrl, 'scriptSource');
             openedWindow.focus();
@@ -372,12 +367,12 @@
 
         changeScript(revision) {
             if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
-                this.test.scriptRevision = revision;
+                this.test.config.scriptRevision = revision;
                 this.getTargetHosts();
                 this.getScriptResource();
                 this.display.showScriptBtn = true;
             } else {
-                this.test.scriptRevision = -1;
+                this.test.config.scriptRevision = -1;
                 this.targetHosts = [];
                 this.resources = [];
                 this.display.showScriptBtn = false;
@@ -385,7 +380,7 @@
         }
 
         getTargetHosts() {
-            this.$http.get(`/script/api/detail/${this.test.scriptName}?r=${this.test.scriptRevision}`)
+            this.$http.get(`/script/api/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`)
                 .then(res => {
                     if (res.data.file && res.data.file.properties.targetHosts) {
                         this.targetHosts = res.data.file.properties.targetHosts.split(',');
@@ -414,7 +409,7 @@
 
         // duration string format: '00:00:00'
         setDurationFromDurationStr() {
-            const durationTokens = this.test.duration.split(':');
+            const durationTokens = this.test.config.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
             this.duration.min = parseInt(durationTokens[1]);
             this.duration.sec = parseInt(durationTokens[2]);
@@ -422,9 +417,9 @@
 
         @Watch('test.threshold')
         watchTestThreshold() {
-            if (this.$refs.runCount && this.test.threshold === 'D') {
+            if (this.$refs.runCount && this.test.config.threshold === 'D') {
                 if (this.$refs.runCount.errors.has('runCount')) {
-                    this.test.runCount = 0;
+                    this.test.config.runCount = 0;
                     this.$refs.runCount.errors.clear();
                     this.$refs.runCountControlGroup.hasError = false;
                 }
@@ -434,8 +429,8 @@
         }
 
         changeVuserPerAgent() {
-            this.test.processes = getProcessCount(this.test.vuserPerAgent);
-            this.test.threads = getThreadCount(this.test.vuserPerAgent);
+            this.test.config.processes = getProcessCount(this.test.config.vuserPerAgent);
+            this.test.config.threads = getThreadCount(this.test.config.vuserPerAgent);
             this.updateVuserPerAgent();
 
             if (this.$refs.rampUp.enableRampUp) {
@@ -456,12 +451,12 @@
         }
 
         updateVuserPerAgent() {
-            this.test.vuserPerAgent = this.test.processes * this.test.threads;
+            this.test.config.vuserPerAgent = this.test.config.processes * this.test.config.threads;
         }
 
         changeDuration(options) {
             if (options && options.focus) {
-                this.test.threshold = 'D';
+                this.test.config.threshold = 'D';
             }
             this.durationMs = (this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec) * 1000;
             if (options && options.updateSlider) {
@@ -470,12 +465,12 @@
         }
 
         changeDurationSlider(durationSec) {
-            this.test.duration = this.$moment.duration(durationSec, 'seconds').format('hh:mm:ss');
+            this.test.config.duration = this.$moment.duration(durationSec, 'seconds').format('hh:mm:ss');
             if (durationSec < 3600) {
-                this.test.duration = `00:${this.test.duration}`;
+                this.test.config.duration = `00:${this.test.config.duration}`;
             }
             if (durationSec < 60) {
-                this.test.duration = `00:${this.test.duration}`;
+                this.test.config.duration = `00:${this.test.config.duration}`;
             }
             this.setDurationFromDurationStr();
             this.changeDuration({ focus: true });
@@ -502,7 +497,7 @@
         }
 
         get totalVuser() {
-            return this.test.agentCount * this.test.vuserPerAgent;
+            return this.test.config.agentCount * this.test.config.vuserPerAgent;
         }
     }
 </script>
