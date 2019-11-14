@@ -16,14 +16,14 @@
                     <div class="row m-0">
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpInitCount"
-                                         v-model="test.rampUpInitCount"
+                                         v-model="test.rampUp.initCount"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.initialCount">
                             </input-label>
                         </div>
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpStep"
-                                         v-model="test.rampUpStep"
+                                         v-model="test.rampUp.step"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.step">
                             </input-label>
@@ -32,14 +32,14 @@
                     <div class="row m-0">
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpInitSleepTime"
-                                         v-model="test.rampUpInitSleepTime"
+                                         v-model="test.rampUp.initSleepTime"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.initialSleepTime" others="<code>MS</code>">
                             </input-label>
                         </div>
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpIncrementInterval"
-                                         v-model="test.rampUpIncrementInterval"
+                                         v-model="test.rampUp.interval"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.incrementInterval" others="<code>MS</code>">
                             </input-label>
@@ -87,30 +87,28 @@
     })
     export default class RampUp extends Base {
         @Prop({ type: Object, required: true })
-        testProp;
+        test;
 
         @Prop({ type: Array, required: true })
         rampUpTypes;
-
-        test = {
-            rampUpInitCount: 0,
-            rampUpStep: 1,
-            rampUpInitSleepTime: 0,
-            rampUpIncrementInterval: 1000,
-        };
 
         chart = null;
         useRampUp = false;
         rampUpType = 'PROCESS';
 
         created() {
-            Object.assign(this.test, this.testProp);
-            this.useRampUp = this.test.useRampUp;
-            this.rampUpType = this.test.rampUpType;
+            this.useRampUp = this.test.rampUp.enable;
+            this.rampUpType = this.test.rampUp.type;
         }
 
         mounted() {
-            this.$watchAll(['test.rampUpStep', 'test.rampUpInitCount', 'test.rampUpInitSleepTime', 'test.rampUpIncrementInterval'], this.updateRampUpChart);
+            this.$watchAll([
+                'test.rampUp.step',
+                'test.rampUp.initCount',
+                'test.rampUp.initSleepTime',
+                'test.rampUp.interval',
+                'test.config.processes',
+                'test.config.threads'], this.updateRampUpChart);
         }
 
         @Watch('useRampUp')
@@ -123,10 +121,10 @@
             return {
                 useRampUp: this.useRampUp,
                 rampUpType: this.rampUpType,
-                rampUpInitCount: this.test.rampUpInitCount,
-                rampUpStep: this.test.rampUpStep,
-                rampUpInitSleepTime: this.test.rampUpInitSleepTime,
-                rampUpIncrementInterval: this.test.rampUpIncrementInterval,
+                rampUpInitCount: this.test.rampUp.initCount,
+                rampUpStep: this.test.rampUp.step,
+                rampUpInitSleepTime: this.test.rampUp.initSleepTime,
+                rampUpIncrementInterval: this.test.rampUp.interval,
             };
         }
 
@@ -135,11 +133,11 @@
             let factor;
 
             if (this.rampUpType === 'PROCESS') {
-                base = this.test.processes;
-                factor = this.test.threads;
+                base = this.test.config.processes;
+                factor = this.test.config.threads;
             } else {
-                base = this.test.threads;
-                factor = this.test.processes;
+                base = this.test.config.threads;
+                factor = this.test.config.processes;
             }
 
             return { base, factor };
@@ -154,19 +152,19 @@
 
             const factorVar = parseInt(factor, 10);
             const destination = parseInt(base, 10) * factorVar;
-            const increment = parseInt(this.test.rampUpStep, 10) * factorVar;
-            const initialCount = parseInt(this.test.rampUpInitCount, 10) * factorVar;
-            const internalTime = parseInt(this.test.rampUpIncrementInterval, 10);
+            const increment = parseInt(this.test.rampUp.step, 10) * factorVar;
+            const initialCount = parseInt(this.test.rampUp.initCount, 10) * factorVar;
+            const internalTime = parseInt(this.test.rampUp.interval, 10);
 
             if (isNaN(initialCount) || isNaN(destination) || isNaN(increment) || isNaN(internalTime)) {
                 return;
             }
             if (initialCount > destination) {
-                this.test.rampUpInitCount = 1;
+                this.test.rampUp.initCount = 1;
                 return;
             }
             if (initialCount < destination && increment === 0) {
-                this.test.rampUpStep = 1;
+                this.test.rampUp.step = 1;
                 return;
             }
 
@@ -175,7 +173,7 @@
                 steps = 1;
             }
 
-            const initialSleepTime = parseInt(this.test.rampUpInitSleepTime);
+            const initialSleepTime = parseInt(this.test.rampUp.initSleepTime);
 
             if (isNaN(initialSleepTime)) {
                 return;
