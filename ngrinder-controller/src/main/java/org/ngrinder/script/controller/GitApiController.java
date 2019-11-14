@@ -29,7 +29,12 @@ public class GitApiController {
 	 * @since 3.5.0
 	 */
 	@GetMapping("/config")
-	public List<GitConfig> getScripts(User user) {
-		return gitService.getGitConfig(user);
+	public List<GitConfig> getGitHubConfig(User user) {
+		return gitService.getGitHubConfig(user);
+	}
+
+	@GetMapping("/scripts")
+	public List<String> getScripts(User user, GitConfig gitConfig) {
+		return gitService.getScripts(user, gitConfig);
 	}
 }
