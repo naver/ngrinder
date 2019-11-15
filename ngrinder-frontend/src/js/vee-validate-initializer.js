@@ -4,12 +4,6 @@ import VeeValidate from 'vee-validate';
 class VeeValidateInitializer {
     initValidationMessages() {
         const dictionary = {
-            required: name => {
-                switch (name) {
-                    case 'region': return I18n.i18n('perfTest.message.region');
-                    default: return I18n.i18n('common.message.validate.empty');
-                }
-            },
             regex: name => {
                 switch (name) {
                     case 'domain': return I18n.i18n('perfTest.config.addHost.inputTargetDomain');
@@ -20,6 +14,7 @@ class VeeValidateInitializer {
                     case 'param': return I18n.i18n('perfTest.message.param');
                 }
             },
+            required: () => I18n.i18n('common.message.validate.empty'),
             email: () => I18n.i18n('user.info.email.help'),
             max: (name, val) => I18n.i18n('common.message.validate.maxLength', { maxLength: val[0] }),
             min_value: (name, val) => I18n.i18n('common.message.validate.min', { minValue: val[0] }),
