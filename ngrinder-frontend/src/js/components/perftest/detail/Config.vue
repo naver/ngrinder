@@ -311,26 +311,6 @@
             this.$validator.validate('agentCount');
         }
 
-        getParams() {
-            return {
-                param: this.test.config.param,
-                region: this.test.config.region,
-                ignoreSampleCount: this.test.config.ignoreSampleCount,
-                scriptName: this.test.config.scriptName,
-                scriptRevision: this.test.config.scriptRevision,
-                targetHosts: this.targetHosts.join(','),
-                threshold: this.test.config.threshold,
-                runCount: this.test.config.runCount,
-                processes: this.test.config.processes,
-                agentCount: this.test.config.agentCount,
-                threads: this.test.config.threads,
-                safeDistribution: this.test.config.safeDistribution,
-                vuserPerAgent: this.test.config.vuserPerAgent,
-                samplingInterval: this.test.config.samplingInterval,
-                duration: this.durationMs,
-            };
-        }
-
         setScripts(selectedScript) {
             if (!selectedScript) {
                 this.display.showScriptBtn = false;
@@ -407,7 +387,6 @@
             });
         }
 
-        // duration string format: '00:00:00'
         setDurationFromDurationStr() {
             const durationTokens = this.test.config.duration.split(':');
             this.duration.hour = parseInt(durationTokens[0]);
