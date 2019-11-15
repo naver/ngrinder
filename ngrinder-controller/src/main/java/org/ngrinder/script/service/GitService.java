@@ -11,6 +11,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.GitConfig;
 import org.slf4j.Logger;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
@@ -23,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_GITHUB_SCRIPTS;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -121,5 +123,10 @@ public class GitService {
 		String path = ghTreeEntry.getPath();
 		return ghTreeEntry.getType().endsWith("blob")
 			&& (path.endsWith(".groovy") || path.endsWith(".py"));
+	}
+
+	@CacheEvict(value = CACHE_GITHUB_SCRIPTS, key = "#user.userId")
+	public void evictGitHubScriptCache(User user) {
+		noOp();
 	}
 }

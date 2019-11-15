@@ -34,7 +34,10 @@ public class GitApiController {
 	}
 
 	@GetMapping("/scripts")
-	public List<String> getScripts(User user, GitConfig gitConfig) {
+	public List<String> getScripts(User user, GitConfig gitConfig, boolean refresh) {
+		if (refresh) {
+			gitService.evictGitHubScriptCache(user);
+		}
 		return gitService.getScripts(user, gitConfig);
 	}
 }
