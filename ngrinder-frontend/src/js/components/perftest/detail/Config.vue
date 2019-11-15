@@ -140,8 +140,8 @@
                             <option v-for="(v, s) in 60" :value="s" v-text="s < 10 ? `0${s}` : s"></option>
                         </select>
                         <code>HH:MM:SS</code>
-                        <input v-validate="{ min_value: test.config.threshold === 'D' ? 1 : 0 }" type="hidden" name="duration" v-model="durationMs"/>
-                        <duration-slider @change="changeDurationSlider" ref="durationSlider" :durationMs="durationMs" :maxRunHour="config.maxRunHour"></duration-slider>
+                        <input v-validate="{ min_value: test.config.threshold === 'D' ? 1 : 0 }" type="hidden" name="duration" v-model="test.config.duration"/>
+                        <duration-slider @change="changeDurationSlider" ref="durationSlider" :durationMs="test.config.duration" :maxRunHour="config.maxRunHour"></duration-slider>
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
                     <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.config.threshold === 'R' }" v-model="test.config.threshold"
@@ -255,7 +255,6 @@
         targetHosts = [];
 
         maxAgentCount = 0;
-        durationMs = 0;
         shownBsTab = false;
 
         display = {
@@ -275,7 +274,7 @@
 
         created() {
             this.setCustomValidationRules();
-            this.setDurationFromDurationStr();
+            this.setDurationMS();
             this.changeDuration();
             this.setTargetHosts(this.test.config.targetHosts);
             this.getScriptResource();
@@ -293,7 +292,7 @@
 
             this.changeMaxAgentCount();
 
-            const durationHour = parseInt(this.durationMs / 3600000) + 1;
+            const durationHour = parseInt(this.test.config.duration / 3600000) + 1;
             this.durationMaxHour = (durationHour > this.config.maxRunHour) ? durationHour : this.config.maxRunHour;
 
             this.$nextTick(() => {
@@ -387,11 +386,12 @@
             });
         }
 
-        setDurationFromDurationStr() {
-            const durationTokens = this.test.config.duration.split(':');
-            this.duration.hour = parseInt(durationTokens[0]);
-            this.duration.min = parseInt(durationTokens[1]);
-            this.duration.sec = parseInt(durationTokens[2]);
+        setDurationMS() {
+            const duration = this.$moment.duration(this.test.config.duration);
+
+            this.duration.hour = duration.hours();
+            this.duration.min = duration.minutes();
+            this.duration.sec = duration.seconds();
         }
 
         @Watch('test.threshold')
@@ -437,21 +437,15 @@
             if (options && options.focus) {
                 this.test.config.threshold = 'D';
             }
-            this.durationMs = (this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec) * 1000;
+            this.test.config.duration = (this.duration.hour * 3600 + this.duration.min * 60 + this.duration.sec) * 1000;
             if (options && options.updateSlider) {
-                this.$refs.durationSlider.setDurationMs(this.durationMs);
+                this.$refs.durationSlider.setDurationMs(this.test.config.duration);
             }
         }
 
         changeDurationSlider(durationSec) {
-            this.test.config.duration = this.$moment.duration(durationSec, 'seconds').format('hh:mm:ss');
-            if (durationSec < 3600) {
-                this.test.config.duration = `00:${this.test.config.duration}`;
-            }
-            if (durationSec < 60) {
-                this.test.config.duration = `00:${this.test.config.duration}`;
-            }
-            this.setDurationFromDurationStr();
+            this.test.config.duration = durationSec * 1000;
+            this.setDurationMS();
             this.changeDuration({ focus: true });
         }
 

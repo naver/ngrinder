@@ -364,16 +364,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get Duration time in HH:MM:SS style.
-	 *
-	 * @return formatted duration string
-	 */
-	@JsonProperty("duration")
-	public String getDurationStr() {
-		return DateUtils.ms2Time(this.duration);
-	}
-
-	/**
 	 * Get Running time in HH:MM:SS style.
 	 *
 	 * @return formatted runtime string

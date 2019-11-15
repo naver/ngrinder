@@ -226,14 +226,6 @@
             return { test: PerfTestSerializer.deserialize(this.$route.params.test) };
         }
 
-        getParams() {
-            const params = {};
-            Object.assign(params, PerfTestSerializer.serialize(this.test));
-            params.duration = this.$refs.config.durationMS;
-
-            return params;
-        }
-
         beforeRouteEnter(to, from, next) {
             PerfTestDetail.prepare(to)
                 .then(next)
@@ -418,7 +410,7 @@
                 } else {
                     this.test.status.name = 'SAVED';
                     this.$nextTick(() => {
-                        this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, this.getParams())
+                        this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
                             .then(() => this.$router.push('/perftest'))
                             .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
                     });
@@ -446,7 +438,7 @@
             this.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
-                this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, this.getParams())
+                this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
                     .then(res => {
                         this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
                         this.$router.push(`/perftest/${res.data.id}`);
