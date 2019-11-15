@@ -107,8 +107,40 @@
 
     class PerfTestSerializer {
         static serialize(test) {
-            // TODO: implement serialize and remove getParams() methods
-            return test;
+            return {
+                // basic
+                id: test.id,
+                testName: test.testName,
+                tagString: test.tagString,
+                status: test.status.name,
+                description: test.description,
+                scheduledTime: test.scheduledTime,
+
+                // config
+                agentCount: test.config.agentCount,
+                region: test.config.region,
+                vuserPerAgent: test.config.vuserPerAgent,
+                processes: test.config.processes,
+                threads: test.config.threads,
+                scriptName: test.config.scriptName,
+                scriptRevision: test.config.scriptRevision,
+                targetHosts: test.config.targetHosts,
+                threshold: test.config.threshold,
+                duration: test.config.duration,
+                runCount: test.config.runCount,
+                samplingInterval: test.config.samplingInterval,
+                ignoreSampleCount: test.config.ignoreSampleCount,
+                safeDistribution: test.config.safeDistribution,
+                param: test.config.param,
+
+                // rampUp
+                useRampUp: test.rampUp.enable,
+                rampUpType: test.rampUp.type,
+                rampUpInitCount: test.rampUp.initCount,
+                rampUpStep: test.rampUp.step,
+                rampUpInitSleepTime: test.rampUp.initSleepTime,
+                rampUpIncrementInterval: test.rampUp.interval,
+            };
         }
 
         static deserialize(test) {
@@ -144,15 +176,6 @@
                     step: test.rampUpStep,
                     initSleepTime: test.rampUpInitSleepTime,
                     interval: test.rampUpIncrementInterval,
-                },
-                report: {
-                    tps: test.tps,
-                    peakTps: test.peakTps,
-                    meanTestTime: test.meanTestTime,
-                    tests: test.tests,
-                    errors: test.errors,
-                    runtime: test.runtime,
-                    testComment: test.testComment,
                 },
             };
         }
@@ -191,10 +214,6 @@
 
         $testStatusImage = null;
 
-        params = { // FIXME: can i remove this variable?
-            testStatus: 'SAVED',
-        };
-
         tab = {
             display: {
                 running: false,
@@ -208,24 +227,9 @@
         }
 
         getParams() {
-            const params = {
-                id: this.test.id,
-                testName: this.test.testName,
-                tagString: this.test.tagString,
-                description: this.test.description,
-                status: this.params.testStatus,
-            };
-
-            if (this.scheduledTime) {
-                params.scheduledTime = this.scheduledTime;
-            }
-
-            if (this.ngrinder.config.isClustered) {
-                params.region = this.$refs.config.test.region;
-            }
-
-            Object.assign(params, this.$refs.config.getParams());
-            Object.assign(params, this.$refs.config.$refs.rampUp.getParams());
+            const params = {};
+            Object.assign(params, PerfTestSerializer.serialize(this.test));
+            params.duration = this.$refs.config.durationMS;
 
             return params;
         }
@@ -412,7 +416,7 @@
                 if (this.errors.any()) {
                     this.$refs.configTab.click();
                 } else {
-                    this.params.testStatus = 'SAVED';
+                    this.test.status.name = 'SAVED';
                     this.$nextTick(() => {
                         this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, this.getParams())
                             .then(() => this.$router.push('/perftest'))
@@ -438,7 +442,7 @@
 
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
-            this.params.testStatus = 'READY';
+            this.test.status.name = 'READY';
             this.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
