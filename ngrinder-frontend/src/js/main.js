@@ -92,6 +92,12 @@ Vue.filter('dateFormat', (value, format) => {
     }
     return '';
 });
+Vue.filter('durationFormat', (value, format) => {
+    if (value) {
+        return moment.duration(value).format(format, { trim: false });
+    }
+    return '';
+});
 
 const store = require('./store/vuex-store').default;
 
