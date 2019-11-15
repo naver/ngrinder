@@ -16,22 +16,24 @@
                                 </button>
                             </td>
                             <td>
-                                <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend"
+                                <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend d-flex"
                                      data-toggle="popover"
                                      data-trigger="hover"
                                      data-html="true"
                                      data-placement="bottom"
                                      title="Subversion"
                                      :data-content="i18n('script.message.svn')">
-                                    <div class="input-group-text">SVN</div>
-                                    <div class="border uneditable-input">
-                                        <router-link v-text="svnPath" to="/script/list"></router-link><!--
+                                    <div class="ml-auto">
+                                        <div class="input-group-text">SVN</div>
+                                        <div class="border uneditable-input ellipsis">
+                                            <router-link v-text="svnPath" to="/script/list"></router-link><!--
                                         --><template v-if="currentPath !== ''"
                                                      v-for="(each, index) in currentPath.split('/')"><!--
                                             -->/<!--
                                             --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
                                                             v-text="each"></router-link>
                                         </template>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -144,6 +146,8 @@
         }
 
         .uneditable-input {
+            width: 500px;
+
             a:first-of-type {
                 margin-left: 7px;
             }
