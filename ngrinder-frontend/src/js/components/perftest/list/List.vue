@@ -75,7 +75,7 @@
             </template>
 
             <template slot="threshold" slot-scope="props">
-                <div v-if="props.rowData.threshold === 'D'" :title="i18n('perfTest.list.duration')" v-text="props.rowData.duration"></div>
+                <div v-if="props.rowData.threshold === 'D'" :title="i18n('perfTest.list.duration')">{{ props.rowData.duration | durationFormat('HH:mm:ss')}}</div>
                 <div v-else v-text="props.rowData.runCount" :title="i18n('perfTest.list.runCount')"></div>
             </template>
 
