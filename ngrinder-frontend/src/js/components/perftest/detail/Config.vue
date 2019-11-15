@@ -208,7 +208,8 @@
         </div>
         <div :data-step="shownBsTab ? 11 : undefined"
              :data-intro="shownBsTab ? i18n('intro.config.rampup') : undefined">
-            <ramp-up ref="rampUp" :test="test" :rampUpTypes="config.rampUpTypes"></ramp-up>
+            <ramp-up ref="rampUp" :rampUp="test.rampUp" :rampUpTypes="config.rampUpTypes"
+                     :processes="test.config.processes" :threads="test.config.threads"></ramp-up>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
