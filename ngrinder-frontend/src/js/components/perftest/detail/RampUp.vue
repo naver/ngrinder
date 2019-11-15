@@ -117,17 +117,6 @@
             this.updateRampUpChart();
         }
 
-        getParams() {
-            return {
-                useRampUp: this.useRampUp,
-                rampUpType: this.rampUpType,
-                rampUpInitCount: this.test.rampUp.initCount,
-                rampUpStep: this.test.rampUp.step,
-                rampUpInitSleepTime: this.test.rampUp.initSleepTime,
-                rampUpIncrementInterval: this.test.rampUp.interval,
-            };
-        }
-
         getCurrentBaseAndFactor() {
             let base;
             let factor;
