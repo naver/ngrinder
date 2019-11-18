@@ -100,10 +100,11 @@
                              ref="scriptStorageSelect" customStyle="width: 90px;"
                              @change="changeScriptStorage">
                         <option value="svn">svn</option>
-                        <option v-for="gitConfig in config.git"
+                        <option v-show="config.git && config.git.length > 0" v-for="gitConfig in config.git"
                                 v-text="`${gitConfig.owner}/${gitConfig.repo}`"
                                 :value="`${gitConfig.owner}/${gitConfig.repo}`">
                         </option>
+                        <option v-if="!config.git" class="add-git" value="addGit" v-text="i18n('script.git.add.config')"></option>
                     </select2>
                     <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
@@ -342,6 +343,10 @@
         }
 
         loadScriptFromGit(refresh) {
+            if (!this.config.git) {
+                return;
+            }
+
             this.config.git.forEach(gitConfig => {
                 this.$http.get('/git/api/scripts', {
                     params: gitConfig,
@@ -361,10 +366,29 @@
         }
 
         changeScriptStorage() {
-            this.display.showGitHubRefreshBtn = this.scriptStorage !== 'svn';
-            this.scripts = this.scriptsMap[this.scriptStorage];
-            this.test.scriptName = '';
-            this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
+            if (this.scriptStorage === 'addGit') {
+                this.createGitConfig();
+            } else {
+                this.display.showGitHubRefreshBtn = this.scriptStorage !== 'svn';
+                this.scripts = this.scriptsMap[this.scriptStorage];
+                this.test.config.scriptName = '';
+                this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
+            }
+        }
+
+        createGitConfig() {
+            this.$http.post('/git/api/config')
+                .then(() => {
+                    this.ngrinder.config.existGitConfig = true;
+                    this.$bootbox.confirm({
+                        message: this.i18n('script.message.editing.git.config'),
+                        buttons: {
+                            confirm: { label: this.i18n('common.button.ok') },
+                            cancel: { label: this.i18n('common.button.cancel') },
+                        },
+                        onConfirm: () => this.$router.push('/script/detail/.gitconfig.yml'),
+                    });
+                });
         }
 
         @Watch('test.config.region')
@@ -573,7 +597,7 @@
         }
 
         get showRevisonBtn() {
-            return this.display.showRevisionBtn && !this.display.showGitHubRefreshBtn;
+            return this.display.showRevisionBtn && !this.display.showGitHubRefreshBtn && this.test.config.scriptName;
         }
     }
 </script>
@@ -640,6 +664,16 @@
                 top: -2px !important;
                 border-top-left-radius: unset;
                 border-top-right-radius: unset;
+            }
+        }
+    }
+
+    ul.select2-results {
+        li.add-git {
+            color: red;
+
+            &:hover {
+                color: white;
             }
         }
     }

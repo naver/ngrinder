@@ -1,7 +1,7 @@
 #owner: # repository owner.
 #repo: # repository name.
 #access-token: # github personal access token.
-#base-url: # API base uri, default is api.github.com.
+#base-url: # API base uri, default is https://api.github.com.
 #---
 #owner: naver
 #repo: ngrinder
