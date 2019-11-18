@@ -7,6 +7,7 @@
                    :name="name"
                    :title='i18n(message)'
                    :value="value"
+                   :min="min"
                    v-validate="validationRules"
                    class="form-control"
                    data-html="true"
@@ -60,6 +61,10 @@
             append: {
                 type: [String, Number],
                 default: null,
+            },
+            min: {
+                type: [String, Number],
+                default: 0,
             },
             readonly: {
                 type: Boolean,

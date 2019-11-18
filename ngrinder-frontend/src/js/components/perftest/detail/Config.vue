@@ -14,7 +14,7 @@
                         <control-group id="agentCount" :class="{ error: errors.has('agentCount') }"
                                        labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
                             <input-append name="agentCount" ref="agentCount"
-                                          v-model="test.config.agentCount"
+                                          type="number" v-model="test.config.agentCount"
                                           :validationRules="agentCountValidationRules"
                                           errStyle="width: 145px; word-break: break-all; white-space: normal;"
                                           appendPrefix="perfTest.config.max"
@@ -43,7 +43,7 @@
                                :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
                     <div class="vuser-per-agent-container">
                         <input-append name="vuserPerAgent" ref="vuserPerAgent"
-                                      v-model="test.config.vuserPerAgent"
+                                      type="number" v-model="test.config.vuserPerAgent"
                                       :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                       @change="changeVuserPerAgent"
                                       errStyle="white-space: nowrap; width: 130px;"
@@ -60,11 +60,11 @@
                         </span>
                     </div>
                     <div v-show="display.vuserPanel" class="vuser-panel">
-                        <input-prepend name="processes" v-model.number="test.config.processes"
+                        <input-prepend name="processes" type="number" v-model.number="test.config.processes"
                                        @change="changeProcessThreadCount"
                                        message="perfTest.config.process" extraCss="control-group">
                         </input-prepend>
-                        <input-prepend name="threads" v-model.number="test.config.threads"
+                        <input-prepend name="threads" type="number" v-model.number="test.config.threads"
                                        @change="changeProcessThreadCount"
                                        message="perfTest.config.thread" extraCss="control-group">
                         </input-prepend>
@@ -150,8 +150,8 @@
                                    :data-step="shownBsTab ? 10 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
+                                      type="number" v-model="test.config.runCount"
                                       appendPrefix="perfTest.config.max"
-                                      v-model="test.config.runCount"
                                       @focus="test.config.threshold = 'R'"
                                       message="perfTest.config.runCount"
                                       :append="config.maxRunCount"

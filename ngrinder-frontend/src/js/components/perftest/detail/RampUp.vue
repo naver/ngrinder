@@ -16,6 +16,7 @@
                     <div class="row m-0">
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpInitCount"
+                                         type="number"
                                          v-model="rampUp.initCount"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.initialCount">
@@ -23,6 +24,7 @@
                         </div>
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpStep"
+                                         type="number"
                                          v-model="rampUp.step"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.step">
@@ -32,6 +34,7 @@
                     <div class="row m-0">
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpInitSleepTime"
+                                         type="number"
                                          v-model="rampUp.initSleepTime"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.initialSleepTime" others="<code>MS</code>">
@@ -39,6 +42,7 @@
                         </div>
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpIncrementInterval"
+                                         type="number"
                                          v-model="rampUp.interval"
                                          ref="rampUpConfig"
                                          message="perfTest.config.rampUp.incrementInterval" others="<code>MS</code>">

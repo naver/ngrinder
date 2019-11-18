@@ -38,6 +38,16 @@ h1, h2, h3, h4  {
 	text-rendering : auto !important
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type=number] {
+	-moz-appearance:textfield;
+}
+
 .checkbox {
 	min-height:15px;
 	padding-left:0;
