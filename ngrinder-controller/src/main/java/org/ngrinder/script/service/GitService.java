@@ -2,6 +2,7 @@ package org.ngrinder.script.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTreeEntry;
 import org.kohsuke.github.GitHub;
@@ -16,6 +17,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,21 +33,22 @@ import static org.slf4j.LoggerFactory.getLogger;
  *
  * @since 3.5.0
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GitService {
 
-	private static final Logger LOGGER = getLogger(GitService.class);
+	private static final String GITHUB_CONFIG_NAME = ".gitconfig.yml";
 
 	private final FileEntryService fileEntryService;
 
 	private final ObjectMapper objectMapper;
 
-	public List<GitConfig> getGitHubConfig(User user) {
+	public List<GitConfig> getGitHubConfig(User user) throws FileNotFoundException {
 		List<GitConfig> gitConfig = new ArrayList<>();
-		FileEntry gitConfigYaml = fileEntryService.getOne(user, ".gitconfig.yml", -1L);
+		FileEntry gitConfigYaml = fileEntryService.getOne(user, GITHUB_CONFIG_NAME, -1L);
 		if (gitConfigYaml == null) {
-			return gitConfig;
+			throw new FileNotFoundException(GITHUB_CONFIG_NAME + " isn't exist.");
 		}
 
 		// Yaml is not thread safe. so create it every time.
@@ -68,7 +71,7 @@ public class GitService {
 		String repo = gitConfig.getRepo();
 
 		if (isEmpty(gitConfig.getOwner()) || isEmpty(gitConfig.getRepo())) {
-			LOGGER.error("Owner and repository configuration must not be empty. [userId({}), {}]", user.getUserId(), gitConfig);
+			log.error("Owner and repository configuration must not be empty. [userId({}), {}]", user.getUserId(), gitConfig);
 			throw new NGrinderRuntimeException("Owner and repository configuration must not be empty.");
 		}
 
@@ -79,7 +82,7 @@ public class GitService {
 			List<GHTreeEntry> allFiles = ghRepository.getTreeRecursive(shaOfDefaultBranch, 1).getTree();
 			return filterScript(allFiles);
 		} catch (IOException e) {
-			LOGGER.error("Fail to get script from git with [userId({}), {}]", user.getUserId(), gitConfig, e);
+			log.error("Fail to get script from git with [userId({}), {}]", user.getUserId(), gitConfig, e);
 			throw new NGrinderRuntimeException("Fail to get script from git.");
 		}
 	}
@@ -106,7 +109,7 @@ public class GitService {
 		try {
 			return gitHubBuilder.build();
 		} catch (IOException e) {
-			LOGGER.error("Fail to creation of github client from {}", gitConfig, e);
+			log.error("Fail to creation of github client from {}", gitConfig, e);
 			throw new NGrinderRuntimeException("Fail to creation of github client.");
 		}
 	}

@@ -129,16 +129,22 @@ public class FileEntryService {
 		}
 	}
 
-	private void createGitHubConfig(User user) {
-		String githubConfigTemplate = config.getGitHubConfigTemplate();
-		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath("/.gitconfig.yml");
-		fileEntry.setContent(githubConfigTemplate);
-		fileEntry.setEncoding(UTF_8);
-		fileEntry.setFileType(YAML);
-		fileEntry.setContentBytes(githubConfigTemplate.getBytes());
-		fileEntry.setFileSize(fileEntry.getContent().length());
-		save(user, fileEntry);
+	public void createGitHubConfig(User user) {
+		if (!existGitConfig(user)) {
+			String githubConfigTemplate = config.getGitHubConfigTemplate();
+			FileEntry fileEntry = new FileEntry();
+			fileEntry.setPath("/.gitconfig.yml");
+			fileEntry.setContent(githubConfigTemplate);
+			fileEntry.setEncoding(UTF_8);
+			fileEntry.setFileType(YAML);
+			fileEntry.setContentBytes(githubConfigTemplate.getBytes());
+			fileEntry.setFileSize(fileEntry.getContent().length());
+			save(user, fileEntry);
+		}
+	}
+
+	public boolean existGitConfig(User user) {
+		return getOne(user, ".gitconfig.yml", -1L) != null;
 	}
 
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
