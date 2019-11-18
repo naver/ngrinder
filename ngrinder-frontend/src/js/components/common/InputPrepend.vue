@@ -3,8 +3,8 @@
         <div class="input-group-prepend">
             <span class="input-group-text" :title='i18n(message)' v-text="i18n(message)"></span>
         </div>
-        <input class="form-control d-inline-flex" type="text"
-               :id="name" :name="name" :value="value"
+        <input class="form-control d-inline-flex" :type="type"
+               :id="name" :name="name" :value="value" :min="min"
                @input="$emit('input', $event.target.value)"
                @change="$emit('change')"/>
     </div>
@@ -17,9 +17,17 @@
     @Component({
         name: 'inputPrepend',
         props: {
+            type: {
+                type: String,
+                default: 'text',
+            },
             value: {
                 type: [String, Number],
                 required: true,
+            },
+            min: {
+                type: [String, Number],
+                default: 0,
             },
             message: {
                 type: String,
