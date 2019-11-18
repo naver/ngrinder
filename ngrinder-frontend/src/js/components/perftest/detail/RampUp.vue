@@ -132,7 +132,7 @@
         }
 
         updateRampUpChart() {
-            if (this.$parent.errors.has('vuserPerAgent')) {
+            if (this.$parent.errors.has('vuserPerAgent') || this.processes === 0 || this.threads === 0) {
                 return;
             }
 

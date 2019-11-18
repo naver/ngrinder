@@ -60,11 +60,11 @@
                         </span>
                     </div>
                     <div v-show="display.vuserPanel" class="vuser-panel">
-                        <input-prepend name="processes" v-model="test.config.processes"
+                        <input-prepend name="processes" v-model.number="test.config.processes"
                                        @change="changeProcessThreadCount"
                                        message="perfTest.config.process" extraCss="control-group">
                         </input-prepend>
-                        <input-prepend name="threads" v-model="test.config.threads"
+                        <input-prepend name="threads" v-model.number="test.config.threads"
                                        @change="changeProcessThreadCount"
                                        message="perfTest.config.thread" extraCss="control-group">
                         </input-prepend>
@@ -413,6 +413,13 @@
             } else {
                 this.$refs.runCount.focus();
             }
+        }
+
+        @Watch('test.config.processes')
+        @Watch('test.config.threads')
+        onProcessesAndThreadsChanged() {
+            this.test.config.processes = this.test.config.processes || 0;
+            this.test.config.threads = this.test.config.threads || 0;
         }
 
         changeVuserPerAgent() {
