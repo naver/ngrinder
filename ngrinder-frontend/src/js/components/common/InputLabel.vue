@@ -2,8 +2,8 @@
     <div class="input-label-container">
         <label :for="name" class="control-label pointer-cursor"><span v-text="i18n(message)"></span></label>
         <div class="controls">
-            <input type="text" class="input form-control" :id="name" :name="name" :style="extraCss"
-                   :value="value" @input="$emit('input', $event.target.value)" :readonly="readonly"/>
+            <input :type="type" class="input form-control" :id="name" :name="name" :style="extraCss"
+                   :value="value" :min="min" @input="$emit('input', $event.target.value)" :readonly="readonly"/>
             <span v-if="others" v-html="others"></span>
             <div :id="`err-${name}`" :style="errStyle"></div>
         </div>
@@ -17,9 +17,17 @@
     @Component({
         name: 'inputLabel',
         props: {
+            type: {
+                type: String,
+                default: 'text',
+            },
             value: {
                 type: [String, Number],
                 required: true,
+            },
+            min: {
+                type: [String, Number],
+                default: 0,
             },
             message: {
                 type: String,
