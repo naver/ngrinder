@@ -10,8 +10,7 @@ import org.kohsuke.github.GitHubBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.model.GitConfig;
-import org.slf4j.Logger;
+import org.ngrinder.script.model.GitHubConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GitService {
+public class GitHubService {
 
 	private static final String GITHUB_CONFIG_NAME = ".gitconfig.yml";
 
@@ -44,8 +43,8 @@ public class GitService {
 
 	private final ObjectMapper objectMapper;
 
-	public List<GitConfig> getGitHubConfig(User user) throws FileNotFoundException {
-		List<GitConfig> gitConfig = new ArrayList<>();
+	public List<GitHubConfig> getGitHubConfig(User user) throws FileNotFoundException {
+		List<GitHubConfig> gitHubConfig = new ArrayList<>();
 		FileEntry gitConfigYaml = fileEntryService.getOne(user, GITHUB_CONFIG_NAME, -1L);
 		if (gitConfigYaml == null) {
 			throw new FileNotFoundException(GITHUB_CONFIG_NAME + " isn't exist.");
@@ -55,9 +54,9 @@ public class GitService {
 		Yaml yaml = new Yaml();
 		Iterable<Object> gitConfigs = yaml.loadAll(gitConfigYaml.getContent());
 		for (Object object : gitConfigs) {
-			gitConfig.add(objectMapper.convertValue(object, GitConfig.class));
+			gitHubConfig.add(objectMapper.convertValue(object, GitHubConfig.class));
 		}
-		return gitConfig;
+		return gitHubConfig;
 	}
 
 	/**
@@ -66,35 +65,35 @@ public class GitService {
 	 * @since 3.5.0
 	 */
 	@Cacheable(value = CACHE_GITHUB_SCRIPTS, key = "#user.userId")
-	public List<String> getScripts(User user, GitConfig gitConfig) {
-		String owner = gitConfig.getOwner();
-		String repo = gitConfig.getRepo();
+	public List<String> getScripts(User user, GitHubConfig gitHubConfig) {
+		String owner = gitHubConfig.getOwner();
+		String repo = gitHubConfig.getRepo();
 
-		if (isEmpty(gitConfig.getOwner()) || isEmpty(gitConfig.getRepo())) {
-			log.error("Owner and repository configuration must not be empty. [userId({}), {}]", user.getUserId(), gitConfig);
+		if (isEmpty(gitHubConfig.getOwner()) || isEmpty(gitHubConfig.getRepo())) {
+			log.error("Owner and repository configuration must not be empty. [userId({}), {}]", user.getUserId(), gitHubConfig);
 			throw new NGrinderRuntimeException("Owner and repository configuration must not be empty.");
 		}
 
 		try {
-			GitHub gitHub = getGitHubClient(gitConfig);
+			GitHub gitHub = getGitHubClient(gitHubConfig);
 			GHRepository ghRepository = gitHub.getRepository(owner + "/" + repo);;
 			String shaOfDefaultBranch = ghRepository.getBranch(ghRepository.getDefaultBranch()).getSHA1();
 			List<GHTreeEntry> allFiles = ghRepository.getTreeRecursive(shaOfDefaultBranch, 1).getTree();
 			return filterScript(allFiles);
 		} catch (IOException e) {
-			log.error("Fail to get script from git with [userId({}), {}]", user.getUserId(), gitConfig, e);
+			log.error("Fail to get script from git with [userId({}), {}]", user.getUserId(), gitHubConfig, e);
 			throw new NGrinderRuntimeException("Fail to get script from git.");
 		}
 	}
 
 	/**
-	 * Create GitHub client from {@link GitConfig}.
+	 * Create GitHub client from {@link GitHubConfig}.
 	 *
 	 * @since 3.5.0
 	 */
-	private GitHub getGitHubClient(GitConfig gitConfig) {
-		String baseUrl = gitConfig.getBaseUrl();
-		String accessToken = gitConfig.getAccessToken();
+	private GitHub getGitHubClient(GitHubConfig gitHubConfig) {
+		String baseUrl = gitHubConfig.getBaseUrl();
+		String accessToken = gitHubConfig.getAccessToken();
 
 		GitHubBuilder gitHubBuilder = new GitHubBuilder();
 
@@ -109,7 +108,7 @@ public class GitService {
 		try {
 			return gitHubBuilder.build();
 		} catch (IOException e) {
-			log.error("Fail to creation of github client from {}", gitConfig, e);
+			log.error("Fail to creation of github client from {}", gitHubConfig, e);
 			throw new NGrinderRuntimeException("Fail to creation of github client.");
 		}
 	}

@@ -130,7 +130,7 @@ public class FileEntryService {
 	}
 
 	public void createGitHubConfig(User user) {
-		if (!existGitConfig(user)) {
+		if (!existGitHubConfig(user)) {
 			String githubConfigTemplate = config.getGitHubConfigTemplate();
 			FileEntry fileEntry = new FileEntry();
 			fileEntry.setPath("/.gitconfig.yml");
@@ -143,7 +143,7 @@ public class FileEntryService {
 		}
 	}
 
-	public boolean existGitConfig(User user) {
+	public boolean existGitHubConfig(User user) {
 		return getOne(user, ".gitconfig.yml", -1L) != null;
 	}
 
