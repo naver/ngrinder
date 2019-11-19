@@ -257,6 +257,7 @@
         updateTableWithUrl() {
             history.replaceState('', '', this.makeQueryString(1, this.table.pagination.perPage, this.$refs.searchBar.searchText,
                 this.makeQueryFilter(), this.sort, this.$refs.searchBar.selectedTag));
+            $('[data-toggle="popover"]').popover('hide');
             this.$refs.vuetable.refresh();
         }
 
