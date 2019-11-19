@@ -7,7 +7,7 @@
             <div class="table-container">
                 <table class="table ellipsis">
                     <colgroup>
-                        <col width="350">
+                        <col width="480">
                     </colgroup>
                     <tbody>
                     <template v-for="(entry, index) in entries">
@@ -27,7 +27,7 @@
                     <img :src="`${contextPath}/img/asksupport.gif`" />
                     <a :href="askQuestionUrl" target="_blank" v-text="i18n('home.button.ask')"></a>
                 </div>
-                <div v-if="seeMoreQuestionUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="ml-auto">
+                <div v-if="seeMoreQuestionUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="ml-auto more">
                     <a :href="seeMoreQuestionUrl" target="_blank">
                         <i class="fa fa-share"></i>
                         <span v-text="i18n('home.button.more')"></span>
@@ -55,7 +55,7 @@
             },
             panelSize: {
                 type: Number,
-                default: 6,
+                default: 8,
             },
             seeMoreQuestionUrl: String,
             askQuestionUrl: String,
@@ -68,15 +68,15 @@
 
 <style lang="less" scoped>
     .panel-container {
-        width: 460px;
+        width: 590px;
 
         .card {
-            height: 300px;
+            height: 350px;
             padding: 10px;
         }
 
         .table-container {
-            height: 215px;
+            height: 285px;
             margin-top: 14px;
 
             table {
@@ -91,7 +91,11 @@
         }
 
         .d-flex {
-            padding: 0 6px;
+            padding: 6px;
+        }
+
+        .more {
+            padding-right: 12px;
         }
     }
 </style>

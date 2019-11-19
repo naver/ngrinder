@@ -47,8 +47,8 @@
 
         #ngrinder {
             .container {
-                width: 940px;
-                min-width: 940px;
+                width: 1200px;
+                min-width: 1200px;
             }
 
             .pointer-cursor {
