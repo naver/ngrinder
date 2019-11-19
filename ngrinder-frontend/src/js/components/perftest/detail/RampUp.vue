@@ -183,7 +183,7 @@
                     coordinates.push(0, 0);
                     coordinates.push(initialSleepTime, 0);
                 }
-                coordinates.push(curX + 0.01, curY);
+                coordinates.push(curX, curY);
 
                 curX += internalTime;
                 coordinates.push(curX, curY);
@@ -193,10 +193,10 @@
                     if (curY > destination) {
                         curY = destination;
                     }
-                    coordinates.push(curX + 0.01, curY);
+                    coordinates.push(curX, curY);
 
                     curX += internalTime;
-                    coordinates.push(curX + 0.01, curY);
+                    coordinates.push(curX, curY);
                 }
 
                 const maxX = tail(coordinates.get().x);
@@ -205,9 +205,9 @@
             } else {
                 let curX = 0;
                 for (let step = 0; step <= steps; step++) {
-                    coordinates.push(curX + 0.01, destination);
+                    coordinates.push(curX, destination);
                     curX += internalTime;
-                    coordinates.push(curX + 0.01, destination);
+                    coordinates.push(curX, destination);
                 }
 
                 const maxX = tail(coordinates.get().x);
@@ -252,7 +252,7 @@
                         tick: {
                             format: value => {
                                 value = value || 0;
-                                return (value).toFixed(0);
+                                return (Math.round(value * 10) / 10);
                             },
                             count: numTicks - 1,
                             text: {
