@@ -271,9 +271,9 @@
         }
 
         static prepareGitConfig(route) {
-            return Base.prototype.$http.get('/git/api/config')
                 .then(res => route.params.config.git = res.data)
                 .catch(() => route.params.config.git = false);
+            return Base.prototype.$http.get('/script/api/github-config')
         }
 
         init() {

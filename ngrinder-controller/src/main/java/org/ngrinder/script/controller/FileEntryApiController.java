@@ -40,6 +40,7 @@ import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.*;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.GitHubService;
 import org.ngrinder.script.service.ScriptValidationService;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
@@ -85,6 +86,8 @@ public class FileEntryApiController {
 	private final MessageSource messageSource;
 
 	private final UserContext userContext;
+
+	private final GitHubService gitHubService;
 
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
@@ -422,5 +425,23 @@ public class FileEntryApiController {
 		} catch (IOException e) {
 			throw processException("error while download file", e);
 		}
+	}
+
+	@GetMapping("/github-config")
+	public List<GitHubConfig> getGitHubConfig(User user) throws FileNotFoundException {
+		return gitHubService.getGitHubConfig(user);
+	}
+
+	@PostMapping("/github-config")
+	public void createGitConfig(User user) {
+		fileEntryService.createGitHubConfig(user);
+	}
+
+	@GetMapping("/github")
+	public List<String> getGitHubScripts(User user, GitHubConfig gitHubConfig, boolean refresh) {
+		if (refresh) {
+			gitHubService.evictGitHubScriptCache(user);
+		}
+		return gitHubService.getScripts(user, gitHubConfig);
 	}
 }
