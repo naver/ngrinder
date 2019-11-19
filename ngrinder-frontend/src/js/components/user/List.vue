@@ -112,7 +112,7 @@
             css: {},
             appendParams: {},
             pagination: {
-                perPage: 10,
+                perPage: 15,
             },
         };
 
@@ -241,14 +241,6 @@
 
         .role-select {
             width: 220px;
-        }
-
-        .email {
-            width: 160px;
-        }
-
-        .description {
-            width: 260px;
         }
     }
 </style>

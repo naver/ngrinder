@@ -16,17 +16,18 @@
                     name: '__slot:userName',
                     title: this.i18n('user.info.name'),
                     sortField: 'userName',
-                    width: '120px',
+                    width: '140px',
                 },
                 {
                     name: '__slot:role',
                     title: this.i18n('user.info.role'),
-                    width: '120px',
+                    width: '140px',
                 },
                 {
                     name: '__slot:email',
                     title: this.i18n('user.info.email'),
                     sortField: 'email',
+                    width: '220px',
                 },
                 {
                     name: '__slot:description',
