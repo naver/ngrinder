@@ -228,6 +228,7 @@
                 data: {
                     json: coordinates.get(),
                     xs: { 'y': 'x' },
+                    colors: { y: '#4bb2c5' },
                 },
                 axis: {
                     x: {
