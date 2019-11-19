@@ -42,7 +42,7 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  */
 @Component
 public class HomeService {
-	private static final int PANEL_ENTRY_SIZE = 6;
+	private static final int PANEL_ENTRY_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
 
