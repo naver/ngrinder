@@ -169,7 +169,7 @@
             css: {},
             appendParams: {},
             pagination: {
-                perPage: 10,
+                perPage: 15,
             },
         };
 
@@ -424,7 +424,7 @@
 
         table {
             font-size: 12px;
-            width: 940px;
+            width: 1200px;
             table-layout: fixed;
             margin-bottom: 6px;
 
