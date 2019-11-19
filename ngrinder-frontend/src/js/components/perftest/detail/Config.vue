@@ -100,11 +100,11 @@
                              ref="scriptStorageSelect" customStyle="width: 90px;"
                              @change="changeScriptStorage">
                         <option value="svn">svn</option>
-                        <option v-show="config.git && config.git.length > 0" v-for="gitConfig in config.git"
-                                v-text="`${gitConfig.owner}/${gitConfig.repo}`"
-                                :value="`${gitConfig.owner}/${gitConfig.repo}`">
+                        <option v-show="config.github && config.github.length > 0" v-for="gitHubConfig in config.github"
+                                v-text="gitHubConfig.name"
+                                :value="gitHubConfig.name">
                         </option>
-                        <option v-if="!config.git" class="add-git" value="addGit" v-text="i18n('script.git.add.config')"></option>
+                        <option v-if="!config.github" class="add-github" value="addGitHub" v-text="i18n('script.github.add.config')"></option>
                     </select2>
                     <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
@@ -343,13 +343,13 @@
         }
 
         loadScriptFromGit(refresh) {
-            if (!this.config.git) {
+            if (!this.config.github) {
                 return;
             }
 
-            this.config.git.forEach(gitConfig => {
-                    params: gitConfig,
+            this.config.github.forEach(gitHubConfig => {
                 this.$http.get('/script/api/github', {
+                    params: gitHubConfig,
                 }).then(res => {
                     const scripts = res.data.map(path => ({
                             revision: -1,
@@ -357,7 +357,7 @@
                             pathInShort: this.extractFileName(path),
                             path,
                         }));
-                    this.scriptsMap[`${gitConfig.owner}/${gitConfig.repo}`] = scripts;
+                    this.scriptsMap[gitHubConfig.name] = scripts;
                     if (refresh) {
                         this.showSuccessMsg(this.i18n('script.message.refresh.success'));
                     }
@@ -366,7 +366,7 @@
         }
 
         changeScriptStorage() {
-            if (this.scriptStorage === 'addGit') {
+            if (this.scriptStorage === 'addGitHub') {
                 this.createGitConfig();
             } else {
                 this.display.showGitHubRefreshBtn = this.scriptStorage !== 'svn';
@@ -379,9 +379,9 @@
         createGitConfig() {
             this.$http.post('/script/api/github-config')
                 .then(() => {
-                    this.ngrinder.config.existGitConfig = true;
+                    this.ngrinder.config.existGitHubConfig = true;
                     this.$bootbox.confirm({
-                        message: this.i18n('script.message.editing.git.config'),
+                        message: this.i18n('script.message.script.github.config'),
                         buttons: {
                             confirm: { label: this.i18n('common.button.ok') },
                             cancel: { label: this.i18n('common.button.cancel') },
@@ -669,7 +669,7 @@
     }
 
     ul.select2-results {
-        li.add-git {
+        li.add-github {
             color: red;
 
             &:hover {

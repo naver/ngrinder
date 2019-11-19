@@ -1,13 +1,16 @@
+#name # configuration name, key of configuration(unique).
 #owner: # repository owner.
 #repo: # repository name.
 #access-token: # github personal access token.
 #base-url: # API base uri, default is https://api.github.com.
 #---
+#name # first-config
 #owner: naver
 #repo: ngrinder
 #access-token: e1a47e652762b60a...3ddc0713b07g13k
 #base-url: https://api.mygit.com
 #---
+#name # second-config
 #owner: torvalds
 #repo: linux
 #access-token: t9a47e6ff262b60a...3dac0713b07e82a

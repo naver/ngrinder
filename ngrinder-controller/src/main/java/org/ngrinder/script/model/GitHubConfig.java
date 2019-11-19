@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 import java.io.IOException;
 
@@ -15,25 +16,31 @@ import java.io.IOException;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(using = GitConfig.GitConfigDeserializer.class)
-public class GitConfig {
+@JsonDeserialize(using = GitHubConfig.GitHubConfigDeserializer.class)
+public class GitHubConfig {
+	private String name;
 	private String owner;
 	private String repo;
 	private String accessToken;
 	private String baseUrl;
 
-	public static class GitConfigDeserializer extends JsonDeserializer<GitConfig> {
+	public static class GitHubConfigDeserializer extends JsonDeserializer<GitHubConfig> {
 
 		@Override
-		public GitConfig deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
+		public GitHubConfig deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
 			ObjectCodec objectCodec = jsonParser.getCodec();
 			JsonNode jsonNode = objectCodec.readTree(jsonParser);
 
-			return new GitConfig(
-				defaultIfNull(jsonNode.get("owner"), ""),
-				defaultIfNull(jsonNode.get("repo"), ""),
-				defaultIfNull(jsonNode.get("access-token"), ""),
-				defaultIfNull(jsonNode.get("base-url"), ""));
+			try {
+				return new GitHubConfig(
+					jsonNode.get("name").asText(),
+					defaultIfNull(jsonNode.get("owner"), ""),
+					defaultIfNull(jsonNode.get("repo"), ""),
+					defaultIfNull(jsonNode.get("access-token"), ""),
+					defaultIfNull(jsonNode.get("base-url"), ""));
+			} catch (RuntimeException e) {
+				throw new NGrinderRuntimeException("Required field 'name' is missing. please check your .gitconfig.yml");
+			}
 		}
 
 		private String defaultIfNull(JsonNode jsonNode, String defaultValue) {

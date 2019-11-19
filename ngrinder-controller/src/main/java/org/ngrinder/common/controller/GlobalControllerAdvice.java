@@ -3,10 +3,8 @@ package org.ngrinder.common.controller;
 import lombok.RequiredArgsConstructor;
 import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
@@ -37,8 +35,6 @@ public class GlobalControllerAdvice {
 	private final PerfTestService perfTestService;
 
 	private final ServletContext servletContext;
-
-	private final FileEntryService fileEntryService;
 
 	private final Config config;
 
