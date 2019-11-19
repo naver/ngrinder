@@ -119,7 +119,7 @@
             renderingData: {
                 data: [],
                 pagination: {
-                    perPage: 10,
+                    perPage: 15,
                 },
             },
         };

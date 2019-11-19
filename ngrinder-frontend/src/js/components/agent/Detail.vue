@@ -181,11 +181,11 @@
         }
 
         .chart-container {
-            width: 700px;
+            width: 940px;
             margin-left: auto;
 
             .chart {
-                height: 250px;
+                height: 300px;
             }
         }
     }
