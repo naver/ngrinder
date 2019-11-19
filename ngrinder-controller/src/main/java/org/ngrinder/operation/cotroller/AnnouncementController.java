@@ -13,6 +13,7 @@
  */
 package org.ngrinder.operation.cotroller;
 
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 @RequestMapping("/operation/announcement")
+@GlobalControllerModel
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AnnouncementController {
 

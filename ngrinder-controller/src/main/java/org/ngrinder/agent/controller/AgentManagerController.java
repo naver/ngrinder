@@ -13,6 +13,7 @@
  */
 package org.ngrinder.agent.controller;
 
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("/agent")
+@GlobalControllerModel
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AgentManagerController {
 

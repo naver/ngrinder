@@ -15,6 +15,7 @@ package org.ngrinder.script.controller;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -39,6 +40,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Controller
 @RequestMapping("/script")
+@GlobalControllerModel
 @RequiredArgsConstructor
 public class FileEntryController {
 
