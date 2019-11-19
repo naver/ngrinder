@@ -53,7 +53,6 @@
     "vue-moment": "^2.1.0",
     "vue-property-decorator": "^6.0.0",
     "vue-router": "^2.7.0",
-    "vue-session": "^1.0.0",
     "vue-shortkey": "^3.1.6",
     "vue-splitpane": "^1.0.2",
     "vue-uuid": "^1.0.0",

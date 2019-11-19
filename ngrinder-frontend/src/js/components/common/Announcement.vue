@@ -25,14 +25,14 @@
         name: 'announcement',
     })
     export default class Announcement extends Mixins(Base, MessagesMixin) {
-        ANNOUNCEMENT_HIDE_SESSION_KEY = 'announcement_hide';
+        ANNOUNCEMENT_HIDE_KEY = 'announcement_hide';
 
         announcement = '';
         hide = false;
 
         created() {
             this.getAnnouncement();
-            this.hide = this.$session.has(this.ANNOUNCEMENT_HIDE_SESSION_KEY) ? this.$session.get(this.ANNOUNCEMENT_HIDE_SESSION_KEY) : false;
+            this.hide = this.$ls.get(this.ANNOUNCEMENT_HIDE_KEY, false, Boolean);
 
             this.$EventBus.$on(this.$Event.CHANGE_ANNOUNCEMENT, newContent => {
                 this.setAnnouncement(newContent);
@@ -50,7 +50,7 @@
 
         toggleDisplay() {
             this.hide = !this.hide;
-            this.$session.set(this.ANNOUNCEMENT_HIDE_SESSION_KEY, this.hide);
+            this.$ls.set(this.ANNOUNCEMENT_HIDE_KEY, this.hide);
         }
 
         setAnnouncement(announcement) {
