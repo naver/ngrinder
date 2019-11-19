@@ -38,6 +38,9 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	private HomeController homeController;
 
 	@Autowired
+	private HealthCheckApiController healthCheckApiController;
+
+	@Autowired
 	private RegionService regionService;
 
 	@Test
@@ -62,8 +65,8 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testHealthCheck() {
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		homeController.healthCheck(res);
-		Map<String, Object> message = homeController.healthCheckSlowly(500, res);
+		healthCheckApiController.healthCheck(res);
+		Map<String, Object> message = healthCheckApiController.healthCheckSlowly(500, res);
 		assertEquals(message.get("current"), regionService.getCurrent());
 	}
 
