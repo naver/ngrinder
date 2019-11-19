@@ -250,10 +250,7 @@
                     },
                     y: {
                         tick: {
-                            format: value => {
-                                value = value || 0;
-                                return (Math.round(value * 10) / 10);
-                            },
+                            format: this.getYTickFormatter(maxY),
                             count: numTicks - 1,
                             text: {
                                 position: { x: -5 },
@@ -289,6 +286,17 @@
                         .attr('height', +zoomRect.attr('height'));
                 },
             });
+        }
+
+        getYTickFormatter(maxY) {
+            let formatter = null;
+            if (maxY <= 10) {
+                formatter = value => Math.round(value * 10) / 10;
+            } else {
+                formatter = value => value.toFixed(0);
+            }
+
+            return value => formatter(value || 0);
         }
     }
 </script>
