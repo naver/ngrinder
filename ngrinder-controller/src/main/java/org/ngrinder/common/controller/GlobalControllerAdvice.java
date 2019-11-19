@@ -1,6 +1,7 @@
 package org.ngrinder.common.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -18,9 +19,9 @@ import static org.ngrinder.common.util.NoOp.noOp;
 /**
  * Includes common model attributes. These attributes uses in app.html
  *
- * @since 3.5
+ * @since 3.5.0
  */
-@ControllerAdvice
+@ControllerAdvice(annotations = GlobalControllerModel.class)
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
 

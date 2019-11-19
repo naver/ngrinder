@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import net.grinder.util.LogCompressUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -40,6 +41,7 @@ import static org.ngrinder.common.util.Preconditions.*;
  */
 @Controller
 @RequestMapping("/perftest")
+@GlobalControllerModel
 @RequiredArgsConstructor
 public class PerfTestController {
 
