@@ -14,6 +14,7 @@
 package org.ngrinder.user.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Controller
 @RequestMapping("/user")
+@GlobalControllerModel
 @RequiredArgsConstructor
 public class UserController {
 

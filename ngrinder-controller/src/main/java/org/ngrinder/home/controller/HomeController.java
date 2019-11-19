@@ -15,6 +15,7 @@ package org.ngrinder.home.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
@@ -52,6 +53,7 @@ import lombok.RequiredArgsConstructor;
  * @since 3.0
  */
 @Controller
+@GlobalControllerModel
 @RequiredArgsConstructor
 public class HomeController implements ControllerConstants {
 
@@ -181,5 +183,4 @@ public class HomeController implements ControllerConstants {
 		model.clear();
 		return "app";
 	}
-
 }
