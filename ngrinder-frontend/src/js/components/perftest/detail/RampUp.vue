@@ -112,6 +112,7 @@
                 'rampUp.interval',
                 'processes',
                 'threads'], this.updateRampUpChart);
+            this.watchUseRampUp(this.rampUp.enable);
         }
 
         @Watch('rampUp.enable')
