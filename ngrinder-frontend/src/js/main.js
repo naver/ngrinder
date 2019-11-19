@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
-import VueSession from 'vue-session';
+import VueLocalStorage from 'vue-localstorage';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
@@ -60,7 +60,10 @@ axiosInstance.interceptors.request.use(config => {
 });
 
 Vue.use(Vuex);
-Vue.use(VueSession);
+Vue.use(VueLocalStorage, {
+    name: 'ls',
+    bind: true,
+});
 Vue.use(VueRouter);
 Vue.use(VeeValidate, {inject: false});
 Vue.use(bFormSlider);
