@@ -132,6 +132,7 @@
                 ignoreSampleCount: test.config.ignoreSampleCount,
                 safeDistribution: test.config.safeDistribution,
                 param: test.config.param,
+                scm: test.config.scm,
 
                 // rampUp
                 useRampUp: test.rampUp.enable,
@@ -169,6 +170,7 @@
                     ignoreSampleCount: test.ignoreSampleCount,
                     safeDistribution: test.safeDistribution,
                     param: test.param,
+                    scm: test.scm || 'svn',
                 },
                 rampUp: {
                     enable: test.useRampUp,
@@ -248,7 +250,7 @@
             return PerfTestDetail.preparePerfTest(route)
                 .then(() => {
                     PerfTestDetail.prepareScripts(route);
-                    PerfTestDetail.prepareGitConfig(route);
+                    PerfTestDetail.prepareGitHubConfig(route);
                 });
         }
 
@@ -275,7 +277,7 @@
                 .then(res => route.params.scriptsMap.svn = res.data);
         }
 
-        static prepareGitConfig(route) {
+        static prepareGitHubConfig(route) {
             return Base.prototype.$http.get('/script/api/github-config')
                 .then(res => route.params.config.github = res.data)
                 .catch(() => route.params.config.github = false);

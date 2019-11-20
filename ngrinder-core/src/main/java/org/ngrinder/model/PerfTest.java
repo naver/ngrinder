@@ -140,6 +140,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String threshold;
 
 	@Cloneable
+	@Column(name = "scm")
+	private String scm;
+
+	@Cloneable
 	@Column(name = "script_name")
 	private String scriptName;
 
@@ -228,7 +232,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String testComment;
 
 	@Column(name = "script_revision")
-	private Long scriptRevision;
+	private String scriptRevision;
 
 	@Column(name = "stop_request")
 	@Type(type = "true_false")
@@ -290,8 +294,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.stopRequest = getSafe(this.stopRequest, false);
 		this.duration = getSafe(this.duration, 60000L);
 		this.samplingInterval = getSafe(this.samplingInterval, 2);
-		this.scriptRevision = getSafe(this.scriptRevision, -1L);
+		this.scriptRevision = getSafe(this.scriptRevision, "-1");
 		this.param = getSafe(this.param, "");
+		this.scm = getSafe(this.scm, "svn");
 		this.region = getSafe(this.region, "NONE");
 		this.targetHosts = getSafe(this.targetHosts, "");
 		this.description = getSafe(this.description, "");

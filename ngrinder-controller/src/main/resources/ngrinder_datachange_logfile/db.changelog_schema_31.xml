@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.5.0" id="31" dbms="h2, mysql">
+		<comment>Modify PERF_TEST table to support github.</comment>
+		<addColumn tableName="PERF_TEST">
+			<column name="scm" type="varchar(30)"/>
+		</addColumn>
+		<modifyDataType tableName="PERF_TEST" columnName="script_revision" newDataType="varchar(40)"/>
+	</changeSet>
+</databaseChangeLog>
