@@ -96,13 +96,13 @@
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
-                    <select2 v-model="scriptStorage" name="scriptStorage"
-                             ref="scriptStorageSelect" customStyle="width: 90px;"
+                    <select2 v-model="test.config.scm" name="scm"
+                             ref="scmSelect" customStyle="width: 90px;"
                              @change="changeScriptStorage">
                         <option value="svn">svn</option>
                         <option v-show="config.github && config.github.length > 0" v-for="gitHubConfig in config.github"
                                 v-text="gitHubConfig.name"
-                                :value="gitHubConfig.name">
+                                :value="`${gitHubConfig.name}:${gitHubConfig.revision}`">
                         </option>
                         <option v-if="!config.github" class="add-github" value="addGitHub" v-text="i18n('script.github.add.config')"></option>
                     </select2>
@@ -123,7 +123,7 @@
                         <span v-if="test.config.scriptRevision === -1">HEAD</span>
                         <span v-else v-text="test.config.scriptRevision"></span>
                     </button>
-                    <button v-show="display.showGitHubRefreshBtn" class="btn btn-info float-right btn-github-refresh" type="button" @click="loadScriptFromGit(true)">
+                    <button v-show="display.showGitHubRefreshBtn" class="btn btn-info float-right btn-github-refresh" type="button" @click="LoadGitHubScript(true)">
                         <i class="fa fa-refresh mr-2"></i><span>Refresh</span>
                     </button>
                 </control-group>
@@ -291,8 +291,6 @@
         targetHostIp = '';
         targetHosts = [];
 
-        scriptStorage = 'svn';
-
         maxAgentCount = 0;
         shownBsTab = false;
 
@@ -313,8 +311,8 @@
         agentCountValidationRules = { required: true, agentCountValidation: true, min_value: 0 };
 
         created() {
-            this.scripts = this.scriptsMap.svn;
-            this.loadScriptFromGit();
+            this.setScripts(this.test.config.scriptName);
+            this.LoadGitHubScript();
             this.setCustomValidationRules();
             this.setDurationMS();
             this.changeDuration();
@@ -326,11 +324,6 @@
             if (!this.ngrinder.config.clustered) {
                 this.test.config.region = 'NONE';
             }
-            this.setScripts(this.test.config.scriptName);
-            this.$nextTick(() => {
-                this.$refs.scriptSelect.selectValue(this.test.config.scriptName);
-                this.$validator.validate('scriptName');
-            });
 
             this.changeMaxAgentCount();
 
@@ -342,35 +335,12 @@
             });
         }
 
-        loadScriptFromGit(refresh) {
-            if (!this.config.github) {
-                return;
-            }
-
-            this.config.github.forEach(gitHubConfig => {
-                this.$http.get('/script/api/github', {
-                    params: gitHubConfig,
-                }).then(res => {
-                    const scripts = res.data.map(path => ({
-                            revision: -1,
-                            validated: 0,
-                            pathInShort: this.extractFileName(path),
-                            path,
-                        }));
-                    this.scriptsMap[gitHubConfig.name] = scripts;
-                    if (refresh) {
-                        this.showSuccessMsg(this.i18n('script.message.refresh.success'));
-                    }
-                }).catch(() => this.showErrorMsg(this.i18n('script.message.refresh.error')));
-            });
-        }
-
         changeScriptStorage() {
-            if (this.scriptStorage === 'addGitHub') {
+            if (this.test.config.scm === 'addGitHub') {
                 this.createGitConfig();
             } else {
-                this.display.showGitHubRefreshBtn = this.scriptStorage !== 'svn';
-                this.scripts = this.scriptsMap[this.scriptStorage];
+                this.display.showGitHubRefreshBtn = this.test.config.scm !== 'svn';
+                this.scripts = this.scriptsMap[this.test.config.scm];
                 this.test.config.scriptName = '';
                 this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
             }
@@ -379,7 +349,6 @@
         createGitConfig() {
             this.$http.post('/script/api/github-config')
                 .then(() => {
-                    this.ngrinder.config.existGitHubConfig = true;
                     this.$bootbox.confirm({
                         message: this.i18n('script.message.script.github.config'),
                         buttons: {
@@ -387,6 +356,10 @@
                             cancel: { label: this.i18n('common.button.cancel') },
                         },
                         onConfirm: () => this.$router.push('/script/detail/.gitconfig.yml'),
+                        onCancel: () => {
+                            this.config.github = [];
+                            this.$refs.scmSelect.selectValue('svn');
+                        },
                     });
                 });
         }
@@ -402,14 +375,57 @@
         }
 
         setScripts(selectedScript) {
-            if (!selectedScript) {
-                this.display.showRevisionBtn = false;
-            } else if (!this.scripts.some(script => script.path === selectedScript)) {
-                this.scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
-                this.display.showRevisionBtn = false;
+            if (this.test.config.scm === 'svn') {
+                this.scripts = this.scriptsMap.svn;
+                if (!selectedScript) {
+                    return;
+                }
+
+                if (!this.scripts.some(script => script.path === selectedScript)) {
+                    this.scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
+                } else {
+                    this.display.showRevisionBtn = true;
+                }
             } else {
-                this.display.showRevisionBtn = true;
+                this.display.showGitHubRefreshBtn = true;
+                this.scripts.push({ pathInShort: this.extractFileName(selectedScript), path: selectedScript, validated: 0 });
             }
+
+            this.$nextTick(() => {
+                this.$refs.scriptSelect.selectValue(this.test.config.scriptName);
+                this.$validator.validate('scriptName');
+            });
+        }
+
+        LoadGitHubScript(refresh) {
+            if (!this.config.github) {
+                return;
+            }
+
+            Promise.all(this.getLoadGitHubScriptPromises()).then(() => {
+                if (refresh) {
+                    this.showSuccessMsg(this.i18n('script.message.refresh.success'));
+                }
+                this.scripts = this.scriptsMap[this.test.config.scm];
+            }).catch(() => this.showErrorMsg(this.i18n('script.message.refresh.error')));
+        }
+
+        getLoadGitHubScriptPromises() {
+            const promises = [];
+            this.config.github.forEach(gitHubConfig => {
+                promises.push(
+                    this.$http.get('/script/api/github', { params: gitHubConfig })
+                        .then(res => {
+                            const scripts = res.data.map(script => ({
+                                revision: script.sha,
+                                validated: 0,
+                                pathInShort: this.extractFileName(script.path),
+                                path: script.path,
+                            }));
+                            this.scriptsMap[`${gitHubConfig.name}:${gitHubConfig.revision}`] = scripts;
+                        }));
+            });
+            return promises;
         }
 
         getScriptResource() {
@@ -435,16 +451,20 @@
             openedWindow.focus();
         }
 
-        changeScript() {
-            this.test.config.scriptRevision = -1;
-            if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
-                this.refreshTargetHosts();
-                this.getScriptResource();
-                this.display.showRevisionBtn = true;
+        changeScript(revision) {
+            if (this.test.config.scm === 'svn') {
+                this.test.config.scriptRevision = -1;
+                if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
+                    this.refreshTargetHosts();
+                    this.getScriptResource();
+                    this.display.showRevisionBtn = true;
+                } else {
+                    this.targetHosts = [];
+                    this.resources = [];
+                    this.display.showRevisionBtn = false;
+                }
             } else {
-                this.targetHosts = [];
-                this.resources = [];
-                this.display.showRevisionBtn = false;
+                this.test.config.scriptRevision = revision;
             }
         }
 

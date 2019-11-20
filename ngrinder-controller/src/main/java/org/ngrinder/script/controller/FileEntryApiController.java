@@ -18,7 +18,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -30,6 +29,7 @@ import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.kohsuke.github.GHTreeEntry;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -438,7 +438,7 @@ public class FileEntryApiController {
 	}
 
 	@GetMapping("/github")
-	public List<String> getGitHubScripts(User user, GitHubConfig gitHubConfig, boolean refresh) {
+	public List<GHTreeEntry> getGitHubScripts(User user, GitHubConfig gitHubConfig, boolean refresh) {
 		if (refresh) {
 			gitHubService.evictGitHubScriptCache(user);
 		}

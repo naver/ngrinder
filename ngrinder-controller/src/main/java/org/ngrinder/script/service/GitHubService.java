@@ -20,12 +20,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_GITHUB_SCRIPTS;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -52,9 +54,10 @@ public class GitHubService {
 
 		// Yaml is not thread safe. so create it every time.
 		Yaml yaml = new Yaml();
-		Iterable<Object> gitConfigs = yaml.loadAll(gitConfigYaml.getContent());
-		for (Object object : gitConfigs) {
-			gitHubConfig.add(objectMapper.convertValue(object, GitHubConfig.class));
+		Iterable<Map<String, Object>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
+		for (Map<String, Object> configMap : gitConfigs) {
+			configMap.put("revision", gitConfigYaml.getRevision());
+			gitHubConfig.add(objectMapper.convertValue(configMap, GitHubConfig.class));
 		}
 		return gitHubConfig;
 	}
@@ -65,7 +68,7 @@ public class GitHubService {
 	 * @since 3.5.0
 	 */
 	@Cacheable(value = CACHE_GITHUB_SCRIPTS, key = "#user.userId")
-	public List<String> getScripts(User user, GitHubConfig gitHubConfig) {
+	public List<GHTreeEntry> getScripts(User user, GitHubConfig gitHubConfig) {
 		String owner = gitHubConfig.getOwner();
 		String repo = gitHubConfig.getRepo();
 
@@ -113,11 +116,10 @@ public class GitHubService {
 		}
 	}
 
-	private List<String> filterScript(List<GHTreeEntry> ghTreeEntries) {
+	private List<GHTreeEntry> filterScript(List<GHTreeEntry> ghTreeEntries) {
 		return ghTreeEntries
 			.stream()
 			.filter(this::isScript)
-			.map(GHTreeEntry::getPath)
 			.collect(toList());
 	}
 

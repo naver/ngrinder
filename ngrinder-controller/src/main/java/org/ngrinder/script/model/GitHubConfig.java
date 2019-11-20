@@ -23,6 +23,7 @@ public class GitHubConfig {
 	private String repo;
 	private String accessToken;
 	private String baseUrl;
+	private String revision;
 
 	public static class GitHubConfigDeserializer extends JsonDeserializer<GitHubConfig> {
 
@@ -37,7 +38,8 @@ public class GitHubConfig {
 					defaultIfNull(jsonNode.get("owner"), ""),
 					defaultIfNull(jsonNode.get("repo"), ""),
 					defaultIfNull(jsonNode.get("access-token"), ""),
-					defaultIfNull(jsonNode.get("base-url"), ""));
+					defaultIfNull(jsonNode.get("base-url"), ""),
+					defaultIfNull(jsonNode.get("revision"), "-1"));
 			} catch (RuntimeException e) {
 				throw new NGrinderRuntimeException("Required field 'name' is missing. please check your .gitconfig.yml");
 			}

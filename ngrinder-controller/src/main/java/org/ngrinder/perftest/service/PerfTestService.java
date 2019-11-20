@@ -70,6 +70,8 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static java.lang.Long.valueOf;
+import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constants.MonitorConstants.MONITOR_FILE_PREFIX;
@@ -268,8 +270,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private void attachFileRevision(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
 			FileEntry scriptEntry = fileEntryService.getOne(user, perfTest.getScriptName());
-			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
-			perfTest.setScriptRevision(revision);
+			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1L;
+			perfTest.setScriptRevision(String.valueOf(revision));
 		}
 	}
 
@@ -634,7 +636,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		FileEntry scriptEntry = checkNotNull(
 				fileEntryService.getOne(user,
 						checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name"),
-						getSafe(perfTest.getScriptRevision())), "script should exist");
+						getSafe(valueOf(perfTest.getScriptRevision()))), "script should exist");
 		// Get all files in the script path
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
 
@@ -1187,7 +1189,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					if (NULL_STRING.equals(dataList[4]) || UNDEFINED_STRING.equals(dataList[4])) {
 						userMemoryMetrics.add(null);
 					} else {
-						userMemoryMetrics.add(Long.valueOf(dataList[4]) - Long.valueOf(dataList[3]));
+						userMemoryMetrics.add(valueOf(dataList[4]) - valueOf(dataList[3]));
 					}
 					addCustomData(cpuUsedMetrics, 5, dataList);
 					addCustomData(networkReceivedMetrics, 6, dataList);
