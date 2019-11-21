@@ -1,17 +1,23 @@
 <template>
-    <div class="container">
-        <vue-headful :title="i18n('operation.script.title')"/>
-        <fieldset>
-            <legend class="header border-bottom d-flex">
-                <span v-text="i18n('navigator.dropDown.scriptConsole')"></span>
-                <button class="btn btn-success mt-auto mb-auto ml-auto" @click="runScript">
-                    <i class="fa fa-play mr-1"></i>
-                    <span v-text="i18n('operation.script.runScript')"></span>
-                </button>
-            </legend>
-        </fieldset>
-        <code-mirror ref="editor"></code-mirror>
-        <pre class="rounded border" v-text="result"></pre>
+    <div class="container d-flex flex-column flex-grow-0 vh-100 overflow-y-auto">
+        <div class="flex-grow-0">
+            <vue-headful :title="i18n('operation.script.title')"/>
+            <fieldset>
+                <legend class="header border-bottom d-flex">
+                    <span v-text="i18n('navigator.dropDown.scriptConsole')"></span>
+                    <button class="btn btn-success mt-auto mb-auto ml-auto" @click="runScript">
+                        <i class="fa fa-play mr-1"></i>
+                        <span v-text="i18n('operation.script.runScript')"></span>
+                    </button>
+                </legend>
+            </fieldset>
+        </div>
+        <div class="flex-grow-1 overflow-y-auto">
+            <code-mirror class="h-100" ref="editor"></code-mirror>
+        </div>
+        <div class="flex-grow-0">
+            <pre class="rounded border" v-text="result"></pre>
+        </div>
     </div>
 </template>
 
@@ -50,10 +56,6 @@
             '\n' +
             'please refer nGrinder javadoc to find out more APIs on the given variables.\n';
 
-        mounted() {
-            this.codemirror.setSize(null, 400);
-        }
-
         get codemirror() {
             return this.$refs.editor.codemirror;
         }
@@ -75,7 +77,7 @@
 
     pre {
         height: 250px;
-        margin: 5px 0 20px;
+        margin-top: 5px;
         padding: 14px 10px;
         max-height: 340px;
         overflow-y: scroll;
@@ -83,7 +85,4 @@
         background-color: #f5f5f5;
     }
 
-    button {
-        height: 30px;
-    }
 </style>
