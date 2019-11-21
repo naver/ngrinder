@@ -415,8 +415,6 @@
 
 <style lang="less" scoped>
     .perftest-list-container {
-        margin-bottom: 80px;
-
         .img-unit {
             height: 110px;
             padding: 0;

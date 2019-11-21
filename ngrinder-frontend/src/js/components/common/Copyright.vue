@@ -23,9 +23,8 @@
 
 <style lang="less" scoped>
     footer {
-        position: fixed;
-        height: 40px;
-        bottom: 0;
+        min-height: 40px;
+        margin-top: 10px;
         width: 100%;
         background-color: #f5f4f2;
 

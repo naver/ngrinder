@@ -69,11 +69,9 @@
 
 <style lang="less" scoped>
     .container {
-        padding-top: 40px !important;
-
         .alert-block {
             color: #c09853;
-            padding: 5px 20px;
+            padding: 45px 20px 0;
             margin-bottom: 0;
             text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
             background-color: #fcf8e3;

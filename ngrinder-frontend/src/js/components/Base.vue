@@ -216,10 +216,4 @@
             }
         }
     }
-
-    @media only screen and (max-height: 950px) {
-        body {
-            margin-bottom: 50px !important;
-        }
-    }
 </style>
