@@ -206,8 +206,6 @@
 
 <style lang="less" scoped>
     .detail-report {
-        margin-bottom: 80px;
-
         header {
             display: flex;
             align-items: center;

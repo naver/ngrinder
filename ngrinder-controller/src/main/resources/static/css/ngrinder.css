@@ -308,3 +308,7 @@ legend a {
 hr.small {
 	margin : 4px;
 }
+
+.overflow-y-auto {
+	overflow-y: auto;
+}
