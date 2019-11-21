@@ -1,23 +1,27 @@
 <template>
-    <div class="container">
-        <vue-headful :title="i18n('operation.announcement.title')"/>
-        <fieldset class="mb-0">
-            <legend class="header border-bottom d-flex">
-                <span v-text="i18n('navigator.dropDown.announcement')"></span>
-                <small class="ml-3" v-text="i18n('operation.announcement.help')"></small>
-                <span class="ml-auto mt-auto mb-auto">
-                    <button class="btn btn-primary" @click="test">
-                        <i class="fa fa-play mr-1"></i>
-                        <span v-text="i18n('common.button.test')"></span>
-                    </button>
-                    <button class="btn btn-success" @click="save">
-                        <i class="fa fa-save mr-1"></i>
-                        <span v-text="i18n('common.button.save')"></span>
-                    </button>
-                </span>
-            </legend>
-        </fieldset>
-        <code-mirror ref="editor" :options="{ mode: 'text/html' }"></code-mirror>
+    <div class="container d-flex flex-column flex-grow-0 vh-100 overflow-y-auto">
+        <div class="flex-grow-0">
+            <vue-headful :title="i18n('operation.announcement.title')"/>
+            <fieldset class="mb-0">
+                <legend class="header border-bottom d-flex">
+                    <span v-text="i18n('navigator.dropDown.announcement')"></span>
+                    <small class="ml-3" v-text="i18n('operation.announcement.help')"></small>
+                    <span class="ml-auto mt-auto mb-auto">
+                        <button class="btn btn-primary" @click="test">
+                            <i class="fa fa-play mr-1"></i>
+                            <span v-text="i18n('common.button.test')"></span>
+                        </button>
+                        <button class="btn btn-success" @click="save">
+                            <i class="fa fa-save mr-1"></i>
+                            <span v-text="i18n('common.button.save')"></span>
+                        </button>
+                    </span>
+                </legend>
+            </fieldset>
+        </div>
+        <div class="flex-grow-1 overflow-y-auto">
+            <code-mirror class="h-100" ref="editor" :options="{ mode: 'text/html' }"></code-mirror>
+        </div>
     </div>
 </template>
 
@@ -39,7 +43,6 @@
 
         mounted() {
             this.pullAnnouncement();
-            this.$refs.editor.codemirror.setSize(null, 500);
         }
 
         beforeDestroy() {
@@ -88,10 +91,6 @@
         small {
             font-size: 15px;
             color: #999999;
-        }
-
-        button {
-            height: 30px;
         }
     }
 </style>

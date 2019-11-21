@@ -94,6 +94,7 @@
     .CodeMirror {
         border: 1px solid #dddddd;
         font-family: Consolas, monospace;
+        height: 100%;
     }
 
     .cm-tab {
