@@ -1,6 +1,6 @@
 <template>
-    <div class="container" ref="container">
-        <div class="file-desc-container">   <!-- card card-header -->
+    <div class="container d-flex flex-column overflow-y-auto">
+        <div class="file-desc-container flex-grow-0">   <!-- card card-header -->
             <div class="form-horizontal">
                 <div class="mb-2 flex-box control-group">
                     <div>
@@ -69,11 +69,13 @@
                 </div>
             </div>
         </div>
-        <code-mirror ref="editor"
-                     :value="this.file.content"
-                     :options="cmOptions"></code-mirror>
-        <div class="float-right tip" data-toggle="popover" title="Tip" data-html="true"
-             data-placement="left" data-trigger="hover" :data-content="
+        <div class="flex-grow-1 overflow-y-auto">
+            <code-mirror ref="editor"
+                         class="h-100"
+                         :value="this.file.content"
+                         :options="cmOptions"></code-mirror>
+            <div class="float-right tip" style="margin-left: auto; order:2" data-toggle="popover" title="Tip" data-html="true"
+                 data-placement="left" data-trigger="hover" :data-content="
             'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
             'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
             'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
@@ -81,8 +83,10 @@
             'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
             'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
             'ESC : ' + i18n('script.editor.tip.back') ">
-            <code class="tip">Tip</code>
+                <code class="tip">Tip</code>
+            </div>
         </div>
+
         <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
         </div>
@@ -92,7 +96,7 @@
                  v-text="validationResult">
             </pre>
             <div class="float-right expand-btn-container">
-                <a class="pointer-cursor" @click="expand">
+                <a class="pointer-cursor" @click="validationResultExpanded = !validationResultExpanded">
                     <code v-text="validationResultExpanded ? '-' : '+'"></code>
                 </a>
             </div>
@@ -103,7 +107,7 @@
 </template>
 
 <script>
-    import { Component, Prop, Watch } from 'vue-property-decorator';
+    import { Component, Prop } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
 
     import Base from '../Base.vue';
@@ -135,8 +139,6 @@
 
         targetHosts = [];
         targetHostIp = '';
-
-        editorSize = 0;
 
         validated = false;
         validating = false;
@@ -191,7 +193,6 @@
             this.validated = this.file.validated;
 
             this.cmOptions = { mode: this.codemirrorKey };
-            this.editorSize = 500;
             this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
 
@@ -292,23 +293,6 @@
             const hostToken = host.split(':');
             this.targetHostIp = hostToken[1] ? hostToken[1] : hostToken[0];
             this.$refs.targetHostInfoModal.show();
-        }
-
-        @Watch('editorSize')
-        editorSizeChanged(newValue) {
-            if (!newValue) {
-                return;
-            }
-            this.$refs.editor.setSize(null, newValue);
-        }
-
-        expand() {
-            this.validationResultExpanded = !this.validationResultExpanded;
-            if (this.validationResultExpanded) {
-                this.editorSize -= 200;
-            } else {
-                this.editorSize += 200;
-            }
         }
 
         get basePath() {
