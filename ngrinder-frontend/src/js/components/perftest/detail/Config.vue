@@ -118,7 +118,7 @@
                          :data-content="i18n('perfTest.config.targetHost.help')">
                         <div v-for="(host, index) in targetHosts" class="host">
                             <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                            <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
+                            <i class="fa fa-times-circle pointer-cursor" @click="removeHost(host, index)"></i>
                         </div>
                     </div>
                     <input type="hidden" name="targetHosts" :value="targetHosts.join(',')">
@@ -298,7 +298,6 @@
 
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover();
-                this.$refs.rampUp.updateRampUpChart();
             });
         }
 
@@ -339,7 +338,7 @@
         showScript() {
             let showScriptUrl = `${this.contextPath}/script/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`;
             if (this.isAdmin || this.isSuperUser) {
-                showScriptUrl += `&ownerId=${this.test.config.createdUser.userId}`;
+                showScriptUrl += `&ownerId=${this.test.createdUser.userId}`;
             }
             const openedWindow = window.open(showScriptUrl, 'scriptSource');
             openedWindow.focus();
@@ -348,7 +347,7 @@
         changeScript(revision) {
             if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
                 this.test.config.scriptRevision = revision;
-                this.getTargetHosts();
+                this.refreshTargetHosts();
                 this.getScriptResource();
                 this.display.showScriptBtn = true;
             } else {
@@ -359,14 +358,15 @@
             }
         }
 
-        getTargetHosts() {
+        refreshTargetHosts() {
             this.$http.get(`/script/api/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`)
                 .then(res => {
                     if (res.data.file && res.data.file.properties.targetHosts) {
-                        this.targetHosts = res.data.file.properties.targetHosts.split(',');
+                        this.test.config.targetHosts = res.data.file.properties.targetHosts;
                     } else {
-                        this.targetHosts = [];
+                        this.test.config.targetHosts = '';
                     }
+                    this.setTargetHosts(this.test.config.targetHosts);
                 });
         }
 
@@ -388,9 +388,7 @@
 
             this.$validator.extend('regionValidation', {
                 getMessage: () => this.i18n('perfTest.message.region'),
-                validate: () => {
-                    return !this.ngrinder.config.clustered || (this.ngrinder.config.clustered && this.test.config.region !== 'NONE');
-                },
+                validate: () => this.ngrinder.config.clustered || (this.ngrinder.config.clustered && this.test.config.region !== 'NONE'),
             });
         }
 
@@ -464,18 +462,26 @@
             this.changeDuration({ focus: true });
         }
 
+        // TODO: Change targetHosts to array. Not the comma separated string.
         addHost(newHost) {
             if (this.targetHosts.some(host => host === newHost)) {
                 return;
             }
             this.targetHosts.push(newHost);
+            this.test.config.targetHosts = this.targetHosts.join(',');
         }
 
-        setTargetHosts(targetHosts) {
-            if (!targetHosts) {
-                return;
+        removeHost(host, index) {
+            this.targetHosts.splice(index, 1);
+            this.test.config.targetHosts = this.targetHosts.join(',');
+        }
+
+        setTargetHosts(hosts) {
+            this.targetHosts.splice(0, this.targetHosts.length);
+
+            if (hosts) {
+                hosts.split(',').forEach(host => this.targetHosts.push(host));
             }
-            targetHosts.split(',').forEach(host => this.targetHosts.push(host));
         }
 
         showTargetHostInfoModal(host) {
@@ -518,10 +524,14 @@
 <style lang="less" scoped>
     .config-container {
         .basic-config-container {
-            width: 460px;
+            width: 590px;
 
             .form-horizontal {
                 margin-top: 10px;
+
+                hr {
+                    margin: 20px 0;
+                }
             }
 
             .badge-info {
@@ -607,7 +617,7 @@
         div {
             &.div-resources {
                 border: 1px solid #D6D6D6;
-                height: 40px;
+                height: 60px;
                 margin-bottom: 8px;
                 overflow-y: auto;
                 border-radius: 3px;
@@ -624,7 +634,7 @@
 
             &.div-host {
                 border: 1px solid #D6D6D6;
-                height: 50px;
+                height: 70px;
                 margin-bottom: 8px;
                 overflow-y: auto;
                 border-radius: 3px;
@@ -647,8 +657,8 @@
         .add-host-btn {
             font-size: 10px;
             padding: 1px 3px;
-            margin-top: 30px;
-            margin-left: 283px;
+            margin-top: 50px;
+            margin-left: 413px;
             position: absolute;
 
             i {
@@ -657,7 +667,7 @@
         }
 
         .control-group {
-            margin-bottom: 5px;
+            margin-bottom: 15px;
 
             &.script-control-group {
                 margin-bottom: 20px;

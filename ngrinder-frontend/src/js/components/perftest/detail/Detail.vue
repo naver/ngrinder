@@ -17,7 +17,7 @@
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 175px" type="input" name="tagString"
+                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; height: 30px;" type="input" name="tagString"
                                                  :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
                                                   maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
                                         </select2>
@@ -467,7 +467,7 @@
 
             .control-label {
                 padding-top: 5px;
-                width: 95px;
+                width: 110px;
             }
         }
 
@@ -478,11 +478,11 @@
         }
 
         .controls {
-            margin-left: 120px;
+            margin-left: 130px;
         }
 
         .tag-container {
-            width: 260px;
+            width: 414px;
 
             label.control-label {
                 width: 60px;
@@ -494,11 +494,11 @@
         }
 
         .test-name-container {
-            width: 360px;
-            height: 48px;
+            width: 430px;
+            height: 40px;
 
             input {
-                width: 240px;
+                width: 300px;
             }
         }
 
@@ -538,7 +538,8 @@
 
         #description {
             resize: none;
-            width: 776px;
+            width: 990px;
+            height: 66px;
         }
 
         #save_schedule_btn {
