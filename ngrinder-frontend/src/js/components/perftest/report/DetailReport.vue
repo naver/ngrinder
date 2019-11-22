@@ -109,11 +109,11 @@
                         </tr>
                         <tr v-if="test.description">
                             <th v-text="i18n('common.label.description')"></th>
-                            <td colspan="3" v-text="test.description.replace(/\n/g, '<br>')"></td>
+                            <td colspan="3" v-html="test.description.replace(/\n/g, '<br>')"></td>
                         </tr>
                         <tr v-if="test.testComment">
                             <th v-text="i18n('perfTest.report.testComment')"></th>
-                            <td colspan="3" v-text="test.testComment.replace(/\n/g, '<br>')"></td>
+                            <td colspan="3" v-html="test.testComment.replace(/\n/g, '<br>')"></td>
                         </tr>
                     </table>
                     <div>
@@ -210,7 +210,7 @@
             display: flex;
             align-items: center;
             height: 60px;
-            width: 940px;
+            width: 1200px;
             margin: 0 auto 20px auto;
             min-height: 40px;
             padding-left: 20px;
@@ -275,7 +275,7 @@
 
         .report-chart-container {
             margin-left: 20px;
-            width: 700px;
+            width: 960px;
 
             .table {
                 margin-bottom: 35px;
