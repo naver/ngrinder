@@ -329,13 +329,13 @@
 
     #description {
         resize: none;
-        height: 65px;
-        width: 460px;
+        height: 90px;
+        width: 700px;
     }
 
     .uneditable-input {
         cursor: text;
-        width: 460px;
+        width: 700px;
     }
 
     .tip {
@@ -345,7 +345,7 @@
     .flex-box {
         display: flex;
 
-        div {
+        > div {
             margin-left: 10px;
         }
 
@@ -361,7 +361,7 @@
     }
 
     .add-host-btn {
-        margin-top: 45px;
+        margin-top: 70px;
         margin-left: 194px;
         position: absolute;
         padding: 1px 4px;
@@ -373,21 +373,19 @@
         text-align: center;
     }
 
-    div {
-        .div-host {
+    .div-host {
             background-color: #FFF;
             border: 1px solid #D6D6D6;
-            height: 65px;
+            height: 90px;
             overflow-y: scroll;
             border-radius: 3px;
             width: 250px;
             margin-left: 0;
         }
 
-        .host {
-            color: #666;
-            margin: 2px 0 2px 7px;
-        }
+    .host {
+        color: #666;
+        margin: 2px 0 2px 7px;
     }
 
     .validation-result {
