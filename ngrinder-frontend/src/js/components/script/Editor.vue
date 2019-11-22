@@ -74,7 +74,10 @@
                          class="h-100"
                          :value="this.file.content"
                          :options="cmOptions"></code-mirror>
-            <div class="float-right tip" style="margin-left: auto; order:2" data-toggle="popover" title="Tip" data-html="true"
+        </div>
+        <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
+            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
+            <div class="float-right pointer-cursor tip"  data-toggle="popover" title="Tip" data-html="true"
                  data-placement="left" data-trigger="hover" :data-content="
             'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
             'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
@@ -83,12 +86,8 @@
             'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
             'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
             'ESC : ' + i18n('script.editor.tip.back') ">
-                <code class="tip">Tip</code>
+                <code>Tip</code>
             </div>
-        </div>
-
-        <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
-            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
         </div>
         <div v-show="showValidationResult" class="validation-result-panel">
             <pre class="border validation-result"
@@ -322,6 +321,10 @@
         flex-direction: column;
         border: 1px solid rgba(0, 0, 0, 0.125);
         border-radius: 0.25rem;
+
+        .control-label {
+            margin-right: 10px;
+        }
     }
 
     #description {
@@ -336,10 +339,7 @@
     }
 
     .tip {
-        float: right;
-        cursor: pointer;
-        margin-top: -12px;
-        margin-right: -15px;
+        margin-top: -10px;
     }
 
     .flex-box {
