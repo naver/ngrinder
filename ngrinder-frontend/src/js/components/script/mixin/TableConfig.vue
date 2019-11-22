@@ -22,12 +22,12 @@
                     name: '__slot:path',
                     title: this.i18n('script.list.name'),
                     sortField: 'path',
-                    width: '230px',
+                    width: '330px',
                 },
                 {
                     name: '__slot:description',
                     title: this.i18n('script.list.commit'),
-                    width: '230px',
+                    width: '390px',
                 },
                 {
                     name: '__slot:lastModifiedDate',
