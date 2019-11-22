@@ -2,7 +2,10 @@
     <div class="container d-flex flex-column overflow-y-auto">
         <div class="file-desc-container flex-grow-0">   <!-- card card-header -->
             <div class="form-horizontal">
-                <div class="mb-2 flex-box control-group">
+                <div class="flex-box control-group" :class="{ 'mb-2' : !hideDescription }">
+                    <div class="caret-box pointer-cursor" @click="toggleHideDescription">
+                        <i class="fa" :class="{ 'fa-caret-up' : !hideDescription, 'fa-caret-down' : hideDescription }"></i>
+                    </div>
                     <div>
                         <label class="control-label" v-text="i18n('script.info.name')"></label>
                     </div>
@@ -39,7 +42,7 @@
                         </template>
                     </div>
                 </div>
-                <div class="flex-box">
+                <div class="flex-box description-container" v-show="!hideDescription">
                     <div>
                         <label class="control-label" for="description" v-text="i18n('script.action.commit')"></label>
                     </div>
@@ -89,7 +92,7 @@
                 <code>Tip</code>
             </div>
         </div>
-        <div v-show="showValidationResult" class="validation-result-panel">
+        <div v-show="showValidationResult" class="validation-result-panel"> <!-- TODO: Think that the best UX will be the resizable one -->
             <pre class="border validation-result"
                  :class="{ expanded: validationResultExpanded }"
                  v-text="validationResult">
@@ -146,6 +149,9 @@
 
         cmOptions = {};
 
+        SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
+        hideDescription = false;
+
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
             const revision = to.query.r || -1;
@@ -161,6 +167,10 @@
                 .then(res => Object.assign(to.params, res.data))
                 .then(next)
                 .catch(() => next('/script'));
+        }
+
+        created() {
+            this.hideDescription = this.$ls.get(this.SCRIPT_DESCRIPTION_HIDE_KEY, false, Boolean);
         }
 
         mounted() {
@@ -294,6 +304,11 @@
             this.$refs.targetHostInfoModal.show();
         }
 
+        toggleHideDescription() {
+            this.hideDescription = !this.hideDescription;
+            this.$ls.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
+        }
+
         get basePath() {
             return this.remainedPath.substring(0, this.remainedPath.lastIndexOf('/'));
         }
@@ -322,14 +337,24 @@
         border: 1px solid rgba(0, 0, 0, 0.125);
         border-radius: 0.25rem;
 
+        div.caret-box {
+            position: absolute;
+            margin-left: 5px;
+            padding: 5px;
+        }
+
         .control-label {
             margin-right: 10px;
         }
     }
 
+    .description-container {
+        height: 90px;
+    }
+
     #description {
         resize: none;
-        height: 90px;
+        height: 100%;
         width: 700px;
     }
 
@@ -376,7 +401,7 @@
     .div-host {
             background-color: #FFF;
             border: 1px solid #D6D6D6;
-            height: 90px;
+            height: 100%;
             overflow-y: scroll;
             border-radius: 3px;
             width: 250px;
