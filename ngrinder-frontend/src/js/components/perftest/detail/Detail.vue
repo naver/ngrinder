@@ -147,6 +147,7 @@
             return {
                 id: test.id,
                 createdUser: test.createdUser,
+                progressMessage: test.progressMessage,
                 lastProgressMessage: test.lastProgressMessage,
                 testName: test.testName,
                 tagString: test.tagString,
