@@ -128,7 +128,7 @@
             },
             basePath: {
                 type: String,
-                default: 'user',
+                default: '/user',
             },
         },
         components: { ControlGroup, InputAppend, Select2 },
@@ -212,7 +212,7 @@
         save() {
             this.$validator.validateAll().then(result => {
                 if (result) {
-                    this.$http.post(`/${this.basePath}/api/save`, this.user)
+                    this.$http.post(`${this.basePath}/api/save`, this.user)
                         .then(() => this.$emit('saved'))
                         .catch(() => this.showErrorMsg(this.i18n('user.message.save.error')));
                 }
@@ -234,7 +234,7 @@
                 getMessage: this.i18n('user.info.userId.exist'),
                 validate: userId => {
                     if (userId && userId.length > 0) {
-                        return this.$http.get(`/${this.basePath}/api/${userId}/check_duplication`)
+                        return this.$http.get(`${this.basePath}/api/${userId}/check_duplication`)
                             .then(res => res.data.success);
                     } else {
                         return false;
