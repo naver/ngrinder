@@ -16,9 +16,16 @@
                 <i class="mr-1 fa fa-arrow-up"></i>
                 <span v-text="i18n('agent.list.update')"></span>
             </button>
-            <button class="btn btn-danger" @click="stopAgents">
+            <button class="btn btn-danger mr-3" @click="stopAgents">
                 <i class="mr-1 fa fa-stop"></i>
                 <span v-text="i18n('common.button.stop')"></span>
+            </button>
+
+            <input class="mr-1 form-control search-input" type="text" ref="searchInput"
+                   placeholder="Keywords" @keydown.enter.prevent="search"/>
+            <button class="btn btn-info" @click="search">
+                <i class="fa fa-search mr-1"></i>
+                <span v-text="i18n('common.button.search')"></span>
             </button>
 
             <div class="input-prepend ml-auto mt-auto mb-auto">
@@ -114,6 +121,9 @@
         downloadLink = '';
         updateStatesTimer = null;
 
+        query = '';
+        queryFilter = () => true;
+
         table = {
             css: {},
             renderingData: {
@@ -130,9 +140,15 @@
 
         mounted() {
             this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
+
             this.region = this.$route.query.region || this.region;
             this.updateDownloadLink();
-            this.updateStates(true);
+
+            this.query = this.$route.query.query || '';
+            this.queryFilter = this.createQueryFilter(this.query);
+            this.$refs.searchInput.value = this.query; // Prevent to update query by periodic status update
+
+            this.initAgents();
         }
 
         beforeDestroy() {
@@ -171,21 +187,30 @@
             });
         }
 
-        updateStates(initialize) {
-            this.$http.get('/agent/api/list', { params: { region: this.region } })
-                .then(res => {
-                    this.agents = this.appendAgentKey(res.data);
-                    if (initialize) {
-                        this.table.renderingData.data = _.slice(this.agents, 0, this.table.renderingData.pagination.perPage);
-                        this.table.renderingData.pagination.total = this.agents.length;
-                        this.table.renderingData.pagination.last_page =
-                            Math.ceil(this.table.renderingData.pagination.total / this.table.renderingData.pagination.perPage);
-                        this.$refs.vuetable.setData(this.table.renderingData);
-                    }
-                    this.$refs.vuetable.reload();
+        initAgents() {
+            this.getAgents()
+                .then(() => {
+                    this.table.renderingData.data = _.slice(this.agents, 0, this.table.renderingData.pagination.perPage);
+                    this.table.renderingData.pagination.total = this.agents.length;
+                    this.table.renderingData.pagination.last_page =
+                        Math.ceil(this.table.renderingData.pagination.total / this.table.renderingData.pagination.perPage);
+                    this.$refs.vuetable.setData(this.table.renderingData);
                 })
-                .then(() => history.replaceState('', '', this.region ? `${this.contextPath}/agent?region=${this.region}` : `${this.contextPath}/agent`))
+                .then(() => this.$refs.vuetable.reload())
+                .then(() => history.replaceState('', '', this.makeQueryString()))
                 .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
+        }
+
+        updateStates() {
+            this.getAgents()
+                .then(() => this.$refs.vuetable.reload())
+                .then(() => history.replaceState('', '', this.makeQueryString()))
+                .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
+        }
+
+        getAgents() {
+            return this.$http.get('/agent/api/list', { params: { region: this.region } })
+                .then(res => this.agents = this.appendAgentKey(res.data).filter(this.queryFilter));
         }
 
         appendAgentKey(agents) {
@@ -195,12 +220,37 @@
             });
         }
 
-        changeRegion(event) {
-            this.region = event.target.value;
-
+        changeRegion() {
             clearTimeout(this.updateStatesTimer);
             this.updateStates();
             this.updateDownloadLink();
+        }
+
+        search() {
+            this.query = this.$refs.searchInput.value;
+            this.queryFilter = this.createQueryFilter(this.query);
+            clearTimeout(this.updateStatesTimer);
+            this.updateStates();
+        }
+
+        createQueryFilter(query) {
+            const contains = (string, keyword) => string.indexOf(keyword) > -1;
+            return agent => !query || contains(agent.name, query) || contains(agent.ip, query);
+        }
+
+        makeQueryString() {
+            const url = `${this.contextPath}/agent`;
+            const params = [];
+
+            if (this.region) {
+                params.push(`region=${this.region}`);
+            }
+
+            if (this.query) {
+                params.push(`query=${this.query}`);
+            }
+
+            return params ? `${url}?${params.join('&')}` : url;
         }
 
         update() {
@@ -336,5 +386,10 @@
 
     .search-bar {
         flex-direction: row;
+
+        .search-input {
+            width: 150px;
+            height: inherit;
+        }
     }
 </style>
