@@ -7,7 +7,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
                 <div class="modal-body">
-                    <user-info base-path="sign_up" :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
+                    <user-info :base-path="basePath" :userProps="user" :config="config" ref="userInfo" @saved="$emit('saved') & hide()"></user-info>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
         dataLoadFinished = false;
 
         created() {
-            this.$http.get('/sign_up/api/new').then(res => {
+            this.$http.get(`${this.basePath}/api/new`).then(res => {
                 this.user = res.data.user;
                 this.config = res.data.config;
                 this.dataLoadFinished = true;
@@ -40,6 +40,10 @@
 
         reset() {
             this.$refs.userInfo.reset();
+        }
+
+        get basePath() {
+            return this.$route.name === 'login' ? '/sign_up' : '/user';
         }
     }
 
@@ -51,6 +55,10 @@
 
         .modal.fade.in {
             top: 2%;
+        }
+
+        .modal-dialog {
+            margin-top: 80px;
         }
 
         .modal-body {

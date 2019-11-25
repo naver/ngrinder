@@ -17,7 +17,7 @@
                 <span v-text="i18n('common.button.search')"></span>
             </button>
             <div class="ml-auto">
-                <button class="btn btn-info" @click="$router.push({ path : '/user/new' })">
+                <button class="btn btn-info" @click="$refs.signUpModal.show()">
                     <i class="fa fa-user mr-1"></i>
                     <span v-text="i18n('user.list.button.create')"></span>
                 </button>
@@ -82,6 +82,7 @@
             :css="table.css.pagination"
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
+        <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()"></sign-up-modal>
     </div>
 </template>
 
@@ -95,10 +96,11 @@
     import Base from '../Base.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
+    import SignUpModal from './modal/SignUpModal.vue';
 
     @Component({
         name: 'userList',
-        components: { vueHeadful, Paginate, Vuetable, VuetablePagination },
+        components: { vueHeadful, Paginate, Vuetable, VuetablePagination, SignUpModal },
     })
     export default class UserList extends Mixins(Base, MessagesMixin, TableConfig) {
         roles = [{
