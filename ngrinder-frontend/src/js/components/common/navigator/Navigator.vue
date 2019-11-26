@@ -23,7 +23,7 @@
                             <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name}(${ngrinder.currentUser.factualUser.name})`"></span>
                             <span v-else v-text="ngrinder.currentUser.name"></span>
                         </a>
-                        <user-menu class="user-menu" @showUserProfileModal="showUserProfileModal = true"
+                        <user-menu class="user-menu" @showUserEditModal="showUserEditModal = true"
                                    @showUserSwitchModal="$refs.userSwitchModal.show()">
                         </user-menu>
                     </li>
@@ -36,7 +36,7 @@
         </nav>
         <announcement></announcement>
         <user-switch-modal ref="userSwitchModal"></user-switch-modal>
-        <user-profile-modal v-if="showUserProfileModal" @hidden="showUserProfileModal = false" ref="userProfileModal"></user-profile-modal>
+        <user-edit-modal v-if="showUserEditModal" @hidden="showUserEditModal = false" ref="userEditModal"></user-edit-modal>
     </header>
 </template>
 
@@ -46,14 +46,14 @@
     import Announcement from '../Announcement.vue';
     import UserMenu from './UserMenu.vue';
     import UserSwitchModal from './modal/UserSwitchModal.vue';
-    import UserProfileModal from '../../user/modal/UserProfileModal.vue';
+    import UserEditModal from '../../user/modal/UserEditModal.vue';
 
     @Component({
         name: 'navigator',
-        components: { Announcement, UserMenu, UserSwitchModal, UserProfileModal },
+        components: { Announcement, UserMenu, UserSwitchModal, UserEditModal },
     })
     export default class Navigator extends Base {
-        showUserProfileModal = false;
+        showUserEditModal = false;
     }
 </script>
 

@@ -45,7 +45,7 @@
             @vuetable:loading="beforeTableLoading">
 
             <template slot="userName" slot-scope="props">
-                <router-link :to="`/user/${props.rowData.userId}`" v-text="props.rowData.userName"></router-link>
+                <span class="pointer-cursor user-name" @click="editUser(props.rowData.userId)" v-text="props.rowData.userName"></span>
             </template>
 
             <template slot="role" slot-scope="props">
@@ -65,9 +65,9 @@
             </template>
 
             <template slot="edit" slot-scope="props">
-                <router-link :to="`/user/${props.rowData.userId}`">
-                    <i class="fa fa-edit text-dark fa-angle-"></i>
-                </router-link>
+                <div class="pointer-cursor" @click="editUser(props.rowData.userId)">
+                    <i class="fa fa-edit"></i>
+                </div>
             </template>
 
             <template slot="delete" slot-scope="props">
@@ -83,6 +83,8 @@
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
         <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()"></sign-up-modal>
+        <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId"
+                            @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = !showUserEditModal"></user-edit-modal>
     </div>
 </template>
 
@@ -97,10 +99,11 @@
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import SignUpModal from './modal/SignUpModal.vue';
+    import UserEditModal from './modal/UserEditModal.vue';
 
     @Component({
         name: 'userList',
-        components: { vueHeadful, Paginate, Vuetable, VuetablePagination, SignUpModal },
+        components: { vueHeadful, Paginate, Vuetable, VuetablePagination, SignUpModal, UserEditModal },
     })
     export default class UserList extends Mixins(Base, MessagesMixin, TableConfig) {
         roles = [{
@@ -121,6 +124,9 @@
         keywords = '';
         sort = 'userName,ASC';
         showTable = false;
+
+        targetUserId = '';
+        showUserEditModal = false;
 
         created() {
             this.table.css = this.tableCss;
@@ -212,6 +218,11 @@
             this.$refs.vuetable.refresh();
         }
 
+        editUser(userId) {
+            this.targetUserId = userId;
+            this.showUserEditModal = true;
+        }
+
         isAdminUser(user) {
             return user.userId === 'admin';
         }
@@ -235,6 +246,10 @@
 
         .table {
             margin-bottom: 7px;
+        }
+
+        .user-name {
+            color: #007bff;
         }
 
         .pagination {
