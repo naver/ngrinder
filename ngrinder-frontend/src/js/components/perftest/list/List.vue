@@ -1,7 +1,7 @@
 <template>
     <div class="container perftest-list-container p-0">
         <vue-headful :title="i18n('perfTest.list.title')"></vue-headful>
-        <div class="img-unit" :style="`background-image: url('${contextPath}/img/bg_perftest_banner_en.png')`"></div>
+        <div class="img-unit" :style="`background-image: url('${contextPath}/img/bg_perftest_banner.png')`"></div>
         <div class="current-running-status-container">
             <code v-text="runningSummary"></code>
         </div>

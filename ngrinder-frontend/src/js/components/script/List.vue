@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <vue-headful :title="i18n('script.list.title')"></vue-headful>
-        <div class="script-img-unit" :style="`background-image: url('${contextPath}/img/bg_script_banner_en.png')`"></div>
+        <div class="script-img-unit" :style="`background-image: url('${contextPath}/img/bg_script_banner.png')`"></div>
 
         <search-bar :currentPath="currentPath" @deleteFile="deleteFile"></search-bar>
 
