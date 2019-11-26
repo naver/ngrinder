@@ -8,7 +8,7 @@
             </template>
             <template v-else>
                 <li>
-                    <a @click.prevent="$emit('showUserProfileModal')" class="dropdown-item" v-text="i18n('navigator.dropDown.profile')"></a>
+                    <a @click.prevent="$emit('showUserEditModal')" class="dropdown-item" v-text="i18n('navigator.dropDown.profile')"></a>
                 </li>
                 <li>
                     <a @click.prevent="$emit('showUserSwitchModal')" class="dropdown-item" v-text="i18n('navigator.dropDown.switchUser')"></a>

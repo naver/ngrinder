@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoadFinished" id="user-profile-modal" class="modal fade">
+    <div v-if="dataLoadFinished" id="user-edit-modal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header align-items-center">
@@ -7,7 +7,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
                 <div class="modal-body">
-                    <user-info :userProps="user" :config="config" ref="userInfo" @saved="hide"></user-info>
+                    <user-info :userProps="user" :config="config" ref="userInfo" @saved="$emit('saved') & hide()"></user-info>
                 </div>
             </div>
         </div>
@@ -16,37 +16,45 @@
 
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import Component from 'vue-class-component';
+    import { Component, Prop } from 'vue-property-decorator';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import UserInfo from '../UserInfo.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
     @Component({
-        name: 'userProfileModal',
+        name: 'userEditModal',
         components: { UserInfo },
     })
-    export default class UserProfileModal extends Mixins(ModalBase, MessagesMixin) {
+    export default class UserEditModal extends Mixins(ModalBase, MessagesMixin) {
+        @Prop({ type: String })
+        userId;
+
         user = {};
         config = {};
         dataLoadFinished = false;
 
         created() {
-            this.$http.get('/user/api/profile').then(res => {
-                this.user = res.data.user;
-                this.config = res.data.config;
-                this.dataLoadFinished = true;
-                this.$nextTick(() => {
-                    this.show();
-                    $(this.$el).on('hidden.bs.modal', () => this.$emit('hidden'));
-                });
-            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
+            const url = this.userId ? `/user/api/${this.userId}/detail` : '/user/api/profile';
+            this.$http.get(url)
+                .then(res => this.init(res.data.user, res.data.config))
+                .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
+        }
+
+        init(user, config) {
+            this.user = user;
+            this.config = config;
+            this.dataLoadFinished = true;
+            this.$nextTick(() => {
+                this.show();
+                $(this.$el).on('hidden.bs.modal', () => this.$emit('hidden'));
+            });
         }
     }
 
 </script>
 
 <style lang="less" scoped>
-    #user-profile-modal {
+    #user-edit-modal {
         .modal-dialog {
             margin-top: 80px;
         }
