@@ -1,7 +1,7 @@
 <template>
     <main class="container">
         <vue-headful :title="i18n('home.title')"/>
-        <div class="main-banner" :style="`background-image: url('${contextPath}/img/bg_main_banner_en.png')`" data-step="1" :data-intro="i18n('intro.index.quick.start')">
+        <div class="main-banner" :style="`background-image: url('${contextPath}/img/bg_main_banner.png')`" data-step="1" :data-intro="i18n('intro.index.quick.start')">
             <div class="quick-start" :data-original-title="i18n('home.tip.url.title')" :data-content="i18n('home.tip.url.content')" data-placement="bottom" rel="popover">
                 <input v-focus type="text" name="url" class="form-control" v-validate="{url: {require_protocol: true}, required: true}" ref="inputQuickStartUrl"
                        :class="{error: errors.any()}" :placeholder="i18n('home.placeholder.url')" data-step="2" :data-intro="i18n('intro.index.test.url')" v-model="quickStartUrl"/>
@@ -119,8 +119,8 @@
         }
 
         .quick-start {
-            padding-left: 160px;
-            padding-top: 35px;
+            padding-left: 290px;
+            padding-top: 30px;
 
             * {
                 margin: 0;
