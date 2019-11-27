@@ -29,7 +29,7 @@
                                        labelMessageKey="perfTest.config.region"
                                        labelHelpMessageKey="perfTest.config.region">
                             <select2 name="region" ref="region" v-model="test.config.region" @change="changeMaxAgentCount"
-                                     errStyle="position: absolute; max-width: 170px; margin-left: -51px;"
+                                     errStyle="position: absolute; max-width: 170px;"
                                      class="required" customStyle="width: 120px;" :validationRules="{ regionValidation: true, required: true }">
                                 <option v-for="region in config.regions" :value="region" :selected="region === test.config.region" v-text="region"></option>
                             </select2>
@@ -388,7 +388,7 @@
 
             this.$validator.extend('regionValidation', {
                 getMessage: () => this.i18n('perfTest.message.region'),
-                validate: () => this.ngrinder.config.clustered || (this.ngrinder.config.clustered && this.test.config.region !== 'NONE'),
+                validate: () => !this.ngrinder.config.clustered || (this.ngrinder.config.clustered && this.test.config.region !== 'NONE'),
             });
         }
 
