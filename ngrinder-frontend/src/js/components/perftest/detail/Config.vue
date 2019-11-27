@@ -16,65 +16,66 @@
                             <input-append name="agentCount" ref="agentCount"
                                           type="number" v-model="test.config.agentCount"
                                           :validationRules="agentCountValidationRules"
-                                          errStyle="width: 145px; word-break: break-all; white-space: normal;"
+                                          errStyle="width: 165px; white-space: normal;"
                                           appendPrefix="perfTest.config.max"
                                           :append="maxAgentCount"
                                           message="perfTest.config.agent">
                             </input-append>
                         </control-group>
                     </div>
-                    <div v-if="ngrinder.config.clustered" class="agent-region-container ml-auto">
+                    <div v-if="ngrinder.config.clustered" class="agent-region-container">
                         <control-group id="region" :class="{ error: errors.has('region') }"
                                        ref="regionControlGroup"
-                                       labelStyle="position: absolute;"
                                        labelMessageKey="perfTest.config.region"
                                        labelHelpMessageKey="perfTest.config.region">
                             <select2 name="region" ref="region" v-model="test.config.region" @change="changeMaxAgentCount"
                                      errStyle="position: absolute; max-width: 170px; margin-left: -51px;"
-                                     class="float-right required" customStyle="width: 110px;" :validationRules="{ regionValidation: true, required: true }">
+                                     class="required" customStyle="width: 120px;" :validationRules="{ regionValidation: true, required: true }">
                                 <option v-for="region in config.regions" :value="region" :selected="region === test.config.region" v-text="region"></option>
                             </select2>
                         </control-group>
                     </div>
-                </div>
-                <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }" labelMessageKey="perfTest.config.vuserPerAgent"
-                               ref="vuserPerAgentControlGroup"
-                               :data-step="shownBsTab ? 5 : undefined"
-                               :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
-                    <div class="vuser-per-agent-container">
-                        <input-append name="vuserPerAgent" ref="vuserPerAgent"
-                                      type="number" v-model="test.config.vuserPerAgent"
-                                      :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
-                                      @change="changeVuserPerAgent"
-                                      errStyle="white-space: nowrap; width: 130px;"
-                                      appendPrefix="perfTest.config.max"
-                                      :append="config.maxVuserPerAgent"
-                                      message="perfTest.config.vuserPerAgent">
-                        </input-append>
-                    </div>
-                    <i class="pointer-cursor expand" :style="`background: url('${contextPath}/img/icon_expand.png') no-repeat`" @click="display.vuserPanel = !display.vuserPanel"></i>
-                    <div class="float-right">
+                    <div class="ml-auto">
                         <span class="badge badge-info float-right">
                             <span v-text="i18n('perfTest.config.availVuser')"></span>
                             <span v-text="totalVuser"></span>
                         </span>
                     </div>
-                    <div v-show="display.vuserPanel" class="vuser-panel">
-                        <input-prepend name="processes" type="number" v-model.number="test.config.processes"
-                                       @change="changeProcessThreadCount"
-                                       message="perfTest.config.process" extraCss="control-group">
-                        </input-prepend>
-                        <input-prepend name="threads" type="number" v-model.number="test.config.threads"
-                                       @change="changeProcessThreadCount"
-                                       message="perfTest.config.thread" extraCss="control-group">
-                        </input-prepend>
+                </div>
+                <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }"
+                               labelMessageKey="perfTest.config.vuserPerAgent"
+                               ref="vuserPerAgentControlGroup"
+                               :data-step="shownBsTab ? 5 : undefined"
+                               :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
+                    <div class="d-flex vuser-per-agent-container">
+                        <div>
+                            <input-append name="vuserPerAgent" ref="vuserPerAgent"
+                                          type="number" v-model="test.config.vuserPerAgent"
+                                          :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
+                                          @change="changeVuserPerAgent"
+                                          errStyle="white-space: nowrap; width: 150px;"
+                                          appendPrefix="perfTest.config.max"
+                                          :append="config.maxVuserPerAgent"
+                                          message="perfTest.config.vuserPerAgent">
+                            </input-append>
+                        </div>
+                        <div class="vuser-panel">
+                            <input-prepend name="processes" type="number" v-model.number="test.config.processes"
+                                           @change="changeProcessThreadCount"
+                                           message="perfTest.config.process" extraCss="control-group">
+                            </input-prepend>
+                            <input-prepend name="threads" type="number" v-model.number="test.config.threads"
+                                           @change="changeProcessThreadCount"
+                                           message="perfTest.config.thread" extraCss="control-group">
+                            </input-prepend>
+                        </div>
                     </div>
                 </control-group>
 
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
-                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
+                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 440px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
@@ -146,7 +147,6 @@
                     </control-group>
                     <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.config.threshold === 'R' }" v-model="test.config.threshold"
                                    labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold"
-                                   controlsStyle="height: 45px;"
                                    :data-step="shownBsTab ? 10 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
@@ -524,13 +524,13 @@
 <style lang="less" scoped>
     .config-container {
         .basic-config-container {
-            width: 590px;
+            width: 650px;
 
             .form-horizontal {
                 margin-top: 10px;
 
                 hr {
-                    margin: 20px 0;
+                    margin: 15px 0;
                 }
             }
 
@@ -554,19 +554,19 @@
                 }
 
                 .agent-region-container {
-                    width: 175px;
-                    max-width: 175px;
+                    width: 220px;
+                    max-width: 220px;
                 }
             }
 
             .vuser-per-agent-container {
                 height: 48px;
-                max-width: 173px;
-                display: inline-block;
             }
         }
 
         .vuser-panel {
+            margin-left: 15px;
+
             .input-prepend-container {
                 width: 130px;
             }
@@ -658,7 +658,7 @@
             font-size: 10px;
             padding: 1px 3px;
             margin-top: 50px;
-            margin-left: 413px;
+            margin-left: 463px;
             position: absolute;
 
             i {
@@ -677,6 +677,22 @@
                 &.control-label {
                     width: 110px;
                 }
+            }
+        }
+    }
+</style>
+<style lang="less">
+    .agent-config-container {
+        .agent-region-container {
+            .control-label {
+                float: none;
+                width: fit-content;
+            }
+
+            .controls {
+                display: inline-block;
+                vertical-align: top;
+                margin-left: 5px;
             }
         }
     }
