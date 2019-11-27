@@ -3,7 +3,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header align-items-center">
-                    <h4 class="modal-title" v-text="i18n('navigator.dropDown.profile.title')"></h4>
+                    <h4 class="modal-title" v-text="modalHeader"></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
                 <div class="modal-body">
@@ -48,6 +48,10 @@
                 this.show();
                 $(this.$el).on('hidden.bs.modal', () => this.$emit('hidden'));
             });
+        }
+
+        get modalHeader() {
+            return this.userId ? this.i18n('user.info.header') : this.i18n('navigator.dropDown.profile.title');
         }
     }
 
