@@ -3,7 +3,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header align-items-center">
-                    <h4 class="modal-title" v-text="i18n('user.signup.header')"></h4>
+                    <h4 class="modal-title" v-text="modalHeader"></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </div>
                 <div class="modal-body">
@@ -44,6 +44,10 @@
 
         get basePath() {
             return this.$route.name === 'login' ? '/sign_up' : '/user';
+        }
+
+        get modalHeader() {
+            return this.$route.name === 'login' ? this.i18n('user.signup.header') : this.i18n('user.info.header');
         }
     }
 
