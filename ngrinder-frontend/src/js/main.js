@@ -64,7 +64,10 @@ Vue.use(VueLocalStorage, {
     bind: true,
 });
 Vue.use(VueRouter);
-Vue.use(VeeValidate, {inject: false});
+Vue.use(VeeValidate, {
+    inject: false,
+    useConstraintAttrs: false,
+});
 Vue.use(bFormSlider);
 
 Vue.prototype.$bootbox = BootBox;

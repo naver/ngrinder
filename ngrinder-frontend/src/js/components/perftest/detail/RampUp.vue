@@ -275,7 +275,7 @@
                 padding: {
                     top: 10,
                     right: 16,
-                    left: 58,
+                    left: 40,
                 },
                 oninit() {
                     this.svg.select('g.bb-grid')
@@ -312,7 +312,7 @@
     @import '~billboard.js/dist/theme/insight.min.css';
 
     .ramp-up-container {
-        width: 590px;
+        width: 530px;
         margin-left: 18px;
 
         .ramp-up-config-container {
@@ -320,8 +320,8 @@
         }
 
         #ramp-up-chart {
-            width: 590px;
-            height: 400px;
+            width: 530px;
+            height: 350px;
 
             .chart-background {
                 fill: #fffdf6;
@@ -331,7 +331,7 @@
         }
 
         .ramp-up-config-item {
-            width: 285px;
+            width: 265px;
         }
 
         select {
@@ -360,7 +360,7 @@
     .ramp-up-config-item {
         .input-label-container {
             .controls {
-                margin-left: 140px;
+                margin-left: 150px;
             }
 
             .form-control {
