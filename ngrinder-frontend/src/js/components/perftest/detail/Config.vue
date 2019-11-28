@@ -15,7 +15,7 @@
                                        labelMessageKey="perfTest.config.agent">
                             <div class="input-group">
                                 <div v-if="ngrinder.config.clustered" class="input-group-prepend">
-                                    <button class="btn btn-outline-secondary select-region-btn"
+                                    <button class="btn btn-outline-secondary select-region-btn dropdown-toggle"
                                             type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="flex-grow-1" v-text="currentRegion"></span>
                                         <i class="fa fa-caret-down"></i>
@@ -198,7 +198,8 @@
                                        labelHelpMessageKey="perfTest.config.safeDistribution">
                             <input type="checkbox" name="safeDistribution" v-model="test.config.safeDistribution">
                         </control-group>
-                        <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
+                        <control-group :class="{error: errors.has('param')}"
+                                       name="param" labelMessageKey="perfTest.config.param"
                                        controlsStyle="margin-left: 85px;" labelStyle="width: 70px;">
                             <input-popover name="param"
                                            ref="param"
@@ -512,6 +513,9 @@
 </script>
 
 <style lang="less">
+    @light-gray: #e9ecef;
+    @error-color: #d9534f;
+
     .config-container {
         .advanced-config {
             margin-top: 10px;
@@ -526,11 +530,51 @@
             }
         }
 
+        .agent-region-container {
+            .control-label {
+                float: none;
+                width: fit-content;
+            }
+
+            .controls {
+                display: inline-block;
+                vertical-align: top;
+                margin-left: 5px;
+            }
+        }
+
         .input-append {
             input {
                 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
                     max-width: 74px;
                 }
+            }
+        }
+
+        .dropdown-toggle:after {
+            display: none;
+        }
+
+        .dropdown-item:active {
+            background-color: @light-gray;
+        }
+
+        .error {
+            .btn-outline-secondary {
+                &:hover {
+                    background-color: @light-gray;
+                }
+
+                &:active {
+                    background-color: @light-gray;
+                    color: @error-color;
+                }
+            }
+
+            .show > .btn-outline-secondary.dropdown-toggle {
+                background-color: @light-gray;
+                border-color: @error-color;
+                color: @error-color;
             }
         }
     }
@@ -727,22 +771,6 @@
                 &.control-label {
                     width: 110px;
                 }
-            }
-        }
-    }
-</style>
-<style lang="less">
-    .agent-config-container {
-        .agent-region-container {
-            .control-label {
-                float: none;
-                width: fit-content;
-            }
-
-            .controls {
-                display: inline-block;
-                vertical-align: top;
-                margin-left: 5px;
             }
         }
     }
