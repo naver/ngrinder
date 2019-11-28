@@ -402,7 +402,7 @@
 
         clonePerftest() {
             this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
-            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({ name: 'agentCount' });
+            const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
             this.$validator.validateAll().then(() => {
@@ -421,7 +421,7 @@
 
         saveAndStart() {
             this.$set(this.$refs.config.agentCountValidationRules, 'min_value', 1);
-            const agentCountField = this.$refs.config.$refs.agentCount.$validator.fields.find({ name: 'agentCount' });
+            const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
             this.$validator.validateAll().then(() => {

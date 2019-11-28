@@ -11,28 +11,33 @@
                      :data-step="shownBsTab ? 4 : undefined"
                      :data-intro="shownBsTab ? i18n('intro.config.basic.agent') : undefined">
                     <div class="agent-count-container">
-                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') }"
-                                       labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
-                            <input-append name="agentCount" ref="agentCount"
-                                          type="number" v-model="test.config.agentCount"
-                                          :validationRules="agentCountValidationRules"
-                                          errStyle="width: 165px; white-space: normal;"
-                                          appendPrefix="perfTest.config.max"
-                                          :append="maxAgentCount"
-                                          message="perfTest.config.agent">
-                            </input-append>
-                        </control-group>
-                    </div>
-                    <div v-if="ngrinder.config.clustered" class="agent-region-container">
-                        <control-group id="region" :class="{ error: errors.has('region') }"
-                                       ref="regionControlGroup"
-                                       labelMessageKey="perfTest.config.region"
-                                       labelHelpMessageKey="perfTest.config.region">
-                            <select2 name="region" ref="region" v-model="test.config.region" @change="changeMaxAgentCount"
-                                     errStyle="position: absolute; max-width: 170px;"
-                                     class="required" customStyle="width: 120px;" :validationRules="{ regionValidation: true, required: true }">
-                                <option v-for="region in config.regions" :value="region" :selected="region === test.config.region" v-text="region"></option>
-                            </select2>
+                        <control-group id="agentCount" class="agent-count-control-group" :class="{ error: errors.has('agentCount') || errors.has('region') }"
+                                       labelMessageKey="perfTest.config.agent">
+                            <div class="input-group">
+                                <div v-if="ngrinder.config.clustered" class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary select-region-btn"
+                                            type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="flex-grow-1" v-text="currentRegion"></span>
+                                        <i class="fa fa-caret-down"></i>
+                                        <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a v-for="region in config.regions" class="dropdown-item pointer-cursor"
+                                           @click="test.config.region = region" v-text="region"></a>
+                                    </div>
+                                </div>
+                                <input type="number" class="form-control" name="agentCount" ref="agentCount" min="0"
+                                       v-validate="agentCountValidationRules" v-model="test.config.agentCount"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <span class="mr-1" v-text="i18n('perfTest.config.max')"></span>
+                                        <span v-text="maxAgentCount"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="validation-message"
+                                 v-visible="errors.has('agentCount') || errors.has('region')"
+                                 v-text="errors.first('agentCount') || errors.first('region')"></div>
                         </control-group>
                     </div>
                     <div class="ml-auto">
@@ -42,6 +47,7 @@
                         </span>
                     </div>
                 </div>
+
                 <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }"
                                labelMessageKey="perfTest.config.vuserPerAgent"
                                ref="vuserPerAgentControlGroup"
@@ -127,8 +133,10 @@
                 <hr>
 
                 <div class="threshold-container">
-                    <control-group :class="{ error: errors.has('duration') }" :radio="{ radioValue: 'D', checked: test.config.threshold === 'D' }" v-model="test.config.threshold"
-                                   ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration"
+                    <control-group id="duration" name="threshold" :class="{ error: errors.has('duration') }"
+                                   :radio="{ radioValue: 'D', checked: test.config.threshold === 'D' }"
+                                   labelMessageKey="perfTest.config.duration"
+                                   v-model="test.config.threshold"
                                    :data-step="shownBsTab ? 9 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.duration') : undefined">
                         <select class="select-item form-control" v-model="duration.hour" @change="changeDuration({ focus: true, updateSlider: true })">
@@ -146,7 +154,7 @@
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
                     <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.config.threshold === 'R' }" v-model="test.config.threshold"
-                                   labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold"
+                                   labelMessageKey="perfTest.config.runCount" name="threshold"
                                    :data-step="shownBsTab ? 10 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
@@ -191,7 +199,7 @@
                             <input type="checkbox" name="safeDistribution" v-model="test.config.safeDistribution">
                         </control-group>
                         <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
-                                       controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
+                                       controlsStyle="margin-left: 85px;" labelStyle="width: 70px;">
                             <input-popover name="param"
                                            ref="param"
                                            dataPlacement="top"
@@ -493,6 +501,13 @@
         get totalVuser() {
             return this.test.config.agentCount * this.test.config.vuserPerAgent;
         }
+
+        get currentRegion() {
+            if (this.ngrinder.config.clustered && this.test.config.region === 'NONE') {
+                return this.i18n('perfTest.config.region');
+            }
+            return this.test.config.region;
+        }
     }
 </script>
 
@@ -545,11 +560,42 @@
 
             .agent-config-container {
                 .agent-count-container {
-                    max-width: 285px;
+                    max-width: 360px;
                     height: 61px;
 
-                    .input-append {
-                        width: 155px;
+                    .input-group-append, .input-group-prepend {
+                        height: 30px;
+                    }
+
+                    input {
+                        width: 70px;
+                        height: 30px;
+                        padding-left: 8px;
+                    }
+
+                    .select-region-btn {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        width: 100px;
+                        height: 30px;
+
+                        > span {
+                            padding: 0 2px;
+                            display: block;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                        }
+
+                        > i {
+                            line-height: 18px;
+                        }
+                    }
+
+                    .validation-message {
+                        width: 165px;
+                        white-space: normal;
                     }
                 }
 
@@ -560,7 +606,7 @@
             }
 
             .vuser-per-agent-container {
-                height: 48px;
+                height: 44px;
             }
         }
 
