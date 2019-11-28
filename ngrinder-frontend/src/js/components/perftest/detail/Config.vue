@@ -11,7 +11,7 @@
                      :data-step="shownBsTab ? 4 : undefined"
                      :data-intro="shownBsTab ? i18n('intro.config.basic.agent') : undefined">
                     <div class="agent-count-container">
-                        <control-group id="agentCount" class="agent-count-control-group" :class="{ error: errors.has('agentCount') || errors.has('region') }"
+                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') || errors.has('region') }"
                                        labelMessageKey="perfTest.config.agent">
                             <div class="input-group">
                                 <div v-if="ngrinder.config.clustered" class="input-group-prepend">
@@ -26,7 +26,7 @@
                                            @click="test.config.region = region" v-text="region"></a>
                                     </div>
                                 </div>
-                                <input type="number" class="form-control" name="agentCount" ref="agentCount" min="0"
+                                <input type="number" class="form-control agent-count-input" name="agentCount" ref="agentCount" min="0"
                                        v-validate="agentCountValidationRules" v-model="test.config.agentCount"/>
                                 <div class="input-group-append">
                                     <span class="input-group-text">
@@ -59,7 +59,7 @@
                                           type="number" v-model="test.config.vuserPerAgent"
                                           :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                           @change="changeVuserPerAgent"
-                                          errStyle="white-space: nowrap; width: 150px;"
+                                          errStyle="width: 150px;"
                                           appendPrefix="perfTest.config.max"
                                           :append="config.maxVuserPerAgent"
                                           message="perfTest.config.vuserPerAgent">
@@ -561,14 +561,14 @@
             .agent-config-container {
                 .agent-count-container {
                     max-width: 360px;
-                    height: 61px;
+                    height: 55px;
 
                     .input-group-append, .input-group-prepend {
                         height: 30px;
                     }
 
-                    input {
-                        width: 70px;
+                    .agent-count-input {
+                        width: 74px;
                         height: 30px;
                         padding-left: 8px;
                     }
@@ -594,8 +594,10 @@
                     }
 
                     .validation-message {
-                        width: 165px;
-                        white-space: normal;
+                        position: absolute;
+                        /*width: 400px;*/
+                        /*white-space: normal;*/
+                        white-space: nowrap;
                     }
                 }
 
@@ -606,7 +608,7 @@
             }
 
             .vuser-per-agent-container {
-                height: 44px;
+                height: 54px;
             }
         }
 
@@ -614,6 +616,7 @@
             top: -6px;
             margin-left: 15px;
             width: 280px;
+            height: 44px;
 
             div + div {
                 margin-left: 5px;
