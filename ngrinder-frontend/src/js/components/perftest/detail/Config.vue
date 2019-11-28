@@ -17,7 +17,7 @@
                                 <div v-if="ngrinder.config.clustered" class="input-group-prepend">
                                     <button class="btn btn-outline-secondary select-region-btn dropdown-toggle"
                                             type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="flex-grow-1" v-text="currentRegion"></span>
+                                        <span class="flex-grow-1 text-left" v-text="currentRegion"></span>
                                         <i class="fa fa-caret-down"></i>
                                         <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
                                     </button>
@@ -505,7 +505,7 @@
 
         get currentRegion() {
             if (this.ngrinder.config.clustered && this.test.config.region === 'NONE') {
-                return this.i18n('perfTest.config.region');
+                return this.i18n('perfTest.config.region.setting');
             }
             return this.test.config.region;
         }
@@ -514,6 +514,7 @@
 
 <style lang="less">
     @light-gray: #e9ecef;
+    @gray: #6c757d;
     @error-color: #d9534f;
 
     .config-container {
@@ -555,8 +556,17 @@
             display: none;
         }
 
-        .dropdown-item:active {
-            background-color: @light-gray;
+        .dropdown-menu {
+            border-color: @gray;
+            min-width: 100px;
+
+            .dropdown-item {
+                padding: 0.25rem 0.75rem;
+
+                &:active {
+                    background-color: @light-gray;
+                }
+            }
         }
 
         .error {
@@ -567,6 +577,7 @@
 
                 &:active {
                     background-color: @light-gray;
+                    border-color: @error-color;
                     color: @error-color;
                 }
             }
