@@ -65,7 +65,7 @@
                                           message="perfTest.config.vuserPerAgent">
                             </input-append>
                         </div>
-                        <div class="vuser-panel">
+                        <div class="vuser-panel row card p-2">
                             <input-prepend name="processes" type="number" v-model.number="test.config.processes"
                                            @change="changeProcessThreadCount"
                                            message="perfTest.config.process" extraCss="control-group">
@@ -611,15 +611,16 @@
         }
 
         .vuser-panel {
+            top: -6px;
             margin-left: 15px;
+            width: 280px;
+
+            div + div {
+                margin-left: 5px;
+            }
 
             .input-prepend-container {
                 width: 130px;
-            }
-
-            .input-group {
-                display: inline-flex;
-                margin: 0;
             }
         }
 
