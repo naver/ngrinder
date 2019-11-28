@@ -59,13 +59,13 @@
                                           type="number" v-model="test.config.vuserPerAgent"
                                           :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
                                           @change="changeVuserPerAgent"
-                                          errStyle="width: 150px;"
+                                          errStyle="white-space: nowrap; width: 150px;"
                                           appendPrefix="perfTest.config.max"
                                           :append="config.maxVuserPerAgent"
                                           message="perfTest.config.vuserPerAgent">
                             </input-append>
                         </div>
-                        <div class="vuser-panel row card p-2">
+                        <div class="vuser-panel row border-left">
                             <input-prepend name="processes" type="number" v-model.number="test.config.processes"
                                            @change="changeProcessThreadCount"
                                            message="perfTest.config.process" extraCss="control-group">
@@ -650,8 +650,6 @@
 
                     .validation-message {
                         position: absolute;
-                        /*width: 400px;*/
-                        /*white-space: normal;*/
                         white-space: nowrap;
                     }
                 }
@@ -663,22 +661,22 @@
             }
 
             .vuser-per-agent-container {
-                height: 54px;
-            }
-        }
+                height: 44px;
 
-        .vuser-panel {
-            top: -6px;
-            margin-left: 15px;
-            width: 280px;
-            height: 44px;
+                .vuser-panel {
+                    margin-left: 15px;
+                    padding-left: 15px;
+                    width: 400px;
+                    height: 30px;
 
-            div + div {
-                margin-left: 5px;
-            }
+                    div + div {
+                        margin-left: 5px;
+                    }
 
-            .input-prepend-container {
-                width: 130px;
+                    .input-prepend-container {
+                        width: 120px;
+                    }
+                }
             }
         }
 

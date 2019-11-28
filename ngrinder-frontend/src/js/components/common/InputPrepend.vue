@@ -39,3 +39,11 @@
     })
     export default class InputPrepend extends Base {}
 </script>
+
+<style lang="less" scoped>
+    .input-group {
+        input {
+            height: 30px;
+        }
+    }
+</style>
