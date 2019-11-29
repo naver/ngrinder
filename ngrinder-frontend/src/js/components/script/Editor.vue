@@ -93,15 +93,13 @@
             </div>
         </div>
         <div v-show="showValidationResult" class="validation-result-panel"> <!-- TODO: Think that the best UX will be the resizable one -->
+            <div class="expand-btn-container btn-secondary pointer-cursor text-center" @click="validationResultExpanded = !validationResultExpanded">
+                <i class="fa" :class="{ 'fa-caret-down': validationResultExpanded, 'fa-caret-up': !validationResultExpanded }"></i>
+            </div>
             <pre class="border validation-result"
                  :class="{ expanded: validationResultExpanded }"
                  v-text="validationResult">
             </pre>
-            <div class="float-right expand-btn-container">
-                <a class="pointer-cursor" @click="validationResultExpanded = !validationResultExpanded">
-                    <code v-text="validationResultExpanded ? '-' : '+'"></code>
-                </a>
-            </div>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
@@ -424,8 +422,13 @@
     }
 
     .expand-btn-container {
-        margin-top: -39px;
-        margin-right: -17px;
+        position: absolute;
+        left: 50%;
+
+        width: 40px;
+        height: 20px;
+        margin-left: -20px;
+        margin-top: 6px;
     }
 
     .expanded {
