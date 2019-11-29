@@ -523,10 +523,14 @@
 
             .row {
                 height: 48px;
-                width: 480px;
+                width: 650px;
 
                 .control-group {
                     width: 240px;
+                }
+
+                .control-group + .control-group {
+                    margin-left: 60px;
                 }
             }
         }
