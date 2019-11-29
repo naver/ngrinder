@@ -61,8 +61,13 @@ module.exports = function (env) {
             rules: [
                 {
                     test: /\.js$/,
-                    exclude: /node_modules/,
-                    loader: 'babel-loader',
+                    exclude: {
+                        test: /node_modules/,
+                        not: [/(d3-.*)$/]
+                    },
+                    use: [
+                        { loader: 'babel-loader', options: { 'presets': ['@babel/preset-env'] } },
+                    ],
                 },
                 {
                     test: /\.vue$/,
