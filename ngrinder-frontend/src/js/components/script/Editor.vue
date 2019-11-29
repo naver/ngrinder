@@ -72,34 +72,35 @@
                 </div>
             </div>
         </div>
-        <div class="flex-grow-1 overflow-y-auto">
-            <code-mirror ref="editor"
-                         class="h-100"
-                         :value="this.file.content"
-                         :options="cmOptions"></code-mirror>
-        </div>
+        <splitpanes class="flex-grow-1 overflow-y-auto default-theme" ref="splitPane" horizontal>
+            <pane :min-size="10">
+                <code-mirror ref="editor"
+                             class="h-100"
+                             :value="this.file.content"
+                             :options="cmOptions">
+                </code-mirror>
+            </pane>
+            <pane v-if="showValidationResult" :min-size="10" :size="20">
+                <pre class="border h-100 validation-result"
+                     :class="{ expanded: validationResultExpanded }"
+                     v-text="validationResult">
+                </pre>
+            </pane>
+        </splitpanes>
         <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
-            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
-            <div class="float-right pointer-cursor tip"  data-toggle="popover" title="Tip" data-html="true"
+            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
+                Samples</a>
+            <div class="float-right pointer-cursor tip" data-toggle="popover" title="Tip" data-html="true"
                  data-placement="left" data-trigger="hover" :data-content="
-            'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
-            'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
-            'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
-            'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
-            'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
-            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
-            'ESC : ' + i18n('script.editor.tip.back') ">
+                            'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
+                            'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
+                            'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
+                            'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
+                            'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
+                            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
+                            'ESC : ' + i18n('script.editor.tip.back') ">
                 <code>Tip</code>
             </div>
-        </div>
-        <div v-show="showValidationResult" class="validation-result-panel"> <!-- TODO: Think that the best UX will be the resizable one -->
-            <div class="expand-btn-container btn-secondary pointer-cursor text-center" @click="validationResultExpanded = !validationResultExpanded">
-                <i class="fa" :class="{ 'fa-caret-down': validationResultExpanded, 'fa-caret-up': !validationResultExpanded }"></i>
-            </div>
-            <pre class="border validation-result"
-                 :class="{ expanded: validationResultExpanded }"
-                 v-text="validationResult">
-            </pre>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
@@ -109,6 +110,7 @@
 <script>
     import { Component, Prop } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
+    import { Splitpanes, Pane } from 'splitpanes';
 
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
@@ -120,7 +122,7 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror },
+        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror, Splitpanes, Pane },
     })
     export default class Editor extends Mixins(Base, MessagesMixin) {
         @Prop({ type: Object, required: true })
@@ -322,6 +324,7 @@
 </script>
 
 <style lang="less" scoped>
+    @import "~splitpanes/dist/splitpanes.css";
 
     div.file-desc-container {
         padding: 0.75rem 1.25rem;
@@ -413,10 +416,7 @@
 
     .validation-result {
         height: 140px;
-        margin: 5px 0 20px;
         padding: 5px;
-        max-height: 340px;
-        overflow-y: scroll;
         font-size: 12px;
         background-color: #f5f5f5;
     }
