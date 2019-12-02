@@ -73,21 +73,18 @@
             </div>
         </div>
         <splitpanes class="flex-grow-1 overflow-y-auto default-theme" ref="splitPane" horizontal>
-            <pane :min-size="10">
+            <pane :min-size="10" size="85">
                 <code-mirror ref="editor"
                              class="h-100"
                              :value="this.file.content"
                              :options="cmOptions">
                 </code-mirror>
             </pane>
-            <pane v-if="showValidationResult" :min-size="10" :size="20">
-                <pre class="border h-100 validation-result"
-                     :class="{ expanded: validationResultExpanded }"
-                     v-text="validationResult">
-                </pre>
+            <pane v-if="validationResult" :min-size="10" size="15">
+                <pre class="border h-100 validation-result" v-text="validationResult"></pre>
             </pane>
         </splitpanes>
-        <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
+        <div class="script-samples-link" ref="sampleLink">
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
                 Samples</a>
             <div class="float-right pointer-cursor tip" data-toggle="popover" title="Tip" data-html="true"
@@ -143,8 +140,6 @@
         targetHostIp = '';
 
         validated = false;
-        validating = false;
-        validationResultExpanded = false;
         validationResult = '';
 
         cmOptions = {};
@@ -178,6 +173,24 @@
             this.init();
 
             $('[data-toggle="popover"]').popover();
+
+            this.$nextTick(() => {
+                this.$refs.editor.codemirror.focus();
+                this.validationResult = 'You can use five log levels. [trace, debug, info, warn, error]\n' +
+                    'ex) grinder.logger.${level}("message")\n\n' +
+                    'You can access to response body with HTTPResponse.getText() method.\n' +
+                    'ex) HTTPResponse result = request.GET("...")\n' +
+                    '    grinder.logger.debug(result.text)\n\n' +
+                    'You can test multiple transactions by recording new GTest instance.\n' +
+                    'ex) test2 = new GTest(2, "...")\n' +
+                    '    test2.record(this, "test2")\n\n' +
+                    '    public void test2() { ... }\n\n' +
+                    'You can specify the test run rate with @RunRate annotation.\n' +
+                    'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
+                    '    @Test\n' +
+                    '    @RunRate(50)\n' +
+                    '    public void test() { ... } // This test will run only half of the total requests you specified.\n\n';
+            });
         }
 
         beforeRouteLeave(to, from, next) {
@@ -263,12 +276,6 @@
         }
 
         validate() {
-            if (this.validating) {
-                return;
-            }
-            this.validating = true;
-            this.validationResult = '';
-
             this.showProgressBar(this.i18n('script.editor.message.validate'));
 
             const params = {
@@ -287,7 +294,6 @@
             .catch(() => this.showErrorMsg(this.i18n('script.editor.error.validate')))
             .finally(() => {
                 this.hideProgressBar();
-                this.validating = false;
             });
         }
 
@@ -315,10 +321,6 @@
 
         get breadcrumbPathUrl() {
             return ['/script/list', ...this.basePath.split('/')];
-        }
-
-        get showValidationResult() {
-            return this.validationResult || (this.validated && !this.validating);
         }
     }
 </script>
@@ -415,7 +417,6 @@
     }
 
     .validation-result {
-        height: 140px;
         padding: 5px;
         font-size: 12px;
         background-color: #f5f5f5;
@@ -429,10 +430,6 @@
         height: 20px;
         margin-left: -20px;
         margin-top: 6px;
-    }
-
-    .expanded {
-        height: 340px;
     }
 
     input[type="text"] {
