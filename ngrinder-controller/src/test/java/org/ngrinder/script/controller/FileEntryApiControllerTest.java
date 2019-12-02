@@ -43,10 +43,7 @@ import static org.junit.Assert.assertThat;
 public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private FileEntryApiController scriptController;
-
-	@Autowired
-	private FileEntryController fileEntryController;
+	private FileEntryApiController fileEntryController;
 
 	@Autowired
 	private MockFileEntityRepository fileEntityRepository;
@@ -73,15 +70,15 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 	public void testCreateAndGet() {
 		Map<String, Object> response;
 		String path = "test1-path";
-		scriptController.addFolder(getTestUser(), "", path);
+		fileEntryController.addFolder(getTestUser(), "", path);
 		// create
-		response = scriptController.createScript(getTestUser(), path, new ScriptCreationParams("new_file.py", "test.com", null, "jython", false));
+		response = fileEntryController.createScript(getTestUser(), path, new ScriptCreationParams("new_file.py", "test.com", null, "jython", false));
 		FileEntry script = (FileEntry) response.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.save(getTestUser(), new FileSaveParams(script, null, "", false));
-		scriptController.validate(getTestUser(), new ScriptValidationParams(script, "test.com"));
+		fileEntryController.save(getTestUser(), new FileSaveParams(script, null, "", false));
+		fileEntryController.validate(getTestUser(), new ScriptValidationParams(script, "test.com"));
 		// save and get
-		response = scriptController.getOne(getTestUser(), script.getPath(), -1L);
+		response = fileEntryController.getOne(getTestUser(), script.getPath(), -1L);
 		FileEntry newScript = (FileEntry) response.get("file");
 		assertThat(newScript.getFileName(), is(script.getFileName()));
 		assertThat(newScript.getContent(), is(script.getContent()));
@@ -89,10 +86,10 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		// List<Long> versionList = newScript.getRevisions();
 		// reversion list is not implemented yet.
 		// assertThat(versionList.size(), is(2));
-		scriptController.search(getTestUser(), "test");
+		fileEntryController.search(getTestUser(), "test");
 
-		scriptController.delete(getTestUser(), Arrays.asList(path + "/new_file.py"));
-		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
+		fileEntryController.delete(getTestUser(), Arrays.asList(path + "/new_file.py"));
+		List<FileEntry> scriptList = fileEntryController.getAll(getTestUser(), path);
 		assertThat(scriptList.size(), is(0));
 	}
 
@@ -103,24 +100,24 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 		String path = "test2-path";
 
 		// add folder
-		scriptController.addFolder(getTestUser(), "", path);
+		fileEntryController.addFolder(getTestUser(), "", path);
 		// create
-		response = scriptController.createScript(getTestUser(), path, new ScriptCreationParams("file-for-search.py", "test.com", null, "jython", false));
+		response = fileEntryController.createScript(getTestUser(), path, new ScriptCreationParams("file-for-search.py", "test.com", null, "jython", false));
 		FileEntry script = (FileEntry) response.get("file");
-		scriptController.save(getTestUser(), new FileSaveParams(script, null, "", false));
+		fileEntryController.save(getTestUser(), new FileSaveParams(script, null, "", false));
 
 		// save another script
 		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
-		scriptController.save(getTestUser(), new FileSaveParams(script, null, "", false));
+		fileEntryController.save(getTestUser(), new FileSaveParams(script, null, "", false));
 		// save and get
-		scriptController.getOne(getTestUser(), script.getPath(), -1L);
+		fileEntryController.getOne(getTestUser(), script.getPath(), -1L);
 
-		Collection<FileEntry> searchResult = scriptController.search(getTestUser(), "file-for-search");
+		Collection<FileEntry> searchResult = fileEntryController.search(getTestUser(), "file-for-search");
 		assertThat(searchResult.size(), is(2));
 
 		// delete both files
-		scriptController.delete(getTestUser(), Arrays.asList(path + "/file-for-search.py", path + "/new-file-for-search.py"));
-		List<FileEntry> scriptList = scriptController.getAll(getTestUser(), path);
+		fileEntryController.delete(getTestUser(), Arrays.asList(path + "/file-for-search.py", path + "/new-file-for-search.py"));
+		List<FileEntry> scriptList = fileEntryController.getAll(getTestUser(), path);
 		assertThat(scriptList.size(), is(0));
 	}
 
@@ -128,13 +125,13 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 	@Test
 	public void testUploadFiles() {
 		String path = "test-upload-path";
-		scriptController.addFolder(getTestUser(), "", path);
+		fileEntryController.addFolder(getTestUser(), "", path);
 
 		String upFileName = "Uploaded";
 		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "Uploaded.py", null, "#test content...".getBytes());
 		path = path + "/" + upFileName;
-		scriptController.uploadFile(getTestUser(), path, "Uploaded file desc.", upFile);
-		Collection<FileEntry> searchResult = scriptController.search(getTestUser(), "Uploaded");
+		fileEntryController.uploadFile(getTestUser(), path, "Uploaded file desc.", upFile);
+		Collection<FileEntry> searchResult = fileEntryController.search(getTestUser(), "Uploaded");
 		assertThat(searchResult.size(), is(1));
 	}
 
@@ -142,14 +139,14 @@ public class FileEntryApiControllerTest extends AbstractNGrinderTransactionalTes
 	public void testDownload() {
 		String path = "download-path";
 		String fileName = "download_file.py";
-		scriptController.addFolder(getTestUser(), "", path);
-		Map<String, Object> responseMap = scriptController.createScript(getTestUser(), path, new ScriptCreationParams(fileName, "test.com", null, "jython", false));
+		fileEntryController.addFolder(getTestUser(), "", path);
+		Map<String, Object> responseMap = fileEntryController.createScript(getTestUser(), path, new ScriptCreationParams(fileName, "test.com", null, "jython", false));
 
 		FileEntry script = (FileEntry) responseMap.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.save(getTestUser(), new FileSaveParams(script, null, "", false));
+		fileEntryController.save(getTestUser(), new FileSaveParams(script, null, "", false));
 
-		scriptController.createScript(getTestUser(), path, new ScriptCreationParams(fileName, "", null, "", false));
+		fileEntryController.createScript(getTestUser(), path, new ScriptCreationParams(fileName, "", null, "", false));
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		path = path + "/" + fileName;
