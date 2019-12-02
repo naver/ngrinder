@@ -15,19 +15,32 @@
                                        labelMessageKey="perfTest.config.agent">
                             <div class="input-group">
                                 <div v-if="ngrinder.config.clustered" class="input-group-prepend">
-                                    <button class="btn btn-outline-secondary select-region-btn dropdown-toggle"
+                                    <button class="btn btn-outline-secondary p-0 select-region-btn dropdown-toggle"
                                             type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="flex-grow-1 text-left" v-text="currentRegion"></span>
-                                        <i class="fa fa-caret-down"></i>
-                                        <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
+                                        <span class="d-flex region-popover-wrapper"
+                                              data-trigger="hover"
+                                              data-toggle="popover"
+                                              data-html="true"
+                                              :title="i18n('perfTest.config.region')"
+                                              :data-content="i18n('perfTest.config.region.help')">
+                                            <span class="flex-grow-1 text-left" v-text="currentRegion"></span>
+                                            <i class="fa fa-caret-down"></i>
+                                            <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
+                                        </span>
                                     </button>
                                     <div class="dropdown-menu">
                                         <a v-for="region in config.regions" class="dropdown-item pointer-cursor"
-                                           @click="test.config.region = region" v-text="region"></a>
+                                           @click="test.config.region = region" v-text="i18n(region)"></a>
                                     </div>
                                 </div>
                                 <input type="number" class="form-control agent-count-input" name="agentCount" ref="agentCount" min="0"
-                                       v-validate="agentCountValidationRules" v-model="test.config.agentCount"/>
+                                       v-validate="agentCountValidationRules" v-model="test.config.agentCount"
+                                       data-trigger="hover"
+                                       data-toggle="popover"
+                                       data-html="true"
+                                       :title="i18n('perfTest.config.agent')"
+                                       :data-content="i18n('perfTest.config.agent.help')"
+                                       data-placement="right"/>
                                 <div class="input-group-append">
                                     <span class="input-group-text">
                                         <span class="mr-1" v-text="i18n('perfTest.config.max')"></span>
@@ -310,6 +323,7 @@
             });
         }
 
+        @Watch('test.config.region')
         changeMaxAgentCount() {
             if (this.test.config.region && this.config.regionAgentCountMap[this.test.config.region]) {
                 this.maxAgentCount = this.config.regionAgentCountMap[this.test.config.region];
@@ -571,6 +585,10 @@
                     background-color: @light-gray;
                 }
             }
+
+            &.show {
+                top: -2px !important;
+            }
         }
 
         .error {
@@ -639,16 +657,21 @@
                         width: 100px;
                         height: 30px;
 
-                        > span {
-                            padding: 0 2px;
-                            display: block;
-                            overflow: hidden;
-                            white-space: nowrap;
-                            text-overflow: ellipsis;
-                        }
+                        .region-popover-wrapper {
+                            width: 100%;
+                            padding: 0.375rem 0.75rem;
 
-                        > i {
-                            line-height: 18px;
+                            > span {
+                                padding: 0 2px;
+                                display: block;
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+
+                            > i {
+                                line-height: 18px;
+                            }
                         }
                     }
 
