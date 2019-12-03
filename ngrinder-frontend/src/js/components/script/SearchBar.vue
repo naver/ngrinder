@@ -1,80 +1,54 @@
 <template>
     <div class="search-bar card card-header">
-        <table class="w-100">
-            <tr>
-                <td>
-                    <table class="w-100">
-                        <colgroup>
-                            <col width="350px"/>
-                        </colgroup>
-                        <tr>
-                            <td>
-                                <input type="text" class="search-query form-control" placeholder="Keywords" v-model="query" @keyup.enter="search">
-                                <button class="btn btn-info search-btn" @click="search">
-                                    <i class="fa fa-search mr-1"></i>
-                                    <span v-text="i18n('common.button.search')"></span>
-                                </button>
-                            </td>
-                            <td>
-                                <div v-show="$route.name !== 'scriptSearch'" id="svn-url" class="input-prepend d-flex"
-                                     data-toggle="popover"
-                                     data-trigger="hover"
-                                     data-html="true"
-                                     data-placement="bottom"
-                                     title="Subversion"
-                                     :data-content="i18n('script.message.svn')">
-                                    <div class="ml-auto">
-                                        <div class="input-group-text">SVN</div>
-                                        <div class="border uneditable-input ellipsis">
-                                            <router-link v-text="svnPath" to="/script/list"></router-link><!--
+        <div class="d-flex justify-content-between search-container">
+            <div>
+                <input type="text" class="search-query form-control" placeholder="Keywords" v-model="query" @keyup.enter="search">
+                <button class="btn btn-info search-btn" @click="search">
+                    <i class="fa fa-search mr-1"></i>
+                    <span v-text="i18n('common.button.search')"></span>
+                </button>
+            </div>
+            <div id="svn-url" class="input-prepend d-flex" v-show="$route.name !== 'scriptSearch'"
+                 data-toggle="popover"
+                 data-trigger="hover"
+                 data-html="true"
+                 data-placement="bottom"
+                 title="Subversion"
+                 :data-content="i18n('script.message.svn')">
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">SVN</span></div>
+                    <div class="border form-control uneditable-input ellipsis">
+                        <router-link v-text="svnPath" to="/script/list"></router-link><!--
                                         --><template v-if="currentPath !== ''"
                                                      v-for="(each, index) in currentPath.split('/')"><!--
                                             -->/<!--
                                             --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
                                                             v-text="each"></router-link>
-                                        </template>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <table class="w-100 mt-1">
-                        <colgroup>
-                            <col width="600px"/>
-                        </colgroup>
-                        <tr>
-                            <td>
-                                <template v-if="$route.name !== 'scriptSearch'">
-                                    <button class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
-                                        <i class="fa fa-file mr-1"></i>
-                                        <span v-text="i18n('script.action.createScript')"></span>
-                                    </button>
-                                    <button class="btn btn-primary" @click.prevent="$refs.createFolderModal.show">
-                                        <i class="fa fa-folder-open mr-1"></i>
-                                        <span v-text="i18n('script.action.createFolder')"></span>
-                                    </button>
-                                    <button class="btn btn-primary" @click.prevent="$refs.uploadFileModal.show">
-                                        <i class="fa fa-upload mr-1"></i>
-                                        <span v-text="i18n('script.action.uploadResources')"></span>
-                                    </button>
-                                </template>
-                            </td>
-                            <td>
-                                <button class="pointer-cursor btn btn-danger float-right" @click="$emit('deleteFile')">
-                                    <i class="fa fa-remove mr-1"></i>
-                                    <span v-text="i18n('script.action.delete')"></span>
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+                    </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <div v-if="$route.name !== 'scriptSearch'">
+                <button class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
+                    <i class="fa fa-file mr-1"></i>
+                    <span v-text="i18n('script.action.createScript')"></span>
+                </button>
+                <button class="btn btn-primary" @click.prevent="$refs.createFolderModal.show">
+                    <i class="fa fa-folder-open mr-1"></i>
+                    <span v-text="i18n('script.action.createFolder')"></span>
+                </button>
+                <button class="btn btn-primary" @click.prevent="$refs.uploadFileModal.show">
+                    <i class="fa fa-upload mr-1"></i>
+                    <span v-text="i18n('script.action.uploadResources')"></span>
+                </button>
+            </div>
+            <button class="pointer-cursor btn btn-danger float-right" @click="$emit('deleteFile')">
+                <i class="fa fa-remove mr-1"></i>
+                <span v-text="i18n('script.action.delete')"></span>
+            </button>
+        </div>
         <create-script-modal ref="createScriptModal" :currentPath="currentPath"></create-script-modal>
         <create-folder-modal ref="createFolderModal" :currentPath="currentPath"></create-folder-modal>
         <upload-file-modal ref="uploadFileModal" :currentPath="currentPath"></upload-file-modal>
@@ -132,30 +106,25 @@
 
 <style lang="less" scoped>
     .search-bar {
-        height: 92px;
+        height: 90px;
 
-        .search-btn {
-            height: 32px;
-            vertical-align: baseline;
-        }
+        .search-container {
+            margin-bottom: 8px;
 
-        .input-group-text {
-            float: left;
-            cursor: default;
-            padding: 6px 10px;
-        }
-
-        .uneditable-input {
-            width: 500px;
-
-            a:first-of-type {
-                margin-left: 7px;
+            .search-query {
+                height: 30px;
+                width: 220px;
             }
-        }
 
-        .search-query {
-            height: 32px;
-            width: 220px;
+            .search-btn {
+                height: 30px;
+                vertical-align: baseline;
+            }
+
+            .uneditable-input {
+                width: 500px;
+                height: 30px;
+            }
         }
     }
 </style>
