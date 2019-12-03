@@ -25,7 +25,6 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-localstorage-cache": "^1.1.1",
     "intro.js": "^2.9.3",
-    "jqplot": "^1.0.9",
     "jquery": "^3.4.1",
     "jquery-i18next": "^1.2.1",
     "jshint": "^2.9.6",
