@@ -176,20 +176,29 @@
 
             this.$nextTick(() => {
                 this.$refs.editor.codemirror.focus();
-                this.validationResult = 'You can use five log levels. [trace, debug, info, warn, error]\n' +
-                    'ex) grinder.logger.${level}("message")\n\n' +
+                this.validationResult = 'You can use various log levels. [trace, debug, info, warn, error]\n' +
+                    'ex) grinder.logger.${level}("message")\n\n' + // eslint-disable-line no-template-curly-in-string
                     'You can access to response body with HTTPResponse.getText() method.\n' +
                     'ex) HTTPResponse result = request.GET("...")\n' +
                     '    grinder.logger.debug(result.text)\n\n' +
                     'You can test multiple transactions by recording new GTest instance.\n' +
-                    'ex) test2 = new GTest(2, "...")\n' +
-                    '    test2.record(this, "test2")\n\n' +
+                    'ex) @BeforeProcess\n' +
+                    '    public static void beforeProcess() {\n' +
+                    '        test1 = new GTest(1, "...")\n' +
+                    '        test2 = new GTest(2, "...")\n' +
+                    '    }\n\n' +
+                    '    @BeforeThread\n' +
+                    '    public void beforeThread() {\n' +
+                    '        test1.record(this, "test1")\n' +
+                    '        test2.record(this, "test2")\n' +
+                    '    }\n\n' +
+                    '    public void test1() { ... }\n' +
                     '    public void test2() { ... }\n\n' +
                     'You can specify the test run rate with @RunRate annotation.\n' +
                     'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
                     '    @Test\n' +
                     '    @RunRate(50)\n' +
-                    '    public void test() { ... } // This test will run only half of the total requests you specified.\n\n';
+                    '    public void test() { ... } // This test will run only half of the total run which you specified.\n\n';
             });
         }
 
