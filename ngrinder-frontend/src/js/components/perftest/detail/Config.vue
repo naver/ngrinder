@@ -15,7 +15,7 @@
                                        labelMessageKey="perfTest.config.agent">
                             <div class="input-group">
                                 <div v-if="ngrinder.config.clustered" class="input-group-prepend">
-                                    <button class="btn btn-outline-secondary p-0 select-region-btn dropdown-toggle"
+                                    <button class="btn p-0 select-region-btn dropdown-toggle"
                                             type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="d-flex region-popover-wrapper"
                                               data-trigger="hover"
@@ -529,7 +529,6 @@
 <style lang="less">
     @light-gray: #e9ecef;
     @gray: #6c757d;
-    @error-color: #d9534f;
 
     .config-container {
         .advanced-config {
@@ -588,32 +587,18 @@
 
             &.show {
                 top: -2px !important;
-            }
-        }
-
-        .error {
-            .btn-outline-secondary {
-                &:hover {
-                    background-color: @light-gray;
-                }
-
-                &:active {
-                    background-color: @light-gray;
-                    border-color: @error-color;
-                    color: @error-color;
-                }
-            }
-
-            .show > .btn-outline-secondary.dropdown-toggle {
-                background-color: @light-gray;
-                border-color: @error-color;
-                color: @error-color;
+                border-top-left-radius: unset;
+                border-top-right-radius: unset;
             }
         }
     }
 </style>
 
 <style lang="less" scoped>
+    @light-gray: #e9ecef;
+    @gray: #6c757d;
+    @error-color: #d9534f;
+
     .config-container {
         .basic-config-container {
             width: 650px;
@@ -650,12 +635,27 @@
                         padding-left: 8px;
                     }
 
+                    .show {
+                        .select-region-btn {
+                            background-color: @light-gray;
+                            color: #495057;
+                        }
+                    }
+
                     .select-region-btn {
                         display: flex;
                         flex-direction: row;
                         justify-content: space-between;
                         width: 100px;
                         height: 30px;
+
+                        color: @gray;
+                        border-color: @gray;
+
+                        &:hover {
+                            background-color: @light-gray;
+                            color: #495057;
+                        }
 
                         .region-popover-wrapper {
                             width: 100%;
@@ -672,6 +672,28 @@
                             > i {
                                 line-height: 18px;
                             }
+                        }
+                    }
+
+                    .error {
+                        .select-region-btn {
+                            border-color: @error-color;
+                            color: @error-color;
+
+                            &:hover {
+                                background-color: @light-gray;
+                            }
+
+                            &:focus {
+                                outline: 0;
+                                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                            }
+                        }
+
+                        .show > .select-region-btn.dropdown-toggle {
+                            background-color: @light-gray;
+                            border-color: @error-color;
+                            color: @error-color;
                         }
                     }
 
