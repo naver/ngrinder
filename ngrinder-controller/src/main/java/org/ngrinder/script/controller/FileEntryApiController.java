@@ -401,7 +401,6 @@ public class FileEntryApiController {
 	 */
 	@GetMapping("/download/**")
 	public void download(User user, @RemainedPath String path, HttpServletResponse response) {
-		path = decodePathWithUTF8(path);
 		FileEntry fileEntry = fileEntryService.getOne(user, path);
 		if (fileEntry == null) {
 			LOG.error("{} requested to download not existing file entity {}", user.getUserId(), path);
