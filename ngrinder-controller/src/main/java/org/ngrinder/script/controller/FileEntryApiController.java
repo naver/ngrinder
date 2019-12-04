@@ -416,21 +416,11 @@ public class FileEntryApiController {
 		response.setHeader("Content-Disposition", contentDisposition.toString());
 		response.addHeader("Content-Length", "" + fileEntry.getFileSize());
 
-		byte[] buffer = new byte[4096];
-		ByteArrayInputStream fis = null;
-		OutputStream toClient = null;
-		try {
-			fis = new ByteArrayInputStream(fileEntry.getContentBytes());
-			toClient = new BufferedOutputStream(response.getOutputStream());
-			int readLength;
-			while (((readLength = fis.read(buffer)) != -1)) {
-				toClient.write(buffer, 0, readLength);
-			}
+		try (ByteArrayInputStream fis = new ByteArrayInputStream(fileEntry.getContentBytes());
+			OutputStream os = new BufferedOutputStream(response.getOutputStream())) {
+			IOUtils.copy(fis, os);
 		} catch (IOException e) {
 			throw processException("error while download file", e);
-		} finally {
-			IOUtils.closeQuietly(fis);
-			IOUtils.closeQuietly(toClient);
 		}
 	}
 }
