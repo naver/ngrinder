@@ -10,13 +10,13 @@
                         <label class="control-label" v-text="i18n('script.info.name')"></label>
                     </div>
                     <div>
-                        <span class="d-inline-block border rounded uneditable-input">
-                            <template v-if="basePath !== ''"
-                                      v-for="(each, index) in basePath.split('/')"><!--eslint-disable-next-line vue/valid-v-for--><!--
-                                --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
-                                                v-text="each"></router-link><!--
-                                -->/<!--
-                            --></template><span v-text="file.fileName"></span>
+                        <span class="d-inline-block border rounded form-control uneditable-input">
+                            <span v-if="basePath !== ''">
+                                <template v-for="(each, index) in basePath.split('/')">
+                                    <router-link :key="each" :to="breadcrumbPathUrl.slice(0, index + 2).join('/')" v-text="each"></router-link>/<!--
+                             --></template>
+                            </span><!--
+                         --><span v-text="file.fileName"></span>
                         </span>
                     </div>
                     <div>
@@ -353,6 +353,7 @@
             position: absolute;
             margin-left: 5px;
             padding: 5px;
+            color: #495057
         }
 
         .control-label {
@@ -373,6 +374,7 @@
     .uneditable-input {
         cursor: text;
         width: 700px;
+        height: 30px;
     }
 
     .tip {
@@ -394,7 +396,7 @@
     }
 
     button:not(.add-host-btn) {
-        height: 32px;
+        height: 30px;
     }
 
     .add-host-btn {
