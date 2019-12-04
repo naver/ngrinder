@@ -19,12 +19,11 @@
                     <div class="input-group-prepend"><span class="input-group-text">SVN</span></div>
                     <div class="border form-control uneditable-input ellipsis">
                         <router-link v-text="svnPath" to="/script/list"></router-link><!--
-                                        --><template v-if="currentPath !== ''"
-                                                     v-for="(each, index) in currentPath.split('/')"><!--
-                                            -->/<!--
-                                            --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
-                                                            v-text="each"></router-link>
-                    </template>
+                     --><span v-if="currentPath !== ''">
+                            <template v-for="(each, index) in currentPath.split('/')">/<!--
+                             --><router-link :key="each" :to="breadcrumbPathUrl.slice(0, index + 2).join('/')" v-text="each"></router-link>
+                            </template>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -124,6 +123,10 @@
             .uneditable-input {
                 width: 500px;
                 height: 30px;
+
+                > * {
+                    vertical-align: middle;
+                }
             }
         }
     }
