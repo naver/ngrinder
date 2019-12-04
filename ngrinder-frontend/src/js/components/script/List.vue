@@ -187,7 +187,7 @@
                         confirm: { label: this.i18n('common.button.ok') },
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
-                    onConfirm: () => this.$http.post('/script/api/delete', this.$refs.vuetable.selectedTo)
+                    onConfirm: () => this.$http.delete('/script/api/delete', { data: this.$refs.vuetable.selectedTo })
                         .then(() => this.refresh()),
                 });
             }
