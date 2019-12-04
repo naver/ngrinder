@@ -259,7 +259,7 @@ public class FileEntryApiController {
 	 * @param user        user
 	 * @param paths 	list of file paths to be deleted
 	 */
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public void delete(User user, @RequestBody List<String> paths) {
 		fileEntryService.delete(user, paths);
 	}
