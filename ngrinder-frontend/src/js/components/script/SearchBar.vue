@@ -131,3 +131,9 @@
         }
     }
 </style>
+
+<style lang="less">
+    .modal-dialog {
+        margin-top: 200px;
+    }
+</style>
