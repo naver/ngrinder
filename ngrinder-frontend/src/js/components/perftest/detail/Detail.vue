@@ -242,13 +242,16 @@
 
         mounted() {
             this.init();
+            if (this.test.config.scm && this.test.config.scm !== 'svn') {
+                this.syncGitHubConfigRevision();
+            }
         }
 
         static async prepare(route) {
             route.params.scriptsMap = {};
             await PerfTestDetail.preparePerfTest(route);
             return Promise.all([
-                PerfTestDetail.prepareScripts(route),
+                PerfTestDetail.prepareSvnScripts(route),
                 PerfTestDetail.prepareGitHubConfig(route),
             ]);
         }
@@ -267,7 +270,7 @@
             return promise.then(res => Object.assign(route.params, res.data));
         }
 
-        static prepareScripts(route) {
+        static prepareSvnScripts(route) {
             return Base.prototype.$http.get('/perftest/api/script')
                 .then(res => route.params.scriptsMap.svn = res.data);
         }
@@ -276,6 +279,17 @@
             return Base.prototype.$http.get('/script/api/github-config')
                 .then(res => route.params.config.github = res.data)
                 .catch(() => route.params.config.github = false);
+        }
+
+        syncGitHubConfigRevision() {
+            const gitHubConfigName = this.test.config.scm.split(':')[0];
+            if (this.config.github) {
+                this.config.github.forEach(gitHubConfig => {
+                   if (gitHubConfig.name === gitHubConfigName) {
+                       this.$refs.config.$refs.scmSelect.selectValue(`${gitHubConfig.name}:${gitHubConfig.revision}`);
+                   }
+                });
+            }
         }
 
         init() {

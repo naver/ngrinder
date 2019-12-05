@@ -109,6 +109,7 @@
                     <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
+                             @opening="openingScriptSelect"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts"
@@ -310,9 +311,10 @@
 
         agentCountValidationRules = { required: true, agentCountValidation: true, min_value: 0 };
 
+        gitHubLazyLoading = true;
+
         created() {
             this.setScripts(this.test.config.scriptName);
-            this.LoadGitHubScript();
             this.setCustomValidationRules();
             this.setDurationMS();
             this.changeDuration();
@@ -339,7 +341,7 @@
             if (this.test.config.scm === 'addGitHub') {
                 this.createGitConfig();
             } else {
-                this.display.showGitHubRefreshBtn = this.test.config.scm !== 'svn';
+                this.display.showGitHubRefreshBtn = this.isGitHubStorage();
                 this.scripts = this.scriptsMap[this.test.config.scm];
                 this.test.config.scriptName = '';
                 this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
@@ -375,7 +377,10 @@
         }
 
         setScripts(selectedScript) {
-            if (this.test.config.scm === 'svn') {
+            if (this.isGitHubStorage()) {
+                this.display.showGitHubRefreshBtn = true;
+                this.scripts.push({ pathInShort: this.extractScriptName(selectedScript), path: selectedScript, validated: 0 });
+            } else {
                 this.scripts = this.scriptsMap.svn;
                 if (!selectedScript) {
                     return;
@@ -386,9 +391,6 @@
                 } else {
                     this.display.showRevisionBtn = true;
                 }
-            } else {
-                this.display.showGitHubRefreshBtn = true;
-                this.scripts.push({ pathInShort: this.extractFileName(selectedScript), path: selectedScript, validated: 0 });
             }
 
             this.$nextTick(() => {
@@ -402,30 +404,31 @@
                 return;
             }
 
-            Promise.all(this.getLoadGitHubScriptPromises()).then(() => {
-                if (refresh) {
-                    this.showSuccessMsg(this.i18n('script.message.refresh.success'));
-                }
-                this.scripts = this.scriptsMap[this.test.config.scm];
-            }).catch(() => this.showErrorMsg(this.i18n('script.message.refresh.error')));
-        }
-
-        getLoadGitHubScriptPromises() {
-            const promises = [];
-            this.config.github.forEach(gitHubConfig => {
-                promises.push(
-                    this.$http.get('/script/api/github', { params: gitHubConfig })
-                        .then(res => {
-                            const scripts = res.data.map(script => ({
-                                revision: script.sha,
-                                validated: 0,
-                                pathInShort: this.extractFileName(script.path),
-                                path: script.path,
-                            }));
-                            this.scriptsMap[`${gitHubConfig.name}:${gitHubConfig.revision}`] = scripts;
+            this.showProgressBar();
+            this.$http.get(`/script/api/github?refresh=${!!refresh}`)
+                .then(res => {
+                    for (const key in res.data) {
+                        this.scriptsMap[key] = res.data[key].map(script => ({
+                            revision: script.sha,
+                            validated: 0,
+                            pathInShort: this.extractScriptName(script.path),
+                            path: script.path,
                         }));
-            });
-            return promises;
+                    }
+
+                    this.scripts = this.scriptsMap[this.test.config.scm];
+                    if (this.gitHubLazyLoading) {
+                        this.gitHubLazyLoading = false;
+                        this.$nextTick(() => this.$refs.scriptSelect.refreshDropDown());
+                    }
+
+                    if (refresh) {
+                        this.showSuccessMsg(this.i18n('script.message.refresh.success'));
+                        this.$nextTick(() => this.$refs.scriptSelect.refreshDropDown());
+                    }
+                })
+                .catch(() => this.showErrorMsg(this.i18n('script.message.refresh.error')))
+                .finally(() => this.hideProgressBar());
         }
 
         getScriptResource() {
@@ -451,20 +454,27 @@
             openedWindow.focus();
         }
 
+        openingScriptSelect() {
+            if (this.gitHubLazyLoading && this.isGitHubStorage()) {
+                this.LoadGitHubScript();
+            }
+        }
+
         changeScript(revision) {
-            if (this.test.config.scm === 'svn') {
-                this.test.config.scriptRevision = -1;
-                if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
-                    this.refreshTargetHosts();
-                    this.getScriptResource();
-                    this.display.showRevisionBtn = true;
-                } else {
-                    this.targetHosts = [];
-                    this.resources = [];
-                    this.display.showRevisionBtn = false;
-                }
-            } else {
+            if (this.isGitHubStorage()) {
                 this.test.config.scriptRevision = revision;
+                return;
+            }
+
+            this.test.config.scriptRevision = -1;
+            if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
+                this.refreshTargetHosts();
+                this.getScriptResource();
+                this.display.showRevisionBtn = true;
+            } else {
+                this.targetHosts = [];
+                this.resources = [];
+                this.display.showRevisionBtn = false;
             }
         }
 
@@ -600,9 +610,13 @@
             this.$refs.targetHostInfoModal.show();
         }
 
-        extractFileName(path) {
+        extractScriptName(path) {
             const pathToken = path.split('/');
             return pathToken[pathToken.length - 1];
+        }
+
+        isGitHubStorage() {
+            return this.test.config.scm !== 'svn';
         }
 
         get totalVuser() {

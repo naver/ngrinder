@@ -65,7 +65,6 @@
                 <div class="chart border border-secondary" id="memory-usage-chart"></div>
             </div>
         </div>
-        <!--content-->
     </div>
 </template>
 

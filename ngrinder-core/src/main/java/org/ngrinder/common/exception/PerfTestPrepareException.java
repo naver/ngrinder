@@ -11,24 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.perftest.service;
+package org.ngrinder.common.exception;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+/**
+ * @since 3.5.0
+ */
+public class PerfTestPrepareException extends NGrinderRuntimeException {
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Test;
-
-public class NumberFormatTest {
-
-	@Test
-	public void testNumberFormat() {
-		PerfTestService perfTestService = new PerfTestService(null,
-			null, null, null, null, null, null, null, null);
-		Map<String, String> map = new HashMap<>();
-		map.put("HELLO", "100,000");
-		assertThat(perfTestService.parseDoubleWithSafety(map, "HELLO", 3d), is(100000D));
+	public PerfTestPrepareException(String message, Throwable t) {
+		super(message, t);
 	}
 }
