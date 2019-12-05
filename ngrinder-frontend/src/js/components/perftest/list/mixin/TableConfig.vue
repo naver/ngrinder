@@ -15,6 +15,7 @@
                 {
                     name: '__slot:status',
                     title: this.i18n('common.label.status'),
+                    titleClass: `${this.$utils.isLocale('en') ? 'pl-2' : ''}`,
                     dataClass: 'center aligned',
                     width: '50px',
                 },
@@ -73,6 +74,7 @@
                 {
                     name: '__slot:actions',
                     title: this.i18n('common.label.actions'),
+                    titleClass: `${this.$utils.isLocale('en') ? 'pl-2' : ''}`,
                     dataClass: 'center aligned',
                     width: '55px',
                 },
