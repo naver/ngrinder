@@ -52,11 +52,9 @@
                 .select2(this.option, [])
                 .change(function() {
                     self.$emit('input', this.value);
+                    self.$emit('change');
                     if (self.type === 'select') {
-                        self.$emit('change', self.getSelectedOptionRevision());
                         self.$nextTick(() => self.$validator.validate(self.name));
-                    } else {
-                        self.$emit('change');
                     }
                 });
         }
@@ -65,13 +63,8 @@
             $(this.$refs.select2).select2('val', value);
         }
 
-        // for only type 'select'
-        getSelectedOptionValidate() {
-            return this.$refs.select2.options[this.selectedIndex()].dataset.validate;
-        }
-
-        getSelectedOptionRevision() {
-            return this.$refs.select2.options[this.selectedIndex()].dataset.revision;
+        getSelectedOption(key) {
+            return this.$refs.select2.options[this.selectedIndex()].dataset[key];
         }
 
         selectedIndex() {

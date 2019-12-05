@@ -331,7 +331,11 @@
         }
 
         .ramp-up-config-item {
-            width: 265px;
+            width: 250px;
+        }
+
+        .ramp-up-config-item + .ramp-up-config-item {
+            margin-left: 30px;
         }
 
         select {
@@ -360,7 +364,7 @@
     .ramp-up-config-item {
         .input-label-container {
             .controls {
-                margin-left: 150px;
+                margin-left: 140px;
             }
 
             .form-control {

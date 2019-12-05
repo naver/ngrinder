@@ -33,7 +33,8 @@
                                            @click="test.config.region = region" v-text="i18n(region)"></a>
                                     </div>
                                 </div>
-                                <input type="number" class="form-control agent-count-input" name="agentCount" ref="agentCount" min="0"
+                                <input id="agentCount" name="agentCount" class="form-control agent-count-input"
+                                       type="number" ref="agentCount" min="0"
                                        v-validate="agentCountValidationRules" v-model="test.config.agentCount"
                                        data-trigger="hover"
                                        data-toggle="popover"
@@ -74,6 +75,7 @@
                                           @change="changeVuserPerAgent"
                                           errStyle="white-space: nowrap; width: 150px;"
                                           appendPrefix="perfTest.config.max"
+                                          :title-content="i18n('perfTest.config.vuserPerAgent').replace(/<br>/g, ' ')"
                                           :append="config.maxVuserPerAgent"
                                           message="perfTest.config.vuserPerAgent">
                             </input-append>
@@ -94,13 +96,12 @@
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
-                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 440px;"
+                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts"
-                                :data-revision="script.revision"
                                 :data-validate="script.validated"
                                 v-text="script.pathInShort"
                                 :value="script.path">
@@ -208,8 +209,8 @@
                     </div>
                     <div class="row">
                         <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
-                                       labelHelpMessageKey="perfTest.config.safeDistribution">
-                            <input type="checkbox" name="safeDistribution" v-model="test.config.safeDistribution">
+                                       labelHelpMessageKey="perfTest.config.safeDistribution" controlsStyle="padding-top: 6px;">
+                            <input type="checkbox" id="safeDistribution" name="safeDistribution" v-model="test.config.safeDistribution">
                         </control-group>
                         <control-group :class="{error: errors.has('param')}"
                                        name="param" labelMessageKey="perfTest.config.param"
@@ -367,14 +368,13 @@
             openedWindow.focus();
         }
 
-        changeScript(revision) {
-            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
-                this.test.config.scriptRevision = revision;
+        changeScript() {
+            this.test.config.scriptRevision = -1;
+            if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
                 this.refreshTargetHosts();
                 this.getScriptResource();
                 this.display.showScriptBtn = true;
             } else {
-                this.test.config.scriptRevision = -1;
                 this.targetHosts = [];
                 this.resources = [];
                 this.display.showScriptBtn = false;
@@ -403,7 +403,7 @@
                 getMessage: this.i18n('perfTest.message.script'),
                 validate: () => {
                     if (this.$refs.scriptSelect) {
-                        return this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1';
+                        return this.$refs.scriptSelect.getSelectedOption('validate') !== '-1';
                     }
                     return true;
                 },
@@ -622,7 +622,7 @@
 
             .agent-config-container {
                 .agent-count-container {
-                    max-width: 360px;
+                    max-width: 380px;
                     height: 55px;
 
                     .input-group-append, .input-group-prepend {
@@ -715,7 +715,6 @@
                 .vuser-panel {
                     margin-left: 15px;
                     padding-left: 15px;
-                    width: 400px;
                     height: 30px;
 
                     div + div {
@@ -819,6 +818,7 @@
         }
 
         .control-group {
+            vertical-align: baseline;
             margin-bottom: 15px;
 
             &.script-control-group {

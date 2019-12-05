@@ -123,7 +123,6 @@
                 processes: test.config.processes,
                 threads: test.config.threads,
                 scriptName: test.config.scriptName,
-                scriptRevision: test.config.scriptRevision,
                 targetHosts: test.config.targetHosts,
                 threshold: test.config.threshold,
                 duration: test.config.duration,
