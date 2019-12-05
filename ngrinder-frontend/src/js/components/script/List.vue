@@ -35,7 +35,7 @@
                                  :title="props.rowData.path" target="_self"
                                  v-text="props.rowData.fileName">
                     </router-link>
-                    <a v-else :href="`${contextPath}/script/download/${props.rowData.path}`"
+                    <a v-else :href="`${contextPath}/script/api/download/${props.rowData.path}`"
                        :title="props.rowData.path" target="_blank"
                        v-text="props.rowData.fileName">
                     </a>
@@ -187,7 +187,7 @@
                         confirm: { label: this.i18n('common.button.ok') },
                         cancel: { label: this.i18n('common.button.cancel') },
                     },
-                    onConfirm: () => this.$http.post('/script/api/delete', this.$refs.vuetable.selectedTo)
+                    onConfirm: () => this.$http.delete('/script/api/delete', { data: this.$refs.vuetable.selectedTo })
                         .then(() => this.refresh()),
                 });
             }
@@ -218,7 +218,14 @@
         }
 
         downloadScript(path) {
-            window.location.href = `${this.contextPath}/script/download/${path}`;
+            const link = document.createElement('a');
+            link.style.display = 'none';
+            link.href = `${this.contextPath}/script/api/download/${path}`;
+            link.setAttribute('download', path);
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         getFileSize(size) {

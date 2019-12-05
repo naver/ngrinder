@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -27,6 +28,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -42,14 +45,17 @@ import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * FileEntry manipulation API controller.
@@ -253,7 +259,7 @@ public class FileEntryApiController {
 	 * @param user        user
 	 * @param paths 	list of file paths to be deleted
 	 */
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public void delete(User user, @RequestBody List<String> paths) {
 		fileEntryService.delete(user, paths);
 	}
@@ -384,5 +390,37 @@ public class FileEntryApiController {
 		FileEntry fileEntry = scriptValidationParams.getFileEntry();
 		fileEntry.setCreatedUser(user);
 		return scriptValidationService.validate(user, fileEntry, false, scriptValidationParams.getHostString());
+	}
+
+	/**
+	 * Download file entry of given path.
+	 *
+	 * @param user     current user
+	 * @param path     user
+	 * @param response response
+	 */
+	@GetMapping("/download/**")
+	public void download(User user, @RemainedPath String path, HttpServletResponse response) {
+		FileEntry fileEntry = fileEntryService.getOne(user, path);
+		if (fileEntry == null) {
+			LOG.error("{} requested to download not existing file entity {}", user.getUserId(), path);
+			throw new NGrinderRuntimeException("download requested file not exists in file entity " + path);
+		}
+
+		response.reset();
+
+		response.setContentType("application/octet-stream; charset=UTF-8");
+		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+			.filename(fileEntry.getFileName(), StandardCharsets.UTF_8)
+			.build();
+		response.setHeader("Content-Disposition", contentDisposition.toString());
+		response.addHeader("Content-Length", "" + fileEntry.getFileSize());
+
+		try (ByteArrayInputStream fis = new ByteArrayInputStream(fileEntry.getContentBytes());
+			OutputStream os = new BufferedOutputStream(response.getOutputStream())) {
+			IOUtils.copy(fis, os);
+		} catch (IOException e) {
+			throw processException("error while download file", e);
+		}
 	}
 }
