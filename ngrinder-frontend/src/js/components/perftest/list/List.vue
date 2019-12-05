@@ -402,17 +402,6 @@
     }
 </script>
 
-<style lang="less">
-    .perftest-list-container {
-        table {
-            th {
-                padding-left: 5px;
-                padding-right: 5px;
-            }
-        }
-    }
-</style>
-
 <style lang="less" scoped>
     .perftest-list-container {
         .img-unit {
