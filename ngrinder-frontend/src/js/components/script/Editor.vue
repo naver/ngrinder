@@ -2,14 +2,12 @@
     <div class="container d-flex flex-column overflow-y-auto">
         <div class="file-desc-container flex-grow-0">   <!-- card card-header -->
             <div class="form-horizontal">
-                <div class="flex-box control-group" :class="{ 'mb-2' : !hideDescription }">
-                    <div class="caret-box pointer-cursor" @click="toggleHideDescription">
-                        <i class="fa" :class="{ 'fa-caret-up' : !hideDescription, 'fa-caret-down' : hideDescription }"></i>
-                    </div>
+                <div class="caret-box pointer-cursor" @click="toggleHideDescription">
+                    <i class="fa" :class="{ 'fa-caret-up' : !hideDescription, 'fa-caret-down' : hideDescription }"></i>
+                </div>
+                <div class="control-group" :class="{ 'mb-2' : !hideDescription }">
                     <div>
                         <label class="control-label" v-text="i18n('script.info.name')"></label>
-                    </div>
-                    <div>
                         <span class="d-inline-block border rounded form-control uneditable-input">
                             <span v-if="basePath !== ''">
                                 <template v-for="(each, index) in basePath.split('/')">
@@ -42,31 +40,27 @@
                         </template>
                     </div>
                 </div>
-                <div class="flex-box description-container" v-show="!hideDescription">
+                <div class="control-group description-container" v-show="!hideDescription">
                     <div>
                         <label class="control-label" for="description" v-text="i18n('script.action.commit')"></label>
-                    </div>
-                    <div>
                         <textarea class="form-control" id="description"
                                   name="description" v-model="file.description">
                         </textarea>
                     </div>
-                    <div>
+                    <div class="div-host"
+                         :title="i18n('perfTest.config.targetHost')"
+                         :data-content="i18n('perfTest.config.targetHost.help')"
+                         data-toggle="popover"
+                         data-html="true"
+                         data-trigger="hover"
+                         data-placement="bottom">
                         <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
                             <i class="fa fa-plus"></i>
                             <span v-text="i18n('perfTest.config.add')"></span>
                         </button>
-                        <div class="div-host"
-                             :title="i18n('perfTest.config.targetHost')"
-                             :data-content="i18n('perfTest.config.targetHost.help')"
-                             data-toggle="popover"
-                             data-html="true"
-                             data-trigger="hover"
-                             data-placement="bottom">
-                            <div v-for="(host, index) in targetHosts" class="host">
-                                <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
-                            </div>
+                        <div v-for="(host, index) in targetHosts" class="host">
+                            <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
+                            <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
                         </div>
                     </div>
                 </div>
@@ -337,8 +331,15 @@
 <style lang="less" scoped>
     @import "~splitpanes/dist/splitpanes.css";
 
+    div.caret-box {
+        position: absolute;
+        left: 25px;
+        padding: 5px;
+        color: #495057
+    }
+
     div.file-desc-container {
-        padding: 0.75rem 1.25rem;
+        padding: 10px 70px;
         margin-bottom: 0;
         background-color: #f9f9f9;
         position: relative;
@@ -349,15 +350,14 @@
         border: 1px solid rgba(0, 0, 0, 0.125);
         border-radius: 0.25rem;
 
-        div.caret-box {
-            position: absolute;
-            margin-left: 5px;
-            padding: 5px;
-            color: #495057
+        .control-group {
+            display: flex;
+            justify-content: space-between;
         }
 
         .control-label {
-            margin-right: 10px;
+            width: 110px;
+            margin: 4px 10px 0px -10px;
         }
     }
 
@@ -368,31 +368,17 @@
     #description {
         resize: none;
         height: 100%;
-        width: 700px;
+        width: 690px;
     }
 
     .uneditable-input {
         cursor: text;
-        width: 700px;
+        width: 690px;
         height: 30px;
     }
 
     .tip {
         margin-top: -10px;
-    }
-
-    .flex-box {
-        display: flex;
-
-        > div {
-            margin-left: 10px;
-        }
-
-        label {
-            margin-top: 5px;
-            margin-left: 20px;
-            width: 120px;
-        }
     }
 
     button:not(.add-host-btn) {
@@ -415,7 +401,7 @@
     .div-host {
             background-color: #FFF;
             border: 1px solid #D6D6D6;
-            height: 100%;
+            height: 90px;
             overflow-y: scroll;
             border-radius: 3px;
             width: 250px;

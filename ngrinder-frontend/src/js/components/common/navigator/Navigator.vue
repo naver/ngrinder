@@ -20,7 +20,7 @@
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
                         <a data-toggle="dropdown" class="dropdown-toggle pointer-cursor">
-                            <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name}(${ngrinder.currentUser.factualUser.name})`"></span>
+                            <span v-if="ngrinder.config.userSwitchMode" v-text="`${ngrinder.currentUser.name} (${ngrinder.currentUser.factualUser.name})`"></span>
                             <span v-else v-text="ngrinder.currentUser.name"></span>
                         </a>
                         <user-menu class="user-menu" @showUserEditModal="showUserEditModal = true"
