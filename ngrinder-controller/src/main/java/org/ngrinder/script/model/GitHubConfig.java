@@ -35,13 +35,13 @@ public class GitHubConfig {
 			try {
 				return new GitHubConfig(
 					jsonNode.get("name").asText(),
-					defaultIfNull(jsonNode.get("owner"), ""),
-					defaultIfNull(jsonNode.get("repo"), ""),
-					defaultIfNull(jsonNode.get("access-token"), ""),
+					jsonNode.get("owner").asText(),
+					jsonNode.get("repo").asText(),
+					jsonNode.get("access-token").asText(),
 					defaultIfNull(jsonNode.get("base-url"), ""),
 					defaultIfNull(jsonNode.get("revision"), "-1"));
-			} catch (RuntimeException e) {
-				throw new NGrinderRuntimeException("Required field 'name' is missing. please check your .gitconfig.yml");
+			} catch (Exception e) {
+				throw new NGrinderRuntimeException("Required field(name, owner, repo, access-token) is missing.\nPlease check your .gitconfig.yml", e);
 			}
 		}
 

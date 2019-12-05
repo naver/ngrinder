@@ -13,32 +13,39 @@
  */
 package org.ngrinder.script.handler;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.util.FileUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
+import org.ngrinder.script.repository.GitHubFileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
 import static freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.FileUtils.copyResourceToFile;
 
 /**
  * Script per language handler. This is the superclass for all sub
@@ -70,7 +77,12 @@ public abstract class ScriptHandler implements ControllerConstants {
 	}
 
 	@Autowired
+	@JsonIgnore
 	private FileEntryRepository fileEntryRepository;
+
+	@Autowired
+	@JsonIgnore
+	private GitHubFileEntryRepository gitHubFileEntryRepository;
 
 	/**
 	 * Get the display order of {@link ScriptHandler}s.
@@ -135,7 +147,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @param processingResult processing result holder.
 	 */
 	public void prepareDist(Long testCaseId,
-	                        User user, //
+	                        User user,
 	                        FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
 	                        ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
@@ -143,20 +155,34 @@ public abstract class ScriptHandler implements ControllerConstants {
 		if (scriptEntry.getRevision() != 0) {
 			fileEntries.add(scriptEntry);
 		}
+
 		String basePath = getBasePath(scriptEntry);
 		// Distribute each files in that folder.
-		for (FileEntry each : fileEntries) {
-			// Directory is not subject to be distributed.
-			if (each.getFileType() == FileType.DIR) {
-				continue;
+		try {
+			for (FileEntry each : fileEntries) {
+				// Directory is not subject to be distributed.
+				if (each.getFileType() == FileType.DIR) {
+					continue;
+				}
+				File toDir = new File(distDir, calcDistSubPath(basePath, each));
+				processingResult.printf("%s is being written.\n", each.getPath());
+				LOGGER.info("{} is being written in {} for test {}", each.getPath(), toDir, testCaseId);
+				if (isGitHubFileEntry(each)) {
+					gitHubFileEntryRepository.writeContentTo(each.getPath(), toDir);
+				} else {
+					fileEntryRepository.writeContentTo(user, each.getPath(), toDir);
+				}
 			}
-			File toDir = new File(distDir, calcDistSubPath(basePath, each));
-			processingResult.printf("%s is being written.\n", each.getPath());
-			LOGGER.info("{} is being written in {} for test {}", new Object[]{each.getPath(), toDir, testCaseId});
-			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
+		} catch (IOException ex) {
+			throw new PerfTestPrepareException("Fail copy perftest files to distribution folder.", ex);
 		}
 		processingResult.setSuccess(true);
 		prepareDistMore(testCaseId, user, scriptEntry, distDir, properties, processingResult);
+	}
+
+	private boolean isGitHubFileEntry(FileEntry fileEntry) {
+		Map<String, String> properties = fileEntry.getProperties();
+		return properties != null && StringUtils.equals(properties.get("scm"), "github");
 	}
 
 	/**
@@ -202,9 +228,8 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return the resolved destination path.
 	 */
 	protected String calcDistSubPath(String basePath, FileEntry fileEntry) {
-		String path = FilenameUtils.getPath(fileEntry.getPath());
-		path = path.substring(basePath.length());
-		return path;
+		String path = getFullPath(fileEntry.getPath());
+		return path.substring(basePath.length());
 	}
 
 	/**
@@ -217,9 +242,24 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return file entry list
 	 */
 	public List<FileEntry> getLibAndResourceEntries(User user, FileEntry scriptEntry, long revision) {
-		String path = FilenameUtils.getPath(scriptEntry.getPath());
+		String path = getFullPath(scriptEntry.getPath());
 		List<FileEntry> fileList = newArrayList();
-		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "lib/", revision, true)) {
+		List<FileEntry> libFileEntries;
+		List<FileEntry> resourceFileEntries;
+
+		if (isGitHubFileEntry(scriptEntry)) {
+			try {
+				libFileEntries = gitHubFileEntryRepository.findAll(path + "lib");
+				resourceFileEntries = gitHubFileEntryRepository.findAll(path + "resources");
+			} catch (IOException e) {
+				throw new NGrinderRuntimeException(e);
+			}
+		} else {
+			libFileEntries = fileEntryRepository.findAll(user, path + "lib/", revision, true);
+			resourceFileEntries = fileEntryRepository.findAll(user, path + "resources/", revision, true);
+		}
+
+		for (FileEntry eachFileEntry : libFileEntries) {
 			// Skip jython 2.5... it's already included.
 			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
 					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
@@ -230,18 +270,20 @@ public abstract class ScriptHandler implements ControllerConstants {
 				fileList.add(eachFileEntry);
 			}
 		}
-		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "resources/", revision, true)) {
+
+		for (FileEntry eachFileEntry : resourceFileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isResourceDistributable()) {
 				fileList.add(eachFileEntry);
 			}
 		}
+
 		return fileList;
 	}
 
 	protected void prepareDefaultFile(File distDir, PropertiesWrapper properties) {
 		if (properties.getPropertyBoolean(PROP_CONTROLLER_DIST_LOGBACK)) {
-			FileUtils.copyResourceToFile("/logback/logback-worker.xml", new File(distDir, "logback-worker.xml"));
+			copyResourceToFile("/logback/logback-worker.xml", new File(distDir, "logback-worker.xml"));
 		}
 	}
 
@@ -256,7 +298,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return base path
 	 */
 	public String getBasePath(String path) {
-		return FilenameUtils.getPath(path);
+		return getFullPath(path);
 	}
 
 	/**
@@ -312,6 +354,14 @@ public abstract class ScriptHandler implements ControllerConstants {
 
 	void setFileEntryRepository(FileEntryRepository fileEntryRepository) {
 		this.fileEntryRepository = fileEntryRepository;
+	}
+
+	public GitHubFileEntryRepository getGitHubFileEntryRepository() {
+		return gitHubFileEntryRepository;
+	}
+
+	public void setGitHubFileEntryRepository(GitHubFileEntryRepository gitHubFileEntryRepository) {
+		this.gitHubFileEntryRepository = gitHubFileEntryRepository;
 	}
 
 	/**
