@@ -1,6 +1,7 @@
 <template>
     <div class="container d-flex flex-column overflow-y-auto">
-        <div class="file-desc-container flex-grow-0">   <!-- card card-header -->
+        <vue-headful :title="i18n('script.editor.title')"/>
+        <div class="file-desc-container flex-grow-0">
             <div class="form-horizontal">
                 <div class="caret-box pointer-cursor" @click="toggleHideDescription">
                     <i class="fa" :class="{ 'fa-caret-up' : !hideDescription, 'fa-caret-down' : hideDescription }"></i>
@@ -102,6 +103,7 @@
     import { Component, Prop } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
     import { Splitpanes, Pane } from 'splitpanes';
+    import VueHeadful from 'vue-headful';
 
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
@@ -113,7 +115,7 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror, Splitpanes, Pane },
+        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror, Splitpanes, Pane, VueHeadful },
     })
     export default class Editor extends Mixins(Base, MessagesMixin) {
         @Prop({ type: Object, required: true })
