@@ -521,7 +521,7 @@
             if (this.ngrinder.config.clustered && this.test.config.region === 'NONE') {
                 return this.i18n('perfTest.config.region.setting');
             }
-            return this.test.config.region;
+            return this.i18n(this.test.config.region);
         }
     }
 </script>

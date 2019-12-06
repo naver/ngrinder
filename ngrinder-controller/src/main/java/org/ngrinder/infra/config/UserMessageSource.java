@@ -123,7 +123,7 @@ public class UserMessageSource extends AbstractMessageSource {
 		return resolved == null ? langMessageMap.get(new LocaleAndCode("en", code)) : resolved;
 	}
 
-	public Map<String, String> getMessageProperties(String locale) {
+	public Map<String, String> getMessageMap(String locale) {
 		return langMessageMap
 			.entrySet()
 			.stream()

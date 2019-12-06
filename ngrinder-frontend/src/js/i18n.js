@@ -1,17 +1,8 @@
 import i18next from 'i18next';
-import jqueryI18next from 'jquery-i18next';
-import Cache from 'i18next-localstorage-cache';
+import Backend from 'i18next-chained-backend';
+import LocalStorageBackend from 'i18next-localstorage-backend';
+import XHR from 'i18next-xhr-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-
-function replaceArgs(msgs) {
-    for (const each in msgs) {
-        const msg = msgs[each];
-        if (msg !== null) {
-            msgs[each] = msg.replace(/\{([0-9])\}/g, "{{arg$1}}");
-        }
-    }
-    return msgs;
-}
 
 const resources = {
     kr: {
@@ -35,15 +26,21 @@ class I18n {
                 lookupCookie: "naveruserlocale",
                 lookupLocalStorage: "naveruserlocale"
             },
-
             fallbackLng: "en",
-            resources: resources
+            resources: resources,
+            backend: {
+                backends: [ LocalStorageBackend, XHR ],
+                backendOptions: [
+                    { prefix: 'i18next-cache-', expirationTime: 24 * 60 * 60 * 1000 },
+                    { loadPath: '/home/api/messagesources/{{lng}}' },
+                ],
+            }
         };
 
-        i18next.use(Cache).use(LanguageDetector).init(options, () => {
-            jqueryI18next.init(i18next, $);
-            $(document.body).localize();
-        });
+        i18next
+            .use(LanguageDetector)
+            .use(Backend)
+            .init(options, () => i18next.reloadResources());
     };
 
     i18n(key, args) {

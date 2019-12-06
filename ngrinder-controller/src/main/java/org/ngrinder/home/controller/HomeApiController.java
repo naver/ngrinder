@@ -109,8 +109,8 @@ public class HomeApiController {
 	}
 
 	@GetMapping("/messagesources/{locale}")
-	public Properties getMessageSources(@PathVariable String locale) {
-		return homeService.getMessageSources(locale);
+	public Map<String, String> getMessageSources(@PathVariable String locale) {
+		return homeService.getUserMessageSources(locale);
 	}
 
 	/**

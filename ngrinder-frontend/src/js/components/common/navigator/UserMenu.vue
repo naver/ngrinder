@@ -22,7 +22,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li v-for="region in regions">
-                            <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${region}`" v-text="region"></a>
+                            <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${region}`" v-text="i18n(region)"></a>
                         </li>
                     </ul>
                 </li>
@@ -37,7 +37,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li v-for="region in regions">
-                            <a class="dropdown-item" :href="`${contextPath}/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="region"></a>
+                            <a class="dropdown-item" :href="`${contextPath}/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="i18n(region)"></a>
                         </li>
                     </ul>
                 </li>

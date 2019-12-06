@@ -67,7 +67,7 @@
             </template>
 
             <template v-if="ngrinder.config.clustered" slot="region" slot-scope="props">
-                <div class="ellipsis region" :title="props.rowData.region" v-text="props.rowData.region"></div>
+                <div class="ellipsis region" :title="props.rowData.region" v-text="i18n(props.rowData.region)"></div>
             </template>
 
             <template slot="createUser" slot-scope="props">

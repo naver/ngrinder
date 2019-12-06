@@ -7,7 +7,7 @@
                 <select v-if="ngrinder.config.clustered" class="form-control change-region ml-auto mt-auto mb-auto"
                         v-model="region" @change="changeRegion">
                     <option value="">All</option>
-                    <option v-for="region in regions" :value="region" v-text="region"></option>
+                    <option v-for="region in regions" :value="region" v-text="i18n(region)"></option>
                 </select>
             </legend>
         </fieldSet>
