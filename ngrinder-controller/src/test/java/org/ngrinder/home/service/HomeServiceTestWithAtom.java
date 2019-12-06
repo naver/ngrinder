@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 
 public class HomeServiceTestWithAtom {
 
-	private HomeService homeService = new HomeService();
+	private HomeService homeService = new HomeService(null);
 
 	@Test
 	public void testAtom() {
