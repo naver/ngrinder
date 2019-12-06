@@ -3,7 +3,7 @@
         <fieldset>
             <control-group :class="{error: errors.has('userId')}"
                            name="userId"
-                           controlsStyle="height: 68px;"
+                           :controlsStyle="config.allowUserIdChange ? 'height: 68px;' : 'height: 40px'"
                            labelMessageKey="user.info.userId" required>
                 <input-append name="userId" ref="userId"
                               v-model="user.userId"
@@ -22,7 +22,7 @@
                               message="user.info.name"/>
             </control-group>
 
-            <control-group v-if="config.allowRoleChange" name="role" labelMessageKey="user.info.role">
+            <control-group v-if="config.allowRoleChange" name="role" class="mb-4" labelMessageKey="user.info.role">
                 <select v-model="user.role" name="role" class="form-control">
                     <option v-for="role in config.roleSet" :value="role"
                             v-text="role.fullName" :selected="user.role === role">
@@ -40,7 +40,7 @@
                               message="user.info.email"/>
             </control-group>
 
-            <control-group name="description" labelMessageKey="common.label.description">
+            <control-group class="mb-4" name="description" labelMessageKey="common.label.description">
                 <textarea cols="30" name="description"
                           rows="3" title="Description"
                           id="description"
@@ -53,13 +53,13 @@
                            controlsStyle="height: 55px;"
                            labelMessageKey="user.info.phone">
                 <input-append name="mobilePhone" ref="mobilePhone"
-                              errStyle="width: 285px;"
+                              errStyle="width: 290px;"
                               v-model="user.mobilePhone"
                               :validationRules="{ regex: /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/ }"
                               message="user.info.phone"/>
             </control-group>
 
-            <control-group v-if="config.allowShareChange" labelMessageKey="user.share.title">
+            <control-group v-if="config.allowShareChange" :class="{ 'mb-3' : config.showPasswordByDefault }" labelMessageKey="user.share.title">
                 <select2 v-model="user.followersStr" type="input" name="followersStr"
                          :option="followerSelect2Option" customStyle="width: 100%;">
                 </select2>
@@ -70,7 +70,8 @@
             </div>
 
             <template v-if="config.allowPasswordChange">
-                <div v-show="displayPasswordField" class="password-container border-top mt-1">
+                <div v-show="displayPasswordField" class="password-container border-top mt-1"
+                     :class="[{ 'pt-3' : config.showPasswordByDefault}, {'pt-4' : !config.showPasswordByDefault }]">
                     <control-group :class="{ error: errors.has('password') }"
                                    name="password"
                                    controlsStyle="height: 45px;"
@@ -82,7 +83,7 @@
                                       type="password" message="user.info.pwd"/>
                     </control-group>
 
-                    <control-group :class="{ error: errors.has('confirmPassword') }"
+                    <control-group :class="{ error: errors.has('confirmPassword') }" class="mb-0"
                                    name="confirmPassword"
                                    controlsStyle="height: 45px;"
                                    labelMessageKey="user.info.cpwd"
@@ -254,23 +255,25 @@
                     border-radius: 4px;
                 }
             }
+
+            .controls {
+                display: flex;
+            }
+
+            .control-label {
+                width: 160px;
+            }
+
+            select {
+                font-size: 12px;
+            }
         }
     }
 </style>
 
 <style lang="less">
     .user-info {
-        .controls {
-            display: flex;
-        }
 
-        .control-label {
-            width: 160px;
-        }
-
-        select {
-            font-size: 12px;
-        }
     }
 </style>
 
@@ -289,10 +292,6 @@
             .save-user-btn {
                 margin-top: 20px;
             }
-        }
-
-        .password-container {
-            padding: 9px 0;
         }
     }
 </style>

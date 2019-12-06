@@ -60,7 +60,7 @@
 <style lang="less" scoped>
     #user-edit-modal {
         .modal-dialog {
-            margin-top: 80px;
+            margin-top: 150px;
         }
 
         .modal.fade.in {
