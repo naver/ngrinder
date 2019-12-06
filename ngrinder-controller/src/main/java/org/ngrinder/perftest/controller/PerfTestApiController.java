@@ -834,20 +834,4 @@ public class PerfTestApiController {
 		return this.cloneAndStart(user, id, perftest);
 	}
 
-	/**
-	 * Get the message from messageSource by the given key.
-	 *
-	 * @param key key of message
-	 * @return the found message. If not found, the error message will return.
-	 */
-	private String getMessages(String key) {
-		String userLanguage = "en";
-		try {
-			userLanguage = userContext.getCurrentUser().getUserLanguage();
-		} catch (Exception e) {
-			noOp();
-		}
-		Locale locale = new Locale(userLanguage);
-		return messageSource.getMessage(key, null, locale);
-	}
 }

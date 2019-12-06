@@ -19,7 +19,7 @@ public class MessageConfig {
 
 	@Bean
 	public MessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		ReloadableResourceBundleMessageSource messageSource = new ExportableMessageSource();
 		messageSource.setBasename("classpath:messages");
 		messageSource.setDefaultEncoding("UTF-8");
 		messageSource.setUseCodeAsDefaultMessage(true);

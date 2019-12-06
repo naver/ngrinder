@@ -8,9 +8,9 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.user.service.UserContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -106,6 +106,11 @@ public class HomeApiController {
 			return homeService.getLeftPanelEntries(leftPanelRssURL);
 		}
 		return Collections.emptyList();
+	}
+
+	@GetMapping("/messagesources/{locale}")
+	public Properties getMessageSources(@PathVariable String locale) {
+		return homeService.getMessageSources(locale);
 	}
 
 	/**

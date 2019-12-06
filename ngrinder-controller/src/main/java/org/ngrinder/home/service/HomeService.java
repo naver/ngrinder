@@ -17,22 +17,27 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
+import org.ngrinder.infra.config.ExportableMessageSource;
+import org.ngrinder.infra.config.UserMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.MESSAGES;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -41,10 +46,15 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @since 3.1
  */
 @Component
+@RequiredArgsConstructor
 public class HomeService {
 	private static final int PANEL_ENTRY_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
+
+	private final MessageSource messageSource;
+
+	private final UserMessageSource userMessageSource;
 
 	/**
 	 * Get the let panel entries from the given feed RUL.
@@ -68,6 +78,13 @@ public class HomeService {
 	@Cacheable(CACHE_RIGHT_PANEL_ENTRIES)
 	public List<PanelEntry> getRightPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
+	}
+
+	@Cacheable(value = MESSAGES, key = "#locale")
+	public Properties getMessageSources(@PathVariable String locale) {
+		Properties resourceMessageProperties = ((ExportableMessageSource) messageSource).getAllProperties(Locale.forLanguageTag(locale));
+		resourceMessageProperties.putAll(userMessageSource.getMessageProperties(locale));
+		return resourceMessageProperties;
 	}
 
 	/**

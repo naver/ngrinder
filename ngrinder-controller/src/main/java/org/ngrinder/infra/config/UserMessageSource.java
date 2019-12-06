@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -120,5 +121,13 @@ public class UserMessageSource extends AbstractMessageSource {
 	protected MessageFormat resolveCode(String code, Locale locale) {
 		MessageFormat resolved = langMessageMap.get(new LocaleAndCode(locale.getLanguage(), code));
 		return resolved == null ? langMessageMap.get(new LocaleAndCode("en", code)) : resolved;
+	}
+
+	public Map<String, String> getMessageProperties(String locale) {
+		return langMessageMap
+			.entrySet()
+			.stream()
+			.filter(entry -> entry.getKey().locale.equals(locale))
+			.collect(Collectors.toMap(entry -> entry.getKey().code, entry -> entry.getValue().toPattern()));
 	}
 }
