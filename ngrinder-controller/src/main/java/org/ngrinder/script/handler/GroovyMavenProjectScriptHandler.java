@@ -91,10 +91,6 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		}
 	}
 
-	private boolean isGitHubFileEntry(FileEntry fileEntry) {
-		return StringUtils.equals(fileEntry.getProperties().get("scm"), "github");
-	}
-
 	@Override
 	public Integer displayOrder() {
 		return 400;

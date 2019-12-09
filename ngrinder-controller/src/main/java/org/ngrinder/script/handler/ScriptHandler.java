@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
+import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -54,6 +55,7 @@ import static org.ngrinder.common.util.FileUtils.copyResourceToFile;
  *
  * @since 3.2
  */
+@Getter
 public abstract class ScriptHandler implements ControllerConstants {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(JythonScriptHandler.class);
 	private final String codemirrorKey;
@@ -91,10 +93,6 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	public abstract Integer displayOrder();
 
-	public String getCodemirrorKey() {
-		return codemirrorKey;
-	}
-
 	/**
 	 * Check if the given fileEntry can be handled by this handler.
 	 *
@@ -103,10 +101,6 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	public boolean canHandle(FileEntry fileEntry) {
 		return FilenameUtils.isExtension(fileEntry.getPath(), getExtension());
-	}
-
-	public String getExtension() {
-		return extension;
 	}
 
 	/**
@@ -180,7 +174,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 		prepareDistMore(testCaseId, user, scriptEntry, distDir, properties, processingResult);
 	}
 
-	private boolean isGitHubFileEntry(FileEntry fileEntry) {
+	protected boolean isGitHubFileEntry(FileEntry fileEntry) {
 		Map<String, String> properties = fileEntry.getProperties();
 		return properties != null && StringUtils.equals(properties.get("scm"), "github");
 	}
@@ -338,30 +332,6 @@ public abstract class ScriptHandler implements ControllerConstants {
 		} catch (Exception e) {
 			throw processException("Error while fetching the script template.", e);
 		}
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	FileEntryRepository getFileEntryRepository() {
-		return fileEntryRepository;
-	}
-
-	void setFileEntryRepository(FileEntryRepository fileEntryRepository) {
-		this.fileEntryRepository = fileEntryRepository;
-	}
-
-	public GitHubFileEntryRepository getGitHubFileEntryRepository() {
-		return gitHubFileEntryRepository;
-	}
-
-	public void setGitHubFileEntryRepository(GitHubFileEntryRepository gitHubFileEntryRepository) {
-		this.gitHubFileEntryRepository = gitHubFileEntryRepository;
 	}
 
 	/**
