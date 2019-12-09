@@ -24,10 +24,9 @@ public interface CacheConstants {
 	String DIST_MAP_NAME_MONITORING = "monitoring";
 	String DIST_MAP_NAME_AGENT = "agent";
 
-	String MESSAGES = "messages";
-
 	String CACHE_USERS = "users";
 	String CACHE_FILE_ENTRIES = "file_entries";
+	String CACHE_MESSAGES = "messages";
 
 	String CACHE_RIGHT_PANEL_ENTRIES = "right_panel_entries";
 	String CACHE_LEFT_PANEL_ENTRIES = "left_panel_entries";
