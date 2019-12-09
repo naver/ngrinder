@@ -33,7 +33,7 @@ import java.util.*;
 
 import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
-import static org.ngrinder.common.constant.CacheConstants.MESSAGES;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_MESSAGES;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -74,7 +74,7 @@ public class HomeService {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
 	}
 
-	@Cacheable(value = MESSAGES, key = "#locale")
+	@Cacheable(value = CACHE_MESSAGES, key = "#locale")
 	public Map<String, String> getUserMessageSources(String locale) {
 		return userMessageSource.getMessageMap(locale);
 	}

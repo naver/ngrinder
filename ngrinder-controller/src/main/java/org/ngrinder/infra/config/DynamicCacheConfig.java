@@ -152,7 +152,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 2);
 		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 2);
 		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
-		cm.addLocalCache(MESSAGES, 1 * DAY, 3);
+		cm.addLocalCache(CACHE_MESSAGES, 1 * DAY, 3);
 		return cm;
 	}
 
