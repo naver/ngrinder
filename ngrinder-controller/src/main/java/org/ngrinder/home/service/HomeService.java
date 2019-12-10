@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
-import org.ngrinder.infra.config.UserMessageSource;
+import org.ngrinder.infra.config.UserDefinedMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,7 +33,6 @@ import java.util.*;
 
 import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_MESSAGES;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -48,7 +47,7 @@ public class HomeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
 
-	private final UserMessageSource userMessageSource;
+	private final UserDefinedMessageSource userDefinedMessageSource;
 
 	/**
 	 * Get the let panel entries from the given feed RUL.
@@ -74,9 +73,8 @@ public class HomeService {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
 	}
 
-	@Cacheable(value = CACHE_MESSAGES, key = "#locale")
-	public Map<String, String> getUserMessageSources(String locale) {
-		return userMessageSource.getMessageMap(locale);
+	public Map<String, String> getUserDefinedMessageSources(String locale) {
+		return userDefinedMessageSource.getMessageSourcesByLocale().get(locale);
 	}
 
 	/**
