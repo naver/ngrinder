@@ -161,7 +161,7 @@
         }
 
         created() {
-            this.hideDescription = this.$ls.get(this.SCRIPT_DESCRIPTION_HIDE_KEY, false, Boolean);
+            this.hideDescription = this.$localStorage.get(this.SCRIPT_DESCRIPTION_HIDE_KEY, false, Boolean);
         }
 
         mounted() {
@@ -317,7 +317,7 @@
 
         toggleHideDescription() {
             this.hideDescription = !this.hideDescription;
-            this.$ls.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
+            this.$localStorage.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
         }
 
         get basePath() {

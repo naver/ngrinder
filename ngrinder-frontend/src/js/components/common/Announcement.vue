@@ -32,7 +32,7 @@
 
         created() {
             this.getAnnouncement();
-            this.hide = this.$ls.get(this.ANNOUNCEMENT_HIDE_KEY, false, Boolean);
+            this.hide = this.$localStorage.get(this.ANNOUNCEMENT_HIDE_KEY, false, Boolean);
 
             this.$EventBus.$on(this.$Event.CHANGE_ANNOUNCEMENT, newContent => {
                 this.setAnnouncement(newContent);
@@ -50,7 +50,7 @@
 
         toggleDisplay() {
             this.hide = !this.hide;
-            this.$ls.set(this.ANNOUNCEMENT_HIDE_KEY, this.hide);
+            this.$localStorage.set(this.ANNOUNCEMENT_HIDE_KEY, this.hide);
         }
 
         setAnnouncement(announcement) {
