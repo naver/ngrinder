@@ -60,7 +60,7 @@ axiosInstance.interceptors.request.use(config => {
 
 Vue.use(Vuex);
 Vue.use(VueLocalStorage, {
-    name: 'ls',
+    name: 'localStorage',
     bind: true,
 });
 Vue.use(VueRouter);
