@@ -79,7 +79,7 @@
     .search-bar {
         .select2-container {
             .select2-choice {
-                width: 150px;
+                width: 170px;
                 height: 29px;
             }
         }
@@ -101,7 +101,7 @@
         }
 
         .search-query-without-radios {
-            width: 140px;
+            width: 170px;
         }
 
         .checkbox-label {

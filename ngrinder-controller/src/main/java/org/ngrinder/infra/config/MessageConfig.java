@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MessageConfig {
 
-	private final UserMessageSource userMessageSource;
+	private final UserDefinedMessageSource userDefinedMessageSource;
 
 	@Bean
 	public MessageSource messageSource() {
@@ -23,7 +23,7 @@ public class MessageConfig {
 		messageSource.setBasename("classpath:messages");
 		messageSource.setDefaultEncoding("UTF-8");
 		messageSource.setUseCodeAsDefaultMessage(true);
-		messageSource.setParentMessageSource(userMessageSource);
+		messageSource.setParentMessageSource(userDefinedMessageSource);
 		return messageSource;
 	}
 

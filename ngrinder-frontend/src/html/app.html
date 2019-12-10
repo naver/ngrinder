@@ -9,10 +9,10 @@
         <link href="{{ contextPath }}/css/ngrinder.css" rel="stylesheet"/>
     </head>
     <body>
-        <main id="ngrinder">
-            <navigator v-if="ngrinder.currentUser.role"></navigator>
-            <router-view :key="$route.fullPath"></router-view>
-            <copyright :version="ngrinder.version"></copyright>
+        <main id="ngrinder" class="vh-100 d-flex flex-column">
+            <navigator class="flex-grow-0" v-if="ngrinder.currentUser.role"></navigator>
+            <router-view class="flex-grow-1" :key="$route.fullPath"></router-view>
+            <copyright class="flex-grow-0" :version="ngrinder.version"></copyright>
             <messages ref="messages"></messages>
         </main>
         <script>

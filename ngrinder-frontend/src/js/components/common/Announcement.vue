@@ -25,14 +25,14 @@
         name: 'announcement',
     })
     export default class Announcement extends Mixins(Base, MessagesMixin) {
-        ANNOUNCEMENT_HIDE_SESSION_KEY = 'announcement_hide';
+        ANNOUNCEMENT_HIDE_KEY = 'announcement_hide';
 
         announcement = '';
         hide = false;
 
         created() {
             this.getAnnouncement();
-            this.hide = this.$session.has(this.ANNOUNCEMENT_HIDE_SESSION_KEY) ? this.$session.get(this.ANNOUNCEMENT_HIDE_SESSION_KEY) : false;
+            this.hide = this.$localStorage.get(this.ANNOUNCEMENT_HIDE_KEY, false, Boolean);
 
             this.$EventBus.$on(this.$Event.CHANGE_ANNOUNCEMENT, newContent => {
                 this.setAnnouncement(newContent);
@@ -50,7 +50,7 @@
 
         toggleDisplay() {
             this.hide = !this.hide;
-            this.$session.set(this.ANNOUNCEMENT_HIDE_SESSION_KEY, this.hide);
+            this.$localStorage.set(this.ANNOUNCEMENT_HIDE_KEY, this.hide);
         }
 
         setAnnouncement(announcement) {
@@ -69,11 +69,9 @@
 
 <style lang="less" scoped>
     .container {
-        padding-top: 40px !important;
-
         .alert-block {
             color: #c09853;
-            padding: 5px 20px;
+            padding: 45px 20px 0;
             margin-bottom: 0;
             text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
             background-color: #fcf8e3;

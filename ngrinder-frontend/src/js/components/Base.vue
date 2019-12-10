@@ -47,8 +47,8 @@
 
         #ngrinder {
             .container {
-                width: 940px;
-                min-width: 940px;
+                width: 1200px;
+                min-width: 1200px;
             }
 
             .pointer-cursor {
@@ -166,7 +166,7 @@
         }
 
         .control-group.error {
-            input, select, .input-group-text {
+            input, select, button, .input-group-text {
                 color: @error-color;
                 border-color: @error-color;
                 box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -214,12 +214,6 @@
             &.datepicker {
                 z-index: 1200;
             }
-        }
-    }
-
-    @media only screen and (max-height: 950px) {
-        body {
-            margin-bottom: 50px !important;
         }
     }
 </style>

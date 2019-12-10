@@ -1,7 +1,7 @@
 <template>
     <div class="container perftest-list-container p-0">
         <vue-headful :title="i18n('perfTest.list.title')"></vue-headful>
-        <div class="img-unit" :style="`background-image: url('${contextPath}/img/bg_perftest_banner_en.png')`"></div>
+        <div class="img-unit" :style="`background-image: url('${contextPath}/img/bg_perftest_banner.png')`"></div>
         <div class="current-running-status-container">
             <code v-text="runningSummary"></code>
         </div>
@@ -67,7 +67,7 @@
             </template>
 
             <template v-if="ngrinder.config.clustered" slot="region" slot-scope="props">
-                <div class="ellipsis region" :title="props.rowData.region" v-text="props.rowData.region"></div>
+                <div class="ellipsis region" :title="props.rowData.region" v-text="i18n(props.rowData.region)"></div>
             </template>
 
             <template slot="createUser" slot-scope="props">
@@ -75,7 +75,7 @@
             </template>
 
             <template slot="threshold" slot-scope="props">
-                <div v-if="props.rowData.threshold === 'D'" :title="i18n('perfTest.list.duration')">{{ props.rowData.duration | durationFormat('HH:mm:ss')}}</div>
+                <div v-if="props.rowData.threshold === 'D'" :title="i18n('perfTest.list.duration')">{{ props.rowData.duration | durationFormat('HH:mm:ss') }}</div>
                 <div v-else v-text="props.rowData.runCount" :title="i18n('perfTest.list.runCount')"></div>
             </template>
 
@@ -169,7 +169,7 @@
             css: {},
             appendParams: {},
             pagination: {
-                perPage: 10,
+                perPage: 15,
             },
         };
 
@@ -257,6 +257,7 @@
         updateTableWithUrl() {
             history.replaceState('', '', this.makeQueryString(1, this.table.pagination.perPage, this.$refs.searchBar.searchText,
                 this.makeQueryFilter(), this.sort, this.$refs.searchBar.selectedTag));
+            $('[data-toggle="popover"]').popover('hide');
             this.$refs.vuetable.refresh();
         }
 
@@ -401,21 +402,8 @@
     }
 </script>
 
-<style lang="less">
-    .perftest-list-container {
-        table {
-            th {
-                padding-left: 5px;
-                padding-right: 5px;
-            }
-        }
-    }
-</style>
-
 <style lang="less" scoped>
     .perftest-list-container {
-        margin-bottom: 80px;
-
         .img-unit {
             height: 110px;
             padding: 0;
@@ -424,7 +412,7 @@
 
         table {
             font-size: 12px;
-            width: 940px;
+            width: 1200px;
             table-layout: fixed;
             margin-bottom: 6px;
 

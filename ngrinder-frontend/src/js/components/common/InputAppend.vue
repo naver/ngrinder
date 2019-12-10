@@ -5,7 +5,7 @@
                    :type="inputType"
                    :readonly="readonly"
                    :name="name"
-                   :title='i18n(message)'
+                   :title="titleContent ? titleContent : i18n(message)"
                    :value="value"
                    :min="min"
                    v-validate="validationRules"
@@ -71,6 +71,7 @@
                 default: false,
             },
             validationRules: Object,
+            titleContent: String,
             messageContent: String,
             appendPrefix: String,
             errStyle: String,

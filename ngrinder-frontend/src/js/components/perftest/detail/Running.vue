@@ -34,7 +34,7 @@
                     <hr>
                     <div v-if="config.threshold === 'D'" class="my-4">
                         <label v-text="i18n('perfTest.running.duration')"></label>
-                        <span v-text="config.duration" class="mr-2"></span>
+                        <span class="mr-2">{{ config.duration | durationFormat('HH:mm:ss') }}</span>
                         <code>HH:MM:SS</code>
                         <div class="badge badge-success float-right">
                             <span v-text="i18n('perfTest.running.runCount')"></span>
@@ -164,7 +164,7 @@
             this.tpsChart = this.drawChart('running-tps-chart', { Total: this.tpsQueue.getArray() }, this.config.samplingInterval, null, {
                 transition: { duration: null },
                 legend: { show: false },
-                size: { width: 540 },
+                size: { width: 780 },
             });
         }
 
@@ -243,15 +243,18 @@
 <style lang="less" scoped>
     #running-container {
         #running-tps-chart {
-            height: 300px;
+            height: 350px;
+            width: 780px;
+            border: 1px solid #c4c4c4;
+            margin-bottom: 12px;
         }
 
         .left-panel {
-            width: 380px;
+            width: 400px;
         }
 
         .right-panel {
-            width: 540px;
+            width: 780px;
         }
 
         .agent-state, .monitor-state {
@@ -287,14 +290,6 @@
 
         strong {
             color: #6DAFCF;
-        }
-
-        .chart {
-            min-width: 500px;
-            width: 540px;
-            height: 300px;
-            border: 1px solid #666;
-            margin-bottom: 12px;
         }
     }
 </style>

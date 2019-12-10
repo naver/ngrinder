@@ -66,7 +66,7 @@
                                            data-placement="right"
                                            v-model="createLibAndResource"
                                            :title="i18n('script.action.createResourceAndLib')"
-                                           :data-content="i18n('script.message.libAndResource.help')">
+                                           :data-content="i18n('script.message.libAndResource')">
                                     <label for="createLibAndResource" class="pointer-cursor ml-1 mb-0" v-text="i18n('script.action.createResourceAndLib')"></label>
                                 </div>
                                 <div class="card bg-light mb-2 create-script-help-message">

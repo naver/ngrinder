@@ -11,76 +11,97 @@
                      :data-step="shownBsTab ? 4 : undefined"
                      :data-intro="shownBsTab ? i18n('intro.config.basic.agent') : undefined">
                     <div class="agent-count-container">
-                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') }"
-                                       labelMessageKey="perfTest.config.agent" ref="agentCountControlGroup">
-                            <input-append name="agentCount" ref="agentCount"
-                                          type="number" v-model="test.config.agentCount"
-                                          :validationRules="agentCountValidationRules"
-                                          errStyle="width: 145px; word-break: break-all; white-space: normal;"
-                                          appendPrefix="perfTest.config.max"
-                                          :append="maxAgentCount"
-                                          message="perfTest.config.agent">
-                            </input-append>
+                        <control-group id="agentCount" :class="{ error: errors.has('agentCount') || errors.has('region') }"
+                                       labelMessageKey="perfTest.config.agent">
+                            <div class="input-group">
+                                <div v-if="ngrinder.config.clustered" class="input-group-prepend">
+                                    <button class="btn p-0 select-region-btn dropdown-toggle"
+                                            type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="d-flex region-popover-wrapper"
+                                              data-trigger="hover"
+                                              data-toggle="popover"
+                                              data-html="true"
+                                              :title="i18n('perfTest.config.region')"
+                                              :data-content="i18n('perfTest.config.region.help')">
+                                            <span class="flex-grow-1 text-left" v-text="currentRegion"></span>
+                                            <i class="fa fa-caret-down"></i>
+                                            <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
+                                        </span>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a v-for="region in config.regions" class="dropdown-item pointer-cursor"
+                                           @click="test.config.region = region" v-text="i18n(region)"></a>
+                                    </div>
+                                </div>
+                                <input id="agentCount" name="agentCount" class="form-control agent-count-input"
+                                       type="number" ref="agentCount" min="0"
+                                       v-validate="agentCountValidationRules" v-model="test.config.agentCount"
+                                       data-trigger="hover"
+                                       data-toggle="popover"
+                                       data-html="true"
+                                       :title="i18n('perfTest.config.agent')"
+                                       :data-content="i18n('perfTest.config.agent.help')"
+                                       data-placement="right"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <span class="mr-1" v-text="i18n('perfTest.config.max')"></span>
+                                        <span v-text="maxAgentCount"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="validation-message"
+                                 v-visible="errors.has('agentCount') || errors.has('region')"
+                                 v-text="errors.first('agentCount') || errors.first('region')"></div>
                         </control-group>
                     </div>
-                    <div v-if="ngrinder.config.clustered" class="agent-region-container ml-auto">
-                        <control-group id="region" :class="{ error: errors.has('region') }"
-                                       ref="regionControlGroup"
-                                       labelStyle="position: absolute;"
-                                       labelMessageKey="perfTest.config.region"
-                                       labelHelpMessageKey="perfTest.config.region">
-                            <select2 name="region" ref="region" v-model="test.config.region" @change="changeMaxAgentCount"
-                                     errStyle="position: absolute; max-width: 170px; margin-left: -51px;"
-                                     class="float-right required" customStyle="width: 110px;" :validationRules="{ regionValidation: true, required: true }">
-                                <option v-for="region in config.regions" :value="region" :selected="region === test.config.region" v-text="region"></option>
-                            </select2>
-                        </control-group>
-                    </div>
-                </div>
-                <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }" labelMessageKey="perfTest.config.vuserPerAgent"
-                               ref="vuserPerAgentControlGroup"
-                               :data-step="shownBsTab ? 5 : undefined"
-                               :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
-                    <div class="vuser-per-agent-container">
-                        <input-append name="vuserPerAgent" ref="vuserPerAgent"
-                                      type="number" v-model="test.config.vuserPerAgent"
-                                      :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
-                                      @change="changeVuserPerAgent"
-                                      errStyle="white-space: nowrap; width: 130px;"
-                                      appendPrefix="perfTest.config.max"
-                                      :append="config.maxVuserPerAgent"
-                                      message="perfTest.config.vuserPerAgent">
-                        </input-append>
-                    </div>
-                    <i class="pointer-cursor expand" :style="`background: url('${contextPath}/img/icon_expand.png') no-repeat`" @click="display.vuserPanel = !display.vuserPanel"></i>
-                    <div class="float-right">
+                    <div class="ml-auto">
                         <span class="badge badge-info float-right">
                             <span v-text="i18n('perfTest.config.availVuser')"></span>
                             <span v-text="totalVuser"></span>
                         </span>
                     </div>
-                    <div v-show="display.vuserPanel" class="vuser-panel">
-                        <input-prepend name="processes" type="number" v-model.number="test.config.processes"
-                                       @change="changeProcessThreadCount"
-                                       message="perfTest.config.process" extraCss="control-group">
-                        </input-prepend>
-                        <input-prepend name="threads" type="number" v-model.number="test.config.threads"
-                                       @change="changeProcessThreadCount"
-                                       message="perfTest.config.thread" extraCss="control-group">
-                        </input-prepend>
+                </div>
+
+                <control-group id="vuserPerAgent" :class="{ error: errors.has('vuserPerAgent') }"
+                               labelMessageKey="perfTest.config.vuserPerAgent"
+                               ref="vuserPerAgentControlGroup"
+                               :data-step="shownBsTab ? 5 : undefined"
+                               :data-intro="shownBsTab ? i18n('intro.config.basic.vuser') : undefined">
+                    <div class="d-flex vuser-per-agent-container">
+                        <div>
+                            <input-append name="vuserPerAgent" ref="vuserPerAgent"
+                                          type="number" v-model="test.config.vuserPerAgent"
+                                          :validationRules="{ required: true, max_value: config.maxVuserPerAgent, min_value: 1 }"
+                                          @change="changeVuserPerAgent"
+                                          errStyle="white-space: nowrap; width: 150px;"
+                                          appendPrefix="perfTest.config.max"
+                                          :title-content="i18n('perfTest.config.vuserPerAgent').replace(/<br>/g, ' ')"
+                                          :append="config.maxVuserPerAgent"
+                                          message="perfTest.config.vuserPerAgent">
+                            </input-append>
+                        </div>
+                        <div class="vuser-panel row border-left">
+                            <input-prepend name="processes" type="number" v-model.number="test.config.processes"
+                                           @change="changeProcessThreadCount"
+                                           message="perfTest.config.process" extraCss="control-group">
+                            </input-prepend>
+                            <input-prepend name="threads" type="number" v-model.number="test.config.threads"
+                                           @change="changeProcessThreadCount"
+                                           message="perfTest.config.thread" extraCss="control-group">
+                            </input-prepend>
+                        </div>
                     </div>
                 </control-group>
 
                 <control-group :class="{ error: errors.has('scriptName'), 'script-control-group': true }" labelMessageKey="perfTest.config.script"
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
-                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
+                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute;">
                         <option value=""></option>
                         <option v-for="script in scripts"
-                                :data-revision="script.revision"
                                 :data-validate="script.validated"
                                 v-text="script.pathInShort"
                                 :value="script.path">
@@ -118,7 +139,7 @@
                          :data-content="i18n('perfTest.config.targetHost.help')">
                         <div v-for="(host, index) in targetHosts" class="host">
                             <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                            <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
+                            <i class="fa fa-times-circle pointer-cursor" @click="removeHost(host, index)"></i>
                         </div>
                     </div>
                     <input type="hidden" name="targetHosts" :value="targetHosts.join(',')">
@@ -126,8 +147,10 @@
                 <hr>
 
                 <div class="threshold-container">
-                    <control-group :class="{ error: errors.has('duration') }" :radio="{ radioValue: 'D', checked: test.config.threshold === 'D' }" v-model="test.config.threshold"
-                                   ref="thresholdControlGroup" labelMessageKey="perfTest.config.duration" name="threshold" id="duration"
+                    <control-group id="duration" name="threshold" :class="{ error: errors.has('duration') }"
+                                   :radio="{ radioValue: 'D', checked: test.config.threshold === 'D' }"
+                                   labelMessageKey="perfTest.config.duration"
+                                   v-model="test.config.threshold"
                                    :data-step="shownBsTab ? 9 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.duration') : undefined">
                         <select class="select-item form-control" v-model="duration.hour" @change="changeDuration({ focus: true, updateSlider: true })">
@@ -145,8 +168,7 @@
                         <div v-show="errors.has('duration')" class="validation-message" v-text="errors.first('duration')"></div>
                     </control-group>
                     <control-group id="runCount" :class="{ error: errors.has('runCount') }" :radio="{ radioValue: 'R', checked: test.config.threshold === 'R' }" v-model="test.config.threshold"
-                                   labelMessageKey="perfTest.config.runCount" ref="runCountControlGroup" name="threshold"
-                                   controlsStyle="height: 45px;"
+                                   labelMessageKey="perfTest.config.runCount" name="threshold"
                                    :data-step="shownBsTab ? 10 : undefined"
                                    :data-intro="shownBsTab ? i18n('intro.config.basic.runcount') : undefined">
                         <input-append name="runCount" ref="runCount"
@@ -187,11 +209,12 @@
                     </div>
                     <div class="row">
                         <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
-                                       labelHelpMessageKey="perfTest.config.safeDistribution">
-                            <input type="checkbox" name="safeDistribution" v-model="test.config.safeDistribution">
+                                       labelHelpMessageKey="perfTest.config.safeDistribution" controlsStyle="padding-top: 6px;">
+                            <input type="checkbox" id="safeDistribution" name="safeDistribution" v-model="test.config.safeDistribution">
                         </control-group>
-                        <control-group :class="{error: errors.has('param')}" labelMessageKey="perfTest.config.param"
-                                       controlsStyle="margin-left: 85px;" labelStyle="width: 70px;" ref="paramControlGroup">
+                        <control-group :class="{error: errors.has('param')}"
+                                       name="param" labelMessageKey="perfTest.config.param"
+                                       controlsStyle="margin-left: 85px;" labelStyle="width: 70px;">
                             <input-popover name="param"
                                            ref="param"
                                            dataPlacement="top"
@@ -298,10 +321,10 @@
 
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover();
-                this.$refs.rampUp.updateRampUpChart();
             });
         }
 
+        @Watch('test.config.region')
         changeMaxAgentCount() {
             if (this.test.config.region && this.config.regionAgentCountMap[this.test.config.region]) {
                 this.maxAgentCount = this.config.regionAgentCountMap[this.test.config.region];
@@ -339,34 +362,34 @@
         showScript() {
             let showScriptUrl = `${this.contextPath}/script/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`;
             if (this.isAdmin || this.isSuperUser) {
-                showScriptUrl += `&ownerId=${this.test.config.createdUser.userId}`;
+                showScriptUrl += `&ownerId=${this.test.createdUser.userId}`;
             }
             const openedWindow = window.open(showScriptUrl, 'scriptSource');
             openedWindow.focus();
         }
 
-        changeScript(revision) {
-            if (this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1') {
-                this.test.config.scriptRevision = revision;
-                this.getTargetHosts();
+        changeScript() {
+            this.test.config.scriptRevision = -1;
+            if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
+                this.refreshTargetHosts();
                 this.getScriptResource();
                 this.display.showScriptBtn = true;
             } else {
-                this.test.config.scriptRevision = -1;
                 this.targetHosts = [];
                 this.resources = [];
                 this.display.showScriptBtn = false;
             }
         }
 
-        getTargetHosts() {
+        refreshTargetHosts() {
             this.$http.get(`/script/api/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`)
                 .then(res => {
                     if (res.data.file && res.data.file.properties.targetHosts) {
-                        this.targetHosts = res.data.file.properties.targetHosts.split(',');
+                        this.test.config.targetHosts = res.data.file.properties.targetHosts;
                     } else {
-                        this.targetHosts = [];
+                        this.test.config.targetHosts = '';
                     }
+                    this.setTargetHosts(this.test.config.targetHosts);
                 });
         }
 
@@ -380,7 +403,7 @@
                 getMessage: this.i18n('perfTest.message.script'),
                 validate: () => {
                     if (this.$refs.scriptSelect) {
-                        return this.$refs.scriptSelect.getSelectedOptionValidate() !== '-1';
+                        return this.$refs.scriptSelect.getSelectedOption('validate') !== '-1';
                     }
                     return true;
                 },
@@ -388,9 +411,7 @@
 
             this.$validator.extend('regionValidation', {
                 getMessage: () => this.i18n('perfTest.message.region'),
-                validate: () => {
-                    return !this.ngrinder.config.clustered || (this.ngrinder.config.clustered && this.test.config.region !== 'NONE');
-                },
+                validate: () => !this.ngrinder.config.clustered || (this.ngrinder.config.clustered && this.test.config.region !== 'NONE'),
             });
         }
 
@@ -464,18 +485,26 @@
             this.changeDuration({ focus: true });
         }
 
+        // TODO: Change targetHosts to array. Not the comma separated string.
         addHost(newHost) {
             if (this.targetHosts.some(host => host === newHost)) {
                 return;
             }
             this.targetHosts.push(newHost);
+            this.test.config.targetHosts = this.targetHosts.join(',');
         }
 
-        setTargetHosts(targetHosts) {
-            if (!targetHosts) {
-                return;
+        removeHost(host, index) {
+            this.targetHosts.splice(index, 1);
+            this.test.config.targetHosts = this.targetHosts.join(',');
+        }
+
+        setTargetHosts(hosts) {
+            this.targetHosts.splice(0, this.targetHosts.length);
+
+            if (hosts) {
+                hosts.split(',').forEach(host => this.targetHosts.push(host));
             }
-            targetHosts.split(',').forEach(host => this.targetHosts.push(host));
         }
 
         showTargetHostInfoModal(host) {
@@ -487,21 +516,47 @@
         get totalVuser() {
             return this.test.config.agentCount * this.test.config.vuserPerAgent;
         }
+
+        get currentRegion() {
+            if (this.ngrinder.config.clustered && this.test.config.region === 'NONE') {
+                return this.i18n('perfTest.config.region.setting');
+            }
+            return this.i18n(this.test.config.region);
+        }
     }
 </script>
 
 <style lang="less">
+    @gray: #6c757d;
+
     .config-container {
         .advanced-config {
             margin-top: 10px;
 
             .row {
                 height: 48px;
-                width: 480px;
+                width: 650px;
 
                 .control-group {
                     width: 240px;
                 }
+
+                .control-group + .control-group {
+                    margin-left: 60px;
+                }
+            }
+        }
+
+        .agent-region-container {
+            .control-label {
+                float: none;
+                width: fit-content;
+            }
+
+            .controls {
+                display: inline-block;
+                vertical-align: top;
+                margin-left: 5px;
             }
         }
 
@@ -512,16 +567,46 @@
                 }
             }
         }
+
+        .dropdown-toggle:after {
+            display: none;
+        }
+
+        .dropdown-menu {
+            border-color: #ced4da;;
+            min-width: 100px;
+
+            .dropdown-item {
+                padding: 0.25rem 0.75rem;
+
+                &:active {
+                    background-color: #e9ecef;
+                }
+            }
+
+            &.show {
+                top: -2px !important;
+                border-top-left-radius: unset;
+                border-top-right-radius: unset;
+            }
+        }
     }
 </style>
 
 <style lang="less" scoped>
+    @gray: #6c757d;
+    @error-color: #d9534f;
+
     .config-container {
         .basic-config-container {
-            width: 460px;
+            width: 650px;
 
             .form-horizontal {
                 margin-top: 10px;
+
+                hr {
+                    margin: 15px 0;
+                }
             }
 
             .badge-info {
@@ -535,35 +620,98 @@
 
             .agent-config-container {
                 .agent-count-container {
-                    max-width: 285px;
-                    height: 61px;
+                    max-width: 380px;
+                    height: 55px;
 
-                    .input-append {
-                        width: 155px;
+                    .input-group-append, .input-group-prepend {
+                        height: 30px;
+                    }
+
+                    .agent-count-input {
+                        width: 74px;
+                        height: 30px;
+                        padding-left: 8px;
+                    }
+
+                    .show {
+                        .select-region-btn {
+                            color: #495057;
+                        }
+                    }
+
+                    .select-region-btn {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        width: 100px;
+                        height: 30px;
+
+                        color: #495057;
+                        border-color: #ced4da;
+
+                        .region-popover-wrapper {
+                            width: 100%;
+                            padding: 0.375rem 0.75rem;
+
+                            > span {
+                                padding: 0 2px;
+                                display: block;
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+
+                            > i {
+                                line-height: 18px;
+                            }
+                        }
+                    }
+
+                    .error {
+                        .select-region-btn {
+                            border-color: @error-color;
+                            color: @error-color;
+                        }
+
+                        .show > .select-region-btn.dropdown-toggle {
+                            border-color: @error-color;
+                            color: @error-color;
+
+                            &:focus {
+                                outline: 0;
+                                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                            }
+                        }
+                    }
+
+                    .validation-message {
+                        position: absolute;
+                        white-space: nowrap;
                     }
                 }
 
                 .agent-region-container {
-                    width: 175px;
-                    max-width: 175px;
+                    width: 220px;
+                    max-width: 220px;
                 }
             }
 
             .vuser-per-agent-container {
-                height: 48px;
-                max-width: 173px;
-                display: inline-block;
-            }
-        }
+                height: 44px;
 
-        .vuser-panel {
-            .input-prepend-container {
-                width: 130px;
-            }
+                .vuser-panel {
+                    margin-left: 15px;
+                    padding-left: 15px;
+                    height: 30px;
 
-            .input-group {
-                display: inline-flex;
-                margin: 0;
+                    div + div {
+                        margin-left: 5px;
+                    }
+
+                    .input-prepend-container {
+                        width: 120px;
+                    }
+                }
             }
         }
 
@@ -607,7 +755,7 @@
         div {
             &.div-resources {
                 border: 1px solid #D6D6D6;
-                height: 40px;
+                height: 60px;
                 margin-bottom: 8px;
                 overflow-y: auto;
                 border-radius: 3px;
@@ -624,7 +772,7 @@
 
             &.div-host {
                 border: 1px solid #D6D6D6;
-                height: 50px;
+                height: 70px;
                 margin-bottom: 8px;
                 overflow-y: auto;
                 border-radius: 3px;
@@ -647,8 +795,8 @@
         .add-host-btn {
             font-size: 10px;
             padding: 1px 3px;
-            margin-top: 30px;
-            margin-left: 283px;
+            margin-top: 50px;
+            margin-left: 463px;
             position: absolute;
 
             i {
@@ -657,7 +805,8 @@
         }
 
         .control-group {
-            margin-bottom: 5px;
+            vertical-align: baseline;
+            margin-bottom: 15px;
 
             &.script-control-group {
                 margin-bottom: 20px;

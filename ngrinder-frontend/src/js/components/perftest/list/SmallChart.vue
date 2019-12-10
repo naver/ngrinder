@@ -3,6 +3,7 @@
         <tr>
             <td><div class="small-chart" :id="`tps_${rowData.id}`"></div></td>
             <td><div class="small-chart" :id="`mtt_${rowData.id}`"></div></td>
+            <td><div class="small-chart" :id="`mttfb_${rowData.id}`"></div></td>
             <td><div class="small-chart" :id="`err_${rowData.id}`"></div></td>
         </tr>
     </table>
@@ -20,10 +21,7 @@
             x: { show: true },
             y: { show: true, ticks: 5 },
         },
-        point: {
-            show: true,
-            r: 1.0,
-        },
+        point: { show: false },
         zoom: {
             enabled: {
                 type: 'drag',
@@ -91,7 +89,7 @@
         showChart() {
             this.$http.get(`/perftest/api/${this.rowData.id}/graph`, {
                 params: {
-                    dataType: 'TPS,Errors,Mean_Test_Time_(ms)',
+                    dataType: 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte',
                     imgWidth: 100,
                     onlyTotal: true,
                 },
@@ -103,6 +101,7 @@
 
             this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data.TPS.Total, interval);
             this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data.Mean_Test_Time_ms.Total, interval);
+            this.drawSmallChart(`mttfb_${this.rowData.id}`, 'MTTFB', data.Mean_time_to_first_byte.Total, interval);
             this.drawSmallChart(`err_${this.rowData.id}`, 'ERR', data.Errors.Total, interval);
 
             this.$nextTick(() => {
@@ -141,7 +140,7 @@
                         tick: {
                             culling: true,
                             text: {
-                                position: { x: -3 },
+                                position: { x: -2 },
                             },
                         },
                         padding: {
@@ -176,7 +175,7 @@
         }
 
         div.small-chart {
-            width: 290px;
+            width: 280px;
             height: 150px;
             border: 1px solid #c4c4c4;
             background-color: #ffffff;

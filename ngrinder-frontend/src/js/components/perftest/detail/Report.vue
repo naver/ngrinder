@@ -44,7 +44,7 @@
                     </fieldset>
                 </div>
             </div>
-            <div class="pl-4 intro tps-chart-container"
+            <div class="pl-4 intro"
                  :data-step="shownBsTab ? 5 : undefined"
                  :data-intro="shownBsTab ? i18n('intro.report.tpsGraph') : undefined">
                 <fieldSet>
@@ -185,7 +185,7 @@
 <style lang="less" scoped>
     #report-container {
         .summary-chart-container {
-            width: 300px;
+            width: 400px;
         }
 
         .border-bottom {
@@ -193,7 +193,7 @@
         }
 
         .log-container {
-            width: 300px;
+            width: 400px;
 
             img {
                 margin-top: -3px;
@@ -206,10 +206,10 @@
         }
 
         .comment-container {
-            width: 638px;
+            width: 798px;
 
             textarea {
-                height: 64px;
+                height: 84px;
                 resize: none;
             }
         }
@@ -225,7 +225,7 @@
         }
 
         #tps-chart {
-            width: 620px;
+            width: 780px;
             height: 300px;
             border: 1px solid #c4c4c4;
         }

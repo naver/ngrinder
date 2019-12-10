@@ -15,6 +15,7 @@
                 {
                     name: '__slot:status',
                     title: this.i18n('common.label.status'),
+                    titleClass: `${this.$utils.isLocale('en') ? 'pl-2' : ''}`,
                     dataClass: 'center aligned',
                     width: '50px',
                 },
@@ -22,19 +23,19 @@
                     name: '__slot:testName',
                     title: this.i18n('perfTest.list.testName'),
                     sortField: 'testName',
-                    width: this.ngrinder.config.clustered ? '110px' : '140px',
+                    width: this.ngrinder.config.clustered ? '185px' : '240px',
                 },
                 {
                     name: '__slot:scriptName',
                     title: this.i18n('perfTest.list.scriptName'),
                     sortField: 'scriptName',
-                    width: this.ngrinder.config.clustered ? '105px' : '140px',
+                    width: this.ngrinder.config.clustered ? '210px' : '255px',
                 },
                 {
                     name: '__slot:createUser',
                     title: this.isAdmin ? this.i18n('perfTest.list.owner') :
                         this.i18n('perfTest.list.modifier.oneLine'),
-                    width: '55px',
+                    width: '80px',
                 },
                 {
                     name: '__slot:startTime',
@@ -45,23 +46,25 @@
                 {
                     name: '__slot:threshold',
                     title: this.i18n('perfTest.list.threshold'),
-                    width: '75px',
+                    width: '80px',
                 },
                 {
                     name: '__slot:tps',
                     title: this.i18n('perfTest.list.tps'),
                     sortField: 'tps',
+                    width: '70px',
                 },
                 {
                     name: '__slot:meanTestTime',
                     title: 'MTT',
                     sortField: 'meanTestTime',
+                    width: '70px',
                 },
                 {
                     name: '__slot:errorRate',
                     title: this.i18n('perfTest.list.errorRate'),
                     sortField: 'errors',
-                    width: '75px',
+                    width: '70px',
                 },
                 {
                     name: '__slot:vuser',
@@ -71,6 +74,7 @@
                 {
                     name: '__slot:actions',
                     title: this.i18n('common.label.actions'),
+                    titleClass: `${this.$utils.isLocale('en') ? 'pl-2' : ''}`,
                     dataClass: 'center aligned',
                     width: '55px',
                 },
@@ -81,7 +85,7 @@
                     name: '__slot:region',
                     title: this.i18n('common.region'),
                     sortField: 'region',
-                    width: '65px',
+                    width: '100px',
                 });
             }
 

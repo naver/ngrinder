@@ -1,19 +1,21 @@
 <template>
-    <div class="container" ref="container">
-        <div class="file-desc-container">   <!-- card card-header -->
+    <div class="container d-flex flex-column overflow-y-auto">
+        <vue-headful :title="i18n('script.editor.title')"/>
+        <div class="file-desc-container flex-grow-0">
             <div class="form-horizontal">
-                <div class="mb-2 flex-box control-group">
+                <div class="caret-box pointer-cursor" @click="toggleHideDescription">
+                    <i class="fa" :class="{ 'fa-caret-up' : !hideDescription, 'fa-caret-down' : hideDescription }"></i>
+                </div>
+                <div class="control-group" :class="{ 'mb-2' : !hideDescription }">
                     <div>
                         <label class="control-label" v-text="i18n('script.info.name')"></label>
-                    </div>
-                    <div>
-                        <span class="d-inline-block border rounded uneditable-input">
-                            <template v-if="basePath !== ''"
-                                      v-for="(each, index) in basePath.split('/')"><!--eslint-disable-next-line vue/valid-v-for--><!--
-                                --><router-link :to="breadcrumbPathUrl.slice(0, index + 2).join('/')"
-                                                v-text="each"></router-link><!--
-                                -->/<!--
-                            --></template><span v-text="file.fileName"></span>
+                        <span class="d-inline-block border rounded form-control uneditable-input">
+                            <span v-if="basePath !== ''">
+                                <template v-for="(each, index) in basePath.split('/')">
+                                    <router-link :key="each" :to="breadcrumbPathUrl.slice(0, index + 2).join('/')" v-text="each"></router-link>/<!--
+                             --></template>
+                            </span><!--
+                         --><span v-text="file.fileName"></span>
                         </span>
                     </div>
                     <div>
@@ -39,62 +41,57 @@
                         </template>
                     </div>
                 </div>
-                <div class="flex-box">
+                <div class="control-group description-container" v-show="!hideDescription">
                     <div>
                         <label class="control-label" for="description" v-text="i18n('script.action.commit')"></label>
-                    </div>
-                    <div>
                         <textarea class="form-control" id="description"
                                   name="description" v-model="file.description">
                         </textarea>
                     </div>
-                    <div>
+                    <div class="div-host"
+                         :title="i18n('perfTest.config.targetHost')"
+                         :data-content="i18n('perfTest.config.targetHost.help')"
+                         data-toggle="popover"
+                         data-html="true"
+                         data-trigger="hover"
+                         data-placement="bottom">
                         <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
                             <i class="fa fa-plus"></i>
                             <span v-text="i18n('perfTest.config.add')"></span>
                         </button>
-                        <div class="div-host"
-                             :title="i18n('perfTest.config.targetHost')"
-                             :data-content="i18n('perfTest.config.targetHost.help')"
-                             data-toggle="popover"
-                             data-html="true"
-                             data-trigger="hover"
-                             data-placement="bottom">
-                            <div v-for="(host, index) in targetHosts" class="host">
-                                <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                                <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
-                            </div>
+                        <div v-for="(host, index) in targetHosts" class="host">
+                            <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
+                            <i class="fa fa-times-circle pointer-cursor" @click="targetHosts.splice(index, 1)"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <code-mirror ref="editor"
-                     :value="this.file.content"
-                     :options="cmOptions"></code-mirror>
-        <div class="float-right tip" data-toggle="popover" title="Tip" data-html="true"
-             data-placement="left" data-trigger="hover" :data-content="
-            'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
-            'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
-            'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
-            'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
-            'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
-            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
-            'ESC : ' + i18n('script.editor.tip.back') ">
-            <code class="tip">Tip</code>
-        </div>
-        <div v-show="!showValidationResult" class="script-samples-link" ref="sampleLink">
-            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
-        </div>
-        <div v-show="showValidationResult" class="validation-result-panel">
-            <pre class="border validation-result"
-                 :class="{ expanded: validationResultExpanded }"
-                 v-text="validationResult">
-            </pre>
-            <div class="float-right expand-btn-container">
-                <a class="pointer-cursor" @click="expand">
-                    <code v-text="validationResultExpanded ? '-' : '+'"></code>
-                </a>
+        <splitpanes class="flex-grow-1 overflow-y-auto default-theme" ref="splitPane" horizontal>
+            <pane :min-size="10" size="85">
+                <code-mirror ref="editor"
+                             class="h-100"
+                             :value="this.file.content"
+                             :options="cmOptions">
+                </code-mirror>
+            </pane>
+            <pane v-if="validationResult" :min-size="10" size="15">
+                <pre class="border h-100 validation-result" v-text="validationResult"></pre>
+            </pane>
+        </splitpanes>
+        <div class="script-samples-link" ref="sampleLink">
+            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
+                Samples</a>
+            <div class="float-right pointer-cursor tip" data-toggle="popover" title="Tip" data-html="true"
+                 data-placement="left" data-trigger="hover" :data-content="
+                            'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
+                            'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
+                            'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
+                            'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
+                            'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
+                            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
+                            'ESC : ' + i18n('script.editor.tip.back') ">
+                <code>Tip</code>
             </div>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
@@ -103,8 +100,10 @@
 </template>
 
 <script>
-    import { Component, Prop, Watch } from 'vue-property-decorator';
+    import { Component, Prop } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
+    import { Splitpanes, Pane } from 'splitpanes';
+    import VueHeadful from 'vue-headful';
 
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
@@ -116,7 +115,7 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
-        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror },
+        components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror, Splitpanes, Pane, VueHeadful },
     })
     export default class Editor extends Mixins(Base, MessagesMixin) {
         @Prop({ type: Object, required: true })
@@ -136,14 +135,13 @@
         targetHosts = [];
         targetHostIp = '';
 
-        editorSize = 0;
-
         validated = false;
-        validating = false;
-        validationResultExpanded = false;
         validationResult = '';
 
         cmOptions = {};
+
+        SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
+        hideDescription = false;
 
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
@@ -162,11 +160,42 @@
                 .catch(() => next('/script'));
         }
 
+        created() {
+            this.hideDescription = this.$localStorage.get(this.SCRIPT_DESCRIPTION_HIDE_KEY, false, Boolean);
+        }
+
         mounted() {
             this.setConfirmBeforeLeave();
             this.init();
 
             $('[data-toggle="popover"]').popover();
+
+            this.$nextTick(() => {
+                this.$refs.editor.codemirror.focus();
+                this.validationResult = 'You can use various log levels. [trace, debug, info, warn, error]\n' +
+                    'ex) grinder.logger.${level}("message")\n\n' + // eslint-disable-line no-template-curly-in-string
+                    'You can access to response body with HTTPResponse.getText() method.\n' +
+                    'ex) HTTPResponse result = request.GET("...")\n' +
+                    '    grinder.logger.debug(result.text)\n\n' +
+                    'You can test multiple transactions by recording new GTest instance.\n' +
+                    'ex) @BeforeProcess\n' +
+                    '    public static void beforeProcess() {\n' +
+                    '        test1 = new GTest(1, "...")\n' +
+                    '        test2 = new GTest(2, "...")\n' +
+                    '    }\n\n' +
+                    '    @BeforeThread\n' +
+                    '    public void beforeThread() {\n' +
+                    '        test1.record(this, "test1")\n' +
+                    '        test2.record(this, "test2")\n' +
+                    '    }\n\n' +
+                    '    public void test1() { ... }\n' +
+                    '    public void test2() { ... }\n\n' +
+                    'You can specify the test run rate with @RunRate annotation.\n' +
+                    'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
+                    '    @Test\n' +
+                    '    @RunRate(50)\n' +
+                    '    public void test() { ... } // This test will run only half of the total run which you specified.\n\n';
+            });
         }
 
         beforeRouteLeave(to, from, next) {
@@ -191,7 +220,6 @@
             this.validated = this.file.validated;
 
             this.cmOptions = { mode: this.codemirrorKey };
-            this.editorSize = 500;
             this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
 
@@ -253,12 +281,6 @@
         }
 
         validate() {
-            if (this.validating) {
-                return;
-            }
-            this.validating = true;
-            this.validationResult = '';
-
             this.showProgressBar(this.i18n('script.editor.message.validate'));
 
             const params = {
@@ -277,7 +299,6 @@
             .catch(() => this.showErrorMsg(this.i18n('script.editor.error.validate')))
             .finally(() => {
                 this.hideProgressBar();
-                this.validating = false;
             });
         }
 
@@ -294,21 +315,9 @@
             this.$refs.targetHostInfoModal.show();
         }
 
-        @Watch('editorSize')
-        editorSizeChanged(newValue) {
-            if (!newValue) {
-                return;
-            }
-            this.$refs.editor.setSize(null, newValue);
-        }
-
-        expand() {
-            this.validationResultExpanded = !this.validationResultExpanded;
-            if (this.validationResultExpanded) {
-                this.editorSize -= 200;
-            } else {
-                this.editorSize += 200;
-            }
+        toggleHideDescription() {
+            this.hideDescription = !this.hideDescription;
+            this.$localStorage.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
         }
 
         get basePath() {
@@ -318,17 +327,21 @@
         get breadcrumbPathUrl() {
             return ['/script/list', ...this.basePath.split('/')];
         }
-
-        get showValidationResult() {
-            return this.validationResult || (this.validated && !this.validating);
-        }
     }
 </script>
 
 <style lang="less" scoped>
+    @import "~splitpanes/dist/splitpanes.css";
+
+    div.caret-box {
+        position: absolute;
+        left: 25px;
+        padding: 5px;
+        color: #495057
+    }
 
     div.file-desc-container {
-        padding: 0.75rem 1.25rem;
+        padding: 10px 70px;
         margin-bottom: 0;
         background-color: #f9f9f9;
         position: relative;
@@ -338,46 +351,44 @@
         flex-direction: column;
         border: 1px solid rgba(0, 0, 0, 0.125);
         border-radius: 0.25rem;
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-label {
+            width: 110px;
+            margin: 4px 10px 0px -10px;
+        }
+    }
+
+    .description-container {
+        height: 90px;
     }
 
     #description {
         resize: none;
-        height: 65px;
-        width: 460px;
+        height: 100%;
+        width: 690px;
     }
 
     .uneditable-input {
         cursor: text;
-        width: 460px;
+        width: 690px;
+        height: 30px;
     }
 
     .tip {
-        float: right;
-        cursor: pointer;
-        margin-top: -12px;
-        margin-right: -15px;
-    }
-
-    .flex-box {
-        display: flex;
-
-        div {
-            margin-left: 10px;
-        }
-
-        label {
-            margin-top: 5px;
-            margin-left: 20px;
-            width: 120px;
-        }
+        margin-top: -10px;
     }
 
     button:not(.add-host-btn) {
-        height: 32px;
+        height: 30px;
     }
 
     .add-host-btn {
-        margin-top: 45px;
+        margin-top: 70px;
         margin-left: 194px;
         position: absolute;
         padding: 1px 4px;
@@ -389,40 +400,35 @@
         text-align: center;
     }
 
-    div {
-        .div-host {
+    .div-host {
             background-color: #FFF;
             border: 1px solid #D6D6D6;
-            height: 65px;
+            height: 90px;
             overflow-y: scroll;
             border-radius: 3px;
             width: 250px;
             margin-left: 0;
         }
 
-        .host {
-            color: #666;
-            margin: 2px 0 2px 7px;
-        }
+    .host {
+        color: #666;
+        margin: 2px 0 2px 7px;
     }
 
     .validation-result {
-        height: 140px;
-        margin: 5px 0 20px;
         padding: 5px;
-        max-height: 340px;
-        overflow-y: scroll;
         font-size: 12px;
         background-color: #f5f5f5;
     }
 
     .expand-btn-container {
-        margin-top: -39px;
-        margin-right: -17px;
-    }
+        position: absolute;
+        left: 50%;
 
-    .expanded {
-        height: 340px;
+        width: 40px;
+        height: 20px;
+        margin-left: -20px;
+        margin-top: 6px;
     }
 
     input[type="text"] {

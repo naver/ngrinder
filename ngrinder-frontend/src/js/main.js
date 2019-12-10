@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
-import VueSession from 'vue-session';
+import VueLocalStorage from 'vue-localstorage';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
@@ -21,7 +21,6 @@ import ScriptConsole from 'operation/ScriptConsole.vue';
 import SystemConfig from 'operation/SystemConfig.vue';
 import Announcement from 'operation/Announcement.vue';
 import UserList from 'user/List.vue';
-import UserDetail from 'user/UserDetail.vue';
 import AgentList from 'agent/List.vue';
 import AgentDetail from 'agent/Detail.vue';
 
@@ -60,9 +59,15 @@ axiosInstance.interceptors.request.use(config => {
 });
 
 Vue.use(Vuex);
-Vue.use(VueSession);
+Vue.use(VueLocalStorage, {
+    name: 'localStorage',
+    bind: true,
+});
 Vue.use(VueRouter);
-Vue.use(VeeValidate, {inject: false});
+Vue.use(VeeValidate, {
+    inject: false,
+    useConstraintAttrs: false,
+});
 Vue.use(bFormSlider);
 
 Vue.prototype.$bootbox = BootBox;
@@ -120,8 +125,6 @@ const routes = [
     {path: '/operation/system_config', component: SystemConfig, name: 'systemConfig'},
     {path: '/operation/announcement', component: Announcement, name: 'announcement'},
     {path: '/user', component: UserList, name: 'userList'},
-    {path: '/user/new', component: UserDetail, name: 'createNewUser'},
-    {path: '/user/:userId', component: UserDetail, name: 'userDetail', props: true},
     {path: '/agent', component: AgentList, name: 'agentList'},
     {path: '/agent/:ip/:name', component: AgentDetail, name: 'agentDetail', props: true},
 ];

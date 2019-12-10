@@ -17,7 +17,7 @@
                 <span v-text="i18n('common.button.search')"></span>
             </button>
             <div class="ml-auto">
-                <button class="btn btn-info" @click="$router.push({ path : '/user/new' })">
+                <button class="btn btn-info" @click="$refs.signUpModal.show()">
                     <i class="fa fa-user mr-1"></i>
                     <span v-text="i18n('user.list.button.create')"></span>
                 </button>
@@ -45,7 +45,7 @@
             @vuetable:loading="beforeTableLoading">
 
             <template slot="userName" slot-scope="props">
-                <router-link :to="`/user/${props.rowData.userId}`" v-text="props.rowData.userName"></router-link>
+                <span class="pointer-cursor user-name" @click="editUser(props.rowData.userId)" v-text="props.rowData.userName"></span>
             </template>
 
             <template slot="role" slot-scope="props">
@@ -65,9 +65,9 @@
             </template>
 
             <template slot="edit" slot-scope="props">
-                <router-link :to="`/user/${props.rowData.userId}`">
-                    <i class="fa fa-edit text-dark fa-angle-"></i>
-                </router-link>
+                <div class="pointer-cursor" @click="editUser(props.rowData.userId)">
+                    <i class="fa fa-edit"></i>
+                </div>
             </template>
 
             <template slot="delete" slot-scope="props">
@@ -82,6 +82,9 @@
             :css="table.css.pagination"
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
+        <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()"></sign-up-modal>
+        <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId"
+                            @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = !showUserEditModal"></user-edit-modal>
     </div>
 </template>
 
@@ -95,10 +98,12 @@
     import Base from '../Base.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
+    import SignUpModal from './modal/SignUpModal.vue';
+    import UserEditModal from './modal/UserEditModal.vue';
 
     @Component({
         name: 'userList',
-        components: { vueHeadful, Paginate, Vuetable, VuetablePagination },
+        components: { vueHeadful, Paginate, Vuetable, VuetablePagination, SignUpModal, UserEditModal },
     })
     export default class UserList extends Mixins(Base, MessagesMixin, TableConfig) {
         roles = [{
@@ -112,13 +117,16 @@
             css: {},
             appendParams: {},
             pagination: {
-                perPage: 10,
+                perPage: 15,
             },
         };
 
         keywords = '';
         sort = 'userName,ASC';
         showTable = false;
+
+        targetUserId = '';
+        showUserEditModal = false;
 
         created() {
             this.table.css = this.tableCss;
@@ -210,6 +218,11 @@
             this.$refs.vuetable.refresh();
         }
 
+        editUser(userId) {
+            this.targetUserId = userId;
+            this.showUserEditModal = true;
+        }
+
         isAdminUser(user) {
             return user.userId === 'admin';
         }
@@ -235,20 +248,16 @@
             margin-bottom: 7px;
         }
 
+        .user-name {
+            color: #007bff;
+        }
+
         .pagination {
             margin-top: -3px !important;
         }
 
         .role-select {
             width: 220px;
-        }
-
-        .email {
-            width: 160px;
-        }
-
-        .description {
-            width: 260px;
         }
     }
 </style>

@@ -13,7 +13,7 @@
             <!--eslint-disable-next-line vue/no-unused-vars-->
             <template v-for="i in 1">
                 <div>
-                    <div class="row m-0">
+                    <div class="row">
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpInitCount"
                                          type="number"
@@ -31,7 +31,7 @@
                             </input-label>
                         </div>
                     </div>
-                    <div class="row m-0">
+                    <div class="row">
                         <div class="ramp-up-config-item">
                             <input-label name="rampUpInitSleepTime"
                                          type="number"
@@ -52,7 +52,7 @@
                 </div>
             </template>
         </div>
-        <legend class="center mt-0 pt-0">
+        <legend class="center mt-0 pt-0 border-bottom">
             <span v-text="i18n('perfTest.config.rampUp.des')"></span>
         </legend>
         <div id="ramp-up-chart"></div>
@@ -112,7 +112,7 @@
                 'rampUp.interval',
                 'processes',
                 'threads'], this.updateRampUpChart);
-            this.watchUseRampUp(this.rampUp.enable);
+            this.$refs.rampUpConfig.forEach(component => component.readonly = !this.rampUp.enable);
         }
 
         @Watch('rampUp.enable')
@@ -228,6 +228,7 @@
                 data: {
                     json: coordinates.get(),
                     xs: { 'y': 'x' },
+                    colors: { y: '#4bb2c5' },
                 },
                 axis: {
                     x: {
@@ -271,6 +272,11 @@
                     x: { show: true },
                     y: { show: true },
                 },
+                padding: {
+                    top: 10,
+                    right: 16,
+                    left: 40,
+                },
                 oninit() {
                     this.svg.select('g.bb-grid')
                         .insert('rect', ':first-child')
@@ -306,7 +312,7 @@
     @import '~billboard.js/dist/theme/insight.min.css';
 
     .ramp-up-container {
-        width: 460px;
+        width: 530px;
         margin-left: 18px;
 
         .ramp-up-config-container {
@@ -314,6 +320,8 @@
         }
 
         #ramp-up-chart {
+            width: 530px;
+            height: 350px;
 
             .chart-background {
                 fill: #fffdf6;
@@ -323,7 +331,11 @@
         }
 
         .ramp-up-config-item {
-            width: 220px;
+            width: 250px;
+        }
+
+        .ramp-up-config-item + .ramp-up-config-item {
+            margin-left: 30px;
         }
 
         select {
@@ -346,6 +358,18 @@
 
         g.tick > text > tspan {
             font-size: 0.95em;
+        }
+    }
+
+    .ramp-up-config-item {
+        .input-label-container {
+            .controls {
+                margin-left: 140px;
+            }
+
+            .form-control {
+                width: 70px;
+            }
         }
     }
 </style>

@@ -17,9 +17,11 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
+import org.ngrinder.infra.config.UserDefinedMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,9 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
@@ -41,10 +41,13 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @since 3.1
  */
 @Component
+@RequiredArgsConstructor
 public class HomeService {
-	private static final int PANEL_ENTRY_SIZE = 6;
+	private static final int PANEL_ENTRY_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
+
+	private final UserDefinedMessageSource userDefinedMessageSource;
 
 	/**
 	 * Get the let panel entries from the given feed RUL.
@@ -68,6 +71,10 @@ public class HomeService {
 	@Cacheable(CACHE_RIGHT_PANEL_ENTRIES)
 	public List<PanelEntry> getRightPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
+	}
+
+	public Map<String, String> getUserDefinedMessageSources(String locale) {
+		return userDefinedMessageSource.getMessageSourcesByLocale().get(locale);
 	}
 
 	/**
