@@ -527,7 +527,6 @@
 </script>
 
 <style lang="less">
-    @light-gray: #e9ecef;
     @gray: #6c757d;
 
     .config-container {
@@ -574,14 +573,14 @@
         }
 
         .dropdown-menu {
-            border-color: @gray;
+            border-color: #ced4da;;
             min-width: 100px;
 
             .dropdown-item {
                 padding: 0.25rem 0.75rem;
 
                 &:active {
-                    background-color: @light-gray;
+                    background-color: #e9ecef;
                 }
             }
 
@@ -595,7 +594,6 @@
 </style>
 
 <style lang="less" scoped>
-    @light-gray: #e9ecef;
     @gray: #6c757d;
     @error-color: #d9534f;
 
@@ -637,7 +635,6 @@
 
                     .show {
                         .select-region-btn {
-                            background-color: @light-gray;
                             color: #495057;
                         }
                     }
@@ -649,13 +646,8 @@
                         width: 100px;
                         height: 30px;
 
-                        color: @gray;
-                        border-color: @gray;
-
-                        &:hover {
-                            background-color: @light-gray;
-                            color: #495057;
-                        }
+                        color: #495057;
+                        border-color: #ced4da;
 
                         .region-popover-wrapper {
                             width: 100%;
@@ -679,21 +671,16 @@
                         .select-region-btn {
                             border-color: @error-color;
                             color: @error-color;
+                        }
 
-                            &:hover {
-                                background-color: @light-gray;
-                            }
+                        .show > .select-region-btn.dropdown-toggle {
+                            border-color: @error-color;
+                            color: @error-color;
 
                             &:focus {
                                 outline: 0;
                                 box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
                             }
-                        }
-
-                        .show > .select-region-btn.dropdown-toggle {
-                            background-color: @light-gray;
-                            border-color: @error-color;
-                            color: @error-color;
                         }
                     }
 
