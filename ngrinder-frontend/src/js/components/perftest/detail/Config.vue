@@ -97,7 +97,7 @@
                                :data-step="shownBsTab ? 6 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.script') : undefined">
                     <select2 v-model="test.config.scm" name="scm"
-                             ref="scmSelect" customStyle="width: 90px;"
+                             ref="scmSelect" customStyle="width: 173px;"
                              @change="changeScriptStorage"
                              :validationRules="{ required: true, scmValidation: true }" errStyle="position: absolute;">
                         <option value="svn">svn</option>
@@ -109,11 +109,11 @@
                         </option>
                         <option v-if="!config.github || config.github.length === 0" class="add-github" value="addGitHub" v-text="i18n('script.github.add.config')"></option>
                     </select2>
-                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 430px;"
+                    <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
                              @change="changeScript"
                              @opening="openingScriptSelect"
-                             :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute; padding-left: 95px;">
+                             :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute; padding-left: 177px;">
                         <option value=""></option>
                         <option v-for="script in scripts"
                                 :data-validate="script.validated"
@@ -378,7 +378,7 @@
         }
 
         addGitHubDeletedConfig() {
-            const deletedGitHubConfigName = `(d) ${this.test.config.scm.split(':')[0]}`;
+            const deletedGitHubConfigName = `(deleted) ${this.test.config.scm.split(':')[0]}`;
             const defaultRevision = -1;
             this.config.github.push({
                 name: deletedGitHubConfigName,
@@ -527,7 +527,7 @@
         }
 
         isValidScm() {
-            return this.$refs.scmSelect.getSelectedOptionValidate() !== '-1';
+            return this.$refs.scmSelect.getSelectedOption('validate') !== '-1';
         }
 
         getScriptResource() {
@@ -614,7 +614,7 @@
                 getMessage: this.i18n('perfTest.message.scm'),
                 validate: () => {
                     if (this.$refs.scmSelect) {
-                        return this.$refs.scmSelect.getSelectedOptionValidate() !== '-1';
+                        return this.$refs.scmSelect.getSelectedOption('validate') !== '-1';
                     }
                     return true;
                 },
