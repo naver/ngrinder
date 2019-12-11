@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.controller;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
@@ -428,8 +429,12 @@ public class FileEntryApiController {
 	}
 
 	@GetMapping("/github-config")
-	public List<GitHubConfig> getGitHubConfig(User user) throws FileNotFoundException {
-		return gitHubFileEntryService.getAllGitHubConfig(user);
+	public List<GitHubConfig> getGitHubConfig(User user) {
+		try {
+			return gitHubFileEntryService.getAllGitHubConfig(user);
+		} catch (FileNotFoundException e) {
+			return emptyList();
+		}
 	}
 
 	@PostMapping("/github-config")

@@ -232,20 +232,17 @@
         beforeRouteEnter(to, from, next) {
             PerfTestDetail.prepare(to)
                 .then(next)
-                .catch(() => next('/perftest'));
+                .catch(() => { /* noOp */ });
         }
 
         beforeRouteUpdate(to, from, next) {
             PerfTestDetail.prepare(to)
                 .then(next)
-                .catch(() => next('/perftest'));
+                .catch(() => { /* noOp */ });
         }
 
         mounted() {
             this.init();
-            if (this.test.config.scm && this.test.config.scm !== 'svn') {
-                this.syncGitHubConfigRevision();
-            }
         }
 
         static prepare(route) {
@@ -283,18 +280,7 @@
         static prepareGitHubConfig(route) {
             return Base.prototype.$http.get('/script/api/github-config')
                 .then(res => route.params.config.github = res.data)
-                .catch(() => route.params.config.github = false);
-        }
-
-        syncGitHubConfigRevision() {
-            const gitHubConfigName = this.test.config.scm.split(':')[0];
-            if (this.config.github) {
-                this.config.github.forEach(gitHubConfig => {
-                   if (gitHubConfig.name === gitHubConfigName) {
-                       this.$refs.config.$refs.scmSelect.selectValue(`${gitHubConfig.name}:${gitHubConfig.revision}`);
-                   }
-                });
-            }
+                .catch(error => route.params.config.github = { error: true, message: error.response.data.message });
         }
 
         init() {
@@ -434,18 +420,20 @@
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
-            this.$validator.validateAll().then(() => {
-                if (this.errors.any()) {
-                    this.$refs.configTab.click();
-                } else {
-                    this.test.status.name = 'SAVED';
-                    this.$nextTick(() => {
-                        this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
-                            .then(() => this.$router.push('/perftest'))
-                            .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
-                    });
-                }
-            });
+            this.$refs.config.loadGitHubScript().then(() => {
+                this.$validator.validateAll().then(() => {
+                    if (this.errors.any()) {
+                        this.$refs.configTab.click();
+                    } else {
+                        this.test.status.name = 'SAVED';
+                        this.$nextTick(() => {
+                            this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
+                                .then(() => this.$router.push('/perftest'))
+                                .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
+                        });
+                    }
+                });
+            }).catch(() => { /* noOp */ });
         }
 
         saveAndStart() {
@@ -453,13 +441,15 @@
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
-            this.$validator.validateAll().then(() => {
-                if (this.errors.any()) {
-                    this.$refs.configTab.click();
-                } else {
-                    this.$refs.scheduleModal.show();
-                }
-            });
+            this.$refs.config.loadGitHubScript().then(() => {
+                this.$validator.validateAll().then(() => {
+                    if (this.errors.any()) {
+                        this.$refs.configTab.click();
+                    } else {
+                        this.$refs.scheduleModal.show();
+                    }
+                });
+            }).catch(() => { /* noOp */ });
         }
 
         runPerftest(scheduledTime) {

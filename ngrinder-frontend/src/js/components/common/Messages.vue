@@ -9,7 +9,7 @@
              v-show="showErrMsgDiv">
             <button class="close" @click="close">x</button>
             <h4 class="alert-heading">ERROR</h4>
-            <span class="error-message" v-text="errMessage"></span>
+            <div class="error-message" v-html="errMessage"></div>
         </div>
         <transition name="fade">
             <div class="message-div rounded progress-bar progress-bar-striped progress-bar-animated" v-show="showPrgDiv">

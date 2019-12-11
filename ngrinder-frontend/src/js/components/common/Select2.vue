@@ -63,6 +63,7 @@
 
         selectValue(value) {
             $(this.$refs.select2).select2('val', value);
+            this.$emit('input', value);
         }
 
         getSelectedOption(key) {
