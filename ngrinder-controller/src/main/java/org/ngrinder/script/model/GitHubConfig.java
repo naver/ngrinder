@@ -41,7 +41,7 @@ public class GitHubConfig {
 					defaultIfNull(jsonNode.get("base-url"), ""),
 					defaultIfNull(jsonNode.get("revision"), "-1"));
 			} catch (Exception e) {
-				throw new NGrinderRuntimeException("Required field(name, owner, repo, access-token) is missing.\nPlease check your .gitconfig.yml", e);
+				throw new NGrinderRuntimeException("Required field(name, owner, repo, access-token) is missing.<br>Please check your .gitconfig.yml", e);
 			}
 		}
 

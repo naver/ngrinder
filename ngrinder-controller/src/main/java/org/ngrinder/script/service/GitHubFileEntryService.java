@@ -196,6 +196,9 @@ public class GitHubFileEntryService {
 		Yaml yaml = new Yaml();
 		Iterable<Map<String, Object>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
 		for (Map<String, Object> configMap : gitConfigs) {
+			if (configMap == null) {
+				continue;
+			}
 			configMap.put("revision", gitConfigYaml.getRevision());
 			gitHubConfig.add(objectMapper.convertValue(configMap, GitHubConfig.class));
 		}
@@ -248,7 +251,7 @@ public class GitHubFileEntryService {
 				scriptMap.put(gitHubConfig.getName() + ":" + gitHubConfig.getRevision(), scripts);
 			} catch (IOException e) {
 				log.error("Fail to get script from github with [userId({}), {}]", user.getUserId(), gitHubConfig, e);
-				throw new NGrinderRuntimeException("Fail to get script from github.");
+				throw new NGrinderRuntimeException("Fail to get script from github.\ncause: " + e.getCause() , e);
 			}
 		});
 		return scriptMap;
