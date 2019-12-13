@@ -16,6 +16,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.yaml.snakeyaml.Yaml;
 
@@ -91,7 +93,13 @@ public class GitHubFileEntryService {
 			String sha = ghRepository.getBranch(defaultBranch).getSHA1();
 
 			String checkoutDirPath = getCheckoutDirPath(user, ghRepository, gitHubConfig.getName(), scriptPath);
-			SVNUpdateClient svnUpdateClient = newInstance().getUpdateClient();
+			BasicAuthenticationManager basicAuthenticationManager
+				= new BasicAuthenticationManager(gitHubConfig.getUserId(), gitHubConfig.getAccessToken());
+
+			SVNClientManager svnClientManager = newInstance();
+			svnClientManager.setAuthenticationManager(basicAuthenticationManager);
+			SVNUpdateClient svnUpdateClient = svnClientManager.getUpdateClient();
+
 			File checkoutDir = new File(checkoutDirPath);
 			String checkoutBaseUrl = hazelcastService.get(CACHE_GITHUB_CHECKOUT_BASE_URL, gitHubConfig.getName());
 
@@ -125,7 +133,8 @@ public class GitHubFileEntryService {
 				}
 			}
 		} catch (Exception e) {
-			throw new PerfTestPrepareException("Failed to checkout scripts from github.\nPlease check your github configuration.", e);
+			throw new PerfTestPrepareException("Failed to checkout scripts from github.\n" +
+				"Please check your github configuration.\n\n" + e.getMessage(), e);
 		}
 	}
 
