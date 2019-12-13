@@ -105,6 +105,7 @@
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
+    import CommonMixin from '../mixin/CommonMixin.vue';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -192,7 +193,7 @@
             validator: 'new',
         },
     })
-    export default class PerfTestDetail extends Mixins(Base, MessagesMixin, PopoverMixin) {
+    export default class PerfTestDetail extends Mixins(Base, MessagesMixin, PopoverMixin, CommonMixin) {
         @Prop({ type: String, required: false })
         id;
 
@@ -294,9 +295,8 @@
                     this.$refs.running.startSamplingInterval();
                 }
                 this.$testStatusImage = $(this.$refs.testStatusImage);
-                this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
-                this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
-
+                this.$testStatusImage.attr('data-content', this.getStatusDataContent(this.test.progressMessage, this.test.lastProgressMessage));
+                this.currentRefreshStatusTimeoutId = this.startRefreshPerfTestStatusInterval();
                 this.initPopover($('[data-toggle="popover"]'));
                 this.setTabEvent();
                 this.updateTabDisplay();
@@ -331,7 +331,7 @@
             $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
         }
 
-        refreshPerftestStatus() {
+        startRefreshPerfTestStatusInterval() {
             if (!this.test.id || !this.isUpdatableStatus()) {
                 return;
             }
@@ -349,7 +349,7 @@
                     this.test.status.category = status.category;
                     this.updateTabDisplay();
                 }
-                this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
+                this.currentRefreshStatusTimeoutId = setTimeout(this.startRefreshPerfTestStatusInterval, 3000);
             });
         }
 

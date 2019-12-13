@@ -35,7 +35,7 @@
                    data-trigger="hover"
                    :id="`ball_${props.rowData.id}`"
                    :title="props.rowData.status.name"
-                   :data-content="`${props.rowData.progressMessage}<br><b>${props.rowData.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
+                   :data-content="getStatusDataContent(props.rowData.progressMessage, props.rowData.lastProgressMessage)">
                     <img :src="`${contextPath}/img/ball/${props.rowData.status.iconName}`">
                 </div>
             </template>
@@ -152,6 +152,7 @@
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import SmallChart from './SmallChart.vue';
     import TableConfig from './mixin/TableConfig.vue';
+    import CommonMixin from '../mixin/CommonMixin.vue';
 
     Vue.component('small-chart', SmallChart);
 
@@ -159,7 +160,7 @@
         name: 'perfTestList',
         components: { IntroButton, vueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
-    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig, PopoverMixin) {
+    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig, PopoverMixin, CommonMixin) {
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
         tests = [];
         autoUpdateTargets = [];
