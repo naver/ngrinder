@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -73,6 +74,8 @@ public class ScriptConsoleApiController {
 
 	private final Config config;
 
+	private final HazelcastService hazelcastService;
+
 	/**
 	 * Run the given script. The run result is stored in "result" of the given model.
 	 *
@@ -99,6 +102,7 @@ public class ScriptConsoleApiController {
 			engine.put("pluginManager", this.pluginManager);
 			engine.put("cacheManager", this.cacheManager);
 			engine.put("user", this.userContext.getCurrentUser());
+			engine.put("hazelcastService", this.hazelcastService);
 			final StringWriter out = new StringWriter();
 			PrintWriter writer = new PrintWriter(out);
 			engine.getContext().setWriter(writer);
