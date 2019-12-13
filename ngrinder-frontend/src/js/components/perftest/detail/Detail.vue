@@ -104,6 +104,7 @@
     import Select2 from '../../common/Select2.vue';
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
+    import CommonMixin from '../mixin/CommonMixin.vue';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -191,7 +192,7 @@
             validator: 'new',
         },
     })
-    export default class PerfTestDetail extends Mixins(Base, MessagesMixin) {
+    export default class PerfTestDetail extends Mixins(Base, MessagesMixin, CommonMixin) {
         @Prop({ type: String, required: false })
         id;
 
@@ -280,6 +281,7 @@
 
         init() {
             this.isClone = this.test.status.name !== 'SAVED';
+            this.$testStatusImage = $(this.$refs.testStatusImage);
             this.perftestStatus.iconPath = `/img/ball/${this.test.status.iconName}`;
             if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                 this.test.region = '';
@@ -288,9 +290,8 @@
                 if (this.test.status.category === 'TESTING') {
                     this.$refs.running.startSamplingInterval();
                 }
-                this.$testStatusImage = $(this.$refs.testStatusImage);
-                this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
-                this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
+                this.currentRefreshStatusTimeoutId = this.startRefreshPerfTestStatusInterval();
+                this.$testStatusImage.attr('data-content', this.getStatusDataContent(this.test.progressMessage, this.test.lastProgressMessage));
                 $('[data-toggle="popover"]').popover();
                 this.setTabEvent();
                 this.updateTabDisplay();
@@ -325,7 +326,7 @@
             $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
         }
 
-        refreshPerftestStatus() {
+        startRefreshPerfTestStatusInterval() {
             if (!this.test.id || !this.isUpdatableStatus()) {
                 return;
             }
@@ -343,7 +344,7 @@
                     this.test.status.category = status.category;
                     this.updateTabDisplay();
                 }
-                this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
+                this.currentRefreshStatusTimeoutId = setTimeout(this.startRefreshPerfTestStatusInterval, 3000);
             });
         }
 

@@ -405,7 +405,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 			return;
 		}
 		if (!StringUtils.equals(this.lastProgressMessage, lastProgressMessage)) {
-			setProgressMessage(getProgressMessage() + this.lastProgressMessage + "\n");
+			if (!StringUtils.isEmpty(this.lastProgressMessage)) {
+				setProgressMessage(getProgressMessage() + this.lastProgressMessage + "\n");
+			}
 		}
 		this.lastProgressMessage = lastProgressMessage;
 	}

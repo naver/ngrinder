@@ -8,6 +8,7 @@ import VueLocalStorage from 'vue-localstorage';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
+import html5Entities from 'html-entities/lib/html5-entities.js';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
@@ -70,6 +71,7 @@ Vue.use(VeeValidate, {
 });
 Vue.use(bFormSlider);
 
+Vue.prototype.$htmlEntities = html5Entities;
 Vue.prototype.$bootbox = BootBox;
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axiosInstance;
