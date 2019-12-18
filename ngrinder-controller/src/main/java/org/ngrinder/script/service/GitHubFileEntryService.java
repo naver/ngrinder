@@ -26,10 +26,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-import static java.io.File.separator;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.readFileToString;
@@ -75,8 +76,8 @@ public class GitHubFileEntryService {
 		this.hazelcastService = hazelcastService;
 	}
 
-	public FileEntry getOne(User user, GHRepository ghRepository, String gitHubConfigName, String scriptPath) {
-		String fullPath = getCheckoutDirPath(user, ghRepository, gitHubConfigName, scriptPath);
+	public FileEntry getOne(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
+		String fullPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
 		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
 			fullPath += scriptPath.substring(scriptPath.indexOf(MAVEN_PATH));
 			FileEntry fileEntry = createGitHubScriptFileEntry(fullPath);
@@ -102,7 +103,7 @@ public class GitHubFileEntryService {
 			String sha = ghRepository.getBranch(activeBranch).getSHA1();
 			String scriptPath = perfTest.getScriptName();
 
-			String checkoutDirPath = getCheckoutDirPath(user, ghRepository, gitHubConfig.getName(), scriptPath);
+			String checkoutDirPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
 			BasicAuthenticationManager basicAuthenticationManager
 				= new BasicAuthenticationManager(gitHubConfig.getUserId(), gitHubConfig.getAccessToken());
 
@@ -199,15 +200,20 @@ public class GitHubFileEntryService {
 		return StringUtils.equals(sha, oldSha);
 	}
 
-	private String getCheckoutDirPath(User user, GHRepository ghRepository, String gitHubconfigName, String scriptPath) {
-		String checkoutScriptPath;
-		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
-			checkoutScriptPath = scriptPath.split(MAVEN_PATH)[0];
-		} else {
-			checkoutScriptPath = scriptPath.substring(0, scriptPath.lastIndexOf("/"));
+	private String getCheckoutDirPath(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
+		try {
+			String checkoutScriptPath;
+			URI uri = new URI(gitHubConfig.getBaseUrl());
+			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
+				checkoutScriptPath = scriptPath.split(MAVEN_PATH)[0];
+			} else {
+				checkoutScriptPath = scriptPath.substring(0, scriptPath.lastIndexOf("/"));
+			}
+			return config.getHome().getDirectory().getPath() + "/github/" + uri.getHost()
+				+ "/" + gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo() + "/" + checkoutScriptPath;
+		} catch (URISyntaxException e) {
+			throw new NGrinderRuntimeException(e);
 		}
-		return config.getHome().getUserRepoDirectory(user).getPath().replace(separator, "/")
-			+ "/git/" + gitHubconfigName + "/" + checkoutScriptPath;
 	}
 
 	/**
