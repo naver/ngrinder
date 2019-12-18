@@ -138,6 +138,7 @@ public class GitHubFileEntryService {
 					log.info("github update to: {}, sha: {}", checkoutDir, sha);
 				}
 			}
+			perfTest.setScriptRevision(sha);
 		} catch (Exception e) {
 			hazelcastService.delete(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch));
 			throw new PerfTestPrepareException("Failed to checkout scripts from github.\n" +

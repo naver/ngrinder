@@ -117,6 +117,7 @@
                         <option value=""></option>
                         <option v-for="script in scripts"
                                 :data-validate="script.validated"
+                                :data-revision="script.revision"
                                 v-text="script.pathInShort"
                                 :value="script.path">
                         </option>
@@ -481,7 +482,8 @@
                 .then(res => {
                     for (const key in res.data) {
                         this.scriptsMap[key] = res.data[key].map(script => ({
-                            revision: script.sha,
+                            // github script revision will be set on back-end.
+                            revision: 0,
                             validated: 0,
                             pathInShort: this.extractScriptName(script.path),
                             path: script.path,
@@ -564,9 +566,8 @@
             }
         }
 
-        changeScript(revision) {
+        changeScript() {
             if (this.isGitHubStorage()) {
-                this.test.config.scriptRevision = revision;
                 return;
             }
 
