@@ -23,6 +23,7 @@ public class GitHubConfig {
 	private String repo;
 	private String userId;
 	private String accessToken;
+	private String branch;
 	private String baseUrl;
 	private String revision;
 
@@ -40,6 +41,7 @@ public class GitHubConfig {
 					jsonNode.get("repo").asText(),
 					jsonNode.get("user-id").asText(),
 					jsonNode.get("access-token").asText(),
+					defaultIfNull(jsonNode.get("branch"), ""),
 					defaultIfNull(jsonNode.get("base-url"), ""),
 					defaultIfNull(jsonNode.get("revision"), "-1"));
 			} catch (Exception e) {
