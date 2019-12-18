@@ -218,12 +218,16 @@ public class GitHubFileEntryService {
 	 * @since 3.5.0
 	 */
 	public List<GitHubConfig> getAllGitHubConfig(User user) throws FileNotFoundException {
-		List<GitHubConfig> gitHubConfig = new ArrayList<>();
 		FileEntry gitConfigYaml = fileEntryService.getOne(user, GITHUB_CONFIG_NAME, -1L);
 		if (gitConfigYaml == null) {
 			throw new FileNotFoundException(GITHUB_CONFIG_NAME + " isn't exist.");
 		}
 
+		return getAllGithubConfig(gitConfigYaml);
+	}
+
+	private List<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
+		List<GitHubConfig> gitHubConfig = new ArrayList<>();
 		// Yaml is not thread safe. so create it every time.
 		Yaml yaml = new Yaml();
 		Iterable<Map<String, Object>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
@@ -255,6 +259,17 @@ public class GitHubFileEntryService {
 			throw new NGrinderRuntimeException("GitHub configuration(" + name + ") is not exist");
 		}
 		return gitHubConfigOptional.get();
+	}
+
+	public boolean validate(FileEntry gitConfigYaml) {
+		for (GitHubConfig config : getAllGithubConfig(gitConfigYaml)) {
+			try {
+				getGitHubClient(config).getRepository(config.getOwner() + "/" + config.getRepo());
+			} catch (IOException e) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

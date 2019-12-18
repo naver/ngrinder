@@ -24,7 +24,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.*;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
@@ -448,5 +448,10 @@ public class FileEntryApiController {
 			gitHubFileEntryService.evictGitHubScriptCache(user);
 		}
 		return gitHubFileEntryService.getScripts(user);
+	}
+
+	@PostMapping("/github/validate")
+	public void validateGithubConfig(@RequestBody FileEntry fileEntry) {
+		checkTrue(gitHubFileEntryService.validate(fileEntry), "Invalid git config");
 	}
 }

@@ -33,6 +33,16 @@
                                 <span v-text="i18n('script.editor.button.validate')"></span>
                             </button>
                         </template>
+                        <template v-else-if="isGitConfigFile">
+                            <button class="btn btn-success" @click="save(false)">
+                                <i class="fa fa-save mr-1"></i>
+                                <span v-text="i18n('common.button.save')"></span>
+                            </button>
+                            <button class="btn btn-primary" @click="validate">
+                                <i class="fa fa-check mr-1"></i>
+                                <span v-text="i18n('script.editor.button.validate')"></span>
+                            </button>
+                        </template>
                         <template v-else>
                             <button class="btn btn-success" @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
@@ -112,6 +122,7 @@
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
+    const GIT_CONFIG_FILE_NAME = '.gitconfig.yml';
     const guides = {
         perftest:
             'You can use various log levels. [trace, debug, info, warn, error]\n' +
@@ -179,6 +190,8 @@
         SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
         hideDescription = false;
 
+        isGitConfigFile = false;
+
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
             const revision = to.query.r || -1;
@@ -208,9 +221,7 @@
 
             this.$nextTick(() => {
                 this.$refs.editor.codemirror.focus();
-
-                const isGitConfigFile = this.file.path === '.gitconfig.yml';
-                this.validationResult = isGitConfigFile ? guides.gitconfig : guides.perftest;
+                this.validationResult = this.isGitConfigFile ? guides.gitconfig : guides.perftest;
             });
         }
 
@@ -235,6 +246,7 @@
             if (this.file.properties.targetHosts) {
                 this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
             }
+            this.isGitConfigFile = this.file.path === GIT_CONFIG_FILE_NAME;
             this.validated = this.file.validated;
             this.cmOptions = { mode: this.codemirrorKey };
             this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
@@ -300,20 +312,26 @@
         validate() {
             this.showProgressBar(this.i18n('script.editor.message.validate'));
 
-            const params = {
-                fileEntry: {
-                    path: this.file.path,
+            let promise = null;
+            if (this.isGitConfigFile) {
+                promise = this.$http.post('/script/api/github/validate', {
                     content: this.$refs.editor.getValue(),
-                },
-                hostString: this.targetHosts.join(','),
-            };
+                }).then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')));
+            } else {
+                promise = this.$http.post('/script/api/validate', {
+                    fileEntry: {
+                        path: this.file.path,
+                        content: this.$refs.editor.getValue(),
+                    },
+                    hostString: this.targetHosts.join(','),
+                }).then(res => {
+                    this.validationResult = res.data;
+                    this.validated = true;
+                });
+            }
 
-            this.$http.post('/script/api/validate', params)
-            .then(res => {
-                this.validationResult = res.data;
-                this.validated = true;
-            })
-            .catch(() => this.showErrorMsg(this.i18n('script.editor.error.validate')))
+            promise
+            .catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
             .finally(() => {
                 this.hideProgressBar();
             });
