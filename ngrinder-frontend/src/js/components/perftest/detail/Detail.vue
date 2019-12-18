@@ -133,6 +133,7 @@
                 safeDistribution: test.config.safeDistribution,
                 param: test.config.param,
                 scm: test.config.scm,
+                scriptRevision: test.config.scriptRevision,
 
                 // rampUp
                 useRampUp: test.rampUp.enable,
