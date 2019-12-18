@@ -641,14 +641,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 		if (isGitHubScript(scm)) {
 			String gitHubConfigName = extractGitHubConfigName(scm);
-			String scriptName = perfTest.getScriptName();
 
 			GitHubConfig gitHubConfig = gitHubFileEntryService.getGitHubConfig(user, gitHubConfigName);
 			GitHub gitHub = gitHubFileEntryService.getGitHubClient(gitHubConfig);
 			GHRepository ghRepository = gitHub.getRepository(gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo());
 
-			gitHubFileEntryService.checkoutGitHubScript(user, ghRepository, gitHubConfig, scriptName);
-			scriptEntry = gitHubFileEntryService.getOne(user, ghRepository, gitHubConfigName, scriptName);
+			gitHubFileEntryService.checkoutGitHubScript(user, perfTest, ghRepository, gitHubConfig);
+			scriptEntry = gitHubFileEntryService.getOne(user, ghRepository, gitHubConfigName, perfTest.getScriptName());
 		} else {
 			scriptEntry = checkNotNull(
 				fileEntryService.getOne(user,

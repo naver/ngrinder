@@ -8,6 +8,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.GitHubConfig;
@@ -31,7 +32,8 @@ import java.util.*;
 import static java.io.File.separator;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.AopUtils.proxy;
@@ -73,8 +75,8 @@ public class GitHubFileEntryService {
 		this.hazelcastService = hazelcastService;
 	}
 
-	public FileEntry getOne(User user, GHRepository ghRepository, String gitHubconfigName, String scriptPath) {
-		String fullPath = getCheckoutDirPath(user, ghRepository, gitHubconfigName, scriptPath);
+	public FileEntry getOne(User user, GHRepository ghRepository, String gitHubConfigName, String scriptPath) {
+		String fullPath = getCheckoutDirPath(user, ghRepository, gitHubConfigName, scriptPath);
 		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
 			fullPath += scriptPath.substring(scriptPath.indexOf(MAVEN_PATH));
 			FileEntry fileEntry = createGitHubScriptFileEntry(fullPath);
@@ -87,10 +89,18 @@ public class GitHubFileEntryService {
 		}
 	}
 
-	public void checkoutGitHubScript(User user, GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
+	public void checkoutGitHubScript(User user, PerfTest perfTest, GHRepository ghRepository, GitHubConfig gitHubConfig) {
+		String activeBranch = "";
 		try {
 			String defaultBranch = ghRepository.getDefaultBranch();
-			String sha = ghRepository.getBranch(defaultBranch).getSHA1();
+			String configuredBranch = gitHubConfig.getBranch();
+			activeBranch = defaultBranch;
+
+			if (!StringUtils.isEmpty(configuredBranch)) {
+				activeBranch = configuredBranch;
+			}
+			String sha = ghRepository.getBranch(activeBranch).getSHA1();
+			String scriptPath = perfTest.getScriptName();
 
 			String checkoutDirPath = getCheckoutDirPath(user, ghRepository, gitHubConfig.getName(), scriptPath);
 			BasicAuthenticationManager basicAuthenticationManager
@@ -101,13 +111,13 @@ public class GitHubFileEntryService {
 			SVNUpdateClient svnUpdateClient = svnClientManager.getUpdateClient();
 
 			File checkoutDir = new File(checkoutDirPath);
-			String checkoutBaseUrl = hazelcastService.get(CACHE_GITHUB_CHECKOUT_BASE_URL, gitHubConfig.getName());
+			String checkoutBaseUrl = hazelcastService.get(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch));
 
 			if (checkoutBaseUrl == null) {
 				GHContent ghContent = ghRepository.getFileContent(scriptPath);
 				URL url = new URL(ghContent.getHtmlUrl());
-				checkoutBaseUrl = createCheckoutBaseUrl(gitHubConfig, url, defaultBranch);
-				hazelcastService.put(CACHE_GITHUB_CHECKOUT_BASE_URL, gitHubConfig.getName(), checkoutBaseUrl);
+				checkoutBaseUrl = createCheckoutBaseUrl(gitHubConfig, url, isDefaultBranch(configuredBranch, defaultBranch));
+				hazelcastService.put(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch), checkoutBaseUrl);
 			}
 
 			SVNURL checkoutUrl;
@@ -117,25 +127,37 @@ public class GitHubFileEntryService {
 				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + scriptPath.substring(0, scriptPath.lastIndexOf("/")));
 			}
 
-			if (!checkoutDir.exists()) {
-				// TODO check export or checkout, update cost.
-				svnUpdateClient.doExport(checkoutUrl, checkoutDir, HEAD, HEAD, "\n", true, INFINITY);
-				// svnUpdateClient.doCheckout(checkoutUrl, checkoutDir, HEAD, HEAD, INFINITY, false);
+			if (!isSvnWorkingCopyDir(checkoutDir)) {
+				svnUpdateClient.doCheckout(checkoutUrl, checkoutDir, HEAD, HEAD, INFINITY, true);
 				saveSha(sha, checkoutDirPath);
 				log.info("github checkout to: {}, url: {} sha: {}", checkoutDir, checkoutUrl.toString(), sha);
 			} else {
 				if (!isSameRevision(sha, checkoutDirPath)) {
-					deleteQuietly(checkoutDir);
-					svnUpdateClient.doExport(checkoutUrl, checkoutDir, HEAD, HEAD, "\n", true, INFINITY);
-					// svnUpdateClient.doUpdate(checkoutDir, HEAD, INFINITY, false, true);
+					svnUpdateClient.doSwitch(checkoutDir, checkoutUrl, HEAD, HEAD, INFINITY, true, true);
 					saveSha(sha, checkoutDirPath);
 					log.info("github update to: {}, sha: {}", checkoutDir, sha);
 				}
 			}
 		} catch (Exception e) {
+			hazelcastService.delete(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch));
 			throw new PerfTestPrepareException("Failed to checkout scripts from github.\n" +
 				"Please check your github configuration.\n\n" + e.getMessage(), e);
 		}
+	}
+
+	private boolean isDefaultBranch(String configuredBranch, String defaultBranch) {
+		return StringUtils.isEmpty(configuredBranch) || configuredBranch.equals(defaultBranch);
+	}
+
+	private String getCheckoutBaseUrlCacheKey(GitHubConfig gitHubConfig, String branch) {
+		return gitHubConfig.getName() + ":" + branch;
+	}
+
+	private boolean isSvnWorkingCopyDir(File directory) {
+		if (!directory.exists() || !directory.isDirectory()) {
+			return false;
+		}
+		return new File(directory.getPath() + "/" + ".svn").exists();
 	}
 
 	@Cacheable(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#scriptPath")
@@ -246,16 +268,23 @@ public class GitHubFileEntryService {
 			try {
 				GitHub gitHub = getGitHubClient(gitHubConfig);
 				GHRepository ghRepository = gitHub.getRepository(gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo());
+
 				String defaultBranch = ghRepository.getDefaultBranch();
-				String shaOfDefaultBranch = ghRepository.getBranch(defaultBranch).getSHA1();
+				String configuredBranch = gitHubConfig.getBranch();
+				String activeBranch = defaultBranch;
+
+				if (!StringUtils.isEmpty(configuredBranch)) {
+					activeBranch = configuredBranch;
+				}
+				String shaOfDefaultBranch = ghRepository.getBranch(activeBranch).getSHA1();
 				List<GHTreeEntry> allFiles = ghRepository.getTreeRecursive(shaOfDefaultBranch, 1).getTree();
 				List<GHTreeEntry> scripts = filterScript(allFiles);
 
 				if (scripts.size() > 0) {
 					GHContent ghContent = ghRepository.getFileContent(scripts.get(0).getPath());
 					URL url = new URL(ghContent.getHtmlUrl());
-					hazelcastService.put(CACHE_GITHUB_CHECKOUT_BASE_URL, gitHubConfig.getName()
-						, createCheckoutBaseUrl(gitHubConfig, url, defaultBranch));
+					hazelcastService.put(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch)
+						, createCheckoutBaseUrl(gitHubConfig, url, isDefaultBranch(configuredBranch, defaultBranch)));
 				}
 				scriptMap.put(gitHubConfig.getName() + ":" + gitHubConfig.getRevision(), scripts);
 			} catch (IOException e) {
@@ -266,9 +295,12 @@ public class GitHubFileEntryService {
 		return scriptMap;
 	}
 
-	private String createCheckoutBaseUrl(GitHubConfig gitHubConfig, URL htmlUrl, String defaultBranch) {
-		return htmlUrl.getProtocol() + "://" + htmlUrl.getHost() + "/" + gitHubConfig.getOwner()
-			+ "/" + gitHubConfig.getRepo() + "/branches/" + defaultBranch;
+	private String createCheckoutBaseUrl(GitHubConfig gitHubConfig, URL htmlUrl, boolean isDefaultBranch) {
+		String checkoutUrl = htmlUrl.getProtocol() + "://" + htmlUrl.getHost()
+			+ "/" + gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo();
+
+		checkoutUrl += isDefaultBranch ? "/trunk" : "/branches/" + gitHubConfig.getBranch();
+		return checkoutUrl;
 	}
 
 	/**
