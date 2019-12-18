@@ -75,6 +75,7 @@ dependencies {
     compile (group: "com.hazelcast", name: "hazelcast", version: hazelcast_version)
     compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
     compile (group: "org.kohsuke", name: "github-api", version: "1.99")
+    compile (group: "commons-validator", name: "commons-validator", version: "1.6")
 
     compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
     annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")

@@ -7,15 +7,18 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 import java.io.IOException;
 
+import static org.apache.commons.validator.routines.UrlValidator.getInstance;
+
 @Getter
 @Setter
+@Builder
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonDeserialize(using = GitHubConfig.GitHubConfigDeserializer.class)
 public class GitHubConfig {
 	private String name;
@@ -33,17 +36,24 @@ public class GitHubConfig {
 		public GitHubConfig deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
 			ObjectCodec objectCodec = jsonParser.getCodec();
 			JsonNode jsonNode = objectCodec.readTree(jsonParser);
+			UrlValidator urlValidator = getInstance();
+
+			String baseUrl = defaultIfNull(jsonNode.get("base-url"), "https://api.github.com");
+			if (!urlValidator.isValid(baseUrl)) {
+				throw new NGrinderRuntimeException("Field 'base-url' is invalid.<br>Please check your .gitconfig.yml");
+			}
 
 			try {
-				return new GitHubConfig(
-					jsonNode.get("name").asText(),
-					jsonNode.get("owner").asText(),
-					jsonNode.get("repo").asText(),
-					jsonNode.get("user-id").asText(),
-					jsonNode.get("access-token").asText(),
-					defaultIfNull(jsonNode.get("branch"), ""),
-					defaultIfNull(jsonNode.get("base-url"), ""),
-					defaultIfNull(jsonNode.get("revision"), "-1"));
+				return GitHubConfig.builder()
+					.name(jsonNode.get("name").asText())
+					.owner(jsonNode.get("owner").asText())
+					.repo(jsonNode.get("repo").asText())
+					.userId(jsonNode.get("user-id").asText())
+					.accessToken(jsonNode.get("access-token").asText())
+					.branch(defaultIfNull(jsonNode.get("branch"), ""))
+					.baseUrl(baseUrl)
+					.revision(defaultIfNull(jsonNode.get("revision"), "-1"))
+					.build();
 			} catch (Exception e) {
 				throw new NGrinderRuntimeException("Required field(name, owner, repo, user-id, access-token) is missing.<br>Please check your .gitconfig.yml", e);
 			}
