@@ -5,7 +5,13 @@
     export default class CommonMixin {
         getStatusDataContent(progressMessage, lastProgressMessage) {
             const dataContent = progressMessage ? `${progressMessage}<br>` : '';
-            return `${dataContent}<b>${this.$htmlEntities.encode(decodeURIComponent(lastProgressMessage))}</b>`.replace(/\n/g, '<br>');
+            try {
+                lastProgressMessage = decodeURIComponent(lastProgressMessage);
+            } catch (e) {
+                // do nothing
+            }
+
+            return `${dataContent}<b>${this.$htmlEntities.encode(lastProgressMessage)}</b>`.replace(/\n/g, '<br>');
         }
     }
 </script>
