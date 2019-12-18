@@ -1,23 +1,13 @@
-#name: #configuration name, key of configuration. (unique, required)
-#owner: #repository owner. (required)
-#repo: #repository name. (required)
-#user-id: #github user id. (required)
-#access-token: #github personal access token. (required)
-#branch: #github branch name, default is project default branch. (optional)
-#base-url: #API base uri, default is https://api.github.com (optional)
-#---
-#name: first-config
+#name: My Github Config
 #owner: naver
 #repo: ngrinder
-#user-id: ngrinderman
+#user-id: ngrinder-user
 #access-token: e1a47e652762b60a...3ddc0713b07g13k
-#branch: feature/add-ngrinder-scripts
-#base-url: https://api.mygit.com
 #---
-#name: second-config
+#name: Another Config
 #owner: naver
 #repo: pinpoint
-#user-id: pinpointgirl
+#user-id: pinpoint-user
 #access-token: t9a47e6ff262b60a...3dac0713b07e82a
-#branch:
-#base-url:
+#branch: feature/add-ngrinder-scripts
+#base-url: https://api.mygithub.com

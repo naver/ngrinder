@@ -112,6 +112,42 @@
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
+    const guides = {
+        perftest:
+            'You can use various log levels. [trace, debug, info, warn, error]\n' +
+                'ex) grinder.logger.${level}("message")\n\n' + // eslint-disable-line no-template-curly-in-string
+            'You can access to response body with HTTPResponse.getText() method.\n' +
+            'ex) HTTPResponse result = request.GET("...")\n' +
+            '    grinder.logger.debug(result.text)\n\n' +
+            'You can test multiple transactions by recording new GTest instance.\n' +
+            'ex) @BeforeProcess\n' +
+            '    public static void beforeProcess() {\n' +
+            '        test1 = new GTest(1, "...")\n' +
+            '        test2 = new GTest(2, "...")\n' +
+            '    }\n\n' +
+            '    @BeforeThread\n' +
+            '    public void beforeThread() {\n' +
+            '        test1.record(this, "test1")\n' +
+            '        test2.record(this, "test2")\n' +
+            '    }\n\n' +
+            '    public void test1() { ... }\n' +
+            '    public void test2() { ... }\n\n' +
+            'You can specify the test run rate with @RunRate annotation.\n' +
+            'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
+            '    @Test\n' +
+            '    @RunRate(50)\n' +
+            '    public void test() { ... } // This test will run only half of the total run which you specified.\n\n',
+        gitconfig:
+            'Git Config Field Details\n' +
+            '* name: Configuration name. (unique, required)\n' +
+            '* owner: Repository organization/owner name. (required)\n' +
+            '* repo: Repository name (required)\n' +
+            '* user-id: Github user ID (required)\n' +
+            '* access-token: Github personal access token (required)\n' +
+            '* branch: The branch to find your test scripts. (optional, default: default branch)\n' +
+            '* base-url: The API base URL of github. If you are using your own Github Enterprise Server, you need to set it (optional, default: https://api.github.com)',
+    };
+
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
@@ -172,29 +208,9 @@
 
             this.$nextTick(() => {
                 this.$refs.editor.codemirror.focus();
-                this.validationResult = 'You can use various log levels. [trace, debug, info, warn, error]\n' +
-                    'ex) grinder.logger.${level}("message")\n\n' + // eslint-disable-line no-template-curly-in-string
-                    'You can access to response body with HTTPResponse.getText() method.\n' +
-                    'ex) HTTPResponse result = request.GET("...")\n' +
-                    '    grinder.logger.debug(result.text)\n\n' +
-                    'You can test multiple transactions by recording new GTest instance.\n' +
-                    'ex) @BeforeProcess\n' +
-                    '    public static void beforeProcess() {\n' +
-                    '        test1 = new GTest(1, "...")\n' +
-                    '        test2 = new GTest(2, "...")\n' +
-                    '    }\n\n' +
-                    '    @BeforeThread\n' +
-                    '    public void beforeThread() {\n' +
-                    '        test1.record(this, "test1")\n' +
-                    '        test2.record(this, "test2")\n' +
-                    '    }\n\n' +
-                    '    public void test1() { ... }\n' +
-                    '    public void test2() { ... }\n\n' +
-                    'You can specify the test run rate with @RunRate annotation.\n' +
-                    'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
-                    '    @Test\n' +
-                    '    @RunRate(50)\n' +
-                    '    public void test() { ... } // This test will run only half of the total run which you specified.\n\n';
+
+                const isGitConfigFile = this.file.path === '.gitconfig.yml';
+                this.validationResult = isGitConfigFile ? guides.gitconfig : guides.perftest;
             });
         }
 
