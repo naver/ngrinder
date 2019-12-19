@@ -234,7 +234,6 @@ public class FileEntryApiController {
 	 * @return detail view properties
 	 */
 	@GetMapping("/detail/**")
-	@SuppressWarnings("SpellCheckingInspection")
 	public Map<String, Object> getOne(User user,
 									  @RemainedPath String path,
 									  @RequestParam(value = "r", required = false) Long revision) {
@@ -452,6 +451,6 @@ public class FileEntryApiController {
 
 	@PostMapping("/github/validate")
 	public void validateGithubConfig(@RequestBody FileEntry fileEntry) {
-		checkTrue(gitHubFileEntryService.validate(fileEntry), "Invalid git config");
+		gitHubFileEntryService.validate(fileEntry);
 	}
 }
