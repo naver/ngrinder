@@ -54,6 +54,8 @@ import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.replace;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -478,10 +480,19 @@ public class PerfTestApiController {
 		Map<String, Object> result = newHashMap();
 		result.put("id", perfTest.getId());
 		result.put("status", perfTest.getStatus());
-		result.put("message",
-			StringUtils.replace(perfTest.getProgressMessage() + "\n<b>" + perfTest.getLastProgressMessage() + "</b>\n"
-				+ perfTest.getLastModifiedDateToStr(), "\n", "<br/>"));
+		result.put("message", getStatusMessage(perfTest));
 		return result;
+	}
+
+	private String getStatusMessage(PerfTest perfTest) {
+		String message = "";
+		String progressMessage = perfTest.getProgressMessage();
+		if (!isEmpty(progressMessage)) {
+			message += progressMessage + "<br>";
+		}
+		message += "<b>" + perfTest.getLastProgressMessage() + "</b><br>";
+		message += perfTest.getLastModifiedDateToStr();
+		return replace(message, "\n", "<br>");
 	}
 
 	@SuppressWarnings("ConstantConditions")
