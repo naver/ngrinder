@@ -168,7 +168,8 @@ public abstract class ScriptHandler implements ControllerConstants {
 				}
 			}
 		} catch (IOException ex) {
-			throw new PerfTestPrepareException("Fail copy perftest files to distribution folder.", ex);
+			throw new PerfTestPrepareException("Fail to copy perftest files from distribution folder.\n" +
+				"If you change your branch configuration, please click script refresh button before running test.", ex);
 		}
 		processingResult.setSuccess(true);
 		prepareDistMore(testCaseId, user, scriptEntry, distDir, properties, processingResult);

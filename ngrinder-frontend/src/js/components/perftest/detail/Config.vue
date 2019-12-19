@@ -352,7 +352,7 @@
                 return;
             }
 
-            const gitHubConfigName = this.test.config.scm.split(':')[0];
+            const gitHubConfigName = this.extractConfigurationName(this.test.config.scm);
             if (this.config.github && this.config.github.length === 0) {
                 this.addGitHubDeletedConfig();
                 return;
@@ -368,7 +368,7 @@
         }
 
         syncGitHubConfigRevision() {
-            const gitHubConfigName = this.test.config.scm.split(':')[0];
+            const gitHubConfigName = this.extractConfigurationName(this.test.config.scm);
             if (this.config.github) {
                 this.config.github.forEach(gitHubConfig => {
                     if (gitHubConfig.name === gitHubConfigName) {
@@ -379,7 +379,7 @@
         }
 
         addGitHubDeletedConfig() {
-            const deletedGitHubConfigName = `(deleted) ${this.test.config.scm.split(':')[0]}`;
+            const deletedGitHubConfigName = `(deleted) ${this.extractConfigurationName(this.test.config.scm)}`;
             const defaultRevision = -1;
             this.config.github.push({
                 name: deletedGitHubConfigName,
@@ -401,7 +401,7 @@
                 this.resources = [];
                 this.targetHosts = [];
                 if (this.isValidScm()) {
-                    this.scripts = this.scriptsMap[this.test.config.scm];
+                    this.scripts = this.scriptsMap[this.extractConfigurationName(this.test.config.scm)] || [];
                     this.test.config.scriptName = '';
                     this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
                 }
@@ -445,7 +445,7 @@
                     this.scripts.push({ pathInShort: `(deleted) ${this.extractScriptName(selectedScript)}`, path: selectedScript, validated: -1 });
                 }
             } else {
-                this.scripts = this.scriptsMap.svn;
+                this.scripts = this.scriptsMap.svn || [];
                 if (!selectedScript) {
                     return;
                 }
@@ -471,7 +471,6 @@
             if (!this.config.github || !this.isValidScm()) {
                 return Promise.reject();
             }
-
             this.showProgressBar();
             await this.callLoadGitHubScriptApi(refresh).finally(() => this.hideProgressBar());
             return Promise.resolve();
@@ -481,7 +480,7 @@
             return this.$http.get(`/script/api/github?refresh=${!!refresh}`)
                 .then(res => {
                     for (const key in res.data) {
-                        this.scriptsMap[key] = res.data[key].map(script => ({
+                        this.scriptsMap[this.extractConfigurationName(key)] = res.data[key].map(script => ({
                             // github script revision will be set on back-end.
                             revision: 0,
                             validated: 0,
@@ -489,17 +488,20 @@
                             path: script.path,
                         }));
                     }
-
-                    this.scripts = this.scriptsMap[this.test.config.scm];
-
+                    this.scripts = this.scriptsMap[this.extractConfigurationName(this.test.config.scm)] || [];
+                    this.validateGitHubScript();
                     if (refresh) {
                         this.showSuccessMsg(this.i18n('script.message.refresh.success'));
-                        this.validateGitHubScript();
+                        this.$nextTick(() => this.$validator.validate('scriptName'));
                     }
                     return Promise.resolve();
                 })
                 .catch(error => {
-                    this.showErrorMsg(`${this.i18n('script.message.refresh.error')}<br><br>${error.response.data.message}`);
+                    let errorMessage = this.i18n('script.message.refresh.error');
+                    if (error.response) {
+                        errorMessage += `<br><br>${error.response.data.message}`;
+                    }
+                    this.showErrorMsg(errorMessage);
                     return Promise.reject();
                 });
         }
@@ -508,12 +510,13 @@
             if (!this.test.config.scriptName) {
                 return;
             }
-
             const scriptName = this.extractScriptName(this.test.config.scriptName);
             const deletedScript = { pathInShort: `(deleted) ${scriptName}`, path: this.test.config.scriptName, validated: -1 };
             if (this.scripts.length > 0) {
                 if (!this.scripts.some(script => script.path === this.test.config.scriptName)) {
                     this.selectDeletedScript(deletedScript);
+                } else {
+                    this.$nextTick(() => this.$refs.scriptSelect.selectValue(this.test.config.scriptName));
                 }
             } else {
                 this.selectDeletedScript(deletedScript);
@@ -560,11 +563,10 @@
                 if (this.isValidScm()) {
                     await this.loadGitHubScript();
                     this.gitHubScriptFirstOpening = false;
-                    this.validateGitHubScript();
                     this.$nextTick(() => this.$refs.scriptSelect.refreshDropDown());
                 }
             }
-        }
+    }
 
         changeScript() {
             if (this.isGitHubStorage()) {
@@ -723,6 +725,10 @@
             const hostToken = host.split(':');
             this.targetHostIp = hostToken[1] ? hostToken[1] : hostToken[0];
             this.$refs.targetHostInfoModal.show();
+        }
+
+        extractConfigurationName(scm) {
+            return scm ? scm.split(':')[0] : '';
         }
 
         extractScriptName(path) {
