@@ -1,5 +1,6 @@
 package org.ngrinder.script.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +40,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.JsonUtils.deserialize;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.script.model.FileType.getFileTypeByName;
@@ -272,7 +274,8 @@ public class GitHubFileEntryService {
 			try {
 				getGitHubClient(config).getRepository(config.getOwner() + "/" + config.getRepo());
 			} catch (IOException e) {
-				return false;
+				Map<String, String> errorJson = deserialize(e.getMessage(), new TypeReference<Map<String, String>>() {});
+				throw new NGrinderRuntimeException("Invalid git configuration.\n" + errorJson.get("message"));
 			}
 		}
 		return true;
@@ -348,7 +351,8 @@ public class GitHubFileEntryService {
 			return gitHubBuilder.build();
 		} catch (IOException e) {
 			log.error("Fail to creation of github client from {}", gitHubConfig, e);
-			throw new NGrinderRuntimeException("Fail to creation of github client.\n" + e.getMessage());
+			Map<String, String> errorJson = deserialize(e.getMessage(), new TypeReference<Map<String, String>>() {});
+			throw new NGrinderRuntimeException("Fail to creation of github client.\n" + errorJson.get("message"));
 		}
 	}
 

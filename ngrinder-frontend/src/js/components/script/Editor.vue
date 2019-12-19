@@ -312,29 +312,34 @@
         validate() {
             this.showProgressBar(this.i18n('script.editor.message.validate'));
 
-            let promise = null;
+            let promise;
             if (this.isGitConfigFile) {
-                promise = this.$http.post('/script/api/github/validate', {
-                    content: this.$refs.editor.getValue(),
-                }).then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')));
+                promise = this.validateGitConfig();
             } else {
-                promise = this.$http.post('/script/api/validate', {
-                    fileEntry: {
-                        path: this.file.path,
-                        content: this.$refs.editor.getValue(),
-                    },
-                    hostString: this.targetHosts.join(','),
-                }).then(res => {
-                    this.validationResult = res.data;
-                    this.validated = true;
-                });
+                promise = this.validateScript();
             }
 
-            promise
-            .catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
-            .finally(() => {
-                this.hideProgressBar();
-            });
+            promise.finally(this.hideProgressBar);
+        }
+
+        validateGitConfig() {
+            return this.$http.post('/script/api/github/validate', {
+                content: this.$refs.editor.getValue(),
+            }).then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')))
+                .catch(error => this.showErrorMsg(error.response.data.message.replace(/\n/g, '<br>')));
+        }
+
+        validateScript() {
+            return this.$http.post('/script/api/validate', {
+                fileEntry: {
+                    path: this.file.path,
+                    content: this.$refs.editor.getValue(),
+                },
+                hostString: this.targetHosts.join(','),
+            }).then(res => {
+                this.validationResult = res.data;
+                this.validated = true;
+            }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')));
         }
 
         addHost(newHost) {
