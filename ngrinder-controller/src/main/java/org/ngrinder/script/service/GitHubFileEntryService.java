@@ -36,6 +36,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
+import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.AopUtils.proxy;
@@ -87,7 +89,7 @@ public class GitHubFileEntryService {
 			fileEntry.getProperties().put("scriptPath", scriptPath);
 			return fileEntry;
 		} else {
-			fullPath += scriptPath.substring(scriptPath.lastIndexOf("/"));
+			fullPath += getName(scriptPath);
 			return createGitHubScriptFileEntry(fullPath);
 		}
 	}
@@ -117,7 +119,7 @@ public class GitHubFileEntryService {
 			String checkoutBaseUrl = hazelcastService.get(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch));
 
 			if (checkoutBaseUrl == null) {
-				GHContent ghContent = ghRepository.getFileContent(scriptPath);
+				GHContent ghContent = ghRepository.getFileContent(scriptPath, activeBranch);
 				URL url = new URL(ghContent.getHtmlUrl());
 				checkoutBaseUrl = createCheckoutBaseUrl(gitHubConfig, url, isDefaultBranch(configuredBranch, defaultBranch));
 				hazelcastService.put(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch), checkoutBaseUrl);
@@ -127,7 +129,7 @@ public class GitHubFileEntryService {
 			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
 				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + scriptPath.split(MAVEN_PATH)[0]);
 			} else {
-				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + scriptPath.substring(0, scriptPath.lastIndexOf("/")));
+				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + getFullPath(scriptPath));
 			}
 
 			if (!isSvnWorkingCopyDir(checkoutDir)) {
@@ -209,7 +211,7 @@ public class GitHubFileEntryService {
 			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
 				checkoutScriptPath = scriptPath.split(MAVEN_PATH)[0];
 			} else {
-				checkoutScriptPath = scriptPath.substring(0, scriptPath.lastIndexOf("/"));
+				checkoutScriptPath = getFullPath(scriptPath);
 			}
 			return config.getHome().getDirectory().getPath() + "/github/" + uri.getHost()
 				+ "/" + gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo() + "/" + checkoutScriptPath;
@@ -306,7 +308,7 @@ public class GitHubFileEntryService {
 				List<GHTreeEntry> scripts = filterScript(allFiles);
 
 				if (scripts.size() > 0) {
-					GHContent ghContent = ghRepository.getFileContent(scripts.get(0).getPath());
+					GHContent ghContent = ghRepository.getFileContent(scripts.get(0).getPath(), activeBranch);
 					URL url = new URL(ghContent.getHtmlUrl());
 					hazelcastService.put(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch)
 						, createCheckoutBaseUrl(gitHubConfig, url, isDefaultBranch(configuredBranch, defaultBranch)));
@@ -314,7 +316,7 @@ public class GitHubFileEntryService {
 				scriptMap.put(gitHubConfig.getName() + ":" + gitHubConfig.getRevision(), scripts);
 			} catch (IOException e) {
 				log.error("Fail to get script from github with [userId({}), {}]", user.getUserId(), gitHubConfig, e);
-				throw new NGrinderRuntimeException("Fail to get script from github.\ncause: " + e.getCause() , e);
+				throw new NGrinderRuntimeException("Fail to get script from github.\ncause: " + e.getCause(), e);
 			}
 		});
 		return scriptMap;
