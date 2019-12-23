@@ -110,7 +110,9 @@
                         <option v-if="!config.github || config.github.length === 0" class="add-github" value="addGitHub" v-text="i18n('script.github.add.config')"></option>
                     </select2>
                     <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
-                             :option="{ placeholder: i18n('perfTest.config.scriptInput') }"
+                             :option="{ placeholder: i18n('perfTest.config.scriptInput'),
+                                        formatSelection: scriptSelect2Template,
+                                        formatResult: scriptSelect2Template }"
                              @change="changeScript"
                              @opening="openingScriptSelect"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute; padding-left: 177px;">
@@ -119,6 +121,7 @@
                                 :data-validate="script.validated"
                                 :data-revision="script.revision"
                                 v-text="script.pathInShort"
+                                :title="script.path"
                                 :value="script.path">
                         </option>
                     </select2>
@@ -725,6 +728,10 @@
             const hostToken = host.split(':');
             this.targetHostIp = hostToken[1] ? hostToken[1] : hostToken[0];
             this.$refs.targetHostInfoModal.show();
+        }
+
+        scriptSelect2Template(item) {
+            return $('<span>', { title: item.element[0].title }).text(item.text);
         }
 
         extractConfigurationName(scm) {
