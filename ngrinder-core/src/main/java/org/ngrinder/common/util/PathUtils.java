@@ -85,22 +85,6 @@ public abstract class PathUtils {
 		return path;
 	}
 
-	/**
-	 * Get the shorten displayable path from the given path.
-	 *
-	 * @param path path
-	 * @return shortPath
-	 */
-	public static String getShortPath(String path) {
-		if (path.length() >= MAX_PATH_LENGTH && StringUtils.contains(path, "/")) {
-			String start = path.substring(0, path.indexOf("/") + 1);
-			String end = path.substring(path.lastIndexOf("/"), path.length());
-			return start + "..." + end;
-		} else {
-			return path;
-		}
-	}
-
 	public static String getSubPath(String originPath, String basePath) {
 		if (!originPath.contains(basePath)) {
 			return originPath;
