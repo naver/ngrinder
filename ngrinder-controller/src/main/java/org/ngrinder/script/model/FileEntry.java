@@ -72,12 +72,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	private long lastRevision;
 
-	@JsonSerialize(using = UnixPathSerializer.class)
-	@SuppressWarnings("UnusedDeclaration")
-	public String getPathInShort() {
-		return PathUtils.getShortPath(path);
-	}
-
 	public String getFileName() {
 		return FilenameUtils.getName(checkNotEmpty(getPath()));
 	}

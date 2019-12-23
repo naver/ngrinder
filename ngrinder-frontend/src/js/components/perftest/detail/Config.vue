@@ -120,7 +120,7 @@
                         <option v-for="script in scripts"
                                 :data-validate="script.validated"
                                 :data-revision="script.revision"
-                                v-text="script.pathInShort"
+                                v-text="getShortPath(script.displayPath || script.path)"
                                 :title="script.path"
                                 :value="script.path">
                         </option>
@@ -443,9 +443,9 @@
             if (this.isGitHubStorage()) {
                 if (this.isValidScm()) {
                     this.display.showGitHubRefreshBtn = true;
-                    this.scripts.push({ pathInShort: this.extractScriptName(selectedScript), path: selectedScript, validated: 0 });
+                    this.scripts.push({ path: selectedScript, validated: 0 });
                 } else {
-                    this.scripts.push({ pathInShort: `(deleted) ${this.extractScriptName(selectedScript)}`, path: selectedScript, validated: -1 });
+                    this.scripts.push({ displayPath: `(deleted) ${this.extractScriptName(selectedScript)}`, path: selectedScript, validated: -1 });
                 }
             } else {
                 this.scripts = this.scriptsMap.svn || [];
@@ -454,7 +454,7 @@
                 }
 
                 if (!this.scripts.some(script => script.path === selectedScript)) {
-                    this.scripts.push({ pathInShort: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
+                    this.scripts.push({ displayPath: `(deleted) ${selectedScript}`, path: selectedScript, validated: -1 });
                 } else {
                     this.display.showRevisionBtn = true;
                 }
@@ -487,7 +487,6 @@
                             // github script revision will be set on back-end.
                             revision: 0,
                             validated: 0,
-                            pathInShort: this.extractScriptName(script.path),
                             path: script.path,
                         }));
                     }
@@ -514,7 +513,7 @@
                 return;
             }
             const scriptName = this.extractScriptName(this.test.config.scriptName);
-            const deletedScript = { pathInShort: `(deleted) ${scriptName}`, path: this.test.config.scriptName, validated: -1 };
+            const deletedScript = { displayPath: `(deleted) ${scriptName}`, path: this.test.config.scriptName, validated: -1 };
             if (this.scripts.length > 0) {
                 if (!this.scripts.some(script => script.path === this.test.config.scriptName)) {
                     this.selectDeletedScript(deletedScript);
@@ -741,6 +740,20 @@
         extractScriptName(path) {
             const pathToken = path.split('/');
             return pathToken[pathToken.length - 1];
+        }
+
+        getShortPath(path) {
+            if (!path) {
+                return '';
+            }
+
+            if (path.length >= 40 && path.includes('/')) {
+                const start = path.substring(0, path.indexOf('/') + 1);
+                const end = path.substring(path.lastIndexOf('/'));
+                return `${start}...${end}`;
+            } else {
+                return path;
+            }
         }
 
         isGitHubStorage() {
