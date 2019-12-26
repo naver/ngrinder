@@ -114,6 +114,7 @@
     import { Mixins } from 'vue-mixin-decorator';
     import { Splitpanes, Pane } from 'splitpanes';
     import VueHeadful from 'vue-headful';
+    import YAML from 'js-yaml';
 
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
@@ -322,11 +323,17 @@
             promise.finally(this.hideProgressBar);
         }
 
-        validateGitConfig() {
-            return this.$http.post('/script/api/github/validate', {
-                content: this.$refs.editor.getValue(),
-            }).then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')))
-                .catch(error => this.showErrorMsg(error.response.data.message.replace(/\n/g, '<br>')));
+        async validateGitConfig() {
+            const content = this.$refs.editor.getValue();
+            try {
+                await YAML.loadAll(content);
+                return this.$http.post('/script/api/github/validate', { content })
+                    .then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')))
+                    .catch(error => this.showErrorMsg(error.response.data.message.replace(/\n/g, '<br>')));
+            } catch (e) {
+                this.showErrorMsg(`YAML syntax error<br>${e.message}`);
+            }
+            return Promise.reject();
         }
 
         validateScript() {
