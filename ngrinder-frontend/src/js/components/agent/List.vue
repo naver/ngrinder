@@ -413,7 +413,7 @@
         flex-direction: row;
 
         .search-input {
-            width: 150px;
+            width: 280px;
             height: inherit;
         }
     }

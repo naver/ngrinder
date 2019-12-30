@@ -5,6 +5,7 @@ import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
 import VueLocalStorage from 'vue-localstorage';
+import VueShortkey from 'vue-shortkey';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
@@ -60,6 +61,7 @@ axiosInstance.interceptors.request.use(config => {
     return config;
 });
 
+Vue.use(VueShortkey);
 Vue.use(VueLocalStorage, {
     name: 'localStorage',
     bind: true,
