@@ -47,6 +47,11 @@
             this.$nextTick(() => {
                 this.show();
                 $(this.$el).on('hidden.bs.modal', () => this.$emit('hidden'));
+                $(this.$el).on('shown.bs.modal', () => {
+                    if (this.$refs.userInfo.$refs[this.focus]) {
+                        this.$refs.userInfo.$refs[this.focus].focus();
+                    }
+                });
             });
         }
 

@@ -14,7 +14,7 @@
                         <fieldset>
                             <control-group :class="{error: errors.has('domain')}" labelMessageKey="perfTest.config.domain">
                                 <input type="text"
-                                       ref="domainInput"
+                                       ref="domain"
                                        class="form-control"
                                        name="domain"
                                        v-model="host"
@@ -80,7 +80,7 @@
 
         addHost() {
             if (!this.ip && !this.host) {
-                this.$refs.domainInput.focus();
+                this.$refs.domain.focus();
                 return;
             }
 
@@ -95,12 +95,11 @@
                     }
 
                     this.$emit('add-host', host);
-                    this.clear();
                 }
             });
         }
 
-        clear() {
+        reset() {
             this.host = '';
             this.ip = '';
         }

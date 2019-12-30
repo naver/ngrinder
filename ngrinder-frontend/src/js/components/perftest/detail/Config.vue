@@ -254,7 +254,7 @@
             <ramp-up ref="rampUp" :rampUp="test.rampUp" :rampUpTypes="config.rampUpTypes"
                      :processes="test.config.processes" :threads="test.config.threads"></ramp-up>
         </div>
-        <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
+        <host-modal ref="addHostModal" @add-host="addHost" focus="domain"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
     </div>
 </template>

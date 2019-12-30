@@ -36,7 +36,8 @@
         </nav>
         <announcement></announcement>
         <user-switch-modal ref="userSwitchModal"></user-switch-modal>
-        <user-edit-modal v-if="showUserEditModal" @hidden="showUserEditModal = false" ref="userEditModal"></user-edit-modal>
+        <user-edit-modal v-if="showUserEditModal" @hidden="showUserEditModal = false"
+                         focus="userName" ref="userEditModal"></user-edit-modal>
     </header>
 </template>
 

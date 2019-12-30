@@ -22,7 +22,7 @@
             </button>
 
             <input class="mr-1 form-control search-input" type="text" ref="searchInput"
-                   placeholder="Keywords" @keydown.enter.prevent="search"/>
+                   placeholder="Keywords" @keydown.enter.prevent="search" v-focus/>
             <button class="btn btn-info" @click="search">
                 <i class="fa fa-search mr-1"></i>
                 <span v-text="i18n('common.button.search')"></span>
