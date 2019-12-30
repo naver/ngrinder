@@ -235,7 +235,7 @@
             flex-direction: row;
 
             .search-query-without-radios {
-                width: 234px;
+                width: 350px;
                 height: 30px;
             }
 

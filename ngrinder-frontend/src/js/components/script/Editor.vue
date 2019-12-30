@@ -20,7 +20,9 @@
                     </div>
                     <div>
                         <template v-if="scriptHandler && scriptHandler.validatable">
-                            <button class="btn btn-success" @click="save(false)">
+                            <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
+                                    @shortkey="save(false)"
+                                    @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
                             </button>
@@ -28,23 +30,31 @@
                                 <i class="fa fa-undo mr-1"></i>
                                 <span v-text="i18n('common.button.save.and.close')"></span>
                             </button>
-                            <button class="btn btn-primary" @click="validate">
+                            <button v-shortkey="['ctrl', 'shift', 'v']" class="btn btn-primary"
+                                    @shortkey="validate"
+                                    @click="validate">
                                 <i class="fa fa-check mr-1"></i>
                                 <span v-text="i18n('script.editor.button.validate')"></span>
                             </button>
                         </template>
                         <template v-else-if="isGitConfigFile">
-                            <button class="btn btn-success" @click="save(false)">
+                            <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
+                                    @shortkey="save(false)"
+                                    @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
                             </button>
-                            <button class="btn btn-primary" @click="validate">
+                            <button v-shortkey="['ctrl', 'shift', 'v']" class="btn btn-primary"
+                                    @shortkey="validate"
+                                    @click="validate">
                                 <i class="fa fa-check mr-1"></i>
                                 <span v-text="i18n('script.editor.button.validate')"></span>
                             </button>
                         </template>
                         <template v-else>
-                            <button class="btn btn-success" @click="save(false)">
+                            <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
+                                    @shortkey="save(false)"
+                                    @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
                             </button>
@@ -65,7 +75,10 @@
                          data-html="true"
                          data-trigger="hover"
                          data-placement="bottom">
-                        <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
+                        <button v-shortkey="['ctrl', 'shift', 'a']"
+                                @shortkey="showAddHostModal"
+                                @click.prevent="showAddHostModal"
+                                class="btn btn-info float-right add-host-btn">
                             <i class="fa fa-plus"></i>
                             <span v-text="i18n('perfTest.config.add')"></span>
                         </button>
@@ -93,14 +106,7 @@
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
                 Samples</a>
             <div class="float-right pointer-cursor tip" data-toggle="popover" title="Tip" data-html="true"
-                 data-placement="left" data-trigger="hover" :data-content="
-                            'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
-                            'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
-                            'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
-                            'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
-                            'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
-                            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
-                            'ESC : ' + i18n('script.editor.tip.back') ">
+                 data-placement="left" data-trigger="hover" :data-content="getShortcutGuides()">
                 <code>Tip</code>
             </div>
         </div>
@@ -122,50 +128,16 @@
     import TargetHostInfoModal from '../perftest/modal/TargetHostInfoModal.vue';
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
+    import GuideMixin from './mixin/Guide.vue';
 
     const GIT_CONFIG_FILE_NAME = '.gitconfig.yml';
-    const guides = {
-        perftest:
-            'You can use various log levels. [trace, debug, info, warn, error]\n' +
-                'ex) grinder.logger.${level}("message")\n\n' + // eslint-disable-line no-template-curly-in-string
-            'You can access to response body with HTTPResponse.getText() method.\n' +
-            'ex) HTTPResponse result = request.GET("...")\n' +
-            '    grinder.logger.debug(result.text)\n\n' +
-            'You can test multiple transactions by recording new GTest instance.\n' +
-            'ex) @BeforeProcess\n' +
-            '    public static void beforeProcess() {\n' +
-            '        test1 = new GTest(1, "...")\n' +
-            '        test2 = new GTest(2, "...")\n' +
-            '    }\n\n' +
-            '    @BeforeThread\n' +
-            '    public void beforeThread() {\n' +
-            '        test1.record(this, "test1")\n' +
-            '        test2.record(this, "test2")\n' +
-            '    }\n\n' +
-            '    public void test1() { ... }\n' +
-            '    public void test2() { ... }\n\n' +
-            'You can specify the test run rate with @RunRate annotation.\n' +
-            'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
-            '    @Test\n' +
-            '    @RunRate(50)\n' +
-            '    public void test() { ... } // This test will run only half of the total run which you specified.\n\n',
-        gitconfig:
-            'Git Config Field Details\n' +
-            '* name: Configuration name. (unique, required)\n' +
-            '* owner: Repository organization/owner name. (required)\n' +
-            '* repo: Repository name (required)\n' +
-            '* user-id: Github user ID (required)\n' +
-            '* access-token: Github personal access token (required)\n' +
-            '* branch: The branch to find your test scripts. (optional, default: default branch)\n' +
-            '* base-url: The API base URL of github. If you are using your own Github Enterprise Server, you need to set it (optional, default: https://api.github.com)',
-    };
 
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
         components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror, Splitpanes, Pane, VueHeadful },
     })
-    export default class Editor extends Mixins(Base, MessagesMixin) {
+    export default class Editor extends Mixins(Base, MessagesMixin, GuideMixin) {
         @Prop({ type: Object, required: true })
         file;
 
@@ -222,7 +194,7 @@
 
             this.$nextTick(() => {
                 this.$refs.editor.codemirror.focus();
-                this.validationResult = this.isGitConfigFile ? guides.gitconfig : guides.perftest;
+                this.validationResult = this.isGitConfigFile ? this.guides.gitconfig : this.guides.perftest;
             });
         }
 
@@ -362,9 +334,18 @@
             this.$refs.targetHostInfoModal.show();
         }
 
+        showAddHostModal() {
+            this.$refs.addHostModal.show();
+        }
+
         toggleHideDescription() {
             this.hideDescription = !this.hideDescription;
             this.$localStorage.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
+        }
+
+        getShortcutGuides() {
+            return this.shortcutConfigs.reduce((guides, shortcutConfig) =>
+                guides += `${shortcutConfig.key} : ${this.i18n(shortcutConfig.desc)}<br>`);
         }
 
         get basePath() {
