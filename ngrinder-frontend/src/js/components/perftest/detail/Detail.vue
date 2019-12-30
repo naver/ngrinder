@@ -11,7 +11,8 @@
                                         <input class="required form-control float-left" name="testName"
                                                maxlength="80" size="30" type="text"
                                                v-validate="{ required: true }"
-                                               v-model="test.testName"/>
+                                               v-model="test.testName"
+                                               v-focus/>
                                         <span v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></span>
                                     </control-group>
                                 </div>

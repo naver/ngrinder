@@ -11,7 +11,7 @@
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
             <input type="text" class="search-query-without-radios form-control"
-                   placeholder="Keywords" @keyup.enter="search" v-model="keywords">
+                   placeholder="Keywords" @keyup.enter="search" v-model="keywords" v-focus>
             <button class="btn btn-info btn-search" @click="search">
                 <i class="fa fa-search mr-1"></i>
                 <span v-text="i18n('common.button.search')"></span>
@@ -82,8 +82,8 @@
             :css="table.css.pagination"
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
-        <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()"></sign-up-modal>
-        <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId"
+        <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()" focus="userId"></sign-up-modal>
+        <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId" focus="userName"
                             @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = !showUserEditModal"></user-edit-modal>
     </div>
 </template>
