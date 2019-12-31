@@ -283,33 +283,43 @@
         }
 
         validate() {
-            this.showProgressBar(this.i18n('script.editor.message.validate'));
-
-            let promise;
             if (this.isGitConfigFile) {
-                promise = this.validateGitConfig();
-            } else {
-                promise = this.validateScript();
+                this.validateGitConfig();
+                return;
             }
 
-            promise.finally(this.hideProgressBar);
+            this.validateScript();
         }
 
-        async validateGitConfig() {
+        validateGitConfig() {
             const content = this.$refs.editor.getValue();
             try {
-                await YAML.loadAll(content);
-                return this.$http.post('/script/api/github/validate', { content })
+                const configs = YAML.loadAll(content);
+
+                if (configs.filter(config => !!config).length === 0) {
+                    this.$bootbox.alert({
+                        message: this.i18n('script.message.empty.github.config'),
+                        buttons: {
+                            ok: { label: this.i18n('common.button.ok') },
+                        },
+                    });
+                    return;
+                }
+
+                this.showProgressBar(this.i18n('script.editor.message.validate'));
+                this.$http.post('/script/api/github/validate', { content })
                     .then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')))
-                    .catch(error => this.showErrorMsg(error.response.data.message.replace(/\n/g, '<br>')));
-            } catch (e) {
-                this.showErrorMsg(`YAML syntax error<br>${e.message}`);
+                    .catch(error => this.showErrorMsg(error.response.data.message.replace(/\n/g, '<br>')))
+                    .finally(this.hideProgressBar);
+            } catch (error) {
+                this.showErrorMsg(`YAML syntax error<br>${error.message}`);
+                this.hideProgressBar();
             }
-            return Promise.reject();
         }
 
         validateScript() {
-            return this.$http.post('/script/api/validate', {
+            this.showProgressBar(this.i18n('script.editor.message.validate'));
+            this.$http.post('/script/api/validate', {
                 fileEntry: {
                     path: this.file.path,
                     content: this.$refs.editor.getValue(),
@@ -318,7 +328,8 @@
             }).then(res => {
                 this.validationResult = res.data;
                 this.validated = true;
-            }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')));
+            }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
+              .finally(this.hideProgressBar);
         }
 
         addHost(newHost) {
