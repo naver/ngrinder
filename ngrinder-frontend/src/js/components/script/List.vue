@@ -258,8 +258,12 @@
         th, td {
             padding: 8px;
 
-            .description, .path {
+            .path {
                 width: 230px;
+            }
+
+            .description {
+                width: 390px;
             }
         }
     }

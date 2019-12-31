@@ -44,7 +44,7 @@
                     <span v-text="i18n('script.action.uploadResources')"></span>
                 </button>
             </div>
-            <button class="pointer-cursor btn btn-danger float-right" @click="$emit('deleteFile')">
+            <button class="pointer-cursor btn btn-danger ml-auto" @click="$emit('deleteFile')">
                 <i class="fa fa-remove mr-1"></i>
                 <span v-text="i18n('script.action.delete')"></span>
             </button>
@@ -116,11 +116,16 @@
         height: 90px;
 
         .search-container {
+            line-height: 0;
             margin-bottom: 8px;
+
+            .input-group-text {
+                height: 30px;
+            }
 
             .search-query {
                 height: 30px;
-                width: 220px;
+                width: 339px;
             }
 
             .search-btn {

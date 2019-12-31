@@ -117,8 +117,8 @@
 
         .control-group {
             display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 2px;
+            min-height: 45px;
         }
     }
 
@@ -133,6 +133,13 @@
     #add-host-modal {
         .controls {
             margin: 0 0 0 30px;
+        }
+
+        .control-label {
+            .label-message {
+                display: inline-block;
+                margin-top: 5px;
+            }
         }
     }
 </style>
