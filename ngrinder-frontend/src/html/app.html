@@ -33,6 +33,7 @@
                     timeZone: '{{ currentUser.timeZone }}',
                 },
                 config: {
+                    githubBaseUrl: '{{ githubBaseUrl }}',
                     signUpEnabled : {{{ signUpEnabled }}},
                     clustered: {{{ clustered }}},
                     userSwitchMode: !!('{{ currentUser.ownerUser }}'),
