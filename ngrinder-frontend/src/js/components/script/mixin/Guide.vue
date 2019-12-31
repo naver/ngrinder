@@ -1,8 +1,9 @@
 <script>
     import { Mixin } from 'vue-mixin-decorator';
+    import Vue from 'vue';
 
     @Mixin
-    export default class Guide {
+    export default class Guide extends Vue {
         get guides() {
             return {
                 perftest:
@@ -37,7 +38,7 @@
                     '* user-id: Github user ID (required)\n' +
                     '* access-token: Github personal access token (required)\n' +
                     '* branch: The branch to find your test scripts. (optional, default: default branch)\n' +
-                    '* base-url: The API base URL of github. If you are using your own Github Enterprise Server, you need to set it (optional, default: https://api.github.com)\n' +
+                    `* base-url: The API base URL of github. If you are using your own Github Enterprise Server, you need to set it (optional, default: ${this.ngrinder.config.githubBaseUrl})\n` +
                     '* script-root: Root path for scripts searching. (optional, default: project root)',
             };
         }

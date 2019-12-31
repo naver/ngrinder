@@ -40,6 +40,7 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_GITHUB_BASE_URL;
 import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.JsonUtils.deserialize;
@@ -95,7 +96,7 @@ public class GitHubFileEntryService {
 		}
 	}
 
-	public void checkoutGitHubScript(User user, PerfTest perfTest, GHRepository ghRepository, GitHubConfig gitHubConfig) {
+	public void checkoutGitHubScript(PerfTest perfTest, GHRepository ghRepository, GitHubConfig gitHubConfig) {
 		String activeBranch = "";
 		try {
 			String defaultBranch = ghRepository.getDefaultBranch();
@@ -208,7 +209,7 @@ public class GitHubFileEntryService {
 	private String getCheckoutDirPath(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
 		try {
 			String checkoutScriptPath;
-			URI uri = new URI(gitHubConfig.getBaseUrl());
+			URI uri = new URI(getGitHubBaseUrl(gitHubConfig));
 			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
 				checkoutScriptPath = scriptPath.split(MAVEN_PATH)[0];
 			} else {
@@ -337,7 +338,7 @@ public class GitHubFileEntryService {
 	 * @since 3.5.0
 	 */
 	public GitHub getGitHubClient(GitHubConfig gitHubConfig) {
-		String baseUrl = gitHubConfig.getBaseUrl();
+		String baseUrl = getGitHubBaseUrl(gitHubConfig);
 		String accessToken = gitHubConfig.getAccessToken();
 
 		GitHubBuilder gitHubBuilder = new GitHubBuilder().withRateLimitHandler(rateLimitHandlerEx);
@@ -370,6 +371,11 @@ public class GitHubFileEntryService {
 		String path = ghTreeEntry.getPath();
 		return ghTreeEntry.getType().endsWith("blob") && path.contains(scriptRoot)
 			&& (path.endsWith(".groovy") || path.endsWith(".py"));
+	}
+
+	private String getGitHubBaseUrl(GitHubConfig gitHubConfig) {
+		String configuredGitHubBaseUrl = gitHubConfig.getBaseUrl();
+		return (!configuredGitHubBaseUrl.isEmpty()) ? configuredGitHubBaseUrl : config.getControllerProperties().getProperty(PROP_CONTROLLER_GITHUB_BASE_URL);
 	}
 
 	@CacheEvict(value = CACHE_GITHUB_SCRIPTS, key = "#user.userId")

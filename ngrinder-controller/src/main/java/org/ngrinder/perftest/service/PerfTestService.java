@@ -646,7 +646,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			GitHub gitHub = gitHubFileEntryService.getGitHubClient(gitHubConfig);
 			GHRepository ghRepository = gitHub.getRepository(gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo());
 
-			gitHubFileEntryService.checkoutGitHubScript(user, perfTest, ghRepository, gitHubConfig);
+			gitHubFileEntryService.checkoutGitHubScript(perfTest, ghRepository, gitHubConfig);
 			scriptEntry = gitHubFileEntryService.getOne(ghRepository, gitHubConfig, perfTest.getScriptName());
 		} else {
 			scriptEntry = checkNotNull(

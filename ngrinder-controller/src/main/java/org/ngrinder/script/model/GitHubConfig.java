@@ -41,8 +41,8 @@ public class GitHubConfig {
 			JsonNode jsonNode = objectCodec.readTree(jsonParser);
 			UrlValidator urlValidator = getInstance();
 
-			String baseUrl = defaultIfNull(jsonNode.get("base-url"), "https://api.github.com");
-			if (!urlValidator.isValid(baseUrl)) {
+			String baseUrl = defaultIfNull(jsonNode.get("base-url"), "");
+			if (!baseUrl.isEmpty() && !urlValidator.isValid(baseUrl)) {
 				throw new NGrinderRuntimeException("Field 'base-url' is invalid.<br>Please check your .gitconfig.yml");
 			}
 
