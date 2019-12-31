@@ -44,6 +44,7 @@ import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.JsonUtils.deserialize;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.script.model.FileType.getFileTypeByName;
 import static org.tmatesoft.svn.core.SVNDepth.INFINITY;
@@ -305,7 +306,7 @@ public class GitHubFileEntryService {
 				}
 				String shaOfDefaultBranch = ghRepository.getBranch(activeBranch).getSHA1();
 				List<GHTreeEntry> allFiles = ghRepository.getTreeRecursive(shaOfDefaultBranch, 1).getTree();
-				List<GHTreeEntry> scripts = filterScript(allFiles);
+				List<GHTreeEntry> scripts = filterScript(allFiles, removePrependedSlash(gitHubConfig.getScriptRoot()));
 
 				if (scripts.size() > 0) {
 					GHContent ghContent = ghRepository.getFileContent(scripts.get(0).getPath(), activeBranch);
@@ -358,16 +359,16 @@ public class GitHubFileEntryService {
 		}
 	}
 
-	private List<GHTreeEntry> filterScript(List<GHTreeEntry> ghTreeEntries) {
+	private List<GHTreeEntry> filterScript(List<GHTreeEntry> ghTreeEntries, String scriptRoot) {
 		return ghTreeEntries
 			.stream()
-			.filter(this::isScript)
+			.filter(ghTreeEntry -> isScript(ghTreeEntry, scriptRoot))
 			.collect(toList());
 	}
 
-	private boolean isScript(GHTreeEntry ghTreeEntry) {
+	private boolean isScript(GHTreeEntry ghTreeEntry, String scriptRoot) {
 		String path = ghTreeEntry.getPath();
-		return ghTreeEntry.getType().endsWith("blob")
+		return ghTreeEntry.getType().endsWith("blob") && path.contains(scriptRoot)
 			&& (path.endsWith(".groovy") || path.endsWith(".py"));
 	}
 

@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.*;
-import org.apache.commons.lang.StringUtils;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 
@@ -29,6 +31,7 @@ public class GitHubConfig {
 	private String branch;
 	private String baseUrl;
 	private String revision;
+	private String scriptRoot;
 
 	public static class GitHubConfigDeserializer extends JsonDeserializer<GitHubConfig> {
 
@@ -53,6 +56,7 @@ public class GitHubConfig {
 					.branch(defaultIfNull(jsonNode.get("branch"), ""))
 					.baseUrl(baseUrl)
 					.revision(defaultIfNull(jsonNode.get("revision"), "-1"))
+					.scriptRoot(defaultIfNull(jsonNode.get("script-root"), ""))
 					.build();
 			} catch (Exception e) {
 				throw new NGrinderRuntimeException("Required field(name, owner, repo, user-id, access-token) is missing.<br>Please check your .gitconfig.yml", e);
