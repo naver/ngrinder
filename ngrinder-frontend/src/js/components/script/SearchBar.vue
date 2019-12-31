@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-between">
-            <div v-if="$route.name !== 'scriptSearch'">
+            <div v-show="$route.name !== 'scriptSearch'">
                 <button class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
                     <i class="fa fa-file mr-1"></i>
                     <span v-text="i18n('script.action.createScript')"></span>
@@ -95,6 +95,13 @@
         }
 
         search() {
+            if (!this.query) {
+                if (this.$route.path !== '/script') {
+                    this.$router.push('/script');
+                }
+                return;
+            }
+
             this.$router.push({ path: '/script/search', query: { query: this.query } });
         }
 

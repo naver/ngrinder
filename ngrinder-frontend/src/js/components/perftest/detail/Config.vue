@@ -415,7 +415,7 @@
             this.$http.post('/script/api/github-config')
                 .then(() => {
                     this.$bootbox.confirm({
-                        message: this.i18n('script.message.script.github.config'),
+                        message: this.i18n('script.message.no.github.config'),
                         buttons: {
                             confirm: { label: this.i18n('common.button.ok') },
                             cancel: { label: this.i18n('common.button.cancel') },
