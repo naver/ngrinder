@@ -21,7 +21,7 @@
                     <i class="fa fa-user mr-1"></i>
                     <span v-text="i18n('user.list.button.create')"></span>
                 </button>
-                <button class="btn btn-danger" @click="deleteCheckedUsers">
+                <button class="btn btn-danger" @click="deleteUsers($refs.vuetable.selectedTo.join(','))">
                     <i class="fa fa-remove mr-1"></i>
                     <span v-text="i18n('user.list.button.delete')"></span>
                 </button>
@@ -193,6 +193,16 @@
         }
 
         deleteUsers(userIds) {
+            if (!userIds) {
+                this.$bootbox.alert({
+                    message: this.i18n('user.list.alert.delete'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
+                return;
+            }
+
             this.$bootbox.confirm({
                 message: `${this.i18n('user.list.confirm.delete')}?`,
                 buttons: {
@@ -204,10 +214,6 @@
                     .then(() => this.$refs.vuetable.selectedTo = [])
                     .catch(() => this.showErrorMsg(this.i18n('user.message.delete.error'))),
             });
-        }
-
-        deleteCheckedUsers() {
-            this.deleteUsers(this.$refs.vuetable.selectedTo.join(','));
         }
 
         changeRole() {

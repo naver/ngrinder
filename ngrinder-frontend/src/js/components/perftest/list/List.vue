@@ -332,6 +332,16 @@
         }
 
         deleteTests(ids) {
+            if (!ids) {
+                this.$bootbox.alert({
+                    message: this.i18n('perfTest.message.delete.alert'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
+                return;
+            }
+
             this.$bootbox.confirm({
                 message: this.i18n('perfTest.message.delete.confirm'),
                 buttons: {
