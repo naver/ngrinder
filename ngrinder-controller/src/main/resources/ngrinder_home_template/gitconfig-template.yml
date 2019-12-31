@@ -11,3 +11,4 @@
 #access-token: t9a47e6ff262b60a...3dac0713b07e82a
 #branch: feature/add-ngrinder-scripts
 #base-url: https://api.mygithub.com
+#script-root: ngrinder-scripts
