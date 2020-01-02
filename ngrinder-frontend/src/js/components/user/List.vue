@@ -84,7 +84,7 @@
         </vuetable-pagination>
         <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()" focus="userId"></sign-up-modal>
         <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId" focus="userName"
-                            @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = !showUserEditModal"></user-edit-modal>
+                            @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = false"></user-edit-modal>
     </div>
 </template>
 

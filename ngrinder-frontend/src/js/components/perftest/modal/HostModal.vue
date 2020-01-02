@@ -86,8 +86,6 @@
 
             this.$validator.validateAll().then(result => {
                 if (result) {
-                    this.hide();
-
                     let host = this.host;
 
                     if (this.ip) {
@@ -95,11 +93,12 @@
                     }
 
                     this.$emit('add-host', host);
+                    this.hide();
                 }
             });
         }
 
-        reset() {
+        beforeHidden() {
             this.host = '';
             this.ip = '';
         }
