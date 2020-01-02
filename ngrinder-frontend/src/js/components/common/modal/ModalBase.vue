@@ -15,6 +15,9 @@
                     this.$refs[this.focus].focus();
                 }
             });
+
+            $(this.$el).on('show.bs.modal', this.beforeShown);
+            $(this.$el).on('hide.bs.modal', this.beforeHidden);
         }
 
         hide() {
@@ -22,11 +25,14 @@
         }
 
         show() {
-            this.reset();
             $(this.$el).modal('show');
         }
 
-        reset() {
+        beforeShown() {
+            // Implement in child class
+        }
+
+        beforeHidden() {
             // Implement in child class
         }
     }
