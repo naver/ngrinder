@@ -1,5 +1,6 @@
 <template>
     <div class="perftest-detail-container">
+        <vue-headful :title="i18n('perfTest.title')"></vue-headful>
         <div class="container">
             <div class="card bg-light">
                 <div class="form-horizontal info">
@@ -95,6 +96,7 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import { Component, Prop } from 'vue-property-decorator';
+    import VueHeadful from 'vue-headful';
 
     import Base from '../../Base.vue';
     import Config from './Config.vue';
@@ -191,7 +193,7 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'perfTestDetail',
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
+        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal, VueHeadful },
         $_veeValidate: {
             validator: 'new',
         },
@@ -669,7 +671,7 @@
         }
 
         i {
-            &.collapse{
+            &.collapse {
                 background: url('/img/icon_collapse.png') no-repeat;
                 display: inline-block;
                 height: 16px;
