@@ -214,8 +214,6 @@
         };
 
         isClone = false;
-        scheduledTime = 0;
-
         currentRefreshStatusTimeoutId = 0;
 
         $testStatusImage = null;
@@ -457,13 +455,18 @@
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status.name = 'READY';
-            this.scheduledTime = scheduledTime;
+            this.test.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
                     .then(res => {
-                        this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
-                        this.$router.push(`/perftest/${res.data.id}`);
+                        if (scheduledTime) {
+                            this.showSuccessMsg(this.i18n('perfTest.message.scheduled.success'));
+                            this.$router.push('/perftest/');
+                        } else {
+                            this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
+                            this.$router.push(`/perftest/${res.data.id}`);
+                        }
                     }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.saveAndRun.error')));
             });
         }
