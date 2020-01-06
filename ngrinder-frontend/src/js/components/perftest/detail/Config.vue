@@ -467,13 +467,10 @@
         }
 
         async loadGitHubScript(refresh) {
-            if (!this.isGitHubStorage()) {
-                return Promise.resolve();
-            }
-
             if (!this.config.github || !this.isValidScm()) {
                 return Promise.reject();
             }
+
             this.showProgressBar();
             await this.callLoadGitHubScriptApi(refresh).finally(() => this.hideProgressBar());
             return Promise.resolve();
@@ -568,7 +565,7 @@
                     this.$nextTick(() => this.$refs.scriptSelect.refreshDropDown());
                 }
             }
-    }
+        }
 
         changeScript() {
             if (this.isGitHubStorage()) {
