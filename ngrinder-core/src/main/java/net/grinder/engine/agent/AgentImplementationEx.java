@@ -222,7 +222,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 								.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 					}
 					File logFile = new File(properties.getFile(GrinderProperties.LOG_DIRECTORY, new File(".")),
-							m_agentIdentity.getName() + "-" + m_agentIdentity.getNumber() + ".log");
+						m_agentIdentity.getName() + "-0.log");
 					m_logger.info("log file : {}", logFile);
 					AbstractLanguageHandler handler = Lang.getByFileName(script.getFile()).getHandler();
 					final WorkerFactory workerFactory;
