@@ -10,7 +10,9 @@ import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.GitHubConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -70,16 +72,19 @@ public class GitHubFileEntryService {
 
 	private final HazelcastService hazelcastService;
 
+	private final PerfTestService perfTestService;
+
 	private static final String MAVEN_PATH = "/src/main/java";
 
 	private static final RateLimitHandlerEx rateLimitHandlerEx = new RateLimitHandlerEx();
 
 	public GitHubFileEntryService(FileEntryService fileEntryService, @Lazy ObjectMapper objectMapper,
-								  Config config, HazelcastService hazelcastService) {
+								  Config config, HazelcastService hazelcastService, @Lazy PerfTestService perfTestService) {
 		this.fileEntryService = fileEntryService;
 		this.objectMapper = objectMapper;
 		this.config = config;
 		this.hazelcastService = hazelcastService;
+		this.perfTestService = perfTestService;
 	}
 
 	public FileEntry getOne(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
@@ -134,6 +139,7 @@ public class GitHubFileEntryService {
 				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + getFullPath(scriptPath));
 			}
 
+			perfTestService.markProgressAndStatus(perfTest, Status.CHECKOUT_SCRIPT, "Getting script from github.");
 			if (!isSvnWorkingCopyDir(checkoutDir)) {
 				svnUpdateClient.doCheckout(checkoutUrl, checkoutDir, HEAD, HEAD, INFINITY, true);
 				saveSha(sha, checkoutDirPath);
