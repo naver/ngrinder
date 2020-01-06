@@ -44,6 +44,10 @@ public enum Status {
 	 */
 	READY(StatusCategory.PREPARE),
 	/**
+	 * Just before checkout script from github.
+	 */
+	CHECKOUT_SCRIPT(StatusCategory.PROGRESSING),
+	/**
 	 * Just before starting console.
 	 */
 	START_CONSOLE(StatusCategory.PROGRESSING),
