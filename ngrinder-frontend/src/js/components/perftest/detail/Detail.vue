@@ -420,8 +420,18 @@
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
-            this.$refs.config.loadGitHubScript().then(() => {
-                this.$validator.validateAll().then(() => {
+            if (this.test.config.scm === 'svn') {
+                this.checkClonePerftestValidation();
+                return;
+            }
+
+            this.$refs.config.loadGitHubScript()
+                .then(this.checkClonePerftestValidation, this.clickConfigTabIfHasErrors);
+        }
+
+        checkClonePerftestValidation() {
+            this.$validator.validateAll()
+                .then(() => {
                     if (this.errors.any()) {
                         this.$refs.configTab.click();
                     } else {
@@ -432,8 +442,7 @@
                                 .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
                         });
                     }
-                });
-            }).catch(() => { /* noOp */ });
+            });
         }
 
         saveAndStart() {
@@ -441,15 +450,30 @@
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
-            this.$refs.config.loadGitHubScript().then(() => {
-                this.$validator.validateAll().then(() => {
+            if (this.test.config.scm === 'svn') {
+                this.checkSaveAndStartValidation();
+                return;
+            }
+
+            this.$refs.config.loadGitHubScript()
+                .then(this.checkSaveAndStartValidation, this.clickConfigTabIfHasErrors);
+        }
+
+        checkSaveAndStartValidation() {
+            this.$validator.validateAll()
+                .then(() => {
                     if (this.errors.any()) {
                         this.$refs.configTab.click();
                     } else {
                         this.$refs.scheduleModal.show();
                     }
-                });
-            }).catch(() => { /* noOp */ });
+            });
+        }
+
+        clickConfigTabIfHasErrors() {
+            if (this.errors.any()) {
+                this.$refs.configTab.click();
+            }
         }
 
         runPerftest(scheduledTime) {
