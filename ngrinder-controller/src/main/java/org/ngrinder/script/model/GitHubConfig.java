@@ -26,7 +26,6 @@ public class GitHubConfig {
 	private String name;
 	private String owner;
 	private String repo;
-	private String userId;
 	private String accessToken;
 	private String branch;
 	private String baseUrl;
@@ -51,7 +50,6 @@ public class GitHubConfig {
 					.name(jsonNode.get("name").asText())
 					.owner(jsonNode.get("owner").asText())
 					.repo(jsonNode.get("repo").asText())
-					.userId(jsonNode.get("user-id").asText())
 					.accessToken(jsonNode.get("access-token").asText())
 					.branch(defaultIfNull(jsonNode.get("branch"), ""))
 					.baseUrl(baseUrl)
@@ -59,7 +57,7 @@ public class GitHubConfig {
 					.scriptRoot(defaultIfNull(jsonNode.get("script-root"), ""))
 					.build();
 			} catch (Exception e) {
-				throw new NGrinderRuntimeException("Required field(name, owner, repo, user-id, access-token) is missing.<br>Please check your .gitconfig.yml", e);
+				throw new NGrinderRuntimeException("Required field(name, owner, repo, access-token) is missing.<br>Please check your .gitconfig.yml", e);
 			}
 		}
 
