@@ -115,8 +115,9 @@ public class GitHubFileEntryService {
 			String scriptPath = perfTest.getScriptName();
 
 			String checkoutDirPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
+			// userName is don't care parameter if using access token.
 			BasicAuthenticationManager basicAuthenticationManager
-				= new BasicAuthenticationManager(gitHubConfig.getUserId(), gitHubConfig.getAccessToken());
+				= new BasicAuthenticationManager("ngrinder", gitHubConfig.getAccessToken());
 
 			SVNClientManager svnClientManager = newInstance();
 			svnClientManager.setAuthenticationManager(basicAuthenticationManager);
