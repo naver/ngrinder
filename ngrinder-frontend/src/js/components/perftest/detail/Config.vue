@@ -346,7 +346,9 @@
 
         initScripts() {
             if (this.config.github.error) {
+                this.decorateGitHubErrorMessage();
                 this.showErrorMsg(this.config.github.message);
+                this.config.github = [];
                 return;
             }
 
@@ -368,6 +370,12 @@
 
             this.syncGitHubConfigRevision();
             this.setScripts(this.test.config.scriptName);
+        }
+
+        decorateGitHubErrorMessage() {
+            this.config.github.message = this.config.github.message
+                .replace(/\n/g, '<br>')
+                .replace('.gitconfig.yml', '<span class="link-git-config pointer-cursor">.gitconfig.yml</span>');
         }
 
         syncGitHubConfigRevision() {
