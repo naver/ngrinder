@@ -347,6 +347,7 @@
         initScripts() {
             if (this.config.github && this.config.github.error) {
                 this.showErrorMsg(this.config.github.message);
+                this.config.github = [];
                 return;
             }
 

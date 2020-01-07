@@ -42,7 +42,7 @@ public class GitHubConfig {
 
 			String baseUrl = defaultIfNull(jsonNode.get("base-url"), "");
 			if (!baseUrl.isEmpty() && !urlValidator.isValid(baseUrl)) {
-				throw new NGrinderRuntimeException("Field 'base-url' is invalid.<br>Please check your .gitconfig.yml");
+				throw new NGrinderRuntimeException("Field 'base-url' is invalid.\nPlease check your .gitconfig.yml");
 			}
 
 			try {
@@ -57,7 +57,7 @@ public class GitHubConfig {
 					.scriptRoot(defaultIfNull(jsonNode.get("script-root"), ""))
 					.build();
 			} catch (Exception e) {
-				throw new NGrinderRuntimeException("Required field(name, owner, repo, access-token) is missing.<br>Please check your .gitconfig.yml", e);
+				throw new NGrinderRuntimeException("Some of required fields(name, owner, repo, access-token) are missing.\nPlease check your .gitconfig.yml", e);
 			}
 		}
 
