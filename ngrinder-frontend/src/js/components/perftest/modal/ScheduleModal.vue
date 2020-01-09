@@ -1,5 +1,5 @@
 <template>
-    <div class="modal" id="schedule-modal">
+    <div class="modal fade" id="schedule-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

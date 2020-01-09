@@ -465,6 +465,10 @@
                     if (this.errors.any()) {
                         this.$refs.configTab.click();
                     } else {
+                        if (typeof(scheduleTestBlockingHook) === 'function') {
+                            scheduleTestBlockingHook.call(this, this.$refs.scheduleModal.show);
+                            return;
+                        }
                         this.$refs.scheduleModal.show();
                     }
             });

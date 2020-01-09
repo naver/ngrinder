@@ -30,6 +30,7 @@
                         role: '{{ currentUser.role.shortName }}',
                     },
                     timeZone: '{{ currentUser.timeZone }}',
+                    language: '{{ currentUser.userLanguage }}',
                 },
                 config: {
                     githubBaseUrl: '{{ githubBaseUrl }}',
@@ -47,4 +48,3 @@
         <script type="text/javascript" src="{{ contextPath }}/js/app.js"></script>
     </body>
 </html>
-
