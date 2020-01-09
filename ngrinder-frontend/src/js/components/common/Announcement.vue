@@ -10,7 +10,9 @@
                     </span>
                 </span>
             </div>
-            <div v-show="!hide" class="announcement-content" v-html="announcement"></div>
+            <slide-up-down :active="!hide" :duration="300">
+                <div class="announcement-content border-top pt-2" v-html-bind-script="announcement"></div>
+            </slide-up-down>
         </div>
     </div>
 </template>
@@ -35,7 +37,7 @@
             this.hide = this.$localStorage.get(this.ANNOUNCEMENT_HIDE_KEY, false, Boolean);
 
             this.$EventBus.$on(this.$Event.CHANGE_ANNOUNCEMENT, newContent => {
-                this.setAnnouncement(newContent);
+                this.announcement = newContent;
                 if (this.hide) {
                     this.toggleDisplay();
                 }
@@ -44,17 +46,13 @@
 
         getAnnouncement() {
             this.$http.get('/operation/announcement/api')
-                .then(res => this.setAnnouncement(res.data))
+                .then(res => this.announcement = res.data)
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('announcement.title') })));
         }
 
         toggleDisplay() {
             this.hide = !this.hide;
             this.$localStorage.set(this.ANNOUNCEMENT_HIDE_KEY, this.hide);
-        }
-
-        setAnnouncement(announcement) {
-            this.announcement = announcement.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
         }
     }
 </script>

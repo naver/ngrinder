@@ -90,6 +90,10 @@ Vue.directive('focus', {
     inserted: el => el.focus(),
 });
 
+Vue.directive('htmlBindScript', (el, binding) => {
+    $(el).html(binding.value);
+});
+
 Vue.directive('visible', (el, binding) => {
     el.style.visibility = !!binding.value ? 'visible' : 'hidden';
 });
