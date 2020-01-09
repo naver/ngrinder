@@ -14,24 +14,20 @@
                         <control-group id="agentCount" :class="{ error: errors.has('agentCount') || errors.has('region') }"
                                        labelMessageKey="perfTest.config.agent">
                             <div class="input-group">
-                                <div v-if="ngrinder.config.clustered" class="input-group-prepend">
-                                    <button class="btn p-0 select-region-btn dropdown-toggle"
-                                            type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="d-flex region-popover-wrapper"
-                                              data-trigger="hover"
-                                              data-toggle="popover"
-                                              data-html="true"
-                                              :title="i18n('perfTest.config.region')"
-                                              :data-content="i18n('perfTest.config.region.help')">
-                                            <span class="flex-grow-1 text-left" v-text="currentRegion"></span>
-                                            <i class="fa fa-caret-down"></i>
-                                            <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
-                                        </span>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a v-for="region in config.regions" class="dropdown-item pointer-cursor"
-                                           @click="test.config.region = region" v-text="i18n(region)"></a>
-                                    </div>
+                                <div v-if="ngrinder.config.clustered"
+                                     data-trigger="hover"
+                                     data-toggle="popover"
+                                     data-html="true"
+                                     :title="i18n('perfTest.config.region')"
+                                     :data-content="i18n('perfTest.config.region.help')"
+                                     class="input-group-prepend agent-region-container">
+                                    <select2 v-model="test.config.region"
+                                             customStyle="width: 110px"
+                                             :option="{ placeholder: i18n('perfTest.config.region.setting') }">
+                                        <option></option>
+                                        <option v-for="region in config.regions" :value="region" v-text="i18n(region)"></option>
+                                    </select2>
+                                    <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
                                 </div>
                                 <input id="agentCount" name="agentCount" class="form-control agent-count-input"
                                        type="number" ref="agentCount" min="0"
@@ -50,8 +46,9 @@
                                 </div>
                             </div>
                             <div class="validation-message"
-                                 v-visible="errors.has('agentCount') || errors.has('region')"
-                                 v-text="errors.first('agentCount') || errors.first('region')"></div>
+                                 v-visible="errors.has('region') || errors.has('agentCount')"
+                                 v-text="errors.first('region') || errors.first('agentCount')">
+                            </div>
                         </control-group>
                     </div>
                     <div class="ml-auto">
@@ -116,7 +113,7 @@
                              @change="changeScript"
                              @opening="openingScriptSelect"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute; padding-left: 177px;">
-                        <option value=""></option>
+                        <option></option>
                         <option v-for="script in scripts"
                                 :data-validate="script.validated"
                                 :data-revision="script.revision"
@@ -329,10 +326,7 @@
         }
 
         mounted() {
-            if (!this.ngrinder.config.clustered) {
-                this.test.config.region = 'NONE';
-            }
-
+            this.initRegion();
             this.initScripts();
             this.changeMaxAgentCount();
 
@@ -342,6 +336,12 @@
             this.$nextTick(() => {
                 $('[data-toggle="popover"]').popover();
             });
+        }
+
+        initRegion() {
+            if (!this.ngrinder.config.clustered) {
+                this.test.config.region = 'NONE';
+            }
         }
 
         initScripts() {
@@ -762,13 +762,6 @@
             return this.test.config.agentCount * this.test.config.vuserPerAgent;
         }
 
-        get currentRegion() {
-            if (this.ngrinder.config.clustered && this.test.config.region === 'NONE') {
-                return this.i18n('perfTest.config.region.setting');
-            }
-            return this.i18n(this.test.config.region);
-        }
-
         get showRevisonBtn() {
             return this.display.showRevisionBtn && !this.display.showGitHubRefreshBtn && this.test.config.scriptName;
         }
@@ -797,15 +790,14 @@
         }
 
         .agent-region-container {
-            .control-label {
-                float: none;
-                width: fit-content;
+            .select2-choice {
+                border-color: #ced4da;
+                border-top-right-radius: unset;
+                border-bottom-right-radius: unset;
             }
 
-            .controls {
-                display: inline-block;
-                vertical-align: top;
-                margin-left: 5px;
+            .select2-arrow {
+                border-color: #ced4da;
             }
         }
 
@@ -892,66 +884,10 @@
                         padding-left: 8px;
                     }
 
-                    .show {
-                        .select-region-btn {
-                            color: #495057;
-                        }
-                    }
-
-                    .select-region-btn {
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        width: 100px;
-                        height: 30px;
-
-                        color: #495057;
-                        border-color: #ced4da;
-
-                        .region-popover-wrapper {
-                            width: 100%;
-                            padding: 0.375rem 0.75rem;
-
-                            > span {
-                                padding: 0 2px;
-                                display: block;
-                                overflow: hidden;
-                                white-space: nowrap;
-                                text-overflow: ellipsis;
-                            }
-
-                            > i {
-                                line-height: 18px;
-                            }
-                        }
-                    }
-
-                    .error {
-                        .select-region-btn {
-                            border-color: @error-color;
-                            color: @error-color;
-                        }
-
-                        .show > .select-region-btn.dropdown-toggle {
-                            border-color: @error-color;
-                            color: @error-color;
-
-                            &:focus {
-                                outline: 0;
-                                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-                            }
-                        }
-                    }
-
                     .validation-message {
                         position: absolute;
                         white-space: nowrap;
                     }
-                }
-
-                .agent-region-container {
-                    width: 220px;
-                    max-width: 220px;
                 }
             }
 
