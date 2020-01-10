@@ -7,6 +7,6 @@
 		<addColumn tableName="PERF_TEST">
 			<column name="scm" type="varchar(30)"/>
 		</addColumn>
-		<modifyDataType tableName="PERF_TEST" columnName="script_revision" newDataType="varchar(40)"/>
+		<modifyDataType tableName="PERF_TEST" columnName="script_revision" newDataType="varchar(255)"/>
 	</changeSet>
 </databaseChangeLog>

@@ -8,6 +8,10 @@ class Utils {
             .find(c => c.indexOf('naveruserlocale=') > -1)
             .split('=')[1] === locale;
     }
+
+    isNumeric(num){
+        return !isNaN(num)
+    }
 }
 
 export default new Utils();

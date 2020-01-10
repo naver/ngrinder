@@ -58,11 +58,17 @@
                      data-trigger="hover"
                      :title="i18n('perfTest.list.scriptName')"
                      :data-content="`${props.rowData.scriptName}<br> - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
-                    <a v-if="isAdmin"
-                       :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
-                       v-text="props.rowData.scriptName"></a>
-                    <a v-else :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}`"
-                       v-text="props.rowData.scriptName"></a>
+                    <template v-if="props.rowData.scm === 'svn'">
+                        <a v-if="isAdmin"
+                           :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
+                           v-text="props.rowData.scriptName"></a>
+                        <a v-else :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}`"
+                           v-text="props.rowData.scriptName"></a>
+                    </template>
+                    <template v-else>
+                        <span v-if="$utils.isNumeric(props.rowData.scriptRevision)" v-text="props.rowData.scriptName"></span>
+                        <a v-else target="_blank" :href="props.rowData.scriptRevision" v-text="props.rowData.scriptName"></a>
+                    </template>
                 </div>
             </template>
 

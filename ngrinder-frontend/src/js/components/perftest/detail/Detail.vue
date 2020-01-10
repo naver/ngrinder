@@ -106,6 +106,7 @@
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
+    import Utils from '../../../utils.js';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -163,7 +164,8 @@
                     processes: test.processes,
                     threads: test.threads,
                     scriptName: test.scriptName,
-                    scriptRevision: test.scriptRevision,
+                    scriptRevision: Utils.isNumeric(test.scriptRevision) ?
+                        parseInt(test.scriptRevision) : test.scriptRevision,
                     targetHosts: test.targetHosts,
                     threshold: test.threshold,
                     duration: test.duration,
