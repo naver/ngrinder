@@ -12,15 +12,7 @@
 
 package org.tmatesoft.svn.core.internal.io.dav;
 
-import java.util.Iterator;
-import java.util.Map;
-
-import org.tmatesoft.svn.core.SVNErrorCode;
-import org.tmatesoft.svn.core.SVNErrorMessage;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNProperties;
-import org.tmatesoft.svn.core.SVNProperty;
-import org.tmatesoft.svn.core.SVNPropertyValue;
+import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.internal.io.dav.handlers.DAVPropertiesHandler;
 import org.tmatesoft.svn.core.internal.io.dav.http.HTTPHeader;
 import org.tmatesoft.svn.core.internal.io.dav.http.HTTPStatus;
@@ -31,7 +23,8 @@ import org.tmatesoft.svn.core.internal.wc.SVNErrorManager;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.util.SVNLogType;
 
-import static org.ngrinder.common.util.PathUtils.getSubPath;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Handle different branch concept in svn and github.
@@ -177,7 +170,7 @@ public class DAVUtil {
 	 * */
 	private static String syncRelativePathWithFullPath(String fullPath, String relativePath) {
 		if (fullPath.contains("trunk") && relativePath.contains("branches")) {
-			relativePath = getSubPath(fullPath, "trunk");
+			relativePath = fullPath.substring(fullPath.indexOf("trunk"));
 		}
 		return relativePath;
 	}

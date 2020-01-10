@@ -125,12 +125,22 @@
                     <button v-show="showRevisonBtn" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
                         R
-                        <span v-if="test.config.scriptRevision === -1">HEAD</span>
+                        <span v-if="isHeadRevision(test.config.scriptRevision)">HEAD</span>
                         <span v-else v-text="test.config.scriptRevision"></span>
                     </button>
-                    <button v-show="display.showGitHubRefreshBtn" class="btn btn-info float-right btn-github-refresh" type="button" @click="loadGitHubScript(true)">
-                        <i class="fa fa-refresh mr-2"></i><span>Refresh</span>
-                    </button>
+                    <span v-show="display.showGitHubRefreshBtn">
+                        <button v-if="isHeadRevision(test.config.scriptRevision)"
+                                class="btn btn-info float-right btn-github-refresh"
+                                @click="loadGitHubScript(true)">
+                            <i class="fa fa-refresh mr-2"></i><span>Refresh</span>
+                        </button>
+                        <a v-else
+                           target="_blank"
+                           class="btn btn-info float-right btn-github-revision"
+                           :href="test.config.scriptRevision">
+                            <i class="fa fa-file mr-2"></i><span v-text="getShortGitHubRevision(test.config.scriptRevision)"></span>
+                        </a>
+                    </span>
                 </control-group>
                 <control-group labelMessageKey="perfTest.config.scriptResources"
                                :data-step="shownBsTab ? 7 : undefined"
@@ -569,11 +579,12 @@
         }
 
         changeScript() {
+            this.test.config.scriptRevision = -1;
+
             if (this.isGitHubStorage()) {
                 return;
             }
 
-            this.test.config.scriptRevision = -1;
             if (this.$refs.scriptSelect.getSelectedOption('validate') !== '-1') {
                 this.refreshTargetHosts();
                 this.getScriptResource();
@@ -754,8 +765,21 @@
             }
         }
 
+        getShortGitHubRevision(gitHubRevisionLink) {
+            if (!this.isGitHubStorage()) {
+                return '';
+            }
+
+            const baseIndex = gitHubRevisionLink.indexOf('blob');
+            return `${gitHubRevisionLink.substring(baseIndex + 5, baseIndex + 10)}...`;
+        }
+
         isGitHubStorage() {
             return this.test.config.scm !== 'svn' && this.test.config.scm !== 'addGitHub';
+        }
+
+        isHeadRevision(revision) {
+            return revision === -1;
         }
 
         get totalVuser() {
@@ -927,12 +951,17 @@
             }
         }
 
-        .btn-script-revision, .btn-github-refresh {
+        .btn-script-revision, .btn-github-refresh, .btn-github-revision {
             position: relative;
             width: 82px;
+            color: white;
 
             i {
                 vertical-align: baseline;
+            }
+
+            &:hover {
+                color: white;
             }
         }
 

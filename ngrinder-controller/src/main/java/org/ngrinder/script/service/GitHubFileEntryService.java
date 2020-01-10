@@ -40,6 +40,7 @@ import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.io.FilenameUtils.getName;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_GITHUB_BASE_URL;
@@ -108,7 +109,7 @@ public class GitHubFileEntryService {
 			String configuredBranch = gitHubConfig.getBranch();
 			activeBranch = defaultBranch;
 
-			if (!StringUtils.isEmpty(configuredBranch)) {
+			if (!isEmpty(configuredBranch)) {
 				activeBranch = configuredBranch;
 			}
 			String sha = ghRepository.getBranch(activeBranch).getSHA1();
@@ -152,7 +153,7 @@ public class GitHubFileEntryService {
 					log.info("github update to: {}, sha: {}", checkoutDir, sha);
 				}
 			}
-			perfTest.setScriptRevision(sha);
+			perfTest.setScriptRevision(getGitHubScriptRevision(checkoutBaseUrl, sha, scriptPath));
 		} catch (Exception e) {
 			hazelcastService.delete(CACHE_GITHUB_CHECKOUT_BASE_URL, getCheckoutBaseUrlCacheKey(gitHubConfig, activeBranch));
 			throw new PerfTestPrepareException("Failed to checkout scripts from github.\n" +
@@ -160,8 +161,12 @@ public class GitHubFileEntryService {
 		}
 	}
 
+	private String getGitHubScriptRevision(String checkoutBase, String sha, String scriptPath) {
+		return getRevisionBaseUrl(checkoutBase) + "/blob/" + sha + "/" + scriptPath;
+	}
+
 	private boolean isDefaultBranch(String configuredBranch, String defaultBranch) {
-		return StringUtils.isEmpty(configuredBranch) || configuredBranch.equals(defaultBranch);
+		return isEmpty(configuredBranch) || configuredBranch.equals(defaultBranch);
 	}
 
 	private String getCheckoutBaseUrlCacheKey(GitHubConfig gitHubConfig, String branch) {
@@ -309,7 +314,7 @@ public class GitHubFileEntryService {
 				String configuredBranch = gitHubConfig.getBranch();
 				String activeBranch = defaultBranch;
 
-				if (!StringUtils.isEmpty(configuredBranch)) {
+				if (!isEmpty(configuredBranch)) {
 					activeBranch = configuredBranch;
 				}
 				String shaOfDefaultBranch = ghRepository.getBranch(activeBranch).getSHA1();
@@ -337,6 +342,13 @@ public class GitHubFileEntryService {
 
 		checkoutUrl += isDefaultBranch ? "/trunk" : "/branches/" + gitHubConfig.getBranch();
 		return checkoutUrl;
+	}
+
+	private String getRevisionBaseUrl(String checkoutBaseUrl) {
+		if (checkoutBaseUrl.contains("/trunk")) {
+			return checkoutBaseUrl.substring(0, checkoutBaseUrl.indexOf("/trunk"));
+		}
+		return checkoutBaseUrl.substring(0, checkoutBaseUrl.indexOf("/branches"));
 	}
 
 	/**

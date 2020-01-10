@@ -84,11 +84,4 @@ public abstract class PathUtils {
 		}
 		return path;
 	}
-
-	public static String getSubPath(String originPath, String basePath) {
-		if (!originPath.contains(basePath)) {
-			return originPath;
-		}
-		return originPath.substring(originPath.indexOf(basePath));
-	}
 }
