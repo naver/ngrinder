@@ -116,12 +116,8 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 	}
 
 	private String resolveRegion(String attachedAgentRegion) {
-		if (attachedAgentRegion == null) {
-			return NONE_REGION;
-		}
-
 		String controllerRegion = config.getRegion();
-		if (attachedAgentRegion.contains("_owned_")) {
+		if (attachedAgentRegion != null && attachedAgentRegion.contains("_owned_")) {
 			String[] regionTokens = attachedAgentRegion.split("_owned_", 2);
 			if (StringUtils.equals(controllerRegion, regionTokens[0])) {
 				return attachedAgentRegion;
