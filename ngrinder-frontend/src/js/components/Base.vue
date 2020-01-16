@@ -196,7 +196,6 @@
 
         .popover {
             width: auto;
-            min-width: 300px;
             max-width: 600px;
             font-size: 12px;
 
