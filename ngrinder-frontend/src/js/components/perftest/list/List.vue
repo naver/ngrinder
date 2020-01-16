@@ -381,7 +381,6 @@
 
                     this.autoUpdateTargets.forEach((target, index) => {
                         const updatedStatus = statuses[index].status;
-                        const message = statuses[index].message;
 
                         if (updatedStatus.reportable) {
                             this.$refs.vuetable.refresh();
@@ -389,10 +388,6 @@
 
                         this.tests[target.index].status = updatedStatus;
                         this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
-
-                        const $ball = $(`#ball_${target.id}`);
-                        $ball.attr('title', updatedStatus.name);
-                        $ball.attr('data-content', message);
                     });
                 }).finally(() => this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000));
             } else {

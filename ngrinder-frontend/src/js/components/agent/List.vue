@@ -53,7 +53,12 @@
             @vuetable:pagination-data="beforePagination">
 
             <template slot="state" slot-scope="props">
-                <div class="ball" :title="props.rowData.state.name">
+                <div class="ball"
+                     data-toggle="popover"
+                     data-html="true"
+                     data-trigger="hover"
+                     :id="`ball_${props.rowData.key}`"
+                     :data-content="getAgentStatePopoverContent(props.rowData)">
                     <img class="status" :src="`${contextPath}/img/ball/${props.rowData.state.iconName}`"/>
                 </div>
             </template>
@@ -108,6 +113,8 @@
     import Base from '../Base.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
+
+    const AGENT_KEY_TOKEN = '_';
 
     @Component({
         name: 'agentList',
@@ -171,6 +178,10 @@
 
         changePage(nextPage) {
             this.$refs.vuetable.changePage(nextPage);
+            this.$nextTick(() => {
+                $('[data-toggle="popover"]').popover('dispose');
+                $('[data-toggle="popover"]').popover();
+            });
         }
 
         beforePagination(paginationData) {
@@ -198,14 +209,28 @@
                 })
                 .then(() => this.$refs.vuetable.reload())
                 .then(() => history.replaceState('', '', this.makeQueryString()))
-                .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
+                .finally(() => {
+                    this.updateStatesTimer = setTimeout(this.updateStates, 2000);
+                    this.$nextTick(() => $('[data-toggle="popover"]').popover());
+                });
         }
 
         updateStates() {
             this.getAgents()
                 .then(() => this.$refs.vuetable.reload())
                 .then(() => history.replaceState('', '', this.makeQueryString()))
-                .finally(() => this.updateStatesTimer = setTimeout(this.updateStates, 2000));
+                .finally(() => {
+                    this.updateAgentStatePopover();
+                    this.updateStatesTimer = setTimeout(this.updateStates, 2000);
+                });
+        }
+
+        updateAgentStatePopover() {
+            this.$nextTick(() =>this.agents.forEach(agent => document.getElementById(`ball_${agent.key}`).setAttribute('data-content', this.getAgentStatePopoverContent(agent))));
+        }
+
+        getAgentStatePopoverContent(agent) {
+            return `<b>${agent.state.name}</b>`;
         }
 
         getAgents() {
@@ -215,7 +240,7 @@
 
         appendAgentKey(agents) {
             return agents.map(agent => {
-                agent.key = `${agent.ip},${agent.name}`;
+                agent.key = `${agent.ip}${AGENT_KEY_TOKEN}${agent.name}`;
                 return agent;
             });
         }
@@ -331,7 +356,7 @@
 
         getData() {
             return this.$refs.vuetable.selectedTo.map(keyToken => {
-                const ipAndName = keyToken.split(',');
+                const ipAndName = keyToken.split(AGENT_KEY_TOKEN);
                 return { ip: ipAndName[0], name: ipAndName[1] };
             });
         }
