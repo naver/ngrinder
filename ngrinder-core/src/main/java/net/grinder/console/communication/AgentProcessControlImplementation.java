@@ -29,7 +29,6 @@ import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +99,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		messageDispatchRegistry.set(AgentControllerProcessReportMessage.class,
 				new AbstractHandler<AgentControllerProcessReportMessage>() {
 					public void handle(AgentControllerProcessReportMessage message) {
-						updateAgentStatusMap(message);
+						updateAgentProcessReportMessage(message);
 					}
 				});
 
@@ -131,30 +130,16 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	}
 
 	/**
-	 * Add Agent status report.
+	 * Set Agent status report.
 	 *
 	 * @param message {@link AgentControllerProcessReportMessage}
 	 */
-	private void updateAgentStatusMap(AgentControllerProcessReportMessage message) {
+	private void updateAgentProcessReportMessage(AgentControllerProcessReportMessage message) {
 		AgentIdentity agentIdentity = message.getAgentIdentity();
-		AgentStatus currentAgentStatus = new AgentStatus(agentIdentity);
-		currentAgentStatus.setAgentProcessStatus(message);
-
-		// Prevent living agent to becoming zombie.
-		AgentStatus previousAgentStatus = getAgentStatus(agentIdentity);
-		if (previousAgentStatus != null) {
-			previousAgentStatus.initPurgeDelayCount();
-		}
-
-		// Check if agent status has changed.
-		if (previousAgentStatus == null
-			|| !previousAgentStatus.getAgentControllerState().equals(currentAgentStatus.getAgentControllerState())
-			|| !StringUtils.equals(previousAgentStatus.getVersion(), currentAgentStatus.getVersion())) {
-			synchronized (m_agentMap) {
-				m_agentMap.put(agentIdentity, currentAgentStatus);
-				m_newData = true;
-			}
-		}
+		AgentStatus agentStatus = getAgentStatus(agentIdentity);
+		agentStatus.setAgentProcessStatus(message);
+		m_agentMap.put(agentIdentity, agentStatus);
+		m_newData = true;
 	}
 
 	/**
@@ -164,11 +149,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 * @return {@link AgentStatus}
 	 */
 	private AgentStatus getAgentStatus(AgentIdentity agentIdentity) {
-		final AgentStatus existing = m_agentMap.get(agentIdentity);
-		if (existing != null) {
-			return existing;
-		}
-		return new AgentStatus(agentIdentity);
+		return m_agentMap.getOrDefault(agentIdentity, new AgentStatus(agentIdentity));
 	}
 
 	/**
@@ -312,10 +293,6 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		 */
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
 			m_agentReference = new AgentReference(message);
-		}
-
-		public void initPurgeDelayCount() {
-			m_agentReference.initPurgeDelayCount();
 		}
 
 		public String getVersion() {
