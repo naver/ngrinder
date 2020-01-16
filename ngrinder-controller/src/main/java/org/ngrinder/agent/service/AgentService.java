@@ -29,6 +29,7 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
+import org.ngrinder.infra.hazelcast.task.AgentStateTask;
 import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
@@ -58,8 +59,7 @@ import static org.apache.commons.lang.StringUtils.contains;
 import static org.apache.commons.lang.StringUtils.endsWith;
 import static org.ngrinder.agent.model.AgentRequest.RequestType.STOP_AGENT;
 import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
-import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_LISTENER_NAME;
-import static org.ngrinder.common.constant.CacheConstants.AGENT_TOPIC_NAME;
+import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
@@ -364,8 +364,7 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 
 	@Override
 	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
-		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(ip, name);
-		return agentIdentity != null ? agentManager.getSystemDataModel(agentIdentity) : new SystemDataModel();
+		return hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new AgentStateTask(ip, name), region);
 	}
 
 	/**
