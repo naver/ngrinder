@@ -1,6 +1,7 @@
 package org.ngrinder.infra.hazelcast.task;
 
 import com.hazelcast.spring.context.SpringAware;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -30,7 +31,9 @@ public class AgentStateTask implements Callable<SystemDataModel>, Serializable {
 	@Autowired
 	private transient AgentManager agentManager;
 
+	@Override
 	public SystemDataModel call() {
-		return agentManager.getSystemDataModel(agentService.getAgentIdentityByIpAndName(ip, name));
+		AgentControllerIdentityImplementation identity = agentService.getAgentIdentityByIpAndName(ip, name);
+		return identity != null ? agentManager.getSystemDataModel(identity) : new SystemDataModel();
 	}
 }
