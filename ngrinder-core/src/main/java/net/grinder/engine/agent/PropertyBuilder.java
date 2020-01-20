@@ -172,28 +172,28 @@ public class PropertyBuilder {
 	public String buildJVMArgumentWithoutMemory() {
 		StringBuilder jvmArguments = new StringBuilder();
 		if (securityEnabled) {
-			jvmArguments = addSecurityManager(jvmArguments);
-			jvmArguments = addCurrentAgentPath(jvmArguments);
-			jvmArguments = addConsoleIP(jvmArguments);
-			jvmArguments = addDnsIP(jvmArguments);
+			addSecurityManager(jvmArguments);
+			addCurrentAgentPath(jvmArguments);
+			addConsoleIP(jvmArguments);
+			addDnsIP(jvmArguments);
 		} else {
 			jvmArguments.append(properties.getProperty("grinder.jvm.arguments", ""));
-			jvmArguments = addNativeLibraryPath(jvmArguments);
+			addNativeLibraryPath(jvmArguments);
 		}
 
-		jvmArguments = addParam(jvmArguments, properties.getProperty("grinder.param", ""));
-		jvmArguments = addPythonPathJvmArgument(jvmArguments);
-		jvmArguments = addCustomDns(jvmArguments);
-		jvmArguments = addUserDir(jvmArguments);
-		jvmArguments = addContext(jvmArguments);
-		jvmArguments = addHttpsProtocols(jvmArguments);
-		jvmArguments = disableSNIExtension(jvmArguments);
+		addParam(jvmArguments, properties.getProperty("grinder.param", ""));
+		addPythonPathJvmArgument(jvmArguments);
+		addCustomDns(jvmArguments);
+		addUserDir(jvmArguments);
+		addContext(jvmArguments);
+		addHttpsProtocols(jvmArguments);
+		disableSNIExtension(jvmArguments);
 
 		if (server) {
-			jvmArguments = addServerMode(jvmArguments);
+			addServerMode(jvmArguments);
 		}
 		if (StringUtils.isNotBlank(additionalJavaOpt)) {
-			jvmArguments = addAdditionalJavaOpt(jvmArguments);
+			addAdditionalJavaOpt(jvmArguments);
 		}
 		return jvmArguments.toString();
 	}
