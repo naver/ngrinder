@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder</artifactId>
-	<version>3.4.3</version>
+	<version>3.4.4</version>
 	<packaging>pom</packaging>
 	<name>ngrinder</name>
 	<modules>
@@ -33,7 +33,7 @@
 		<repository>
 			<id>maven-repo</id>
 			<name>Official Repository</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 		</repository>
 		<repository>
 			<id>springsource-repo</id>

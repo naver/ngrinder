@@ -1,3 +1,13 @@
+3.4.4 (2020.01.17)
+==================
+> nGrinder 3.4.4 
+ is the bug fix release.
+- Changes
+  * Make default groovy maven project pom.xml work correctly.
+
+- Bug Fix
+  * #495 Fix maven central repository url to https
+
 3.4.3 (2019.07.09)
 ==================
 > nGrinder 3.4.3 
