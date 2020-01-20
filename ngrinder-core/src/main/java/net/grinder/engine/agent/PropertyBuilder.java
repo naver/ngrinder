@@ -25,12 +25,21 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLSocket;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static java.lang.String.join;
+import static java.util.Arrays.stream;
+import static java.util.Collections.singletonList;
+import static javax.net.ssl.SSLSocketFactory.getDefault;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_LIGHT;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -45,6 +54,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  */
 public class PropertyBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessBuilder.class);
+	private static final Set<String> DISABLED_SSL_PROTOCOLS = new HashSet<>(singletonList("SSLv2Hello"));
+
 	private final GrinderProperties properties;
 	private final Directory baseDirectory;
 	private final String hostName;
@@ -173,11 +184,14 @@ public class PropertyBuilder {
 			jvmArguments.append(properties.getProperty("grinder.jvm.arguments", ""));
 			jvmArguments = addNativeLibraryPath(jvmArguments);
 		}
+
 		jvmArguments = addParam(jvmArguments, properties.getProperty("grinder.param", ""));
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
 		jvmArguments = addUserDir(jvmArguments);
 		jvmArguments = addContext(jvmArguments);
+		jvmArguments = addHttpsProtocols(jvmArguments);
+		jvmArguments = disableSNIExtension(jvmArguments);
 
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
@@ -186,6 +200,30 @@ public class PropertyBuilder {
 			jvmArguments = addAdditionalJavaOpt(jvmArguments);
 		}
 		return jvmArguments.toString();
+	}
+
+	protected StringBuilder disableSNIExtension(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -Djsse.enableSNIExtension=false ");
+	}
+
+	protected StringBuilder addHttpsProtocols(StringBuilder jvmArguments) {
+		String[] sslProtocols = {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+
+		try {
+			SSLSocket socket = (SSLSocket) getDefault().createSocket();
+			sslProtocols = socket.getSupportedProtocols();
+		} catch (IOException e) {
+			noOp();
+		}
+
+		sslProtocols = stream(sslProtocols)
+			.filter(sslProtocol -> !DISABLED_SSL_PROTOCOLS.contains(sslProtocol))
+			.toArray(String[]::new);
+
+		return jvmArguments
+			.append(" -Dhttps.protocols=")
+			.append(join(",", sslProtocols))
+			.append(" ");
 	}
 
 	protected StringBuilder addContext(StringBuilder jvmArguments) {
