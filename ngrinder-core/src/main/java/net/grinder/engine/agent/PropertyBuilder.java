@@ -178,6 +178,8 @@ public class PropertyBuilder {
 		jvmArguments = addCustomDns(jvmArguments);
 		jvmArguments = addUserDir(jvmArguments);
 		jvmArguments = addContext(jvmArguments);
+		jvmArguments = addHttpsProtocols(jvmArguments);
+		jvmArguments = disableSNIExtension(jvmArguments);
 
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
@@ -186,6 +188,14 @@ public class PropertyBuilder {
 			jvmArguments = addAdditionalJavaOpt(jvmArguments);
 		}
 		return jvmArguments.toString();
+	}
+
+	protected StringBuilder disableSNIExtension(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -Djsse.enableSNIExtension=false ");
+	}
+
+	protected StringBuilder addHttpsProtocols(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 ");
 	}
 
 	protected StringBuilder addContext(StringBuilder jvmArguments) {
