@@ -39,7 +39,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +260,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		return Lists.newArrayList(Iterables.filter(agents,
 				new Predicate<AgentInfo>() {
 					@Override
-					public boolean apply(@Nullable AgentInfo input) {
+					public boolean apply(AgentInfo input) {
 						return input != null && regions.contains(extractRegionFromAgentRegion(input.getRegion()));
 					}
 				}));
