@@ -273,9 +273,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	private void attachFileRevision(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
-			FileEntry scriptEntry = fileEntryService.getOne(user, perfTest.getScriptName());
-			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1L;
-			perfTest.setScriptRevision(String.valueOf(revision));
+			if (perfTest.isGitHubScm()) {
+				perfTest.setScriptRevision(String.valueOf(perfTest.getScriptRevision()));
+			} else {
+				FileEntry scriptEntry = fileEntryService.getOne(user, perfTest.getScriptName());
+				long revision = scriptEntry != null ? scriptEntry.getRevision() : -1L;
+				perfTest.setScriptRevision(String.valueOf(revision));
+			}
 		}
 	}
 
