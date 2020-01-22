@@ -20,6 +20,7 @@
                   data-placement='top'>
 				<i class="fa fa-question-circle align-middle"></i>
 			</span>
+            <i v-if="labelIconOption" v-show="display.labelIcon" :class="labelIconOption.class" @click="$emit('clickLabelIcon')"></i>
         </label>
         <div class="controls" :style="controlsStyle">
             <slot></slot>
@@ -34,6 +35,10 @@
     @Component({
         name: 'controlGroup',
         props: {
+            labelIconOption: {
+                type: Object,
+                required: false
+            },
             labelMessageKey: {
                 type: String,
                 required: true,
@@ -56,6 +61,9 @@
     })
     export default class ControlGroup extends Base {
         success = false;
+        display = {
+            labelIcon: !!this.labelIconOption,
+        };
     }
 </script>
 

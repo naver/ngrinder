@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
@@ -27,7 +28,9 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -38,7 +41,8 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.ngrinder.common.constant.CacheConstants.*;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_GITHUB_IS_MAVEN_GROOVY;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_GITHUB_SCRIPTS;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_GITHUB_BASE_URL;
 import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
@@ -109,22 +113,9 @@ public class GitHubFileEntryService {
 			String scriptPath = perfTest.getScriptName();
 
 			String checkoutDirPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
-			// userName is don't care parameter if using access token.
-			BasicAuthenticationManager basicAuthenticationManager
-				= new BasicAuthenticationManager("ngrinder", gitHubConfig.getAccessToken());
-
-			SVNClientManager svnClientManager = newInstance();
-			svnClientManager.setAuthenticationManager(basicAuthenticationManager);
-			SVNUpdateClient svnUpdateClient = svnClientManager.getUpdateClient();
-
+			SVNUpdateClient svnUpdateClient = createSvnUpdateClient(gitHubConfig);
 			File checkoutDir = new File(checkoutDirPath);
-			String checkoutBaseUrl = createCheckoutBaseUrl(ghRepository, configuredBranch, isDefaultBranch(configuredBranch, defaultBranch));
-			SVNURL checkoutUrl;
-			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
-				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + scriptPath.split(MAVEN_PATH)[0]);
-			} else {
-				checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + getFullPath(scriptPath));
-			}
+			SVNURL checkoutUrl = createCheckoutUrl(ghRepository, scriptPath, configuredBranch, isDefaultBranch(configuredBranch, defaultBranch));
 
 			perfTestService.markProgressAndStatus(perfTest, Status.CHECKOUT_SCRIPT, "Getting script from github.");
 			if (!isSvnWorkingCopyDir(checkoutDir)) {
@@ -138,15 +129,25 @@ public class GitHubFileEntryService {
 					log.info("github update to: {}, sha: {}", checkoutDir, sha);
 				}
 			}
-			perfTest.setScriptRevision(getGitHubScriptRevision(checkoutBaseUrl, sha, scriptPath));
+			perfTest.setScriptRevision(createScriptRevisionUrl(ghRepository.getSvnUrl(), sha, scriptPath));
 		} catch (Exception e) {
 			throw new PerfTestPrepareException("Failed to checkout scripts from github.\n" +
 				"Please check your github configuration.\n\n" + e.getMessage(), e);
 		}
 	}
 
-	private String getGitHubScriptRevision(String checkoutBase, String sha, String scriptPath) {
-		return getRevisionBaseUrl(checkoutBase) + "/blob/" + sha + "/" + scriptPath;
+	private String createScriptRevisionUrl(String baseUrl, String treeSha, String scriptPath) {
+		return baseUrl + "/blob/" + treeSha + "/" + scriptPath;
+	}
+
+	private SVNUpdateClient createSvnUpdateClient(GitHubConfig gitHubConfig) {
+		// userName is don't care parameter if using access token.
+		BasicAuthenticationManager basicAuthenticationManager
+			= new BasicAuthenticationManager("ngrinder", gitHubConfig.getAccessToken());
+
+		SVNClientManager svnClientManager = newInstance();
+		svnClientManager.setAuthenticationManager(basicAuthenticationManager);
+		return svnClientManager.getUpdateClient();
 	}
 
 	private boolean isDefaultBranch(String configuredBranch, String defaultBranch) {
@@ -301,6 +302,9 @@ public class GitHubFileEntryService {
 				List<GHTreeEntry> allFiles = ghRepository.getTreeRecursive(shaOfDefaultBranch, 1).getTree();
 				List<GHTreeEntry> scripts = filterScript(allFiles, removePrependedSlash(gitHubConfig.getScriptRoot()));
 
+				if (scripts.size() > 0) {
+					scripts.forEach(script -> script.setSha(createScriptRevisionUrl(ghRepository.getSvnUrl(), shaOfDefaultBranch, script.getPath())));
+				}
 				scriptMap.put(gitHubConfig.getName() + ":" + gitHubConfig.getRevision(), scripts);
 			} catch (IOException e) {
 				log.error("Fail to get script from github with [userId({}), {}]", user.getUserId(), gitHubConfig, e);
@@ -310,18 +314,19 @@ public class GitHubFileEntryService {
 		return scriptMap;
 	}
 
-
-	private String createCheckoutBaseUrl(GHRepository ghRepository, String configuredBranch, boolean isDefaultBranch) {
+	private SVNURL createCheckoutUrl(GHRepository ghRepository,
+									 String scriptPath,
+									 String configuredBranch,
+									 boolean isDefaultBranch) throws SVNException {
 		String checkoutBaseUrl = ghRepository.getSvnUrl();
 		checkoutBaseUrl += isDefaultBranch ? "/trunk" : "/branches/" + configuredBranch;
-		return checkoutBaseUrl;
-	}
-
-	private String getRevisionBaseUrl(String checkoutBaseUrl) {
-		if (checkoutBaseUrl.contains("/trunk")) {
-			return checkoutBaseUrl.substring(0, checkoutBaseUrl.indexOf("/trunk"));
+		SVNURL checkoutUrl;
+		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
+			checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + scriptPath.split(MAVEN_PATH)[0]);
+		} else {
+			checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + getFullPath(scriptPath));
 		}
-		return checkoutBaseUrl.substring(0, checkoutBaseUrl.indexOf("/branches"));
+		return checkoutUrl;
 	}
 
 	/**
