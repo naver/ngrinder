@@ -48,7 +48,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Comparator;
@@ -313,7 +312,7 @@ public class FileEntryController extends BaseController {
 		List<FileEntry> searchResult = newArrayList(filter(fileEntryService.getAll(user),
 				new Predicate<FileEntry>() {
 					@Override
-					public boolean apply(@Nullable FileEntry input) {
+					public boolean apply(FileEntry input) {
 						return input != null && input.getFileType() != FileType.DIR && StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimmedQuery);
 					}
 				}));
@@ -482,7 +481,7 @@ public class FileEntryController extends BaseController {
 		List<FileEntry> files = newArrayList(filter(fileEntryService.getAll(user),
 				new Predicate<FileEntry>() {
 					@Override
-					public boolean apply(@Nullable FileEntry input) {
+					public boolean apply(FileEntry input) {
 						return input != null && trimPathSeparatorBothSides(getPath(input.getPath())).equals(trimmedPath);
 					}
 				}));

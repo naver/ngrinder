@@ -146,6 +146,8 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
 				+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
 
+		System.setProperty(MavenCli.MULTIMODULE_PROJECT_DIRECTORY, distDir.getAbsolutePath());
+
 		int result = cli.doMain(new String[]{ // goal specification
 				"dependency:copy-dependencies", // run dependency goal
 				"-DoutputDirectory=./lib", // to the lib folder

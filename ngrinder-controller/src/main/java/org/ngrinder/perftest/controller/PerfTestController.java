@@ -56,7 +56,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -731,7 +730,7 @@ public class PerfTestController extends BaseController {
 		List<FileEntry> scripts = newArrayList(filter(fileEntryService.getAll(user),
 				new com.google.common.base.Predicate<FileEntry>() {
 					@Override
-					public boolean apply(@Nullable FileEntry input) {
+					public boolean apply(FileEntry input) {
 						return input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT;
 					}
 				}));
