@@ -194,7 +194,18 @@
 
             this.$nextTick(() => {
                 this.$refs.editor.codemirror.focus();
-                this.validationResult = this.isGitConfigFile ? this.guides.gitconfig : this.guides.perftest;
+
+                switch (true) {
+                    case this.isGitConfigFile:
+                        this.validationResult = this.guides.gitconfig;
+                        break;
+                    case /\\*.groovy/.test(this.file.fileName):
+                    case /\\*.py/.test(this.file.fileName):
+                        this.validationResult = this.guides.perftest;
+                        break;
+                    default:
+                        this.validationResult = '';
+                }
             });
         }
 

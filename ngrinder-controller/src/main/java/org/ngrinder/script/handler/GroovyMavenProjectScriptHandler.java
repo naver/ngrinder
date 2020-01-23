@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.handler;
 
@@ -258,9 +258,9 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				String hostName = UrlUtils.getHost(url);
 				if (StringUtils.isNotEmpty(hostName)
 						&& fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
-					Map<String, String> properties = newHashMap();
-					properties.put("targetHosts", UrlUtils.getHost(url));
-					fileEntry.setProperties(properties);
+					fileEntry.getProperties().put("targetHosts", UrlUtils.getHost(url));
+				} else {
+					fileEntry.getProperties().put("targetHosts", StringUtils.EMPTY);
 				}
 				getFileEntryRepository().save(user, fileEntry, "UTF8");
 			} catch (IOException e) {
@@ -281,7 +281,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.ngrinder.script.handler.ScriptHandler#getBasePath(java.lang.String)
 	 */
