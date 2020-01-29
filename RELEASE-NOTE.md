@@ -4,6 +4,7 @@
  is the bug fix release.
 - Changes
   * Make default groovy maven project pom.xml work correctly.
+  * Drop SSLv2Hello protocol.
 
 - Bug Fix
   * #495 Fix maven central repository url to https
