@@ -31,14 +31,9 @@
 	</organization>
 	<repositories>
 		<repository>
-			<id>maven-repo</id>
-			<name>Official Repository</name>
-			<url>http://repo1.maven.org/maven2</url>
-		</repository>
-		<repository>
 			<id>springsource-repo</id>
 			<name>SpringSource Repository</name>
-			<url>http://repo.springsource.org/release</url>
+			<url>https://repo.springsource.org/release</url>
 		</repository>
 		<repository>
 			<id>repository.jboss.org-public</id>
@@ -52,7 +47,7 @@
 		<repository>
 			<id>scm-manager.repo</id>
 			<name>scm-manager.repo</name>
-			<url>http://maven.scm-manager.org/nexus/content/repositories/releases</url>
+			<url>https://maven.scm-manager.org/nexus/content/repositories/releases</url>
 		</repository>
 	</repositories>
 
