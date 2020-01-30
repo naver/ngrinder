@@ -3,12 +3,13 @@
   <groupId>org.ngrinder</groupId>
   <artifactId>ngrinder-runtime</artifactId>
   <versioning>
-    <release>3.4.3</release>
+    <release>3.4.4</release>
     <versions>
       <version>3.4</version>
       <version>3.4.2</version>
       <version>3.4.3</version>
+      <version>3.4.4</version>
     </versions>
-    <lastUpdated>20190725055204</lastUpdated>
+    <lastUpdated>20200130092223</lastUpdated>
   </versioning>
 </metadata>
