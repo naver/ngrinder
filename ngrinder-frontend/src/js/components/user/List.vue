@@ -77,14 +77,19 @@
                 </a>
             </template>
         </vuetable>
-        <vuetable-pagination
-            ref="pagination"
-            :css="table.css.pagination"
-            @vuetable-pagination:change-page="changePage">
+        <vuetable-pagination ref="pagination"
+                             :css="table.css.pagination"
+                             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
-        <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()" focus="userId"></sign-up-modal>
-        <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId" focus="userName"
-                            @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = false"></user-edit-modal>
+        <sign-up-modal ref="signUpModal"
+                       focus="userId"
+                       @saved="$refs.vuetable.reload()">
+        </sign-up-modal>
+        <user-edit-modal :user-id="targetUserId"
+                         ref="userEditModal"
+                         focus="userName"
+                         @saved="$refs.vuetable.reload()">
+        </user-edit-modal>
     </div>
 </template>
 
@@ -126,7 +131,6 @@
         showTable = false;
 
         targetUserId = '';
-        showUserEditModal = false;
 
         created() {
             this.table.css = this.tableCss;
@@ -226,7 +230,7 @@
 
         editUser(userId) {
             this.targetUserId = userId;
-            this.showUserEditModal = true;
+            this.$nextTick(this.$refs.userEditModal.show);
         }
 
         isAdminUser(user) {
