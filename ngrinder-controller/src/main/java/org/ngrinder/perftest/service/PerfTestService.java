@@ -683,7 +683,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			cleanupPerftestDistibutionFolder(perfTest);
 			ScriptHandler prepareDistribution = prepareDistribution(perfTest);
 			return getGrinderProperties(perfTest, prepareDistribution);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new PerfTestPrepareException(e.getMessage(), e);
 		}
 	}
