@@ -190,7 +190,10 @@
 
         mounted() {
             this.init();
-            this.$refs.vuetable.reload().then(() => this.showTable = true);
+            this.$refs.vuetable.reload().then(() => {
+                this.showTable = true;
+                this.$nextTick(this.addIntroJsConfig);
+            });
             this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
         }
 
@@ -412,6 +415,16 @@
             } else {
                 this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
             }
+        }
+
+        addIntroJsConfig() {
+            // vuetable-2 not support add html attribute to field header.
+            const statusFieldHeader = document.getElementsByClassName('vuetable-th-slot-status')[0];
+            const actionsFieldHeader = document.getElementsByClassName('vuetable-th-slot-actions')[0];
+            statusFieldHeader.dataset.step = '4';
+            actionsFieldHeader.dataset.step = '5';
+            statusFieldHeader.dataset.intro = this.i18n('intro.list.perftest.status');
+            actionsFieldHeader.dataset.intro = this.i18n('intro.list.perftest.actions');
         }
     }
 </script>
