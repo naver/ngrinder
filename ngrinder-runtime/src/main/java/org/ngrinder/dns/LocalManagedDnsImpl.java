@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,12 +9,11 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.dns;
 
 import org.xbill.DNS.*;
-import sun.net.spi.nameservice.NameService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,7 +25,7 @@ import java.net.UnknownHostException;
  * @since 3.0
  */
 @SuppressWarnings({"restriction", "WeakerAccess"})
-public class LocalManagedDnsImpl implements NameService {
+public class LocalManagedDnsImpl implements NameServiceProxy {
 
 	public LocalManagedDnsImpl() {
 		Cache cache = createCache();
@@ -44,9 +43,9 @@ public class LocalManagedDnsImpl implements NameService {
 	 * @return All the ip addresses found for the host name.
 	 * @throws UnknownHostException occurs when name is not available in DNS
 	 */
+	@Override
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
 		try {
-
 			final Lookup lookup = new Lookup(name, Type.A);
 			Record[] records = lookup.run();
 			if (records == null) {
@@ -71,6 +70,7 @@ public class LocalManagedDnsImpl implements NameService {
 	 * @return The host name found for the ip address.
 	 * @throws UnknownHostException occurs when id is not available in DNS
 	 */
+	@Override
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
 		try {
 			String addr = DnsUtils.numericToTextFormat(ip);

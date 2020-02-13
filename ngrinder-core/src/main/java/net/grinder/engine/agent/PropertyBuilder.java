@@ -40,6 +40,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.SystemInfoUtils.getAvailableMemory;
+import static org.ngrinder.common.util.SystemInfoUtils.getJDKVersion;
 
 /**
  * Class which is responsible to build custom jvm arguments.
@@ -194,9 +195,16 @@ public class PropertyBuilder {
 		if (server) {
 			addServerMode(jvmArguments);
 		}
+
 		if (StringUtils.isNotBlank(additionalJavaOpt)) {
 			addAdditionalJavaOpt(jvmArguments);
 		}
+
+		String jdkVersion = getJDKVersion();
+		if (jdkVersion != null && !jdkVersion.startsWith("1.")) {
+			jvmArguments.append(" --add-opens java.base/java.net=ALL-UNNAMED ");
+		}
+
 		return jvmArguments.toString();
 	}
 
@@ -402,7 +410,7 @@ public class PropertyBuilder {
 			jvmArguments.append(",").append(rebaseHostString(hostString));
 		}
 		if (enableLocalDNS) {
-			jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
+			jvmArguments.append(" -Dngrinder.enable.local-dns=true ");
 		}
 		return jvmArguments;
 	}

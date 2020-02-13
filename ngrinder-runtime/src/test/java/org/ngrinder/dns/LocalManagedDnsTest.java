@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
  */
 public class LocalManagedDnsTest {
 
-	private final LocalManagedDnsProxy localDNS = (LocalManagedDnsProxy) new LocalManagedDnsDescriptor().createNameService();
+	private final LocalManagedDnsProxy localDNS = new LocalManagedDnsProxy();
 
 	@After
 	public void after() {
@@ -96,5 +96,4 @@ public class LocalManagedDnsTest {
 		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
 		assertThat(impl.lookupAllHostAddr("www.google.com"), notNullValue());
 	}
-
 }
