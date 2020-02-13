@@ -408,7 +408,7 @@ public class PropertyBuilder {
 			jvmArguments.append(",").append(rebaseHostString(hostString));
 		}
 		if (enableLocalDNS) {
-			jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
+			jvmArguments.append(" -Dngrinder.enable.local.dns=true ");
 		}
 		return jvmArguments;
 	}

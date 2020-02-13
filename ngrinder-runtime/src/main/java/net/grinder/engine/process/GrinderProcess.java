@@ -58,6 +58,8 @@ import net.grinder.util.*;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.BooleanCondition;
 import net.grinder.util.thread.Condition;
+import org.ngrinder.dns.LocalManagedDnsProxy;
+import org.ngrinder.dns.NameServiceProxy;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,8 @@ import java.io.StringWriter;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static java.lang.System.getProperty;
 
 /**
  * The controller for a worker process.
@@ -140,6 +144,17 @@ final class GrinderProcess {
 
 			m_logbackLoggerContext = configureLogging(workerName, logDirectory);
 			m_logger = LoggerFactory.getLogger("worker." + workerName);
+
+			if (getProperty("ngrinder.enable.local.dns") != null) {
+				try {
+					// set LocalManagedDnsProxy to be used as NameService implementation inside InetAddress.
+					NameServiceProxy.set(new LocalManagedDnsProxy());
+					m_logger.info("Setting of nGrinder local DNS successfully");
+				} catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
+					throw new EngineException("Setting of Local DNS provider failed", e);
+				}
+			}
+
 			m_dataLogger = LoggerFactory.getLogger("data");
 
 			m_logger.info("The Grinder version {}", GrinderBuild.getVersionString());
