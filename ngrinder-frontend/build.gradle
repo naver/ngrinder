@@ -14,7 +14,7 @@ buildscript {
 node {
     version = "8.9.0"
     // Enabled the automatic download. False is the default (for now).
-    download = true
+    download = false
 }
 
 task webpack(dependsOn: "npmInstall", type: NodeTask) {
