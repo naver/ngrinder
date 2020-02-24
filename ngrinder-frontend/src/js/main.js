@@ -5,9 +5,11 @@ import VeeValidate from 'vee-validate';
 import moment from 'moment';
 import axios from 'axios';
 import VueLocalStorage from 'vue-localstorage';
+import VueShortkey from 'vue-shortkey';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
+import html5Entities from 'html-entities/lib/html5-entities.js';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
@@ -59,6 +61,7 @@ axiosInstance.interceptors.request.use(config => {
 });
 
 Vue.use(Vuex);
+Vue.use(VueShortkey);
 Vue.use(VueLocalStorage, {
     name: 'localStorage',
     bind: true,
@@ -70,6 +73,7 @@ Vue.use(VeeValidate, {
 });
 Vue.use(bFormSlider);
 
+Vue.prototype.$htmlEntities = html5Entities;
 Vue.prototype.$bootbox = BootBox;
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axiosInstance;
@@ -84,6 +88,10 @@ Vue.prototype.$watchAll = function(props, callback) {
 
 Vue.directive('focus', {
     inserted: el => el.focus(),
+});
+
+Vue.directive('htmlBindScript', (el, binding) => {
+    $(el).html(binding.value);
 });
 
 Vue.directive('visible', (el, binding) => {
@@ -134,6 +142,7 @@ const router = new VueRouter({
     base: window.ngrinder.contextPath,
     routes,
 });
+
 router.beforeEach((to, from, next) => {
     $('[data-toggle="popover"]').popover('hide');
     next();

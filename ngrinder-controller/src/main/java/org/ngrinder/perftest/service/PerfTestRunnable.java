@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
@@ -140,11 +141,9 @@ public class PerfTestRunnable implements ControllerConstants {
 		}
 
 		if (!isScheduledNow(runCandidate)) {
-			// this test project is reserved,but it isn't yet going to run test
-			// right now.
+			// Test is reserved, but it isn't yet going to run test right now.
 			return;
 		}
-
 
 		if (!hasEnoughFreeAgents(runCandidate)) {
 			return;
@@ -167,7 +166,6 @@ public class PerfTestRunnable implements ControllerConstants {
 				.truncate((Date) defaultIfNull(test.getScheduledTime(), current), Calendar.MINUTE);
 		return current.after(scheduledDate);
 	}
-
 
 	/**
 	 * Check the free agent availability for the given {@link PerfTest}.
@@ -202,6 +200,9 @@ public class PerfTestRunnable implements ControllerConstants {
 
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
+		} catch (PerfTestPrepareException ex) {
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
+				ex.getMessage());
 		} catch (SingleConsoleCancellationException ex) {
 			// In case of error, mark the occurs error on perftest.
 			doCancel(perfTest, singleConsole);

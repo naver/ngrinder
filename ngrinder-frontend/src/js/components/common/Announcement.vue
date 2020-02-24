@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="alert alert-block">
-            <div class="border-bottom">
+            <div class="announcement-title-container">
                 <span>
                     <span v-if="ngrinder.config.hasNewAnnouncement" class="badge badge-danger" v-text="'new'"></span>
                     <span class="announcement-title" v-text="i18n('announcement.title')"></span>
@@ -10,7 +10,9 @@
                     </span>
                 </span>
             </div>
-            <div v-show="!hide" class="announcement-content" v-html="announcement"></div>
+            <slide-up-down :active="!hide" :duration="300">
+                <div class="announcement-content border-top pt-2" v-html-bind-script="announcement"></div>
+            </slide-up-down>
         </div>
     </div>
 </template>
@@ -18,11 +20,13 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
+    import SlideUpDown from 'vue-slide-up-down';
     import Base from '../Base.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'announcement',
+        components: { SlideUpDown },
     })
     export default class Announcement extends Mixins(Base, MessagesMixin) {
         ANNOUNCEMENT_HIDE_KEY = 'announcement_hide';
@@ -35,7 +39,7 @@
             this.hide = this.$localStorage.get(this.ANNOUNCEMENT_HIDE_KEY, false, Boolean);
 
             this.$EventBus.$on(this.$Event.CHANGE_ANNOUNCEMENT, newContent => {
-                this.setAnnouncement(newContent);
+                this.announcement = newContent;
                 if (this.hide) {
                     this.toggleDisplay();
                 }
@@ -44,17 +48,13 @@
 
         getAnnouncement() {
             this.$http.get('/operation/announcement/api')
-                .then(res => this.setAnnouncement(res.data))
+                .then(res => this.announcement = res.data)
                 .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error', { content: this.i18n('announcement.title') })));
         }
 
         toggleDisplay() {
             this.hide = !this.hide;
             this.$localStorage.set(this.ANNOUNCEMENT_HIDE_KEY, this.hide);
-        }
-
-        setAnnouncement(announcement) {
-            this.announcement = announcement.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
         }
     }
 </script>
@@ -63,6 +63,10 @@
     .announcement-content {
         li {
             line-height: 20px;
+        }
+
+        ul {
+            margin-bottom: 5px;
         }
     }
 </style>
@@ -78,7 +82,7 @@
             border: 1px solid #fbeed5;
             border-radius: 4px;
 
-            .border-bottom {
+            .announcement-title-container {
                 margin: 0;
                 padding-bottom: 2px;
 
@@ -93,10 +97,6 @@
         .announcement-icon {
             margin-top: 5px;
             color: black;
-        }
-
-        .announcement-content {
-            margin-top: 10px;
         }
     }
 </style>

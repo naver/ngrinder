@@ -25,7 +25,8 @@ public class NumberFormatTest {
 
 	@Test
 	public void testNumberFormat() {
-		PerfTestService perfTestService = new PerfTestService(null, null, null, null, null, null, null, null);
+		PerfTestService perfTestService = new PerfTestService(null,
+			null, null, null, null, null, null, null, null);
 		Map<String, String> map = new HashMap<>();
 		map.put("HELLO", "100,000");
 		assertThat(perfTestService.parseDoubleWithSafety(map, "HELLO", 3d), is(100000D));

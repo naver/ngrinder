@@ -81,6 +81,7 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setCreatedUser(getTestUser());
 		test.setRegion(config.getRegion());
 		test.setSamplingInterval(1);
+		test.setScm("svn");
 		return test;
 	}
 

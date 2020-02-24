@@ -51,7 +51,10 @@ package org.ngrinder.infra.config;
   import java.util.Date;
   import java.util.Properties;
 
+  import static java.nio.charset.StandardCharsets.UTF_8;
   import static net.grinder.util.NoOp.noOp;
+  import static org.apache.commons.io.FileUtils.readFileToString;
+  import static org.apache.commons.lang.StringUtils.isEmpty;
   import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
   import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
   import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -292,7 +295,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		if (StringUtils.isEmpty(userHome)) {
+		if (isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
 			userHome = System.getProperty("user.home") + File.separator + userHome.substring(2);
@@ -318,7 +321,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		}
 		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 
-		if (StringUtils.isEmpty(userHome)) {
+		if (isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_EX_FOLDER;
 		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
 			userHome = System.getProperty("user.home") + File.separator + userHome.substring(2);
@@ -396,7 +399,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		synchronized (announcement) {
 			File sysFile = home.getSubFile("announcement.conf");
 			try {
-				announcement = FileUtils.readFileToString(sysFile, "UTF-8");
+				announcement = readFileToString(sysFile, "UTF-8");
 				if (sysFile.exists()) {
 					announcementDate = new Date(sysFile.lastModified());
 				} else {
@@ -590,15 +593,35 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 * @return loaded file content.
 	 */
 	public String getProcessAndThreadPolicyScript() {
-		if (StringUtils.isEmpty(policyScript)) {
+		if (isEmpty(policyScript)) {
 			try {
-				policyScript = FileUtils.readFileToString(getHome().getSubFile("process_and_thread_policy.js"));
+				policyScript = readFileToString(getHome().getSubFile("process_and_thread_policy.js"), UTF_8);
 				return policyScript;
 			} catch (IOException e) {
 				LOG.error("Error while load process_and_thread_policy.js", e);
 			}
 		}
 		return policyScript;
+	}
+
+
+	private String gitHubConfigTemplate = "";
+
+	/**
+	 * Get the content of "gitconfig-template.yml" file.
+	 *
+	 * @return loaded file content.
+	 */
+	public String getGitHubConfigTemplate() {
+		if (isEmpty(gitHubConfigTemplate)) {
+			try {
+				gitHubConfigTemplate = readFileToString(getHome().getSubFile("gitconfig-template.yml"), UTF_8);
+				return gitHubConfigTemplate;
+			} catch (IOException e) {
+				LOG.error("Error while load gitconfig-template.yml", e);
+			}
+		}
+		return gitHubConfigTemplate;
 	}
 
 	/**

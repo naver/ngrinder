@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.controller;
 
+import lombok.RequiredArgsConstructor;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -51,10 +52,10 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URL;
 import java.util.*;
 
-import lombok.RequiredArgsConstructor;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.replace;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -372,7 +373,7 @@ public class PerfTestApiController {
 		Map<String, Object> model = new HashMap<>();
 		PerfTest perfTest = createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost());
 		perfTest.setScriptName(newEntry.getPath());
-		perfTest.setScriptRevision(-1L);
+		perfTest.setScriptRevision("-1");
 		model.put(PARAM_TEST, perfTest);
 
 		model.putAll(getDefaultAttributes(user));
@@ -479,10 +480,19 @@ public class PerfTestApiController {
 		Map<String, Object> result = newHashMap();
 		result.put("id", perfTest.getId());
 		result.put("status", perfTest.getStatus());
-		result.put("message",
-			StringUtils.replace(perfTest.getProgressMessage() + "\n<b>" + perfTest.getLastProgressMessage() + "</b>\n"
-				+ perfTest.getLastModifiedDateToStr(), "\n", "<br/>"));
+		result.put("message", getStatusMessage(perfTest));
 		return result;
+	}
+
+	private String getStatusMessage(PerfTest perfTest) {
+		String message = "";
+		String progressMessage = perfTest.getProgressMessage();
+		if (!isEmpty(progressMessage)) {
+			message += progressMessage + "<br>";
+		}
+		message += "<b>" + perfTest.getLastProgressMessage() + "</b><br>";
+		message += perfTest.getLastModifiedDateToStr();
+		return replace(message, "\n", "<br>");
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -571,6 +581,7 @@ public class PerfTestApiController {
 		if (StringUtils.isNotEmpty(ownerId)) {
 			user = userService.getOne(ownerId);
 		}
+
 		return fileEntryService.getAll(user)
 			.stream()
 			.filter(input -> input != null && input.getFileType().getFileCategory() == FileCategory.SCRIPT)

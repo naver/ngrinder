@@ -16,7 +16,6 @@ package org.ngrinder.perftest.service;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import net.grinder.SingleConsole;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
@@ -25,7 +24,6 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 import net.grinder.util.Pair;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -35,8 +33,11 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
+import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.common.util.JsonUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
@@ -51,7 +52,9 @@ import org.ngrinder.script.handler.ProcessingResultPrintStream;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.model.GitHubConfig;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.GitHubFileEntryService;
 import org.ngrinder.service.AbstractPerfTestService;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -65,12 +68,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static java.lang.Long.valueOf;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constants.MonitorConstants.MONITOR_FILE_PREFIX;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
@@ -119,6 +123,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private final ScriptHandlerFactory scriptHandlerFactory;
 
 	private final HazelcastService hazelcastService;
+
+	private final GitHubFileEntryService gitHubFileEntryService;
 
 	/**
 	 * Get {@link PerfTest} list for the given user.
@@ -267,9 +273,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	private void attachFileRevision(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
-			FileEntry scriptEntry = fileEntryService.getOne(user, perfTest.getScriptName());
-			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
-			perfTest.setScriptRevision(revision);
+			if (perfTest.isGitHubScm()) {
+				perfTest.setScriptRevision(String.valueOf(perfTest.getScriptRevision()));
+			} else {
+				FileEntry scriptEntry = fileEntryService.getOne(user, perfTest.getScriptName());
+				long revision = scriptEntry != null ? scriptEntry.getRevision() : -1L;
+				perfTest.setScriptRevision(String.valueOf(revision));
+			}
 		}
 	}
 
@@ -477,7 +487,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param perfTest perfTest
 	 */
 	private void deletePerfTestDirectory(PerfTest perfTest) {
-		FileUtils.deleteQuietly(getPerfTestDirectory(perfTest));
+		deleteQuietly(getPerfTestDirectory(perfTest));
 	}
 
 	/*
@@ -628,14 +638,29 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param perfTest perfTest
 	 * @return File location in which the perftest script and resources are distributed.
 	 */
-	public ScriptHandler prepareDistribution(PerfTest perfTest) {
+	public ScriptHandler prepareDistribution(PerfTest perfTest) throws IOException {
 		File perfTestDistDirectory = getDistributionPath(perfTest);
 		User user = perfTest.getCreatedUser();
-		FileEntry scriptEntry = checkNotNull(
+		String scm = perfTest.getScm();
+		FileEntry scriptEntry;
+
+		if (isGitHubScript(scm)) {
+			String gitHubConfigName = extractGitHubConfigName(scm);
+
+			GitHubConfig gitHubConfig = gitHubFileEntryService.getGitHubConfig(user, gitHubConfigName);
+			GitHub gitHub = gitHubFileEntryService.getGitHubClient(gitHubConfig);
+			GHRepository ghRepository = gitHub.getRepository(gitHubConfig.getOwner() + "/" + gitHubConfig.getRepo());
+
+			gitHubFileEntryService.checkoutGitHubScript(perfTest, ghRepository, gitHubConfig);
+			scriptEntry = gitHubFileEntryService.getOne(ghRepository, gitHubConfig, perfTest.getScriptName());
+		} else {
+			scriptEntry = checkNotNull(
 				fileEntryService.getOne(user,
-						checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name"),
-						getSafe(perfTest.getScriptRevision())), "script should exist");
-		// Get all files in the script path
+					checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name"),
+					getSafe(valueOf(perfTest.getScriptRevision()))), "script should exist");
+		}
+
+		// Get all files in the script path.
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
 
 		ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
@@ -655,15 +680,28 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	public GrinderProperties prepareTest(PerfTest perfTest) {
-		cleanupPerftestDistibutionFolder(perfTest);
-		ScriptHandler prepareDistribution = prepareDistribution(perfTest);
-		return getGrinderProperties(perfTest, prepareDistribution);
+		try {
+			cleanupPerftestDistibutionFolder(perfTest);
+			ScriptHandler prepareDistribution = prepareDistribution(perfTest);
+			return getGrinderProperties(perfTest, prepareDistribution);
+		} catch (Throwable e) {
+			throw new PerfTestPrepareException(e.getMessage(), e);
+		}
+	}
+
+	// scm format in db is name:revision
+	private String extractGitHubConfigName(String scm) {
+		return scm.split(":")[0];
+	}
+
+	private boolean isGitHubScript(String scm) {
+		return scm != null && !scm.equals("svn");
 	}
 
 	private void cleanupPerftestDistibutionFolder(PerfTest perfTest) {
 		File distributedFolder = config.getHome().getDistributedFolderName(perfTest.getId().toString());
 		if (distributedFolder.exists()) {
-			FileUtils.deleteQuietly(distributedFolder);
+			deleteQuietly(distributedFolder);
 		}
 	}
 
@@ -792,7 +830,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		}
 		return Arrays.asList(logFileDirectory.list());
 	}
-
 
 	/**
 	 * Get report file directory for give test .
@@ -1082,7 +1119,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @param perfTest perf test
 	 */
 	public void cleanUpDistFolder(PerfTest perfTest) {
-		FileUtils.deleteQuietly(getDistributionPath(perfTest));
+		deleteQuietly(getDistributionPath(perfTest));
 	}
 
 	/**
@@ -1187,7 +1224,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					if (NULL_STRING.equals(dataList[4]) || UNDEFINED_STRING.equals(dataList[4])) {
 						userMemoryMetrics.add(null);
 					} else {
-						userMemoryMetrics.add(Long.valueOf(dataList[4]) - Long.valueOf(dataList[3]));
+						userMemoryMetrics.add(valueOf(dataList[4]) - valueOf(dataList[3]));
 					}
 					addCustomData(cpuUsedMetrics, 5, dataList);
 					addCustomData(networkReceivedMetrics, 6, dataList);

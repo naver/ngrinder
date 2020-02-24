@@ -10,7 +10,7 @@
                    @change="$emit('change')"
                    :checked="radio.checked">
             <span v-show="required" class="required-mark" v-text="'*'"></span>
-            <span v-html="i18n(labelMessageKey)"></span>
+            <span v-html="i18n(labelMessageKey)" class="label-message"></span>
             <span v-if="labelHelpMessageKey"
                   data-toggle="popover"
                   data-html="true"
@@ -20,6 +20,7 @@
                   data-placement='top'>
 				<i class="fa fa-question-circle align-middle"></i>
 			</span>
+            <i v-if="labelIconOption" v-show="display.labelIcon" :class="labelIconOption.class" @click="$emit('clickLabelIcon')"></i>
         </label>
         <div class="controls" :style="controlsStyle">
             <slot></slot>
@@ -34,6 +35,10 @@
     @Component({
         name: 'controlGroup',
         props: {
+            labelIconOption: {
+                type: Object,
+                required: false
+            },
             labelMessageKey: {
                 type: String,
                 required: true,
@@ -56,6 +61,9 @@
     })
     export default class ControlGroup extends Base {
         success = false;
+        display = {
+            labelIcon: !!this.labelIconOption,
+        };
     }
 </script>
 

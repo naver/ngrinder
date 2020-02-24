@@ -53,6 +53,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private static final int MAX_STRING_SIZE = 2048;
 
+	private static final String DEFAULT_SCM = "svn";
+
 	public PerfTest() {
 
 	}
@@ -138,6 +140,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Cloneable
 	@Column(name = "threshold")
 	private String threshold;
+
+	@Cloneable
+	@Column(name = "scm")
+	private String scm;
 
 	@Cloneable
 	@Column(name = "script_name")
@@ -228,7 +234,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String testComment;
 
 	@Column(name = "script_revision")
-	private Long scriptRevision;
+	private String scriptRevision;
 
 	@Column(name = "stop_request")
 	@Type(type = "true_false")
@@ -290,8 +296,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.stopRequest = getSafe(this.stopRequest, false);
 		this.duration = getSafe(this.duration, 60000L);
 		this.samplingInterval = getSafe(this.samplingInterval, 2);
-		this.scriptRevision = getSafe(this.scriptRevision, -1L);
+		this.scriptRevision = getSafe(this.scriptRevision, "-1");
 		this.param = getSafe(this.param, "");
+		this.scm = getSafe(this.scm, DEFAULT_SCM);
 		this.region = getSafe(this.region, "NONE");
 		this.targetHosts = getSafe(this.targetHosts, "");
 		this.description = getSafe(this.description, "");
@@ -400,7 +407,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 			return;
 		}
 		if (!StringUtils.equals(this.lastProgressMessage, lastProgressMessage)) {
-			setProgressMessage(getProgressMessage() + this.lastProgressMessage + "\n");
+			if (!StringUtils.isEmpty(this.lastProgressMessage)) {
+				setProgressMessage(getProgressMessage() + this.lastProgressMessage + "\n");
+			}
 		}
 		this.lastProgressMessage = lastProgressMessage;
 	}
@@ -419,6 +428,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public Boolean getSafeDistribution() {
 		return safeDistribution == null ? Boolean.FALSE : safeDistribution;
+	}
+
+	public boolean isGitHubScm() {
+		return !scm.equals(DEFAULT_SCM);
 	}
 
 	public void prepare(boolean isClone) {

@@ -40,5 +40,8 @@ public interface CacheConstants {
 
 	String CACHE_USER_ENTITY = "org.ngrinder.model.User";
 
+	String CACHE_GITHUB_SCRIPTS = "github_scripts";
+	String CACHE_GITHUB_IS_MAVEN_GROOVY = "github_is_maven_groovy";
+
 	int REGION_CACHE_TIME_TO_LIVE_SECONDS = 20;
 }

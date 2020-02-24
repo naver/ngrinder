@@ -84,4 +84,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT = "controller.inactive_client_time_out";
 	public static final String PROP_CONTROLLER_ENABLE_STATISTICS = "controller.enable_statistics";
 	public static final String PROP_CONTROLLER_CSV_SEPARATOR = "controller.csv_separator";
+	public static final String PROP_CONTROLLER_GITHUB_BASE_URL = "controller.github_base_url";
 }

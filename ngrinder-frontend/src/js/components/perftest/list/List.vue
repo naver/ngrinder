@@ -9,7 +9,8 @@
         <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter"
                     @create="$router.push('/perftest/new')"
                     @search="updateTableWithUrl" @change-tag="updateTableWithUrl"
-                    @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))"></search-bar>
+                    @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))">
+        </search-bar>
         <vuetable
             v-show="showTable"
             ref="vuetable"
@@ -35,7 +36,7 @@
                    data-trigger="hover"
                    :id="`ball_${props.rowData.id}`"
                    :title="props.rowData.status.name"
-                   :data-content="`${props.rowData.progressMessage}<br><b>${props.rowData.lastProgressMessage}</b>`.replace(/\n/g, '<br>')">
+                   :data-content="getStatusDataContent(props.rowData.progressMessage, props.rowData.lastProgressMessage)">
                     <img :src="`${contextPath}/img/ball/${props.rowData.status.iconName}`">
                 </div>
             </template>
@@ -58,11 +59,21 @@
                      data-trigger="hover"
                      :title="i18n('perfTest.list.scriptName')"
                      :data-content="`${props.rowData.scriptName}<br> - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
-                    <a v-if="isAdmin"
-                       :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
-                       v-text="props.rowData.scriptName"></a>
-                    <a v-else :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}`"
-                       v-text="props.rowData.scriptName"></a>
+                    <template v-if="props.rowData.scm === 'svn'">
+                        <a v-if="isAdmin"
+                           :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
+                           v-text="props.rowData.scriptName"
+                           target="_blank">
+                        </a>
+                        <a v-else :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}`"
+                           v-text="props.rowData.scriptName"
+                           target="_blank">
+                        </a>
+                    </template>
+                    <template v-else>
+                        <span v-if="$utils.isNumeric(props.rowData.scriptRevision)" v-text="props.rowData.scriptName"></span>
+                        <a v-else target="_blank" :href="props.rowData.scriptRevision" v-text="props.rowData.scriptName"></a>
+                    </template>
                 </div>
             </template>
 
@@ -129,6 +140,7 @@
             </template>
 
         </vuetable>
+        <intro-button/>
         <vuetable-pagination
             ref="pagination"
             :css="table.css.pagination"
@@ -151,6 +163,7 @@
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import SmallChart from './SmallChart.vue';
     import TableConfig from './mixin/TableConfig.vue';
+    import CommonMixin from '../mixin/CommonMixin.vue';
 
     Vue.component('small-chart', SmallChart);
 
@@ -158,7 +171,7 @@
         name: 'perfTestList',
         components: { IntroButton, vueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
-    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig) {
+    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig, CommonMixin) {
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
         tests = [];
         autoUpdateTargets = [];
@@ -182,7 +195,10 @@
 
         mounted() {
             this.init();
-            this.$refs.vuetable.reload().then(() => this.showTable = true);
+            this.$refs.vuetable.reload().then(() => {
+                this.showTable = true;
+                this.$nextTick(this.addIntroJsConfig);
+            });
             this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
         }
 
@@ -329,6 +345,16 @@
         }
 
         deleteTests(ids) {
+            if (!ids) {
+                this.$bootbox.alert({
+                    message: this.i18n('perfTest.message.delete.alert'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
+                return;
+            }
+
             this.$bootbox.confirm({
                 message: this.i18n('perfTest.message.delete.confirm'),
                 buttons: {
@@ -394,6 +420,16 @@
                 this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000);
             }
         }
+
+        addIntroJsConfig() {
+            // vuetable-2 not support add html attribute to field header.
+            const statusFieldHeader = document.getElementsByClassName('vuetable-th-slot-status')[0];
+            const actionsFieldHeader = document.getElementsByClassName('vuetable-th-slot-actions')[0];
+            statusFieldHeader.dataset.step = '4';
+            actionsFieldHeader.dataset.step = '5';
+            statusFieldHeader.dataset.intro = this.i18n('intro.list.perftest.status');
+            actionsFieldHeader.dataset.intro = this.i18n('intro.list.perftest.actions');
+        }
     }
 </script>
 
@@ -431,21 +467,17 @@
             }
         }
 
-        .intro-button-container {
-            margin-top: -26px;
-        }
-
         .popover {
             width: auto;
             min-width: 200px;
             max-width: 600px;
             max-height: 500px;
         }
-    }
 
-    .intro-button-container {
-        .intro-button-title {
-            margin-right: -30px;
+        .intro-button-container {
+            position: relative;
+            margin-top: -25px;
+            margin-right: -29px;
         }
     }
 </style>

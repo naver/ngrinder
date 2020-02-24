@@ -35,11 +35,16 @@
                 this.user = res.data.user;
                 this.config = res.data.config;
                 this.dataLoadFinished = true;
-            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
-        }
 
-        reset() {
-            this.$refs.userInfo.reset();
+                this.$nextTick(() => {
+                    $(this.$el).on('hide.bs.modal', this.$refs.userInfo.reset);
+                    $(this.$el).on('shown.bs.modal', () => {
+                        if (this.$refs.userInfo.$refs[this.focus]) {
+                            this.$refs.userInfo.$refs[this.focus].focus();
+                        }
+                    });
+                });
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
         }
 
         get basePath() {

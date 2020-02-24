@@ -1,5 +1,6 @@
 <template>
     <div class="perftest-detail-container">
+        <vue-headful :title="i18n('perfTest.title')"></vue-headful>
         <div class="container">
             <div class="card bg-light">
                 <div class="form-horizontal info">
@@ -11,13 +12,14 @@
                                         <input class="required form-control float-left" name="testName"
                                                maxlength="80" size="30" type="text"
                                                v-validate="{ required: true }"
-                                               v-model="test.testName"/>
+                                               v-model="test.testName"
+                                               v-focus/>
                                         <span v-show="errors.has('testName')" v-text="errors.first('testName')" class="validation-message"></span>
                                     </control-group>
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; height: 30px;" type="input" name="tagString"
+                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; min-height: 30px;" type="input" name="tagString"
                                                  :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
                                                   maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
                                         </select2>
@@ -72,11 +74,11 @@
                         <a v-show="tab.display.report" href="#report-section" class="nav-link"
                            data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                     </li>
-                    <a v-if="isAdmin" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
+                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdUser.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
-                        <config ref="config" :test="test" :scripts="scripts" :config="config"></config>
+                        <config ref="config" :test="test" :scriptsMap="scriptsMap" :config="config"></config>
                     </div>
                     <div class="tab-pane" id="running-section">
                         <running ref="running" :id="id" :config="test.config"></running>
@@ -86,7 +88,7 @@
                     </div>
                 </div>
             </div>
-            <intro-button></intro-button>
+            <intro-button/>
         </div>
         <schedule-modal ref="scheduleModal" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
@@ -94,6 +96,7 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import { Component, Prop } from 'vue-property-decorator';
+    import VueHeadful from 'vue-headful';
 
     import Base from '../../Base.vue';
     import Config from './Config.vue';
@@ -104,6 +107,8 @@
     import Select2 from '../../common/Select2.vue';
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
+    import CommonMixin from '../mixin/CommonMixin.vue';
+    import Utils from '../../../utils.js';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -131,6 +136,8 @@
                 ignoreSampleCount: test.config.ignoreSampleCount,
                 safeDistribution: test.config.safeDistribution,
                 param: test.config.param,
+                scm: test.config.scm,
+                scriptRevision: test.config.scriptRevision,
 
                 // rampUp
                 useRampUp: test.rampUp.enable,
@@ -159,7 +166,8 @@
                     processes: test.processes,
                     threads: test.threads,
                     scriptName: test.scriptName,
-                    scriptRevision: test.scriptRevision,
+                    scriptRevision: Utils.isNumeric(test.scriptRevision) ?
+                        parseInt(test.scriptRevision) : test.scriptRevision,
                     targetHosts: test.targetHosts,
                     threshold: test.threshold,
                     duration: test.duration,
@@ -168,6 +176,7 @@
                     ignoreSampleCount: test.ignoreSampleCount,
                     safeDistribution: test.safeDistribution,
                     param: test.param,
+                    scm: test.scm || 'svn',
                 },
                 rampUp: {
                     enable: test.useRampUp,
@@ -184,12 +193,12 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'perfTestDetail',
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal },
+        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal, VueHeadful },
         $_veeValidate: {
             validator: 'new',
         },
     })
-    export default class PerfTestDetail extends Mixins(Base, MessagesMixin) {
+    export default class PerfTestDetail extends Mixins(Base, MessagesMixin, CommonMixin) {
         @Prop({ type: String, required: false })
         id;
 
@@ -199,8 +208,8 @@
         @Prop({ type: Number, required: true })
         timezoneOffset;
 
-        @Prop({ type: Array, required: true })
-        scripts;
+        @Prop({ type: Object, required: true })
+        scriptsMap;
 
         perftestStatus = {
             message: '',
@@ -208,8 +217,6 @@
         };
 
         isClone = false;
-        scheduledTime = 0;
-
         currentRefreshStatusTimeoutId = 0;
 
         $testStatusImage = null;
@@ -229,23 +236,25 @@
         beforeRouteEnter(to, from, next) {
             PerfTestDetail.prepare(to)
                 .then(next)
-                .catch(() => next('/perftest'));
+                .catch(() => { /* noOp */ });
         }
 
         beforeRouteUpdate(to, from, next) {
             PerfTestDetail.prepare(to)
                 .then(next)
-                .catch(() => next('/perftest'));
+                .catch(() => { /* noOp */ });
         }
 
         mounted() {
             this.init();
         }
 
-        static prepare(route) {
+        static async prepare(route) {
+            route.params.scriptsMap = {};
+            await PerfTestDetail.preparePerfTest(route);
             return Promise.all([
-                PerfTestDetail.preparePerfTest(route),
-                PerfTestDetail.prepareScripts(route),
+                PerfTestDetail.prepareSvnScripts(route),
+                PerfTestDetail.prepareGitHubConfig(route),
             ]);
         }
 
@@ -263,13 +272,20 @@
             return promise.then(res => Object.assign(route.params, res.data));
         }
 
-        static prepareScripts(route) {
+        static prepareSvnScripts(route) {
             return Base.prototype.$http.get('/perftest/api/script')
-                .then(res => route.params.scripts = res.data);
+                .then(res => route.params.scriptsMap.svn = res.data);
+        }
+
+        static prepareGitHubConfig(route) {
+            return Base.prototype.$http.get('/script/api/github-config')
+                .then(res => route.params.config.github = res.data)
+                .catch(error => route.params.config.github = { error: true, message: error.response.data.message });
         }
 
         init() {
             this.isClone = this.test.status.name !== 'SAVED';
+            this.$testStatusImage = $(this.$refs.testStatusImage);
             this.perftestStatus.iconPath = `/img/ball/${this.test.status.iconName}`;
             if (this.ngrinder.config.clustered && this.test.region === 'NONE') {
                 this.test.region = '';
@@ -278,9 +294,8 @@
                 if (this.test.status.category === 'TESTING') {
                     this.$refs.running.startSamplingInterval();
                 }
-                this.$testStatusImage = $(this.$refs.testStatusImage);
-                this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
-                this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
+                this.currentRefreshStatusTimeoutId = this.startRefreshPerfTestStatusInterval();
+                this.$testStatusImage.attr('data-content', this.getStatusDataContent(this.test.progressMessage, this.test.lastProgressMessage));
                 $('[data-toggle="popover"]').popover();
                 this.setTabEvent();
                 this.updateTabDisplay();
@@ -315,7 +330,7 @@
             $(this.$refs.runningTab).on('hidden.bs.tab', () => this.$refs.running.shownBsTab = false);
         }
 
-        refreshPerftestStatus() {
+        startRefreshPerfTestStatusInterval() {
             if (!this.test.id || !this.isUpdatableStatus()) {
                 return;
             }
@@ -333,7 +348,7 @@
                     this.test.status.category = status.category;
                     this.updateTabDisplay();
                 }
-                this.currentRefreshStatusTimeoutId = setTimeout(this.refreshPerftestStatus, 3000);
+                this.currentRefreshStatusTimeoutId = setTimeout(this.startRefreshPerfTestStatusInterval, 3000);
             });
         }
 
@@ -404,17 +419,28 @@
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
-            this.$validator.validateAll().then(() => {
-                if (this.errors.any()) {
-                    this.$refs.configTab.click();
-                } else {
-                    this.test.status.name = 'SAVED';
-                    this.$nextTick(() => {
-                        this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
-                            .then(() => this.$router.push('/perftest'))
-                            .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
-                    });
-                }
+            if (this.test.config.scm === 'svn') {
+                this.checkClonePerftestValidation();
+                return;
+            }
+
+            this.$refs.config.loadGitHubScript()
+                .then(this.checkClonePerftestValidation, this.clickConfigTabIfHasErrors);
+        }
+
+        checkClonePerftestValidation() {
+            this.$validator.validateAll()
+                .then(() => {
+                    if (this.errors.any()) {
+                        this.$refs.configTab.click();
+                    } else {
+                        this.test.status.name = 'SAVED';
+                        this.$nextTick(() => {
+                            this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
+                                .then(() => this.$router.push('/perftest'))
+                                .catch(() => this.showErrorMsg(this.i18n('perfTest.message.save.error')));
+                        });
+                    }
             });
         }
 
@@ -423,25 +449,51 @@
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
-            this.$validator.validateAll().then(() => {
-                if (this.errors.any()) {
-                    this.$refs.configTab.click();
-                } else {
-                    this.$refs.scheduleModal.show();
-                }
+            if (this.test.config.scm === 'svn') {
+                this.checkSaveAndStartValidation();
+                return;
+            }
+
+            this.$refs.config.loadGitHubScript()
+                .then(this.checkSaveAndStartValidation, this.clickConfigTabIfHasErrors);
+        }
+
+        checkSaveAndStartValidation() {
+            this.$validator.validateAll()
+                .then(() => {
+                    if (this.errors.any()) {
+                        this.$refs.configTab.click();
+                    } else {
+                        if (typeof(scheduleTestBlockingHook) === 'function') {
+                            scheduleTestBlockingHook.call(this, this.$refs.scheduleModal.show);
+                            return;
+                        }
+                        this.$refs.scheduleModal.show();
+                    }
             });
+        }
+
+        clickConfigTabIfHasErrors() {
+            if (this.errors.any()) {
+                this.$refs.configTab.click();
+            }
         }
 
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status.name = 'READY';
-            this.scheduledTime = scheduledTime;
+            this.test.scheduledTime = scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
                     .then(res => {
-                        this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
-                        this.$router.push(`/perftest/${res.data.id}`);
+                        if (scheduledTime) {
+                            this.showSuccessMsg(this.i18n('perfTest.message.scheduled.success'));
+                            this.$router.push('/perftest/');
+                        } else {
+                            this.showSuccessMsg(this.i18n('perfTest.message.testStart'));
+                            this.$router.push(`/perftest/${res.data.id}`);
+                        }
                     }).catch(() => this.showErrorMsg(this.i18n('perfTest.message.saveAndRun.error')));
             });
         }
@@ -504,10 +556,6 @@
 
         input[type="text"] {
             height: 30px;
-        }
-
-        .intro-button-container {
-            margin-top: -28px;
         }
 
         .select2-choices {
@@ -619,7 +667,7 @@
         }
 
         i {
-            &.collapse{
+            &.collapse {
                 background: url('/img/icon_collapse.png') no-repeat;
                 display: inline-block;
                 height: 16px;

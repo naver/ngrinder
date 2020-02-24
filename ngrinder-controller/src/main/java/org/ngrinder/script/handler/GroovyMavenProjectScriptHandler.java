@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,24 +9,16 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.handler;
 
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.common.util.UrlUtils;
@@ -35,9 +27,22 @@ import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
+import org.ngrinder.script.repository.GitHubFileEntryRepository;
+import org.ngrinder.script.service.GitHubFileEntryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
+import java.util.List;
+import java.util.Map;
+
+import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Groovy Maven project {@link ScriptHandler}.
@@ -59,22 +64,31 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	private static final String GROOVY = "/src/main/groovy/";
 	private static final String LIB = "/lib/";
 
+	@Lazy
+	@Autowired
+	@JsonIgnore
+	private GitHubFileEntryService gitHubFileEntryService;
+
 	@Override
 	public boolean canHandle(FileEntry fileEntry) {
-		if (fileEntry.getCreatedUser() == null) {
-			return false;
-		}
 		String path = fileEntry.getPath();
 		if (!FilenameUtils.isExtension(path, "groovy")) {
 			return false;
-
 		}
+
 		//noinspection SimplifiableIfStatement
 		if (!path.contains(JAVA) && !path.contains(GROOVY)) {
 			return false;
 		}
 
-		return getFileEntryRepository().hasOne(fileEntry.getCreatedUser(), getBasePath(path) + "/pom.xml");
+		if (isGitHubFileEntry(fileEntry)) {
+			return StringUtils.equals(fileEntry.getProperties().get("type"), "groovy-maven");
+		} else {
+			if (fileEntry.getCreatedUser() == null) {
+				return false;
+			}
+			return getFileEntryRepository().hasOne(fileEntry.getCreatedUser(), getBasePath(path) + "/pom.xml");
+		}
 	}
 
 	@Override
@@ -92,35 +106,65 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		List<FileEntry> fileList = newArrayList();
 		String basePath = getBasePath(scriptEntry);
 		FileEntryRepository fileEntryRepository = getFileEntryRepository();
-		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + RESOURCES, revision, true)) {
+		GitHubFileEntryRepository gitHubFileEntryRepository = getGitHubFileEntryRepository();
+
+		List<FileEntry> resourcesFileEntry;
+		List<FileEntry> javaFileEntry;
+		List<FileEntry> groovyFileEntry;
+		List<FileEntry> libFileEntry;
+
+		if (isGitHubFileEntry(scriptEntry)) {
+			try {
+				javaFileEntry = gitHubFileEntryRepository.findAll(basePath + JAVA);
+				resourcesFileEntry = gitHubFileEntryRepository.findAll(basePath + RESOURCES);
+				groovyFileEntry = gitHubFileEntryRepository.findAll(basePath + GROOVY);
+				libFileEntry = gitHubFileEntryRepository.findAll(basePath + LIB);
+			} catch (IOException e) {
+				throw new NGrinderRuntimeException(e);
+			}
+
+			try {
+				fileList.add(gitHubFileEntryRepository.findOne(basePath + "/pom.xml"));
+			} catch (NoSuchFileException e) {
+				gitHubFileEntryService.evictGitHubMavenGroovyCache(scriptEntry.getProperties().get("scriptPath"));
+				throw new NGrinderRuntimeException("pom.xml isn't exist in groovy maven.", e);
+			}
+		} else {
+			resourcesFileEntry = fileEntryRepository.findAll(user, basePath + RESOURCES, revision, true);
+			javaFileEntry = fileEntryRepository.findAll(user, basePath + JAVA, revision, true);
+			groovyFileEntry = fileEntryRepository.findAll(user, basePath + GROOVY, revision, true);
+			libFileEntry = fileEntryRepository.findAll(user, basePath + LIB, revision, true);
+			fileList.add(fileEntryRepository.findOne(user, basePath + "/pom.xml", SVNRevision.create(revision)));
+		}
+
+		for (FileEntry eachFileEntry : resourcesFileEntry) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isResourceDistributable()) {
 				fileList.add(eachFileEntry);
 			}
 		}
 
-		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + JAVA, revision, true)) {
-			FileType fileType = eachFileEntry.getFileType();
-
-			if (fileType.isLibDistributable() && !eachFileEntry.getPath().equals(scriptEntry.getPath())) {
-				fileList.add(eachFileEntry);
-			}
-		}
-
-		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + GROOVY, revision, true)) {
+		for (FileEntry eachFileEntry : javaFileEntry) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isLibDistributable() && !eachFileEntry.getPath().equals(scriptEntry.getPath())) {
 				fileList.add(eachFileEntry);
 			}
 		}
 
-		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + LIB, revision, true)) {
+		for (FileEntry eachFileEntry : groovyFileEntry) {
+			FileType fileType = eachFileEntry.getFileType();
+			if (fileType.isLibDistributable() && !eachFileEntry.getPath().equals(scriptEntry.getPath())) {
+				fileList.add(eachFileEntry);
+			}
+		}
+
+		for (FileEntry eachFileEntry : libFileEntry) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isLibDistributable()) {
 				fileList.add(eachFileEntry);
 			}
 		}
-		fileList.add(fileEntryRepository.findOne(user, basePath + "/pom.xml", SVNRevision.create(revision)));
+
 		return fileList;
 	}
 
@@ -214,9 +258,9 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				String hostName = UrlUtils.getHost(url);
 				if (StringUtils.isNotEmpty(hostName)
 						&& fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
-					Map<String, String> properties = newHashMap();
-					properties.put("targetHosts", UrlUtils.getHost(url));
-					fileEntry.setProperties(properties);
+					fileEntry.getProperties().put("targetHosts", UrlUtils.getHost(url));
+				} else {
+					fileEntry.getProperties().put("targetHosts", StringUtils.EMPTY);
 				}
 				getFileEntryRepository().save(user, fileEntry, "UTF8");
 			} catch (IOException e) {
@@ -237,7 +281,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.ngrinder.script.handler.ScriptHandler#getBasePath(java.lang.String)
 	 */

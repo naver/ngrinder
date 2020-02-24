@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.servlet.ServletContext;
 
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_GITHUB_BASE_URL;
 import static org.ngrinder.common.constant.WebConstants.PARAM_PROCESS_THREAD_POLICY_SCRIPT;
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -45,6 +46,7 @@ public class GlobalControllerAdvice {
 		model.addAttribute("clustered", config.isClustered());
 		model.addAttribute("helpUrl", config.getHelpUrl());
 		model.addAttribute("signUpEnabled", config.isSignUpEnabled());
+		model.addAttribute("githubBaseUrl", config.getControllerProperties().getProperty(PROP_CONTROLLER_GITHUB_BASE_URL));
 		model.addAttribute("hasNewAnnouncement", announcementService.isNew());
 		model.addAttribute(PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 

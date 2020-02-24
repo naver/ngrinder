@@ -88,7 +88,7 @@
                 });
         }
 
-        reset() {
+        beforeHidden() {
             this.description = '';
             this.$refs.file.value = '';
         }
