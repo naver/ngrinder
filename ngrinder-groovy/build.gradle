@@ -9,6 +9,7 @@ configurations {
 dependencies {
     compile (project(":ngrinder-runtime"))
     compile (group: "org.codehaus.groovy", name: "groovy-all", version:"2.2.1")
+    compile (group: "net.sourceforge.javacsv", name: "javacsv", version: "2.0")
 
     testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 

@@ -20,10 +20,16 @@ import net.grinder.script.InternalScriptContext;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+
+import com.csvreader.CsvReader;
 
 /**
  * Convenient NGrinder utilities.
@@ -33,6 +39,165 @@ import java.util.Random;
  */
 @SuppressWarnings({"UnusedDeclaration", "SpellCheckingInspection"})
 public abstract class GrinderUtils {
+
+	/**
+	 * 读取csv文件方法
+	 * @param filePath 文件路径
+	 * @param columnName 列名称
+	 * @return
+	 */
+	public static List getFileParams(String filePath , String columnName) {
+		List list = new ArrayList();
+		CsvReader reader = null;
+		try {
+			//初始化CsvReader并指定列分隔符和字符编码
+			reader = new CsvReader(filePath, ',', Charset.forName("UTF-8"));
+			reader.readHeaders();
+			while (reader.readRecord()) {
+				if (reader.get(columnName) != null && !"".equals(reader.get(columnName)))
+					list.add(reader.get(columnName));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null)
+				//关闭CsvReader
+				reader.close();
+		}
+		return list;
+	}
+
+	/**
+	 * 读取csv文件方法
+	 * @param filePath 文件路径
+	 * @param columnNum 列序号，从0开始
+	 * @return
+	 */
+	public static List getFileParams(String filePath , int columnNum) {
+		List list = new ArrayList();
+		CsvReader reader = null;
+		try {
+			//初始化CsvReader并指定列分隔符和字符编码
+			reader = new CsvReader(filePath, ',', Charset.forName("UTF-8"));
+			reader.readHeaders();
+			while (reader.readRecord()) {
+				if (reader.get(columnNum) != null && !"".equals(reader.get(columnNum)))
+					list.add(reader.get(columnNum));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null)
+				//关闭CsvReader
+				reader.close();
+		}
+		return list;
+	}
+
+	/**
+	 * 获取所有场景执行中的唯一值，可结合grinder.runNumber使用。
+	 * @return totalRunCount
+	 * @author lingj
+	 */
+	public static int getRunsUniqId() {
+		InternalScriptContext grinder = getGrinderInstance();
+		GrinderProperties properties = grinder.getProperties();
+		if (properties != null) {
+			int totalProcessCount = properties.getInt("grinder.processes", 1);
+			int totalThreadCount = properties.getInt("grinder.threads", 1);
+			int totalRunCount = properties.getInt("grinder.runs", 1);
+			int agentNumber = grinder.getAgentNumber();
+			int processNumber = grinder.getProcessNumber();
+			int threadNumber = grinder.getThreadNumber();
+			// Calc the current total sence unique id
+			return ((agentNumber * totalProcessCount * totalThreadCount) + (processNumber * totalThreadCount) + threadNumber) * totalRunCount;
+		}
+		return 0;
+	}
+
+	/**
+	 * 获取每次运行均生成唯一Id的方法，与进程数无关，可结合grinder.runNumber使用。
+	 * @return uniqNumExpProId
+	 * @author lingj
+	 */
+	public static int getRunsUniqNumExpProId() {
+		InternalScriptContext grinder = getGrinderInstance();
+		GrinderProperties properties = grinder.getProperties();
+		if (properties != null) {
+			int totalThreadCount = properties.getInt("grinder.threads", 1);
+			int totalRunCount = properties.getInt("grinder.runs", 1);
+			int agentNumber = grinder.getAgentNumber();
+			int threadNumber = grinder.getThreadNumber();
+			// Calc the current run number unique id independent of process number
+			return ((agentNumber * totalThreadCount)  + threadNumber) * totalRunCount;
+		}
+		return 0;
+	}
+
+	/**
+	 * 获取每次运行均生成唯一Id的方法，与进程数无关
+	 * @return uniqNumExpProId
+	 * @author lingj
+	 */
+	public static int getUniqNumExpProId() {
+		InternalScriptContext grinder = getGrinderInstance();
+		GrinderProperties properties = grinder.getProperties();
+		if (properties != null) {
+			int totalThreadCount = properties.getInt("grinder.threads", 1);
+			int agentNumber = grinder.getAgentNumber();
+			int threadNumber = grinder.getThreadNumber();
+			// Calc the current thread's unique id independent of process number
+			return (agentNumber * totalThreadCount)  + threadNumber;
+		}
+		return 0;
+	}
+
+	/**
+	 * 获取测试配置中运行的总次数
+	 * @return totalRunCount
+	 * @author lingj
+	 */
+	public static int getTotalRunCount() {
+		InternalScriptContext grinder = getGrinderInstance();
+		GrinderProperties properties = grinder.getProperties();
+		if (properties != null) {
+			// Get the total run count
+			return properties.getInt("grinder.runs", 1);
+		}
+		return 0;
+	}
+
+	/**
+	 * 截取动态字符串，获取动态数据
+	 * @param inputStr 输入字符串
+	 * @param startStr 字符串左边界
+	 * @param startStrLength 截取长度
+	 * @return 截取字符串
+	 */
+	public static String getCutStr(String inputStr, String startStr, int startStrLength){
+		int startIdx = inputStr.indexOf(startStr)+startStr.length();
+		return inputStr.substring(startIdx,startIdx+startStrLength);
+	}
+
+	/**
+	 * 截取动态字符串，获取动态数据
+	 * @param inputStr 输入字符串
+	 * @param startStr 字符串左边界
+	 * @param endStr 字符串右边界
+	 * @return 截取字符串
+	 */
+	public static String getCutStrLR(String inputStr, String startStr, String endStr){
+		int startIdx = inputStr.indexOf(startStr)+startStr.length();
+		int endIdx = inputStr.indexOf(endStr);
+		return inputStr.substring(startIdx,endIdx);
+	}
+
+	//*********************add by lingj
+
 	/**
 	 * Get this thread unique id among all threads in the all agents.
 	 *
