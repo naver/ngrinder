@@ -28,6 +28,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.ngrinder.monitor.share.domain.DiskBusy;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * System data collector class.
  *
@@ -44,6 +48,8 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 	private String[] netInterfaces = new String[]{};
 
 	private File customDataFile = null;
+
+	private List<String> localDevNames = new ArrayList<String>(){};
 
 	/**
 	 * Set Agent Home.
@@ -66,8 +72,13 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			sigar = new Sigar();
 			try {
 				netInterfaces = sigar.getNetInterfaceList();
+
+				localDevNames = getlocalDevNames();
+
 				prev = new SystemInfo();
 				prev.setBandWidth(getNetworkUsage());
+				prev.setDiskBusy(getDiskUsage());//add by lingj
+
 			} catch (SigarException e) {
 				LOGGER.error("Network usage data retrieval failed.", e);
 			}
@@ -93,7 +104,17 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			BandWidth networkUsage = getNetworkUsage();
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
 			systemInfo.setBandWidth(bandWidth);
-			systemInfo.setCpuUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+//			systemInfo.setCpuUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+
+			//add by lingj 修改cpu使用率为1-idle%，新增CPU等待率
+			systemInfo.setCpuUsedPercentage((float) (1 - sigar.getCpuPerc().getIdle()) * 100);
+			systemInfo.setCpuWait((float) (sigar.getCpuPerc().getWait()) * 100);
+			//新增磁盘读写速率
+			DiskBusy diskUsage = getDiskUsage();
+			DiskBusy diskBusy = diskUsage.adjust(prev.getDiskBusy());
+			systemInfo.setDiskBusy(diskBusy);
+
+
 			Cpu cpu = sigar.getCpu();
 			systemInfo.setTotalCpuValue(cpu.getTotal());
 			systemInfo.setIdleCpuValue(cpu.getIdle());
@@ -102,6 +123,20 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			systemInfo.setFreeMemory(mem.getActualFree() / 1024L);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 			systemInfo.setCustomValues(getCustomMonitorData());
+
+			//add by lingj 新增cpuWaitcpu等待率,memUsedPercentage内存使用率,load,diskUtil数据收集
+			systemInfo.setCpuWait((float) (sigar.getCpuPerc().getWait()) * 100);
+			systemInfo.setMemUsedPercentage(mem.getUsedPercent());
+			if (systemInfo.getSystem() == SystemInfo.System.LINUX) {
+				IoUsageCollector iousage = new IoUsageCollector();
+				systemInfo.setDiskUtil(iousage.getIoUsage());
+			}
+
+			double load = sigar.getLoadAverage()[0];
+			systemInfo.setLoad(load);
+
+			//add end
+
 		} catch (Throwable e) {
 			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
 			LOGGER.debug("Error trace is ", e);
@@ -109,6 +144,47 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 		prev = systemInfo;
 		return systemInfo;
 	}
+
+	/**
+	 * add by lingj
+	 * Get the current Disk Read and Write usage.
+	 * 获取磁盘读写
+	 * @return DiskBusy
+	 * @throws SigarException thrown when the underlying lib is not linked
+	 */
+	public DiskBusy getDiskUsage() throws SigarException {
+		DiskBusy diskBusy = new DiskBusy(System.currentTimeMillis());
+
+		for (String each : localDevNames) {
+			try {
+				DiskUsage diskUsage = sigar.getDiskUsage(each);
+				diskBusy.setRead(diskBusy.getRead() + diskUsage.getReadBytes());
+				diskBusy.setWrite(diskBusy.getWrite() + diskUsage.getWriteBytes());
+			} catch (Exception e) {
+				NoOp.noOp();
+			}
+		}
+		return diskBusy;
+	}
+
+	/**
+	 * add by lingj
+	 * Get the localDevNames.
+	 *
+	 * @return localDevNames
+	 * @throws SigarException thrown when the underlying lib is not linked
+	 */
+	public List<String> getlocalDevNames() throws SigarException {
+		FileSystem[] fileSystems = sigar.getFileSystemList();
+		List<String> localDevNames = new ArrayList<String>();
+		for(FileSystem fileSystem : fileSystems) {
+			if(fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
+				localDevNames.add(fileSystem.getDevName());
+			}
+		}
+		return localDevNames;
+	}
+
 
 	/**
 	 * Get the current network usage.

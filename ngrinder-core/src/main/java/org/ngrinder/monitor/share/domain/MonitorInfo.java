@@ -64,4 +64,7 @@ public abstract class MonitorInfo {
 		return cd.containsKey(itemName);
 	}
 
+	//add by lingj
+	protected static Double getDouble(CompositeData cd, String itemName) { return (Double) getObject(cd, itemName); }
+
 }

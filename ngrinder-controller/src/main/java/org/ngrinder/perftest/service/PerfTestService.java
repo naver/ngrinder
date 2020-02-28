@@ -1201,6 +1201,17 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			List<String> cpuUsedMetrics = new ArrayList<>();
 			List<String> networkReceivedMetrics = new ArrayList<>();
 			List<String> networkSentMetrics = new ArrayList<>();
+
+			//add by lingj
+			List<String> cpuwaitSentMetrics = new ArrayList<>();
+			List<String> memusedSentMetrics = new ArrayList<>();
+			List<String> loadSentMetrics = new ArrayList<>();
+			List<String> diskbusySentMetrics = new ArrayList<>();
+			List<String> readSentMetrics = new ArrayList<>();
+			List<String> writeSentMetrics = new ArrayList<>();
+			//add end
+
+
 			List<String> customData1Metrics = new ArrayList<>();
 			List<String> customData2Metrics = new ArrayList<>();
 			List<String> customData3Metrics = new ArrayList<>();
@@ -1229,17 +1240,44 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					addCustomData(cpuUsedMetrics, 5, dataList);
 					addCustomData(networkReceivedMetrics, 6, dataList);
 					addCustomData(networkSentMetrics, 7, dataList);
-					addCustomData(customData1Metrics, 8, dataList);
-					addCustomData(customData2Metrics, 9, dataList);
-					addCustomData(customData3Metrics, 10, dataList);
-					addCustomData(customData4Metrics, 11, dataList);
-					addCustomData(customData5Metrics, 12, dataList);
+
+					//add by lingj
+					addCustomData(cpuwaitSentMetrics, 8, dataList);
+					addCustomData(memusedSentMetrics, 9, dataList);
+					addCustomData(loadSentMetrics, 10, dataList);
+					addCustomData(diskbusySentMetrics, 11, dataList);
+					addCustomData(readSentMetrics, 12, dataList);
+					addCustomData(writeSentMetrics, 13, dataList);
+
+					addCustomData(customData1Metrics, 14, dataList);
+					addCustomData(customData2Metrics, 15, dataList);
+					addCustomData(customData3Metrics, 16, dataList);
+					addCustomData(customData4Metrics, 17, dataList);
+					addCustomData(customData5Metrics, 18, dataList);
+
+					//add end
+
+//					addCustomData(customData1Metrics, 8, dataList);
+//					addCustomData(customData2Metrics, 9, dataList);
+//					addCustomData(customData3Metrics, 10, dataList);
+//					addCustomData(customData4Metrics, 11, dataList);
+//					addCustomData(customData5Metrics, 12, dataList);
 				}
 			}
 			returnMap.put("cpu", cpuUsedMetrics);
 			returnMap.put("memory", userMemoryMetrics);
 			returnMap.put("received", networkReceivedMetrics);
 			returnMap.put("sent", networkSentMetrics);
+
+			//add by lingj
+			returnMap.put("cpuwait", cpuwaitSentMetrics);
+			returnMap.put("memused", memusedSentMetrics);
+			returnMap.put("load", loadSentMetrics);
+			returnMap.put("diskbusy", diskbusySentMetrics);
+			returnMap.put("read", readSentMetrics);
+			returnMap.put("write", writeSentMetrics);
+			//add end
+
 			returnMap.put("customData1", customData1Metrics);
 			returnMap.put("customData2", customData2Metrics);
 			returnMap.put("customData3", customData3Metrics);

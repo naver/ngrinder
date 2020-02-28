@@ -43,7 +43,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	 * Header field of monitor status fields.
 	 */
 	public static final String HEADER = "ip,system,collectTime,freeMemory,"
-			+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,customValues";
+			+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,cpuWait,memUsedPercentage,load,diskUtil,readPerSec,writePerSec,customValues";
 
 	public boolean isParsed() {
 		return true;
@@ -74,6 +74,21 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	protected String customValues;
 
+	//add by lingj
+	private double load;   // load
+
+	private float cpuWait;	//cpu等待率
+
+	private long read;	// 磁盘读
+
+	private long write;	// 磁盘写
+
+	private float diskUtil;	// 磁盘读写率
+
+	private double memUsedPercentage;	// 内存使用率
+
+	protected DiskBusy diskBusy;
+
 	@Override
 	public void parse(CompositeData cd) {
 		if (cd == null) {
@@ -90,6 +105,15 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			this.totalMemory = getLong(cd, "totalMemory");
 			this.cpuUsedPercentage = getFloat(cd, "cpuUsedPercentage");
 
+			//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil等字段定义
+			this.load = getDouble(cd, "load");
+			this.cpuWait = getFloat(cd, "cpuWait");
+			this.read = getLong(cd, "read");
+			this.write = getLong(cd, "write");
+			this.diskUtil = getFloat(cd, "diskUtil");
+			this.memUsedPercentage = getDouble(cd, "memUsedPercentage");
+			//add end
+
 			if (containsKey(cd, "bandWidth")) {
 				CompositeData bandWidth = (CompositeData) getObject(cd, "bandWidth");
 				this.bandWidth = new BandWidth(collectTime);
@@ -98,6 +122,17 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 				this.bandWidth.setReceivedPerSec(receivedPerSec);
 				this.bandWidth.setSentPerSec(sentPerSec);
 			}
+
+			//新增Disk ReadPerSec、WritePerSec
+			if (containsKey(cd, "diskBusy")) {
+				CompositeData diskBusy = (CompositeData) getObject(cd, "diskBusy");
+				this.diskBusy = new DiskBusy(collectTime);
+				long readPerSec = getLong(diskBusy, "readPerSec");
+				long writePerSec = getLong(diskBusy, "writePerSec");
+				this.diskBusy.setReadPerSec(readPerSec);
+				this.diskBusy.setWritePerSec(writePerSec);
+			}
+
 			if (containsKey(cd, "customValues")) {
 				this.setCustomValues(getString(cd, "customValues"));
 			}
@@ -125,6 +160,14 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		if (bandWidth != null) {
 			sb.append(",").append(bandWidth.getReceivedPerSec()).append(",").append(bandWidth.getSentPerSec());
 		}
+
+		//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil、ReadPerSec、WritePerSec的字段拼接
+		sb.append(",").append(cpuWait).append(",").append(memUsedPercentage).append(",").append(load).append(",").append(diskUtil);
+		if (diskBusy != null) {
+			sb.append(",").append(diskBusy.getReadPerSec()).append(",").append(diskBusy.getWritePerSec());
+		}
+		//add end
+
 		if (customValues != null) {
 			sb.append(",").append(customValues);
 		}
@@ -148,12 +191,23 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		@Override
 		public String toRecordString() {
 			StringBuilder sb = new StringBuilder();
+			//ip、system
 			sb.append("null").append(",").append("null").append(",");
+			//collectTime,freeMemory
 			sb.append("null").append(",").append("null").append(",");
+			//totalMemory,cpuUsedPercentage
 			sb.append("null").append(",").append("null");
 			if (bandWidth != null) {
 				sb.append(",").append("null").append(",").append("null");
 			}
+
+			//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil,ReadPerSec、WritePerSec的字段拼接
+			sb.append(",").append("null").append(",").append("null").append(",").append("null").append(",").append("null");
+			if (diskBusy != null) {
+				sb.append(",").append("null").append(",").append("null");
+			}
+			//add end
+
 			if (customValues != null) {
 				int valueCount = StringUtils.countMatches(customValues, ",") + 1;
 				for (int i = 0; i < valueCount; i++) {
