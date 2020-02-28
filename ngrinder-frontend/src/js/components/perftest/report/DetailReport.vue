@@ -36,11 +36,11 @@
                         </tr>
                         <tr>
                             <th v-text="'TPS'"></th>
-                            <td><strong>{{ test.tps | numFormat('0,0.0') }}</strong></td>
+                            <td><strong>{{ test.tps | numFormat('0,0.00') }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.peakTPS')"></th>
-                            <td><strong>{{ test.peakTps | numFormat }}</strong></td>
+                            <td><strong>{{ test.peakTps | numFormat('0,0.00') }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.meantime')"></th>
@@ -61,6 +61,15 @@
                             <th v-text="i18n('perfTest.report.errors')"></th>
                             <td>{{ test.error | numFormat }}</td>
                         </tr>
+
+                        <!--add by lingj -->
+                        <tr>
+                            <th v-text="i18n('perfTest.report.successRate')"></th>
+                            <td>
+                                <span>{{ (test.tests / (test.tests + test.errors)) * 100 | numFormat('0,0.00') }}%</span>
+                            </td>
+                        </tr>
+
                     </table>
                     <div class="card bg-light">
                         <ul class="nav flex-column">
