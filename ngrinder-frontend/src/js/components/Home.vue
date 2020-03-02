@@ -21,7 +21,7 @@
                         :seeMoreResourcesUrl="seeMoreResourcesUrl">
             </home-panel>
         </section>
-        <intro-button/>
+        <intro-button></intro-button>
     </main>
 </template>
 
@@ -142,6 +142,10 @@
             select {
                 width: 140px;
             }
+        }
+
+        .intro-button-container {
+            margin-top: -20px;
         }
 
         .row {

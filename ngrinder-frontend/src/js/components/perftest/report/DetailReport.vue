@@ -71,18 +71,16 @@
                         </tr>
 
                     </table>
-                    <div class="card bg-light">
+                    <div class="card bg-light py-1">
                         <ul class="nav flex-column">
-                            <li class="nav-item active pl-3" ref="perftestNavMenu" :class="{ 'mb-1': test.targetHosts }">
+                            <li class="nav-item active pl-3" ref="perftestNavMenu">
                                 <a href="#" class="nav-link px-0" @click="showPerftestMenu($event)" v-text="i18n('perfTest.report.performanceReport')"></a>
                             </li>
 
-                            <template v-if="test.targetHosts">
-                                <li class="nav-item mb-1 pl-3" v-text="i18n('perfTest.report.targetHost')"></li>
-                                <li v-for="ip in test.targetHosts.split(',')" class="monitor pt-1" :ip="ip">
-                                    <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link py-0 ml-3 pb-1" v-text="ip"></a>
-                                </li>
-                            </template>
+                            <li class="nav-item mb-2 pl-3" v-text="i18n('perfTest.report.targetHost')"></li>
+                            <li v-for="ip in test.targetHosts.split(',')" class="monitor" :ip="ip">
+                                <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link py-0 ml-3 pb-1" v-text="ip"></a>
+                            </li>
                         </ul>
                     </div>
                 </div>

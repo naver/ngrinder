@@ -9,8 +9,7 @@
         <search-bar ref="searchBar" @filter-running="runQueryFilter" @filter-schduled="runQueryFilter"
                     @create="$router.push('/perftest/new')"
                     @search="updateTableWithUrl" @change-tag="updateTableWithUrl"
-                    @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))">
-        </search-bar>
+                    @delete-selected-tests="deleteTests($refs.vuetable.selectedTo.join(','))"></search-bar>
         <vuetable
             v-show="showTable"
             ref="vuetable"
@@ -62,13 +61,9 @@
                     <template v-if="props.rowData.scm === 'svn'">
                         <a v-if="isAdmin"
                            :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
-                           v-text="props.rowData.scriptName"
-                           target="_blank">
-                        </a>
+                           v-text="props.rowData.scriptName"></a>
                         <a v-else :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}`"
-                           v-text="props.rowData.scriptName"
-                           target="_blank">
-                        </a>
+                           v-text="props.rowData.scriptName"></a>
                     </template>
                     <template v-else>
                         <span v-if="$utils.isNumeric(props.rowData.scriptRevision)" v-text="props.rowData.scriptName"></span>
@@ -140,7 +135,6 @@
             </template>
 
         </vuetable>
-        <intro-button/>
         <vuetable-pagination
             ref="pagination"
             :css="table.css.pagination"
@@ -467,17 +461,21 @@
             }
         }
 
+        .intro-button-container {
+            margin-top: -26px;
+        }
+
         .popover {
             width: auto;
             min-width: 200px;
             max-width: 600px;
             max-height: 500px;
         }
+    }
 
-        .intro-button-container {
-            position: relative;
-            margin-top: -25px;
-            margin-right: -29px;
+    .intro-button-container {
+        .intro-button-title {
+            margin-right: -30px;
         }
     }
 </style>

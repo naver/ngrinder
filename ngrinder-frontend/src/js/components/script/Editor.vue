@@ -391,7 +391,7 @@
     }
 
     div.file-desc-container {
-        padding: 10px 10px 10px 60px;
+        padding: 10px 70px;
         margin-bottom: 0;
         background-color: #f9f9f9;
         position: relative;
@@ -420,12 +420,12 @@
     #description {
         resize: none;
         height: 100%;
-        width: 758px;
+        width: 690px;
     }
 
     .uneditable-input {
         cursor: text;
-        width: 758px;
+        width: 690px;
         height: 30px;
     }
 

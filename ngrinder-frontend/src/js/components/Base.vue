@@ -158,18 +158,6 @@
             }
         }
 
-        .select2-container {
-            .select2-default {
-                color: #777 !important;
-            }
-        }
-
-        .modal-dialog {
-            .modal-body {
-                word-break: break-all;
-            }
-        }
-
         .uneditable-input {
             border-color: #ced4da !important;
             background-color: #fff;

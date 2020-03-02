@@ -822,12 +822,6 @@
 <style lang="less">
     @gray: #6c757d;
 
-    .select2-container {
-        .select2-default {
-            color: #777 !important;
-        }
-    }
-
     .config-container {
         .advanced-config {
             margin-top: 10px;
@@ -855,7 +849,6 @@
 
             .select2-arrow {
                 border-color: #ced4da;
-                border-radius: unset;
             }
         }
 
@@ -1016,7 +1009,7 @@
                 border: 1px solid #D6D6D6;
                 height: 60px;
                 margin-bottom: 8px;
-                overflow-y: scroll;
+                overflow-y: auto;
                 border-radius: 3px;
 
                 .resource {
@@ -1033,7 +1026,7 @@
                 border: 1px solid #D6D6D6;
                 height: 70px;
                 margin-bottom: 8px;
-                overflow-y: scroll;
+                overflow-y: auto;
                 border-radius: 3px;
 
                 .host {
@@ -1055,7 +1048,7 @@
             font-size: 10px;
             padding: 1px 3px;
             margin-top: 50px;
-            margin-left: 465px;
+            margin-left: 463px;
             position: absolute;
 
             i {

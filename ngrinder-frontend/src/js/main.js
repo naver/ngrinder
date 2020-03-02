@@ -142,7 +142,6 @@ const router = new VueRouter({
     base: window.ngrinder.contextPath,
     routes,
 });
-
 router.beforeEach((to, from, next) => {
     $('[data-toggle="popover"]').popover('hide');
     next();

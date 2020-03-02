@@ -37,8 +37,13 @@
 
 <style lang="less" scoped>
     .intro-button-container {
+        .intro-button-title {
+            margin-right: -30px;
+        }
+
         code {
-            padding: 2px 4px;
+            position: absolute;
+            padding: 0 4px !important;
         }
     }
 </style>
