@@ -31,5 +31,4 @@ public enum FileCategory {
 	public boolean isEditable() {
 		return isEditable;
 	}
-
 }

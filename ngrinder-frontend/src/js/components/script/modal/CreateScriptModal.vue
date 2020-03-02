@@ -159,7 +159,7 @@
                 });
         }
 
-        reset() {
+        beforeHidden() {
             this.fileName = '';
             this.scriptHandler = this.handlers[0];
             this.method = 'GET';

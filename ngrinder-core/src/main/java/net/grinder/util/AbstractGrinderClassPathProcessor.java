@@ -163,6 +163,9 @@ public abstract class AbstractGrinderClassPathProcessor {
 		uselessJarList.add("ngrinder-controller");
 		uselessJarList.add("ngrinder-groovy");
 		uselessJarList.add("spring");
+
+		//add by lingj
+		usefulJarList.add("javacsv");
 	}
 
 	protected abstract void initMore();

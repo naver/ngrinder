@@ -9,6 +9,7 @@
     import 'codemirror/mode/javascript/javascript.js';
     import 'codemirror/mode/htmlmixed/htmlmixed';
     import 'codemirror/mode/xml/xml';
+    import 'codemirror/mode/yaml/yaml';
 
     import 'codemirror/addon/display/fullscreen.js';
     import 'codemirror/addon/dialog/dialog.js';

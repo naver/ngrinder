@@ -40,6 +40,7 @@ subprojects {
   }
 
   repositories {
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
     mavenCentral()
     maven { url "http://repo.springsource.org/release" }
     maven { url "http://maven.scm-manager.org/nexus/content/repositories/releases" }

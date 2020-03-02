@@ -1,6 +1,6 @@
 <template>
     <main>
-        <sign-up-modal v-if="ngrinder.config.signUpEnabled" ref="signUpModal"></sign-up-modal>
+        <sign-up-modal v-if="ngrinder.config.signUpEnabled" ref="signUpModal" focus="userId"></sign-up-modal>
         <header>
             <vue-headful title="nGrinder Login"/>
             <img :src="`${contextPath}/img/logo_ngrinder_a.png`" width="400" alt="nGrinder logo">

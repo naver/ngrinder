@@ -13,17 +13,17 @@
  */
 package org.ngrinder.script.handler;
 
-import static org.ngrinder.common.util.CollectionUtils.getValue;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-
-import java.io.File;
-import java.util.Map;
-
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Map;
+
+import static org.ngrinder.common.util.CollectionUtils.getValue;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
 /**
  * Null {@link ScriptHandler} which implements Null object pattern.
@@ -39,6 +39,7 @@ public class NullScriptHandler extends ScriptHandler {
 		super("", "", null, null);
 		codeMirrorKey.put(FileType.PROPERTIES, "properties");
 		codeMirrorKey.put(FileType.XML, "xml");
+		codeMirrorKey.put(FileType.YAML, "yaml");
 	}
 
 	@Override

@@ -31,8 +31,10 @@
                         role: '{{ currentUser.role.shortName }}',
                     },
                     timeZone: '{{ currentUser.timeZone }}',
+                    language: '{{ currentUser.userLanguage }}',
                 },
                 config: {
+                    githubBaseUrl: '{{ githubBaseUrl }}',
                     signUpEnabled : {{{ signUpEnabled }}},
                     clustered: {{{ clustered }}},
                     userSwitchMode: !!('{{ currentUser.ownerUser }}'),
@@ -47,4 +49,3 @@
         <script type="text/javascript" src="{{ contextPath }}/js/app.js"></script>
     </body>
 </html>
-

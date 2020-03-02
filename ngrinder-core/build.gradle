@@ -8,7 +8,7 @@ dependencies {
     compile (group: "org.fusesource", name: "sigar", version:"1.6.4")
     compile (group: "org.pf4j", name: "pf4j", version:"3.0.1")
     compile (group: "javax.servlet", name: "javax.servlet-api", version:"3.1.0")
-    compile (group: "commons-collections", name: "commons-collections", version:"3.2.1")
+    compile (group: "commons-collections", name: "commons-collections", version:"3.2.2")
     compile (group: "org.python", name: "jython-standalone", version:"2.5.3")
     compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
     compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)

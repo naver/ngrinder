@@ -15,6 +15,7 @@ package org.ngrinder.operation;
 
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.operation.cotroller.ScriptConsoleApiController;
 import org.ngrinder.perftest.service.AgentManager;
@@ -34,7 +35,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class MockScriptConsoleApiController extends ScriptConsoleApiController {
 
-	public MockScriptConsoleApiController(ApplicationContext applicationContext, AgentManager agentManager, AgentService agentService, ConsoleManager consoleManager, PerfTestService perfTestService, FileEntryService fileEntryService, UserService userService, RegionService regionService, PluginManager pluginManager, TagService tagService, CacheManager cacheManager, UserContext userContext, Config config) {
-		super(applicationContext, agentManager, agentService, consoleManager, perfTestService, fileEntryService, userService, regionService, pluginManager, tagService, cacheManager, userContext, config);
+	public MockScriptConsoleApiController(ApplicationContext applicationContext, AgentManager agentManager, AgentService agentService,
+										  ConsoleManager consoleManager, PerfTestService perfTestService, FileEntryService fileEntryService,
+										  UserService userService, RegionService regionService, PluginManager pluginManager,
+										  TagService tagService, CacheManager cacheManager, UserContext userContext,
+										  Config config, HazelcastService hazelcastService) {
+		super(applicationContext, agentManager, agentService, consoleManager, perfTestService, fileEntryService,
+			userService, regionService, pluginManager, tagService, cacheManager, userContext, config, hazelcastService);
 	}
 }

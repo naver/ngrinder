@@ -83,7 +83,7 @@
                 });
         }
 
-        reset() {
+        beforeHidden() {
             this.folderName = '';
         }
     }

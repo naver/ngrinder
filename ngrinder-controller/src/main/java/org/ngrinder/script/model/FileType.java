@@ -39,6 +39,8 @@ public enum FileType {
 	CSV("csv", "csv", FileCategory.DATA, false, true),
 	/** JSON. */
 	JSON("json", "json", FileCategory.DATA, false, true),
+	/** YAML. */
+	YAML("yaml", "yml", FileCategory.DATA, false, false),
 	/** Properties. */
 	PROPERTIES("properties", "properties", FileCategory.DATA, false, true),
 	/** Classes. */

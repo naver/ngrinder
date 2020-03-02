@@ -36,11 +36,11 @@
                         </tr>
                         <tr>
                             <th v-text="'TPS'"></th>
-                            <td><strong>{{ test.tps | numFormat('0,0.0') }}</strong></td>
+                            <td><strong>{{ test.tps | numFormat('0,0.00') }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.peakTPS')"></th>
-                            <td><strong>{{ test.peakTps | numFormat }}</strong></td>
+                            <td><strong>{{ test.peakTps | numFormat('0,0.00') }}</strong></td>
                         </tr>
                         <tr>
                             <th v-text="i18n('perfTest.report.meantime')"></th>
@@ -61,17 +61,28 @@
                             <th v-text="i18n('perfTest.report.errors')"></th>
                             <td>{{ test.error | numFormat }}</td>
                         </tr>
+
+                        <!--add by lingj -->
+                        <tr>
+                            <th v-text="i18n('perfTest.report.successRate')"></th>
+                            <td>
+                                <span>{{ (test.tests / (test.tests + test.errors)) * 100 | numFormat('0,0.00') }}%</span>
+                            </td>
+                        </tr>
+
                     </table>
-                    <div class="card bg-light py-1">
+                    <div class="card bg-light">
                         <ul class="nav flex-column">
-                            <li class="nav-item active pl-3" ref="perftestNavMenu">
+                            <li class="nav-item active pl-3" ref="perftestNavMenu" :class="{ 'mb-1': test.targetHosts }">
                                 <a href="#" class="nav-link px-0" @click="showPerftestMenu($event)" v-text="i18n('perfTest.report.performanceReport')"></a>
                             </li>
 
-                            <li class="nav-item mb-2 pl-3" v-text="i18n('perfTest.report.targetHost')"></li>
-                            <li v-for="ip in test.targetHosts.split(',')" class="monitor" :ip="ip">
-                                <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link py-0 ml-3 pb-1" v-text="ip"></a>
-                            </li>
+                            <template v-if="test.targetHosts">
+                                <li class="nav-item mb-1 pl-3" v-text="i18n('perfTest.report.targetHost')"></li>
+                                <li v-for="ip in test.targetHosts.split(',')" class="monitor pt-1" :ip="ip">
+                                    <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link py-0 ml-3 pb-1" v-text="ip"></a>
+                                </li>
+                            </template>
                         </ul>
                     </div>
                 </div>

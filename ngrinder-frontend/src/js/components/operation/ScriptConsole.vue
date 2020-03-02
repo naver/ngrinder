@@ -49,6 +49,7 @@
             '- config              (org.ngrinder.infra.config.Config)\n' +
             '- pluginManager       (org.ngrinder.infra.plugin.PluginManager)\n' +
             '- cacheManager        (org.springframework.cache.CacheManager)\n' +
+            '- hazelcastService    (org.ngrinder.infra.hazelcast.hazelcastService)\n' +
             '\n' +
             'Please type following and click the Submit button as a example\n' +
             '\n' +
