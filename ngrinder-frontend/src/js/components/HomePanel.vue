@@ -1,7 +1,7 @@
 <template>
     <article class="panel-container">
         <header class="pb-2 mt-4 mb-3 border-bottom">
-            <h4 :data-step="introJsDataSetp" :data-intro="introJsDataIntro" v-text="title"></h4>
+            <h4 :data-step="introJsDataStep" :data-intro="introJsDataIntro" v-text="title"></h4>
         </header>
         <div class="card bg-light">
             <div class="table-container">
@@ -60,7 +60,7 @@
             seeMoreQuestionUrl: String,
             askQuestionUrl: String,
             introJsDataIntro: String,
-            introJsDataSetp: Number,
+            introJsDataStep: Number,
         },
     })
     export default class HomePanel extends Base {}
