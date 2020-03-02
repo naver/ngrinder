@@ -18,7 +18,7 @@
                         :seeMoreQuestionUrl="seeMoreQuestionUrl" :askQuestionUrl="askQuestionUrl">
             </home-panel>
             <home-panel :title="i18n('home.resources.title')" :entries="rightPanelEntries" :introJsDataSetp="6" :introJsDataIntro="i18n('intro.index.resource')"
-                        :seeMoreQuestionUrl="seeMoreQuestionUrl">
+                        :seeMoreResourcesUrl="seeMoreResourcesUrl">
             </home-panel>
         </section>
         <intro-button></intro-button>
