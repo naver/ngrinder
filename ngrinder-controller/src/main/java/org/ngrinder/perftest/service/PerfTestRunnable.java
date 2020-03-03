@@ -333,12 +333,11 @@ public class PerfTestRunnable implements ControllerConstants {
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
 				if (sizeOfDirectory > safeThreshold) {
 					perfTestService.markProgress(perfTest, "The total size of distributed files is over "
-							+ UnitUtils.byteCountToDisplaySize(safeThreshold) + "B.\n- Safe file distribution mode is enabled by force.");
+							+ UnitUtils.byteCountToDisplaySize(safeThreshold) + ".\n- Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;
 			}
-
 		});
 
 		// the files have prepared before

@@ -681,7 +681,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	public GrinderProperties prepareTest(PerfTest perfTest) {
 		try {
-			cleanupPerftestDistibutionFolder(perfTest);
+			cleanUpPerftestDistributionFolder(perfTest);
 			ScriptHandler prepareDistribution = prepareDistribution(perfTest);
 			return getGrinderProperties(perfTest, prepareDistribution);
 		} catch (Throwable e) {
@@ -698,7 +698,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		return scm != null && !scm.equals("svn");
 	}
 
-	private void cleanupPerftestDistibutionFolder(PerfTest perfTest) {
+	private void cleanUpPerftestDistributionFolder(PerfTest perfTest) {
 		File distributedFolder = config.getHome().getDistributedFolderName(perfTest.getId().toString());
 		if (distributedFolder.exists()) {
 			deleteQuietly(distributedFolder);
