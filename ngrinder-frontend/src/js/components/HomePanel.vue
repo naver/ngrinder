@@ -1,7 +1,7 @@
 <template>
     <article class="panel-container">
         <header class="pb-2 mt-4 mb-3 border-bottom">
-            <h4 :data-step="introJsDataSetp" :data-intro="introJsDataIntro" v-text="title"></h4>
+            <h4 :data-step="introJsDataStep" :data-intro="introJsDataIntro" v-text="title"></h4>
         </header>
         <div class="card bg-light">
             <div class="table-container">
@@ -27,8 +27,8 @@
                     <img :src="`${contextPath}/img/asksupport.gif`" />
                     <a :href="askQuestionUrl" target="_blank" v-text="i18n('home.button.ask')"></a>
                 </div>
-                <div v-if="seeMoreQuestionUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="ml-auto more">
-                    <a :href="seeMoreQuestionUrl" target="_blank">
+                <div v-if="seeMoreUrl" :colspan="(askQuestionUrl || entries.length === 0) ? 1 : 2" class="ml-auto more">
+                    <a :href="seeMoreUrl" target="_blank">
                         <i class="fa fa-share"></i>
                         <span v-text="i18n('home.button.more')"></span>
                     </a>
@@ -58,12 +58,17 @@
                 default: 8,
             },
             seeMoreQuestionUrl: String,
+            seeMoreResourcesUrl: String,
             askQuestionUrl: String,
             introJsDataIntro: String,
-            introJsDataSetp: Number,
+            introJsDataStep: Number,
         },
     })
-    export default class HomePanel extends Base {}
+    export default class HomePanel extends Base {
+        get seeMoreUrl() {
+            return this.seeMoreQuestionUrl || this.seeMoreResourcesUrl;
+        }
+    }
 </script>
 
 <style lang="less" scoped>
