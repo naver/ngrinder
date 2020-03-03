@@ -25,26 +25,24 @@ import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
 import net.grinder.console.common.ErrorQueue;
 import net.grinder.console.common.Resources;
-import net.grinder.console.communication.ConsoleCommunication;
-import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
-import net.grinder.console.communication.DistributionControlImplementation;
-import net.grinder.console.communication.ProcessControlImplementation;
+import net.grinder.console.communication.*;
 import net.grinder.console.communication.server.DispatchClientCommands;
 import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.distribution.WireFileDistribution;
 import net.grinder.console.model.*;
 import net.grinder.console.synchronisation.WireDistributedBarriers;
+import net.grinder.engine.communication.Md5Message;
 import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.messages.console.RegisterExpressionViewMessage;
 import net.grinder.messages.console.RegisterTestsMessage;
 import net.grinder.messages.console.ReportStatisticsMessage;
 import net.grinder.statistics.StatisticsServicesImplementation;
+import net.grinder.util.ListenerSupport;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.lang.StringUtils;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.Parameter;
 import org.picocontainer.behaviors.Caching;
 import org.picocontainer.parameters.ComponentParameter;
 import org.picocontainer.parameters.ConstantParameter;
@@ -63,16 +61,15 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @since 3.0
  */
 public class ConsoleFoundationEx {
-
 	private final MutablePicoContainer m_container;
 	private final Timer m_timer;
 	private boolean m_shutdown = false;
-
 	private final Condition m_eventSyncCondition;
+	private final ListenerSupport<AcceptMd5Listener> m_md5AcceptListener = new ListenerSupport<>();
 
 	/**
 	 * Constructor. Allows properties to be specified.
-	 * 
+	 *
 	 * @param resources		Console resources
 	 * @param logger		Logger.
 	 * @param properties	The properties.
@@ -101,14 +98,19 @@ public class ConsoleFoundationEx {
 
 		//noinspection RedundantArrayCreation
 		m_container.addComponent(FileDistributionImplementation.class, FileDistributionImplementation.class,
-						new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
-								new ComponentParameter(ProcessControlImplementation.class),
-								new ConstantParameter(properties.getDistributionDirectory()),
-								new ConstantParameter(properties.getDistributionFileFilterPattern()), });
+			new ComponentParameter(DistributionControlImplementation.class),
+			new ComponentParameter(ProcessControlImplementation.class),
+			new ConstantParameter(properties.getDistributionDirectory()),
+			new ConstantParameter(properties.getDistributionFileFilterPattern()));
 
 		m_container.addComponent(DispatchClientCommands.class);
 		m_container.addComponent(WireFileDistribution.class);
-		m_container.addComponent(WireMessageDispatch.class);
+		m_container.addComponent(WireMessageDispatch.class, WireMessageDispatch.class,
+			new ComponentParameter(ConsoleCommunicationImplementationEx.class),
+			new ComponentParameter(SampleModelImplementationEx.class),
+			new ComponentParameter(SampleModelViewsImplementation.class),
+			new ComponentParameter(DispatchClientCommands.class),
+			new ConstantParameter(m_md5AcceptListener));
 		m_container.addComponent(WireDistributedBarriers.class);
 		m_container.addComponent(ErrorQueue.class);
 
@@ -144,6 +146,10 @@ public class ConsoleFoundationEx {
 		}
 	}
 
+	public void addMd5AcceptListener(AcceptMd5Listener acceptMd5Listener) {
+		 m_md5AcceptListener.add(acceptMd5Listener);
+	}
+
 	private String getConsoleInfo() {
 		ConsoleProperties consoleProperties = m_container.getComponent(ConsoleProperties.class);
 		return StringUtils.defaultIfBlank(consoleProperties.getConsoleHost(), "localhost") + ":"
@@ -152,7 +158,7 @@ public class ConsoleFoundationEx {
 
 	/**
 	 * Console message event loop.
-	 * 
+	 *
 	 * Dispatches communication messages appropriately. Blocks until we are {@link #shutdown()}.
 	 */
 	public void run() {
@@ -185,25 +191,26 @@ public class ConsoleFoundationEx {
 
 	/**
 	 * Factory that wires up the message dispatch.
-	 * 
+	 *
 	 * <p>
 	 * Must be public for PicoContainer.
 	 * </p>
-	 * 
+	 *
 	 * @see WireFileDistribution
 	 */
 	public static class WireMessageDispatch {
 
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * @param communication	Console communication.
 		 * @param model			Console sample model.
 		 * @param sampleModelViews	Console sample model views
 		 * @param dispatchClientCommands	Client command dispatcher.
 		 */
 		public WireMessageDispatch(ConsoleCommunication communication, final SampleModel model,
-						final SampleModelViews sampleModelViews, DispatchClientCommands dispatchClientCommands) {
+						final SampleModelViews sampleModelViews,DispatchClientCommands dispatchClientCommands,
+								   ListenerSupport<AcceptMd5Listener> md5AcceptListener) {
 
 			final MessageDispatchRegistry messageDispatchRegistry = communication.getMessageDispatchRegistry();
 
@@ -219,12 +226,22 @@ public class ConsoleFoundationEx {
 				}
 			});
 
-			messageDispatchRegistry.set(RegisterExpressionViewMessage.class,
-							new AbstractHandler<RegisterExpressionViewMessage>() {
-								public void handle(RegisterExpressionViewMessage message) {
-									sampleModelViews.registerStatisticExpression(message.getExpressionView());
-								}
-							});
+			messageDispatchRegistry.set(RegisterExpressionViewMessage.class, new AbstractHandler<RegisterExpressionViewMessage>() {
+				public void handle(RegisterExpressionViewMessage message) {
+					sampleModelViews.registerStatisticExpression(message.getExpressionView());
+				}
+			});
+
+			messageDispatchRegistry.set(Md5Message.class, new AbstractHandler<Md5Message>() {
+				public void handle(Md5Message message) {
+					md5AcceptListener.apply(new ListenerSupport.Informer<AcceptMd5Listener>() {
+						@Override
+						public void inform(AcceptMd5Listener listener) {
+							listener.onAcceptMd5Listener(message.getMd5());
+						}
+					});
+				}
+			});
 
 			dispatchClientCommands.registerMessageHandlers(messageDispatchRegistry);
 		}

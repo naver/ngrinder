@@ -31,6 +31,7 @@ import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.communication.ConsoleListener;
+import net.grinder.engine.communication.Md5Message;
 import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.messages.agent.StartGrinderMessage;
@@ -49,11 +50,11 @@ import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.IOException;
+import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static net.grinder.util.FileUtils.*;
 import static org.ngrinder.common.constants.GrinderConstants.*;
 
 /**
@@ -98,7 +99,6 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentIdentityImplementation(NetworkUtils.getLocalHostName());
-
 	}
 
 	/**
@@ -517,7 +517,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 		private final MessagePump m_messagePump;
 
 		public ConsoleCommunication(Connector connector, String user) throws CommunicationException,
-				FileStore.FileStoreException {
+			FileStore.FileStoreException, IOException {
 
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
@@ -532,6 +532,11 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
 					.getCacheHighWaterMark()));
+
+			File currentDir = m_fileStore.getDirectory().getFile();
+			File cacheDir = new File(currentDir.getParentFile().getPath() + "/incoming");
+			m_sender.send(new Md5Message(getAllMd5InDirectory(cacheDir)));
+			m_logger.info("Send md5 of cached file to controller.");
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);

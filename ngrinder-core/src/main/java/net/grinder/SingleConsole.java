@@ -28,6 +28,7 @@ import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
+import net.grinder.console.communication.AcceptMd5Listener;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -61,6 +62,7 @@ import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -74,7 +76,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon (clone Console and modify this for nGrinder)
  * @since 3.0
  */
-public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener {
+public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener, AcceptMd5Listener {
 	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
@@ -86,6 +88,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
+
+	// It contains cached distribution files md5 checksum from each agents.
+	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesMd5List = new CopyOnWriteArrayList<>();
 	private boolean cancel = false;
 
 	// for displaying tps graph in test running page
@@ -172,6 +177,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
 					consoleCommunicationSetting, eventSyncCondition);
+			consoleFoundation.addMd5AcceptListener(this);
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		} catch (GrinderException e) {
@@ -348,6 +354,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		return this.getConsoleProperties().getConsoleHost();
 	}
 
+	@Override
+	public void onAcceptMd5Listener(Set<String> md5) {
+		this.agentCachedDistFilesMd5List.add(md5);
+	}
 	/**
 	 * File distribution event listener.
 	 *
@@ -540,7 +550,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	/*
      * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.grinder.ISingleConsole2#getStatisticsIndexMap()
 	 */
 	public StatisticsIndexMap getStatisticsIndexMap() {
@@ -1309,6 +1319,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	@Override
 	public int getRunningProcess() {
 		return runningProcess;
+	}
+
+	public List<Set<String>> getAgentCachedDistFilesMd5List() {
+		return agentCachedDistFilesMd5List;
 	}
 
 	/**
