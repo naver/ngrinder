@@ -17,8 +17,8 @@
             <home-panel :title="i18n('home.qa.title')" :entries="leftPanelEntries" :introJsDataStep="5" :introJsDataIntro="i18n('intro.index.qna')"
                         :seeMoreQuestionUrl="seeMoreQuestionUrl" :askQuestionUrl="askQuestionUrl">
             </home-panel>
-            <home-panel :title="i18n('home.resources.title')" :entries="rightPanelEntries" :introJsDataStep="6" :introJsDataIntro="i18n('intro.index.resource')"
-                        :seeMoreQuestionUrl="seeMoreQuestionUrl">
+            <home-panel :title="i18n('home.resources.title')" :entries="rightPanelEntries" :introJsDataSetp="6" :introJsDataIntro="i18n('intro.index.resource')"
+                        :seeMoreResourcesUrl="seeMoreResourcesUrl">
             </home-panel>
         </section>
         <intro-button></intro-button>
