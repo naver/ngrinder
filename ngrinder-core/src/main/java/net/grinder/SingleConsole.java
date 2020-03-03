@@ -457,17 +457,18 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	/**
-	 * Wait until the given size of agents are all connected. It wait until 10
-	 * sec.
+	 * Wait until the given size of agents are all connected and receive md5 from there cached files.
+	 * It wait until 10 sec.
 	 *
 	 * @param size size of agent.
 	 */
-	public void waitUntilAgentConnected(int size) {
+	public void waitUntilAgentPrepared(int size) {
 		int trial = 1;
 		while (trial++ < 10) {
 			// when agent finished one test, processReports will be updated as
 			// null
-			if (processReports == null || this.processReports.length != size) {
+			if ((processReports == null || this.processReports.length != size)
+				&& agentCachedDistFilesMd5List.size() != size) {
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(1000);
 				}

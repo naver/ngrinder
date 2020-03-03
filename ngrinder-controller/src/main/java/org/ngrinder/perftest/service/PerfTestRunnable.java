@@ -310,12 +310,12 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param singleConsole     console to be used.
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(perfTest.getAgentCount())
+		int agentCount = perfTest.getAgentCount();
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(agentCount)
 				+ " agents are starting.");
-		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties,
-				getSafe(perfTest.getAgentCount()));
-		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(perfTest.getAgentCount())
+		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties, getSafe(agentCount));
+		singleConsole.waitUntilAgentPrepared(agentCount);
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(agentCount)
 				+ " agents are ready.");
 	}
 

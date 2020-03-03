@@ -126,10 +126,10 @@ public class SingleConsoleTest {
 		assertThat(singleConsole.getRunningThread(), is(5));
 
 		processReports = new ProcessReports[]{};
-		singleConsole.waitUntilAgentConnected(1);
+		singleConsole.waitUntilAgentPrepared(1);
 		singleConsole.update(processReports);
 		try {
-			singleConsole.waitUntilAgentConnected(1);
+			singleConsole.waitUntilAgentPrepared(1);
 			fail("Should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 			//
