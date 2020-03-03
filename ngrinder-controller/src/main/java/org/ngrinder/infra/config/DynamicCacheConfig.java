@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -94,18 +94,16 @@ public class DynamicCacheConfig implements ClusterConstants {
 		hazelcastConfig.addExecutorConfig(getExecutorConfig(AGENT_EXECUTOR_SERVICE_NAME));
 		hazelcastConfig.addTopicConfig(getTopicConfig());
 		NetworkConfig networkConfig = hazelcastConfig.getNetworkConfig();
-		networkConfig.setPort(getClusterPort());
+		networkConfig.setPort(getClusterPort()).setPortAutoIncrement(false);
+
+		JoinConfig join = networkConfig.getJoin();
+		join.getMulticastConfig().setEnabled(false);
 
 		if (isClustered() && getClusterURIs() != null && getClusterURIs().length > 0) {
-			JoinConfig join = networkConfig.getJoin();
-			join.getMulticastConfig().setEnabled(false);
 			TcpIpConfig tcpIpConfig = join.getTcpIpConfig();
 			tcpIpConfig.setEnabled(true);
 			tcpIpConfig.setMembers(Arrays.asList(getClusterURIs()));
 			networkConfig.setPublicAddress(selectLocalIp(Arrays.asList(getClusterURIs())));
-		} else {
-			JoinConfig join = networkConfig.getJoin();
-			join.getMulticastConfig().setEnabled(false);
 		}
 
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
