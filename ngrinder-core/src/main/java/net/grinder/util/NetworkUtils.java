@@ -214,24 +214,24 @@ public abstract class NetworkUtils {
 	 *
 	 * @param size port size
 	 * @param from port number starting from
+	 * @param limit number of max port
 	 * @return port list
 	 */
 	public static List<Integer> getAvailablePorts(String ip, int size, int from, int limit) {
 		List<Integer> ports = new ArrayList<Integer>(size);
-		int freeSocket;
+		int freePort;
 		InetAddress inetAddress = null;
 		if (StringUtils.isNotBlank(ip)) {
 			try {
-
 				inetAddress = InetAddress.getByName(ip);
 			} catch (Exception e) {
 				noOp();
 			}
 		}
 		for (int i = 0; i < size; i++) {
-			freeSocket = checkPortAvailability(inetAddress, from, limit);
-			ports.add(freeSocket);
-			from = freeSocket + 1;
+			freePort = checkPortAvailability(inetAddress, from, limit);
+			ports.add(freePort);
+			from = freePort + 1;
 		}
 		return ports;
 	}

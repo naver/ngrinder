@@ -66,15 +66,14 @@ public class ConsoleManager {
 		int consoleSize = getConsoleSize();
 		consoleQueue = new ArrayBlockingQueue<>(consoleSize);
 		final String currentIP = config.getCurrentIP();
-		for (int each : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
-			final ConsoleEntry e = new ConsoleEntry(config.getCurrentIP(), each);
+		for (int port : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
+			final ConsoleEntry consoleEntry = new ConsoleEntry(currentIP, port);
 			try {
-				e.occupySocket();
-				consoleQueue.add(e);
+				consoleEntry.occupySocket();
+				consoleQueue.add(consoleEntry);
 			} catch (Exception ex) {
-				LOG.error("socket binding to {}:{} is failed", config.getCurrentIP(), each);
+				LOG.error("socket binding to {}:{} is failed", currentIP, port);
 			}
-
 		}
 	}
 

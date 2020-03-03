@@ -106,7 +106,6 @@ public class AgentController implements Agent, AgentConstants {
 		this.agentSystemDataCollector.refresh();
 	}
 
-
 	/**
 	 * Run the agent controller.
 	 *
@@ -122,7 +121,7 @@ public class AgentController implements Agent, AgentConstants {
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-		AgentDaemon agent = new AgentDaemon(checkNotNull(agentConfig,
+		AgentDaemon agentDaemon = new AgentDaemon(checkNotNull(agentConfig,
 				"agent.conf should be provided before agent daemon start."));
 		try {
 			while (true) {
@@ -170,11 +169,11 @@ public class AgentController implements Agent, AgentConstants {
 					LOGGER.info("Starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
-					agent.run(startMessage.getProperties());
+					agentDaemon.run(startMessage.getProperties());
 
 					final ConsoleCommunication conCom = consoleCommunication;
-					agent.resetListeners();
-					agent.addListener(new AgentShutDownListener() {
+					agentDaemon.resetListeners();
+					agentDaemon.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
 							LOGGER.info("Send log for {}", testId);
@@ -196,7 +195,7 @@ public class AgentController implements Agent, AgentConstants {
 				if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 					startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.STOP)) {
-					agent.shutdown();
+					agentDaemon.shutdown();
 					startMessage = null;
 					m_connectionPort = 0;
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.STOP);
@@ -257,11 +256,10 @@ public class AgentController implements Agent, AgentConstants {
 					startMessage = null;
 				}
 			}
-
 		} finally {
 			m_connectionPort = 0;
 			// Abnormal state.
-			agent.shutdown();
+			agentDaemon.shutdown();
 			m_state = AgentControllerState.FINISHED;
 			shutdownConsoleCommunication(consoleCommunication);
 			m_timer.cancel();
