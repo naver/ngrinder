@@ -533,8 +533,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
 					.getCacheHighWaterMark()));
 
-			File currentDir = m_fileStore.getDirectory().getFile();
-			File cacheDir = new File(currentDir.getParentFile().getPath() + "/incoming");
+			File cacheDir = m_fileStore.getIncomingDirectory().getFile();
 			m_sender.send(new Md5Message(getAllMd5InDirectory(cacheDir)));
 			m_logger.info("Send md5 of cached file to controller.");
 

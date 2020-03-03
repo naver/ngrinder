@@ -29,6 +29,7 @@ import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.AcceptMd5Listener;
+import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -36,6 +37,8 @@ import net.grinder.console.distribution.AgentCacheState;
 import net.grinder.console.distribution.FileDistribution;
 import net.grinder.console.distribution.FileDistributionHandler;
 import net.grinder.console.model.*;
+import net.grinder.messages.agent.RefreshCacheMessage;
+import net.grinder.messages.console.AgentAddress;
 import net.grinder.statistics.*;
 import net.grinder.util.*;
 import net.grinder.util.ListenerSupport.Informer;
@@ -358,6 +361,22 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	public void onAcceptMd5Listener(Set<String> md5) {
 		this.agentCachedDistFilesMd5List.add(md5);
 	}
+
+	/**
+	 * Send Md5 of unnecessary files to agents for refresh agent's distribution cache directory.
+	 *
+	 * @param distFilesMd5 Required file's md5 for currently running test
+	 */
+	public void sendDistFilesMd5ToAgents(Set<String> distFilesMd5) {
+		for (ProcessReports processReport : processReports) {
+			getConsoleComponent(ConsoleCommunicationImplementationEx.class)
+				.sendToAddressedAgents(
+					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
+					new RefreshCacheMessage(distFilesMd5));
+		}
+		LOGGER.info("Send md5 of distribution files to agent.");
+	}
+
 	/**
 	 * File distribution event listener.
 	 *

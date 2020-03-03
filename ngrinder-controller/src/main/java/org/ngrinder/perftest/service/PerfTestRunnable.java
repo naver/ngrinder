@@ -47,11 +47,16 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+import static net.grinder.util.FileUtils.getAllFilesInDirectory;
+import static net.grinder.util.FileUtils.getMd5;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -199,7 +204,6 @@ public class PerfTestRunnable implements ControllerConstants {
 			singleConsole = startConsole(perfTest);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, checkCancellation(singleConsole));
-
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 		} catch (PerfTestPrepareException ex) {
@@ -216,6 +220,58 @@ public class PerfTestRunnable implements ControllerConstants {
 			doTerminate(perfTest, singleConsole);
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
 		}
+	}
+
+	/**
+	 * Delete cached distribution files, These are already in the agent cache directory.
+	 *
+	 * @param distFiles 					Required files for currently running test.
+	 * @param distFilesMd5					Required file's md5 for currently running test.
+	 * @param agentCachedDistFilesMd5List   Md5 of files in each agent cache directory
+	 * */
+	private void deleteCachedDistFiles(List<File> distFiles,
+									   Set<String> distFilesMd5,
+									   List<Set<String>> agentCachedDistFilesMd5List) {
+		Set<String> cachedDistFilesMd5 = extractCachedDistFilesMd5(distFilesMd5, agentCachedDistFilesMd5List);
+
+		distFiles
+			.stream()
+			.filter(file -> isCachedFile(cachedDistFilesMd5, file))
+			.forEach(FileUtils::deleteQuietly);
+	}
+
+	private boolean isCachedFile(Set<String> cachedDistFilesMd5, File file) {
+		try {
+			return cachedDistFilesMd5.contains(getMd5(file));
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Extract non cached distribution files for send to each agents.
+	 *
+	 * @param distFilesMd5					Required file's md5 for currently running test.
+	 * @param agentCachedDistFilesMd5List   Md5 of files in each agent cache directory
+	 *
+	 * */
+	private Set<String> extractCachedDistFilesMd5(Set<String> distFilesMd5,
+												 List<Set<String>> agentCachedDistFilesMd5List) {
+		return distFilesMd5
+			.stream()
+			.filter(distFileMd5 -> agentCachedDistFilesMd5List
+				.stream()
+				.allMatch(agentCachedDistFilesMd5 -> agentCachedDistFilesMd5.contains(distFileMd5)))
+			.collect(toSet());
+	}
+
+	private void prepareFileDistribution(PerfTest perfTest, SingleConsole singleConsole) throws IOException {
+		File distributionDir = perfTestService.getDistributionPath(perfTest);
+		List<File> distributionFiles = getAllFilesInDirectory(distributionDir);
+		Set<String> distributionFilesMd5 = getMd5(distributionFiles);
+
+		singleConsole.sendDistFilesMd5ToAgents(distributionFilesMd5);
+		deleteCachedDistFiles(distributionFiles, distributionFilesMd5, singleConsole.getAgentCachedDistFilesMd5List());
 	}
 
 	/**
@@ -254,9 +310,11 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param perfTest      perftest
 	 * @param singleConsole console to be used.
 	 */
-	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) {
+	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) throws IOException {
+		prepareFileDistribution(perfTest, singleConsole);
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
+
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
 		final long safeThreshold = getSafeTransmissionThreshold();
 
