@@ -66,7 +66,10 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ForkJoinPool;
 
+
+import static java.util.Arrays.stream;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -88,6 +91,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	public static final Logger LOGGER = LoggerFactory.getLogger("console");
 	public static final String REPORT_DATA = ".data";
 	private static final String REPORT_CSV = "output.csv";
+	private static final int NUM_OF_SEND_MD5_THREAD = 3;
 
 	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
@@ -368,12 +372,13 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param distFilesMd5 Required file's md5 for currently running test
 	 */
 	public void sendDistFilesMd5ToAgents(Set<String> distFilesMd5) {
-		for (ProcessReports processReport : processReports) {
-			getConsoleComponent(ConsoleCommunicationImplementationEx.class)
+		ForkJoinPool myPool = new ForkJoinPool(NUM_OF_SEND_MD5_THREAD);
+		myPool.submit(() -> stream(processReports)
+			.parallel()
+			.forEach(processReport -> getConsoleComponent(ConsoleCommunicationImplementationEx.class)
 				.sendToAddressedAgents(
 					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
-					new RefreshCacheMessage(distFilesMd5));
-		}
+					new RefreshCacheMessage(distFilesMd5))));
 		LOGGER.info("Send md5 of distribution files to agent.");
 	}
 
