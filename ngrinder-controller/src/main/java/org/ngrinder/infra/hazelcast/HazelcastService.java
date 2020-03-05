@@ -92,4 +92,9 @@ public class HazelcastService {
 		checkNotNull(distMap, "Cache(" + map +") is not exist");
 		return distMap.get(key);
 	}
+
+	public <K, V> V getOrDefault(String map, K key, V defaultValue) {
+		V value = get(map, key);
+		return value == null ? defaultValue : value;
+	}
 }
