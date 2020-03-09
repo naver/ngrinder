@@ -149,6 +149,7 @@
     import SearchBar from './Searchbar.vue';
     import IntroButton from '../../common/IntroButton.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
+    import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import SmallChart from './SmallChart.vue';
     import TableConfig from './mixin/TableConfig.vue';
 
@@ -158,7 +159,7 @@
         name: 'perfTestList',
         components: { IntroButton, vueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
-    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig) {
+    export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig, PopoverMixin) {
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
         tests = [];
         autoUpdateTargets = [];
@@ -249,8 +250,9 @@
                 }
             });
             this.$nextTick(() => {
-                $('[data-toggle="popover"]').popover('dispose');
-                $('[data-toggle="popover"]').popover();
+                const $popover = $('[data-toggle="popover"]');
+                $popover.popover('dispose');
+                this.initPopover($popover);
             });
         }
 
@@ -439,7 +441,6 @@
             width: auto;
             min-width: 200px;
             max-width: 600px;
-            max-height: 500px;
         }
     }
 
