@@ -36,6 +36,8 @@
 </script>
 
 <style lang="less" scoped>
+    @import '~intro.js/introjs.css';
+
     .intro-button-container {
         .intro-button-title {
             margin-right: -30px;
