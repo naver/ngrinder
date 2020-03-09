@@ -48,9 +48,6 @@
             <li>
                 <a class="dropdown-item" :href="`${contextPath}/monitor/download`" v-text="i18n('navigator.dropDown.downloadMonitor')"></a>
             </li>
-            <li>
-                <a class="dropdown-item" href="https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide" target="_blank" v-text="i18n('navigator.dropDown.downloadRecorder')"></a>
-            </li>
             <li class="dropdown-divider"></li>
             <template v-if="isAdmin">
                 <li><router-link class="dropdown-item" to="/user" v-text="i18n('navigator.dropDown.userManagement')"></router-link></li>
