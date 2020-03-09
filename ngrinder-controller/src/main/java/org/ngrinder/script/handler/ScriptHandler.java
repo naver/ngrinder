@@ -35,6 +35,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
+import static freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -285,8 +286,8 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	public String getScriptTemplate(Map<String, Object> values) {
 		try {
-			Configuration freemarkerConfig = new Configuration();
-			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+			Configuration freemarkerConfig = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper(DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 			freemarkerConfig.setClassForTemplateLoading(this.getClass() , "/script_template");
 			Template template = freemarkerConfig.getTemplate("basic_template_" + getExtension() + ".ftl");
 			StringWriter writer = new StringWriter();
