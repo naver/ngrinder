@@ -104,6 +104,7 @@
     import Select2 from '../../common/Select2.vue';
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
+    import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -189,7 +190,7 @@
             validator: 'new',
         },
     })
-    export default class PerfTestDetail extends Mixins(Base, MessagesMixin) {
+    export default class PerfTestDetail extends Mixins(Base, MessagesMixin, PopoverMixin) {
         @Prop({ type: String, required: false })
         id;
 
@@ -281,7 +282,8 @@
                 this.$testStatusImage = $(this.$refs.testStatusImage);
                 this.$testStatusImage.attr('data-content', `${this.test.progressMessage}<br><b>${this.test.lastProgressMessage}</b>`.replace(/\n/g, '<br>'));
                 this.currentRefreshStatusTimeoutId = this.refreshPerftestStatus();
-                $('[data-toggle="popover"]').popover();
+
+                this.initPopover($('[data-toggle="popover"]'));
                 this.setTabEvent();
                 this.updateTabDisplay();
             });
