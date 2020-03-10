@@ -40,13 +40,17 @@ public enum Status {
 	 */
 	SAVED(StatusCategory.PREPARE),
 	/**
-	 * test ready.
+	 * Test ready.
 	 */
 	READY(StatusCategory.PREPARE),
 	/**
 	 * Just before checkout script from github.
 	 */
 	CHECKOUT_SCRIPT(StatusCategory.PROGRESSING),
+	/**
+	 * Preparation of distribution files.
+	 */
+	PREPARE_DISTRIBUTION(StatusCategory.PROGRESSING),
 	/**
 	 * Just before starting console.
 	 */
