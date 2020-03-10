@@ -33,7 +33,7 @@
                 <td>{{ statistic.TPS | numFormat }}</td>
                 <td v-if="type === 'last'">{{ statistic['Mean_time_to_first_byte'] | numFormat }}</td>
                 <td v-else>{{ statistic.Peak_TPS | numFormat }}</td>
-                <td v-text="formatNetwork(null, statistic['Response_bytes_per_second'])"></td>
+                <td v-text="formatNetwork(statistic['Response_bytes_per_second'])"></td>
             </tr>
         </tbody>
     </table>
