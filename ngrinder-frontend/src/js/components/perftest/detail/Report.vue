@@ -50,10 +50,12 @@
                 <fieldSet>
                     <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.tpsGraph')"></span>
-                        <button @click="$router.push(`/perftest/${report.test.id}/detail_report`)" class="btn btn-primary float-right">
+                        <router-link :to="`/perftest/${report.test.id}/detail_report`"
+                                     class="btn btn-primary float-right"
+                                     target="_blank">
                             <i class="fa fa-file mr-1"></i>
                             <span v-text="i18n('perfTest.report.detailedReport')"></span>
-                        </button>
+                        </router-link>
                     </legend>
                 </fieldSet>
                 <div id="tps-chart"></div>
