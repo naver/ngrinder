@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,12 +9,13 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder;
 
 import com.beust.jcommander.JCommander;
 import net.grinder.AgentControllerDaemon;
+import net.grinder.ExternalAgentControllerServerDaemon;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -90,6 +91,24 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 	 */
 	public String getVersion() {
 		return agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
+	}
+
+	private void startExternalAgent() {
+		printLog("***************************************************");
+		printLog("* Start nGrinder External Agent... ");
+		printLog("***************************************************");
+
+		try {
+			String ip = getIP(agentConfig.getControllerIP());
+			int port = agentConfig.getControllerPort();
+
+			ExternalAgentControllerServerDaemon serverDaemon = new ExternalAgentControllerServerDaemon(ip, port);
+			serverDaemon.run();
+
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			printHelpAndExit("Error while starting external agent", e);
+		}
 	}
 
 	/**
@@ -211,13 +230,28 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			return;
 		}
 		starter.checkDuplicatedRun(startMode);
+
+		final boolean externalOption = modeParam.external != null;
+
 		if (startMode.equalsIgnoreCase("agent")) {
-			starter.startAgent();
+			if (externalOption) {
+				starter.startExternalAgent();
+			} else {
+				starter.startAgent();
+			}
 		} else if (startMode.equalsIgnoreCase("monitor")) {
-			starter.startMonitor();
+			if (externalOption) {
+				starter.startExternalMonitor();
+			} else {
+				starter.startMonitor();
+			}
 		} else {
 			staticPrintHelpAndExit("Invalid agent.conf, '--mode' must be set as 'monitor' or 'agent'.");
 		}
+	}
+
+	private void startExternalMonitor() {
+		// TODO: implement external monitor
 	}
 
 	private static String getStaticVersion() {

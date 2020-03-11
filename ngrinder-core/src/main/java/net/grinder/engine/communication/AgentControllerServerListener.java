@@ -72,6 +72,12 @@ public final class AgentControllerServerListener {
 	 */
 	public static final int AGENT_UPDATE = 1 << 4;
 
+	/**
+	 * Constant that represents a agent state request.
+	 *
+	 * @see #received
+	 */
+	public static final int AGENT_STATE = 1 << 5;
 
 
 	/**
@@ -79,7 +85,7 @@ public final class AgentControllerServerListener {
 	 *
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN | AGENT_UPDATE;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN | AGENT_UPDATE | AGENT_STATE;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;
@@ -87,6 +93,7 @@ public final class AgentControllerServerListener {
 	private int m_lastMessagesReceived = 0;
 	private StartGrinderMessage m_lastStartGrinderMessage;
 	private AgentUpdateGrinderMessage m_lastAgentUpdateGrinderMessage;
+	private AgentControllerStateMessage m_lastAgentStateGrinderMessage;
 
 	/**
 	 * Constructor.
@@ -209,18 +216,16 @@ public final class AgentControllerServerListener {
 				setReceived(AGENT_UPDATE);
 			}
 		});
+
+		messageDispatcher.set(AgentControllerStateMessage.class, new AbstractMessageHandler<AgentControllerStateMessage>() {
+			@Override
+			public void handle(AgentControllerStateMessage message) {
+				m_logger.debug("Received a agent state request message");
+				m_lastAgentStateGrinderMessage = message;
+				setReceived(AGENT_STATE);
+			}
+		});
 	}
-
-	/**
-	 * Return the last {@link StartGrinderMessage} received.
-	 *
-	 * @return The message.
-	 */
-	public StartGrinderMessage getLastStartGrinderMessage() {
-		return m_lastStartGrinderMessage;
-	}
-
-
 
 	private abstract class AbstractMessageHandler<T extends Message> implements Handler<T> {
 
@@ -238,8 +243,20 @@ public final class AgentControllerServerListener {
 		}
 	}
 
+	/**
+	 * Return the last {@link StartGrinderMessage} received.
+	 *
+	 * @return The message.
+	 */
+	public StartGrinderMessage getLastStartGrinderMessage() {
+		return m_lastStartGrinderMessage;
+	}
+
 	public AgentUpdateGrinderMessage getLastAgentUpdateGrinderMessage() {
 		return m_lastAgentUpdateGrinderMessage;
 	}
 
+	public AgentControllerStateMessage getLastAgentStateGrinderMessage() {
+		return m_lastAgentStateGrinderMessage;
+	}
 }
