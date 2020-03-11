@@ -63,7 +63,7 @@
 
         changeSlider(values) {
             const maxIndex = this.durationMap.length - 1;
-            let durationSec = 0;
+            let durationSec;
             if (maxIndex === values.newValue) {
                 durationSec = (this.durationMap[maxIndex] + 59) * 60 + 59;
             } else {
