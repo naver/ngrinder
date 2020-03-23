@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.agent.service.AgentPackageService;
+import org.ngrinder.agent.service.ExternalAgentService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
@@ -47,6 +48,8 @@ import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities
 public class AgentManagerApiController {
 
 	private final AgentService agentService;
+
+	private final ExternalAgentService externalAgentService;
 
 	private final RegionService regionService;
 
@@ -272,5 +275,10 @@ public class AgentManagerApiController {
 	@PreAuthorize("permitAll")
 	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
 		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user.getUserId(), targetRegion));
+	}
+
+	@GetMapping("/connect")
+	public void connectToAgent(@RequestParam String host, @RequestParam int port) {
+		externalAgentService.connectToAgent(host, port);
 	}
 }

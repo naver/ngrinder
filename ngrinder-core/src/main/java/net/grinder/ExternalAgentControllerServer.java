@@ -106,11 +106,12 @@ public class ExternalAgentControllerServer {
 		private final BooleanCondition processing = new BooleanCondition();
 		private final BooleanCondition shutdown = new BooleanCondition();
 
-
 		private Acceptor acceptor = null;
 		private ServerReceiver receiver = null;
 		private FanOutServerSender sender = null;
 		private Thread acceptorProblemListener = null;
+
+		private AgentControllerState state = AgentControllerState.STARTED;
 
 		public ConsoleCommunicationImpl(Resources resources, ConsoleProperties consoleProperties,
 										ErrorHandler errorHandler,
@@ -127,8 +128,10 @@ public class ExternalAgentControllerServer {
 			this.messageDispatcher.set(AgentControllerStateMessage.class, new MessageDispatchRegistry.AbstractHandler<AgentControllerStateMessage>() {
 				@Override
 				public void handle(AgentControllerStateMessage message) throws CommunicationException {
-					log.debug("AgentControllerState is requested. Send current state.");
-					sendToAddressedAgents(message.getAddress(), new AgentControllerStateMessage(AgentControllerState.READY));
+					if (message.getState() == null) {
+						log.debug("AgentControllerState is requested. Send current state.");
+						sendToAddressedAgents(message.getAddress(), new AgentControllerStateMessage(state));
+					}
 				}
 			});
 
