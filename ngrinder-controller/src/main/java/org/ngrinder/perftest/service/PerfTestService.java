@@ -75,6 +75,9 @@ import java.util.Map.Entry;
 import static java.lang.Long.valueOf;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static java.util.Arrays.asList;
+import static net.grinder.SingleConsole.REPORT_DATA;
+import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constants.MonitorConstants.MONITOR_FILE_PREFIX;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
@@ -100,8 +103,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private static final int MAX_POINT_COUNT = 100;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PerfTestService.class);
-
-	private static final String DATA_FILE_EXTENSION = ".data";
 
 	private static final String NULL_STRING = "null";
 	private static final String UNDEFINED_STRING = "undefined";
@@ -746,7 +747,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		int pointCount = Math.max(imgWidth, MAX_POINT_COUNT);
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		int interval = 0;
-		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
+		File targetFile = new File(reportFolder, dataType + REPORT_DATA);
 		if (!targetFile.exists()) {
 			LOGGER.warn("Report {} for test {} does not exist.", dataType, testId);
 			return 0;
@@ -827,7 +828,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (!logFileDirectory.exists() || !logFileDirectory.isDirectory()) {
 			return Collections.emptyList();
 		}
-		return Arrays.asList(logFileDirectory.list());
+		return asList(logFileDirectory.list());
 	}
 
 	/**
@@ -1437,33 +1438,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return list containing label and tps value list
 	 */
 	public Map<String, List<Float>> getReportData(long testId, String key, boolean onlyTotal, int interval) {
-		Map<String, List<Float>> resultMap = new HashMap<>();
+		Map<String, List<Float>> resultMap = new TreeMap<>();
 		List<File> reportDataFiles = onlyTotal ? Lists.newArrayList(getReportDataFile(testId, key)) : getReportDataFiles(testId, key);
-		reportDataFiles.forEach(each -> {
-			String reportName = buildReportName(key, each);
-			if (key.equals(reportName)) {
-				reportName = "Total";
-			} else {
-				reportName = reportName.replace("_", " ");
-			}
-
-			resultMap.put(reportName, getFileDataAsList(each, interval));
-		});
-
+		reportDataFiles.forEach(each -> resultMap.put(removeExtension(each.getName()), getFileDataAsList(each, interval)));
 		return resultMap;
 	}
 
-	private String buildReportName(String key, File file) {
-		String reportName = FilenameUtils.removeExtension(file.getName());
-		if (key.equals(reportName)) {
-			return reportName;
-		}
-		String[] baseName = StringUtils.split(reportName, "-", 2);
-		if (SingleConsole.INTERESTING_PER_TEST_STATISTICS.contains(baseName[0]) && baseName.length >= 2) {
-			reportName = baseName[1];
-		}
-		return reportName;
-	}
 	/**
 	 * Get a single file for the given report key.
 	 *

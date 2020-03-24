@@ -119,6 +119,48 @@
                 return timeSeries;
             }
         }
+
+        processData(data, dataType) {
+            let result = {};
+            Object.entries(data).forEach(([key, value]) => {
+                if (dataType === key) {
+                    result['Total'] = value;
+                    return true;
+                }
+                result[this.getTestDesc(dataType, key)] = value;
+            });
+            return result;
+        }
+
+        processUserDefinedData(userDefinedData, numOfTestRecord) {
+            let dataType;
+            let userDefinedDataTemp;
+            let result = [];
+
+            Object.entries(userDefinedData).forEach(([key, value], index) => {
+                if (index % numOfTestRecord === 0) {
+                    dataType = key;
+                    userDefinedDataTemp = { title: this.getUserDefinedChartTitle(key), data: {}, };
+                    userDefinedDataTemp.data['Total'] = value;
+                    result[index/numOfTestRecord] = userDefinedDataTemp;
+                } else {
+                    userDefinedDataTemp.data[this.getTestDesc(dataType, key)] = value;
+                }
+            });
+            return result;
+        }
+
+        getUserDefinedChartTitle(dataType) {
+            const title = dataType.replace(/User_defined|_/g, ' ').trim();
+            return title ? title : this.i18n('perfTest.report.header.userDefinedChart');
+        }
+
+        getTestDesc(dataType, dataFileName) {
+            dataFileName = dataFileName.replace(dataType, '');
+            return dataFileName.substring(dataFileName.indexOf('_') + 1)
+                .replace(/_/g, ' ')
+                .trim();
+        }
     }
 </script>
 
