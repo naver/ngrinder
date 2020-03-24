@@ -1,5 +1,6 @@
 package org.ngrinder.perftest.service;
 
+import lombok.Getter;
 import net.grinder.ExternalAgentController;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.CommunicationException;
@@ -21,7 +22,8 @@ public class ExternalAgentManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalAgentManager.class);
 	private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
-	private static final Map<String, ExternalAgentController.ConsoleCommunication> externalAgentsMap = new ConcurrentHashMap<>();
+	@Getter
+	private final Map<String, ExternalAgentController.ConsoleCommunication> externalAgentsMap = new ConcurrentHashMap<>();
 
 	public void connectToAgent(String host, int port) {
 		externalAgentsMap.computeIfAbsent(createKey(host, port), key -> connect(host, port));

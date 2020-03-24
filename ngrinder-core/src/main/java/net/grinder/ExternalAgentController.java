@@ -24,10 +24,12 @@ public class ExternalAgentController {
 
 	public static final class ConsoleCommunication {
 		@Getter
+		private final AgentIdentity agentIdentity;
 		private final ClientSender sender;
 		private final MessagePump messagePump;
 		private AtomicBoolean running = new AtomicBoolean(true);
 
+		@Getter
 		private AgentControllerState state;
 
 		private final ScheduledExecutorService stateRequestExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -35,6 +37,7 @@ public class ExternalAgentController {
 		private AgentControllerServerListener agentControllerServerListener = new AgentControllerServerListener(new Condition(), log);
 
 		public ConsoleCommunication(Connector connector, AgentIdentity agentIdentity) throws CommunicationException {
+			this.agentIdentity = agentIdentity;
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(agentIdentity));
 			sender = ClientSender.connect(receiver);
 
