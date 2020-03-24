@@ -340,7 +340,7 @@
         }
 
         startRefreshPerfTestStatusInterval() {
-            if (!this.test.id || !this.isUpdatableStatus()) {
+            if (!this.test.id || this.isReportableStatus()) {
                 return;
             }
 
@@ -378,7 +378,7 @@
                 this.$nextTick(() => this.$refs.runningTab.click());
                 return;
             }
-            if (!this.isUpdatableStatus()) {
+            if (this.isReportableStatus()) {
                 if (this.$refs.running) {
                     window.clearInterval(this.$refs.running.samplingIntervalId);
                 }
@@ -390,11 +390,11 @@
             this.$nextTick(() => this.$refs.configTab.click());
         }
 
-        isUpdatableStatus() {
-            return !(this.test.status.category === 'FINISHED' ||
+        isReportableStatus() {
+            return this.test.status.category === 'FINISHED' ||
                 this.test.status.category === 'STOP' ||
                 this.test.status.category === 'ERROR' ||
-                this.test.status.category === 'CANCELED');
+                this.test.status.category === 'WARNED';
         }
 
         initSelection(element, callback) {

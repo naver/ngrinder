@@ -91,7 +91,10 @@ public enum Status {
 	 * Test finished.
 	 */
 	FINISHED(StatusCategory.FINISHED),
-
+	/**
+	 * Test finished.
+	 */
+	FINISHED_WITH_WARNING(StatusCategory.WARNED),
 	/**
 	 * Test finished. but contains lots of error
 	 */

@@ -37,7 +37,11 @@ public enum StatusCategory {
 	 */
 	FINISHED("green.png", false, true, true),
 	/**
-	 * Stopped by error .
+	 * Finished with warning.
+	 */
+	WARNED("yellow.png", false, true, true),
+	/**
+	 * Stopped by error.
 	 */
 	ERROR("red.png", false, true, true),
 	/**
