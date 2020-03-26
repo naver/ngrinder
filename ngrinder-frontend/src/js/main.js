@@ -8,6 +8,7 @@ import VueLocalStorage from 'vue-localstorage';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
+import store from 'store/vuex-store.js';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
@@ -58,7 +59,6 @@ axiosInstance.interceptors.request.use(config => {
     return config;
 });
 
-Vue.use(Vuex);
 Vue.use(VueLocalStorage, {
     name: 'localStorage',
     bind: true,
@@ -103,8 +103,6 @@ Vue.filter('durationFormat', (value, format) => {
     }
     return '';
 });
-
-const store = require('./store/vuex-store').default;
 
 const routes = [
     {path: '/', component: Home, name: 'home'},
