@@ -112,7 +112,13 @@ const routes = [
     {path: '/perftest/list', redirect: '/perftest'},
     {path: '/perftest/new', component: PerfTestDetail, name: 'createNewPerfTest', props: true},
     {path: '/perftest/quickstart', component: PerfTestDetail, name: 'quickStart', props: true},
-    {path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail', props: true},
+    {
+        path: '/perftest/:id', component: PerfTestDetail, name: 'perfTestDetail', props: true,
+        beforeEnter: (to, from, next) => {
+            to.params.isAdmin = window.ngrinder.currentUser.role === 'A';
+            next();
+        }
+    },
     {path: '/perftest/:id/detail_report', component: PerfTestDetailReport, name: 'perfTestDetailReport', props: true},
     {path: '/perftest/:id/report', redirect: '/perftest/:id/detail_report'}, // backward compatibility
     {path: '/script/list/:remainedPath(.*)?', component: ScriptList, name: 'scriptList', alias: ['/script'], props: true},
@@ -132,6 +138,7 @@ const router = new VueRouter({
     base: window.ngrinder.contextPath,
     routes,
 });
+
 router.beforeEach((to, from, next) => {
     $('[data-toggle="popover"]').popover('hide');
     next();

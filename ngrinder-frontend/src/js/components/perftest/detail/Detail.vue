@@ -244,10 +244,8 @@
         }
 
         static prepare(route) {
-            return Promise.all([
-                PerfTestDetail.preparePerfTest(route),
-                PerfTestDetail.prepareScripts(route),
-            ]);
+           return PerfTestDetail.preparePerfTest(route)
+                .then(() => PerfTestDetail.prepareScripts(route));
         }
 
         static preparePerfTest(route) {
@@ -265,7 +263,11 @@
         }
 
         static prepareScripts(route) {
-            return Base.prototype.$http.get('/perftest/api/script')
+            let apiUrl = `/perftest/api/script`;
+            if (route.params.isAdmin) {
+                apiUrl += `?ownerId=${route.params.test.createdUser.userId}`;
+            }
+            return Base.prototype.$http.get(apiUrl)
                 .then(res => route.params.scripts = res.data);
         }
 
