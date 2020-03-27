@@ -418,7 +418,7 @@
         setDurationMS() {
             const duration = this.$moment.duration(this.test.config.duration);
 
-            this.duration.hour = duration.hours();
+            this.duration.hour = duration.hours() + (duration.days() * 24);
             this.duration.min = duration.minutes();
             this.duration.sec = duration.seconds();
         }
