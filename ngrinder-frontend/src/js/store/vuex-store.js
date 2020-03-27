@@ -1,6 +1,8 @@
 import Vuex from 'vuex';
+import Vue from 'vue';
 
-export default new Vuex.Store({
+Vue.use(Vuex);
+const store = new Vuex.Store({
     state: {
         ngrinder: {},
     },
@@ -10,3 +12,5 @@ export default new Vuex.Store({
         },
     },
 });
+
+export default store;
