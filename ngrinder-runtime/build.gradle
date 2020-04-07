@@ -7,7 +7,9 @@ dependencies {
     compile (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
     compile (group: "junit", name: "junit-dep", version:"4.8.2")
     compile (group: "asm", name: "asm", version:"3.3.1")
-    compile (group: "net.sf.grinder", name: "grinder", version:"3.9.1") {
+    compile (group: "net.sf.grinder", name: "grinder", version:"3.11") {
+        exclude (module: "grinder-console-service")
+        exclude (module: "grinder-swing-console")
         exclude (module: "clojure")
         exclude (module: "jython")
         exclude (module: "grinder-xmlbeans")

@@ -180,22 +180,23 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 					}
 
 					if (startMessage != null) {
-
 						final GrinderProperties messageProperties = startMessage.getProperties();
 						final Directory fileStoreDirectory = m_fileStore.getDirectory();
 
-						// Convert relative path to absolute path.
-						messageProperties.setAssociatedFile(fileStoreDirectory.getFile(messageProperties
-								.getAssociatedFile()));
+						if (messageProperties.getAssociatedFile() != null) {
+							// Convert relative path to absolute path.
+							messageProperties.setAssociatedFile(fileStoreDirectory.getFile(messageProperties
+									.getAssociatedFile()));
 
-						final File consoleScript = messageProperties.resolveRelativeFile(messageProperties.getFile(
-								GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
+							final File consoleScript = messageProperties.resolveRelativeFile(messageProperties.getFile(
+									GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
 
-						// We only fall back to the agent properties if the start message
-						// doesn't specify a script and there is no default script.
-						if (messageProperties.containsKey(GrinderProperties.SCRIPT) || consoleScript.canRead()) {
-							// The script directory may not be the file's direct parent.
-							script = new ScriptLocation(fileStoreDirectory, consoleScript);
+							// We only fall back to the agent properties if the start message
+							// doesn't specify a script and there is no default script.
+							if (messageProperties.containsKey(GrinderProperties.SCRIPT) || consoleScript.canRead()) {
+								// The script directory may not be the file's direct parent.
+								script = new ScriptLocation(fileStoreDirectory, consoleScript);
+							}
 						}
 						m_agentIdentity.setNumber(startMessage.getAgentNumber());
 					} else {
@@ -509,7 +510,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				m_fileStore = new FileStore(directory, m_logger);
 			}
 
-			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
+			m_sender.send(new AgentProcessReportMessage(ProcessReport.State.STARTED, m_fileStore
 					.getCacheHighWaterMark()));
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
@@ -528,7 +529,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			m_reportRunningTask = new TimerTask() {
 				public void run() {
 					try {
-						m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_RUNNING, m_fileStore
+						m_sender.send(new AgentProcessReportMessage(ProcessReport.State.RUNNING, m_fileStore
 								.getCacheHighWaterMark()));
 					} catch (CommunicationException e) {
 						cancel();
@@ -554,7 +555,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			m_reportRunningTask.cancel();
 
 			try {
-				m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_FINISHED, m_fileStore
+				m_sender.send(new AgentProcessReportMessage(ProcessReport.State.FINISHED, m_fileStore
 						.getCacheHighWaterMark()));
 				m_logger.debug("Shut down message was sent");
 			} catch (CommunicationException e) {

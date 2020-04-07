@@ -2,7 +2,6 @@ sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 description = "ngrinder-core"
 dependencies {
     compile files("${rootDir}/lib/sigar-native-1.0.jar")
-    compile files("${rootDir}/lib/grinder-3.9.1-patch.jar")
     compile (project(":ngrinder-runtime"))
     compile (project(":ngrinder-groovy"))
     compile (group: "org.fusesource", name: "sigar", version:"1.6.4")
@@ -36,13 +35,6 @@ task makeAgentDependencies {
         def classpath = ""
         sourceSets.main.compileClasspath.each {
             def libName = it.getName()
-            if (libName == "grinder-3.9.1.jar") {
-                return
-            }
-            if (libName == "grinder-3.9.1-patch.jar") {
-                classpath += "grinder-3.9.1;"
-                return
-            }
             def removedVersion = libName.findAll(/(.*?)-\d+/).join("")
             if (removedVersion == "") {
                 return

@@ -42,14 +42,18 @@ import net.grinder.statistics.StatisticsServicesImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.lang.StringUtils;
-import org.picocontainer.DefaultPicoContainer;
-import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.Parameter;
+import org.picocontainer.*;
 import org.picocontainer.behaviors.Caching;
+import org.picocontainer.lifecycle.CompositeLifecycleStrategy;
+import org.picocontainer.lifecycle.JavaEE5LifecycleStrategy;
+import org.picocontainer.lifecycle.StartableLifecycleStrategy;
+import org.picocontainer.monitors.NullComponentMonitor;
+import org.picocontainer.monitors.WriterComponentMonitor;
 import org.picocontainer.parameters.ComponentParameter;
 import org.picocontainer.parameters.ConstantParameter;
 import org.slf4j.Logger;
 
+import java.io.PrintWriter;
 import java.util.Timer;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -83,7 +87,18 @@ public class ConsoleFoundationEx {
 							   ConsoleCommunicationSetting consoleCommunicationSetting,
 							   Condition eventSyncCondition) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
-		m_container = new DefaultPicoContainer(new Caching());
+
+		final ComponentMonitor monitor = new NullComponentMonitor();
+
+		// Allow components to use Disposable/Startable interfaces or
+		// JEE annotations.
+		final LifecycleStrategy lifecycleStrategy =
+			new CompositeLifecycleStrategy(
+				new StartableLifecycleStrategy(monitor),
+				new JavaEE5LifecycleStrategy(
+					new WriterComponentMonitor(new PrintWriter(System.err, true))));
+
+		m_container = new DefaultPicoContainer(new Caching(), lifecycleStrategy, null);
 		m_container.addComponent(logger);
 		m_container.addComponent(resources);
 		m_container.addComponent(properties);
