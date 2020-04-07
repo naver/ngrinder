@@ -126,9 +126,6 @@ public class AgentPackageService {
 	 * @return true if dependent lib
 	 */
 	private boolean isDependentLib(File libFile, Set<String> libs) {
-		if (libFile.getName().contains("grinder-3.9.1.jar")) {
-			return false;
-		}
 		String name = libFile.getName().replace("-SNAPSHOT", "").replace("-GA", "");
 		final int libVersionStartIndex = name.lastIndexOf("-");
 		name = name.substring(0, (libVersionStartIndex == -1) ? name.lastIndexOf(".") : libVersionStartIndex);
