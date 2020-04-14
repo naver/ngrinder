@@ -19,9 +19,7 @@ node {
 
 task webpack(dependsOn: "npmInstall", type: NodeTask) {
     script = file("node_modules/webpack/bin/webpack")
-}
-
-task watch(type: NodeTask) {
-    script = file("node_modules/webpack/bin/webpack")
-    args = ["-w"]
+    if (profile) {
+        args = ["--$profile"]
+    }
 }
