@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, {mapState} from 'vuex';
+import { mapState } from 'vuex';
 import VueRouter from 'vue-router';
 import VeeValidate from 'vee-validate';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
 import numeral from 'numeral';
 import store from 'store/vuex-store.js';
-import html5Entities from 'html-entities/lib/html5-entities.js';
+import { AllHtmlEntities } from 'html-entities';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
@@ -73,7 +73,7 @@ Vue.use(VeeValidate, {
 });
 Vue.use(bFormSlider);
 
-Vue.prototype.$htmlEntities = html5Entities;
+Vue.prototype.$htmlEntities = AllHtmlEntities;
 Vue.prototype.$bootbox = BootBox;
 Vue.prototype.$moment = moment;
 Vue.prototype.$http = axiosInstance;
