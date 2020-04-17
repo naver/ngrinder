@@ -36,14 +36,20 @@ public class ExternalAgentController {
 
 		private AgentControllerServerListener agentControllerServerListener = new AgentControllerServerListener(new Condition(), log);
 
-		public ConsoleCommunication(Connector connector, AgentIdentity agentIdentity) throws CommunicationException {
+		public ConsoleCommunication(Connector connector, AgentIdentity agentIdentity) {
 			this.agentIdentity = agentIdentity;
-			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(agentIdentity));
-			sender = ClientSender.connect(receiver);
 
-			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
-			agentControllerServerListener.registerMessageHandlers(messageDispatcher);
-			messagePump = new MessagePump(receiver, messageDispatcher, 1);
+			try {
+				final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(agentIdentity));
+				sender = ClientSender.connect(receiver);
+
+				final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
+				agentControllerServerListener.registerMessageHandlers(messageDispatcher);
+				messagePump = new MessagePump(receiver, messageDispatcher, 1);
+			} catch (CommunicationException e) {
+				log.error("", e);
+				throw new RuntimeException(e);
+			}
 		}
 
 		public void start() {
