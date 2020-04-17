@@ -84,7 +84,7 @@
 <style lang="less">
     .select2-container {
         .select2-choice {
-            height: 30px;
+            height: 30px !important;
         }
     }
 

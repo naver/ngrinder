@@ -59,6 +59,7 @@
     "vue-moment": "^2.1.0",
     "vue-property-decorator": "^6.0.0",
     "vue-router": "^2.7.0",
+    "vue-slide-up-down": "^2.0.0",
     "vue-shortkey": "^3.1.7",
     "vue-uuid": "^1.0.0",
     "vue2-timepicker": "^0.1.4",

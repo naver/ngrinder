@@ -111,7 +111,8 @@
         }
 
         .search-query-without-radios {
-            width: 170px;
+            width: 250px;
+            height: 30px;
         }
 
         .checkbox-label {

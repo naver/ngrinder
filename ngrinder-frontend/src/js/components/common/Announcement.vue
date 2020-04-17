@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="alert alert-block">
-            <div class="border-bottom">
+            <div class="announcement-title-container">
                 <span>
                     <span v-if="ngrinder.config.hasNewAnnouncement" class="badge badge-danger" v-text="'new'"></span>
                     <span class="announcement-title" v-text="i18n('announcement.title')"></span>
@@ -20,11 +20,13 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
+    import SlideUpDown from 'vue-slide-up-down';
     import Base from '../Base.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'announcement',
+        components: { SlideUpDown },
     })
     export default class Announcement extends Mixins(Base, MessagesMixin) {
         ANNOUNCEMENT_HIDE_KEY = 'announcement_hide';
@@ -62,6 +64,10 @@
         li {
             line-height: 20px;
         }
+
+        ul {
+            margin-bottom: 5px;
+        }
     }
 </style>
 
@@ -76,7 +82,7 @@
             border: 1px solid #fbeed5;
             border-radius: 4px;
 
-            .border-bottom {
+            .announcement-title-container {
                 margin: 0;
                 padding-bottom: 2px;
 
@@ -91,10 +97,6 @@
         .announcement-icon {
             margin-top: 5px;
             color: black;
-        }
-
-        .announcement-content {
-            margin-top: 10px;
         }
     }
 </style>

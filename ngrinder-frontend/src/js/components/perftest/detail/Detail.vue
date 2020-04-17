@@ -19,7 +19,7 @@
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; height: 30px;" type="input" name="tagString"
+                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; min-height: 30px;" type="input" name="tagString"
                                                  :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
                                                   maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
                                         </select2>
@@ -74,7 +74,7 @@
                         <a v-show="tab.display.report" href="#report-section" class="nav-link"
                            data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                     </li>
-                    <a v-if="isAdmin" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
+                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdUser.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
@@ -88,7 +88,7 @@
                     </div>
                 </div>
             </div>
-            <intro-button></intro-button>
+            <intro-button/>
         </div>
         <schedule-modal ref="scheduleModal" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
@@ -565,10 +565,6 @@
 
         input[type="text"] {
             height: 30px;
-        }
-
-        .intro-button-container {
-            margin-top: -28px;
         }
 
         .select2-choices {
