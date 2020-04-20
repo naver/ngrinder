@@ -35,8 +35,8 @@ public class JythonGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 	@Override
 	protected void initMore() {
 		List<String> usefulJarList = getUsefulJarList();
-		usefulJarList.add("jython-2.5");
-		usefulJarList.add("jython-standalone-2.5");
+		usefulJarList.add("jython-2.7");
+		usefulJarList.add("jython-standalone-2.7");
 		usefulJarList.add("commons-io");
 		usefulJarList.add("commons-lang");
 	}
