@@ -1,5 +1,5 @@
 <template>
-    <div class="container d-flex flex-column overflow-y-auto">
+    <div class="container d-flex flex-column overflow-y-auto h-100">
         <vue-headful :title="i18n('script.editor.title')"/>
         <div class="file-desc-container flex-grow-0">
             <div class="form-horizontal">
@@ -67,7 +67,7 @@
                 </div>
             </div>
         </div>
-        <splitpanes class="flex-grow-1 overflow-y-auto default-theme" ref="splitPane" horizontal>
+        <splitpanes class="flex-grow-1 overflow-y-auto default-theme h-100" ref="splitPane" horizontal>
             <pane :min-size="10" size="85">
                 <code-mirror ref="editor"
                              class="h-100"
@@ -345,10 +345,6 @@
         margin-bottom: 0;
         background-color: #f9f9f9;
         position: relative;
-        display: -ms-flexbox;
-        display: flex;
-        -ms-flex-direction: column;
-        flex-direction: column;
         border: 1px solid rgba(0, 0, 0, 0.125);
         border-radius: 0.25rem;
 
@@ -369,7 +365,7 @@
 
     #description {
         resize: none;
-        height: 100%;
+        height: 90px;
         width: 690px;
     }
 
