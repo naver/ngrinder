@@ -492,7 +492,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			// when agent finished one test, processReports will be updated as
 			// null
 			if ((processReports == null || this.processReports.length != size)
-				&& agentCachedDistFilesMd5List.size() != size) {
+				|| agentCachedDistFilesMd5List.size() != size) {
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(1000);
 				}
