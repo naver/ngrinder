@@ -217,7 +217,7 @@ public class PerfTestRunnable implements ControllerConstants {
 			// In case of error, mark the occurs error on perftest.
 			LOG.error("Error while executing test: {} - {} ", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Stack Trace is : ", e);
-			doTerminate(perfTest, singleConsole);
+			doTerminate(perfTest, singleConsole, e.getMessage());
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
 		}
 	}
@@ -549,18 +549,29 @@ public class PerfTestRunnable implements ControllerConstants {
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		doTerminate(perfTest, singleConsoleInUse, "");
+	}
+
 	/**
 	 * Terminate the given {@link PerfTest}.
 	 *
 	 * @param perfTest           {@link PerfTest} to be finished
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
 	 *                           {@link PerfTest}
+	 * @param errorMessage       error message
 	 */
-	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse, String errorMessage) {
 		singleConsoleInUse.unregisterSampling();
+		String progressMessage = "Stopped by error";
+
+		if (!errorMessage.isEmpty()) {
+			progressMessage += "\n" + errorMessage;
+		}
+
 		try {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
-					"Stopped by error");
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
+				Status.STOP_BY_ERROR, progressMessage);
 		} catch (Exception e) {
 			LOG.error("Error while terminating {} : {}", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Details : ", e);

@@ -502,7 +502,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				return;
 			}
 		}
-		throw processException("Connection is not completed until 10 sec");
+		throw processException("Connection is not completed or md5 of cached files weren't received until 10 sec");
 	}
 
 	/**
