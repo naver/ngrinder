@@ -136,10 +136,6 @@
         shownBsTab = false;
         logs = [];
 
-        created() {
-            this.fetchReportData();
-        }
-
         fetchReportData() {
             if (!this.id) {
                 return;
