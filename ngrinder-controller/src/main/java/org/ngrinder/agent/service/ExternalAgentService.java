@@ -59,6 +59,7 @@ public class ExternalAgentService {
 		agentInfo.setName(name);
 		agentInfo.setState(consoleCommunication.getState());
 		agentInfo.setApproved(approved);
+		agentInfo.setExternal(true);
 
 		agentInfoStore.updateAgentInfo(createKey(identity), agentInfo);
 	}

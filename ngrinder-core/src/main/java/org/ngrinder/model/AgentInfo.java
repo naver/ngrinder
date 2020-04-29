@@ -75,11 +75,15 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@Transient
 	private String version;
 
+	@Transient
+	private Boolean external;
+
 	@PrePersist
 	public void init() {
 		this.approved = getSafe(this.approved, false);
 		this.version = getSafe(this.version, "");
 		this.region = getSafe(this.region, "");
+		this.external = getSafe(this.external, false);
 	}
 
 	@Override
@@ -120,5 +124,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@JsonIgnore
 	public String getAgentKey() {
 		return ip + "_" + name;
+	}
+
+	public boolean isExternal() {
+		return external == null ? false : external;
 	}
 }

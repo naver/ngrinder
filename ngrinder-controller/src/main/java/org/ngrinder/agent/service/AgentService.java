@@ -435,7 +435,8 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
 		Set<AgentInfo> agentInfoSet = agentInfoStore.getAllAgentInfo()
 			.stream()
-			.filter(agentInfo -> StringUtils.equals(agentManager.extractRegionKey(agentInfo.getRegion()), config.getRegion()))
+			.filter(this::isCurrentRegion)
+			.filter(agentInfo -> !agentInfo.isExternal())
 			.collect(toSet());
 
 		for (AgentProcessControlImplementation.AgentStatus status : agentMap.values()) {
