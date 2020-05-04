@@ -6,11 +6,10 @@ var webpack = require('webpack');
 var outputDir = path.resolve('../ngrinder-controller/build/classes/main/static');
 
 var argv = require('yargs').argv;
-var productionBuild = argv.p || false;
-var devMode = process.env.NODE_ENV !== 'production';
+var productionBuild = argv.p || argv.prod || argv.production || false;
 
 if (productionBuild) {
-    console.log('### production build is enabled. ga is included and javascript is optmized\r');
+    console.log('### production build is enabled. ga is included and javascript is optimized\r');
 } else {
     console.log('### production build is disabled.\r');
 }
@@ -21,6 +20,20 @@ if (argv.w || argv.watch) {
 // If we omit the following line, the env var for module.exports will be undefined. It's weired.
 console.log('### passed env is ' + JSON.stringify(argv.env));
 
+var cssLoader = {
+    loader: 'css-loader',
+    options: {
+        sourceMap: !productionBuild,
+    },
+};
+
+var lessLoader = {
+    loader: 'less-loader',
+    options: {
+        sourceMap: !productionBuild,
+    },
+};
+
 module.exports = function (env) {
     var ngrinderVersion = '3.5.0-SNAPSHOT';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
@@ -29,7 +42,7 @@ module.exports = function (env) {
     console.log('### frontend version is ' + ngrinderVersion + '\r');
 
     var webpackConfig = {
-        mode: 'production',
+        mode: productionBuild ? 'production' : 'development',
         performance: {
             hints: false,
         },
@@ -74,7 +87,12 @@ module.exports = function (env) {
                     loader: 'vue-loader',
                     options: {
                         loaders: {
-                            js: { loader: 'babel-loader', options: {'presets': ['@babel/preset-env']}}
+                            js: {
+                                loader: 'babel-loader',
+                                options: { 'presets': ['@babel/preset-env'] },
+                            },
+                            css: [ MiniCssExtractPlugin.loader, cssLoader ],
+                            less: [ MiniCssExtractPlugin.loader, cssLoader, lessLoader ],
                         },
                     },
                 },
@@ -89,12 +107,7 @@ module.exports = function (env) {
                         options: {
                             publicPath: '../',
                         },
-                    }, {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: devMode,
-                        },
-                    }],
+                    }, cssLoader ],
                 },
                 {
                     test: /\.less$/,
@@ -103,17 +116,7 @@ module.exports = function (env) {
                         options: {
                             publicPath: '../',
                         },
-                    }, {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: devMode,
-                        },
-                    }, {
-                        loader: 'less-loader',
-                        options: {
-                            sourceMap: devMode,
-                        },
-                    }],
+                    }, cssLoader, lessLoader ],
                 },
                 {
                     test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
