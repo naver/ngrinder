@@ -20,6 +20,7 @@ allprojects  {
 
 subprojects {
   apply plugin: "java"
+  apply plugin: "maven-publish"
 
   compileJava.options.encoding = "UTF-8"
   compileTestJava.options.encoding = "UTF-8"
@@ -47,5 +48,30 @@ subprojects {
 
   test {
     testLogging.showStandardStreams = true
+  }
+
+  task javadocJar(type: Jar) {
+    from javadoc.destinationDir
+    classifier "javadoc"
+  }
+
+  task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+  }
+
+  publishing {
+    publications {
+      nGrinerModules(MavenPublication) {
+        from components.java
+        artifact sourceJar
+        artifact javadocJar
+      }
+    }
+    repositories {
+      maven {
+        url = "file:../../ngrinder.maven.repo/releases/"
+      }
+    }
   }
 }
