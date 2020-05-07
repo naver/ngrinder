@@ -201,13 +201,13 @@
         g.tick > text > tspan {
             font-size: 8px;
         }
+
+        tbody > tr:not([render="true"]) > td {
+            padding: 0;
+        }
     }
 
     .bb-tooltip {
         padding: 3px;
-    }
-
-    tbody > tr:not([render="true"]) > td {
-        padding: 0;
     }
 </style>

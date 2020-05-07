@@ -202,7 +202,7 @@
             .popover-body {
                 max-height: 450px;
                 line-height: 20px;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
         }
 
