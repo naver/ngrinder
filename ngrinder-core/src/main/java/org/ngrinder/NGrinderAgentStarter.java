@@ -99,10 +99,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		printLog("***************************************************");
 
 		try {
-			String ip = getIP(agentConfig.getControllerIP());
-			int port = agentConfig.getControllerPort();
-
-			ExternalAgentControllerServerDaemon serverDaemon = new ExternalAgentControllerServerDaemon(ip, port);
+			ExternalAgentControllerServerDaemon serverDaemon = new ExternalAgentControllerServerDaemon(agentConfig);
 			serverDaemon.run();
 
 		} catch (Exception e) {

@@ -5,6 +5,7 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.*;
 import net.grinder.engine.communication.AgentControllerServerListener;
 import net.grinder.engine.communication.AgentControllerStateMessage;
+import net.grinder.engine.communication.AgentInitializeMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.thread.Condition;
@@ -24,7 +25,7 @@ public class ExternalAgentController {
 
 	public static final class ConsoleCommunication {
 		@Getter
-		private final AgentIdentity agentIdentity;
+		private AgentIdentity agentIdentity;
 		private final ClientSender sender;
 		private final MessagePump messagePump;
 		private AtomicBoolean running = new AtomicBoolean(true);
@@ -62,10 +63,29 @@ public class ExternalAgentController {
 				}
 			}, 0, 990, TimeUnit.MILLISECONDS);
 
+			AgentInitializeMessage initMessage = null;
+
 			while (running.get()) {
 				if (!agentControllerServerListener.received(AgentControllerServerListener.ANY)) {
 					log.debug("Agent is started. Waiting for agent controller signal");
 					agentControllerServerListener.waitForMessage();
+				}
+
+				if (agentControllerServerListener.received(AgentControllerServerListener.AGENT_INIT)) {
+					initMessage = agentControllerServerListener.getLastAgentInitializeMessage();
+					agentControllerServerListener.discardMessages(AgentControllerServerListener.AGENT_INIT);
+					agentIdentity = initMessage.getAgentIdentity();
+					log.info("Agent initialized {}", agentIdentity);
+				}
+
+				if (initMessage == null) {
+					try {
+						agentControllerServerListener.discardMessages(AgentControllerServerListener.ANY);
+						sender.send(AgentInitializeMessage.EMPTY);
+					} catch (CommunicationException e) {
+						log.error("Error occurred during initialize external agent");
+						break;
+					}
 				}
 
 				if (agentControllerServerListener.received(AgentControllerServerListener.AGENT_STATE)) {

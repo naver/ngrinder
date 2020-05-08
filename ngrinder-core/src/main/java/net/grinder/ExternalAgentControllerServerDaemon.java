@@ -13,14 +13,12 @@
  */
 package net.grinder;
 
-import net.grinder.common.GrinderException;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.model.ConsoleCommunicationSetting;
-import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.agent.Agent;
-import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
+import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,20 +37,12 @@ public class ExternalAgentControllerServerDaemon implements Agent {
 	private Thread thread;
 	private ExternalAgentControllerServer agentControllerServer;
 
-	public ExternalAgentControllerServerDaemon(String ip, int port) {
-		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties(), ConsoleCommunicationSetting.asDefault());
+	public ExternalAgentControllerServerDaemon(AgentConfig agentConfig) {
+		this(agentConfig, ConsoleCommunicationSetting.asDefault());
 	}
 
-	public ExternalAgentControllerServerDaemon(String ip, int port, ConsoleProperties consoleProperties,
-											   ConsoleCommunicationSetting consoleCommunicationSetting) {
-		try {
-			consoleProperties.setConsoleHost(ip);
-			consoleProperties.setConsolePort(port);
-			this.agentControllerServer = new ExternalAgentControllerServer(RESOURCES, log, consoleProperties,
-				eventSyncCondition, consoleCommunicationSetting);
-		} catch (GrinderException e) {
-			throw processException("Exception occurred while initiating the agent controller server daemon", e);
-		}
+	public ExternalAgentControllerServerDaemon(AgentConfig agentConfig, ConsoleCommunicationSetting consoleCommunicationSetting) {
+		this.agentControllerServer = new ExternalAgentControllerServer(RESOURCES, log, agentConfig, eventSyncCondition, consoleCommunicationSetting);
 	}
 
 	@Override

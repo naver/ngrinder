@@ -13,6 +13,7 @@
  */
 package net.grinder;
 
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.*;
 import net.grinder.console.common.DisplayMessageConsoleException;
 import net.grinder.console.common.ErrorHandler;
@@ -21,17 +22,19 @@ import net.grinder.console.common.Resources;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.ConsoleCommunication;
 import net.grinder.console.model.ConsoleCommunicationSetting;
-import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.communication.AgentControllerStateMessage;
+import net.grinder.engine.communication.AgentInitializeMessage;
 import net.grinder.engine.console.ErrorHandlerImplementation;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
 import net.grinder.util.thread.Condition;
+import org.ngrinder.infra.AgentConfig;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.behaviors.Caching;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -41,13 +44,13 @@ public class ExternalAgentControllerServer {
 	private boolean m_shutdown = false;
 	private final Condition eventSyncCondition;
 
-	public ExternalAgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties,
+	public ExternalAgentControllerServer(Resources resources, Logger logger, AgentConfig agentConfig,
 										 Condition eventSyncCondition, ConsoleCommunicationSetting consoleCommunicationSetting) {
 		this.eventSyncCondition = eventSyncCondition;
 		container = new DefaultPicoContainer(new Caching());
 		container.addComponent(logger);
 		container.addComponent(resources);
-		container.addComponent(properties);
+		container.addComponent(agentConfig);
 		container.addComponent(consoleCommunicationSetting);
 		container.addComponent(ConsoleCommunicationImpl.class);
 
@@ -90,12 +93,12 @@ public class ExternalAgentControllerServer {
 	}
 
 	public static class ConsoleCommunicationImpl implements ConsoleCommunication {
-		private static final Logger log = LoggerFactory.getLogger(ConsoleCommunicationImpl.class);
 		private static final ConnectionType[] CONNECTION_TYPES =
 			new ConnectionType[]{ConnectionType.AGENT, ConnectionType.CONSOLE_CLIENT, ConnectionType.WORKER};
 
 		private final Resources resources;
-		private final ConsoleProperties properties;
+		private final Logger log;
+		private final AgentConfig agentConfig;
 		private final ErrorHandler errorHandler;
 
 		private final long idlePollDelay;
@@ -113,17 +116,19 @@ public class ExternalAgentControllerServer {
 
 		private AgentControllerState state = AgentControllerState.STARTED;
 
-		public ConsoleCommunicationImpl(Resources resources, ConsoleProperties consoleProperties,
-										ErrorHandler errorHandler,
-										ConsoleCommunicationSetting consoleCommunicationSetting) {
+		public ConsoleCommunicationImpl(Resources resources, Logger log, AgentConfig agentConfig,
+										ErrorHandler errorHandler, ConsoleCommunicationSetting consoleCommunicationSetting) {
 			this.resources = resources;
-			this.properties = consoleProperties;
+			this.log = log;
+			this.agentConfig = agentConfig;
 			this.errorHandler = errorHandler;
 			if (consoleCommunicationSetting == null) {
 				consoleCommunicationSetting = ConsoleCommunicationSetting.asDefault();
 			}
 			this.idlePollDelay = consoleCommunicationSetting.getIdlePollDelay();
 			this.inactiveClientTimeOut = consoleCommunicationSetting.getInactiveClientTimeOut();
+
+			final AgentIdentity agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), NetworkUtils.getLocalHostAddress());
 
 			this.messageDispatcher.set(AgentControllerStateMessage.class, new MessageDispatchRegistry.AbstractHandler<AgentControllerStateMessage>() {
 				@Override
@@ -132,6 +137,12 @@ public class ExternalAgentControllerServer {
 						log.debug("AgentControllerState is requested. Send current state.");
 						sendToAddressedAgents(message.getAddress(), new AgentControllerStateMessage(state));
 					}
+				}
+			});
+			this.messageDispatcher.set(AgentInitializeMessage.class, new MessageDispatchRegistry.AbstractHandler<AgentInitializeMessage>() {
+				@Override
+				public void handle(AgentInitializeMessage message) throws CommunicationException {
+					sendToAddressedAgents(message.getAddress(), new AgentInitializeMessage(agentIdentity));
 				}
 			});
 
@@ -169,7 +180,8 @@ public class ExternalAgentControllerServer {
 			}
 
 			try {
-				acceptor = new Acceptor(properties.getConsoleHost(), properties.getConsolePort(), 1, new StandardTimeAuthority());
+				log.info("Listening on " + NetworkUtils.getLocalHostAddress() + ":" + agentConfig.getControllerPort());
+				acceptor = new Acceptor(NetworkUtils.getLocalHostAddress(), agentConfig.getControllerPort(), 1, new StandardTimeAuthority());
 			} catch (CommunicationException e) {
 				errorHandler.handleException(new DisplayMessageConsoleException(resources, "localBindError.text", e));
 

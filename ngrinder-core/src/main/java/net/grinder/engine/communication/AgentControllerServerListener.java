@@ -79,13 +79,19 @@ public final class AgentControllerServerListener {
 	 */
 	public static final int AGENT_STATE = 1 << 5;
 
+	/**
+	 * Constant that represents a agent initialize request.
+	 *
+	 * @see #received
+	 */
+	public static final int AGENT_INIT = 1 << 6;
 
 	/**
 	 * Constant that represent any message.
 	 *
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN | AGENT_UPDATE | AGENT_STATE;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN | AGENT_UPDATE | AGENT_STATE | AGENT_INIT;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;
@@ -94,6 +100,7 @@ public final class AgentControllerServerListener {
 	private StartGrinderMessage m_lastStartGrinderMessage;
 	private AgentUpdateGrinderMessage m_lastAgentUpdateGrinderMessage;
 	private AgentControllerStateMessage m_lastAgentStateGrinderMessage;
+	private AgentInitializeMessage m_lastAgentInitializeMessage;
 
 	/**
 	 * Constructor.
@@ -225,6 +232,14 @@ public final class AgentControllerServerListener {
 				setReceived(AGENT_STATE);
 			}
 		});
+
+		messageDispatcher.set(AgentInitializeMessage.class, new AbstractMessageHandler<AgentInitializeMessage>() {
+			@Override
+			public void handle(AgentInitializeMessage message) {
+				m_lastAgentInitializeMessage = message;
+				setReceived(AGENT_INIT);
+			}
+		});
 	}
 
 	private abstract class AbstractMessageHandler<T extends Message> implements Handler<T> {
@@ -258,5 +273,9 @@ public final class AgentControllerServerListener {
 
 	public AgentControllerStateMessage getLastAgentStateGrinderMessage() {
 		return m_lastAgentStateGrinderMessage;
+	}
+
+	public AgentInitializeMessage getLastAgentInitializeMessage() {
+		return m_lastAgentInitializeMessage;
 	}
 }
