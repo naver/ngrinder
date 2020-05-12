@@ -50,6 +50,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static net.grinder.SingleConsole.IGNORE_TOO_MANY_ERROR;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -240,6 +241,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		perfTestService.markStatusAndProgress(perfTest, START_CONSOLE, "Console is being prepared.");
 		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
+		consoleProperty.putExtraProperties(IGNORE_TOO_MANY_ERROR, perfTest.getIgnoreTooManyError());
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		singleConsole.start();
 		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort());

@@ -251,6 +251,12 @@
                             </input-popover>
                         </control-group>
                     </div>
+                    <div class="row">
+                        <control-group name="ignoreTooManyError" labelMessageKey="perfTest.config.ignoreTooManyError"
+                                       labelHelpMessageKey="perfTest.config.ignoreTooManyError" controlsStyle="padding-top: 6px;">
+                            <input type="checkbox" id="ignoreTooManyError" name="ignoreTooManyError" v-model="test.config.ignoreTooManyError">
+                        </control-group>
+                    </div>
                 </div>
             </div>
         </div>

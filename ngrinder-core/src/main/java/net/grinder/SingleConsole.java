@@ -62,6 +62,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static com.sun.jmx.mbeanserver.Util.cast;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -80,6 +81,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = new ResourcesImplementation(RESOURCE_CONSOLE);
 	public static final Logger LOGGER = LoggerFactory.getLogger("console");
+	public static final String IGNORE_TOO_MANY_ERROR = "ignoreTooManyError";
 
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
@@ -638,7 +640,12 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					}
 				});
 			}
-			checkTooManyError(cumulativeStatistics);
+
+			boolean ignoreTooManyError = cast(getConsoleProperties().getExtraProperties(IGNORE_TOO_MANY_ERROR));
+			if (!ignoreTooManyError) {
+				checkTooManyError(cumulativeStatistics);
+			}
+
 			lastSamplingPeriod = lastSamplingPeriod + (interval * gap);
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurred while updating the statistics : {}", e.getMessage());
