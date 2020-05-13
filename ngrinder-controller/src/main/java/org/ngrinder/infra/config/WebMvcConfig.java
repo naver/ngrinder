@@ -37,9 +37,6 @@ import java.util.List;
 )
 public class WebMvcConfig implements WebMvcConfigurer {
 
-	@Value("${server.multipart.max-upload-size}")
-	private int multipartMaxUploadSize;
-
 	@Value("${server.default-encoding}")
 	private String defaultEncoding;
 
@@ -105,7 +102,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Bean
 	public MultipartResolver multipartResolver() {
 		CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
-		commonsMultipartResolver.setMaxUploadSize(multipartMaxUploadSize);
 		commonsMultipartResolver.setDefaultEncoding(defaultEncoding);
 		return commonsMultipartResolver;
 	}
@@ -124,7 +120,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	    String staticPathPatterns[] = new String[] {"/**/*.js" , "/**/*.png"
+	    String[] staticPathPatterns = new String[] {"/**/*.js" , "/**/*.png"
 			, "/**/*.jpg" , "/**/*.swf" , "/**/*.csv" , "/**/*.css"
 			, "/**/*.html" , "/**/*.gif" , "/**/*.ico" , "/**/*.woff2"
 			, "/**/*.woff" , "/**/*.ttf"};
