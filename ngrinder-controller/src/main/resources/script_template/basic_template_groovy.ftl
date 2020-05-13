@@ -98,7 +98,7 @@ class TestRunner {
 	public void before() {
 		request.setHeaders(headers)
 		cookies.each { CookieModule.addCookie(it, HTTPPluginControl.getThreadHTTPClientContext()) }
-		grinder.logger.info("before thread. init headers and cookies");
+		grinder.logger.info("before. init headers and cookies");
 	}
 
 	@Test
