@@ -53,6 +53,7 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.ngrinder.common.constants.GrinderConstants.*;
 
 /**
@@ -377,11 +378,9 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX),
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_LOCAL_DNS),
 				m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JAVA_OPT));
+
 		String jvmArguments = builder.buildJVMArgument();
-		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
-				+ File.pathSeparator
-				+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
-		properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
+		properties.setProperty(GRINDER_PROP_JVM_CLASSPATH, buildClassPath(systemProperty, properties, handler, builder));
 
 		m_logger.info("grinder properties {}", properties);
 		m_logger.info("jvm arguments {}", jvmArguments);
@@ -391,6 +390,28 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			properties.setInt("grinder.runs", 0);
 		}
 		return jvmArguments;
+	}
+
+	private String buildClassPath(Properties systemProperty,
+								GrinderProperties properties,
+								AbstractLanguageHandler handler,
+								PropertyBuilder builder) {
+
+		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
+			+ File.pathSeparator
+			+ builder.rebaseUserLibraryClassPath(properties.getProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, ""));
+
+		String customJvmClassPath = properties.getProperty(GRINDER_PROP_JVM_CLASSPATH);
+		if (isNotBlank(customJvmClassPath)) {
+			rebaseCustomClassPath += (File.pathSeparator + customJvmClassPath);
+		}
+
+		String agentJvmClassPath = m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JVM_CLASSPATH);
+		if (isNotBlank(agentJvmClassPath)) {
+			rebaseCustomClassPath += (File.pathSeparator + agentJvmClassPath);
+		}
+
+		return rebaseCustomClassPath;
 	}
 
 	/**
