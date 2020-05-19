@@ -216,9 +216,10 @@
         }
 
         init() {
-            this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
+            if (this.file.properties.targetHosts) {
+                this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
+            }
             this.validated = this.file.validated;
-
             this.cmOptions = { mode: this.codemirrorKey };
             this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
         }
