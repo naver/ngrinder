@@ -339,7 +339,7 @@ public final class Acceptor {
 		}
 	}
 
-	private void discriminateConnection(Socket localSocket)
+	public void discriminateConnection(Socket localSocket)
 		throws IOException, ShutdownException {
 
 		boolean closeSocket = true;

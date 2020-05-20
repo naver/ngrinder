@@ -44,6 +44,8 @@ public final class Connector {
 	private final int m_port;
 	private final ConnectionType m_connectionType;
 
+	private final Socket m_socket;
+
 	/**
 	 * Constructor.
 	 *
@@ -57,6 +59,17 @@ public final class Connector {
 		m_hostString = hostString;
 		m_port = port;
 		m_connectionType = connectionType;
+
+		m_socket = null;
+	}
+
+	public Connector(Socket socket,
+					 ConnectionType connectionType) {
+		m_hostString = socket.getInetAddress().getHostName();
+		m_port = socket.getPort();
+		m_connectionType = connectionType;
+
+		m_socket = socket;
 	}
 
 	/**
@@ -72,19 +85,23 @@ public final class Connector {
 	}
 
 	Socket connect(Address address) throws CommunicationException {
-		final InetAddress inetAddress;
+		Socket socket;
+		InetAddress inetAddress = null;
 
 		try {
-			inetAddress = InetAddress.getByName(m_hostString);
-		}
-		catch (UnknownHostException e) {
-			throw new CommunicationException(
-				"Could not resolve host '" + m_hostString + '\'', e);
-		}
-
-		try {
-			// Bind to any local port.
-			final Socket socket = new Socket(inetAddress, m_port);
+			if (m_socket != null) {
+				inetAddress = m_socket.getInetAddress();
+				socket = m_socket;
+			} else {
+				try {
+					inetAddress = InetAddress.getByName(m_hostString);
+					socket = new Socket(inetAddress, m_port);
+				}
+				catch (UnknownHostException e) {
+					throw new CommunicationException(
+						"Could not resolve host '" + m_hostString + '\'', e);
+				}
+			}
 
 			final OutputStream outputStream = socket.getOutputStream();
 
