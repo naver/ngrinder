@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -127,7 +127,13 @@ public class AgentController implements Agent, AgentConstants {
 			while (true) {
 				do {
 					if (consoleCommunication == null) {
-						final Connector connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
+						final Connector connector;
+						if (agentConfig.isExternalMode()) {
+							connector = m_connectorFactory.create(agentConfig.getControllerPort());
+						} else {
+							connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
+						}
+
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
 							consoleCommunication.start();

@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
@@ -45,6 +46,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -310,6 +312,15 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 */
 	public void updateAgent(AgentIdentity agentIdentity, String version) {
 		agentControllerServerDaemon.updateAgent(agentIdentity, version);
+	}
+
+	public void addExternalAgent(String ip, int port) {
+		try {
+			Socket socket = new Socket(ip, port);
+			agentControllerServerDaemon.discriminateConnection(socket);
+		} catch (IOException e) {
+			throw new NGrinderRuntimeException("Unable to connect to external agent " + ip + ":" + port, e);
+		}
 	}
 
 	/**

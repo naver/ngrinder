@@ -273,4 +273,15 @@ public class AgentManagerApiController {
 	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
 		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user.getUserId(), targetRegion));
 	}
+
+	/**
+	 * Add an external agent.
+	 * @param ip	agent ip
+	 * @param port	agent port
+	 */
+	@PostMapping("/external/{ip}/{port}")
+	@PreAuthorize("permitAll")
+	public void addExternalAgent(@PathVariable String ip, @PathVariable int port) {
+		agentService.addExternalAgent(ip, port);
+	}
 }

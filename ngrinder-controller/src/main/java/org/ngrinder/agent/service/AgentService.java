@@ -429,6 +429,10 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		agentManager.updateAgent(agentIdentity, agentManager.getAgentForceUpdate() ? "99.99" : config.getVersion());
 	}
 
+	public void addExternalAgent(String ip, int port) {
+		agentManager.addExternalAgent(ip, port);
+	}
+
 
 	private String createAgentKey(String ip, String name) {
 		return ip + "_" + name;
