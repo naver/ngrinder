@@ -136,8 +136,8 @@ public class AgentManagerApiController {
 	 *
 	 * @return json message
 	 */
-	@PreAuthorize("hasAnyRole('A')")
 	@GetMapping("/state")
+	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public SystemDataModel getState(@RequestParam String ip, @RequestParam String name, @RequestParam String region) {
 		return agentService.getSystemDataModel(ip, name, region);
 	}

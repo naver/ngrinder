@@ -364,7 +364,7 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 
 	@Override
 	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
-		return hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new AgentStateTask(ip, name), region);
+		return hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new AgentStateTask(ip, name), agentManager.extractRegionKey(region));
 	}
 
 	/**
