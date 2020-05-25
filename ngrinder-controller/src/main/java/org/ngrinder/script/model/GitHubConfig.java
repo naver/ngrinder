@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.exception.InvalidGitHubConfigurationException;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ public class GitHubConfig {
 
 			String baseUrl = defaultIfNull(jsonNode.get("base-url"), "");
 			if (!baseUrl.isEmpty() && !urlValidator.isValid(baseUrl)) {
-				throw new NGrinderRuntimeException("Field 'base-url' is invalid.\nPlease check your .gitconfig.yml");
+				throw new InvalidGitHubConfigurationException("Field 'base-url' is invalid.\nPlease check your .gitconfig.yml");
 			}
 
 			try {
@@ -56,8 +56,9 @@ public class GitHubConfig {
 					.revision(defaultIfNull(jsonNode.get("revision"), "-1"))
 					.scriptRoot(defaultIfNull(jsonNode.get("script-root"), ""))
 					.build();
-			} catch (Exception e) {
-				throw new NGrinderRuntimeException("Some of required fields(name, owner, repo, access-token) are missing.\nPlease check your .gitconfig.yml", e);
+			} catch (RuntimeException e) {
+				throw new InvalidGitHubConfigurationException("Some of required fields(name, owner, repo, access-token) are missing.\n" +
+					"Please check your .gitconfig.yml", e);
 			}
 		}
 

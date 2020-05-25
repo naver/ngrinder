@@ -303,12 +303,18 @@
                 this.showProgressBar(this.i18n('script.editor.message.validate'));
                 this.$http.post('/script/api/github/validate', { content })
                     .then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')))
-                    .catch(error => this.showErrorMsg(error.response.data.message.replace(/\n/g, '<br>')))
+                    .catch(error => this.showErrorMsg(this.decorateGitHubConfigurationErrorMessage(error.response.data.message)))
                     .finally(this.hideProgressBar);
             } catch (error) {
                 this.showErrorMsg(`YAML syntax error<br>${error.message}`);
                 this.hideProgressBar();
             }
+        }
+
+        decorateGitHubConfigurationErrorMessage(errorMsg) {
+            return errorMsg
+                    .replace('Not Found', "Not found GitHub repository.<br>Please check your 'owner' or 'repo' field is correct.")
+                    .replace('Bad credentials', "Bad credentials<br>Please check your 'access-token' field is correct.");
         }
 
         validateScript() {

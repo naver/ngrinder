@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SerializationException;
 import org.kohsuke.github.*;
+import org.ngrinder.common.exception.InvalidGitHubConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.infra.config.Config;
@@ -261,7 +263,7 @@ public class GitHubFileEntryService {
 			.findFirst();
 
 		if (!gitHubConfigOptional.isPresent()) {
-			throw new NGrinderRuntimeException("GitHub configuration(" + name + ") is not exist");
+			throw new InvalidGitHubConfigurationException("GitHub configuration(" + name + ") is not exist");
 		}
 		return gitHubConfigOptional.get();
 	}
@@ -269,13 +271,27 @@ public class GitHubFileEntryService {
 	public boolean validate(FileEntry gitConfigYaml) {
 		for (GitHubConfig config : getAllGithubConfig(gitConfigYaml)) {
 			try {
-				getGitHubClient(config).getRepository(config.getOwner() + "/" + config.getRepo());
-			} catch (IOException e) {
-				Map<String, String> errorJson = deserialize(e.getMessage(), new TypeReference<Map<String, String>>() {});
-				throw new NGrinderRuntimeException("Invalid git configuration.\n" + errorJson.get("message"));
+				GHRepository ghRepository = getGitHubClient(config).getRepository(config.getOwner() + "/" + config.getRepo());
+				String branch = config.getBranch();
+				if (isNotEmpty(branch)) {
+					ghRepository.getBranch(branch);
+				}
+			} catch (IOException | InvalidGitHubConfigurationException e) {
+				Map<String, String> errorJson = parseGitHubConfigurationErrorMessage(e.getMessage());
+				throw new InvalidGitHubConfigurationException("Invalid github configuration.(" + config.getName() +")\n" + errorJson.get("message"));
 			}
 		}
 		return true;
+	}
+
+	private Map<String, String> parseGitHubConfigurationErrorMessage(String errorMessage) {
+		try {
+			Map<String, String> errorJson = deserialize(errorMessage, new TypeReference<Map<String, String>>() {});
+			errorJson.putIfAbsent("message", errorMessage);
+			return errorJson;
+		} catch (SerializationException e) {
+			return buildMap("message", errorMessage);
+		}
 	}
 
 	/**
@@ -352,8 +368,8 @@ public class GitHubFileEntryService {
 			return gitHubBuilder.build();
 		} catch (IOException e) {
 			log.error("Fail to creation of github client from {}", gitHubConfig, e);
-			Map<String, String> errorJson = deserialize(e.getMessage(), new TypeReference<Map<String, String>>() {});
-			throw new NGrinderRuntimeException("Fail to creation of github client.\n" + errorJson.get("message"));
+			Map<String, String> errorJson = parseGitHubConfigurationErrorMessage(e.getMessage());
+			throw new InvalidGitHubConfigurationException("Fail to creation of github client.\n" + errorJson.get("message"));
 		}
 	}
 
