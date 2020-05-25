@@ -250,13 +250,17 @@
             this.init();
         }
 
-        static prepare(route) {
+        static async prepare(route) {
             route.params.scriptsMap = {};
-            return PerfTestDetail.preparePerfTest(route)
-                .then(() => {
-                    PerfTestDetail.prepareSvnScripts(route);
-                    PerfTestDetail.prepareGitHubConfig(route);
-                });
+            try {
+                await PerfTestDetail.preparePerfTest(route);
+                return Promise.all([
+                    PerfTestDetail.prepareSvnScripts(route),
+                    PerfTestDetail.prepareGitHubConfig(route)
+                ]);
+            } catch (e) {
+                return Promise.reject();
+            }
         }
 
         static preparePerfTest(route) {
