@@ -19,7 +19,7 @@
                         </span>
                     </div>
                     <div>
-                        <template v-if="scriptHandler && scriptHandler.validatable">
+                        <template v-if="isTestScript || isGitConfig">
                             <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
                                     @shortkey="save(false)"
                                     @click="save(false)">
@@ -29,20 +29,6 @@
                             <button class="btn btn-success" @click="save(true)">
                                 <i class="fa fa-undo mr-1"></i>
                                 <span v-text="i18n('common.button.save.and.close')"></span>
-                            </button>
-                            <button v-shortkey="['ctrl', 'shift', 'v']" class="btn btn-primary"
-                                    @shortkey="validate"
-                                    @click="validate">
-                                <i class="fa fa-check mr-1"></i>
-                                <span v-text="i18n('script.editor.button.validate')"></span>
-                            </button>
-                        </template>
-                        <template v-else-if="isGitConfigFile">
-                            <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
-                                    @shortkey="save(false)"
-                                    @click="save(false)">
-                                <i class="fa fa-save mr-1"></i>
-                                <span v-text="i18n('common.button.save')"></span>
                             </button>
                             <button v-shortkey="['ctrl', 'shift', 'v']" class="btn btn-primary"
                                     @shortkey="validate"
@@ -163,8 +149,6 @@
         SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
         hideDescription = false;
 
-        isGitConfigFile = false;
-
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
             const revision = to.query.r || -1;
@@ -196,7 +180,7 @@
                 this.$refs.editor.codemirror.focus();
 
                 switch (true) {
-                    case this.isGitConfigFile:
+                    case this.isGitConfig:
                         this.validationResult = this.guides.gitconfig;
                         break;
                     case /\\*.groovy/.test(this.file.fileName):
@@ -230,7 +214,6 @@
             if (this.file.properties.targetHosts) {
                 this.targetHosts = this.file.properties.targetHosts.split(',').filter(s => s);
             }
-            this.isGitConfigFile = this.file.path === GIT_CONFIG_FILE_NAME;
             this.validated = this.file.validated;
             this.cmOptions = { mode: this.codemirrorKey };
             this.$nextTick(() => this.$refs.editor.codemirror.clearHistory());
@@ -294,7 +277,7 @@
         }
 
         validate() {
-            if (this.isGitConfigFile) {
+            if (this.isGitConfig) {
                 this.validateGitConfig();
                 return;
             }
@@ -376,6 +359,14 @@
 
         get breadcrumbPathUrl() {
             return ['/script/list', ...this.basePath.split('/')];
+        }
+
+        get isGitConfig() {
+            return this.file.path === GIT_CONFIG_FILE_NAME;
+        }
+
+        get isTestScript() {
+            return this.scriptHandler && this.scriptHandler.validatable;
         }
     }
 </script>
