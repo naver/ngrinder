@@ -16,9 +16,13 @@
                 <i class="mr-1 fa fa-arrow-up"></i>
                 <span v-text="i18n('agent.list.update')"></span>
             </button>
-            <button class="btn btn-danger mr-3" @click="stopAgents">
+            <button class="btn btn-danger mr-1" @click="stopAgents">
                 <i class="mr-1 fa fa-stop"></i>
                 <span v-text="i18n('common.button.stop')"></span>
+            </button>
+            <button class="btn btn-info mr-3" @click="$refs.addExternalAgentModal.show()" v-show="isAdmin">
+                <i class="mr-1 fa fa-plus"></i>
+                <span v-text="i18n('common.button.add')"></span>
             </button>
 
             <input class="mr-1 form-control search-input" type="text" ref="searchInput"
@@ -99,6 +103,7 @@
             :css="table.css.pagination"
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
+        <add-external-agent-modal ref="addExternalAgentModal"/>
     </div>
 </template>
 
@@ -113,12 +118,13 @@
     import Base from '../Base.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
+    import AddExternalAgentModal from './modal/AddExternalAgentModal.vue';
 
     const AGENT_KEY_TOKEN = '_';
 
     @Component({
         name: 'agentList',
-        components: { Vuetable, VuetablePagination, VueHeadful },
+        components: { Vuetable, VuetablePagination, VueHeadful, AddExternalAgentModal },
     })
     export default class AgentList extends Mixins(Base, MessagesMixin, TableConfig) {
         agents = [];
