@@ -11,19 +11,20 @@
                 <div class="modal-body">
                     <div class="form-horizontal form-horizontal-4">
                         <fieldset>
-                            <control-group labelMessageKey="agent.list.IPAndDns">
-                                <input type="text"
-                                       name="ip"
-                                       class="form-control"
-                                       v-model="ip"
-                                       ref="ip">
+                            <control-group :class="{ error: errors.has('ip') }" name="ip"
+                                           labelMessageKey="agent.list.IPAndDns">
+                                <input type="text" name="ip" class="form-control"
+                                       v-model="ip" ref="ip"
+                                       v-validate="{ required: true }"/>
+                                <div v-visible="errors.has('ip')" class="validation-message" v-text="errors.first('ip')"></div>
                             </control-group>
-                            <control-group labelMessageKey="agent.info.port">
-                                <input type="text"
-                                       name="port"
-                                       class="form-control"
-                                       v-model="port"
-                                       @keyup.enter.prevent="addExternalAgent">
+                            <control-group :class="{ error: errors.has('port') }" name="port"
+                                           labelMessageKey="agent.info.port">
+                                <input type="text" name="port" class="form-control"
+                                       v-model="port" ref="port"
+                                       v-validate="{ required: true, numeric: true }"
+                                       @keyup.enter.prevent="addExternalAgent"/>
+                                <div v-visible="errors.has('port')" class="validation-message" v-text="errors.first('port')"></div>
                             </control-group>
                         </fieldset>
                     </div>
@@ -51,15 +52,23 @@
     @Component({
         name: 'addExternalAgentModal',
         components: { ControlGroup },
+        $_veeValidate: {
+            validator: 'new',
+        },
     })
     export default class AddExternalAgentModal extends Mixins(ModalBase, MessageMixin) {
         ip = '';
         port = null;
 
         addExternalAgent() {
-            this.$http.post(`/agent/api/external/${this.ip}/${this.port}`)
-                .catch(() => this.showErrorMsg(this.i18n('common.error.error')))
-                .finally(() => this.hide());
+            this.$validator.validateAll()
+                .then(result => {
+                    if (result) {
+                        this.$http.post(`/agent/api/external/${this.ip}/${this.port}`)
+                            .catch(err => this.showErrorMsg(err.response.data.message))
+                            .finally(() => this.hide());
+                    }
+                });
         }
 
         reset() {
@@ -78,7 +87,11 @@
         .control-group {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        .validation-message {
+            position: absolute;
         }
     }
 
