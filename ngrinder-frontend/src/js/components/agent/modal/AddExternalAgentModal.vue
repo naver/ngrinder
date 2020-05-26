@@ -11,6 +11,17 @@
                 <div class="modal-body">
                     <div class="form-horizontal form-horizontal-4">
                         <fieldset>
+                            <control-group :class="{ error: errors.has('region') }" v-show="ngrinder.config.clustered"
+                                           name="region" labelMessageKey="agent.info.region">
+                                <select name="region" class="form-control"
+                                        v-model="region" v-validate="{ required: true }">
+                                    <option v-for="region in regions"
+                                            :value="region"
+                                            v-text="region">
+                                    </option>
+                                </select>
+                                <div v-visible="errors.has('region')" class="validation-message" v-text="errors.first('region')"></div>
+                            </control-group>
                             <control-group :class="{ error: errors.has('ip') }" name="ip"
                                            labelMessageKey="agent.list.IPAndDns">
                                 <input type="text" name="ip" class="form-control"
@@ -42,7 +53,7 @@
 </template>
 
 <script>
-    import { Component } from 'vue-property-decorator';
+    import { Component, Prop } from 'vue-property-decorator';
     import { Mixins } from 'vue-mixin-decorator';
 
     import ControlGroup from '../../common/ControlGroup.vue';
@@ -57,21 +68,33 @@
         },
     })
     export default class AddExternalAgentModal extends Mixins(ModalBase, MessageMixin) {
+        @Prop({ type: Array, required: false, default: [] })
+        regions;
+
+        region = '';
+
         ip = '';
         port = null;
+
+        created() {
+            if (!this.ngrinder.config.clustered) {
+                this.region = 'NONE';
+            }
+        }
 
         addExternalAgent() {
             this.$validator.validateAll()
                 .then(result => {
                     if (result) {
-                        this.$http.post(`/agent/api/external/${this.ip}/${this.port}`)
+                        this.$http.post(`/agent/api/external/${this.ip}/${this.port}?region=${this.region}`)
                             .catch(err => this.showErrorMsg(err.response.data.message))
                             .finally(() => this.hide());
                     }
                 });
         }
 
-        reset() {
+        beforeShown() {
+            this.region = '';
             this.ip = '';
             this.port = null;
         }

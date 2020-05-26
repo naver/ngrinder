@@ -20,7 +20,7 @@
                 <i class="mr-1 fa fa-stop"></i>
                 <span v-text="i18n('common.button.stop')"></span>
             </button>
-            <button class="btn btn-info mr-3" @click="$refs.addExternalAgentModal.show()" v-show="isAdmin">
+            <button class="btn btn-info mr-3" @click="$refs.addExternalAgentModal.show()" v-if="isAdmin">
                 <i class="mr-1 fa fa-plus"></i>
                 <span v-text="i18n('common.button.add')"></span>
             </button>
@@ -103,7 +103,7 @@
             :css="table.css.pagination"
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
-        <add-external-agent-modal ref="addExternalAgentModal"/>
+        <add-external-agent-modal ref="addExternalAgentModal" :regions="regions" v-if="isAdmin"/>
     </div>
 </template>
 
