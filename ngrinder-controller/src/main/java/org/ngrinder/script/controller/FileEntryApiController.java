@@ -437,7 +437,7 @@ public class FileEntryApiController {
 	}
 
 	@PostMapping("/github-config")
-	public void createGitConfig(User user) {
+	public void createGitHubConfig(User user) {
 		fileEntryService.createGitHubConfig(user);
 	}
 
