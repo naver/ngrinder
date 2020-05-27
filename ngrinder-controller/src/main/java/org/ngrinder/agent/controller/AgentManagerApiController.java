@@ -279,9 +279,9 @@ public class AgentManagerApiController {
 	 * @param ip	agent ip
 	 * @param port	agent port
 	 */
-	@PostMapping("/external/{ip}/{port}")
+	@PostMapping("/connect/{ip}/{port}")
 	@PreAuthorize("permitAll")
-	public void addExternalAgent(@PathVariable String ip, @PathVariable int port, @RequestParam String region) {
-		agentService.addExternalAgent(ip, port, region);
+	public void addConnectionAgent(@PathVariable String ip, @PathVariable int port, @RequestParam String region) {
+		agentService.addConnectionAgent(ip, port, region);
 	}
 }

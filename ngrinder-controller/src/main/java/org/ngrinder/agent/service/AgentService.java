@@ -31,7 +31,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.AgentStateTask;
-import org.ngrinder.infra.hazelcast.task.ExternalAgentTask;
+import org.ngrinder.infra.hazelcast.task.ConnectionAgentTask;
 import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
@@ -430,8 +430,8 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		agentManager.updateAgent(agentIdentity, agentManager.getAgentForceUpdate() ? "99.99" : config.getVersion());
 	}
 
-	public void addExternalAgent(String ip, int port, String region) {
-		hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new ExternalAgentTask(ip, port), region);
+	public void addConnectionAgent(String ip, int port, String region) {
+		hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new ConnectionAgentTask(ip, port), region);
 	}
 
 

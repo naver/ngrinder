@@ -20,7 +20,7 @@
                 <i class="mr-1 fa fa-stop"></i>
                 <span v-text="i18n('common.button.stop')"></span>
             </button>
-            <button class="btn btn-info mr-3" @click="$refs.addExternalAgentModal.show()" v-if="isAdmin">
+            <button class="btn btn-info mr-3" @click="$refs.addConnectionAgentModal.show()" v-if="isAdmin">
                 <i class="mr-1 fa fa-plus"></i>
                 <span v-text="i18n('common.button.add')"></span>
             </button>
@@ -103,7 +103,7 @@
             :css="table.css.pagination"
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
-        <add-external-agent-modal ref="addExternalAgentModal" :regions="regions" v-if="isAdmin"/>
+        <add-connection-agent-modal ref="addConnectionAgentModal" :regions="regions" v-if="isAdmin"/>
     </div>
 </template>
 
@@ -118,13 +118,13 @@
     import Base from '../Base.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
-    import AddExternalAgentModal from './modal/AddExternalAgentModal.vue';
+    import AddConnectionAgentModal from './modal/AddConnectionAgentModal.vue';
 
     const AGENT_KEY_TOKEN = '_';
 
     @Component({
         name: 'agentList',
-        components: { Vuetable, VuetablePagination, VueHeadful, AddExternalAgentModal },
+        components: { Vuetable, VuetablePagination, VueHeadful, AddConnectionAgentModal },
     })
     export default class AgentList extends Mixins(Base, MessagesMixin, TableConfig) {
         agents = [];

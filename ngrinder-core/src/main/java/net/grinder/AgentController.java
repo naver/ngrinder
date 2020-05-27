@@ -128,7 +128,7 @@ public class AgentController implements Agent, AgentConstants {
 				do {
 					if (consoleCommunication == null) {
 						final Connector connector;
-						if (agentConfig.isExternalMode()) {
+						if (agentConfig.isConnectionMode()) {
 							connector = m_connectorFactory.create(agentConfig.getControllerPort());
 						} else {
 							connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());

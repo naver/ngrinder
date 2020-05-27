@@ -314,7 +314,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		agentControllerServerDaemon.updateAgent(agentIdentity, version);
 	}
 
-	public void addExternalAgent(String ip, int port) throws IOException {
+	public void addConnectionAgent(String ip, int port) throws IOException {
 		Socket socket = new Socket(ip, port);
 		agentControllerServerDaemon.discriminateConnection(socket);
 	}

@@ -346,8 +346,8 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE);
 	}
 
-	public boolean isExternalMode() {
-		return getAgentProperties().getPropertyBoolean(PROP_AGENT_EXTERNAL_MODE, false);
+	public boolean isConnectionMode() {
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_CONNECTION_MODE, false);
 	}
 
 	public boolean isSilentMode() {

@@ -30,7 +30,7 @@ public interface AgentConstants {
 	public static final String PROP_AGENT_LIMIT_XMX = "agent.limit_xmx";
 	public static final String PROP_AGENT_REGION = "agent.region";
 	public static final String PROP_AGENT_SERVER_MODE = "agent.server_mode";
-	public static final String PROP_AGENT_EXTERNAL_MODE = "agent.external_mode";
+	public static final String PROP_AGENT_CONNECTION_MODE = "agent.connection_mode";
 	public static final String PROP_AGENT_ENABLE_LOCAL_DNS = "agent.enable_local_dns";
 	public static final String PROP_AGENT_ENABLE_SECURITY = "agent.enable_security";
 

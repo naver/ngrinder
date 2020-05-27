@@ -1,10 +1,10 @@
 <template>
-    <div class="modal fade" id="add-external-agent-modal">
+    <div class="modal fade" id="add-connection-agent-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <header class="modal-header">
                     <h4>
-                        <span>Add External Agent</span>
+                        <span>Add Connection Agent</span>
                     </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 </header>
@@ -34,14 +34,14 @@
                                 <input type="text" name="port" class="form-control"
                                        v-model="port" ref="port"
                                        v-validate="{ required: true, numeric: true }"
-                                       @keyup.enter.prevent="addExternalAgent"/>
+                                       @keyup.enter.prevent="addConnectionAgent"/>
                                 <div v-visible="errors.has('port')" class="validation-message" v-text="errors.first('port')"></div>
                             </control-group>
                         </fieldset>
                     </div>
                 </div>
                 <footer class="modal-footer">
-                    <button class="btn btn-success" @click.prevent="addExternalAgent">
+                    <button class="btn btn-success" @click.prevent="addConnectionAgent">
                         <i class="fa fa-plus mr-1"></i>
                         <span v-text="i18n('common.button.add')"></span>
                     </button>
@@ -61,13 +61,13 @@
     import MessageMixin from '../../common/mixin/MessagesMixin.vue';
 
     @Component({
-        name: 'addExternalAgentModal',
+        name: 'addConnectionAgentModal',
         components: { ControlGroup },
         $_veeValidate: {
             validator: 'new',
         },
     })
-    export default class AddExternalAgentModal extends Mixins(ModalBase, MessageMixin) {
+    export default class AddConnectionAgentModal extends Mixins(ModalBase, MessageMixin) {
         @Prop({ type: Array, required: false, default: [] })
         regions;
 
@@ -82,12 +82,12 @@
             }
         }
 
-        addExternalAgent() {
+        addConnectionAgent() {
             this.$validator.validateAll()
                 .then(result => {
                     if (result) {
-                        this.$http.post(`/agent/api/external/${this.ip}/${this.port}?region=${this.region}`)
-                            .catch(err => this.showErrorMsg(`Unable to connect to external agent <b>${this.ip}:${this.port}</b><br>${err.response.data.message}`))
+                        this.$http.post(`/agent/api/connect/${this.ip}/${this.port}?region=${this.region}`)
+                            .catch(err => this.showErrorMsg(`Unable to connect to connection agent <b>${this.ip}:${this.port}</b><br>${err.response.data.message}`))
                             .finally(() => this.hide());
                     }
                 });
@@ -102,7 +102,7 @@
 </script>
 
 <style lang="less" scoped>
-    #add-external-agent-modal {
+    #add-connection-agent-modal {
         .modal-dialog {
             margin-top: 80px;
         }
@@ -126,7 +126,7 @@
 </style>
 
 <style lang="less">
-    #add-external-agent-modal {
+    #add-connection-agent-modal {
         .controls {
             margin: 0 0 0 30px;
         }
