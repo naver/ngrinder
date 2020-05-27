@@ -129,7 +129,7 @@ public class AgentController implements Agent, AgentConstants {
 					if (consoleCommunication == null) {
 						final Connector connector;
 						if (agentConfig.isConnectionMode()) {
-							connector = m_connectorFactory.create(agentConfig.getControllerPort());
+							connector = m_connectorFactory.create(agentConfig.getConnectionAgentPort());
 						} else {
 							connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
 						}

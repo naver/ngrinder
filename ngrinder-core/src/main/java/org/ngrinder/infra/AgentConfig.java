@@ -330,6 +330,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
 	}
 
+	public int getConnectionAgentPort() {
+		return getAgentProperties().getPropertyInt(PROP_AGENT_CONNECTION_PORT);
+	}
+
 	public String getRegion() {
 		return getAgentProperties().getProperty(PROP_AGENT_REGION);
 	}
