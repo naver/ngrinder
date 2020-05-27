@@ -87,7 +87,7 @@
                 .then(result => {
                     if (result) {
                         this.$http.post(`/agent/api/external/${this.ip}/${this.port}?region=${this.region}`)
-                            .catch(err => this.showErrorMsg(err.response.data.message))
+                            .catch(err => this.showErrorMsg(`Unable to connect to external agent <b>${this.ip}:${this.port}</b><br>${err.response.data.message}`))
                             .finally(() => this.hide());
                     }
                 });

@@ -314,13 +314,9 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		agentControllerServerDaemon.updateAgent(agentIdentity, version);
 	}
 
-	public void addExternalAgent(String ip, int port) {
-		try {
-			Socket socket = new Socket(ip, port);
-			agentControllerServerDaemon.discriminateConnection(socket);
-		} catch (IOException e) {
-			throw new NGrinderRuntimeException("Unable to connect to external agent " + ip + ":" + port, e);
-		}
+	public void addExternalAgent(String ip, int port) throws IOException {
+		Socket socket = new Socket(ip, port);
+		agentControllerServerDaemon.discriminateConnection(socket);
 	}
 
 	/**
