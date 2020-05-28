@@ -501,14 +501,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	}
 
 	/**
-	 * Build custom class path on the given {@link PerfTest}.
+	 * Build user library classpath on the given {@link PerfTest}.
 	 *
 	 * @param perfTest perftest
 	 * @return custom class path.
 	 */
-
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public String getCustomClassPath(PerfTest perfTest) {
+	public String geUserLibraryClassPath(PerfTest perfTest) {
 		File perfTestDirectory = getDistributionPath(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
 
@@ -596,7 +595,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			}
 			grinderProperties.setInt(GRINDER_PROP_REPORT_TO_CONSOLE, 500);
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
-			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
+			grinderProperties.setProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, geUserLibraryClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
 			grinderProperties.setProperty(GRINDER_PROP_SECURITY_LEVEL, config.getSecurityLevel());

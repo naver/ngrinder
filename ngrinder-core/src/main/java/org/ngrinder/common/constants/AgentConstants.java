@@ -26,6 +26,7 @@ public interface AgentConstants {
 	public static final String PROP_AGENT_CONTROLLER_PORT = "agent.controller_port";
 	public static final String PROP_AGENT_HOST_ID = "agent.host_id";
 	public static final String PROP_AGENT_JAVA_OPT = "agent.java_opt";
+	public static final String PROP_AGENT_JVM_CLASSPATH = "agent.jvm.classpath";
 	public static final String PROP_AGENT_LIMIT_XMX = "agent.limit_xmx";
 	public static final String PROP_AGENT_REGION = "agent.region";
 	public static final String PROP_AGENT_SERVER_MODE = "agent.server_mode";

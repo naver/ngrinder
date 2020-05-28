@@ -34,6 +34,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Properties;
 
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_PROP_JVM_CLASSPATH;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -110,8 +111,8 @@ public class LocalScriptTestDriveService {
 			String grinderJVMClassPath = getHomeLibraryPath(classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER))
 				+ File.pathSeparator + getHomeLibraryPath(classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER))
 				+ File.pathSeparator + builder.buildCustomClassPath(true);
-			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath = grinderJVMClassPath.replace(";;", ";"));
-			LOGGER.info("grinder.jvm.classpath : {} ", grinderJVMClassPath);
+			properties.setProperty(GRINDER_PROP_JVM_CLASSPATH, grinderJVMClassPath = grinderJVMClassPath.replace(";;", ";"));
+			LOGGER.info(GRINDER_PROP_JVM_CLASSPATH + " : {} ", grinderJVMClassPath);
 			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
 			agentIdentity.setNumber(0);
 			String newClassPath = classPathProcessor.buildClasspathBasedOnCurrentClassLoader(LOGGER);
