@@ -29,7 +29,6 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.TimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
 
-import javax.annotation.PreDestroy;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -226,7 +225,6 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	/**
 	 * Shut down communication.
 	 */
-	@PreDestroy
 	public void shutdown() {
 		m_shutdown.set(true);
 		m_processing.set(false);

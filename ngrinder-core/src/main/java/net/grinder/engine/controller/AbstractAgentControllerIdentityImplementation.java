@@ -100,8 +100,4 @@ public abstract class AbstractAgentControllerIdentityImplementation implements S
 	public final String toString() {
 		return "Process '" + m_name + "' [" + m_identity + "]";
 	}
-
-	public String getIdentity() {
-		return m_identity;
-	}
 }
