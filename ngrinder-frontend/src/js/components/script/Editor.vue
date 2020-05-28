@@ -84,7 +84,7 @@
                              :options="cmOptions">
                 </code-mirror>
             </pane>
-            <pane v-if="validationResult" :min-size="10" size="15">
+            <pane v-if="validationResult" :min-size="10" :size="resultConsoleSize">
                 <pre class="border h-100 validation-result" v-text="validationResult"></pre>
             </pane>
         </splitpanes>
@@ -148,6 +148,8 @@
 
         SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
         hideDescription = false;
+
+        resultConsoleSize = 15;
 
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
@@ -281,7 +283,6 @@
                 this.validateGitConfig();
                 return;
             }
-
             this.validateScript();
         }
 
@@ -302,13 +303,18 @@
 
                 this.showProgressBar(this.i18n('script.editor.message.validate'));
                 this.$http.post('/script/api/github/validate', { content })
-                    .then(() => this.showSuccessMsg(this.i18n('script.editor.validate.success')))
-                    .catch(error => this.showErrorMsg(this.decorateGitHubConfigurationErrorMessage(error.response.data.message)))
+                    .then(() => this.showScriptValidationResult(this.i18n('script.editor.validate.success')))
+                    .catch(error => this.showScriptValidationResult(this.decorateGitHubConfigurationErrorMessage(error.response.data.message)))
                     .finally(this.hideProgressBar);
             } catch (error) {
-                this.showErrorMsg(`YAML syntax error<br>${error.message}`);
                 this.hideProgressBar();
+                this.showScriptValidationResult(`YAML syntax error<br>${error.message}`);
             }
+        }
+
+        showScriptValidationResult(result) {
+            this.resultConsoleSize = 150;
+            this.validationResult = result;
         }
 
         decorateGitHubConfigurationErrorMessage(errorMsg) {
@@ -326,7 +332,7 @@
                 },
                 hostString: this.targetHosts.join(','),
             }).then(res => {
-                this.validationResult = res.data;
+                this.showScriptValidationResult(res.data);
                 this.validated = true;
             }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
               .finally(this.hideProgressBar);
