@@ -426,18 +426,8 @@
         createGitConfig() {
             this.$http.post('/script/api/github-config')
                 .then(() => {
-                    this.$bootbox.confirm({
-                        message: this.i18n('script.message.no.github.config'),
-                        buttons: {
-                            confirm: { label: this.i18n('common.button.ok') },
-                            cancel: { label: this.i18n('common.button.cancel') },
-                        },
-                        onConfirm: () => this.$router.push('/script/detail/.gitconfig.yml'),
-                        onCancel: () => {
-                            this.config.github = [];
-                            this.$refs.scmSelect.selectValue('svn');
-                        },
-                    });
+                    const { href } = this.$router.resolve({ path: '/script/detail/.gitconfig.yml' });
+                    window.open(href, '_blank');
                 });
         }
 
