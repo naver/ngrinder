@@ -158,7 +158,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("hamcrest");
 		usefulJarList.add("commons-lang");
 
-		uselessJarList.add("jython-2.2");
+		uselessJarList.add("jython-2.7");
 		uselessJarList.add("ngrinder-core");
 		uselessJarList.add("ngrinder-controller");
 		uselessJarList.add("ngrinder-groovy");

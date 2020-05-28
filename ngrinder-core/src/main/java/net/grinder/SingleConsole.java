@@ -24,6 +24,7 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.Test;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.common.processidentity.ProcessReport;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
@@ -1047,7 +1048,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			for (WorkerProcessReport processReport : agentReport.getWorkerProcessReports()) {
 				// There might be the processes which is not finished but no
 				// running thread in it.
-				if (processReport.getState() != 3) {
+				ProcessReport.State state = processReport.getState();
+				if (state != null && !state.equals(ProcessReport.State.FINISHED)) {
 					notFinishedWorkerCount++;
 				}
 				processCount++;
@@ -1152,9 +1154,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
 		this.sampleModel.addModelListener(new SampleModel.Listener() {
+
 			@Override
 			public void stateChanged() {
-				capture = SingleConsole.this.sampleModel.getState().isCapturing();
+				capture = SingleConsole.this.sampleModel.getState().getValue().equals(SampleModel.State.Value.Recording);
 			}
 
 			@Override

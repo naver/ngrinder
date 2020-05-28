@@ -42,7 +42,6 @@ dependencies {
     compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
     compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version)
     compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
-    compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
     compile (group: "com.google.guava", name: "guava", version: "20.0")
     compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
 

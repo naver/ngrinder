@@ -15,6 +15,7 @@ package net.grinder.engine.process;
 
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerIdentity;
+import net.grinder.util.UniqueIdentityGenerator;
 
 /**
  * Simplified {@link WorkerIdentity}y implementation which will be ignored in the unit test context.
@@ -25,6 +26,9 @@ import net.grinder.common.processidentity.WorkerIdentity;
 public class SimpleWorkerIdentity implements WorkerIdentity {
 
 	private static final long serialVersionUID = 3;
+	private static final UniqueIdentityGenerator s_identityGenerator = new UniqueIdentityGenerator();
+	private final String m_identity;
+
 	private int m_number;
 	private SimpleAgentIdentity simpleAgentIdentity;
 
@@ -36,11 +40,18 @@ public class SimpleWorkerIdentity implements WorkerIdentity {
 	 */
 	public SimpleWorkerIdentity(String name, int number) {
 		m_number = number;
+		m_identity = s_identityGenerator.createUniqueString(name);
 		simpleAgentIdentity = new SimpleAgentIdentity(name, number);
 	}
 
+	@Override
 	public int getNumber() {
 		return m_number;
+	}
+
+	@Override
+	public String getUniqueID() {
+		return m_identity;
 	}
 
 	@Override
