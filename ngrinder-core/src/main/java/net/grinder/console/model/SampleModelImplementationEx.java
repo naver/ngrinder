@@ -123,25 +123,28 @@ public class SampleModelImplementationEx implements SampleModel {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Get the expression for TPS.
+	 * 
+	 * @return The TPS expression for this model.
 	 */
-	@Override
 	public StatisticExpression getTPSExpression() {
 		return m_tpsExpression;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Get the expression for peak TPS.
+	 * 
+	 * @return The peak TPS expression for this model.
 	 */
-	@Override
 	public StatisticExpression getPeakTPSExpression() {
 		return m_peakTPSExpression;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Register new tests.
+	 * 
+	 * @param tests	The new tests.
 	 */
-	@Override
 	public void registerTests(Collection<Test> tests) {
 		// Need to copy collection, might be immutable.
 		final Set<Test> newTests = new HashSet<Test>(tests);
@@ -180,7 +183,6 @@ public class SampleModelImplementationEx implements SampleModel {
 		final ModelTestIndex modelTestIndex = new ModelTestIndex(testArray, accumulatorArray);
 		this.modelTestIndex = modelTestIndex;
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
-			@Override
 			public void inform(Listener l) {
 				l.newTests(newTests, modelTestIndex);
 			}
@@ -197,25 +199,20 @@ public class SampleModelImplementationEx implements SampleModel {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Add a new model listener.
+	 * 
+	 * @param listener	The listener.
 	 */
-	@Override
-	public StatisticsSet getTotalLatestStatistics() {
-		return m_totalSampleAccumulator.getLastSampleStatistics();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void addModelListener(Listener listener) {
 		m_listeners.add(listener);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Add a new sample listener for the specific test.
+	 * 
+	 * @param test		The test to add the sample listener for.
+	 * @param listener	The sample listener.
 	 */
-	@Override
 	public void addSampleListener(Test test, SampleListener listener) {
 		final SampleAccumulator sampleAccumulator = m_accumulators.get(test);
 
@@ -225,17 +222,21 @@ public class SampleModelImplementationEx implements SampleModel {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Add a new total sample listener.
+	 * 
+	 * @param listener	The sample listener.
 	 */
-	@Override
 	public void addTotalSampleListener(SampleListener listener) {
 		m_totalSampleAccumulator.addSampleListener(listener);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Reset the model.
+	 * 
+	 * <p>
+	 * This doesn't affect our internal state, just the statistics and the listeners.
+	 * </p>
 	 */
-	@Override
 	public void reset() {
 
 		synchronized (m_tests) {
@@ -246,7 +247,6 @@ public class SampleModelImplementationEx implements SampleModel {
 		m_totalSampleAccumulator.zero();
 
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
-			@Override
 			public void inform(Listener l) {
 				l.resetTests();
 			}
@@ -254,41 +254,34 @@ public class SampleModelImplementationEx implements SampleModel {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Start the model.
 	 */
-	@Override
-	public void zeroStatistics() {
-		zero();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void start() {
 		getInternalState().start();
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Stop the model.
 	 */
-	@Override
 	public void stop() {
 		getInternalState().stop();
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Add a new test report.
+	 * 
+	 * @param testStatisticsMap
+	 *            The new test statistics.
 	 */
-	@Override
 	public void addTestReport(TestStatisticsMap testStatisticsMap) {
 		getInternalState().newTestReport(testStatisticsMap);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Get the current model state.
+	 * 
+	 * @return The model state.
 	 */
-	@Override
 	public State getState() {
 		return getInternalState().toExternalState();
 	}
@@ -317,7 +310,6 @@ public class SampleModelImplementationEx implements SampleModel {
 		}
 
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
-			@Override
 			public void inform(Listener l) {
 				l.stateChanged();
 			}
@@ -340,27 +332,19 @@ public class SampleModelImplementationEx implements SampleModel {
 			return getInternalState() == this;
 		}
 
-		@Override
 		public State toExternalState() {
 			// We don't bother cloning the state, only the description varies.
 			return this;
 		}
 
-		@Override
 		public void start() {
 			// Valid transition for all states.
 			setInternalState(new WaitingForTriggerState());
 		}
 
-		@Override
 		public void stop() {
 			// Valid transition for all states.
 			setInternalState(new StoppedState());
-		}
-
-		@Override
-		public long getSampleCount() {
-			return -1;
 		}
 	}
 
@@ -369,7 +353,6 @@ public class SampleModelImplementationEx implements SampleModel {
 			zero();
 		}
 
-		@Override
 		public void newTestReport(TestStatisticsMap testStatisticsMap) {
 			if (m_properties.getIgnoreSampleCount() == 0) {
 				setInternalState(new CapturingState());
@@ -381,41 +364,43 @@ public class SampleModelImplementationEx implements SampleModel {
 			getInternalState().newTestReport(testStatisticsMap);
 		}
 
-		@Override
 		public String getDescription() {
 			return m_stateWaitingString;
 		}
 
-		@Override
-		public Value getValue() {
-			return Value.WaitingForFirstReport;
+		public boolean isCapturing() {
+			return false;
+		}
+
+		public boolean isStopped() {
+			return false;
 		}
 	}
 
 	private final class StoppedState extends AbstractInternalState {
-		@Override
 		public void newTestReport(TestStatisticsMap testStatisticsMap) {
 			// nothing to do
 		}
 
-		@Override
 		public String getDescription() {
 			return m_stateStoppedString;
 		}
 
-		@Override
-		public Value getValue() {
-			return Value.Stopped;
+		public boolean isStopped() {
+			return true;
+		}
+
+		public boolean isCapturing() {
+			return false;
 		}
 	}
 
-	private abstract class SamplingState extends AbstractInternalState {
+	private abstract class AbstractSamplingState extends AbstractInternalState {
 		// Guarded by this.
-		private long m_lastTime = 0;
+		private long mlastTime = 0;
 
-		private volatile long m_sampleCount = 1;
+		private volatile long msampleCount = 1;
 
-		@Override
 		public void newTestReport(TestStatisticsMap testStatisticsMap) {
 			(testStatisticsMap.new ForEach() {
 				public void next(Test test, StatisticsSet statistics) {
@@ -446,13 +431,12 @@ public class SampleModelImplementationEx implements SampleModel {
 
 		protected void schedule() {
 			synchronized (this) {
-				if (m_lastTime == 0) {
-					m_lastTime = System.currentTimeMillis();
+				if (mlastTime == 0) {
+					mlastTime = System.currentTimeMillis();
 				}
 			}
 
 			m_timer.schedule(new TimerTask() {
-				@Override
 				public void run() {
 					sample();
 				}
@@ -468,7 +452,7 @@ public class SampleModelImplementationEx implements SampleModel {
 				final long period;
 
 				synchronized (this) {
-					period = System.currentTimeMillis() - m_lastTime;
+					period = System.currentTimeMillis() - mlastTime;
 				}
 
 				final long sampleInterval = m_properties.getSampleInterval();
@@ -481,7 +465,7 @@ public class SampleModelImplementationEx implements SampleModel {
 					m_totalSampleAccumulator.refreshIntervalStatistics(sampleInterval, period);
 				}
 				totalSampleAccumulatorSnapshot.fireSample(sampleInterval, period);
-				++m_sampleCount;
+				++msampleCount;
 
 				// I'm ignoring a minor race here: the model could have been
 				// stopped
@@ -495,7 +479,6 @@ public class SampleModelImplementationEx implements SampleModel {
 				setInternalState(nextState());
 
 				m_listeners.apply(new ListenerSupport.Informer<Listener>() {
-					@Override
 					public void inform(Listener l) {
 						l.newSample();
 					}
@@ -509,9 +492,8 @@ public class SampleModelImplementationEx implements SampleModel {
 			}
 		}
 
-		@Override
 		public final long getSampleCount() {
-			return m_sampleCount;
+			return msampleCount;
 		}
 
 		protected abstract boolean shouldAccumulateSamples();
@@ -519,47 +501,46 @@ public class SampleModelImplementationEx implements SampleModel {
 		protected abstract InternalState nextState();
 	}
 
-	private final class TriggeredState extends SamplingState {
+	private final class TriggeredState extends AbstractSamplingState {
 		public TriggeredState() {
 			schedule();
 		}
 
-		@Override
 		protected boolean shouldAccumulateSamples() {
 			return false;
 		}
 
-		@Override
 		protected InternalState nextState() {
 			if (getSampleCount() > m_properties.getIgnoreSampleCount()) {
 				return new CapturingState();
 			}
+
 			return this;
 		}
 
-		@Override
 		public String getDescription() {
 			return m_stateIgnoringString + getSampleCount();
 		}
 
-		@Override
-		public Value getValue() {
-			return Value.IgnoringInitialSamples;
+		public boolean isCapturing() {
+			return false;
+		}
+
+		public boolean isStopped() {
+			return false;
 		}
 	}
 
-	private final class CapturingState extends SamplingState {
+	private final class CapturingState extends AbstractSamplingState {
 		public CapturingState() {
 			zero();
 			schedule();
 		}
 
-		@Override
 		protected boolean shouldAccumulateSamples() {
 			return true;
 		}
 
-		@Override
 		protected InternalState nextState() {
 			final int collectSampleCount = m_properties.getCollectSampleCount();
 
@@ -570,14 +551,16 @@ public class SampleModelImplementationEx implements SampleModel {
 			return this;
 		}
 
-		@Override
 		public String getDescription() {
 			return m_stateCapturingString + getSampleCount();
 		}
 
-		@Override
-		public Value getValue() {
-			return Value.Recording;
+		public boolean isCapturing() {
+			return true;
+		}
+
+		public boolean isStopped() {
+			return false;
 		}
 	}
 

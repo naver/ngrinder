@@ -349,7 +349,7 @@ final class GrinderProcess {
 
 			m_dataLogger.info(dataLogHeader.toString());
 
-			sendStatusMessage(ProcessReport.State.STARTED, (short) 0, numberOfThreads);
+			sendStatusMessage(ProcessReport.STATE_STARTED, (short) 0, numberOfThreads);
 			boolean threadRampUp = properties.getBoolean("grinder.threadRampUp", false);
 			final ThreadSynchronisation threadSynchronisation = threadRampUp ?
 					new ThreadRampUpEnabledThreadSynchronisation(m_eventSynchronisation, m_sleeper) :
@@ -445,7 +445,7 @@ final class GrinderProcess {
 			reportTimerTask.run();
 
 			if (!m_communicationShutdown) {
-				sendStatusMessage(ProcessReport.State.FINISHED, (short) 0, (short) 0);
+				sendStatusMessage(ProcessReport.STATE_FINISHED, (short) 0, (short) 0);
 			}
 
 			m_consoleSender.shutdown();
@@ -525,7 +525,7 @@ final class GrinderProcess {
 						m_consoleSender.send(new ReportStatisticsMessage(sample));
 					}
 
-					sendStatusMessage(ProcessReport.State.RUNNING, m_threads.getNumberOfRunningThreads(),
+					sendStatusMessage(ProcessReport.STATE_RUNNING, m_threads.getNumberOfRunningThreads(),
 							m_threads.getTotalNumberOfThreads());
 				} catch (final CommunicationException e) {
 					m_terminalLogger.info("Report to console failed", e);
@@ -536,7 +536,7 @@ final class GrinderProcess {
 		}
 	}
 
-	private void sendStatusMessage(final ProcessReport.State state, final short numberOfThreads, final short totalNumberOfThreads)
+	private void sendStatusMessage(final short state, final short numberOfThreads, final short totalNumberOfThreads)
 			throws CommunicationException {
 
 		m_consoleSender.send(new WorkerProcessReportMessage(state, numberOfThreads, totalNumberOfThreads));

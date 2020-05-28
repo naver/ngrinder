@@ -52,11 +52,6 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 		return m_number;
 	}
 
-	@Override
-	public String getUniqueID() {
-		return getIdentity();
-	}
-
 	/**
 	 * Set the console allocated agent number.
 	 * 

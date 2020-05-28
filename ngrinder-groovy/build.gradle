@@ -12,7 +12,7 @@ dependencies {
 
     testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 
-    testAgent (group: "net.sf.grinder", name: "grinder-dcr-agent", version: "3.11")
+    testAgent (group: "net.sf.grinder", name: "grinder-dcr-agent", version: "3.9.1")
 }
 
 test {
