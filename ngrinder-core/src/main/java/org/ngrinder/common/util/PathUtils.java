@@ -14,7 +14,6 @@
 package org.ngrinder.common.util;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility class for path manipulation.
@@ -84,4 +83,13 @@ public abstract class PathUtils {
 		}
 		return path;
 	}
+
+	public static String getPrePath(String originPath, String subPath) {
+		int subPathIndex = originPath.indexOf(subPath);
+		if (subPathIndex == -1) {
+			return originPath;
+		}
+		return originPath.substring(0, subPathIndex);
+	}
+
 }

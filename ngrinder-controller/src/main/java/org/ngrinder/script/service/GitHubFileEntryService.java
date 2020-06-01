@@ -24,6 +24,8 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.yaml.snakeyaml.Yaml;
 
@@ -37,8 +39,7 @@ import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -50,6 +51,7 @@ import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.JsonUtils.deserialize;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.PathUtils.getPrePath;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.script.model.FileType.getFileTypeByName;
@@ -113,20 +115,27 @@ public class GitHubFileEntryService {
 			}
 			String sha = ghRepository.getBranch(activeBranch).getSHA1();
 			String scriptPath = perfTest.getScriptName();
-
 			String checkoutDirPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
-			SVNUpdateClient svnUpdateClient = createSvnUpdateClient(gitHubConfig);
+
+			SVNClientManager svnClientManager = createSvnClientManager(gitHubConfig);
+
+			SVNUpdateClient svnUpdateClient = svnClientManager.getUpdateClient();
 			File checkoutDir = new File(checkoutDirPath);
 			SVNURL checkoutUrl = createCheckoutUrl(ghRepository, scriptPath, configuredBranch, isDefaultBranch(configuredBranch, defaultBranch));
 
+			cleanUpGitHubStorage(svnClientManager.getStatusClient(), checkoutDir, checkoutUrl);
+
 			perfTestService.markProgressAndStatus(perfTest, Status.CHECKOUT_SCRIPT, "Getting script from github.");
 			if (!isSvnWorkingCopyDir(checkoutDir)) {
+				if (checkoutDir.exists()) {
+					deleteQuietly(checkoutDir);
+				}
 				svnUpdateClient.doCheckout(checkoutUrl, checkoutDir, HEAD, HEAD, INFINITY, true);
 				saveSha(sha, checkoutDirPath);
 				log.info("github checkout to: {}, url: {} sha: {}", checkoutDir, checkoutUrl.toString(), sha);
 			} else {
 				if (!isSameRevision(sha, checkoutDirPath)) {
-					svnUpdateClient.doSwitch(checkoutDir, checkoutUrl, HEAD, HEAD, INFINITY, true, true);
+					svnUpdateClient.doUpdate(checkoutDir, HEAD, INFINITY, true, true);
 					saveSha(sha, checkoutDirPath);
 					log.info("github update to: {}, sha: {}", checkoutDir, sha);
 				}
@@ -138,18 +147,31 @@ public class GitHubFileEntryService {
 		}
 	}
 
+	private void cleanUpGitHubStorage(SVNStatusClient svnStatusClient, File checkoutDir, SVNURL checkoutUrl) {
+		try {
+			SVNStatus svnStatus = svnStatusClient.doStatus(checkoutDir, false);
+			if (!svnStatus.getURL().equals(checkoutUrl)) {
+				String svnFilePath = svnStatus.getFile().getAbsolutePath();
+				String repositoryRootPath = svnStatus.getRepositoryRootURL().getPath();
+				deleteQuietly(new File(getPrePath(svnFilePath, repositoryRootPath)));
+			}
+		} catch (SVNException | NullPointerException e) {
+			noOp();
+		}
+	}
+
 	private String createScriptRevisionUrl(String baseUrl, String treeSha, String scriptPath) {
 		return baseUrl + "/blob/" + treeSha + "/" + scriptPath;
 	}
 
-	private SVNUpdateClient createSvnUpdateClient(GitHubConfig gitHubConfig) {
+	private SVNClientManager createSvnClientManager(GitHubConfig gitHubConfig) {
 		// userName is don't care parameter if using access token.
 		BasicAuthenticationManager basicAuthenticationManager
 			= new BasicAuthenticationManager("ngrinder", gitHubConfig.getAccessToken());
 
 		SVNClientManager svnClientManager = newInstance();
 		svnClientManager.setAuthenticationManager(basicAuthenticationManager);
-		return svnClientManager.getUpdateClient();
+		return svnClientManager;
 	}
 
 	private boolean isDefaultBranch(String configuredBranch, String defaultBranch) {
@@ -187,18 +209,21 @@ public class GitHubFileEntryService {
 	}
 
 	private void saveSha(String sha, String checkoutDirPath) throws IOException {
-		File shaFile = new File(checkoutDirPath + "/sha");
-		writeStringToFile(shaFile, sha, UTF_8);
+		writeStringToFile(getShaFile(checkoutDirPath), sha, UTF_8);
 	}
 
 	private boolean isSameRevision(String sha, String checkoutDirPath) throws IOException {
-		File shaFile = new File(checkoutDirPath + "/sha");
+		File shaFile = getShaFile(checkoutDirPath);
 		if (!shaFile.exists()) {
 			return false;
 		}
 
 		String oldSha = readFileToString(shaFile, UTF_8).trim();
 		return StringUtils.equals(sha, oldSha);
+	}
+
+	private File getShaFile(String checkoutDirPath) {
+		return new File(checkoutDirPath + "/.sha");
 	}
 
 	private String getCheckoutDirPath(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
