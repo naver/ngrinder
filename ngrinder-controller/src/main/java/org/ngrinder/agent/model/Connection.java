@@ -1,8 +1,6 @@
 package org.ngrinder.agent.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.ngrinder.model.BaseEntity;
 
 import javax.persistence.Entity;
@@ -13,6 +11,8 @@ import javax.persistence.Table;
 @ToString
 @Entity
 @Table(name = "CONNECTION")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Connection extends BaseEntity<Connection> {
 	private String ip;
 	private String name;

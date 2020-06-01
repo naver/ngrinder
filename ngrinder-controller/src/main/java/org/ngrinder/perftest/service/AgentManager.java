@@ -21,6 +21,7 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
+import net.grinder.console.communication.ConnectionAgentListener;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -32,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.CRC32ChecksumUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
@@ -357,4 +357,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	public void addAgentStatusUpdateListener(AgentStatusUpdateListener agentStatusUpdateListener) {
 		agentControllerServerDaemon.addAgentStatusUpdateListener(agentStatusUpdateListener);
 	}
+
+    public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
+		agentControllerServerDaemon.addConnectionAgentListener(connectionAgentListener);
+    }
 }

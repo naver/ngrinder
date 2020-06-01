@@ -19,10 +19,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
-import net.grinder.engine.communication.AgentControllerServerListener;
-import net.grinder.engine.communication.AgentDownloadGrinderMessage;
-import net.grinder.engine.communication.AgentUpdateGrinderMessage;
-import net.grinder.engine.communication.LogReportGrinderMessage;
+import net.grinder.engine.communication.*;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -387,6 +384,10 @@ public class AgentController implements Agent, AgentConstants {
 					}
 				}
 			};
+
+			if (agentConfig.isConnectionMode()) {
+				m_sender.send(new ConnectionAgentMessage(NetworkUtils.getLocalHostAddress(), agentConfig.getAgentHostID(), agentConfig.getConnectionAgentPort()));
+			}
 		}
 
 		public void sendMessage(Message message) {

@@ -296,4 +296,8 @@ public class AgentControllerServerDaemon {
 	public void addLogArrivedListener(LogArrivedListener logArrivedListener) {
 		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
 	}
+
+	public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
+		getComponent(AgentProcessControlImplementation.class).addConnectionAgentListener(connectionAgentListener);
+	}
 }

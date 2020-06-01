@@ -20,12 +20,15 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
+import net.grinder.console.communication.ConnectionAgentListener;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentRequest;
+import org.ngrinder.agent.model.Connection;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.repository.ConnectionRepository;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -77,7 +80,8 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  */
 @Service
 @RequiredArgsConstructor
-public class AgentService extends AbstractAgentService implements TopicListener<AgentRequest>, AgentStatusUpdateListener {
+public class AgentService extends AbstractAgentService
+	implements TopicListener<AgentRequest>, AgentStatusUpdateListener, ConnectionAgentListener {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentService.class);
 
 	protected final AgentManager agentManager;
@@ -97,12 +101,15 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 
 	protected final ScheduledTaskService scheduledTaskService;
 
+	private final ConnectionRepository connectionRepository;
+
 	@Value("${ngrinder.version}")
 	private String nGrinderVersion;
 
 	@PostConstruct
 	public void init() {
 		agentManager.addAgentStatusUpdateListener(this);
+		agentManager.addConnectionAgentListener(this);
 		topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
 	}
 
@@ -521,5 +528,14 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		for (AgentInfo agentInfo : agentInfoSet) {
 			agentInfoStore.deleteAgentInfo(agentInfo.getAgentKey());
 		}
+	}
+
+	@Override
+	public void onConnectionAgentMessage(String ip, String name, int port) {
+		Connection connection = connectionRepository.findByIpAndName(ip, name);
+		if (connection == null) {
+			connection = new Connection(ip, name, port, config.getRegion());
+		}
+		connectionRepository.save(connection);
 	}
 }

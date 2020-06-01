@@ -85,7 +85,7 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 
 		agentService = new AgentService(agentManager,
 			null, null, mockRegionService, null,
-			null, mockAgentInfoStore, null) {
+			null, mockAgentInfoStore, null, null) {
 			@Override
 			public void init() {
 				noOp();
