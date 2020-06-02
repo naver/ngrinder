@@ -38,6 +38,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.*;
+import org.ngrinder.perftest.service.samplinglistener.TooManyErrorCheckPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -50,7 +51,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static net.grinder.SingleConsole.IGNORE_TOO_MANY_ERROR;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -241,7 +242,6 @@ public class PerfTestRunnable implements ControllerConstants {
 		perfTestService.markStatusAndProgress(perfTest, START_CONSOLE, "Console is being prepared.");
 		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
-		consoleProperty.putExtraProperties(IGNORE_TOO_MANY_ERROR, perfTest.getIgnoreTooManyError());
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		singleConsole.start();
 		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort());
@@ -356,16 +356,15 @@ public class PerfTestRunnable implements ControllerConstants {
 		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
 				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
-				perfTestService, scheduledTaskService));
+				perfTestService, scheduledTaskService));;
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
-				(OnTestSamplingRunnable.class, new MonitorCollectorPlugin(config, scheduledTaskService,
-						perfTestService, perfTest.getId()));
+				(OnTestSamplingRunnable.class, asList(new MonitorCollectorPlugin(config, scheduledTaskService,
+					perfTestService, perfTest.getId()), new TooManyErrorCheckPlugin()));
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
 				agentManager, scheduledTaskService));
 	}
-
 
 	/**
 	 * Notify test finish to plugins.

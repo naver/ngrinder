@@ -87,16 +87,15 @@ public class PluginManager {
 	 *
 	 * @param <M>           module type
 	 * @param moduleClass   module class
-	 * @param defaultPlugin default plugin
+	 * @param defaultPlugins default plugins
 	 * @return plugin list
 	 */
-	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
+	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, List<M> defaultPlugins) {
 		ArrayList<M> pluginClasses = new ArrayList<>();
-		if (defaultPlugin != null) {
-			pluginClasses.add(defaultPlugin);
+		if (defaultPlugins != null) {
+			pluginClasses.addAll(defaultPlugins);
 		}
 		pluginClasses.addAll(manager.getExtensions(moduleClass));
 		return pluginClasses;
 	}
-
 }

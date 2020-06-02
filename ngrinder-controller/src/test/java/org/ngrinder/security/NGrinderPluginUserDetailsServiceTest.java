@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		when(auth.getName()).thenReturn("hello1");
 		when(auth.getCredentials()).thenReturn("world");
 
-		when(manager.getEnabledModulesByClass(any(OnLoginRunnable.class.getClass()), any(OnLoginRunnable.class)))
+		when(manager.getEnabledModulesByClass(any(OnLoginRunnable.class.getClass()), any(List.class)))
 						.thenReturn(new ArrayList<OnLoginRunnable>() {
 							{
 								add(defaultLoginPlugin);
