@@ -1,0 +1,12 @@
+#name: My Github Config
+#owner: naver
+#repo: ngrinder
+#access-token: e1a47e652762b60a...3ddc0713b07g13k
+#---
+#name: Another Config
+#owner: naver
+#repo: pinpoint
+#access-token: t9a47e6ff262b60a...3dac0713b07e82a
+#branch: feature/add-ngrinder-scripts
+#base-url: https://api.mygithub.com
+#script-root: ngrinder-scripts

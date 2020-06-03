@@ -1,5 +1,5 @@
 <template>
-    <div class="modal" id="schedule-modal">
+    <div class="modal fade" id="schedule-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -60,11 +60,7 @@
 
         validation = true;
 
-        mounted() {
-            this.init();
-        }
-
-        init() {
+        beforeShown() {
             const date = this.getBrowserTimeApplyingTimezone();
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
@@ -78,6 +74,10 @@
             $(this.$refs.scheduledDate).datepicker({
                 format: 'yyyy-mm-dd',
             });
+        }
+
+        beforeHidden() {
+            this.validation = true;
         }
 
         getBrowserTimeApplyingTimezone(time) {

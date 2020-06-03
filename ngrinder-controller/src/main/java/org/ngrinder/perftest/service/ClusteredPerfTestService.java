@@ -22,6 +22,7 @@ import org.ngrinder.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.GitHubFileEntryService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -30,8 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 3.0
  */
 public class ClusteredPerfTestService extends PerfTestService {
-	public ClusteredPerfTestService(PerfTestRepository perfTestRepository, ConsoleManager consoleManager, AgentManager agentManager, Config config, FileEntryService fileEntryService, TagService tagService, ScriptHandlerFactory scriptHandlerFactory, HazelcastService hazelcastService) {
-		super(perfTestRepository, consoleManager, agentManager, config, fileEntryService, tagService, scriptHandlerFactory, hazelcastService);
+	public ClusteredPerfTestService(PerfTestRepository perfTestRepository, ConsoleManager consoleManager,
+									AgentManager agentManager, Config config, FileEntryService fileEntryService,
+									TagService tagService, ScriptHandlerFactory scriptHandlerFactory,
+									HazelcastService hazelcastService, GitHubFileEntryService gitHubFileEntryService) {
+		super(perfTestRepository, consoleManager, agentManager, config, fileEntryService,
+			tagService, scriptHandlerFactory, hazelcastService, gitHubFileEntryService);
 	}
 
 	/**

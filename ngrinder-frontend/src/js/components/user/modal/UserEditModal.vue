@@ -33,7 +33,8 @@
         config = {};
         dataLoadFinished = false;
 
-        created() {
+        // Override ModalBase's show()
+        show() {
             const url = this.userId ? `/user/api/${this.userId}/detail` : '/user/api/profile';
             this.$http.get(url)
                 .then(res => this.init(res.data.user, res.data.config))
@@ -44,9 +45,15 @@
             this.user = user;
             this.config = config;
             this.dataLoadFinished = true;
+
             this.$nextTick(() => {
-                this.show();
-                $(this.$el).on('hidden.bs.modal', () => this.$emit('hidden'));
+                $(this.$el).modal('show');
+                $(this.$el).on('hidden.bs.modal', () => this.dataLoadFinished = false);
+                $(this.$el).on('shown.bs.modal', () => {
+                    if (this.$refs.userInfo.$refs[this.focus]) {
+                        this.$refs.userInfo.$refs[this.focus].focus();
+                    }
+                });
             });
         }
 

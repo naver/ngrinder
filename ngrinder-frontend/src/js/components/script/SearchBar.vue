@@ -2,7 +2,8 @@
     <div class="search-bar card card-header">
         <div class="d-flex justify-content-between search-container">
             <div>
-                <input type="text" class="search-query form-control" placeholder="Keywords" v-model="query" @keyup.enter="search">
+                <input type="text" class="search-query form-control"
+                       placeholder="Keywords" v-model="query" @keyup.enter="search" v-focus>
                 <button class="btn btn-info search-btn" @click="search">
                     <i class="fa fa-search mr-1"></i>
                     <span v-text="i18n('common.button.search')"></span>
@@ -29,7 +30,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-between">
-            <div v-if="$route.name !== 'scriptSearch'">
+            <div v-show="$route.name !== 'scriptSearch'">
                 <button class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
                     <i class="fa fa-file mr-1"></i>
                     <span v-text="i18n('script.action.createScript')"></span>
@@ -43,14 +44,14 @@
                     <span v-text="i18n('script.action.uploadResources')"></span>
                 </button>
             </div>
-            <button class="pointer-cursor btn btn-danger float-right" @click="$emit('deleteFile')">
+            <button class="pointer-cursor btn btn-danger ml-auto" @click="$emit('deleteFile')">
                 <i class="fa fa-remove mr-1"></i>
                 <span v-text="i18n('script.action.delete')"></span>
             </button>
         </div>
-        <create-script-modal ref="createScriptModal" :currentPath="currentPath"></create-script-modal>
-        <create-folder-modal ref="createFolderModal" :currentPath="currentPath"></create-folder-modal>
-        <upload-file-modal ref="uploadFileModal" :currentPath="currentPath"></upload-file-modal>
+        <create-script-modal ref="createScriptModal" :currentPath="currentPath" focus="fileName"></create-script-modal>
+        <create-folder-modal ref="createFolderModal" :currentPath="currentPath" focus="folderName"></create-folder-modal>
+        <upload-file-modal ref="uploadFileModal" :currentPath="currentPath" focus="file"></upload-file-modal>
     </div>
 </template>
 <script>
@@ -94,6 +95,13 @@
         }
 
         search() {
+            if (!this.query) {
+                if (this.$route.path !== '/script') {
+                    this.$router.push('/script');
+                }
+                return;
+            }
+
             this.$router.push({ path: '/script/search', query: { query: this.query } });
         }
 
@@ -108,11 +116,16 @@
         height: 90px;
 
         .search-container {
+            line-height: 0;
             margin-bottom: 8px;
+
+            .input-group-text {
+                height: 30px;
+            }
 
             .search-query {
                 height: 30px;
-                width: 220px;
+                width: 339px;
             }
 
             .search-btn {

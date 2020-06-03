@@ -16,7 +16,8 @@
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import { Inject } from 'vue-property-decorator';
-    import '../../../plugins/select2/select2.min';
+    import 'select2';
+    import 'select2/select2.css';
 
     @Component({
         props: {
@@ -56,11 +57,13 @@
                     if (self.type === 'select') {
                         self.$nextTick(() => self.$validator.validate(self.name));
                     }
-                });
+                })
+                .on('select2-opening', () => self.$emit('opening'));
         }
 
         selectValue(value) {
             $(this.$refs.select2).select2('val', value);
+            this.$emit('input', value);
         }
 
         getSelectedOption(key) {
@@ -70,18 +73,18 @@
         selectedIndex() {
             return this.$refs.select2.options.selectedIndex;
         }
+
+        refreshDropDown() {
+            $(this.$refs.select2).select2('search', '');
+        }
     }
 
 </script>
 
-<style lang="less" scoped>
-    @import '../../../plugins/select2/select2.css';
-</style>
-
 <style lang="less">
     .select2-container {
         .select2-choice {
-            height: 30px;
+            height: 30px !important;
         }
     }
 

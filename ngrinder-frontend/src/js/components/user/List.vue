@@ -11,7 +11,7 @@
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
             <input type="text" class="search-query-without-radios form-control"
-                   placeholder="Keywords" @keyup.enter="search" v-model="keywords">
+                   placeholder="Keywords" @keyup.enter="search" v-model="keywords" v-focus>
             <button class="btn btn-info btn-search" @click="search">
                 <i class="fa fa-search mr-1"></i>
                 <span v-text="i18n('common.button.search')"></span>
@@ -21,7 +21,7 @@
                     <i class="fa fa-user mr-1"></i>
                     <span v-text="i18n('user.list.button.create')"></span>
                 </button>
-                <button class="btn btn-danger" @click="deleteCheckedUsers">
+                <button class="btn btn-danger" @click="deleteUsers($refs.vuetable.selectedTo.join(','))">
                     <i class="fa fa-remove mr-1"></i>
                     <span v-text="i18n('user.list.button.delete')"></span>
                 </button>
@@ -77,14 +77,19 @@
                 </a>
             </template>
         </vuetable>
-        <vuetable-pagination
-            ref="pagination"
-            :css="table.css.pagination"
-            @vuetable-pagination:change-page="changePage">
+        <vuetable-pagination ref="pagination"
+                             :css="table.css.pagination"
+                             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
-        <sign-up-modal ref="signUpModal" @saved="$refs.vuetable.reload()"></sign-up-modal>
-        <user-edit-modal v-if="showUserEditModal" ref="userEditModal" :user-id="targetUserId"
-                            @saved="$refs.vuetable.reload()" @hidden="showUserEditModal = !showUserEditModal"></user-edit-modal>
+        <sign-up-modal ref="signUpModal"
+                       focus="userId"
+                       @saved="$refs.vuetable.reload()">
+        </sign-up-modal>
+        <user-edit-modal :user-id="targetUserId"
+                         ref="userEditModal"
+                         focus="userName"
+                         @saved="$refs.vuetable.reload()">
+        </user-edit-modal>
     </div>
 </template>
 
@@ -126,7 +131,6 @@
         showTable = false;
 
         targetUserId = '';
-        showUserEditModal = false;
 
         created() {
             this.table.css = this.tableCss;
@@ -193,6 +197,16 @@
         }
 
         deleteUsers(userIds) {
+            if (!userIds) {
+                this.$bootbox.alert({
+                    message: this.i18n('user.list.alert.delete'),
+                    buttons: {
+                        ok: { label: this.i18n('common.button.ok') },
+                    },
+                });
+                return;
+            }
+
             this.$bootbox.confirm({
                 message: `${this.i18n('user.list.confirm.delete')}?`,
                 buttons: {
@@ -206,10 +220,6 @@
             });
         }
 
-        deleteCheckedUsers() {
-            this.deleteUsers(this.$refs.vuetable.selectedTo.join(','));
-        }
-
         changeRole() {
             this.keywords = '';
             this.$refs.vuetable.currentPage = 1;
@@ -220,7 +230,7 @@
 
         editUser(userId) {
             this.targetUserId = userId;
-            this.showUserEditModal = true;
+            this.$nextTick(this.$refs.userEditModal.show);
         }
 
         isAdminUser(user) {
@@ -235,7 +245,7 @@
             flex-direction: row;
 
             .search-query-without-radios {
-                width: 234px;
+                width: 350px;
                 height: 30px;
             }
 
@@ -246,6 +256,7 @@
 
         .table {
             margin-bottom: 7px;
+            table-layout: fixed;
         }
 
         .user-name {

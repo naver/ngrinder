@@ -9,17 +9,17 @@
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
                 <input type="search" name="search" class="search-query-without-radios form-control"
-                       placeholder="Keywords" v-model="searchText" @keydown.enter="$emit('search')">
+                       placeholder="Keywords" v-model="searchText" @keydown.enter="$emit('search')" v-focus>
                 <button class="btn btn-info align-baseline" @click="$emit('search')">
                     <i class="fa fa-search mr-1"></i>
                     <span v-text="i18n('common.button.search')"></span>
                 </button>
                 <label class="checkbox-label">
-                    <input type="checkbox" class="align-middle" @click="$emit('filter-running', {enable: !running, token: 'R'})" v-model="running">
+                    <input type="checkbox" class="align-middle" v-model="running">
                     <span v-text="i18n('perfTest.action.running')"></span>
                 </label>
                 <label class="checkbox-label">
-                    <input type="checkbox" class="align-middle" @click="$emit('filter-schduled', {enable: !scheduled, token: 'S'})" v-model="scheduled">
+                    <input type="checkbox" class="align-middle" v-model="scheduled">
                     <span v-text="i18n('perfTest.action.scheduled')"></span>
                 </label>
             </div>
@@ -40,7 +40,7 @@
 </template>
 <script>
     import { Mixins } from 'vue-mixin-decorator';
-    import Component from 'vue-class-component';
+    import { Component, Watch } from 'vue-property-decorator';
     import Base from '../../Base.vue';
     import Select2 from '../../common/Select2.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
@@ -56,6 +56,16 @@
 
         running = false;
         scheduled = false;
+
+        @Watch('running')
+        filterRunning() {
+            this.$emit('filter-running', { enable: this.running, token: 'R' });
+        }
+
+        @Watch('scheduled')
+        filterScheduled() {
+            this.$emit('filter-schduled', { enable: this.scheduled, token: 'S' });
+        }
 
         created() {
             this.getUserTags();
@@ -101,7 +111,8 @@
         }
 
         .search-query-without-radios {
-            width: 170px;
+            width: 250px;
+            height: 30px;
         }
 
         .checkbox-label {

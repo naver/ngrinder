@@ -179,6 +179,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setVuserPerAgent(newTest.getProcesses() * newTest.getThreads());
 		newTest.setRegion(config.getRegion());
 		newTest.setAgentCount(1);
+		newTest.setScm("svn");
 
 		perfTestApiController.saveOne(getTestUser(), newTest, false);
 		PerfTest savedTest = perfTestApiController.getOne(getTestUser(), newTest.getId());

@@ -66,7 +66,7 @@
             </control-group>
 
             <div v-if="!config.showPasswordByDefault">
-                <a href="#" @click="displayPasswordField = !displayPasswordField" class="pointer-cursor" v-text="i18n('user.info.button.changePwd')"></a>
+                <a href="" @click.prevent="displayPasswordField = !displayPasswordField" class="pointer-cursor" v-text="i18n('user.info.button.changePwd')"></a>
             </div>
 
             <template v-if="config.allowPasswordChange">
@@ -207,7 +207,7 @@
                 this.user[prop] = '';
             }
             this.confirmPassword = '';
-            this.$nextTick(() => this.$validator.validateAll());
+            this.errors.clear();
         }
 
         save() {

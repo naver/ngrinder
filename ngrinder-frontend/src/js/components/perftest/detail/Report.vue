@@ -204,7 +204,8 @@
         }
 
         .comment-container {
-            width: 798px;
+            height: 150px;
+            width: 800px;
 
             textarea {
                 height: 84px;

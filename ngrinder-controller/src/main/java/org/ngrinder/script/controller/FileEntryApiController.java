@@ -13,23 +13,23 @@
  */
 package org.ngrinder.script.controller;
 
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FilenameUtils.getPath;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.EncodingUtils.encodePathWithUTF8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.*;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.kohsuke.github.GHTreeEntry;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -40,6 +40,7 @@ import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.*;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.GitHubFileEntryService;
 import org.ngrinder.script.service.ScriptValidationService;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
@@ -85,6 +86,8 @@ public class FileEntryApiController {
 	private final MessageSource messageSource;
 
 	private final UserContext userContext;
+
+	private final GitHubFileEntryService gitHubFileEntryService;
 
 	@GetMapping("/handlers")
 	public List<ScriptHandler> getHandlers() {
@@ -230,7 +233,6 @@ public class FileEntryApiController {
 	 * @return detail view properties
 	 */
 	@GetMapping("/detail/**")
-	@SuppressWarnings("SpellCheckingInspection")
 	public Map<String, Object> getOne(User user,
 									  @RemainedPath String path,
 									  @RequestParam(value = "r", required = false) Long revision) {
@@ -422,5 +424,32 @@ public class FileEntryApiController {
 		} catch (IOException e) {
 			throw processException("error while download file", e);
 		}
+	}
+
+	@GetMapping("/github-config")
+	public Set<GitHubConfig> getGitHubConfig(User user) {
+		try {
+			return gitHubFileEntryService.getAllGitHubConfig(user);
+		} catch (FileNotFoundException e) {
+			return emptySet();
+		}
+	}
+
+	@PostMapping("/github-config")
+	public void createGitHubConfig(User user) {
+		fileEntryService.createGitHubConfig(user);
+	}
+
+	@GetMapping("/github")
+	public Map<String, List<GHTreeEntry>> getGitHubScripts(User user, boolean refresh) throws FileNotFoundException {
+		if (refresh) {
+			gitHubFileEntryService.evictGitHubScriptCache(user);
+		}
+		return gitHubFileEntryService.getScripts(user);
+	}
+
+	@PostMapping("/github/validate")
+	public void validateGithubConfig(@RequestBody FileEntry fileEntry) {
+		gitHubFileEntryService.validate(fileEntry);
 	}
 }

@@ -158,6 +158,18 @@
             }
         }
 
+        .select2-container {
+            .select2-default {
+                color: #777 !important;
+            }
+        }
+
+        .modal-dialog {
+            .modal-body {
+                word-break: break-all;
+            }
+        }
+
         .uneditable-input {
             border-color: #ced4da !important;
             background-color: #fff;
@@ -166,7 +178,7 @@
         }
 
         .control-group.error {
-            input, select, button, .input-group-text {
+            input, select, .input-group-text {
                 color: @error-color;
                 border-color: @error-color;
                 box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);

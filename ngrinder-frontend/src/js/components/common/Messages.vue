@@ -9,7 +9,7 @@
              v-show="showErrMsgDiv">
             <button class="close" @click="close">x</button>
             <h4 class="alert-heading">ERROR</h4>
-            <span class="error-message" v-text="errMessage"></span>
+            <div class="error-message" v-html="errMessage"></div>
         </div>
         <transition name="fade">
             <div class="message-div rounded progress-bar progress-bar-striped progress-bar-animated" v-show="showPrgDiv">
@@ -37,6 +37,13 @@
         progressMessage = '';
         alertMessage = '';
         errMessage = '';
+
+        mounted() {
+            $('.error-message').on('click', '.link-git-config', () => {
+                this.$router.push('/script/detail/.gitconfig.yml');
+                this.close();
+            });
+        }
 
         close() {
             this.showErrMsgDiv = false;
@@ -69,6 +76,8 @@
 
         showErrorMsg(msg) {
             msg = msg || '';
+            msg = msg.replace(/\n/g, '<br>')
+                     .replace('.gitconfig.yml', '<span class="link-git-config pointer-cursor">.gitconfig.yml</span>');
             this.showErrMsgDiv = false;
             this.errMessage = msg;
             this.showErrMsgDiv = true;
@@ -104,6 +113,14 @@
 </style>
 
 <style lang="less">
+    .error-message {
+        .link-git-config {
+            color: #007bff;
+            text-decoration: underline;
+            text-underline-position: under;
+        }
+    }
+
     .fade-enter-active, .fade-leave-active {
         transition: opacity .1s;
     }

@@ -40,3 +40,4 @@ controller.update_chunk_size,1048576,
 controller.inactive_client_time_out,30000
 controller.enable_statistics,false
 controller.csv_separator,comma,
+controller.github_base_url,https://api.github.com,

@@ -19,8 +19,10 @@
                         </span>
                     </div>
                     <div>
-                        <template v-if="scriptHandler && scriptHandler.validatable">
-                            <button class="btn btn-success" @click="save(false)">
+                        <template v-if="isTestScript || isGitConfig">
+                            <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
+                                    @shortkey="save(false)"
+                                    @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
                             </button>
@@ -28,13 +30,17 @@
                                 <i class="fa fa-undo mr-1"></i>
                                 <span v-text="i18n('common.button.save.and.close')"></span>
                             </button>
-                            <button class="btn btn-primary" @click="validate">
+                            <button v-shortkey="['ctrl', 'shift', 'v']" class="btn btn-primary"
+                                    @shortkey="validate"
+                                    @click="validate">
                                 <i class="fa fa-check mr-1"></i>
                                 <span v-text="i18n('script.editor.button.validate')"></span>
                             </button>
                         </template>
                         <template v-else>
-                            <button class="btn btn-success" @click="save(false)">
+                            <button v-shortkey="['ctrl', 'shift', 's']" class="btn btn-success"
+                                    @shortkey="save(false)"
+                                    @click="save(false)">
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
                             </button>
@@ -55,7 +61,10 @@
                          data-html="true"
                          data-trigger="hover"
                          data-placement="bottom">
-                        <button class="btn btn-info float-right add-host-btn" @click.prevent="$refs.addHostModal.show">
+                        <button v-shortkey="['ctrl', 'shift', 'a']"
+                                @shortkey="showAddHostModal"
+                                @click.prevent="showAddHostModal"
+                                class="btn btn-info float-right add-host-btn">
                             <i class="fa fa-plus"></i>
                             <span v-text="i18n('perfTest.config.add')"></span>
                         </button>
@@ -75,7 +84,7 @@
                              :options="cmOptions">
                 </code-mirror>
             </pane>
-            <pane v-if="validationResult" :min-size="10" size="15">
+            <pane v-if="validationResult" :min-size="10" :size="resultConsoleSize">
                 <pre class="border h-100 validation-result" v-text="validationResult"></pre>
             </pane>
         </splitpanes>
@@ -83,18 +92,11 @@
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
                 Samples</a>
             <div class="float-right pointer-cursor tip" data-toggle="popover" title="Tip" data-html="true"
-                 data-placement="left" data-trigger="hover" :data-content="
-                            'Ctrl-F / Cmd-F :' + i18n('script.editor.tip.startSearching') + '<br/>' +
-                            'Ctrl-G / Cmd-G : ' + i18n('script.editor.tip.findNext') + '<br/>' +
-                            'Shift-Ctrl-G / Shift-Cmd-G : ' + i18n('script.editor.tip.findPrev') + '<br/>' +
-                            'Shift-Ctrl-F / Cmd-Option-F : ' + i18n('script.editor.tip.replace') + '<br/>' +
-                            'Shift-Ctrl-R / Shift-Cmd-Option-F : ' + i18n('script.editor.tip.replaceAll') + '<br/>' +
-                            'F11 : ' + i18n('script.editor.tip.fullScreen') + '<br/>' +
-                            'ESC : ' + i18n('script.editor.tip.back') ">
+                 data-placement="left" data-trigger="hover" :data-content="getShortcutGuides()">
                 <code>Tip</code>
             </div>
         </div>
-        <host-modal ref="addHostModal" @add-host="addHost"></host-modal>
+        <host-modal ref="addHostModal" @add-host="addHost" focus="domain"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
     </div>
 </template>
@@ -104,6 +106,7 @@
     import { Mixins } from 'vue-mixin-decorator';
     import { Splitpanes, Pane } from 'splitpanes';
     import VueHeadful from 'vue-headful';
+    import YAML from 'js-yaml';
 
     import Base from '../Base.vue';
     import ControlGroup from '../common/ControlGroup.vue';
@@ -111,13 +114,16 @@
     import TargetHostInfoModal from '../perftest/modal/TargetHostInfoModal.vue';
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
+    import GuideMixin from './mixin/Guide.vue';
+
+    const GIT_CONFIG_FILE_NAME = '.gitconfig.yml';
 
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave']);
     @Component({
         name: 'scriptEditor',
         components: { HostModal, TargetHostInfoModal, ControlGroup, CodeMirror, Splitpanes, Pane, VueHeadful },
     })
-    export default class Editor extends Mixins(Base, MessagesMixin) {
+    export default class Editor extends Mixins(Base, MessagesMixin, GuideMixin) {
         @Prop({ type: Object, required: true })
         file;
 
@@ -142,6 +148,8 @@
 
         SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
         hideDescription = false;
+
+        resultConsoleSize = 15;
 
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
@@ -172,29 +180,18 @@
 
             this.$nextTick(() => {
                 this.$refs.editor.codemirror.focus();
-                this.validationResult = 'You can use various log levels. [trace, debug, info, warn, error]\n' +
-                    'ex) grinder.logger.${level}("message")\n\n' + // eslint-disable-line no-template-curly-in-string
-                    'You can access to response body with HTTPResponse.getText() method.\n' +
-                    'ex) HTTPResponse result = request.GET("...")\n' +
-                    '    grinder.logger.debug(result.text)\n\n' +
-                    'You can test multiple transactions by recording new GTest instance.\n' +
-                    'ex) @BeforeProcess\n' +
-                    '    public static void beforeProcess() {\n' +
-                    '        test1 = new GTest(1, "...")\n' +
-                    '        test2 = new GTest(2, "...")\n' +
-                    '    }\n\n' +
-                    '    @BeforeThread\n' +
-                    '    public void beforeThread() {\n' +
-                    '        test1.record(this, "test1")\n' +
-                    '        test2.record(this, "test2")\n' +
-                    '    }\n\n' +
-                    '    public void test1() { ... }\n' +
-                    '    public void test2() { ... }\n\n' +
-                    'You can specify the test run rate with @RunRate annotation.\n' +
-                    'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
-                    '    @Test\n' +
-                    '    @RunRate(50)\n' +
-                    '    public void test() { ... } // This test will run only half of the total run which you specified.\n\n';
+
+                switch (true) {
+                    case this.isGitConfig:
+                        this.validationResult = this.guides.gitconfig;
+                        break;
+                    case /\\*.groovy/.test(this.file.fileName):
+                    case /\\*.py/.test(this.file.fileName):
+                        this.validationResult = this.guides.perftest;
+                        break;
+                    default:
+                        this.validationResult = '';
+                }
             });
         }
 
@@ -282,25 +279,63 @@
         }
 
         validate() {
-            this.showProgressBar(this.i18n('script.editor.message.validate'));
+            if (this.isGitConfig) {
+                this.validateGitConfig();
+                return;
+            }
+            this.validateScript();
+        }
 
-            const params = {
+        validateGitConfig() {
+            const content = this.$refs.editor.getValue();
+            try {
+                const configs = YAML.loadAll(content);
+
+                if (configs.filter(config => !!config).length === 0) {
+                    this.$bootbox.alert({
+                        message: this.i18n('script.message.empty.github.config'),
+                        buttons: {
+                            ok: { label: this.i18n('common.button.ok') },
+                        },
+                    });
+                    return;
+                }
+
+                this.showProgressBar(this.i18n('script.editor.message.validate'));
+                this.$http.post('/script/api/github/validate', { content })
+                    .then(() => this.showScriptValidationResult(this.i18n('script.editor.validate.success')))
+                    .catch(error => this.showScriptValidationResult(this.decorateGitHubConfigurationErrorMessage(error.response.data.message)))
+                    .finally(this.hideProgressBar);
+            } catch (error) {
+                this.hideProgressBar();
+                this.showScriptValidationResult(`YAML syntax error<br>${error.message}`);
+            }
+        }
+
+        showScriptValidationResult(result) {
+            this.resultConsoleSize = 150;
+            this.validationResult = result;
+        }
+
+        decorateGitHubConfigurationErrorMessage(errorMsg) {
+            return errorMsg
+                    .replace('Not Found', "Not found GitHub repository.<br>Please check your 'owner' or 'repo' field is correct.")
+                    .replace('Bad credentials', "Bad credentials<br>Please check your 'access-token' field is correct.");
+        }
+
+        validateScript() {
+            this.showProgressBar(this.i18n('script.editor.message.validate'));
+            this.$http.post('/script/api/validate', {
                 fileEntry: {
                     path: this.file.path,
                     content: this.$refs.editor.getValue(),
                 },
                 hostString: this.targetHosts.join(','),
-            };
-
-            this.$http.post('/script/api/validate', params)
-            .then(res => {
-                this.validationResult = res.data;
+            }).then(res => {
+                this.showScriptValidationResult(res.data);
                 this.validated = true;
-            })
-            .catch(() => this.showErrorMsg(this.i18n('script.editor.error.validate')))
-            .finally(() => {
-                this.hideProgressBar();
-            });
+            }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
+              .finally(this.hideProgressBar);
         }
 
         addHost(newHost) {
@@ -316,9 +351,18 @@
             this.$refs.targetHostInfoModal.show();
         }
 
+        showAddHostModal() {
+            this.$refs.addHostModal.show();
+        }
+
         toggleHideDescription() {
             this.hideDescription = !this.hideDescription;
             this.$localStorage.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
+        }
+
+        getShortcutGuides() {
+            return this.shortcutConfigs.reduce((guides, shortcutConfig) =>
+                guides += `${shortcutConfig.key} : ${this.i18n(shortcutConfig.desc)}<br>`);
         }
 
         get basePath() {
@@ -327,6 +371,14 @@
 
         get breadcrumbPathUrl() {
             return ['/script/list', ...this.basePath.split('/')];
+        }
+
+        get isGitConfig() {
+            return this.file.path === GIT_CONFIG_FILE_NAME;
+        }
+
+        get isTestScript() {
+            return this.scriptHandler && this.scriptHandler.validatable;
         }
     }
 </script>
@@ -342,7 +394,7 @@
     }
 
     div.file-desc-container {
-        padding: 10px 70px;
+        padding: 10px 10px 10px 60px;
         margin-bottom: 0;
         background-color: #f9f9f9;
         position: relative;
@@ -367,12 +419,12 @@
     #description {
         resize: none;
         height: 90px;
-        width: 690px;
+        width: 762px;
     }
 
     .uneditable-input {
         cursor: text;
-        width: 690px;
+        width: 762px;
         height: 30px;
     }
 
