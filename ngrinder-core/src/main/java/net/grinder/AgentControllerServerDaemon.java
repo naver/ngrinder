@@ -300,4 +300,8 @@ public class AgentControllerServerDaemon {
 	public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
 		getComponent(AgentProcessControlImplementation.class).addConnectionAgentListener(connectionAgentListener);
 	}
+
+	public void addConnectionAgentCommunicationListener(ConnectionAgentCommunicationListener listener) {
+		getComponent(AgentProcessControlImplementation.class).addConnectionAgentCommunicationListener(listener);
+	}
 }

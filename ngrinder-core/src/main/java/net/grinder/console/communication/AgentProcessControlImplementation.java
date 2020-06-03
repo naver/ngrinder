@@ -19,10 +19,7 @@ import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.communication.CommunicationException;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
-import net.grinder.engine.communication.AgentDownloadGrinderMessage;
-import net.grinder.engine.communication.AgentUpdateGrinderMessage;
-import net.grinder.engine.communication.ConnectionAgentMessage;
-import net.grinder.engine.communication.LogReportGrinderMessage;
+import net.grinder.engine.communication.*;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
@@ -56,6 +53,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<>();
 	private final ListenerSupport<AgentDownloadRequestListener> m_agentDownloadRequestListeners = new ListenerSupport<>();
 	private final ListenerSupport<ConnectionAgentListener> m_connectionAgentListener = new ListenerSupport<>();
+	private final ListenerSupport<ConnectionAgentCommunicationListener> m_connectionAgentCommunicationListener = new ListenerSupport<>();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
 	/**
@@ -140,6 +138,17 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 				});
 			}
 		});
+
+		messageDispatchRegistry.set(ConnectionAgentCommunicationMessage.class, new AbstractHandler<ConnectionAgentCommunicationMessage>() {
+			public void handle(final ConnectionAgentCommunicationMessage message) {
+				m_connectionAgentCommunicationListener.apply(new Informer<ConnectionAgentCommunicationListener>() {
+					@Override
+					public void inform(ConnectionAgentCommunicationListener listener) {
+						listener.onConnectionAgentCommunication(message.getUsingPort(), message.getIp(), message.getPort());
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -188,6 +197,10 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
 		m_connectionAgentListener.add(connectionAgentListener);
+	}
+
+	public void addConnectionAgentCommunicationListener(ConnectionAgentCommunicationListener listener) {
+		m_connectionAgentCommunicationListener.add(listener);
 	}
 
 	/**
