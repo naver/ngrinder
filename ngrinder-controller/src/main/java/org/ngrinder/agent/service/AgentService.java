@@ -56,6 +56,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
@@ -111,6 +113,22 @@ public class AgentService extends AbstractAgentService
 		agentManager.addAgentStatusUpdateListener(this);
 		agentManager.addConnectionAgentListener(this);
 		topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::connectionAgentHealthCheck, 1L, 1L, TimeUnit.MINUTES);
+	}
+
+	private void connectionAgentHealthCheck() {
+		connectionRepository.findAll()
+			.stream()
+			.filter(connection -> config.getRegion().equals(connection.getRegion()))
+			.filter(connection -> agentInfoStore.getAgentInfo(createAgentKey(connection.getIp(), connection.getName())) == null)
+			.forEach(connection -> {
+				try {
+					agentManager.addConnectionAgent(connection.getIp(), connection.getPort());
+					LOGGER.info("Reconnected to connection agent {}:{}", connection.getIp(), connection.getPort());
+				} catch (Exception e) {
+					LOGGER.debug("Fail to reconnect to connection agent {}:{}", connection.getIp(), connection.getPort());
+				}
+			});
 	}
 
 	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
