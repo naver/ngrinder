@@ -249,7 +249,7 @@ public class GitHubFileEntryService {
 	 * @return list of github configuration.
 	 * @since 3.5.0
 	 */
-	public List<GitHubConfig> getAllGitHubConfig(User user) throws FileNotFoundException {
+	public Set<GitHubConfig> getAllGitHubConfig(User user) throws FileNotFoundException {
 		FileEntry gitConfigYaml = fileEntryService.getOne(user, GITHUB_CONFIG_NAME, -1L);
 		if (gitConfigYaml == null) {
 			throw new FileNotFoundException(GITHUB_CONFIG_NAME + " isn't exist.");
@@ -258,8 +258,8 @@ public class GitHubFileEntryService {
 		return getAllGithubConfig(gitConfigYaml);
 	}
 
-	private List<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
-		List<GitHubConfig> gitHubConfig = new ArrayList<>();
+	private Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
+		Set<GitHubConfig> gitHubConfig = new HashSet<>();
 		// Yaml is not thread safe. so create it every time.
 		Yaml yaml = new Yaml();
 		Iterable<Map<String, Object>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
@@ -268,7 +268,14 @@ public class GitHubFileEntryService {
 				continue;
 			}
 			configMap.put("revision", gitConfigYaml.getRevision());
-			gitHubConfig.add(objectMapper.convertValue(configMap, GitHubConfig.class));
+			GitHubConfig config = objectMapper.convertValue(configMap, GitHubConfig.class);
+
+			if (gitHubConfig.contains(config)) {
+				throw new InvalidGitHubConfigurationException("GitHub configuration '"
+					+ config.getName() + "' is duplicated.\nPlease check your .gitconfig.yml");
+			}
+
+			gitHubConfig.add(config);
 		}
 		return gitHubConfig;
 	}
@@ -282,7 +289,7 @@ public class GitHubFileEntryService {
 	 * @since 3.5.0
 	 */
 	public GitHubConfig getGitHubConfig(User user, String name) throws FileNotFoundException {
-		List<GitHubConfig> gitHubConfigs = getAllGitHubConfig(user);
+		Set<GitHubConfig> gitHubConfigs = getAllGitHubConfig(user);
 		Optional<GitHubConfig> gitHubConfigOptional = gitHubConfigs.stream()
 			.filter(config -> StringUtils.equals(config.getName(), name))
 			.findFirst();

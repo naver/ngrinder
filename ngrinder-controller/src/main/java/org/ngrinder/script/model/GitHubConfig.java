@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import static java.util.Objects.hash;
 import static org.apache.commons.validator.routines.UrlValidator.getInstance;
 import static org.ngrinder.script.model.GitHubConfigField.*;
 
@@ -34,6 +35,29 @@ public class GitHubConfig {
 	private String baseUrl;
 	private String revision;
 	private String scriptRoot;
+
+	@Override
+	public int hashCode() {
+		return hash(name);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+
+		if (object == null) {
+			return false;
+		}
+
+		if (this.getClass() != object.getClass()) {
+			return false;
+		}
+
+		GitHubConfig gitHubConfig = (GitHubConfig) object;
+		return name.equals(gitHubConfig.name);
+	}
 
 	public static class GitHubConfigDeserializer extends JsonDeserializer<GitHubConfig> {
 
