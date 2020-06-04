@@ -550,9 +550,12 @@ public class AgentService extends AbstractAgentService
 
 	@Override
 	public void onConnectionAgentMessage(String ip, String name, int port) {
-		Connection connection = connectionRepository.findByIpAndName(ip, name);
+		Connection connection = connectionRepository.findByIpAndPort(ip, port);
 		if (connection == null) {
 			connection = new Connection(ip, name, port, config.getRegion());
+		} else {
+			connection.setName(name);
+			connection.setRegion(config.getRegion());
 		}
 		connectionRepository.save(connection);
 	}
