@@ -13,6 +13,7 @@
  */
 package org.ngrinder.security;
 
+import static java.util.Arrays.asList;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 import org.ngrinder.extension.OnLoginRunnable;
@@ -46,7 +47,7 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String userId) {
-		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, defaultPlugin)) {
+		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultPlugin))) {
 			User user = each.loadUser(userId);
 			if (user != null) {
 				checkNotEmpty(user.getUserId(), "User info's userId provided by " + each.getClass().getName()

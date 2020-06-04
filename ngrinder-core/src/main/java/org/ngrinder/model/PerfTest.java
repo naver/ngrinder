@@ -15,6 +15,8 @@ package org.ngrinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -29,9 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import static com.sun.jmx.mbeanserver.Util.cast;
+import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -249,6 +250,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Type(type = "true_false")
 	private Boolean safeDistribution;
 
+	@Column(name = "ignore_too_many_error", columnDefinition = "char(1)")
+	@Cloneable
+	@Type(type = "true_false")
+	private Boolean ignoreTooManyError;
+
 	@JsonIgnore
 	@Transient
 	private String dateString;
@@ -305,6 +311,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.tagString = getSafe(this.tagString, "");
 		this.vuserPerAgent = getSafe(this.vuserPerAgent, 1);
 		this.safeDistribution = getSafe(this.safeDistribution, false);
+		this.ignoreTooManyError = getSafe(this.ignoreTooManyError, false);
 		this.useRampUp = getSafe(this.useRampUp, false);
 		this.rampUpInitCount = getSafe(this.rampUpInitCount, 0);
 		this.rampUpStep = getSafe(this.rampUpStep, 1);
@@ -427,7 +434,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public Boolean getSafeDistribution() {
-		return safeDistribution == null ? Boolean.FALSE : safeDistribution;
+		return cast(defaultIfNull(safeDistribution, Boolean.FALSE));
+	}
+
+	public Boolean getIgnoreTooManyError() {
+		return cast(defaultIfNull(ignoreTooManyError, Boolean.FALSE));
 	}
 
 	public boolean isGitHubScm() {
@@ -441,5 +452,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		}
 		this.useRampUp = getSafe(this.useRampUp);
 		this.safeDistribution = getSafe(this.safeDistribution);
+		this.ignoreTooManyError = getSafe(this.ignoreTooManyError);
 	}
 }

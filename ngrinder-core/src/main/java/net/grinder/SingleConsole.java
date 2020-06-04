@@ -80,7 +80,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = new ResourcesImplementation(RESOURCE_CONSOLE);
 	public static final Logger LOGGER = LoggerFactory.getLogger("console");
-
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
 
@@ -96,7 +95,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private SampleModelViews modelView;
 	private long startTime = 0;
 	private long momentWhenTpsBeganToHaveVerySmall;
-	private long lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingLifeCycleFollowupListener = ListenerHelper
@@ -638,7 +636,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					}
 				});
 			}
-			checkTooManyError(cumulativeStatistics);
+
 			lastSamplingPeriod = lastSamplingPeriod + (interval * gap);
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurred while updating the statistics : {}", e.getMessage());
@@ -781,37 +779,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		} else {
 			momentWhenTpsBeganToHaveVerySmall = 0;
 		}
-	}
-
-	/**
-	 * Check if too many error has been occurred. If the half of total
-	 * transaction is error for the last 10 secs. It notifies the
-	 * {@link ConsoleShutdownListener}
-	 *
-	 * @param cumulativeStatistics accumulated Statistics
-	 */
-	private void checkTooManyError(StatisticsSet cumulativeStatistics) {
-		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
-		long testSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
-		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
-		if (((double) (testSum + errors)) / 2 < errors) {
-			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == 0) {
-				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = System.currentTimeMillis();
-			} else if (isOverLowTpsThreshold()) {
-				LOGGER.warn("Stop the test because the count of test error is more than"
-						+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
-				getListeners().apply(new Informer<ConsoleShutdownListener>() {
-					public void inform(ConsoleShutdownListener listener) {
-						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
-					}
-				});
-				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = 0;
-			}
-		}
-	}
-
-	private boolean isOverLowTpsThreshold() {
-		return (System.currentTimeMillis() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue) >= TOO_MANY_ERROR_TIME;
 	}
 
 	public static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",

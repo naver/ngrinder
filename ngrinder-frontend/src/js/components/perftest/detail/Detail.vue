@@ -135,6 +135,7 @@
                 runCount: test.config.runCount,
                 samplingInterval: test.config.samplingInterval,
                 ignoreSampleCount: test.config.ignoreSampleCount,
+                ignoreTooManyError: test.config.ignoreTooManyError,
                 safeDistribution: test.config.safeDistribution,
                 param: test.config.param,
                 scm: test.config.scm,
@@ -175,6 +176,7 @@
                     runCount: test.runCount,
                     samplingInterval: test.samplingInterval,
                     ignoreSampleCount: test.ignoreSampleCount,
+                    ignoreTooManyError: test.ignoreTooManyError,
                     safeDistribution: test.safeDistribution,
                     param: test.param,
                     scm: test.scm || 'svn',
@@ -340,7 +342,7 @@
         }
 
         startRefreshPerfTestStatusInterval() {
-            if (!this.test.id || !this.isUpdatableStatus()) {
+            if (!this.test.id || this.isReportableStatus()) {
                 return;
             }
 
@@ -378,7 +380,7 @@
                 this.$nextTick(() => this.$refs.runningTab.click());
                 return;
             }
-            if (!this.isUpdatableStatus()) {
+            if (this.isReportableStatus()) {
                 if (this.$refs.running) {
                     window.clearInterval(this.$refs.running.samplingIntervalId);
                 }
@@ -390,11 +392,11 @@
             this.$nextTick(() => this.$refs.configTab.click());
         }
 
-        isUpdatableStatus() {
-            return !(this.test.status.category === 'FINISHED' ||
+        isReportableStatus() {
+            return this.test.status.category === 'FINISHED' ||
                 this.test.status.category === 'STOP' ||
                 this.test.status.category === 'ERROR' ||
-                this.test.status.category === 'CANCELED');
+                this.test.status.category === 'WARNED';
         }
 
         initSelection(element, callback) {

@@ -38,6 +38,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.*;
+import org.ngrinder.perftest.service.samplinglistener.TooManyErrorCheckPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -50,6 +51,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -354,16 +356,15 @@ public class PerfTestRunnable implements ControllerConstants {
 		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
 				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
-				perfTestService, scheduledTaskService));
+				perfTestService, scheduledTaskService));;
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
-				(OnTestSamplingRunnable.class, new MonitorCollectorPlugin(config, scheduledTaskService,
-						perfTestService, perfTest.getId()));
+				(OnTestSamplingRunnable.class, asList(new MonitorCollectorPlugin(config, scheduledTaskService,
+					perfTestService, perfTest.getId()), new TooManyErrorCheckPlugin()));
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
 				agentManager, scheduledTaskService));
 	}
-
 
 	/**
 	 * Notify test finish to plugins.
@@ -524,10 +525,10 @@ public class PerfTestRunnable implements ControllerConstants {
 		try {
 			// stop target host monitor
 			if (perfTestService.hasTooManyError(perfTest)) {
-				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, FINISHED_WITH_WARNING,
 						"[WARNING] The test is finished but contains too much errors(over 30% of total runs).");
 			} else if (singleConsoleInUse.hasNoPerformedTest()) {
-				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED_WITH_WARNING,
 						"[WARNING] The test is finished but has no TPS.");
 			} else {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,

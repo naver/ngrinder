@@ -40,6 +40,8 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 
+import static java.util.Arrays.asList;
+
 /**
  * nGrinder UserDetailsAuthenticationProvider.
  * 
@@ -100,8 +102,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		SecuredUser user = ((SecuredUser) userDetails);
 		boolean authorized = false;
 
-		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
-				defaultLoginPlugin)) {
+		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLoginPlugin))) {
 			try {
 				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, user.getUsername());
 				LOG.info("{} is logined by {}", user.getUsername(), each.getClass().getName());

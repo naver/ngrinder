@@ -3,10 +3,14 @@
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	<changeSet author="ngrinder.3.5.0" id="31" dbms="h2, mysql">
-		<comment>Modify PERF_TEST table to support github.</comment>
+		<comment>Update for 3.5.0</comment>
 		<addColumn tableName="PERF_TEST">
 			<column name="scm" type="varchar(30)"/>
+		</addColumn>
+		<addColumn tableName="PERF_TEST">
+			<column name="ignore_too_many_error" type="char(1)" defaultValue="F" />
 		</addColumn>
 		<modifyDataType tableName="PERF_TEST" columnName="script_revision" newDataType="varchar(255)"/>
 	</changeSet>
 </databaseChangeLog>
+
