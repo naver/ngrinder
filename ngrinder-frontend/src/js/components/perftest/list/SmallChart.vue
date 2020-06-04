@@ -10,6 +10,7 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import bb from 'billboard.js';
 
@@ -81,7 +82,7 @@
             },
         },
     })
-    export default class SmallChart extends Base {
+    export default class SmallChart extends Mixins(Base, ChartMixin) {
         created() {
             this.showChart();
         }
@@ -93,16 +94,21 @@
                     imgWidth: 100,
                     onlyTotal: true,
                 },
-            }).then(res => this.initCharts(res.data));
+            }).then(res => {
+                Object.entries(res.data).forEach(([key, value]) => {
+                    res.data[key] = this.processData(value, key);
+                });
+                this.initCharts(res.data);
+            });
         }
 
         initCharts(data) {
-            const interval = data.chartInterval;
+            const interval = data['chartInterval'];
 
-            this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data.TPS.Total, interval);
-            this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data.Mean_Test_Time_ms.Total, interval);
-            this.drawSmallChart(`mttfb_${this.rowData.id}`, 'MTTFB', data.Mean_time_to_first_byte.Total, interval);
-            this.drawSmallChart(`err_${this.rowData.id}`, 'ERR', data.Errors.Total, interval);
+            this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data['TPS'].Total, interval);
+            this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data['Mean_Test_Time_(ms)'].Total, interval);
+            this.drawSmallChart(`mttfb_${this.rowData.id}`, 'MTTFB', data['Mean_time_to_first_byte'].Total, interval);
+            this.drawSmallChart(`err_${this.rowData.id}`, 'ERR', data['Errors'].Total, interval);
 
             this.$nextTick(() => {
                 $('g.bb-axis.bb-axis-x text[style*="display: none;"]').siblings().css({ display: 'none' });

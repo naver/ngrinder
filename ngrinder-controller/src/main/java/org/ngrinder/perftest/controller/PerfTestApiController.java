@@ -637,9 +637,8 @@ public class PerfTestApiController {
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		Map<String, Object> resultMap = Maps.newHashMap();
 		for (String each : dataTypes) {
-			String key = StringUtils.replaceChars(each, "()", "");
 			Map<String, List<Float>> result = perfTestService.getReportData(id, each, onlyTotal, interval);
-			resultMap.put(key, result);
+			resultMap.put(each, result);
 		}
 		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		return resultMap;

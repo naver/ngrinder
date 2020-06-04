@@ -78,10 +78,11 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
+
 	public static final Resources RESOURCE = new ResourcesImplementation(RESOURCE_CONSOLE);
 	public static final Logger LOGGER = LoggerFactory.getLogger("console");
+	public static final String REPORT_DATA = ".data";
 	private static final String REPORT_CSV = "output.csv";
-	private static final String REPORT_DATA = ".data";
 
 	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
@@ -653,11 +654,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param lastCall                    true if it's the last call of consequent call in a single
 	 *                                    sampling
 	 */
-	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, //
-												 boolean lastCall) {
+	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, boolean lastCall) {
 		if (intervalStatisticMapPerTest.size() > 1) {
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-				if (INTERESTING_PER_TEST_STATISTICS.contains(each.getKey())) {
+				if (isPerfTestInterestingStatistics(each.getKey())) {
 					for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
 						if (lastCall) {
 							StatisticsSet value = entry.getValue();
@@ -781,11 +781,19 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 	}
 
-	public static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",
-			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)", "User_defined");
+	private static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",
+			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)");
 
-	public static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
-			"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)", "User_defined");
+	private static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
+			"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)");
+
+	public static boolean isPerfTestInterestingStatistics(String key) {
+		return INTERESTING_PER_TEST_STATISTICS.contains(key) || key.startsWith("User_defined");
+	}
+
+	public static boolean isInterestingStatistics(String key) {
+		return INTERESTING_STATISTICS.contains(key) || key.startsWith("User_defined");
+	}
 
 	/**
 	 * Build up statistics for current sampling.
@@ -811,7 +819,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			// When only 1 test is running, it's better to use the parametrized
 			// snapshot.
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-				if (INTERESTING_STATISTICS.contains(each.getKey())) {
+				if (isInterestingStatistics(each.getKey())) {
 					accumulatedStatisticMap.put(each.getKey(),
 							getRealDoubleValue(each.getValue().getDoubleValue(accumulatedSet)));
 					intervalStatisticsMap.put(each.getKey(),
@@ -825,7 +833,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		Map<String, Object> totalStatistics = newHashMap();
 
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-			if (INTERESTING_STATISTICS.contains(each.getKey())) {
+			if (isInterestingStatistics(each.getKey())) {
 				totalStatistics.put(each.getKey(),
 						getRealDoubleValue(each.getValue().getDoubleValue(accumulatedStatistics)));
 			}
