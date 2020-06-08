@@ -108,6 +108,12 @@ task convert_cr_lf {
     }
 }
 
+processResources {
+    filesMatching("ngrinder-sh/agent/run_agent_internal.*") {
+        expand(["ngrinder_core": String.format("lib/ngrinder-core-%s.jar", project.version)])
+    }
+}
+
 test {
     jvmArgs "-Xms600m", "-Xmx1024m", "-XX:MaxPermSize=200m"
 }

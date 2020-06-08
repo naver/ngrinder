@@ -1,2 +1,2 @@
 #!/bin/sh
-java -server -cp "lib/*" org.ngrinder.NGrinderAgentStarter --mode=agent --command=run $@
+java -server -cp "${ngrinder_core}:lib/*" org.ngrinder.NGrinderAgentStarter --mode=agent --command=run \$@
