@@ -18,6 +18,7 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
+import net.grinder.engine.agent.ConnectionAgentCommunicationDelegator;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
 import net.grinder.engine.communication.*;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -83,6 +84,8 @@ public class AgentController implements Agent, AgentConstants {
 	private int retryCount = 0;
 
 	private String version;
+
+	private ConnectionAgentCommunicationDelegator communicationDelegator = ConnectionAgentCommunicationDelegator.EMPTY;
 
 	/**
 	 * Constructor.
@@ -168,13 +171,24 @@ public class AgentController implements Agent, AgentConstants {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
+					final ConsoleCommunication conCom = consoleCommunication;
 					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "unknown");
 					LOGGER.info("Starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
+
+					if (agentConfig.isConnectionMode()) {
+						communicationDelegator = new ConnectionAgentCommunicationDelegator(m_connectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationDelegator.CommunicationMessageSender() {
+							@Override
+							public void send() {
+								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, NetworkUtils.getLocalHostAddress(), agentConfig.getConnectionAgentPort()));
+							}
+						});
+						communicationDelegator.start();
+					}
+
 					agentDaemon.run(startMessage.getProperties());
 
-					final ConsoleCommunication conCom = consoleCommunication;
 					agentDaemon.resetListeners();
 					agentDaemon.addListener(new AgentShutDownListener() {
 						@Override
@@ -183,6 +197,8 @@ public class AgentController implements Agent, AgentConstants {
 							sendLog(conCom, testId);
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
+							communicationDelegator.shutdown();
+							communicationDelegator = ConnectionAgentCommunicationDelegator.EMPTY;
 						}
 					});
 				}

@@ -140,7 +140,11 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				do {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
-					properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());
+					if (m_agentConfig.isConnectionMode()) {
+						properties.setProperty(GrinderProperties.CONSOLE_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+					} else {
+						properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());
+					}
 					m_agentIdentity.setName(m_agentConfig.getAgentHostID());
 					final Connector connector = m_connectorFactory.create(properties);
 					// We only reconnect if the connection details have changed.
