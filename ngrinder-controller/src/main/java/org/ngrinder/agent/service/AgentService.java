@@ -27,6 +27,7 @@ import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentRequest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.store.AgentInfoStore;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.AgentStateTask;
@@ -42,6 +43,7 @@ import org.ngrinder.region.service.RegionService;
 import org.ngrinder.service.AbstractAgentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +66,7 @@ import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -92,6 +95,9 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 	protected final AgentInfoStore agentInfoStore;
 
 	protected final ScheduledTaskService scheduledTaskService;
+
+	@Value("${ngrinder.version}")
+	private String nGrinderVersion;
 
 	@PostConstruct
 	public void init() {
@@ -313,6 +319,16 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId());
 		final Set<AgentInfo> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 
+		if (hasOldVersionAgent(necessaryAgents)) {
+			for (AgentInfo agentInfo : necessaryAgents) {
+				if (!agentInfo.getVersion().equals(nGrinderVersion)) {
+					update(agentInfo.getIp(), agentInfo.getName());
+				}
+			}
+			throw new NGrinderRuntimeException("Old version agent is detected so, update message has been sent automatically." +
+				"\n Please restart perftest after few minutes.");
+		}
+
 		hazelcastService.put(CACHE_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);
 
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
@@ -320,6 +336,11 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 			LOGGER.info("- Agent {}", agentInfo.getName());
 		}
 		agentManager.runAgent(singleConsole, grinderProperties, necessaryAgents);
+	}
+
+
+	private boolean hasOldVersionAgent(Set<AgentInfo> agentInfos) {
+		return agentInfos.stream().anyMatch(agentInfo -> !agentInfo.getVersion().equals(nGrinderVersion));
 	}
 
 	/**
@@ -339,7 +360,7 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 	Set<AgentInfo> selectAgent(User user, Set<AgentInfo> allFreeAgents, int agentCount) {
 		Set<AgentInfo> recentlyUsedAgents = hazelcastService.getOrDefault(CACHE_RECENTLY_USED_AGENTS, user.getUserId(), emptySet());
 
-		Comparator<AgentInfo> agentInfoComparator = (agent1, agent2) -> {
+		Comparator<AgentInfo> recentlyUsedPriorityComparator = (agent1, agent2) -> {
 			if (recentlyUsedAgents.contains(agent1)) {
 				return -1;
 			}
@@ -352,12 +373,12 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		Stream<AgentInfo> ownedFreeAgentStream = allFreeAgents
 			.stream()
 			.filter(agentInfo -> isOwnedAgent(agentInfo, user.getUserId()))
-			.sorted(agentInfoComparator);
+			.sorted(recentlyUsedPriorityComparator);
 
 		Stream<AgentInfo> freeAgentStream = allFreeAgents
 			.stream()
 			.filter(this::isCommonAgent)
-			.sorted(agentInfoComparator);
+			.sorted(recentlyUsedPriorityComparator);
 
 		return concat(ownedFreeAgentStream, freeAgentStream)
 			.limit(agentCount)
