@@ -85,8 +85,8 @@
 				sampling_interval int default 1,
 				param varchar(256) default '',
 				ramp_up_type varchar(10) default 'PROCESS',
-				scm varchar(30) default 'svn'
-				ignore_too_many_error char(1) default 'F'
+				scm varchar(30) default 'svn',
+				ignore_too_many_error char(1) default 'F',
 				primary key (id)
 			);
 
