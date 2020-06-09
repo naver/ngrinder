@@ -354,6 +354,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getAgentProperties().getPropertyBoolean(PROP_AGENT_CONNECTION_MODE, false);
 	}
 
+	public boolean isPublicIPEnabled() {
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_PUBLIC_IP, false);
+	}
+
 	public boolean isSilentMode() {
 		final PropertiesWrapper properties = getCommonProperties();
 		if (properties == null) {

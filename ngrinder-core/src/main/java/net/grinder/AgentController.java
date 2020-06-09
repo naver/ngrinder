@@ -100,7 +100,8 @@ public class AgentController implements Agent, AgentConstants {
 		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronization, LOGGER);
 		// Set it with the default name
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.isPublicIPEnabled() ?
+			NetworkUtils.DEFAULT_PUBLIC_IP_ADDRESS : NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
@@ -185,7 +186,7 @@ public class AgentController implements Agent, AgentConstants {
 						communicationDelegator = new ConnectionAgentCommunicationDelegator(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationDelegator.CommunicationMessageSender() {
 							@Override
 							public void send() {
-								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, NetworkUtils.getLocalHostAddress(), agentConfig.getConnectionAgentPort()));
+								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort()));
 							}
 						});
 						communicationDelegator.start();
@@ -406,7 +407,7 @@ public class AgentController implements Agent, AgentConstants {
 			};
 
 			if (agentConfig.isConnectionMode()) {
-				m_sender.send(new ConnectionAgentMessage(NetworkUtils.getLocalHostAddress(), agentConfig.getAgentHostID(), agentConfig.getConnectionAgentPort()));
+				m_sender.send(new ConnectionAgentMessage(m_agentIdentity.getIp(), agentConfig.getAgentHostID(), agentConfig.getConnectionAgentPort()));
 			}
 		}
 
