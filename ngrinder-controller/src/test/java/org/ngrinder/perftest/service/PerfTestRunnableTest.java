@@ -154,7 +154,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		sleep(3000);
 		perfTestRunnable.distributeFileOn(perfTest, singleConsole);
 
-		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
+		singleConsole.addSamplingLifeCycleListener(new SamplingLifeCycleListener() {
 			@Override
 			public void onSamplingStarted() {
 				System.out.println("Sampling is started");
