@@ -60,6 +60,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class AgentController implements Agent, AgentConstants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
+
 	private final AgentConfig agentConfig;
 
 	private Timer m_timer;
@@ -177,8 +178,11 @@ public class AgentController implements Agent, AgentConstants {
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
 
+					GrinderProperties grinderProperties = startMessage.getProperties();
 					if (agentConfig.isConnectionMode()) {
-						communicationDelegator = new ConnectionAgentCommunicationDelegator(m_connectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationDelegator.CommunicationMessageSender() {
+						final int localConnectionPort = NetworkUtils.getFreePort();
+						grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, localConnectionPort);
+						communicationDelegator = new ConnectionAgentCommunicationDelegator(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationDelegator.CommunicationMessageSender() {
 							@Override
 							public void send() {
 								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, NetworkUtils.getLocalHostAddress(), agentConfig.getConnectionAgentPort()));
@@ -187,7 +191,7 @@ public class AgentController implements Agent, AgentConstants {
 						communicationDelegator.start();
 					}
 
-					agentDaemon.run(startMessage.getProperties());
+					agentDaemon.run(grinderProperties);
 
 					agentDaemon.resetListeners();
 					agentDaemon.addListener(new AgentShutDownListener() {
