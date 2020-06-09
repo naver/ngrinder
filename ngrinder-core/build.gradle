@@ -14,6 +14,7 @@ dependencies {
     compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
     compile (group: "net.java.dev.jna", name: "jna", version:"3.4.0")
     compile (group: "org.apache.commons", name: "commons-compress", version:"1.4.1")
+    compile (group: "commons-codec", name: "commons-codec", version: "1.14")
     compile (group: "com.beust", name: "jcommander", version:"1.32")
     compile (group: "ch.qos.logback", name: "logback-classic", version:"1.0.0")
     compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)

@@ -261,7 +261,7 @@
         tableLoaded() {
             this.autoUpdateTargets = [];
             this.tests.forEach((test, index) => {
-                if (!this.isFinishedStatusType(test)) {
+                if (!test.status.reportable) {
                     this.autoUpdateTargets.push({ 'id': test.id, 'index': index });
                 }
             });
@@ -281,11 +281,6 @@
 
         makeQueryString(page, pageSize, query, queryFilter, sort, tag) {
             return `${this.contextPath}/perftest?page.page=${page}&page.size=${pageSize}&query=${query}&queryFilter=${queryFilter}&sort=${sort}&tag=${tag}`;
-        }
-
-        isFinishedStatusType(test) {
-            return test.status.name === 'FINISHED' || test.status.name === 'STOP_BY_ERROR' ||
-                test.status.name === 'STOP_ON_ERROR' || test.status.name === 'CANCELED';
         }
 
         getOwnerPopoverContent(test) {

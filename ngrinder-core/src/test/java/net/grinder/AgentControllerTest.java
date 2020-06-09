@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
+import static net.grinder.StopReason.SCRIPT_ERROR;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -43,11 +44,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 
 
 	@Before
-	public void before() throws IOException {
-		FileUtils.copyFileToDirectory(
-			new File(this.getClass().getResource("/long-time-prepare-test.py").getFile()),
-			new File("./tmp/agent-home/tmp_1/file-store/_default/current")
-		);
+	public void before() {
 		final int freePort = getFreePort();
 		agentControllerServerDaemon = new AgentControllerServerDaemon(freePort);
 		agentControllerServerDaemon.start();
@@ -149,7 +146,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 	}
 
 	@Test
-	public void testConsoleCommunicationSettingTimeout() throws GrinderProperties.PersistenceException {
+	public void testConsoleCommunicationSettingTimeout() throws GrinderProperties.PersistenceException, IOException {
 		long timeout = 3000;
 
 		// Get one agent
@@ -173,6 +170,11 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 
 		waitAndAssertUntilAgentAttachedTo(console1, 1, 3);
 
+		FileUtils.copyFileToDirectory(
+			new File(this.getClass().getResource("/long-time-prepare-test.py").getFile()),
+			new File("./tmp/agent-home/tmp_1/file-store/_default/incoming")
+		);
+
 		URL scriptUrl = this.getClass().getResource("/long-time-prepare-test.properties");
 		File scriptFile = new File(scriptUrl.getFile());
 		GrinderProperties properties = new GrinderProperties(scriptFile);
@@ -183,8 +185,8 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 			public void readyToStop(StopReason stopReason) {
 				// Notice: it couldn't distinguish between a script error or
 				// timed out of the keepalive connection.
-				System.out.println("The stop signal is recieved " + stopReason);
-				if (stopReason.getDisplay().equals("Script error")) {
+				System.out.println("The stop signal is received " + stopReason);
+				if (stopReason.equals(SCRIPT_ERROR)) {
 					timeouted.setValue(true);
 				}
 			}

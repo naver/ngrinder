@@ -24,9 +24,7 @@ import org.ngrinder.common.util.ThreadUtils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -103,7 +101,7 @@ public class SingleConsoleTest {
 	public boolean canceled = false;
 
 	@Test
-	public void testWaitUnitAgentConnected() {
+	public void testWaitUnitAgentPrepared() {
 		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
 			@Override
 			public boolean isCanceled() {
@@ -125,11 +123,15 @@ public class SingleConsoleTest {
 		assertThat(singleConsole.getRunningProcess(), is(2));
 		assertThat(singleConsole.getRunningThread(), is(5));
 
+		Set<String> fileDigests = new HashSet<>();
+		fileDigests.add("E9C4736A0963EB81C0C85AF48CF2F3F2");
+		singleConsole.onAcceptDistFilesDigestListener(fileDigests);
+
 		processReports = new ProcessReports[]{};
-		singleConsole.waitUntilAgentConnected(1);
+		singleConsole.waitUntilAgentPrepared(1);
 		singleConsole.update(processReports);
 		try {
-			singleConsole.waitUntilAgentConnected(1);
+			singleConsole.waitUntilAgentPrepared(1);
 			fail("Should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 			//

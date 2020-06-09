@@ -47,11 +47,16 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+import static net.grinder.util.FileUtils.getAllFilesInDirectory;
+import static net.grinder.util.FileUtils.getMd5;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -199,7 +204,6 @@ public class PerfTestRunnable implements ControllerConstants {
 			singleConsole = startConsole(perfTest);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, checkCancellation(singleConsole));
-
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 		} catch (PerfTestPrepareException ex) {
@@ -213,9 +217,61 @@ public class PerfTestRunnable implements ControllerConstants {
 			// In case of error, mark the occurs error on perftest.
 			LOG.error("Error while executing test: {} - {} ", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Stack Trace is : ", e);
-			doTerminate(perfTest, singleConsole);
+			doTerminate(perfTest, singleConsole, e.getMessage());
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
 		}
+	}
+
+	/**
+	 * Delete cached distribution files, These are already in the agent cache directory.
+	 *
+	 * @param distFiles 					   Required files for currently running test.
+	 * @param distFilesDigest				   Required file's md5 checksum for currently running test.
+	 * @param agentCachedDistFilesDigestList   Md5 checksum of files in each agent cache directory
+	 * */
+	private void deleteCachedDistFiles(List<File> distFiles,
+									   Set<String> distFilesDigest,
+									   List<Set<String>> agentCachedDistFilesDigestList) {
+		Set<String> cachedDistFilesDigest = extractCachedDistFilesDigest(distFilesDigest, agentCachedDistFilesDigestList);
+
+		distFiles
+			.stream()
+			.filter(file -> isCachedFile(cachedDistFilesDigest, file))
+			.forEach(FileUtils::deleteQuietly);
+	}
+
+	private boolean isCachedFile(Set<String> cachedDistFilesDigest, File file) {
+		try {
+			return cachedDistFilesDigest.contains(getMd5(file));
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Extract non cached distribution files for send to each agents.
+	 *
+	 * @param distFilesDigest					Required file's md5 checksum for currently running test.
+	 * @param agentCachedDistFilesDigestList    Md5 checksum of files in each agent cache directory.
+	 *
+	 * */
+	private Set<String> extractCachedDistFilesDigest(Set<String> distFilesDigest,
+													 List<Set<String>> agentCachedDistFilesDigestList) {
+		return distFilesDigest
+			.stream()
+			.filter(distFileDigest -> agentCachedDistFilesDigestList
+				.stream()
+				.allMatch(agentCachedDistFilesDigest -> agentCachedDistFilesDigest.contains(distFileDigest)))
+			.collect(toSet());
+	}
+
+	private void prepareFileDistribution(PerfTest perfTest, SingleConsole singleConsole) throws IOException {
+		File distDir = perfTestService.getDistributionPath(perfTest);
+		List<File> distFiles = getAllFilesInDirectory(distDir);
+		Set<String> distFilesDigest = getMd5(distFiles);
+
+		singleConsole.sendDistFilesDigestToAgents(distFilesDigest);
+		deleteCachedDistFiles(distFiles, distFilesDigest, singleConsole.getAgentCachedDistFilesDigestList());
 	}
 
 	/**
@@ -254,9 +310,11 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param perfTest      perftest
 	 * @param singleConsole console to be used.
 	 */
-	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) {
+	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) throws IOException {
+		prepareFileDistribution(perfTest, singleConsole);
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
+
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
 		final long safeThreshold = getSafeTransmissionThreshold();
 
@@ -275,12 +333,11 @@ public class PerfTestRunnable implements ControllerConstants {
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
 				if (sizeOfDirectory > safeThreshold) {
 					perfTestService.markProgress(perfTest, "The total size of distributed files is over "
-							+ UnitUtils.byteCountToDisplaySize(safeThreshold) + "B.\n- Safe file distribution mode is enabled by force.");
+							+ UnitUtils.byteCountToDisplaySize(safeThreshold) + ".\n- Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;
 			}
-
 		});
 
 		// the files have prepared before
@@ -310,12 +367,12 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param singleConsole     console to be used.
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(perfTest.getAgentCount())
+		int agentCount = perfTest.getAgentCount();
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(agentCount)
 				+ " agents are starting.");
-		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties,
-				getSafe(perfTest.getAgentCount()));
-		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(perfTest.getAgentCount())
+		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties, getSafe(agentCount));
+		singleConsole.waitUntilAgentPrepared(agentCount);
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(agentCount)
 				+ " agents are ready.");
 	}
 
@@ -492,18 +549,29 @@ public class PerfTestRunnable implements ControllerConstants {
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		doTerminate(perfTest, singleConsoleInUse, "");
+	}
+
 	/**
 	 * Terminate the given {@link PerfTest}.
 	 *
 	 * @param perfTest           {@link PerfTest} to be finished
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
 	 *                           {@link PerfTest}
+	 * @param errorMessage       error message
 	 */
-	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse, String errorMessage) {
 		singleConsoleInUse.unregisterSampling();
+		String progressMessage = "Stopped by error";
+
+		if (!errorMessage.isEmpty()) {
+			progressMessage += "\n" + errorMessage;
+		}
+
 		try {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
-					"Stopped by error");
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
+				Status.STOP_BY_ERROR, progressMessage);
 		} catch (Exception e) {
 			LOG.error("Error while terminating {} : {}", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Details : ", e);

@@ -76,7 +76,7 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
-	public void waitUntilAgentConnected(int size) {
+	public void waitUntilAgentPrepared(int size) {
 		// Do nothing
 	}
 

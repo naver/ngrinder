@@ -30,6 +30,7 @@ public interface CacheConstants {
 	String CACHE_RIGHT_PANEL_ENTRIES = "right_panel_entries";
 	String CACHE_LEFT_PANEL_ENTRIES = "left_panel_entries";
 	String CACHE_CURRENT_PERFTEST_STATISTICS = "current_perftest_statistics";
+	String CACHE_RECENTLY_USED_AGENTS = "recently_used_agents";
 
 	String REGION_ATTR_KEY = "region";
 	String REGION_EXECUTOR_SERVICE_NAME = "region_executor";
