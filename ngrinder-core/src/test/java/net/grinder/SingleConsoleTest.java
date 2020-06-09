@@ -125,7 +125,7 @@ public class SingleConsoleTest {
 
 		Set<String> fileDigests = new HashSet<>();
 		fileDigests.add("E9C4736A0963EB81C0C85AF48CF2F3F2");
-		singleConsole.onAcceptMd5Listener(fileDigests);
+		singleConsole.onAcceptDistFilesDigestListener(fileDigests);
 
 		processReports = new ProcessReports[]{};
 		singleConsole.waitUntilAgentPrepared(1);

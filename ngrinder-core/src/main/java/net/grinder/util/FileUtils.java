@@ -38,7 +38,7 @@ public class FileUtils {
 		return getAllFilesInDirectory(directory.getPath());
 	}
 
-	public static Set<String> getAllMd5InDirectory(File directory) throws IOException {
+	public static Set<String> getAllFilesMd5ChecksumInDirectory(File directory) throws IOException {
 		return getMd5(getAllFilesInDirectory(directory));
 	}
 

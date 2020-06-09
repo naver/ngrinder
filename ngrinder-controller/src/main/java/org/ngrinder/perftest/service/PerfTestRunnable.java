@@ -225,24 +225,24 @@ public class PerfTestRunnable implements ControllerConstants {
 	/**
 	 * Delete cached distribution files, These are already in the agent cache directory.
 	 *
-	 * @param distFiles 					Required files for currently running test.
-	 * @param distFilesMd5					Required file's md5 for currently running test.
-	 * @param agentCachedDistFilesMd5List   Md5 of files in each agent cache directory
+	 * @param distFiles 					   Required files for currently running test.
+	 * @param distFilesDigest				   Required file's md5 checksum for currently running test.
+	 * @param agentCachedDistFilesDigestList   Md5 checksum of files in each agent cache directory
 	 * */
 	private void deleteCachedDistFiles(List<File> distFiles,
-									   Set<String> distFilesMd5,
-									   List<Set<String>> agentCachedDistFilesMd5List) {
-		Set<String> cachedDistFilesMd5 = extractCachedDistFilesMd5(distFilesMd5, agentCachedDistFilesMd5List);
+									   Set<String> distFilesDigest,
+									   List<Set<String>> agentCachedDistFilesDigestList) {
+		Set<String> cachedDistFilesDigest = extractCachedDistFilesDigest(distFilesDigest, agentCachedDistFilesDigestList);
 
 		distFiles
 			.stream()
-			.filter(file -> isCachedFile(cachedDistFilesMd5, file))
+			.filter(file -> isCachedFile(cachedDistFilesDigest, file))
 			.forEach(FileUtils::deleteQuietly);
 	}
 
-	private boolean isCachedFile(Set<String> cachedDistFilesMd5, File file) {
+	private boolean isCachedFile(Set<String> cachedDistFilesDigest, File file) {
 		try {
-			return cachedDistFilesMd5.contains(getMd5(file));
+			return cachedDistFilesDigest.contains(getMd5(file));
 		} catch (IOException e) {
 			return false;
 		}
@@ -251,27 +251,27 @@ public class PerfTestRunnable implements ControllerConstants {
 	/**
 	 * Extract non cached distribution files for send to each agents.
 	 *
-	 * @param distFilesMd5					Required file's md5 for currently running test.
-	 * @param agentCachedDistFilesMd5List   Md5 of files in each agent cache directory
+	 * @param distFilesDigest					Required file's md5 checksum for currently running test.
+	 * @param agentCachedDistFilesDigestList    Md5 checksum of files in each agent cache directory.
 	 *
 	 * */
-	private Set<String> extractCachedDistFilesMd5(Set<String> distFilesMd5,
-												 List<Set<String>> agentCachedDistFilesMd5List) {
-		return distFilesMd5
+	private Set<String> extractCachedDistFilesDigest(Set<String> distFilesDigest,
+													 List<Set<String>> agentCachedDistFilesDigestList) {
+		return distFilesDigest
 			.stream()
-			.filter(distFileMd5 -> agentCachedDistFilesMd5List
+			.filter(distFileDigest -> agentCachedDistFilesDigestList
 				.stream()
-				.allMatch(agentCachedDistFilesMd5 -> agentCachedDistFilesMd5.contains(distFileMd5)))
+				.allMatch(agentCachedDistFilesDigest -> agentCachedDistFilesDigest.contains(distFileDigest)))
 			.collect(toSet());
 	}
 
 	private void prepareFileDistribution(PerfTest perfTest, SingleConsole singleConsole) throws IOException {
-		File distributionDir = perfTestService.getDistributionPath(perfTest);
-		List<File> distributionFiles = getAllFilesInDirectory(distributionDir);
-		Set<String> distributionFilesMd5 = getMd5(distributionFiles);
+		File distDir = perfTestService.getDistributionPath(perfTest);
+		List<File> distFiles = getAllFilesInDirectory(distDir);
+		Set<String> distFilesDigest = getMd5(distFiles);
 
-		singleConsole.sendDistFilesMd5ToAgents(distributionFilesMd5);
-		deleteCachedDistFiles(distributionFiles, distributionFilesMd5, singleConsole.getAgentCachedDistFilesMd5List());
+		singleConsole.sendDistFilesDigestToAgents(distFilesDigest);
+		deleteCachedDistFiles(distFiles, distFilesDigest, singleConsole.getAgentCachedDistFilesDigestList());
 	}
 
 	/**

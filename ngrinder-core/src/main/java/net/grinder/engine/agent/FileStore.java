@@ -137,14 +137,14 @@ final class FileStore {
 				@Override
 				public void handle(RefreshCacheMessage message) {
 					m_logger.info("Refresh cached file store");
-					Set<String> requiredFilesMd5 = message.getMd5();
+					Set<String> requiredFilesDigest = message.getDisFilesDigest();
 					File cacheDir = m_incomingDirectory.getFile();
 
 					try {
 						List<File> cachedFiles = getAllFilesInDirectory(cacheDir);
 						cachedFiles
 							.stream()
-							.filter(file -> !isRequiredFile(requiredFilesMd5, file))
+							.filter(file -> !isRequiredFile(requiredFilesDigest, file))
 							.forEach(FileUtils::deleteQuietly);
 					} catch (IOException e) {
 						m_logger.info("Failed refresh cached file store", e);
@@ -206,9 +206,9 @@ final class FileStore {
 			});
 	}
 
-	private boolean isRequiredFile(Set<String> requiredFilesMd5, File file) {
+	private boolean isRequiredFile(Set<String> requiredFilesDigest, File file) {
 		try {
-			return requiredFilesMd5.contains(getMd5(file));
+			return requiredFilesDigest.contains(getMd5(file));
 		} catch (IOException e) {
 			return false;
 		}

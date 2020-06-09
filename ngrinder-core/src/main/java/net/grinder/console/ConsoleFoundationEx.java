@@ -31,7 +31,7 @@ import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.distribution.WireFileDistribution;
 import net.grinder.console.model.*;
 import net.grinder.console.synchronisation.WireDistributedBarriers;
-import net.grinder.engine.communication.Md5Message;
+import net.grinder.engine.communication.DistFilesDigestMessage;
 import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.messages.console.RegisterExpressionViewMessage;
 import net.grinder.messages.console.RegisterTestsMessage;
@@ -65,7 +65,7 @@ public class ConsoleFoundationEx {
 	private final Timer m_timer;
 	private boolean m_shutdown = false;
 	private final Condition m_eventSyncCondition;
-	private final ListenerSupport<AcceptMd5Listener> m_md5AcceptListener = new ListenerSupport<>();
+	private final ListenerSupport<AcceptDistFilesDigestListener> m_distFilesDigestAcceptListener = new ListenerSupport<>();
 
 	/**
 	 * Constructor. Allows properties to be specified.
@@ -110,7 +110,7 @@ public class ConsoleFoundationEx {
 			new ComponentParameter(SampleModelImplementationEx.class),
 			new ComponentParameter(SampleModelViewsImplementation.class),
 			new ComponentParameter(DispatchClientCommands.class),
-			new ConstantParameter(m_md5AcceptListener));
+			new ConstantParameter(m_distFilesDigestAcceptListener));
 		m_container.addComponent(WireDistributedBarriers.class);
 		m_container.addComponent(ErrorQueue.class);
 
@@ -146,8 +146,8 @@ public class ConsoleFoundationEx {
 		}
 	}
 
-	public void addMd5AcceptListener(AcceptMd5Listener acceptMd5Listener) {
-		 m_md5AcceptListener.add(acceptMd5Listener);
+	public void addDistFilesDigestAcceptListener(AcceptDistFilesDigestListener acceptDistFilesDigestListener) {
+		 m_distFilesDigestAcceptListener.add(acceptDistFilesDigestListener);
 	}
 
 	private String getConsoleInfo() {
@@ -210,7 +210,7 @@ public class ConsoleFoundationEx {
 		 */
 		public WireMessageDispatch(ConsoleCommunication communication, final SampleModel model,
 						final SampleModelViews sampleModelViews,DispatchClientCommands dispatchClientCommands,
-								   ListenerSupport<AcceptMd5Listener> md5AcceptListener) {
+								   ListenerSupport<AcceptDistFilesDigestListener> distFilesDigestAcceptListener) {
 
 			final MessageDispatchRegistry messageDispatchRegistry = communication.getMessageDispatchRegistry();
 
@@ -232,12 +232,12 @@ public class ConsoleFoundationEx {
 				}
 			});
 
-			messageDispatchRegistry.set(Md5Message.class, new AbstractHandler<Md5Message>() {
-				public void handle(Md5Message message) {
-					md5AcceptListener.apply(new ListenerSupport.Informer<AcceptMd5Listener>() {
+			messageDispatchRegistry.set(DistFilesDigestMessage.class, new AbstractHandler<DistFilesDigestMessage>() {
+				public void handle(DistFilesDigestMessage message) {
+					distFilesDigestAcceptListener.apply(new ListenerSupport.Informer<AcceptDistFilesDigestListener>() {
 						@Override
-						public void inform(AcceptMd5Listener listener) {
-							listener.onAcceptMd5Listener(message.getMd5());
+						public void inform(AcceptDistFilesDigestListener listener) {
+							listener.onAcceptDistFilesDigestListener(message.getDistFilesDigest());
 						}
 					});
 				}

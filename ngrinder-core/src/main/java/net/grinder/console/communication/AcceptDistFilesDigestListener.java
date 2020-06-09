@@ -16,10 +16,10 @@ package net.grinder.console.communication;
 import java.util.Set;
 
 /**
- * AcceptMd5Listener for Md5Message.
+ * AcceptDistFilesDigestListener for {@link net.grinder.engine.communication.DistFilesDigestMessage}.
  *
- * @since 3.5.1
+ * @since 3.5.0
  */
-public interface AcceptMd5Listener {
-	void onAcceptMd5Listener(Set<String> md5);
+public interface AcceptDistFilesDigestListener {
+	void onAcceptDistFilesDigestListener(Set<String> distFilesDigest);
 }

@@ -28,7 +28,7 @@ import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
-import net.grinder.console.communication.AcceptMd5Listener;
+import net.grinder.console.communication.AcceptDistFilesDigestListener;
 import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
@@ -82,7 +82,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon (clone Console and modify this for nGrinder)
  * @since 3.0
  */
-public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener, AcceptMd5Listener {
+public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener, AcceptDistFilesDigestListener {
 	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
@@ -91,13 +91,13 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	public static final Logger LOGGER = LoggerFactory.getLogger("console");
 	public static final String REPORT_DATA = ".data";
 	private static final String REPORT_CSV = "output.csv";
-	private static final int NUM_OF_SEND_MD5_THREAD = 3;
+	private static final int NUM_OF_SEND_FILE_DIGEST_THREAD = 3;
 
 	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
 
 	// It contains cached distribution files md5 checksum from each agents.
-	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesMd5List = new CopyOnWriteArrayList<>();
+	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
 	private boolean cancel = false;
 
 	// for displaying tps graph in test running page
@@ -184,7 +184,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
 					consoleCommunicationSetting, eventSyncCondition);
-			consoleFoundation.addMd5AcceptListener(this);
+			consoleFoundation.addDistFilesDigestAcceptListener(this);
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		} catch (GrinderException e) {
@@ -362,24 +362,24 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	@Override
-	public void onAcceptMd5Listener(Set<String> md5) {
-		this.agentCachedDistFilesMd5List.add(md5);
+	public void onAcceptDistFilesDigestListener(Set<String> distFilesDigest) {
+		this.agentCachedDistFilesDigestList.add(distFilesDigest);
 	}
 
 	/**
-	 * Send Md5 of unnecessary files to agents for refresh agent's distribution cache directory.
+	 * Send Md5 checksum of unnecessary files to agents for refresh agent's distribution cache directory.
 	 *
-	 * @param distFilesMd5 Required file's md5 for currently running test
+	 * @param distFilesDigest Required file's md5 checksum for currently running test.
 	 */
-	public void sendDistFilesMd5ToAgents(Set<String> distFilesMd5) {
-		ForkJoinPool myPool = new ForkJoinPool(NUM_OF_SEND_MD5_THREAD);
+	public void sendDistFilesDigestToAgents(Set<String> distFilesDigest) {
+		ForkJoinPool myPool = new ForkJoinPool(NUM_OF_SEND_FILE_DIGEST_THREAD);
 		myPool.submit(() -> stream(processReports)
 			.parallel()
 			.forEach(processReport -> getConsoleComponent(ConsoleCommunicationImplementationEx.class)
 				.sendToAddressedAgents(
 					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
-					new RefreshCacheMessage(distFilesMd5))));
-		LOGGER.info("Send md5 of distribution files to agent.");
+					new RefreshCacheMessage(distFilesDigest))));
+		LOGGER.info("Send md5 checksum of distribution files to agent for refresh agent's cache directory.");
 	}
 
 	/**
@@ -481,7 +481,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	/**
-	 * Wait until the given size of agents are all connected and receive md5 from there cached files.
+	 * Wait until the given size of agents are all connected and receive md5 checksum from there cached files.
 	 * It wait until 10 sec.
 	 *
 	 * @param size size of agent.
@@ -492,7 +492,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			// when agent finished one test, processReports will be updated as
 			// null
 			if ((processReports == null || this.processReports.length != size)
-				|| agentCachedDistFilesMd5List.size() != size) {
+				|| agentCachedDistFilesDigestList.size() != size) {
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(1000);
 				}
@@ -502,7 +502,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				return;
 			}
 		}
-		throw processException("Connection is not completed or md5 of cached files weren't received until 10 sec");
+		throw processException("Connection is not completed or cached files digest weren't received until 10 sec");
 	}
 
 	/**
@@ -1346,8 +1346,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		return runningProcess;
 	}
 
-	public List<Set<String>> getAgentCachedDistFilesMd5List() {
-		return agentCachedDistFilesMd5List;
+	public List<Set<String>> getAgentCachedDistFilesDigestList() {
+		return agentCachedDistFilesDigestList;
 	}
 
 	/**

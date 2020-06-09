@@ -31,7 +31,7 @@ import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.communication.ConsoleListener;
-import net.grinder.engine.communication.Md5Message;
+import net.grinder.engine.communication.DistFilesDigestMessage;
 import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.messages.agent.StartGrinderMessage;
@@ -534,8 +534,8 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 					.getCacheHighWaterMark()));
 
 			File cacheDir = m_fileStore.getIncomingDirectory().getFile();
-			m_sender.send(new Md5Message(getAllMd5InDirectory(cacheDir)));
-			m_logger.info("Send md5 of cached file to controller.");
+			m_sender.send(new DistFilesDigestMessage(getAllFilesMd5ChecksumInDirectory(cacheDir)));
+			m_logger.info("Send md5 checksum of cached file to controller.");
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);

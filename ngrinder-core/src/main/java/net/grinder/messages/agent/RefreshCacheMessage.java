@@ -10,14 +10,14 @@ import java.util.Set;
  * @since 3.5.1
  * */
 public final class RefreshCacheMessage implements Message {
-	private Set<String> md5;
+	private Set<String> disFilesDigest;
 
-	public RefreshCacheMessage(Set<String> md5) {
-		this.md5 = md5;
+	public RefreshCacheMessage(Set<String> disFilesDigest) {
+		this.disFilesDigest = disFilesDigest;
 	}
 
-	public Set<String> getMd5() {
-		return md5;
+	public Set<String> getDisFilesDigest() {
+		return disFilesDigest;
 	}
 }
 
