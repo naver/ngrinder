@@ -25,7 +25,10 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -53,6 +56,7 @@ public abstract class NetworkUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
 	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
 	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
+	public static String DEFAULT_PUBLIC_IP_ADDRESS = getPublicIPAddress();
 	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
 
 	/**
@@ -88,6 +92,28 @@ public abstract class NetworkUtils {
 			// It's final...
 			return "127.0.0.1";
 		}
+	}
+
+
+	public static String getPublicIPAddress() {
+		InputStream inputStream = null;
+		InputStreamReader inputStreamReader = null;
+		BufferedReader bufferedReader = null;
+		try {
+			URL url = new URL("http://checkip.amazonaws.com");
+			inputStream = url.openStream();
+			inputStreamReader = new InputStreamReader(inputStream);
+			bufferedReader = new BufferedReader(inputStreamReader);
+			return bufferedReader.readLine();
+		} catch (IOException e) {
+			// noop
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+			IOUtils.closeQuietly(inputStreamReader);
+			IOUtils.closeQuietly(bufferedReader);
+		}
+
+		return getLocalHostAddress();
 	}
 
 	/**
