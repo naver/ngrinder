@@ -353,16 +353,16 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
 		// Add SamplingLifeCycleListener
-		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
+		singleConsole.addSamplingLifeCycleListener(new PerfTestSamplingCollectorListener(singleConsole,
 				perfTest.getId(), perfTestService, scheduledTaskService));
-		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
+		singleConsole.addSamplingLifeCycleListener(new AgentLostDetectionListener(singleConsole, perfTest,
 				perfTestService, scheduledTaskService));;
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
 				(OnTestSamplingRunnable.class, asList(new MonitorCollectorPlugin(config, scheduledTaskService,
 					perfTestService, perfTest.getId()), new TooManyErrorCheckPlugin()));
-		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
+		singleConsole.addSamplingLifeCycleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
-		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
+		singleConsole.addSamplingLifeCycleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
 				agentManager, scheduledTaskService));
 	}
 

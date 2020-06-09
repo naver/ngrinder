@@ -974,7 +974,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 *
 	 * @param listener listener to be registered.
 	 */
-	public void addSamplingLifeCyleListener(SamplingLifeCycleListener listener) {
+	public void addSamplingLifeCycleListener(SamplingLifeCycleListener listener) {
 		samplingLifeCycleListener.add(listener);
 	}
 
