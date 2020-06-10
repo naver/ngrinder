@@ -232,7 +232,12 @@
         }
 
         updateAgentStatePopover() {
-            this.$nextTick(() =>this.agents.forEach(agent => document.getElementById(`ball_${agent.key}`).setAttribute('data-content', this.getAgentStatePopoverContent(agent))));
+            this.$nextTick(() => this.agents.forEach(agent => {
+                const ball = document.getElementById(`ball_${agent.key}`);
+                if (ball != null) {
+                    ball.setAttribute('data-content', this.getAgentStatePopoverContent(agent));
+                }
+            }));
         }
 
         getAgentStatePopoverContent(agent) {
