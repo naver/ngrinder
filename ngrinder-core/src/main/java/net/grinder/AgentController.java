@@ -18,7 +18,7 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
-import net.grinder.engine.agent.ConnectionAgentCommunicationDelegator;
+import net.grinder.engine.agent.ConnectionAgentCommunicationProxy;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
 import net.grinder.engine.communication.*;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -87,7 +87,7 @@ public class AgentController implements Agent, AgentConstants {
 
 	private String version;
 
-	private ConnectionAgentCommunicationDelegator communicationDelegator = ConnectionAgentCommunicationDelegator.EMPTY;
+	private ConnectionAgentCommunicationProxy communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
 
 	private ServerSocket connectionAgentSocket;
 
@@ -188,14 +188,14 @@ public class AgentController implements Agent, AgentConstants {
 					if (agentConfig.isConnectionMode()) {
 						final int localConnectionPort = NetworkUtils.getFreePort();
 						grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, localConnectionPort);
-						communicationDelegator = new ConnectionAgentCommunicationDelegator(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationDelegator.CommunicationMessageSender() {
+						communicationProxy = new ConnectionAgentCommunicationProxy(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationProxy.CommunicationMessageSender() {
 							@Override
 							public void send() {
 								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort()));
 							}
 						});
 						releaseConnectionAgentSocket();
-						communicationDelegator.start();
+						communicationProxy.start();
 					}
 
 					agentDaemon.run(grinderProperties);
@@ -208,8 +208,8 @@ public class AgentController implements Agent, AgentConstants {
 							sendLog(conCom, testId);
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
-							communicationDelegator.shutdown();
-							communicationDelegator = ConnectionAgentCommunicationDelegator.EMPTY;
+							communicationProxy.shutdown();
+							communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
 							occupyConnectionAgentSocket();
 						}
 					});

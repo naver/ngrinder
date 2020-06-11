@@ -10,8 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class ConnectionAgentCommunicationDelegator extends Thread {
-	public static final ConnectionAgentCommunicationDelegator EMPTY = empty();
+public class ConnectionAgentCommunicationProxy extends Thread {
+	public static final ConnectionAgentCommunicationProxy EMPTY = empty();
 	private static final int DEFAULT_BUFFER_SIZE = 8192;
 
 	private final int localPort;
@@ -22,7 +22,7 @@ public class ConnectionAgentCommunicationDelegator extends Thread {
 	private ServerSocket localServerSocket;
 	private ServerSocket remoteServerSocket;
 
-	public ConnectionAgentCommunicationDelegator(int localPort, int remotePort, Logger LOGGER, CommunicationMessageSender sender) {
+	public ConnectionAgentCommunicationProxy(int localPort, int remotePort, Logger LOGGER, CommunicationMessageSender sender) {
 		this.localPort = localPort;
 		this.remotePort = remotePort;
 		this.LOGGER = LOGGER;
@@ -47,7 +47,7 @@ public class ConnectionAgentCommunicationDelegator extends Thread {
 			LOGGER.error("Cannot transfer agent connection", e);
 			throw new RuntimeException(e);
 		} catch (SocketException e) {
-			LOGGER.debug("Shutdown communication delegator", e);
+			LOGGER.debug("Communication proxy shutdown", e);
 			// normal case. shutdown.
 		} catch (Exception e) {
 			LOGGER.error("Cannot transfer agent connection", e);
@@ -55,7 +55,7 @@ public class ConnectionAgentCommunicationDelegator extends Thread {
 		} finally {
 			shutdown();
 		}
-		LOGGER.info("Communication delegator shutdown");
+		LOGGER.info("Communication proxy shutdown");
 	}
 
 	public void shutdown() {
@@ -116,8 +116,8 @@ public class ConnectionAgentCommunicationDelegator extends Thread {
 		}
 	}
 
-	public static ConnectionAgentCommunicationDelegator empty() {
-		return new ConnectionAgentCommunicationDelegator(0, 0, null, new ConnectionAgentCommunicationDelegator.CommunicationMessageSender() {
+	public static ConnectionAgentCommunicationProxy empty() {
+		return new ConnectionAgentCommunicationProxy(0, 0, null, new ConnectionAgentCommunicationProxy.CommunicationMessageSender() {
 			@Override
 			public void send() {
 				// noop
