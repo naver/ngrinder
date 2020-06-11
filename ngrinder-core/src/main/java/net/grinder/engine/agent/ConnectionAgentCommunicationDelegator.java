@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -13,46 +14,53 @@ public class ConnectionAgentCommunicationDelegator extends Thread {
 	public static final ConnectionAgentCommunicationDelegator EMPTY = empty();
 	private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-	private final int consolePort;
-	private final int connectionAgentPort;
+	private final int localPort;
+	private final int remotePort;
 	private final Logger LOGGER;
 	private final CommunicationMessageSender sender;
 
 	private ServerSocket localServerSocket;
+	private ServerSocket remoteServerSocket;
 
-	public ConnectionAgentCommunicationDelegator(int consolePort, int connectionAgentPort, Logger LOGGER, CommunicationMessageSender sender) {
-		this.consolePort = consolePort;
-		this.connectionAgentPort = connectionAgentPort;
+	public ConnectionAgentCommunicationDelegator(int localPort, int remotePort, Logger LOGGER, CommunicationMessageSender sender) {
+		this.localPort = localPort;
+		this.remotePort = remotePort;
 		this.LOGGER = LOGGER;
 		this.sender = sender;
 	}
 
 	@Override
 	public void run() {
-		try (ServerSocket localServerSocket = new ServerSocket(consolePort)) {
-			this.localServerSocket = localServerSocket;
-			while (true) {
+		try {
+			localServerSocket = new ServerSocket(localPort);
+			remoteServerSocket = new ServerSocket(remotePort);
+
+			while (!localServerSocket.isClosed() && !remoteServerSocket.isClosed()) {
 				Socket localSocket = localServerSocket.accept();
 
 				sender.send();
-				Socket remoteSocket;
-				try (ServerSocket serverSocket = new ServerSocket(connectionAgentPort)) {
-					remoteSocket = serverSocket.accept();
-				}
+				Socket remoteSocket = remoteServerSocket.accept();
 
 				new SocketPipeline(localSocket, remoteSocket).start();
 			}
+		} catch (BindException e) {
+			LOGGER.error("Cannot transfer agent connection", e);
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			LOGGER.debug("Shutdown communication delegator", e);
 			// normal case. shutdown.
 		} catch (Exception e) {
 			LOGGER.error("Cannot transfer agent connection", e);
+			throw new RuntimeException(e);
+		} finally {
+			shutdown();
 		}
 		LOGGER.info("Communication delegator shutdown");
 	}
 
 	public void shutdown() {
 		IOUtils.closeQuietly(localServerSocket);
+		IOUtils.closeQuietly(remoteServerSocket);
 	}
 
 	public interface CommunicationMessageSender {

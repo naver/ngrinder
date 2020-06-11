@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.ServerSocket;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Timer;
@@ -88,6 +89,8 @@ public class AgentController implements Agent, AgentConstants {
 
 	private ConnectionAgentCommunicationDelegator communicationDelegator = ConnectionAgentCommunicationDelegator.EMPTY;
 
+	private ServerSocket connectionAgentSocket;
+
 	/**
 	 * Constructor.
 	 *
@@ -131,7 +134,9 @@ public class AgentController implements Agent, AgentConstants {
 					if (consoleCommunication == null) {
 						final Connector connector;
 						if (agentConfig.isConnectionMode()) {
+							releaseConnectionAgentSocket();
 							connector = m_connectorFactory.create(agentConfig.getConnectionAgentPort());
+							occupyConnectionAgentSocket();
 						} else {
 							connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
 						}
@@ -189,6 +194,7 @@ public class AgentController implements Agent, AgentConstants {
 								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort()));
 							}
 						});
+						releaseConnectionAgentSocket();
 						communicationDelegator.start();
 					}
 
@@ -204,6 +210,7 @@ public class AgentController implements Agent, AgentConstants {
 							m_connectionPort = 0;
 							communicationDelegator.shutdown();
 							communicationDelegator = ConnectionAgentCommunicationDelegator.EMPTY;
+							occupyConnectionAgentSocket();
 						}
 					});
 				}
@@ -340,6 +347,24 @@ public class AgentController implements Agent, AgentConstants {
 				LOGGER.error("Error while sending current state : {}.", e.getMessage());
 				LOGGER.debug("The error detail is ", e);
 			}
+		}
+	}
+
+	private void occupyConnectionAgentSocket() {
+		try {
+			connectionAgentSocket = new ServerSocket(agentConfig.getConnectionAgentPort());
+		} catch(Exception e) {
+			noOp();
+		}
+	}
+
+	private void releaseConnectionAgentSocket() {
+		try {
+			if (connectionAgentSocket != null) {
+				connectionAgentSocket.close();
+			}
+		} catch (Exception e) {
+			noOp();
 		}
 	}
 
