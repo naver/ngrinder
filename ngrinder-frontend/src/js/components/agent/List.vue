@@ -12,18 +12,20 @@
             </legend>
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
-            <button class="btn btn-primary mr-1" @click="update">
-                <i class="mr-1 fa fa-arrow-up"></i>
-                <span v-text="i18n('agent.list.update')"></span>
-            </button>
-            <button class="btn btn-danger mr-1" @click="stopAgents">
-                <i class="mr-1 fa fa-stop"></i>
-                <span v-text="i18n('common.button.stop')"></span>
-            </button>
-            <button class="btn btn-info mr-3" @click="$refs.addConnectionAgentModal.show()" v-if="isAdmin">
-                <i class="mr-1 fa fa-plus"></i>
-                <span v-text="i18n('common.button.add')"></span>
-            </button>
+            <div v-if="isAdmin">
+                <button class="btn btn-primary mr-1" @click="update">
+                    <i class="mr-1 fa fa-arrow-up"></i>
+                    <span v-text="i18n('agent.list.update')"></span>
+                </button>
+                <button class="btn btn-danger mr-1" @click="stopAgents">
+                    <i class="mr-1 fa fa-stop"></i>
+                    <span v-text="i18n('common.button.stop')"></span>
+                </button>
+                <button class="btn btn-info mr-3" @click="$refs.addConnectionAgentModal.show()">
+                    <i class="mr-1 fa fa-plus"></i>
+                    <span v-text="i18n('common.button.add')"></span>
+                </button>
+            </div>
 
             <input class="mr-1 form-control search-input" type="text" ref="searchInput"
                    placeholder="Keywords" @keydown.enter.prevent="search" v-focus/>
