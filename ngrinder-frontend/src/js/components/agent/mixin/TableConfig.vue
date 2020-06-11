@@ -7,12 +7,6 @@
         get tableFields() {
             const fields = [
                 {
-                    name: '__checkbox',
-                    titleClass: 'center aligned',
-                    dataClass: 'center aligned',
-                    width: '30px',
-                },
-                {
                     name: '__slot:state',
                     title: this.i18n('agent.list.state'),
                     dataClass: 'center aligned',
@@ -49,6 +43,13 @@
             ];
 
             if (this.isAdmin) {
+                fields.unshift({
+                    name: '__checkbox',
+                    titleClass: 'center aligned',
+                    dataClass: 'center aligned',
+                    width: '30px',
+                });
+
                 fields.push({
                     name: '__slot:approved',
                     title: this.i18n('agent.list.approved'),
