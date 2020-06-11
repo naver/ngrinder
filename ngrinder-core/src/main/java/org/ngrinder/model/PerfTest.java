@@ -15,6 +15,7 @@ package org.ngrinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.grinder.common.GrinderProperties;
@@ -239,6 +240,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Column(name = "stop_request")
 	@Type(type = "true_false")
+	@Getter(AccessLevel.NONE)
 	private Boolean stopRequest;
 
 	@Cloneable
@@ -375,6 +377,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@JsonIgnore
 	public Boolean isThresholdRunCount() {
 		return "R".equals(getThreshold());
+	}
+
+	public boolean isStopRequest() {
+		return getSafe(stopRequest, false);
 	}
 
 	/**

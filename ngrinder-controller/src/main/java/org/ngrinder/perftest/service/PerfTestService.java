@@ -1050,7 +1050,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public List<PerfTest> getAllStopRequested() {
 		final List<PerfTest> perfTests = getAll(null, config.getRegion(), getProcessingOrTestingTestStatus());
 		return perfTests.stream()
-			.filter(PerfTest::getStopRequest)
+			.filter(PerfTest::isStopRequest)
 			.collect(toList());
 	}
 

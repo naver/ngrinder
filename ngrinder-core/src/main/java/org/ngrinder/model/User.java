@@ -216,7 +216,7 @@ public class User extends BaseModel<User> {
 	}
 
 	public void setEmail(String email) {
-		this.email = email.toLowerCase();
+		this.email = email == null ? "" : email.toLowerCase();
 	}
 
 	public boolean isExternal() {
@@ -242,7 +242,6 @@ public class User extends BaseModel<User> {
 		userInfo.setUserId(this.getUserId());
 		userInfo.setUserName(this.getUserName());
 		userInfo.setEmail(this.getEmail());
-
 		return userInfo;
 	}
 
