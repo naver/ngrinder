@@ -13,11 +13,6 @@
 				approved char(1) not null,
 				hostName varchar(255),
 				ip varchar(255),
-				region varchar(255),
-				state varchar(20),
-				port int default 0,
-				system_stat varchar(1000),
-				version varchar(256) default '',
 				primary key (id)
 			);
 
@@ -66,7 +61,7 @@
 				run_count int,
 				scheduled_time timestamp NULL DEFAULT NULL,
 				script_name varchar(255),
-				script_revision bigint,
+				script_revision varchar(255),
 				send_mail char(1),
 				start_time timestamp NULL DEFAULT NULL,
 				status varchar(255),
@@ -87,13 +82,11 @@
 				last_modified_user bigint,
 				region varchar(255),
 				safe_distribution char(1) default 'F',
-				agent_stat text,
-				running_sample text,
-				monitor_stat text,
 				sampling_interval int default 1,
 				param varchar(256) default '',
 				ramp_up_type varchar(10) default 'PROCESS',
-
+				scm varchar(30) default 'svn',
+				ignore_too_many_error char(1) default 'F',
 				primary key (id)
 			);
 
@@ -117,6 +110,15 @@
 				owner_id bigint not null,
 				follow_id bigint not null,
 				primary key (owner_id, follow_id)
+			);
+
+			create table if not exists CONNECTION (
+				id bigint auto_increment,
+				ip varchar(255),
+				name varchar(255),
+				region varchar(255),
+				port int default 0,
+				primary key(id)
 			);
 
 			create index last_modified_user_index on NUSER (last_modified_user);
