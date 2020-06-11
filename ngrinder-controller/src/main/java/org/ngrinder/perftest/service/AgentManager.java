@@ -21,6 +21,8 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentDownloadRequestListener;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
+import net.grinder.console.communication.ConnectionAgentListener;
+import net.grinder.console.communication.ConnectionAgentCommunicationListener;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
@@ -45,6 +47,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -82,14 +85,12 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	 */
 	@PostConstruct
 	public void init() {
-		int port = config.getControllerPort();
-
 		ConsoleCommunicationSetting consoleCommunicationSetting = ConsoleCommunicationSetting.asDefault();
 		if (config.getInactiveClientTimeOut() > 0) {
 			consoleCommunicationSetting.setInactiveClientTimeOut(config.getInactiveClientTimeOut());
 		}
 
-		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port, consoleCommunicationSetting);
+		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), config.getControllerPort(), consoleCommunicationSetting);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.addAgentDownloadRequestListener(this);
 		agentControllerServerDaemon.addLogArrivedListener((testId, agentAddress, logs) -> {
@@ -312,6 +313,11 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		agentControllerServerDaemon.updateAgent(agentIdentity, version);
 	}
 
+	public void addConnectionAgent(String ip, int port) throws IOException {
+		Socket socket = new Socket(ip, port);
+		agentControllerServerDaemon.discriminateConnection(socket);
+	}
+
 	/**
 	 * Get the set of {@link AgentStatus} from agents belong to the given single console port.
 	 *
@@ -349,5 +355,13 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 
 	public void addAgentStatusUpdateListener(AgentStatusUpdateListener agentStatusUpdateListener) {
 		agentControllerServerDaemon.addAgentStatusUpdateListener(agentStatusUpdateListener);
+	}
+
+    public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
+		agentControllerServerDaemon.addConnectionAgentListener(connectionAgentListener);
+    }
+
+    public void addConnectionAgentCommunicationListener(ConnectionAgentCommunicationListener listener) {
+		agentControllerServerDaemon.addConnectionAgentCommunicationListener(listener);
 	}
 }

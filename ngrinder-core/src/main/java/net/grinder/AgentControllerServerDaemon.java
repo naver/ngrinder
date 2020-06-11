@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -34,6 +34,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.Socket;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -274,6 +275,10 @@ public class AgentControllerServerDaemon {
 				AgentUpdateGrinderMessage.getStartAgentUpdateGrinderMessage(version));
 	}
 
+	public void discriminateConnection(Socket socket) {
+		getComponent(ConsoleCommunicationImplementationEx.class).discriminateConnection(socket);
+	}
+
 	/**
 	 * Add Listener which will be used to catch agent status update.
 	 *
@@ -290,5 +295,13 @@ public class AgentControllerServerDaemon {
 	 */
 	public void addLogArrivedListener(LogArrivedListener logArrivedListener) {
 		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
+	}
+
+	public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
+		getComponent(AgentProcessControlImplementation.class).addConnectionAgentListener(connectionAgentListener);
+	}
+
+	public void addConnectionAgentCommunicationListener(ConnectionAgentCommunicationListener listener) {
+		getComponent(AgentProcessControlImplementation.class).addConnectionAgentCommunicationListener(listener);
 	}
 }

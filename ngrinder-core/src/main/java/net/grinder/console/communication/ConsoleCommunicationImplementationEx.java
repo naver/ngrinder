@@ -32,6 +32,7 @@ import net.grinder.util.thread.BooleanCondition;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.Socket;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -320,6 +321,14 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			} catch (CommunicationException e) {
 				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "sendError.text", e));
 			}
+		}
+	}
+
+	public void discriminateConnection(Socket socket) {
+		try {
+			m_acceptor.discriminateConnection(socket);
+		} catch (Exception e) {
+			m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "sendError.text", e));
 		}
 	}
 }

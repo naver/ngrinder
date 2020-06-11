@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra;
 
@@ -330,6 +330,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
 	}
 
+	public int getConnectionAgentPort() {
+		return getAgentProperties().getPropertyInt(PROP_AGENT_CONNECTION_PORT);
+	}
+
 	public String getRegion() {
 		return getAgentProperties().getProperty(PROP_AGENT_REGION);
 	}
@@ -344,6 +348,14 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 	public boolean isServerMode() {
 		return getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE);
+	}
+
+	public boolean isConnectionMode() {
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_CONNECTION_MODE, false);
+	}
+
+	public boolean isPublicIPEnabled() {
+		return getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_PUBLIC_IP, false);
 	}
 
 	public boolean isSilentMode() {

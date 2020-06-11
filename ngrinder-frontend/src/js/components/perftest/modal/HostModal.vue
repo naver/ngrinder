@@ -47,7 +47,7 @@
                 <footer class="modal-footer">
                     <button class="btn btn-success" @click.prevent="addHost">
                         <i class="fa fa-plus mr-1"></i>
-                        <span v-text="i18n('perfTest.config.add')"></span>
+                        <span v-text="i18n('common.button.add')"></span>
                     </button>
                     <button class="btn btn-danger" data-dismiss="modal" v-text="i18n('common.button.cancel')"></button>
                 </footer>

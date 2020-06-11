@@ -20,17 +20,21 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
+import net.grinder.console.communication.ConnectionAgentListener;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentRequest;
+import org.ngrinder.agent.model.Connection;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.repository.ConnectionRepository;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.AgentStateTask;
+import org.ngrinder.infra.hazelcast.task.ConnectionAgentTask;
 import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
@@ -52,6 +56,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
@@ -76,7 +82,8 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  */
 @Service
 @RequiredArgsConstructor
-public class AgentService extends AbstractAgentService implements TopicListener<AgentRequest>, AgentStatusUpdateListener {
+public class AgentService extends AbstractAgentService
+	implements TopicListener<AgentRequest>, AgentStatusUpdateListener, ConnectionAgentListener {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentService.class);
 
 	protected final AgentManager agentManager;
@@ -96,13 +103,32 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 
 	protected final ScheduledTaskService scheduledTaskService;
 
+	private final ConnectionRepository connectionRepository;
+
 	@Value("${ngrinder.version}")
 	private String nGrinderVersion;
 
 	@PostConstruct
 	public void init() {
 		agentManager.addAgentStatusUpdateListener(this);
+		agentManager.addConnectionAgentListener(this);
 		topicSubscriber.addListener(AGENT_TOPIC_LISTENER_NAME, this);
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::connectionAgentHealthCheck, 1L, 1L, TimeUnit.MINUTES);
+	}
+
+	private void connectionAgentHealthCheck() {
+		connectionRepository.findAll()
+			.stream()
+			.filter(connection -> config.getRegion().equals(connection.getRegion()))
+			.filter(connection -> agentInfoStore.getAgentInfo(createAgentKey(connection.getIp(), connection.getName())) == null)
+			.forEach(connection -> {
+				try {
+					agentManager.addConnectionAgent(connection.getIp(), connection.getPort());
+					LOGGER.info("Reconnected to connection agent {}:{}", connection.getIp(), connection.getPort());
+				} catch (Exception e) {
+					LOGGER.debug("Fail to reconnect to connection agent {}:{}", connection.getIp(), connection.getPort());
+				}
+			});
 	}
 
 	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
@@ -429,6 +455,10 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		agentManager.updateAgent(agentIdentity, agentManager.getAgentForceUpdate() ? "99.99" : config.getVersion());
 	}
 
+	public void addConnectionAgent(String ip, int port, String region) {
+		hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new ConnectionAgentTask(ip, port), region);
+	}
+
 
 	private String createAgentKey(String ip, String name) {
 		return ip + "_" + name;
@@ -516,5 +546,17 @@ public class AgentService extends AbstractAgentService implements TopicListener<
 		for (AgentInfo agentInfo : agentInfoSet) {
 			agentInfoStore.deleteAgentInfo(agentInfo.getAgentKey());
 		}
+	}
+
+	@Override
+	public void onConnectionAgentMessage(String ip, String name, int port) {
+		Connection connection = connectionRepository.findByIpAndPort(ip, port);
+		if (connection == null) {
+			connection = new Connection(ip, name, port, config.getRegion());
+		} else {
+			connection.setName(name);
+			connection.setRegion(config.getRegion());
+		}
+		connectionRepository.save(connection);
 	}
 }

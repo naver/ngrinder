@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -18,11 +18,9 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
+import net.grinder.engine.agent.ConnectionAgentCommunicationProxy;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
-import net.grinder.engine.communication.AgentControllerServerListener;
-import net.grinder.engine.communication.AgentDownloadGrinderMessage;
-import net.grinder.engine.communication.AgentUpdateGrinderMessage;
-import net.grinder.engine.communication.LogReportGrinderMessage;
+import net.grinder.engine.communication.*;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -44,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.ServerSocket;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Timer;
@@ -62,6 +61,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class AgentController implements Agent, AgentConstants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
+
 	private final AgentConfig agentConfig;
 
 	private Timer m_timer;
@@ -87,6 +87,10 @@ public class AgentController implements Agent, AgentConstants {
 
 	private String version;
 
+	private ConnectionAgentCommunicationProxy communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
+
+	private ServerSocket connectionAgentSocket;
+
 	/**
 	 * Constructor.
 	 *
@@ -99,7 +103,8 @@ public class AgentController implements Agent, AgentConstants {
 		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronization, LOGGER);
 		// Set it with the default name
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.isPublicIPEnabled() ?
+			NetworkUtils.DEFAULT_PUBLIC_IP_ADDRESS : NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
@@ -127,7 +132,15 @@ public class AgentController implements Agent, AgentConstants {
 			while (true) {
 				do {
 					if (consoleCommunication == null) {
-						final Connector connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
+						final Connector connector;
+						if (agentConfig.isConnectionMode()) {
+							releaseConnectionAgentSocket();
+							connector = m_connectorFactory.create(agentConfig.getConnectionAgentPort());
+							occupyConnectionAgentSocket();
+						} else {
+							connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
+						}
+
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
 							consoleCommunication.start();
@@ -165,13 +178,28 @@ public class AgentController implements Agent, AgentConstants {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
+					final ConsoleCommunication conCom = consoleCommunication;
 					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "unknown");
 					LOGGER.info("Starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
-					agentDaemon.run(startMessage.getProperties());
 
-					final ConsoleCommunication conCom = consoleCommunication;
+					GrinderProperties grinderProperties = startMessage.getProperties();
+					if (agentConfig.isConnectionMode()) {
+						final int localConnectionPort = NetworkUtils.getFreePort();
+						grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, localConnectionPort);
+						communicationProxy = new ConnectionAgentCommunicationProxy(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationProxy.CommunicationMessageSender() {
+							@Override
+							public void send() {
+								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort()));
+							}
+						});
+						releaseConnectionAgentSocket();
+						communicationProxy.start();
+					}
+
+					agentDaemon.run(grinderProperties);
+
 					agentDaemon.resetListeners();
 					agentDaemon.addListener(new AgentShutDownListener() {
 						@Override
@@ -180,6 +208,9 @@ public class AgentController implements Agent, AgentConstants {
 							sendLog(conCom, testId);
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
+							communicationProxy.shutdown();
+							communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
+							occupyConnectionAgentSocket();
 						}
 					});
 				}
@@ -319,6 +350,24 @@ public class AgentController implements Agent, AgentConstants {
 		}
 	}
 
+	private void occupyConnectionAgentSocket() {
+		try {
+			connectionAgentSocket = new ServerSocket(agentConfig.getConnectionAgentPort());
+		} catch(Exception e) {
+			noOp();
+		}
+	}
+
+	private void releaseConnectionAgentSocket() {
+		try {
+			if (connectionAgentSocket != null) {
+				connectionAgentSocket.close();
+			}
+		} catch (Exception e) {
+			noOp();
+		}
+	}
+
 	/**
 	 * Clean up resources.
 	 */
@@ -381,6 +430,10 @@ public class AgentController implements Agent, AgentConstants {
 					}
 				}
 			};
+
+			if (agentConfig.isConnectionMode()) {
+				m_sender.send(new ConnectionAgentMessage(m_agentIdentity.getIp(), agentConfig.getAgentHostID(), agentConfig.getConnectionAgentPort()));
+			}
 		}
 
 		public void sendMessage(Message message) {
