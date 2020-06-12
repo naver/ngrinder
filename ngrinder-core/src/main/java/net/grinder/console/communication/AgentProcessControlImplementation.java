@@ -82,7 +82,11 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		timer.schedule(new TimerTask() {
 			public void run() {
 				synchronized (m_agentMap) {
-					update();
+					try {
+						update();
+					} catch (Exception e) {
+						LOGGER.error("Error occurred during update agent", e);
+					}
 				}
 			}
 		}, 0, UPDATE_PERIOD);
@@ -90,7 +94,11 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		timer.schedule(new TimerTask() {
 			public void run() {
 				synchronized (m_agentMap) {
-					purge(m_agentMap);
+					try {
+						purge(m_agentMap);
+					} catch (Exception e) {
+						LOGGER.error("Error occurred during purge agent", e);
+					}
 				}
 			}
 		}, 0, FLUSH_PERIOD);
