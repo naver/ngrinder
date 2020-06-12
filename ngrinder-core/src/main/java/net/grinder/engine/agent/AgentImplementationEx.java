@@ -409,12 +409,12 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 
 		String customJvmClassPath = properties.getProperty(GRINDER_PROP_JVM_CLASSPATH);
 		if (isNotBlank(customJvmClassPath)) {
-			rebaseCustomClassPath += (File.pathSeparator + customJvmClassPath);
+			rebaseCustomClassPath = (customJvmClassPath + File.pathSeparator) + rebaseCustomClassPath;
 		}
 
 		String agentJvmClassPath = m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JVM_CLASSPATH);
 		if (isNotBlank(agentJvmClassPath)) {
-			rebaseCustomClassPath += (File.pathSeparator + agentJvmClassPath);
+			rebaseCustomClassPath = (agentJvmClassPath + File.pathSeparator) + rebaseCustomClassPath;
 		}
 
 		return rebaseCustomClassPath;

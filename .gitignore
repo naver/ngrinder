@@ -23,6 +23,7 @@ package-lock.json
 /deploy-core.bat
 /complexity_result.html
 /loc_result.html
+/update_package
 /resources/perftest*
 *.iml
 /atlassian-ide-plugin.xml
