@@ -76,16 +76,18 @@
                 </div>
             </div>
         </div>
-        <splitpanes class="flex-grow-1 overflow-y-auto default-theme h-100" ref="splitPane" horizontal>
-            <pane :min-size="10" size="85">
+        <splitpanes class="flex-grow-1 overflow-y-auto default-theme h-100"
+                    @resize="editorSize = $event[0].size"
+                    horizontal>
+            <pane :min-size="15" :size="editorSize">
                 <code-mirror ref="editor"
                              class="h-100"
-                             :value="this.file.content"
+                             :value="file.content"
                              :options="cmOptions">
                 </code-mirror>
             </pane>
-            <pane v-if="validationResult" :min-size="10" :size="resultConsoleSize">
-                <pre class="border h-100 validation-result" v-text="validationResult"></pre>
+            <pane v-if="validationResult" :min-size="15" :size="100 - editorSize">
+                <pre class="border h-100 validation-result" v-html="validationResult"></pre>
             </pane>
         </splitpanes>
         <div class="script-samples-link" ref="sampleLink">
@@ -149,7 +151,7 @@
         SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
         hideDescription = false;
 
-        resultConsoleSize = 15;
+        editorSize = 85;
 
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
@@ -279,6 +281,8 @@
         }
 
         validate() {
+            // Initialize validation result without re-rendering.
+            this.validationResult = ' ';
             if (this.isGitConfig) {
                 this.validateGitConfig();
                 return;
@@ -313,7 +317,7 @@
         }
 
         showScriptValidationResult(result) {
-            this.resultConsoleSize = 150;
+            this.editorSize = 60;
             this.validationResult = result;
         }
 
