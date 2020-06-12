@@ -82,6 +82,7 @@
                     imgWidth: parseInt(this.$refs.tpsChart.offsetWidth),
                 },
             }).then(res => {
+                const interval = res.data['chartInterval'];
                 const numOfTestRecord = Object.keys(res.data['TPS']).length;
 
                 Object.entries(res.data).forEach(([key, value]) => {
@@ -91,14 +92,13 @@
                     }
                     res.data[key] = this.processData(value, key, numOfTestRecord);
                 });
-                this.drawReportChart(res.data);
+                this.drawReportChart(res.data, interval);
 
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
             $('[data-toggle="popover"]').popover();
         }
 
-        drawReportChart(data) {
-            const interval = data['chartInterval'];
+        drawReportChart(data, interval) {
             this.tpsChart = this.drawChart('tps-chart', data['TPS'], interval);
             this.meanTimeChart = this.drawChart('mean-time-chart', data['Mean_Test_Time_(ms)'], interval);
             this.meanTimeToFirstByteChart = this.drawChart('min-time-first-byte-chart', data['Mean_time_to_first_byte'], interval);
