@@ -144,6 +144,7 @@
         <vuetable-pagination
             ref="pagination"
             :css="table.css.pagination"
+            on-each-side=5
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
     </div>
