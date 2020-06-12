@@ -95,16 +95,15 @@
                     onlyTotal: true,
                 },
             }).then(res => {
+                const interval = res.data['chartInterval'];
                 Object.entries(res.data).forEach(([key, value]) => {
                     res.data[key] = this.processData(value, key);
                 });
-                this.initCharts(res.data);
+                this.initCharts(res.data, interval);
             });
         }
-
-        initCharts(data) {
-            const interval = data['chartInterval'];
-
+        
+        initCharts(data, interval) {
             this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data['TPS'].Total, interval);
             this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data['Mean_Test_Time_(ms)'].Total, interval);
             this.drawSmallChart(`mttfb_${this.rowData.id}`, 'MTTFB', data['Mean_time_to_first_byte'].Total, interval);
