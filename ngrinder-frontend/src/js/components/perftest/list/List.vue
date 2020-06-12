@@ -42,6 +42,7 @@
             </template>
 
             <template slot="testName" slot-scope="props">
+                <span :class="{ today : isToday(props.rowData.createdDate) }"/>
                 <div class="ellipsis testName"
                      data-toggle="popover"
                      data-html="true"
@@ -428,6 +429,12 @@
             statusFieldHeader.dataset.intro = this.i18n('intro.list.perftest.status');
             actionsFieldHeader.dataset.intro = this.i18n('intro.list.perftest.actions');
         }
+
+        isToday(createdDate) {
+            const now = this.$moment.utc();
+            const created = this.$moment(createdDate);
+            return now.isSame(created, 'day');
+        }
     }
 </script>
 
@@ -476,5 +483,16 @@
             margin-top: -25px;
             margin-right: -29px;
         }
+    }
+</style>
+<style>
+    .today {
+        position: absolute;
+        width: 32px;
+        height: 8px;
+        top: 0;
+        left: 0;
+        background: url('/img/icon_today.png') no-repeat right;
+        background-size: 32px 8px;
     }
 </style>
