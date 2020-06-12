@@ -13,7 +13,6 @@
  */
 package org.ngrinder.agent.controller;
 
-import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;

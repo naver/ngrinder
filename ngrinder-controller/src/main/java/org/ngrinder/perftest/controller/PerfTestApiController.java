@@ -63,7 +63,6 @@ import static org.ngrinder.common.constant.WebConstants.*;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.*;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
