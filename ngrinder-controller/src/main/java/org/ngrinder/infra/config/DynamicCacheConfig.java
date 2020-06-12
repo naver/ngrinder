@@ -140,12 +140,12 @@ public class DynamicCacheConfig implements ClusterConstants {
 	@Bean
 	public CacheConfigHolder cacheConfigMap() {
 		CacheConfigHolder cm = new CacheConfigHolder();
-		cm.addDistMap(DIST_MAP_NAME_SAMPLING, 15);
-		cm.addDistMap(DIST_MAP_NAME_MONITORING, 15);
-		cm.addDistMap(DIST_MAP_NAME_AGENT, 10);
+		cm.addDistCache(DIST_MAP_NAME_SAMPLING, 15, 0);
+		cm.addDistCache(DIST_MAP_NAME_MONITORING, 15, 0);
+		cm.addDistCache(DIST_MAP_NAME_AGENT, 10, 0);
 
-		cm.addDistCache(CACHE_USERS, 30,  30);
-		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 1 * HOUR + 40 * MIN);
+		cm.addDistCache(CACHE_USERS, 30, 1000);
+		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 1000);
 
 		cm.addLocalCache(CACHE_GITHUB_SCRIPTS, 5 * MIN, 500);
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
@@ -166,27 +166,28 @@ public class DynamicCacheConfig implements ClusterConstants {
 			caffeineCacheConfig.put(cacheName, cacheBuilder);
 		}
 
-		void addDistCache(String cacheName, int timeout, int nearCacheTimeout) {
-			MapConfig mapConfig = createDistMapConfig(cacheName, timeout);
-
-			NearCacheConfig nearCacheConfig = new NearCacheConfig(cacheName);
-			nearCacheConfig.setTimeToLiveSeconds(nearCacheTimeout);
-			nearCacheConfig.getEvictionConfig().setEvictionPolicy(EvictionPolicy.LRU);
-			mapConfig.setNearCacheConfig(nearCacheConfig);
-
-			hazelcastCacheConfigs.put(cacheName, mapConfig);
-		}
-
-		void addDistMap(String cacheName, int timeout) {
-			hazelcastCacheConfigs.put(cacheName, createDistMapConfig(cacheName, timeout));
-		}
-
-		private MapConfig createDistMapConfig(String cacheName, int timeout) {
+		void addDistCache(String cacheName, int timeout, int count) {
 			MapConfig mapConfig = new MapConfig(cacheName);
 			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
 			mapConfig.setTimeToLiveSeconds(timeout);
-			mapConfig.setEvictionPolicy(EvictionPolicy.LRU);
-			return mapConfig;
+
+			NearCacheConfig nearCacheConfig = new NearCacheConfig(cacheName);
+			nearCacheConfig.setTimeToLiveSeconds(timeout);
+
+			if (count > 0) {
+				mapConfig.setEvictionPolicy(EvictionPolicy.LRU)
+					.getMaxSizeConfig()
+					.setSize(count)
+					.setMaxSizePolicy(MaxSizeConfig.MaxSizePolicy.PER_NODE);
+
+				nearCacheConfig.getEvictionConfig()
+					.setSize(count)
+					.setMaximumSizePolicy(EvictionConfig.MaxSizePolicy.ENTRY_COUNT)
+					.setEvictionPolicy(EvictionPolicy.LRU);
+			}
+
+			mapConfig.setNearCacheConfig(nearCacheConfig);
+			hazelcastCacheConfigs.put(cacheName, mapConfig);
 		}
 
 		Map<String, MapConfig> getHazelcastCacheConfigs() {
