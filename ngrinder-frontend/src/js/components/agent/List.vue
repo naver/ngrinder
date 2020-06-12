@@ -103,7 +103,7 @@
         <vuetable-pagination
             ref="pagination"
             :css="table.css.pagination"
-            on-each-side=5
+            :on-each-side=5
             @vuetable-pagination:change-page="changePage">
         </vuetable-pagination>
         <add-connection-agent-modal ref="addConnectionAgentModal" :regions="regions" v-if="isAdmin"/>
