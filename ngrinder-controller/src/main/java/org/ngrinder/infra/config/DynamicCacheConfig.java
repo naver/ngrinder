@@ -58,6 +58,8 @@ public class DynamicCacheConfig implements ClusterConstants {
 	private static final int HOUR = 60 * 60;
 	private static final int MIN = 60;
 
+	private static final String HAZELCAST_PARTITION_COUNT = "hazelcast.partition.count";
+
 	@Bean
 	public org.springframework.cache.CacheManager cacheManager() {
 		return new CompositeCacheManager(createLocalCacheManager(), createDistCacheManager());
@@ -85,7 +87,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 	@Bean
 	public HazelcastInstance hazelcastInstance() {
-		com.hazelcast.config.Config hazelcastConfig = new com.hazelcast.config.Config();
+		com.hazelcast.config.Config hazelcastConfig = new com.hazelcast.config.Config("nGrinder");
 		hazelcastConfig.setManagedContext(managedContext());
 		hazelcastConfig.getMemberAttributeConfig().setAttributes(getClusterMemberAttributes());
 		hazelcastConfig.setMapConfigs(cacheConfigMap().getHazelcastCacheConfigs());
@@ -103,6 +105,10 @@ public class DynamicCacheConfig implements ClusterConstants {
 			tcpIpConfig.setEnabled(true);
 			tcpIpConfig.setMembers(Arrays.asList(getClusterURIs()));
 			networkConfig.setPublicAddress(selectLocalIp(Arrays.asList(getClusterURIs())));
+		}
+
+		if (!isClustered()) {
+			hazelcastConfig.setProperty(HAZELCAST_PARTITION_COUNT, "1");
 		}
 
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
@@ -144,14 +150,14 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addDistCache(DIST_MAP_NAME_MONITORING, 15, 0);
 		cm.addDistCache(DIST_MAP_NAME_AGENT, 10, 0);
 
-		cm.addDistCache(CACHE_USERS, 30, 1000);
-		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 1000);
+		cm.addDistCache(CACHE_USERS, 30, 300);
+		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 300);
 
-		cm.addLocalCache(CACHE_GITHUB_SCRIPTS, 5 * MIN, 500);
+		cm.addLocalCache(CACHE_GITHUB_SCRIPTS, 5 * MIN, 300);
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
 		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 1);
 		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
-		cm.addLocalCache(CACHE_GITHUB_IS_MAVEN_GROOVY, 24 * HOUR, 500);
+		cm.addLocalCache(CACHE_GITHUB_IS_MAVEN_GROOVY, 24 * HOUR, 300);
 		cm.addLocalCache(CACHE_RECENTLY_USED_AGENTS, 1 * DAY, 100);
 		return cm;
 	}
