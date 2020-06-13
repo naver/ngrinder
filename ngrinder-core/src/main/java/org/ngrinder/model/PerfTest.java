@@ -259,10 +259,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@JsonIgnore
 	@Transient
-	private String dateString;
-
-	@JsonIgnore
-	@Transient
 	private GrinderProperties grinderProperties;
 
 	@JsonIgnore

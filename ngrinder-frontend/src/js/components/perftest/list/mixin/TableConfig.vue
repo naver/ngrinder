@@ -22,6 +22,7 @@
                 {
                     name: '__slot:testName',
                     title: this.i18n('perfTest.list.testName'),
+                    dataClass: 'position-relative',
                     sortField: 'testName',
                     width: this.ngrinder.config.clustered ? '185px' : '240px',
                 },

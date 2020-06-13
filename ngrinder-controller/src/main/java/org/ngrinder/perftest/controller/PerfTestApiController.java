@@ -121,7 +121,6 @@ public class PerfTestApiController {
 		Pair<Page<PerfTest>, Pageable> pair = getPerfTests(user, query, tag, queryFilter, pageable);
 		Page<PerfTest> tests = pair.getFirst();
 		pageable = pair.getSecond();
-		annotateDateMarker(tests);
 		result.put("tag", tag);
 		result.put("totalElements", tests.getTotalElements());
 		result.put("number", tests.getNumber());
@@ -454,25 +453,6 @@ public class PerfTestApiController {
 		attributes.put(PARAM_TIMEZONE_OFFSET, offset);
 
 		return attributes;
-	}
-
-	private void annotateDateMarker(Page<PerfTest> tests) {
-		TimeZone userTZ = TimeZone.getTimeZone(userContext.getCurrentUser().getTimeZone());
-		Calendar userToday = Calendar.getInstance(userTZ);
-		Calendar userYesterday = Calendar.getInstance(userTZ);
-		userYesterday.add(Calendar.DATE, -1);
-		for (PerfTest test : tests) {
-			Calendar localedModified = Calendar.getInstance(userTZ);
-			localedModified.setTime(DateUtils.convertToUserDate(userContext.getCurrentUser().getTimeZone(),
-				test.getLastModifiedDate()));
-			if (org.apache.commons.lang.time.DateUtils.isSameDay(userToday, localedModified)) {
-				test.setDateString("today");
-			} else if (org.apache.commons.lang.time.DateUtils.isSameDay(userYesterday, localedModified)) {
-				test.setDateString("yesterday");
-			} else {
-				test.setDateString("earlier");
-			}
-		}
 	}
 
 	private Map<String, Object> getStatus(PerfTest perfTest) {
