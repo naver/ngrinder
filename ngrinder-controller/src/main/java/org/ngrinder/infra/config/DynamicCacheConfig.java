@@ -146,9 +146,9 @@ public class DynamicCacheConfig implements ClusterConstants {
 	@Bean
 	public CacheConfigHolder cacheConfigMap() {
 		CacheConfigHolder cm = new CacheConfigHolder();
-		cm.addDistCache(DIST_MAP_NAME_SAMPLING, 15, 0);
-		cm.addDistCache(DIST_MAP_NAME_MONITORING, 15, 0);
-		cm.addDistCache(DIST_MAP_NAME_AGENT, 10, 0);
+		cm.addDistMap(DIST_MAP_NAME_SAMPLING, 15);
+		cm.addDistMap(DIST_MAP_NAME_MONITORING, 15);
+		cm.addDistMap(DIST_MAP_NAME_AGENT, 10);
 
 		cm.addDistCache(CACHE_USERS, 30, 300);
 		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 300);
@@ -172,10 +172,13 @@ public class DynamicCacheConfig implements ClusterConstants {
 			caffeineCacheConfig.put(cacheName, cacheBuilder);
 		}
 
+		void addDistMap(String cacheName, int timeout) {
+			MapConfig mapConfig = createDistMapConfig(cacheName, timeout);
+			hazelcastCacheConfigs.put(cacheName, mapConfig);
+		}
+
 		void addDistCache(String cacheName, int timeout, int count) {
-			MapConfig mapConfig = new MapConfig(cacheName);
-			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
-			mapConfig.setTimeToLiveSeconds(timeout);
+			MapConfig mapConfig = createDistMapConfig(cacheName, timeout);
 
 			NearCacheConfig nearCacheConfig = new NearCacheConfig(cacheName);
 			nearCacheConfig.setTimeToLiveSeconds(timeout);
@@ -194,6 +197,13 @@ public class DynamicCacheConfig implements ClusterConstants {
 
 			mapConfig.setNearCacheConfig(nearCacheConfig);
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
+		}
+
+		private MapConfig createDistMapConfig(String cacheName, int timeout) {
+			MapConfig mapConfig = new MapConfig(cacheName);
+			mapConfig.getMergePolicyConfig().setPolicy(LatestUpdateMergePolicy.class.getName());
+			mapConfig.setTimeToLiveSeconds(timeout);
+			return mapConfig;
 		}
 
 		Map<String, MapConfig> getHazelcastCacheConfigs() {
