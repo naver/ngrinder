@@ -8,45 +8,47 @@
             </button>
         </div>
 
-        <div v-show="tpsChart">
-            <h6>
-                <span v-text="'TPS'"></span>
-                <span data-toggle="popover"
-                      data-html="true"
-                      data-trigger="hover"
-                      :data-content="i18n('perfTest.report.tps.help')"
-                      :title="i18n('perfTest.report.tps')">
-                    <i class="fa fa-question-circle"></i>
-                </span>
-            </h6>
-            <div class="bigchart" ref="tpsChart" id="tps-chart"></div>
-        </div>
+        <div v-if="interval">
+            <div v-show="tpsChart">
+                <h6>
+                    <span v-text="'TPS'"></span>
+                    <span data-toggle="popover"
+                          data-html="true"
+                          data-trigger="hover"
+                          :data-content="i18n('perfTest.report.tps.help')"
+                          :title="i18n('perfTest.report.tps')">
+                        <i class="fa fa-question-circle"></i>
+                    </span>
+                </h6>
+                <div class="bigchart" id="tps-chart"></div>
+            </div>
 
-        <div v-show="meanTimeChart">
-            <h6 v-text="`${i18n('perfTest.report.header.meantime')} (ms)`"></h6>
-            <div class="chart" id="mean-time-chart"></div>
-        </div>
+            <div v-show="meanTimeChart">
+                <h6 v-text="`${i18n('perfTest.report.header.meantime')} (ms)`"></h6>
+                <div class="chart" id="mean-time-chart"></div>
+            </div>
 
-        <div v-show="meanTimeToFirstByteChart">
-            <h6 v-text="`${i18n('perfTest.report.header.meantimeToFirstByte')} (ms)`"></h6>
-            <div class="chart" id="min-time-first-byte-chart"></div>
-        </div>
+            <div v-show="meanTimeToFirstByteChart">
+                <h6 v-text="`${i18n('perfTest.report.header.meantimeToFirstByte')} (ms)`"></h6>
+                <div class="chart" id="min-time-first-byte-chart"></div>
+            </div>
 
-        <div v-show="vuserChart">
-            <h6 v-text="i18n('perfTest.report.header.vuser')"></h6>
-            <div class="chart" id="vuser-chart"></div>
-        </div>
+            <div v-show="vuserChart">
+                <h6 v-text="i18n('perfTest.report.header.vuser')"></h6>
+                <div class="chart" id="vuser-chart"></div>
+            </div>
 
-        <div v-show="userDefinedData.length">
-            <template v-for="(data, index) in userDefinedData">
-                <h6 v-text="data.title"></h6>
-                <div class="chart" :id="`user-defined-chart-${index}`"></div>
-            </template>
-        </div>
+            <div v-show="userDefinedData.length">
+                <template v-for="(data, index) in userDefinedData">
+                    <h6 v-text="data.title"></h6>
+                    <div class="chart" :id="`user-defined-chart-${index}`"></div>
+                </template>
+            </div>
 
-        <div v-show="errorChart">
-            <h6 v-text="i18n('perfTest.report.header.errors')"></h6>
-            <div class="chart" id="error-chart"></div>
+            <div v-show="errorChart">
+                <h6 v-text="i18n('perfTest.report.header.errors')"></h6>
+                <div class="chart" id="error-chart"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -75,14 +77,22 @@
         errorChart = {};
         userDefinedData = [];
 
+        interval = 0;
+
         mounted() {
+            this.showProgressBar();
             this.$http.get(`/perftest/api/${this.id}/perf`, {
                 params: {
                     dataType: 'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined,Vuser',
-                    imgWidth: parseInt(this.$refs.tpsChart.offsetWidth),
+                    imgWidth: 960,
                 },
             }).then(res => {
-                const interval = res.data['chartInterval'];
+                this.interval = parseInt(res.data['chartInterval']);
+
+                if (!this.interval) {
+                    return;
+                }
+
                 const numOfTestRecord = Object.keys(res.data['TPS']).length;
 
                 Object.entries(res.data).forEach(([key, value]) => {
@@ -90,11 +100,16 @@
                         this.userDefinedData = this.processUserDefinedData(value, numOfTestRecord);
                         return;
                     }
-                    res.data[key] = this.processData(value, key, numOfTestRecord);
+                    res.data[key] = this.processData(value, key);
                 });
-                this.drawReportChart(res.data, interval);
 
-            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
+                this.$nextTick(() => {
+                    this.drawReportChart(res.data, this.interval);
+                });
+
+            }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')))
+              .finally(this.hideProgressBar);
+
             $('[data-toggle="popover"]').popover();
         }
 
@@ -130,7 +145,7 @@
             &.bigchart, &.chart {
                 border: 1px solid #c4c4c4;
                 height: 300px;
-                min-width: 615px;
+                width: 960px;
                 margin-bottom: 20px;
 
                 &.chart {
