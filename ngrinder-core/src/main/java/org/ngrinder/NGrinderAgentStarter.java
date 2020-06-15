@@ -137,8 +137,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		}
 
 		if (agentConfig.isConnectionMode()) {
-			LOG.info("waiting for connection on {}:{}", agentConfig.isPublicIPEnabled() ?
-				NetworkUtils.DEFAULT_PUBLIC_IP_ADDRESS : NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS, agentConfig.getConnectionAgentPort());
+			LOG.info("waiting for connection on {}:{}", agentConfig.getBroadcastIP(), agentConfig.getConnectionAgentPort());
 		} else {
 			String controllerIP = getIP(agentConfig.getControllerIP());
 			agentConfig.setControllerHost(controllerIP);

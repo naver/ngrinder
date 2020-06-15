@@ -6,7 +6,7 @@ agent.host_id,,agent.hostid
 agent.server_mode,,
 agent.connection_mode,agent_to_controller,
 agent.connection_port,14000,
-agent.public_ip,false,
+agent.broadcast_ip,,
 agent.all_logs,false,agent.send.all.logs
 agent.limit_xmx,true,agent.useXmxLimit
 agent.java_opt,,agent.javaopt

@@ -103,8 +103,7 @@ public class AgentController implements Agent, AgentConstants {
 		this.version = agentConfig.getInternalProperties().getProperty(PROP_INTERNAL_NGRINDER_VERSION);
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronization, LOGGER);
 		// Set it with the default name
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.isPublicIPEnabled() ?
-			NetworkUtils.DEFAULT_PUBLIC_IP_ADDRESS : NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getBroadcastIP());
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
