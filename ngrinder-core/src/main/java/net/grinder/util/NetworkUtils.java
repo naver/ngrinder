@@ -56,7 +56,6 @@ public abstract class NetworkUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
 	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
 	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
-	public static String DEFAULT_PUBLIC_IP_ADDRESS = getPublicIPAddress();
 	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
 
 	/**
@@ -94,27 +93,6 @@ public abstract class NetworkUtils {
 		}
 	}
 
-
-	public static String getPublicIPAddress() {
-		InputStream inputStream = null;
-		InputStreamReader inputStreamReader = null;
-		BufferedReader bufferedReader = null;
-		try {
-			URL url = new URL("http://checkip.amazonaws.com");
-			inputStream = url.openStream();
-			inputStreamReader = new InputStreamReader(inputStream);
-			bufferedReader = new BufferedReader(inputStreamReader);
-			return bufferedReader.readLine();
-		} catch (IOException e) {
-			// noop
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-			IOUtils.closeQuietly(inputStreamReader);
-			IOUtils.closeQuietly(bufferedReader);
-		}
-
-		return getLocalHostAddress();
-	}
 
 	/**
 	 * Get local host name by connecting to a server.
