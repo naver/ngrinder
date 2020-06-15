@@ -4,7 +4,7 @@ agent.controller_port,16001,agent.controller.port,agent.console.port
 agent.region,,
 agent.host_id,,agent.hostid
 agent.server_mode,,
-agent.connection_mode,false,
+agent.connection_mode,agent_to_controller,
 agent.connection_port,14000,
 agent.public_ip,false,
 agent.all_logs,false,agent.send.all.logs
