@@ -92,9 +92,4 @@ public class NetworkUtilTest {
 		assertThat(localHostAddress, notNullValue());
 	}
 
-	@Test
-	public void testPublicIPAddress() {
-		String publicIPAddress = NetworkUtils.getPublicIPAddress();
-		assertThat(publicIPAddress, notNullValue());
-	}
 }
