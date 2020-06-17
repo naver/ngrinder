@@ -70,8 +70,8 @@
 
                             <template v-if="test.targetHosts">
                                 <li class="nav-item mb-1 pl-3" v-text="i18n('perfTest.report.targetHost')"></li>
-                                <li v-for="ip in test.targetHosts.split(',')" class="monitor pt-1" :ip="ip">
-                                    <a href="#" @click="showMonitorMenu($event, ip)" class="nav-link py-0 ml-3 pb-1" v-text="ip"></a>
+                                <li v-for="targetHost in test.targetHosts.split(',')" class="monitor pt-1">
+                                    <a href="#" @click="showMonitorMenu($event, targetHost)" class="nav-link py-0 ml-3 pb-1" v-text="targetHost"></a>
                                 </li>
                             </template>
                         </ul>
@@ -171,14 +171,14 @@
             .finally(this.hideProgressBar);
         }
 
-        showMonitorMenu($event, ip) {
+        showMonitorMenu($event, targetHost) {
             if (!this.switchActiveNavMenu($event.target.parentElement)) {
                 return;
             }
 
             this.props = {
                 id: this.id,
-                targetIP: ip,
+                targetIP: (targetHost.indexOf(':') === -1) ? targetHost : targetHost.split(':')[1],
             };
             this.currentMenuComponent = Monitor;
         }
