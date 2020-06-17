@@ -444,7 +444,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public boolean isGitHubScm() {
-		return !scm.equals(DEFAULT_SCM);
+		return scm != null && !scm.equals(DEFAULT_SCM);
 	}
 
 	public void prepare(boolean isClone) {
