@@ -4,9 +4,9 @@ class Utils {
     }
 
     isLocale(locale) {
-        return document.cookie.split(';')
-            .find(c => c.indexOf('naveruserlocale=') > -1)
-            .split('=')[1] === locale;
+        const localStorageLocale = localStorage.getItem('naveruserlocale');
+        const cookieLocale = document.cookie.split(';').find(c => c.indexOf('naveruserlocale=') > -1);
+        return locale === (localStorageLocale || cookieLocale || "en");
     }
 
     isNumeric(num){
