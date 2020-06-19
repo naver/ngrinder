@@ -260,6 +260,7 @@
         }
 
         changeRegion() {
+            this.$refs.vuetable.currentPage = 1;
             clearTimeout(this.updateStatesTimer);
             this.updateStates();
             this.updateDownloadLink();
