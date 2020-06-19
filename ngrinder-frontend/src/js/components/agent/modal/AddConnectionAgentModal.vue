@@ -17,7 +17,7 @@
                                         v-model="region" v-validate="{ required: true }">
                                     <option v-for="region in regions"
                                             :value="region"
-                                            v-text="region">
+                                            v-text="i18n(region)">
                                     </option>
                                 </select>
                                 <div v-visible="errors.has('region')" class="validation-message" v-text="errors.first('region')"></div>
