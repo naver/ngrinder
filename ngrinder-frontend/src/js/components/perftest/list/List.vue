@@ -430,10 +430,10 @@
             actionsFieldHeader.dataset.intro = this.i18n('intro.list.perftest.actions');
         }
 
-        isToday(createdDate) {
-            const now = this.$moment.utc();
-            const created = this.$moment(createdDate);
-            return now.isSame(created, 'day');
+        isToday(date) {
+            const now = this.$moment().tz(this.ngrinder.currentUser.timeZone);
+            const timeZoneDate = this.$moment(date).tz(this.ngrinder.currentUser.timeZone);
+            return now.isSame(timeZoneDate, 'day');
         }
     }
 </script>
@@ -486,7 +486,7 @@
     }
 </style>
 <style>
-    .today {
+    span.today {
         position: absolute;
         width: 32px;
         height: 8px;
