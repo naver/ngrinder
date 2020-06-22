@@ -77,7 +77,7 @@ public class GitHubConfig {
 					.owner(jsonNode.get(OWNER.getValue()).asText())
 					.repo(jsonNode.get(REPO.getValue()).asText())
 					.accessToken(jsonNode.get(ACCESS_TOKEN.getValue()).asText())
-					.branch(defaultIfNull(jsonNode.get(BRANCH.getValue()), ""))
+					.branch(defaultIfNull(jsonNode.get(BRANCH.getValue()), null))
 					.baseUrl(baseUrl)
 					.revision(defaultIfNull(jsonNode.get(REVISION.getValue()), "-1"))
 					.scriptRoot(defaultIfNull(jsonNode.get(SCRIPT_ROOT.getValue()), ""))

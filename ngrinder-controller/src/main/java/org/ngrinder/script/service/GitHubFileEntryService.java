@@ -77,7 +77,7 @@ public class GitHubFileEntryService {
 
 	private final PerfTestService perfTestService;
 
-	private static final String MAVEN_PATH = "/src/main/java";
+	private static final String MAVEN_PATH = "src/main/java";
 
 	private static final RateLimitHandlerEx rateLimitHandlerEx = new RateLimitHandlerEx();
 
@@ -91,7 +91,7 @@ public class GitHubFileEntryService {
 
 	public FileEntry getOne(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
 		String fullPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
-		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
+		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath, gitHubConfig.getBranch())) {
 			fullPath += scriptPath.substring(scriptPath.indexOf(MAVEN_PATH));
 			FileEntry fileEntry = createGitHubScriptFileEntry(fullPath);
 			fileEntry.getProperties().put("type", "groovy-maven");
@@ -113,6 +113,7 @@ public class GitHubFileEntryService {
 			if (!isEmpty(configuredBranch)) {
 				activeBranch = configuredBranch;
 			}
+			gitHubConfig.setBranch(activeBranch);
 			String sha = ghRepository.getBranch(activeBranch).getSHA1();
 			String scriptPath = perfTest.getScriptName();
 			String checkoutDirPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
@@ -121,7 +122,7 @@ public class GitHubFileEntryService {
 
 			SVNUpdateClient svnUpdateClient = svnClientManager.getUpdateClient();
 			File checkoutDir = new File(checkoutDirPath);
-			SVNURL checkoutUrl = createCheckoutUrl(ghRepository, scriptPath, configuredBranch, isDefaultBranch(configuredBranch, defaultBranch));
+			SVNURL checkoutUrl = createCheckoutUrl(ghRepository, scriptPath, gitHubConfig.getBranch(), defaultBranch);
 
 			cleanUpGitHubStorage(svnClientManager.getStatusClient(), checkoutDir, checkoutUrl);
 
@@ -185,14 +186,14 @@ public class GitHubFileEntryService {
 		return new File(directory.getPath() + "/" + ".svn").exists();
 	}
 
-	@Cacheable(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#scriptPath")
-	public boolean isGroovyMavenProject(GHRepository ghRepository, String scriptPath) {
+	@Cacheable(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
+	public boolean isGroovyMavenProject(GHRepository ghRepository, String scriptPath, String activeBranch) {
 		if (!scriptPath.contains(MAVEN_PATH)) {
 			return false;
 		}
 
 		try {
-			List<GHContent> ghContents = ghRepository.getDirectoryContent(scriptPath.split(MAVEN_PATH)[0]);
+			List<GHContent> ghContents = ghRepository.getDirectoryContent(scriptPath.split(MAVEN_PATH)[0], activeBranch);
 			return ghContents.stream().anyMatch(ghContent -> ghContent.getName().equals("pom.xml"));
 		} catch (IOException e) {
 			return false;
@@ -230,7 +231,7 @@ public class GitHubFileEntryService {
 		try {
 			String checkoutScriptPath;
 			URI uri = new URI(getGitHubBaseUrl(gitHubConfig));
-			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
+			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath, gitHubConfig.getBranch())) {
 				checkoutScriptPath = scriptPath.split(MAVEN_PATH)[0];
 			} else {
 				checkoutScriptPath = getFullPath(scriptPath);
@@ -364,12 +365,13 @@ public class GitHubFileEntryService {
 
 	private SVNURL createCheckoutUrl(GHRepository ghRepository,
 									 String scriptPath,
-									 String configuredBranch,
-									 boolean isDefaultBranch) throws SVNException {
+									 String activeBranch,
+									 String defaultBranch) throws SVNException {
+		boolean isDefaultBranch = isDefaultBranch(activeBranch, defaultBranch);
 		String checkoutBaseUrl = ghRepository.getSvnUrl();
-		checkoutBaseUrl += isDefaultBranch ? "/trunk" : "/branches/" + configuredBranch;
+		checkoutBaseUrl += isDefaultBranch ? "/trunk" : "/branches/" + activeBranch;
 		SVNURL checkoutUrl;
-		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath)) {
+		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath, activeBranch)) {
 			checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + scriptPath.split(MAVEN_PATH)[0]);
 		} else {
 			checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + getFullPath(scriptPath));
