@@ -430,8 +430,8 @@ public class GitHubFileEntryService {
 		noOp();
 	}
 
-	@CacheEvict(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#scriptPath")
-	public void evictGitHubMavenGroovyCache(String scriptPath) {
+	@CacheEvict(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
+	public void evictGitHubMavenGroovyCache(GHRepository ghRepository, String scriptPath, String activeBranch) {
 		noOp();
 	}
 

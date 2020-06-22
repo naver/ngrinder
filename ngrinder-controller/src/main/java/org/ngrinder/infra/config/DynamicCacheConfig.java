@@ -157,7 +157,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
 		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 1);
 		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
-		cm.addLocalCache(CACHE_GITHUB_IS_MAVEN_GROOVY, 24 * HOUR, 300);
+		cm.addLocalCache(CACHE_GITHUB_IS_MAVEN_GROOVY, 5 * MIN, 300);
 		cm.addLocalCache(CACHE_RECENTLY_USED_AGENTS, 1 * DAY, 100);
 		return cm;
 	}

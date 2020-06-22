@@ -119,15 +119,9 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				resourcesFileEntry = gitHubFileEntryRepository.findAll(basePath + RESOURCES);
 				groovyFileEntry = gitHubFileEntryRepository.findAll(basePath + GROOVY);
 				libFileEntry = gitHubFileEntryRepository.findAll(basePath + LIB);
+				fileList.add(gitHubFileEntryRepository.findOne(basePath + "/pom.xml"));
 			} catch (IOException e) {
 				throw new NGrinderRuntimeException(e);
-			}
-
-			try {
-				fileList.add(gitHubFileEntryRepository.findOne(basePath + "/pom.xml"));
-			} catch (NoSuchFileException e) {
-				gitHubFileEntryService.evictGitHubMavenGroovyCache(scriptEntry.getProperties().get("scriptPath"));
-				throw new NGrinderRuntimeException("pom.xml isn't exist in groovy maven.", e);
 			}
 		} else {
 			resourcesFileEntry = fileEntryRepository.findAll(user, basePath + RESOURCES, revision, true);
