@@ -19,7 +19,7 @@
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; min-height: 30px;" type="input" name="tagString"
+                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 300px; min-height: 30px;" type="input" name="tagString"
                                                  :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
                                                   maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
                                         </select2>
@@ -567,6 +567,12 @@
 
         input[type="text"] {
             height: 30px;
+        }
+
+        .select2-dropdown-open {
+            .select2-choices {
+                border-radius: 3px 3px 0 0;
+            }
         }
 
         .select2-choices {
