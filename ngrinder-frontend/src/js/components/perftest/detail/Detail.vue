@@ -32,6 +32,7 @@
                                              data-toggle="popover"
                                              data-trigger="hover"
                                              data-placement="bottom"
+                                             :class="{'pointer-cursor': !isRunningStatus(test.status), 'wait-cursor': isRunningStatus(test.status)}"
                                              :title="i18n(test.status.springMessageKey)"
                                              :src="`${contextPath}${perftestStatus.iconPath}`"/>
                                     </div>
@@ -342,7 +343,7 @@
         }
 
         startRefreshPerfTestStatusInterval() {
-            if (!this.test.id || this.isReportableStatus()) {
+            if (!this.test.id || this.test.status.reportable) {
                 return;
             }
 
@@ -380,7 +381,7 @@
                 this.$nextTick(() => this.$refs.runningTab.click());
                 return;
             }
-            if (this.isReportableStatus()) {
+            if (this.test.status.reportable) {
                 if (this.$refs.running) {
                     window.clearInterval(this.$refs.running.samplingIntervalId);
                 }
@@ -390,13 +391,6 @@
                 return;
             }
             this.$nextTick(() => this.$refs.configTab.click());
-        }
-
-        isReportableStatus() {
-            return this.test.status.category === 'FINISHED' ||
-                this.test.status.category === 'STOP' ||
-                this.test.status.category === 'ERROR' ||
-                this.test.status.category === 'WARNED';
         }
 
         initSelection(element, callback) {

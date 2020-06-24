@@ -55,6 +55,10 @@
                 cursor: pointer;
             }
 
+            .wait-cursor {
+                cursor: wait;
+            }
+
             .container {
                 padding: 0;
             }

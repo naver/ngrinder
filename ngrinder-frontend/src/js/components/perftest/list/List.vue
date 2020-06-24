@@ -34,6 +34,7 @@
                    data-toggle="popover"
                    data-html="true"
                    data-trigger="hover"
+                   :class="{'pointer-cursor': !isRunningStatus(props.rowData.status), 'wait-cursor': isRunningStatus(props.rowData.status)}"
                    :id="`ball_${props.rowData.id}`"
                    :title="props.rowData.status.name"
                    :data-content="getStatusDataContent(props.rowData.progressMessage, props.rowData.lastProgressMessage)">
