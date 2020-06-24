@@ -9,7 +9,11 @@
     </head>
     <body>
         <main id="ngrinder" class="vh-100 d-flex flex-column">
-            <navigator class="flex-grow-0" v-if="ngrinder.currentUser.role"></navigator>
+            <template v-if="ngrinder.currentUser.role">
+                <navigator class="flex-grow-0"></navigator>
+                <tip></tip>
+                <announcement></announcement>
+            </template>
             <router-view class="flex-grow-1" :key="$route.fullPath"></router-view>
             <copyright class="flex-grow-0" :version="ngrinder.version"></copyright>
             <messages ref="messages"></messages>

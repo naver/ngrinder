@@ -144,7 +144,6 @@
             </template>
 
         </vuetable>
-        <intro-button/>
         <vuetable-pagination
             ref="pagination"
             :css="table.css.pagination"
@@ -164,18 +163,18 @@
 
     import Base from '../../Base.vue';
     import SearchBar from './Searchbar.vue';
-    import IntroButton from '../../common/IntroButton.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import SmallChart from './SmallChart.vue';
     import TableConfig from './mixin/TableConfig.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
+    import { TipType } from '../../../constants';
 
     Vue.component('small-chart', SmallChart);
 
     @Component({
         name: 'perfTestList',
-        components: { IntroButton, vueHeadful, SearchBar, Vuetable, VuetablePagination },
+        components: { vueHeadful, SearchBar, Vuetable, VuetablePagination },
     })
     export default class PerfTestList extends Mixins(Base, MessagesMixin, TableConfig, PopoverMixin, CommonMixin) {
         runningSummary = `0 ${this.i18n('perfTest.list.runningSummary')}`;
@@ -200,6 +199,7 @@
         }
 
         mounted() {
+            this.$store.commit('activeTip', TipType.INTROJS);
             this.init();
             this.$refs.vuetable.reload().then(() => {
                 this.showTable = true;
@@ -209,6 +209,7 @@
         }
 
         beforeDestroy() {
+            this.$store.commit('activeTip', '');
             clearTimeout(this.updateStatusTimeoutId);
         }
 
@@ -480,22 +481,19 @@
             min-width: 200px;
             max-width: 600px;
         }
-
-        .intro-button-container {
-            position: relative;
-            margin-top: -25px;
-            margin-right: -29px;
-        }
     }
 </style>
-<style>
-    span.today {
-        position: absolute;
-        width: 32px;
-        height: 8px;
-        top: 0;
-        left: 0;
-        background: url('/img/icon_today.png') no-repeat right;
-        background-size: 32px 8px;
+
+<style lang="less">
+    span {
+        &.today {
+            position: absolute;
+            width: 32px;
+            height: 8px;
+            top: 0;
+            left: 0;
+            background: url('/img/icon_today.png') no-repeat right;
+            background-size: 32px 8px;
+        }
     }
 </style>

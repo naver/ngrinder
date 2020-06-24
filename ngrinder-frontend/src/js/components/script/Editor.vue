@@ -93,10 +93,6 @@
         <div class="script-samples-link" ref="sampleLink">
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
                 Samples</a>
-            <div class="float-right pointer-cursor tip" data-toggle="popover" title="Tip" data-html="true"
-                 data-placement="left" data-trigger="hover" :data-content="getShortcutGuides()">
-                <code>Tip</code>
-            </div>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost" focus="domain"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
@@ -117,6 +113,7 @@
     import CodeMirror from '../common/CodeMirror.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import GuideMixin from './mixin/Guide.vue';
+    import { TipType } from '../../constants';
 
     const GIT_CONFIG_FILE_NAME = '.gitconfig.yml';
 
@@ -175,6 +172,7 @@
         }
 
         mounted() {
+            this.$store.commit('activeTip', TipType.EDITOR_SHORTCUT);
             this.setConfirmBeforeLeave();
             this.init();
 
@@ -195,6 +193,10 @@
                         this.validationResult = '';
                 }
             });
+        }
+
+        beforeDestroy() {
+            this.$store.commit('activeTip', '');
         }
 
         beforeRouteLeave(to, from, next) {
@@ -362,11 +364,6 @@
         toggleHideDescription() {
             this.hideDescription = !this.hideDescription;
             this.$localStorage.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
-        }
-
-        getShortcutGuides() {
-            return this.shortcutConfigs.reduce((guides, shortcutConfig) =>
-                guides += `${shortcutConfig.key} : ${this.i18n(shortcutConfig.desc)}<br>`);
         }
 
         get basePath() {

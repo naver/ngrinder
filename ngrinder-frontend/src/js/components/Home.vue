@@ -21,7 +21,6 @@
                         :seeMoreResourcesUrl="seeMoreResourcesUrl">
             </home-panel>
         </section>
-        <intro-button/>
     </main>
 </template>
 
@@ -31,12 +30,12 @@
     import Base from 'Base.vue';
     import vueHeadful from 'vue-headful';
     import HomePanel from 'HomePanel.vue';
-    import IntroButton from 'common/IntroButton.vue';
     import MessagesMixin from 'common/mixin/MessagesMixin.vue';
+    import { TipType } from '../constants';
 
     @Component({
         name: 'home',
-        components: { IntroButton, vueHeadful, HomePanel },
+        components: { vueHeadful, HomePanel },
         $_veeValidate: {
             validator: 'new',
         },
@@ -53,12 +52,17 @@
         scriptType = '';
 
         mounted() {
+            this.$store.commit('activeTip', TipType.INTROJS);
             if (this.$route.query.type === '404') {
                 this.showErrorMsg('Requested URL does not exist');
             }
             this.getPanel();
             this.getHandlers();
             this.getConfig();
+        }
+
+        beforeDestroy() {
+            this.$store.commit('activeTip', '');
         }
 
         getHandlers() {

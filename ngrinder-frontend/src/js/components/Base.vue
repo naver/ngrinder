@@ -59,6 +59,10 @@
                 cursor: wait;
             }
 
+            .default-cursor {
+                cursor: default;
+            }
+
             .container {
                 padding: 0;
             }

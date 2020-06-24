@@ -89,7 +89,6 @@
                     </div>
                 </div>
             </div>
-            <intro-button/>
         </div>
         <schedule-modal ref="scheduleModal" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
@@ -104,13 +103,13 @@
     import Report from './Report.vue';
     import Running from './Running.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
-    import IntroButton from '../../common/IntroButton.vue';
     import Select2 from '../../common/Select2.vue';
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
     import Utils from '../../../utils.js';
+    import { TipType } from "../../../constants";
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -197,7 +196,7 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'perfTestDetail',
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal, VueHeadful },
+        components: { ControlGroup, Config, Report, Running, Select2, ScheduleModal, VueHeadful },
         $_veeValidate: {
             validator: 'new',
         },
@@ -250,6 +249,7 @@
         }
 
         mounted() {
+            this.$store.commit('activeTip', TipType.INTROJS);
             this.init();
         }
 
@@ -315,6 +315,7 @@
         }
 
         beforeDestroy() {
+            this.$store.commit('activeTip', '');
             window.clearTimeout(this.currentRefreshStatusTimeoutId);
             window.clearInterval(this.$refs.running.samplingIntervalId);
         }

@@ -158,7 +158,7 @@
                     <div class="div-host"
                          data-toggle="popover"
                          data-html="true"
-                         data-placement="bottom"
+                         data-placement="right"
                          data-trigger="hover"
                          :title="i18n('perfTest.config.targetHost')"
                          :data-content="i18n('perfTest.config.targetHost.help')">
