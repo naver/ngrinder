@@ -47,6 +47,7 @@
                      data-toggle="popover"
                      data-html="true"
                      data-trigger="hover"
+                     data-placement="top"
                      :title="props.rowData.testName"
                      :data-content="getTestNamePopoverContent(props.rowData).replace(/\n/g, '<br>')">
                     <router-link :to="`/perftest/${props.rowData.id}`" target="_self" v-text="props.rowData.testName"></router-link>
@@ -58,6 +59,7 @@
                      data-toggle="popover"
                      data-html="true"
                      data-trigger="hover"
+                     data-placement="top"
                      :title="i18n('perfTest.list.scriptName')"
                      :data-content="`${props.rowData.scriptName}<br> - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
                     <template v-if="props.rowData.scm === 'svn'">
@@ -125,7 +127,7 @@
                      data-toggle="popover"
                      data-html="true"
                      data-trigger="hover"
-                     data-placement="left"
+                     data-placement="top"
                      :data-content="getVuserPopoverContent(props.rowData)">
                      {{ props.rowData.vuserPerAgent * props.rowData.agentCount | numFormat }}
                 </div>
