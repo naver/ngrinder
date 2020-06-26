@@ -46,6 +46,28 @@
         }
 
         #ngrinder {
+
+            &.hasHBar {
+                .__panel {
+                    margin-bottom: -17px !important;
+                }
+            }
+
+            // vue-scroll style
+            .__bar-is-vertical,
+            .__bar-is-horizontal {
+                background: #c0c0c0 !important;
+
+                &:hover {
+                    background: #707070 !important;
+                }
+            }
+
+            .__rail-is-vertical {
+                right: 0 !important;
+            }
+            // end vue-scroll style
+
             .container {
                 width: 1200px;
                 min-width: 1200px;

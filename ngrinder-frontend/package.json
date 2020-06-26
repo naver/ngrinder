@@ -66,6 +66,7 @@
     "vuebar": "0.0.20",
     "vuedraggable": "^2.15.0",
     "vuejs-paginate": "^2.0.1",
+    "vuescroll": "^4.16.0",
     "vuetable-2": "^1.7.5",
     "vuex": "^3.0.0"
   },

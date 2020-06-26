@@ -21,7 +21,7 @@ package org.ngrinder.model;
  */
 public enum StatusCategory {
 	/**
-	 * Ready to run..
+	 * Ready to run.
 	 */
 	PREPARE("blue.png", false, true, false),
 	/**
@@ -29,7 +29,7 @@ public enum StatusCategory {
 	 */
 	PROGRESSING("blue_anime.gif", true, false, false),
 	/**
-	 * Testing..
+	 * Testing.
 	 */
 	TESTING("green_anime.gif", true, false, false),
 	/**

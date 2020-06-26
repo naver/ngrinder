@@ -144,7 +144,9 @@
                                :data-step="shownBsTab ? 7 : undefined"
                                :data-intro="shownBsTab ? i18n('intro.config.basic.scriptResources') : undefined">
                     <div class="div-resources">
-                        <div class="resource" v-for="resource in resources" v-text="resource"></div>
+                        <vue-scroll>
+                            <div class="resource" v-for="resource in resources" v-text="resource"></div>
+                        </vue-scroll>
                     </div>
                 </control-group>
 
@@ -162,10 +164,12 @@
                          data-trigger="hover"
                          :title="i18n('perfTest.config.targetHost')"
                          :data-content="i18n('perfTest.config.targetHost.help')">
-                        <div v-for="(host, index) in targetHosts" class="host">
-                            <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
-                            <i class="fa fa-times-circle pointer-cursor" @click="removeHost(host, index)"></i>
-                        </div>
+                        <vue-scroll>
+                            <div v-for="(host, index) in targetHosts" class="host">
+                                <a href="#" @click="showTargetHostInfoModal(host)" v-text="host"></a>
+                                <i class="fa fa-times-circle pointer-cursor" @click="removeHost(host, index)"></i>
+                            </div>
+                        </vue-scroll>
                     </div>
                     <input type="hidden" name="targetHosts" :value="targetHosts.join(',')">
                 </control-group>

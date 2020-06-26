@@ -87,7 +87,9 @@
                 </code-mirror>
             </pane>
             <pane v-if="validationResult" :min-size="15" :size="100 - editorSize">
-                <pre class="border h-100 validation-result" v-html="validationResult"></pre>
+                <vue-scroll class="border">
+                    <pre class="h-100 validation-result" v-html="validationResult"></pre>
+                </vue-scroll>
             </pane>
         </splitpanes>
         <div class="script-samples-link" ref="sampleLink">
@@ -466,7 +468,8 @@
     }
 
     .validation-result {
-        padding: 5px;
+        padding: 5px 5px 0 5px;
+        margin-bottom: 0;
         font-size: 12px;
         background-color: #f5f5f5;
     }
@@ -474,7 +477,6 @@
     .expand-btn-container {
         position: absolute;
         left: 50%;
-
         width: 40px;
         height: 20px;
         margin-left: -20px;

@@ -8,6 +8,7 @@ import VueLocalStorage from 'vue-localstorage';
 import VueShortkey from 'vue-shortkey';
 import bFormSlider from 'vue-bootstrap-slider/es';
 import numFormat from 'vue-filter-number-format';
+import vuescroll from 'vuescroll';
 import numeral from 'numeral';
 import store from 'store/vuex-store.js';
 import { AllHtmlEntities } from 'html-entities';
@@ -64,6 +65,7 @@ axiosInstance.interceptors.request.use(config => {
 });
 
 Vue.use(VueShortkey);
+Vue.use(vuescroll);
 Vue.use(VueLocalStorage, {
     name: 'localStorage',
     bind: true,
