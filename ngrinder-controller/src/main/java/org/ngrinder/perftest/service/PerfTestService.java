@@ -960,6 +960,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@SuppressWarnings("unchecked")
 	public boolean hasTooManyError(PerfTest perfTest) {
 		SamplingModel samplingModel = hazelcastService.get(DIST_MAP_NAME_SAMPLING, perfTest.getId());
+		if (samplingModel == null) {
+			return false;
+		}
 		Map<String, Object> result = JsonUtils.deserialize(samplingModel.getRunningSample(), HashMap.class);
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
