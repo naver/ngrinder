@@ -46,11 +46,10 @@
                 <span :class="{ today : isToday(props.rowData.createdDate) }"/>
                 <div class="ellipsis testName"
                      data-toggle="popover"
-                     data-html="true"
                      data-trigger="hover"
                      data-placement="top"
                      :title="props.rowData.testName"
-                     :data-content="getTestNamePopoverContent(props.rowData).replace(/\n/g, '<br>')">
+                     :data-content="getTestNamePopoverContent(props.rowData)">
                     <router-link :to="`/perftest/${props.rowData.id}`" target="_self" v-text="props.rowData.testName"></router-link>
                 </div>
             </template>
@@ -58,11 +57,10 @@
             <template slot="scriptName" slot-scope="props">
                 <div class="ellipsis scriptName"
                      data-toggle="popover"
-                     data-html="true"
                      data-trigger="hover"
                      data-placement="top"
                      :title="i18n('perfTest.list.scriptName')"
-                     :data-content="`${props.rowData.scriptName}<br> - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
+                     :data-content="`${props.rowData.scriptName}\n - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
                     <template v-if="props.rowData.scm === 'svn'">
                         <a v-if="isAdmin"
                            :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
@@ -292,31 +290,37 @@
         getOwnerPopoverContent(test) {
             let content = `${this.i18n('perfTest.list.owner')} : ${test.createdUser.userName} (${test.createdUser.userId})`;
             if (test.lastModifiedUser) {
-                content += `<br> ${this.i18n('perfTest.list.modifier.oneLine')} : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})`;
+                content += `\n${this.i18n('perfTest.list.modifier.oneLine')} : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})`;
             }
             return content;
         }
 
         getErrorRatePopoverContent(test) {
-            return `${this.i18n('perfTest.list.totalTests')} : ${test.tests + test.errors}<br>` +
-                `${this.i18n('perfTest.list.successfulTests')} : ${test.tests}<br>` +
+            return `${this.i18n('perfTest.list.totalTests')} : ${test.tests + test.errors}\n` +
+                `${this.i18n('perfTest.list.successfulTests')} : ${test.tests}\n` +
                 `${this.i18n('perfTest.list.errors')} : ${test.errors}`;
         }
 
         getVuserPopoverContent(test) {
-            return `${this.i18n('perfTest.list.agent')} : ${test.agentCount ? test.agentCount : 0}<br>` +
-                `${this.i18n('perfTest.list.process')} : ${test.processes ? test.processes : 0}<br>` +
+            return `${this.i18n('perfTest.list.agent')} : ${test.agentCount ? test.agentCount : 0}\n` +
+                `${this.i18n('perfTest.list.process')} : ${test.processes ? test.processes : 0}\n` +
                 `${this.i18n('perfTest.list.thread')} : ${test.threads ? test.threads : 0}`;
         }
 
         getTestNamePopoverContent(test) {
-            let content = `${test.description} <p>${test.testComment}</p>`;
-            if (test.scheduledTime) {
-                content += `${this.i18n('perfTest.list.scheduledTime')} : ${this.$options.filters.dateFormat(test.scheduledTime, 'YYYY-MM-DD HH:mm')}<br>`;
+            let content = '';
+            if (test.description.length > 0) {
+                content += `${test.description}\n`;
             }
-            content += `${this.i18n('perfTest.list.modifiedTime')} : ${this.$options.filters.dateFormat(test.lastModifiedDate, 'YYYY-MM-DD HH:mm')}<br>`;
+            if (test.testComment.length > 0) {
+                content += `${test.testComment}\n`;
+            }
+            if (test.scheduledTime) {
+                content += `${this.i18n('perfTest.list.scheduledTime')} : ${this.$options.filters.dateFormat(test.scheduledTime, 'YYYY-MM-DD HH:mm')}\n`;
+            }
+            content += `${this.i18n('perfTest.list.modifiedTime')} : ${this.$options.filters.dateFormat(test.lastModifiedDate, 'YYYY-MM-DD HH:mm')}\n`;
             if (test.tagString) {
-                content += `${this.i18n('perfTest.config.tags')} : ${test.tagString}<br>`;
+                content += `${this.i18n('perfTest.config.tags')} : ${test.tagString}\n`;
             }
             content += this.getOwnerPopoverContent(test);
             return content;
