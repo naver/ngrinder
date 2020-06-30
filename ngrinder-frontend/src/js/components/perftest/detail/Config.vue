@@ -159,7 +159,6 @@
                     </button>
                     <div class="div-host"
                          data-toggle="popover"
-                         data-html="true"
                          data-placement="right"
                          data-trigger="hover"
                          :title="i18n('perfTest.config.targetHost')"

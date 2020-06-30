@@ -69,7 +69,6 @@
                         <span class="log-comment"
                               data-toggle="popover"
                               data-trigger="hover"
-                              data-html="true"
                               :data-content="i18n('perfTest.report.logs.help')"
                               :title="i18n('perfTest.report.logs')">
                             <i class="fa fa-question-circle pointer-cursor"></i>
