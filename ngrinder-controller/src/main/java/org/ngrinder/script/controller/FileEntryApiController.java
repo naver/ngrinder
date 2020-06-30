@@ -25,7 +25,6 @@ import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.PathUtils.trimPathSeparatorBothSides;
 import static org.ngrinder.common.util.Preconditions.*;
 
-import com.nhncorp.lucy.security.xss.XssPreventer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -281,7 +280,6 @@ public class FileEntryApiController {
 							 @RequestParam String description,
 							 @RequestParam("uploadFile") MultipartFile file) {
 		try {
-			description = XssPreventer.escape(description);
 			upload(user, path, description, file);
 		} catch (IOException e) {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
