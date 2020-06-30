@@ -142,9 +142,6 @@
                 .then(res => {
                     this.handlers = res.data;
                     this.scriptHandler = this.handlers[0];
-                    this.$nextTick(() => {
-                        $('[data-toggle="popover"]').popover();
-                    });
                 });
         }
 

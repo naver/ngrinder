@@ -83,15 +83,7 @@
 
         mounted() {
             this.query = this.$route.query.query;
-            this.$nextTick(() => {
-                $('#svn-url').popover();
-                $('#script-sample').popover();
-
-                $('#fileName').popover();
-                $('#testUrl').popover();
-
-                $('#folderName').popover({ trigger: 'focus' });
-            });
+            this.$nextTick(() => $('[data-toggle="popover"]').popover());
         }
 
         search() {
