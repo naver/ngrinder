@@ -105,12 +105,10 @@
 
                 this.$nextTick(() => {
                     this.drawReportChart(res.data, this.interval);
+                    $('[data-toggle="popover"]').popover();
                 });
-
             }).catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')))
               .finally(this.hideProgressBar);
-
-            $('[data-toggle="popover"]').popover();
         }
 
         drawReportChart(data, interval) {
