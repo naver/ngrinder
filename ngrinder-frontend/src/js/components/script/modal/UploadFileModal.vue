@@ -13,9 +13,10 @@
                                 <input type="text" id="description" class="form-control mb-2" v-model="description">
                             </control-group>
                             <control-group :class="{ error: errors.has('file') }" labelMessageKey="script.info.file" ref="fileControlGroup">
-                                <div data-html="true"
-                                     :title="i18n('script.message.upload.title')"
-                                     :data-content="i18n('script.message.upload.content')">
+                                <div :title="i18n('script.message.upload.title')"
+                                     :data-content="i18n('script.message.upload.content')"
+                                     data-toggle="popover"
+                                     data-trigger="focus hover">
                                     <input type="file"
                                            ref="file"
                                            name="file"

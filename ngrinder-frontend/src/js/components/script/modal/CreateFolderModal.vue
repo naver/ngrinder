@@ -17,6 +17,8 @@
                                        class="form-control d-block"
                                        id="folderName"
                                        name="folderName"
+                                       data-toggle="popover"
+                                       data-trigger="focus"
                                        data-placement="bottom"
                                        :data-content="i18n('script.info.folderName.help')"
                                        ref="folderName"
@@ -70,13 +72,13 @@
                             data: this.folderName,
                             headers: { 'Content-Type': 'text/plain' },
                         }).then(() => {
-                                $(this.$refs.createFolderModal).modal('hide');
-                                this.folderName = '';
-                                this.errors.clear();
-                                this.$refs.folderNameControlGroup.success = false;
+                            $(this.$refs.createFolderModal).modal('hide');
+                            this.folderName = '';
+                            this.errors.clear();
+                            this.$refs.folderNameControlGroup.success = false;
 
-                                this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST);
-                            });
+                            this.$EventBus.$emit(this.$Event.REFRESH_SCRIPT_LIST);
+                        });
                     } else {
                         this.$refs.folderName.focus();
                     }
