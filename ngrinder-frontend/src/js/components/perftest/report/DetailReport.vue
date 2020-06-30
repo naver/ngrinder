@@ -21,7 +21,7 @@
                             <td><span v-text="test.agentCount"></span></td>
                         </tr>
                         <tr>
-                            <th v-html="`${i18n('perfTest.report.process')}<br>${i18n('perfTest.report.thread')}`"></th>
+                            <th class="pre-wrap" v-text="`${i18n('perfTest.report.process')}\n${i18n('perfTest.report.thread')}`"></th>
                             <td class="process-thread-col" v-text="`${test.processes} / ${test.threads}`"></td>
                         </tr>
                         <tr>
@@ -111,11 +111,11 @@
                         </tr>
                         <tr v-if="test.description">
                             <th v-text="i18n('common.label.description')"></th>
-                            <td colspan="3" v-html="test.description.replace(/\n/g, '<br>')"></td>
+                            <td class="pre-wrap" colspan="3" v-text="test.description"></td>
                         </tr>
                         <tr v-if="test.testComment">
                             <th v-text="i18n('perfTest.report.testComment')"></th>
-                            <td colspan="3" v-html="test.testComment.replace(/\n/g, '<br>')"></td>
+                            <td class="pre-wrap" colspan="3" v-text="test.testComment"></td>
                         </tr>
                     </table>
                     <div>
