@@ -97,8 +97,9 @@
             return {
                 table: {
                     ascendingIcon: 'fa fa-arrow-up',
-                        descendingIcon: 'fa fa-arrow-down',
-                        tableClass: 'table table-bordered table-striped',
+                    descendingIcon: 'fa fa-arrow-down',
+                    tableClass: 'table table-bordered table-striped',
+                    detailRowClass: 'vuetable-detail-row',
                 },
                 pagination: {
                     infoClass: 'float-left',

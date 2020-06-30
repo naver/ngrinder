@@ -495,4 +495,8 @@
         background: url('/img/icon_today.png') no-repeat right;
         background-size: 32px 8px;
     }
+
+    tr.vuetable-detail-row > td {
+        padding: 0;
+    }
 </style>
