@@ -13,7 +13,6 @@
                 <h6>
                     <span v-text="'TPS'"></span>
                     <span data-toggle="popover"
-                          data-html="true"
                           data-trigger="hover"
                           :data-content="i18n('perfTest.report.tps.help')"
                           :title="i18n('perfTest.report.tps')">
