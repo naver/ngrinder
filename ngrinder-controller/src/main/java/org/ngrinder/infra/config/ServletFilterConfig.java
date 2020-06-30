@@ -1,15 +1,11 @@
 package org.ngrinder.infra.config;
 
-import com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.filter.DelegatingFilterProxy;
-import org.springframework.web.filter.HiddenHttpMethodFilter;
-import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.web.filter.*;
 
 import javax.servlet.Filter;
 
@@ -29,44 +25,35 @@ public class ServletFilterConfig {
 	}
 
 	@Bean
-	public FilterRegistrationBean xssEscapeServletFilter() {
-		FilterRegistrationBean xssEscapeServletFilter = new FilterRegistrationBean(new XssEscapeServletFilter());
-		String[] urlMappings = {"/login/*", "/perftest/*", "/user/*", "/script/*"};
-		xssEscapeServletFilter.addUrlPatterns(urlMappings);
-		xssEscapeServletFilter.setOrder(1);
-		return xssEscapeServletFilter;
-	}
-
-	@Bean
-	public FilterRegistrationBean httpPutFormContentFilter() {
-		FilterRegistrationBean httpPutFormContentFilter = new FilterRegistrationBean(new HttpPutFormContentFilter());
+	public FilterRegistrationBean<FormContentFilter> httpPutFormContentFilter() {
+		FilterRegistrationBean<FormContentFilter> httpPutFormContentFilter = new FilterRegistrationBean<>(new FormContentFilter());
 		httpPutFormContentFilter.addUrlPatterns("/*");
-		httpPutFormContentFilter.setOrder(2);
+		httpPutFormContentFilter.setOrder(1);
 		return httpPutFormContentFilter;
 	}
 
 	@Bean
-	public FilterRegistrationBean springOpenEntityManagerInViewFilter() {
-		FilterRegistrationBean springOpenEntityManagerInViewFilter = new FilterRegistrationBean(new OpenEntityManagerInViewFilter());
+	public FilterRegistrationBean<OpenEntityManagerInViewFilter> springOpenEntityManagerInViewFilter() {
+		FilterRegistrationBean<OpenEntityManagerInViewFilter> springOpenEntityManagerInViewFilter = new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
 		springOpenEntityManagerInViewFilter.addUrlPatterns("/*");
-		springOpenEntityManagerInViewFilter.setOrder(3);
+		springOpenEntityManagerInViewFilter.setOrder(2);
 		return springOpenEntityManagerInViewFilter;
 	}
 
 	@Bean
-	public FilterRegistrationBean hiddenHttpMethodFilter() {
-		FilterRegistrationBean hiddenHttpMethodFilter = new FilterRegistrationBean(new HiddenHttpMethodFilter());
+	public FilterRegistrationBean<HiddenHttpMethodFilter> hiddenHttpMethodFilter() {
+		FilterRegistrationBean<HiddenHttpMethodFilter> hiddenHttpMethodFilter = new FilterRegistrationBean<>(new HiddenHttpMethodFilter());
 		hiddenHttpMethodFilter.addUrlPatterns("/*");
-		hiddenHttpMethodFilter.setOrder(4);
+		hiddenHttpMethodFilter.setOrder(3);
 		return hiddenHttpMethodFilter;
 	}
 
 	@Bean
-	public FilterRegistrationBean pluggableServletFilterRegister() {
-		FilterRegistrationBean pluggableServletFilter = new FilterRegistrationBean(new DelegatingFilterProxy());
+	public FilterRegistrationBean<DelegatingFilterProxy> pluggableServletFilterRegister() {
+		FilterRegistrationBean<DelegatingFilterProxy> pluggableServletFilter = new FilterRegistrationBean<>(new DelegatingFilterProxy());
 		pluggableServletFilter.addUrlPatterns("/*");
 		pluggableServletFilter.setName("pluggableServletFilter");
-		pluggableServletFilter.setOrder(5);
+		pluggableServletFilter.setOrder(4);
 		return pluggableServletFilter;
 	}
 }
