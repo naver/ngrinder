@@ -60,6 +60,17 @@
                 .attr('class', 'chart-background');
             this.svg.select('g.bb-legend-item > text')
                 .attr('y', 17);
+
+            if (this.data.targets.length === 0) {
+                this.svg.select('g.bb-grid')
+                    .insert('text', ':last-child')
+                    .attr('class', 'bb-text bb-empty empty-chart')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .text('No Data');
+                this.config.axis_y_tick_count = 1;
+                this.config.axis_y_tick_culling = false;
+            }
         },
         onrendered(ctx) {
             const zoomRect = ctx.$.svg.select('.bb-zoom-rect');
@@ -67,6 +78,10 @@
             ctx.$.svg.select('.chart-background')
                 .attr('width', +zoomRect.attr('width'))
                 .attr('height', +zoomRect.attr('height'));
+
+            ctx.$.svg.select('.empty-chart')
+                .attr('x', zoomRect.attr('width') / 2)
+                .attr('y', zoomRect.attr('height') / 2);
         },
     };
 
@@ -102,7 +117,7 @@
                 this.initCharts(res.data, interval);
             });
         }
-        
+
         initCharts(data, interval) {
             this.drawSmallChart(`tps_${this.rowData.id}`, 'TPS', data['TPS'].Total, interval);
             this.drawSmallChart(`mtt_${this.rowData.id}`, 'MTT', data['Mean_Test_Time_(ms)'].Total, interval);
@@ -115,14 +130,10 @@
         }
 
         drawSmallChart(id, label, data, interval) {
-            if (data === undefined || data.length === 0) {
-                return null;
-            }
-
             return bb.generate({
                 bindto: `#${id}`,
                 data: {
-                    json: { [label]: data },
+                    json: { [label]: data || [] },
                     colors: { [label]: ChartMixin.DEFAULT_COLOR },
                 },
                 axis: {
