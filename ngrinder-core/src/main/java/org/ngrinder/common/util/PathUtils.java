@@ -23,8 +23,6 @@ import org.apache.commons.io.FilenameUtils;
  */
 public abstract class PathUtils {
 
-	public static final int MAX_PATH_LENGTH = 40;
-
 	/**
 	 * Remove prepended / from the given path.
 	 *
@@ -83,13 +81,4 @@ public abstract class PathUtils {
 		}
 		return path;
 	}
-
-	public static String getPrePath(String originPath, String subPath) {
-		int subPathIndex = originPath.indexOf(subPath);
-		if (subPathIndex == -1) {
-			return originPath;
-		}
-		return originPath.substring(0, subPathIndex);
-	}
-
 }

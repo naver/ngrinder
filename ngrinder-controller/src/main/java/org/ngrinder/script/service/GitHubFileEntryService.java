@@ -51,7 +51,6 @@ import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.JsonUtils.deserialize;
 import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.PathUtils.getPrePath;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.script.model.FileType.getFileTypeByName;
@@ -152,9 +151,8 @@ public class GitHubFileEntryService {
 		try {
 			SVNStatus svnStatus = svnStatusClient.doStatus(checkoutDir, false);
 			if (!svnStatus.getURL().equals(checkoutUrl)) {
-				String svnFilePath = svnStatus.getFile().getAbsolutePath();
 				String repositoryRootPath = svnStatus.getRepositoryRootURL().getPath();
-				deleteQuietly(new File(getPrePath(svnFilePath, repositoryRootPath)));
+				deleteQuietly(new File(checkoutDir.getAbsolutePath().split(repositoryRootPath)[0] + repositoryRootPath));
 			}
 		} catch (SVNException | NullPointerException e) {
 			noOp();
