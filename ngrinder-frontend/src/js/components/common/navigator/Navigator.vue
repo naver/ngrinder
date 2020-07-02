@@ -35,7 +35,6 @@
                 </ul>
             </div>
         </nav>
-        <announcement></announcement>
         <user-switch-modal ref="userSwitchModal"></user-switch-modal>
         <user-edit-modal focus="userName"
                          ref="userEditModal">
@@ -46,14 +45,13 @@
 <script>
     import Component from 'vue-class-component';
     import Base from '../../Base.vue';
-    import Announcement from '../Announcement.vue';
     import UserMenu from './UserMenu.vue';
     import UserSwitchModal from './modal/UserSwitchModal.vue';
     import UserEditModal from '../../user/modal/UserEditModal.vue';
 
     @Component({
         name: 'navigator',
-        components: { Announcement, UserMenu, UserSwitchModal, UserEditModal },
+        components: { UserMenu, UserSwitchModal, UserEditModal },
     })
     export default class Navigator extends Base {
         showUserEditModal = false;

@@ -13,5 +13,9 @@
 
             return `${dataContent}<b>${this.$htmlEntities.encode(lastProgressMessage)}</b>`.replace(/\n/g, '<br>');
         }
+
+        isRunningStatus(status) {
+            return status && (status.category === 'TESTING' || status.category === 'PROGRESSING');
+        }
     }
 </script>

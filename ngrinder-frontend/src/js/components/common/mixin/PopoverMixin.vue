@@ -12,6 +12,11 @@
                     $('.popover').on('mouseleave', () => $(this).popover('hide'));
                 })
                 .on('mouseleave', function () {
+                    if (!$(this).hasClass('ball')) {
+                        $(this).popover('hide');
+                        return;
+                    }
+
                     setTimeout(() => {
                         if (!$('.popover:hover').length) {
                             $(this).popover('hide');

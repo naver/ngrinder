@@ -5,10 +5,14 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     state: {
         ngrinder: {},
+        activeTip: '',
     },
     mutations: {
         ngrinder(state, ngrinder) {
             state.ngrinder = ngrinder;
+        },
+        activeTip(state, activeTip) {
+            state.activeTip = activeTip;
         },
     },
 });

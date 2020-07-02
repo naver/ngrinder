@@ -1,5 +1,5 @@
 <template>
-    <div class="container d-flex flex-column flex-grow-0 vh-100 overflow-y-auto">
+    <div class="script-console-container container d-flex flex-column flex-grow-0 vh-100 overflow-y-auto">
         <div class="flex-grow-0">
             <vue-headful :title="i18n('operation.script.title')"/>
             <fieldset>
@@ -15,8 +15,10 @@
         <div class="flex-grow-1 overflow-y-auto">
             <code-mirror class="h-100" ref="editor"></code-mirror>
         </div>
-        <div class="flex-grow-0">
-            <pre class="rounded border" v-text="result"></pre>
+        <div class="result-console-container flex-grow-0 rounded border">
+            <vue-scroll>
+                <pre v-text="result"></pre>
+            </vue-scroll>
         </div>
     </div>
 </template>
@@ -74,16 +76,29 @@
         }
     }
 </script>
+
+<style lang="less">
+
+    .script-console-container {
+        .__panel {
+            background-color: #f5f5f5;
+        }
+    }
+
+</style>
+
 <style lang="less" scoped>
 
-    pre {
+    .result-console-container {
         height: 250px;
-        margin-top: 5px;
-        padding: 14px 10px;
         max-height: 340px;
-        overflow-y: scroll;
-        font-size: 12px;
-        background-color: #f5f5f5;
+        margin-top: 5px;
+
+        pre {
+            padding: 14px 10px 2px 10px;
+            font-size: 12px;
+            background-color: #f5f5f5;
+        }
     }
 
 </style>

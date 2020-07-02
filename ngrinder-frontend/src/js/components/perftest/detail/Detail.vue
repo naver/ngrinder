@@ -19,7 +19,7 @@
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 195px; min-height: 30px;" type="input" name="tagString"
+                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 300px; min-height: 30px;" type="input" name="tagString"
                                                  :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
                                                   maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
                                         </select2>
@@ -32,6 +32,7 @@
                                              data-toggle="popover"
                                              data-trigger="hover"
                                              data-placement="bottom"
+                                             :class="{'pointer-cursor': !isRunningStatus(test.status), 'wait-cursor': isRunningStatus(test.status)}"
                                              :title="i18n(test.status.springMessageKey)"
                                              :src="`${contextPath}${perftestStatus.iconPath}`"/>
                                     </div>
@@ -88,7 +89,6 @@
                     </div>
                 </div>
             </div>
-            <intro-button/>
         </div>
         <schedule-modal ref="scheduleModal" @run="runPerftest" :timezoneOffset="timezoneOffset"></schedule-modal>
     </div>
@@ -103,13 +103,13 @@
     import Report from './Report.vue';
     import Running from './Running.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
-    import IntroButton from '../../common/IntroButton.vue';
     import Select2 from '../../common/Select2.vue';
     import ScheduleModal from '../modal/ScheduleModal.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
     import Utils from '../../../utils.js';
+    import { TipType } from "../../../constants";
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -196,7 +196,7 @@
     Component.registerHooks(['beforeRouteEnter', 'beforeRouteUpdate']);
     @Component({
         name: 'perfTestDetail',
-        components: { ControlGroup, Config, Report, Running, IntroButton, Select2, ScheduleModal, VueHeadful },
+        components: { ControlGroup, Config, Report, Running, Select2, ScheduleModal, VueHeadful },
         $_veeValidate: {
             validator: 'new',
         },
@@ -249,6 +249,7 @@
         }
 
         mounted() {
+            this.$store.commit('activeTip', TipType.INTROJS);
             this.init();
         }
 
@@ -314,6 +315,7 @@
         }
 
         beforeDestroy() {
+            this.$store.commit('activeTip', '');
             window.clearTimeout(this.currentRefreshStatusTimeoutId);
             window.clearInterval(this.$refs.running.samplingIntervalId);
         }
@@ -342,7 +344,7 @@
         }
 
         startRefreshPerfTestStatusInterval() {
-            if (!this.test.id || this.isReportableStatus()) {
+            if (!this.test.id || this.test.status.reportable) {
                 return;
             }
 
@@ -380,7 +382,7 @@
                 this.$nextTick(() => this.$refs.runningTab.click());
                 return;
             }
-            if (this.isReportableStatus()) {
+            if (this.test.status.reportable) {
                 if (this.$refs.running) {
                     window.clearInterval(this.$refs.running.samplingIntervalId);
                 }
@@ -390,13 +392,6 @@
                 return;
             }
             this.$nextTick(() => this.$refs.configTab.click());
-        }
-
-        isReportableStatus() {
-            return this.test.status.category === 'FINISHED' ||
-                this.test.status.category === 'STOP' ||
-                this.test.status.category === 'ERROR' ||
-                this.test.status.category === 'WARNED';
         }
 
         initSelection(element, callback) {
@@ -567,6 +562,12 @@
 
         input[type="text"] {
             height: 30px;
+        }
+
+        .select2-dropdown-open {
+            .select2-choices {
+                border-radius: 3px 3px 0 0;
+            }
         }
 
         .select2-choices {
