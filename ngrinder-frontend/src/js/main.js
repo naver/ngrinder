@@ -11,6 +11,7 @@ import numFormat from 'vue-filter-number-format';
 import vuescroll from 'vuescroll';
 import numeral from 'numeral';
 import store from 'store/vuex-store.js';
+import VueRouterReferer from '@tozd/vue-router-referer';
 import { AllHtmlEntities } from 'html-entities';
 
 import Event from 'bus-event.js';
@@ -76,6 +77,7 @@ Vue.use(VeeValidate, {
     useConstraintAttrs: false,
 });
 Vue.use(bFormSlider);
+Vue.use(VueRouterReferer);
 
 Vue.prototype.$htmlEntities = AllHtmlEntities;
 Vue.prototype.$bootbox = BootBox;

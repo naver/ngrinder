@@ -7,6 +7,7 @@
                     <fieldset>
                         <div class="control-group">
                             <div class="row">
+                                <button class="btn-return-to-list btn-primary border-0 position-relative" @click="returnToList" v-text="i18n('common.list')"></button>
                                 <div class="test-name-container" data-step="1" :data-intro="i18n('intro.detail.testName')">
                                     <control-group :class="{ error: errors.has('testName') }" ref="testNameControlGroup" labelMessageKey="perfTest.config.testName">
                                         <input class="required form-control float-left" name="testName"
@@ -251,6 +252,10 @@
         mounted() {
             this.$store.commit('activeTip', TipType.INTROJS);
             this.init();
+        }
+
+        returnToList() {
+            this.$router.referer ? this.$router.back() : this.$router.push('/perftest/');
         }
 
         static async prepare(route) {
@@ -617,6 +622,14 @@
 
         .description-container {
             margin-bottom: 0;
+            margin-left: 50px;
+        }
+
+        .btn-return-to-list {
+            right: 6px;
+            height: 30px;
+            width: 50px;
+            border-radius: 0 3px 3px 0;
         }
 
         .control-label {
