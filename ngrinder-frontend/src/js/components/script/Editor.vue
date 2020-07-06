@@ -1,5 +1,5 @@
 <template>
-    <div class="container d-flex flex-column overflow-y-auto h-100">
+    <div ref="editorContainer" class="container d-flex flex-column overflow-y-auto h-100">
         <vue-headful :title="i18n('script.editor.title')"/>
         <div class="file-desc-container flex-grow-0">
             <div class="form-horizontal">
@@ -87,7 +87,7 @@
             </pane>
             <pane v-if="validationResult" :min-size="15" :size="100 - editorSize">
                 <vue-scroll class="border">
-                    <pre class="h-100 validation-result" v-text="validationResult"></pre>
+                    <pre class="h-100 validation-result" v-html="validationResult"></pre>
                 </vue-scroll>
             </pane>
         </splitpanes>
@@ -193,6 +193,17 @@
                     default:
                         this.validationResult = '';
                 }
+
+                $(this.$refs.editorContainer).on('click', 'a.validation-error-link', event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.$refs.editor.codemirror.focus();
+                    this.$refs.editor.codemirror.setCursor({
+                        line: event.target.dataset.errorLine - 1,
+                        ch: 0,
+                    });
+                });
+
             });
         }
 
@@ -339,10 +350,25 @@
                 },
                 hostString: this.targetHosts.join(','),
             }).then(res => {
-                this.showScriptValidationResult(res.data);
+                this.showScriptValidationResult(this.appendEditorLink(res.data));
                 this.validated = true;
             }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
               .finally(this.hideProgressBar);
+        }
+
+        appendEditorLink(result) {
+            const regex = new RegExp(`(^\\$\{NGRINDER_HOME\}.*)?${this.file.fileName}: ?[0-9]{1,4}`, 'gm');
+            const linkableErrors = result.match(regex);
+            if (linkableErrors) {
+                const linkableError = linkableErrors[0];
+                result = result.replace(regex, `<a href="#" class="validation-error-link" data-error-line="${this.extractErrorLine(linkableError)}">${linkableError}</a>`);
+            }
+            return result;
+        }
+
+        extractErrorLine(error) {
+            const token = error.split(':');
+            return token[token.length - 1].trim();
         }
 
         addHost(newHost) {
