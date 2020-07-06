@@ -349,28 +349,27 @@
             }
 
             this.$http.get(`/perftest/api/${this.test.id}/status`).then(res => {
-                const status = res.data.status;
-                const message = res.data.message;
+                const prevStatus = this.test.status;
+                this.test.status = res.data.status;
 
-                if (this.test.status.name !== status.name) {
-                    this.test.status.name = status.name;
+                if (this.test.status.name !== prevStatus.name) {
                     this.isClone = this.test.status.name !== 'SAVED';
-                    this.updateStatus(status.springMessageKey, message, status.iconName);
+                    this.updateStatusPopover(res.data.message);
                 }
-                if (this.test.status.category !== status.category) {
-                    this.test.status.category = status.category;
+                if (this.test.status.category !== prevStatus.category) {
                     this.updateTabDisplay();
                 }
                 this.currentRefreshStatusTimeoutId = setTimeout(this.startRefreshPerfTestStatusInterval, 3000);
             });
         }
 
-        updateStatus(messageKey, message, icon) {
-            this.$testStatusImage.attr('data-original-title', this.i18n(messageKey));
-            this.$testStatusImage.attr('data-content', message);
+        updateStatusPopover(popoverContent) {
+            this.$testStatusImage.attr('data-original-title', this.i18n(this.test.status.springMessageKey));
+            this.$testStatusImage.attr('data-content', popoverContent);
 
-            if (this.perftestStatus.iconPath !== `/img/ball/${icon}`) {
-                this.perftestStatus.iconPath = `/img/ball/${icon}`;
+            const newIconPath = `/img/ball/${this.test.status.iconName}`;
+            if (this.perftestStatus.iconPath !== newIconPath) {
+                this.perftestStatus.iconPath = newIconPath;
             }
         }
 
