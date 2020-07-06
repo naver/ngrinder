@@ -92,11 +92,6 @@ public class NGrinderAgentStarterParam {
 			}
 		};
 
-		@Parameter(names = {"-o", "--overwrite-config"}, required = false,
-				description = "overwrite overwrite the existing .ngrinder_agent/agent.conf with the local __agent.conf")
-		public Boolean overwriteConfig = null;
-
-
 		@Parameter(names = {"-ah", "--agent-home"}, required = false,
 				description = "this agent's unique home path. The default is ~/.ngrinder_agent")
 		public String agentHome = null;
@@ -139,10 +134,6 @@ public class NGrinderAgentStarterParam {
 		public void process() {
 			if (agentHome != null) {
 				System.setProperty("ngrinder.agent.home", agentHome);
-			}
-
-			if (overwriteConfig != null) {
-				System.setProperty(CommonConstants.PROP_OVERWRITE_CONFIG, "true");
 			}
 
 			if (silent != null) {

@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -82,25 +83,19 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		checkNotNull(home);
 		final File agentConfig = home.getFile("agent.conf");
 		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
-		if (agentConfig.exists()) {
-			if (System.getProperty(CommonConstants.PROP_OVERWRITE_CONFIG) != null) {
-				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
-			} else if (newAgentConfig.exists()) {
-				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
-				LOGGER.warn("If you want to use the '{}' file", newAgentConfig.getAbsolutePath());
-				LOGGER.warn("Please run agent with -o option");
-				return;
-			}
-		}
+
 		if (newAgentConfig.exists()) {
+			LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
 			home.copyFileTo(newAgentConfig, "agent.conf");
 			agentConfig.setLastModified(newAgentConfig.lastModified());
-		} else {
-			try {
-				home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
-			} catch (IOException e) {
-				throw processException(e);
-			}
+			deleteQuietly(newAgentConfig);
+			return;
+		}
+
+		try {
+			home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
+		} catch (IOException e) {
+			throw processException(e);
 		}
 	}
 
@@ -220,7 +215,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	public void removeAgentPidProperties() {
 		checkNotNull(home);
 		File file = home.getFile("pid");
-		FileUtils.deleteQuietly(file);
+		deleteQuietly(file);
 	}
 
 	/**
