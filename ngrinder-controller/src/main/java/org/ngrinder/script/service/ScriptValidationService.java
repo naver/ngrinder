@@ -112,10 +112,14 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 					config.isSecurityEnabled(), config.getSecurityLevel(), hostString, getTimeout());
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuilder output = new StringBuilder();
-			String path = config.getHome().getDirectory().getAbsolutePath();
+			File homeDirectory = config.getHome().getDirectory();
+			String absolutePath = homeDirectory.getAbsolutePath();
+			String realPath = homeDirectory.toPath().toRealPath().toString();
 			for (String each : readLines) {
 				if (!each.startsWith("*sys-package-mgr")) {
-					each = each.replace(path, "${NGRINDER_HOME}");
+					each = each
+						.replace(absolutePath, "${NGRINDER_HOME}")
+						.replace(realPath, "${NGRINDER_HOME}");
 					output.append(each).append("\n");
 				}
 			}
