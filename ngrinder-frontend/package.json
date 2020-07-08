@@ -1,6 +1,6 @@
 {
   "name": "ngrinder",
-  "version": "3.5.0-SNAPSHOT",
+  "version": "3.5.0",
   "description": "ngrinder GUI",
   "private": true,
   "repository": {
