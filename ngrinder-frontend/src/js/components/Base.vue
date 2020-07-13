@@ -49,7 +49,11 @@
 
             &.hasHBar {
                 .__panel {
-                    margin-bottom: -17px !important;
+                    // For Firefox.
+                    scrollbar-width: none;
+
+                    // For Internet Explorer and Edge.
+                    -ms-overflow-style: none;
                 }
             }
 
