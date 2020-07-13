@@ -1044,6 +1044,7 @@
         }
 
         .add-host-btn {
+            z-index: 1;
             font-size: 10px;
             padding: 1px 3px;
             margin-top: 50px;
