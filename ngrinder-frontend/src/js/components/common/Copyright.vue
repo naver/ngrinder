@@ -1,5 +1,5 @@
 <template>
-    <footer>
+    <footer class="w-100">
         <section class="d-flex">
             <a href="https://naver.github.io/ngrinder" target="_blank" v-text="`nGrinder v${version}`"></a>
         </section>
@@ -23,9 +23,8 @@
 
 <style lang="less" scoped>
     footer {
-        min-height: 40px;
+        height: 40px;
         margin-top: 10px;
-        width: 100%;
         background-color: #f5f4f2;
 
         section {
