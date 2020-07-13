@@ -11,7 +11,7 @@ import numFormat from 'vue-filter-number-format';
 import vuescroll from 'vuescroll';
 import numeral from 'numeral';
 import store from 'store/vuex-store.js';
-import VueRouterReferer from '@tozd/vue-router-referer';
+import VueRouterReferer from 'vue-router-referer.js';
 import { AllHtmlEntities } from 'html-entities';
 
 import Event from 'bus-event.js';
