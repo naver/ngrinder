@@ -24,7 +24,7 @@
 <style lang="less" scoped>
     footer {
         height: 40px;
-        margin-top: 10px;
+        margin-top: 7px;
         background-color: #f5f4f2;
 
         section {

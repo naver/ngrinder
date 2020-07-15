@@ -86,14 +86,13 @@
                 </code-mirror>
             </pane>
             <pane v-if="validationResult" :min-size="15" :size="100 - editorSize">
-                <vue-scroll class="border">
+                <vue-scroll class="border validation-result-container">
                     <pre class="h-100 validation-result" v-html="validationResult"></pre>
                 </vue-scroll>
             </pane>
         </splitpanes>
-        <div class="script-samples-link" ref="sampleLink">
-            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script
-                Samples</a>
+        <div class="script-samples-link">
+            <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost" focus="domain"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
@@ -149,7 +148,7 @@
         SCRIPT_DESCRIPTION_HIDE_KEY = 'script_description_hide';
         hideDescription = false;
 
-        editorSize = 85;
+        editorSize = 70;
 
         beforeRouteEnter(to, from, next) {
             const path = to.params.remainedPath;
@@ -473,8 +472,9 @@
     }
 
     .script-samples-link {
-        margin-top: 10px;
-        text-align: center;
+        display: inline-block;
+        margin: -18px 3px 0 auto;
+        z-index: 1;
     }
 
     .div-host {
@@ -492,11 +492,15 @@
         margin: 2px 0 2px 7px;
     }
 
-    .validation-result {
-        padding: 5px 5px 0 5px;
-        margin-bottom: 0;
-        font-size: 12px;
+    .validation-result-container {
         background-color: #f5f5f5;
+
+        .validation-result {
+            padding: 5px 5px 0 5px;
+            margin-bottom: 0;
+            font-size: 12px;
+            background-color: inherit;
+        }
     }
 
     .expand-btn-container {
