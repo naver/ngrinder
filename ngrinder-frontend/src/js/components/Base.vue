@@ -54,6 +54,12 @@
 
                     // For Internet Explorer and Edge.
                     -ms-overflow-style: none;
+
+                    // For Chrome, Safari, and Opera.
+                    &::-webkit-scrollbar {
+                        width: 0;
+                        height: 0;
+                    }
                 }
             }
 
