@@ -27,7 +27,6 @@ dependencyManagement {
 
 dependencies {
     compile project(":ngrinder-core")
-    compile files("${rootDir}/lib/universal-analytics-java-1.0.jar")
 
     compile (group: "org.springframework.boot", name: "spring-boot-starter-web")
     compile (group: "org.springframework.boot", name: "spring-boot-starter-freemarker")
