@@ -333,8 +333,7 @@ public class FileEntryService {
 	 * @param scriptHandler scriptHandler
 	 * @return created new {@link FileEntry}
 	 */
-	public FileEntry prepareNewEntryForQuickTest(User user, String url,
-		ScriptHandler scriptHandler) {
+	public FileEntry prepareNewEntryForQuickTest(User user, String url, ScriptHandler scriptHandler) {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);

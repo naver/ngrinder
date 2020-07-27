@@ -13,7 +13,6 @@
  */
 package org.ngrinder.script.handler;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,20 +27,16 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
 import org.ngrinder.script.repository.GitHubFileEntryRepository;
-import org.ngrinder.script.service.GitHubFileEntryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.List;
-import java.util.Map;
 
-import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
@@ -59,15 +54,10 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		super("groovy_maven", "", "Groovy Maven Project", "groovy");
 	}
 
-	private static final String RESOURCES = "/src/main/resources/";
-	private static final String JAVA = "/src/main/java/";
-	private static final String GROOVY = "/src/main/groovy/";
-	private static final String LIB = "/lib/";
-
-	@Lazy
-	@Autowired
-	@JsonIgnore
-	private GitHubFileEntryService gitHubFileEntryService;
+	private static final String RESOURCES = "src/main/resources/";
+	private static final String JAVA = "src/main/java/";
+	private static final String GROOVY = "src/main/groovy/";
+	private static final String LIB = "lib/";
 
 	@Override
 	public boolean canHandle(FileEntry fileEntry) {
@@ -77,7 +67,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		}
 
 		//noinspection SimplifiableIfStatement
-		if (!path.contains(JAVA) && !path.contains(GROOVY)) {
+		if (!isGroovyMavenPath(path)) {
 			return false;
 		}
 
@@ -87,7 +77,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			if (fileEntry.getCreatedUser() == null) {
 				return false;
 			}
-			return getFileEntryRepository().hasOne(fileEntry.getCreatedUser(), getBasePath(path) + "/pom.xml");
+			return getFileEntryRepository().hasOne(fileEntry.getCreatedUser(), getBasePath(path) + "pom.xml");
 		}
 	}
 
@@ -119,7 +109,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				resourcesFileEntry = gitHubFileEntryRepository.findAll(basePath + RESOURCES);
 				groovyFileEntry = gitHubFileEntryRepository.findAll(basePath + GROOVY);
 				libFileEntry = gitHubFileEntryRepository.findAll(basePath + LIB);
-				fileList.add(gitHubFileEntryRepository.findOne(basePath + "/pom.xml"));
+				fileList.add(gitHubFileEntryRepository.findOne(basePath + "pom.xml"));
 			} catch (IOException e) {
 				throw new NGrinderRuntimeException(e);
 			}
@@ -128,7 +118,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			javaFileEntry = fileEntryRepository.findAll(user, basePath + JAVA, revision, true);
 			groovyFileEntry = fileEntryRepository.findAll(user, basePath + GROOVY, revision, true);
 			libFileEntry = fileEntryRepository.findAll(user, basePath + LIB, revision, true);
-			fileList.add(fileEntryRepository.findOne(user, basePath + "/pom.xml", SVNRevision.create(revision)));
+			fileList.add(fileEntryRepository.findOne(user, basePath + "pom.xml", SVNRevision.create(revision)));
 		}
 
 		for (FileEntry eachFileEntry : resourcesFileEntry) {
@@ -300,8 +290,19 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	@Override
 	public FileEntry getDefaultQuickTestFilePath(String path) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(path + JAVA + "TestRunner.groovy");
+		fileEntry.setPath(path + "/" + JAVA + "TestRunner.groovy");
 		return fileEntry;
 	}
 
+	public String getGroovyMavenPath(String path) {
+		if (path.contains(JAVA)) {
+			return path.substring(path.lastIndexOf(JAVA));
+		} else {
+			return path.substring(path.lastIndexOf(GROOVY));
+		}
+	}
+
+	public boolean isGroovyMavenPath(String path) {
+		return path.contains(JAVA) || path.contains(GROOVY);
+	}
 }

@@ -352,7 +352,7 @@ public class AgentService extends AbstractAgentService
 				}
 			}
 			throw new NGrinderRuntimeException("Old version agent is detected so, update message has been sent automatically." +
-				"\n Please restart perftest after few minutes.");
+				"\nPlease restart perftest after few minutes.");
 		}
 
 		hazelcastService.put(CACHE_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);

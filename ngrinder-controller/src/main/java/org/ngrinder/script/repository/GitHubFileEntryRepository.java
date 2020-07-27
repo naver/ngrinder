@@ -69,12 +69,12 @@ public class GitHubFileEntryRepository {
 		if (!file.exists()) {
 			throw new NoSuchFileException(path + " not exist.");
 		}
-
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(path);
 		fileEntry.setProperties(buildMap("scm", "github"));
 		return fileEntry;
 	}
+
 
 	private FileEntry convertPathToFileEntry(Path path) {
 		FileEntry fileEntry = new FileEntry();
