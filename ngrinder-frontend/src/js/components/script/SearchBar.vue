@@ -1,6 +1,6 @@
 <template>
     <div class="search-bar card card-header">
-        <div class="d-flex justify-content-between search-container">
+        <div class="d-flex search-container">
             <div>
                 <input type="text" class="search-query form-control"
                        placeholder="Keywords" v-model="query" @keyup.enter="search" v-focus>
@@ -9,7 +9,34 @@
                     <span v-text="i18n('common.button.search')"></span>
                 </button>
             </div>
-            <div id="svn-url" class="input-prepend d-flex" v-show="$route.name !== 'scriptSearch'"
+            <div v-show="$route.name !== 'scriptSearch'">
+                <div class="btn-group">
+                    <button class="btn btn-primary dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                        <i class="fa fa-plus mr-1"></i>
+                        <span v-text="i18n('common.button.create')"></span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" @click.prevent="$refs.createScriptModal.show">
+                            <i class="fa fa-file mr-1"></i><span v-text="i18n('script.action.createScript')"></span>
+                        </button>
+                        <button class="dropdown-item" @click.prevent="$refs.createFolderModal.show">
+                            <i class="fa fa-folder-open mr-1"></i><span v-text="i18n('script.action.createFolder')"></span>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-primary" @click.prevent="$refs.uploadFileModal.show">
+                    <i class="fa fa-upload mr-1"></i>
+                    <span v-text="i18n('script.action.upload')"></span>
+                </button>
+                <button class="pointer-cursor btn btn-danger" @click="$emit('deleteFile')">
+                    <i class="fa fa-remove mr-1"></i>
+                    <span v-text="i18n('script.action.delete')"></span>
+                </button>
+            </div>
+            <div id="svn-url" class="input-prepend d-flex ml-auto" v-show="$route.name !== 'scriptSearch'"
                  data-toggle="popover"
                  data-trigger="hover"
                  data-html="true"
@@ -17,7 +44,7 @@
                  title="Subversion"
                  :data-content="i18n('script.message.svn')">
                 <div class="input-group">
-                    <div class="input-group-prepend"><span class="input-group-text">SVN</span></div>
+                    <div class="input-group-prepend"><span class="input-group-text default-cursor">SVN</span></div>
                     <div class="border form-control uneditable-input ellipsis">
                         <router-link v-text="svnPath" to="/script/list"></router-link><!--
                      --><span v-if="currentPath !== ''">
@@ -28,26 +55,14 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="d-flex justify-content-between">
-            <div v-show="$route.name !== 'scriptSearch'">
-                <button class="btn btn-primary" @click.prevent="$refs.createScriptModal.show">
-                    <i class="fa fa-file mr-1"></i>
-                    <span v-text="i18n('script.action.createScript')"></span>
-                </button>
-                <button class="btn btn-primary" @click.prevent="$refs.createFolderModal.show">
-                    <i class="fa fa-folder-open mr-1"></i>
-                    <span v-text="i18n('script.action.createFolder')"></span>
-                </button>
-                <button class="btn btn-primary" @click.prevent="$refs.uploadFileModal.show">
-                    <i class="fa fa-upload mr-1"></i>
-                    <span v-text="i18n('script.action.uploadResources')"></span>
-                </button>
+            <div class="input-group-append pointer-cursor">
+                <span class="input-group-text"
+                      v-clipboard:error="onError"
+                      v-clipboard:success="onCopy"
+                      v-clipboard:copy="currentPath !== '' ? `${svnPath}/${currentPath}` : svnPath">
+                    <i class="fa fa-copy mr-1"></i>
+                </span>
             </div>
-            <button class="pointer-cursor btn btn-danger ml-auto" @click="$emit('deleteFile')">
-                <i class="fa fa-remove mr-1"></i>
-                <span v-text="i18n('script.action.delete')"></span>
-            </button>
         </div>
         <create-script-modal ref="createScriptModal" :currentPath="currentPath" focus="fileName"></create-script-modal>
         <create-folder-modal ref="createFolderModal" :currentPath="currentPath" focus="folderName"></create-folder-modal>
@@ -55,12 +70,14 @@
     </div>
 </template>
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
     import Base from '../Base.vue';
 
     import CreateScriptModal from './modal/CreateScriptModal.vue';
     import CreateFolderModal from './modal/CreateFolderModal.vue';
     import UploadFileModal from './modal/UploadFileModal.vue';
+    import MessagesMixin from '../common/mixin/MessagesMixin.vue';
 
     @Component({
         name: 'searchBar',
@@ -72,7 +89,7 @@
         },
         components: { CreateScriptModal, CreateFolderModal, UploadFileModal },
     })
-    export default class SearchBar extends Base {
+    export default class SearchBar extends Mixins(Base, MessagesMixin) {
         query = '';
         svnPath = '';
 
@@ -97,6 +114,14 @@
             this.$router.push({ path: '/script/search', query: { query: this.query } });
         }
 
+        onError() {
+            this.showErrorMsg(this.i18n('common.message.copy.fail'));
+        }
+
+        onCopy() {
+            this.showSuccessMsg(this.i18n('common.message.copy.success'));
+        }
+
         get breadcrumbPathUrl() {
             return ['/script/list', ...this.currentPath.split('/')];
         }
@@ -105,10 +130,13 @@
 
 <style lang="less" scoped>
     .search-bar {
-        height: 90px;
+        height: 50px;
+
+        button {
+            height: 30px;
+        }
 
         .search-container {
-            line-height: 0;
             margin-bottom: 8px;
 
             .input-group-text {
@@ -117,22 +145,54 @@
 
             .search-query {
                 height: 30px;
-                width: 339px;
+                width: 200px;
+                border-radius: 3px 0 0 3px;
+
+                &:focus {
+                    outline: none;
+                    box-shadow: none;
+                    border-color: #ced4da;
+                }
             }
 
             .search-btn {
                 height: 30px;
                 vertical-align: baseline;
+                margin: 0 3px 0 -3px;
+                border-radius: 0 3px 3px 0;
             }
 
             .uneditable-input {
-                width: 500px;
+                width: 450px;
                 height: 30px;
+                border-radius: 3px 0 0 3px;
 
                 > * {
                     vertical-align: middle;
                 }
             }
+
+            .input-group-append {
+                .input-group-text {
+                    border-radius: 0 3px 3px 0;
+
+                    &:hover {
+                        background: #d9dcdf;
+                    }
+                }
+            }
+
+            .dropdown-item {
+                &:hover {
+                    background: #007bff;
+                    color: white;
+                }
+
+                i {
+                    width: 15px;
+                }
+            }
+
         }
     }
 </style>
