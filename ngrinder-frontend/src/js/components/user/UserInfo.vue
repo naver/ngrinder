@@ -59,7 +59,7 @@
                               message="user.info.phone"/>
             </control-group>
 
-            <control-group v-if="config.allowShareChange" :class="{ 'mb-3' : config.showPasswordByDefault }" labelMessageKey="user.share.title">
+            <control-group v-if="config.allowShareChange" class="follower-container" :class="{ 'mb-3' : config.showPasswordByDefault }" labelMessageKey="user.share.title">
                 <select2 v-model="user.followersStr" type="input" name="followersStr"
                          :option="followerSelect2Option" customStyle="width: 100%;">
                 </select2>
@@ -267,13 +267,17 @@
             select {
                 font-size: 12px;
             }
+
+            .follower-container {
+                .select2-container-multi {
+                    .select2-choices {
+                        max-height: 110px !important;
+                        overflow: scroll;
+                    }
+                }
+            }
+
         }
-    }
-</style>
-
-<style lang="less">
-    .user-info {
-
     }
 </style>
 

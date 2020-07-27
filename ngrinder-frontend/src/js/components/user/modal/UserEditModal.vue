@@ -75,7 +75,7 @@
         }
 
         .modal-body {
-            max-height: 640px;
+            max-height: 700px;
             padding: 20px;
         }
     }
