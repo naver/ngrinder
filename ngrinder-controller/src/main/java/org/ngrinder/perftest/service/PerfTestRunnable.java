@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -48,15 +49,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
-import static net.grinder.util.FileUtils.getAllFilesInDirectory;
-import static net.grinder.util.FileUtils.getMd5;
+import static net.grinder.util.FileUtils.*;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
@@ -225,34 +222,35 @@ public class PerfTestRunnable implements ControllerConstants {
 	/**
 	 * Delete cached distribution files, These are already in the agent cache directory.
 	 *
+	 * @param distDir						   Directory containing files to be distributed for testing.
 	 * @param distFiles 					   Required files for currently running test.
-	 * @param distFilesDigest				   Required file's md5 checksum for currently running test.
-	 * @param agentCachedDistFilesDigestList   Md5 checksum of files in each agent cache directory
+	 * @param distFilesDigest				   Required file's digest for currently running test.
+	 * @param agentCachedDistFilesDigestList   Digest of files in each agent cache directory.
+	 *
 	 * */
-	private void deleteCachedDistFiles(List<File> distFiles,
+	private void deleteCachedDistFiles(File distDir,
+									   List<File> distFiles,
 									   Set<String> distFilesDigest,
 									   List<Set<String>> agentCachedDistFilesDigestList) {
 		Set<String> cachedDistFilesDigest = extractCachedDistFilesDigest(distFilesDigest, agentCachedDistFilesDigestList);
 
 		distFiles
 			.stream()
-			.filter(file -> isCachedFile(cachedDistFilesDigest, file))
+			.filter(file -> {
+				try {
+					return cachedDistFilesDigest.contains(getFileDigest(distDir, file));
+				} catch (IOException e) {
+					throw new NGrinderRuntimeException(e);
+				}
+			})
 			.forEach(FileUtils::deleteQuietly);
-	}
-
-	private boolean isCachedFile(Set<String> cachedDistFilesDigest, File file) {
-		try {
-			return cachedDistFilesDigest.contains(getMd5(file));
-		} catch (IOException e) {
-			return false;
-		}
 	}
 
 	/**
 	 * Extract non cached distribution files for send to each agents.
 	 *
-	 * @param distFilesDigest					Required file's md5 checksum for currently running test.
-	 * @param agentCachedDistFilesDigestList    Md5 checksum of files in each agent cache directory.
+	 * @param distFilesDigest					Required file's digest for currently running test.
+	 * @param agentCachedDistFilesDigestList    Digest of files in each agent cache directory.
 	 *
 	 * */
 	private Set<String> extractCachedDistFilesDigest(Set<String> distFilesDigest,
@@ -268,10 +266,11 @@ public class PerfTestRunnable implements ControllerConstants {
 	private void prepareFileDistribution(PerfTest perfTest, SingleConsole singleConsole) throws IOException {
 		File distDir = perfTestService.getDistributionPath(perfTest);
 		List<File> distFiles = getAllFilesInDirectory(distDir);
-		Set<String> distFilesDigest = getMd5(distFiles);
+
+		Set<String> distFilesDigest = getFilesDigest(distDir, distFiles);
 
 		singleConsole.sendDistFilesDigestToAgents(distFilesDigest);
-		deleteCachedDistFiles(distFiles, distFilesDigest, singleConsole.getAgentCachedDistFilesDigestList());
+		deleteCachedDistFiles(distDir, distFiles, distFilesDigest, singleConsole.getAgentCachedDistFilesDigestList());
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package net.grinder.util;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,12 +16,13 @@ import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
+import static org.ngrinder.common.util.PathUtils.getSubPath;
 import static org.ngrinder.common.util.StreamUtils.exceptionWrapper;
 
 /**
  * Convenient File utilities.
  *
- * @since 3.5.1
+ * @since 3.5.0
  */
 public class FileUtils {
 	/**
@@ -38,10 +41,6 @@ public class FileUtils {
 		return getAllFilesInDirectory(directory.getPath());
 	}
 
-	public static Set<String> getAllFilesMd5ChecksumInDirectory(File directory) throws IOException {
-		return getMd5(getAllFilesInDirectory(directory));
-	}
-
 	public static Set<String> getMd5(List<File> files) {
 		return files
 			.stream()
@@ -53,5 +52,29 @@ public class FileUtils {
 		try (FileInputStream fileInputStream = new FileInputStream(file)) {
 			return md5Hex(fileInputStream);
 		}
+	}
+
+	/**
+	 * Make file digest to {relative path from base directory}:{md5 checksum of file} format.
+	 *
+	 * @param baseDir  Base directory for calculate relative path.
+	 * @param file     Target file.
+	 *
+	 * */
+	public static String getFileDigest(File baseDir, File file) throws IOException {
+		return getSubPath(baseDir.getPath(), file.getPath()) + ":" + getMd5(file);
+	}
+
+	public static Set<String> getFilesDigest(File baseDir, List<File> files) {
+		return files
+			.stream()
+			.map(file -> {
+				try {
+					return getFileDigest(baseDir, file);
+				} catch (IOException e) {
+					throw new NGrinderRuntimeException(e);
+				}
+			})
+			.collect(toSet());
 	}
 }

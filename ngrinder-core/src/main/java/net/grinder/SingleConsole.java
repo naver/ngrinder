@@ -96,7 +96,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
 
-	// It contains cached distribution files md5 checksum from each agents.
+	// It contains cached distribution files digest from each agents.
 	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
 	private boolean cancel = false;
 
@@ -367,9 +367,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	/**
-	 * Send Md5 checksum of unnecessary files to agents for refresh agent's distribution cache directory.
+	 * Send digest of unnecessary files to agents for refresh agent's distribution cache directory.
 	 *
-	 * @param distFilesDigest Required file's md5 checksum for currently running test.
+	 * @param distFilesDigest Required file's digest for currently running test.
 	 */
 	public void sendDistFilesDigestToAgents(Set<String> distFilesDigest) {
 		ForkJoinPool myPool = new ForkJoinPool(NUM_OF_SEND_FILE_DIGEST_THREAD);
@@ -379,7 +379,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				.sendToAddressedAgents(
 					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
 					new RefreshCacheMessage(distFilesDigest))));
-		LOGGER.info("Send md5 checksum of distribution files to agent for refresh agent's cache directory.");
+		LOGGER.info("Send digest of distribution files to agent for refresh agent's cache directory.");
 	}
 
 	/**
@@ -481,7 +481,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	/**
-	 * Wait until the given size of agents are all connected and receive md5 checksum from there cached files.
+	 * Wait until the given size of agents are all connected and receive digest from there cached files.
 	 * It wait until 10 sec.
 	 *
 	 * @param size size of agent.
