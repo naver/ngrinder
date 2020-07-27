@@ -34,7 +34,7 @@ import java.io.File;
  *
  * <p>Not thread safe.</p>
  *
- * @since 3.5.1
+ * @since 3.5.0
  */
 final class FileDistributionHandlerImplementation
 	implements FileDistributionHandler {

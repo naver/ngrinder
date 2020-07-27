@@ -5,7 +5,7 @@ import net.grinder.communication.Message;
 import java.util.Set;
 
 /**
- * Message used to distribute a file's md5 checksum the console to the agent processes.
+ * Message used to distribute a file's digest.
  *
  * @since 3.5.0
  */

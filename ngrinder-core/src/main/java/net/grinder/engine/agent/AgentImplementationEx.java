@@ -540,8 +540,9 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 					.getCacheHighWaterMark()));
 
 			File cacheDir = m_fileStore.getIncomingDirectory().getFile();
-			m_sender.send(new DistFilesDigestMessage(getAllFilesMd5ChecksumInDirectory(cacheDir)));
-			m_logger.info("Send md5 checksum of cached file to controller.");
+
+			m_sender.send(new DistFilesDigestMessage(getFilesDigest(cacheDir, getAllFilesInDirectory(cacheDir))));
+			m_logger.info("Send digest of cached files to controller.");
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);

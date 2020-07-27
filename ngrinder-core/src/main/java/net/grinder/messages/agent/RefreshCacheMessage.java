@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Message that refresh cache directory.
  *
- * @since 3.5.1
+ * @since 3.5.0
  * */
 public final class RefreshCacheMessage implements Message {
 	private Set<String> disFilesDigest;

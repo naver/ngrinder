@@ -666,6 +666,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 		// Get all files in the script path.
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
+		LOGGER.info("Script type is '{}'.", handler.getKey());
 
 		ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
 		handler.prepareDist(perfTest.getId(), user, scriptEntry, perfTestDistDirectory, config.getControllerProperties(),
