@@ -12,6 +12,7 @@ import vuescroll from 'vuescroll';
 import numeral from 'numeral';
 import store from 'store/vuex-store.js';
 import VueRouterReferer from 'vue-router-referer.js';
+import VueClipboard from 'vue-clipboard2';
 import { AllHtmlEntities } from 'html-entities';
 
 import Event from 'bus-event.js';
@@ -78,6 +79,7 @@ Vue.use(VeeValidate, {
 });
 Vue.use(bFormSlider);
 Vue.use(VueRouterReferer);
+Vue.use(VueClipboard);
 
 Vue.prototype.$htmlEntities = AllHtmlEntities;
 Vue.prototype.$bootbox = BootBox;
