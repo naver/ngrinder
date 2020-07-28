@@ -3,6 +3,7 @@
         <vue-headful :title="i18n('script.editor.title')"/>
         <div class="file-desc-container flex-grow-0">
             <div class="form-horizontal">
+                <button class="btn-return-to-list btn-primary border-0 position-absolute" @click="returnToList" v-text="i18n('common.list')"></button>
                 <div class="caret-box pointer-cursor" @click="toggleHideDescription">
                     <i class="fa" :class="{ 'fa-caret-up' : !hideDescription, 'fa-caret-down' : hideDescription }"></i>
                 </div>
@@ -392,6 +393,10 @@
             this.$localStorage.set(this.SCRIPT_DESCRIPTION_HIDE_KEY, this.hideDescription);
         }
 
+        returnToList() {
+            this.$router.referer ? this.$router.back() : this.$router.push('/script/');
+        }
+
         get basePath() {
             return this.remainedPath.substring(0, this.remainedPath.lastIndexOf('/'));
         }
@@ -415,7 +420,7 @@
 
     div.caret-box {
         position: absolute;
-        left: 25px;
+        left: 53px;
         padding: 5px;
         color: #495057
     }
@@ -437,6 +442,13 @@
             width: 110px;
             margin: 4px 10px 0px -10px;
         }
+    }
+
+    .btn-return-to-list {
+        left: -1px;
+        height: 30px;
+        width: 50px;
+        border-radius: 0 3px 3px 0;
     }
 
     .description-container {
