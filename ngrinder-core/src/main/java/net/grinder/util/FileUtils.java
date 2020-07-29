@@ -61,20 +61,18 @@ public class FileUtils {
 	 * @param file     Target file.
 	 *
 	 * */
-	public static String getFileDigest(File baseDir, File file) throws IOException {
-		return getSubPath(baseDir.getPath(), file.getPath()) + ":" + getMd5(file);
+	public static String getFileDigest(File baseDir, File file) {
+		try {
+			return getSubPath(baseDir.getPath(), file.getPath()) + ":" + getMd5(file);
+		} catch (IOException e) {
+			throw new NGrinderRuntimeException(e);
+		}
 	}
 
 	public static Set<String> getFilesDigest(File baseDir, List<File> files) {
 		return files
 			.stream()
-			.map(file -> {
-				try {
-					return getFileDigest(baseDir, file);
-				} catch (IOException e) {
-					throw new NGrinderRuntimeException(e);
-				}
-			})
+			.map(file -> getFileDigest(baseDir, file))
 			.collect(toSet());
 	}
 }

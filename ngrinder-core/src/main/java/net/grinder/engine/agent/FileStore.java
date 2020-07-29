@@ -144,13 +144,7 @@ final class FileStore {
 						List<File> cachedFiles = getAllFilesInDirectory(cacheDir);
 						cachedFiles
 							.stream()
-							.filter(file -> {
-								try {
-									return !requiredFilesDigest.contains(getFileDigest(cacheDir, file));
-								} catch (IOException e) {
-									throw new NGrinderRuntimeException(e);
-								}
-							})
+							.filter(file ->  !requiredFilesDigest.contains(getFileDigest(cacheDir, file)))
 							.forEach(FileUtils::deleteQuietly);
 					} catch (IOException e) {
 						m_logger.info("Failed refresh cached file store", e);
@@ -210,14 +204,6 @@ final class FileStore {
 					m_cacheHighWaterMark = message.getCacheHighWaterMark();
 				}
 			});
-	}
-
-	private boolean isRequiredFile(Set<String> requiredFilesDigest, File file) {
-		try {
-			return requiredFilesDigest.contains(getMd5(file));
-		} catch (IOException e) {
-			return false;
-		}
 	}
 
 	private void createReadmeFile() throws CommunicationException {
