@@ -247,7 +247,7 @@
         }
 
         contentChanged() {
-            return this.$refs.editor.getValue() !== this.file.content;
+            return !this.$utils.equalsIgnoreNewLineChar(this.$refs.editor.getValue(), this.file.content);
         }
 
         save(isClose) {
