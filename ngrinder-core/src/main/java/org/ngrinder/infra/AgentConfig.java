@@ -92,6 +92,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 			return;
 		}
 
+		if (agentConfig.exists()) {
+			return;
+		}
+
 		try {
 			home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
 		} catch (IOException e) {
