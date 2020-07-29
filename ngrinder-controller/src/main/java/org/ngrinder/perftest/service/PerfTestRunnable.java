@@ -27,7 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -236,13 +235,7 @@ public class PerfTestRunnable implements ControllerConstants {
 
 		distFiles
 			.stream()
-			.filter(file -> {
-				try {
-					return cachedDistFilesDigest.contains(getFileDigest(distDir, file));
-				} catch (IOException e) {
-					throw new NGrinderRuntimeException(e);
-				}
-			})
+			.filter(file -> cachedDistFilesDigest.contains(getFileDigest(distDir, file)))
 			.forEach(FileUtils::deleteQuietly);
 	}
 
