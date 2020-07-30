@@ -12,28 +12,32 @@
             </legend>
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
-            <div v-if="isAdmin">
-                <button class="btn btn-primary mr-1" @click="update">
+            <div class="d-inline-block">
+                <div class="input-group">
+                    <input class="form-control input-search-append" type="text" ref="searchInput"
+                           placeholder="Keywords" @keydown.enter.prevent="search" v-focus/>
+                    <div class="input-group-append">
+                        <button class="btn btn-info" @click="search">
+                            <i class="fa fa-search"></i>
+                            <span v-text="i18n('common.button.search')"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div v-if="isAdmin" class="ml-1">
+                <button class="btn btn-primary" @click="update">
                     <i class="mr-1 fa fa-arrow-up"></i>
                     <span v-text="i18n('agent.list.update')"></span>
                 </button>
-                <button class="btn btn-danger mr-1" @click="stopAgents">
+                <button class="btn btn-danger" @click="stopAgents">
                     <i class="mr-1 fa fa-stop"></i>
                     <span v-text="i18n('common.button.stop')"></span>
                 </button>
-                <button class="btn btn-info mr-3" @click="$refs.addConnectionAgentModal.show()">
+                <button class="btn btn-info" @click="$refs.addConnectionAgentModal.show()">
                     <i class="mr-1 fa fa-plus"></i>
                     <span v-text="i18n('common.button.add')"></span>
                 </button>
             </div>
-
-            <input class="mr-1 form-control search-input" type="text" ref="searchInput"
-                   placeholder="Keywords" @keydown.enter.prevent="search" v-focus/>
-            <button class="btn btn-info" @click="search">
-                <i class="fa fa-search mr-1"></i>
-                <span v-text="i18n('common.button.search')"></span>
-            </button>
-
             <div class="input-prepend ml-auto mt-auto mb-auto">
                 <div class="input-group-text" v-text="i18n('agent.list.download')"></div>
                 <div class="border rounded uneditable-input">
@@ -427,9 +431,14 @@
     .search-bar {
         flex-direction: row;
 
-        .search-input {
+        .input-search-append {
             width: 280px;
             height: inherit;
         }
+
+        button {
+            height: 32px;
+        }
     }
+
 </style>

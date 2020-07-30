@@ -10,12 +10,18 @@
             </legend>
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
-            <input type="text" class="search-query-without-radios form-control"
-                   placeholder="Keywords" @keyup.enter="search" v-model="keywords" v-focus>
-            <button class="btn btn-info btn-search" @click="search">
-                <i class="fa fa-search mr-1"></i>
-                <span v-text="i18n('common.button.search')"></span>
-            </button>
+            <div class="d-inline-block">
+                <div class="input-group">
+                    <input type="text" class="input-search-append form-control"
+                           placeholder="Keywords" @keyup.enter="search" v-model="keywords" v-focus>
+                    <div class="input-group-append">
+                        <button class="btn btn-info" @click="search">
+                            <i class="fa fa-search"></i>
+                            <span v-text="i18n('common.button.search')"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="ml-auto">
                 <button class="btn btn-info" @click="$refs.signUpModal.show()">
                     <i class="fa fa-user mr-1"></i>
@@ -245,13 +251,9 @@
         .search-bar {
             flex-direction: row;
 
-            .search-query-without-radios {
+            .input-search-append {
                 width: 350px;
                 height: 30px;
-            }
-
-            .btn-search {
-                margin-left: 5px;
             }
         }
 
