@@ -1,3 +1,58 @@
+3.5.0 (2020.07.30)
+==================
+* New Feature
+    * Server mode agent
+        * Legacy nGrinder agents must be accessible to nGrinder controller via TCP, it was difficult to set up a private agents to connect to the controller behind a firewall. Now, nGrinder provides the server mode agent. You can easily connect the private agent to the nGrinder controller behind a firewall with the server mode agent.
+        * See https://github.com/donggyu04/ngrinder/wiki/Server-Mode-Agent
+    * GitHub script storage
+        * nGrinder is a SVN server itself to manage test scripts. SVN is very suitable for nGrinder, but it is an old technology. So, we added github as another script storage.
+        * See https://github.com/donggyu04/ngrinder/wiki/GitHub-script-storage
+    * Support MySQL
+        * Since 3.5.0, we support MySQL for main database and fade out Cubrid.
+        * We provide cubrid to mysql migration script.
+        * See https://github.com/donggyu04/ngrinder/wiki/MySQL-migration
+    * Improve test restart time
+        * Improve test restart time by caching test resources.
+        * Until previous version, nGrinder agent dosen't cache test lib & resources. So, if you run test that has large amount of resources, each test takes a long preparation time. From nGrinder 3.5.0, the agent caches test resources ran before and the controller sends only non-cached resources to agent.
+    * Fade out nGrinder-recorder
+        * nGrinder-recorder is no longer supported.
+    * Introducing Gradle
+        * From now, we use Gradle 6.3 as a build system.
+    * New options for perftest
+        * Multi user defined statistic
+            * User can define multiple custom statistic.
+            * See https://github.com/donggyu04/ngrinder/wiki/Multiple-user-defined-statistic-in-nGrinder
+        * Ignore error count
+            * Some of users want to continue testing even if there were many errors in the test. so we support that by test option. 
+            * You can find this option in advanced configuration.
+        * Custom classpath
+            * If you want to set classpath for test scripts, you can use this.
+            * See https://github.com/donggyu04/ngrinder/wiki/Custom-classpath
+
+* Modernize
+    * Back-end
+        * Spring boot
+            * Change from spring framework 4 to spring boot 2.
+            * Remove embedded Jetty.
+        * Hazelcast
+            * Use Hazelcast to share data among clusters
+            * Reduce load of database.
+    * Front-end
+        * Vue.js
+            * Introduce SPA for imporve responsibility & usability.
+            * Use webpack as module bundler.
+        * UX/UI
+            *  Use Billboard.js to drawing chart.
+            *  Bump bootstrap up from 2 to 4.
+
+* Bug fix
+    * #490 Fix log file name for agent command line
+    * #558 Fix agent state API to work in private agent
+    * #571 Prevent zombie agents from remaining in distributed cache
+    * #581 Set default locale to "en" when fail to detect user locale
+    * #587 Handle case of no sampling model
+    * #597 Fix log replacement to hide home path correctly
+
 3.4.4 (2020.01.17)
 ==================
 > nGrinder 3.4.4 
