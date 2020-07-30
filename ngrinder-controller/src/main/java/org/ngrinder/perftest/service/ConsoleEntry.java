@@ -17,13 +17,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
  * Console information which containing console attributes.<br/>
  * {@link #port} is the most important attribute of this class.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class ConsoleEntry {
@@ -32,6 +34,8 @@ public class ConsoleEntry {
 	/**
 	 * Console port number.
 	 */
+	@Getter
+	@Setter
 	private Integer port;
 	private ServerSocket socket;
 
@@ -45,18 +49,6 @@ public class ConsoleEntry {
 		this.port = port;
 	}
 
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -77,10 +69,6 @@ public class ConsoleEntry {
 			return false;
 		}
 		return true;
-	}
-
-	public String getIp() {
-		return ip;
 	}
 
 	@Override

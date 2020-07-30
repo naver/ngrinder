@@ -3,6 +3,7 @@ package org.ngrinder.script.handler;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import org.junit.Test;
 import org.ngrinder.model.Role;
@@ -19,7 +20,7 @@ public class GroovyMavenProjectScriptHandlerTest {
 		User user = new User("my", "my", "password", Role.ADMIN);
 		FileEntryRepository serviceMock = mock(FileEntryRepository.class);
 		when(serviceMock.hasOne(user, "/hello/world/pom.xml")).thenReturn(true);
-		handler.setFileEntryRepository(serviceMock);
+		setField(handler, "fileEntryRepository", serviceMock);
 
 		FileEntry entry = new FileEntry();
 		entry.setPath("/hello/world/src/main/java/wow/Global.groovy");

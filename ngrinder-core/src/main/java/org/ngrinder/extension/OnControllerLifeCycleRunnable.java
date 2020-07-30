@@ -13,7 +13,7 @@
  */
 package org.ngrinder.extension;
 
-import ro.fortsoft.pf4j.ExtensionPoint;
+import org.pf4j.ExtensionPoint;
 
 /**
  * Plugin extension point which is executable when controller start and finish.

@@ -13,12 +13,18 @@
  */
 package org.ngrinder.perftest.service;
 
+import org.ngrinder.infra.config.Config;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Profile("unit-test")
 @Component
 public class MockConsoleManager extends ConsoleManager {
+
+	public MockConsoleManager(Config config, AgentManager agentManager) {
+		super(config, agentManager);
+	}
+
 	@Override
 	protected int getConsolePortBase() {
 		return 8000;

@@ -13,7 +13,6 @@
  */
 package org.ngrinder.model;
 
-import java.util.Comparator;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -23,16 +22,20 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Tag class for categorization of {@link PerfTest}.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings("JpaDataSourceORMInspection")
+@Getter
+@Setter
 @Entity
 @Table(name = "TAG")
-public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<Tag> {
+public class Tag extends BaseModel<Tag> implements Comparable<Tag> {
 
 	/**
 	 * UUID.
@@ -42,46 +45,13 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
 	private Set<PerfTest> perfTests;
 
-	/**
-	 * Tag value.
-	 */
 	private String tagValue;
 
-	/**
-	 * Default constructor.
-	 */
 	public Tag() {
 	}
 
-	/**
-	 * Constructor.
-	 *
-	 * @param tagValue tag value
-	 */
 	public Tag(String tagValue) {
 		this.tagValue = StringUtils.trimToEmpty(tagValue);
-
-	}
-
-	public String getTagValue() {
-		return tagValue;
-	}
-
-	public void setTagValue(String tagValue) {
-		this.tagValue = tagValue;
-	}
-
-	public Set<PerfTest> getPerfTests() {
-		return perfTests;
-	}
-
-	public void setPerfTests(Set<PerfTest> perfTests) {
-		this.perfTests = perfTests;
-	}
-
-	@Override
-	public int compare(Tag o1, Tag o2) {
-		return o1.tagValue.compareTo(o2.getTagValue());
 	}
 
 	@Override
@@ -95,8 +65,8 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 	}
 
 	@Override
-	public int compareTo(Tag o) {
-		return compare(this, o);
+	public int compareTo(Tag other) {
+		return this.tagValue.compareTo(other.getTagValue());
 	}
 
 }

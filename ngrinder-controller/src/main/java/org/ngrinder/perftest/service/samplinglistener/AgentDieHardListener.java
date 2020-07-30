@@ -29,7 +29,6 @@ import java.io.File;
 /**
  * Agent crash detector.
  *
- * @author JunHo Yoon
  * @since 3.1.2
  */
 public class AgentDieHardListener implements SamplingLifeCycleListener, Runnable {
@@ -60,7 +59,7 @@ public class AgentDieHardListener implements SamplingLifeCycleListener, Runnable
 
 	@Override
 	public void run() {
-		for (AgentStatus agentStates : agentManager.getAgentStatusSetConnectingToPort(singleConsole.getConsolePort())) {
+		for (AgentStatus agentStates : agentManager.getAttachedAgentStatusSetConnectingToPort(singleConsole.getConsolePort())) {
 			SystemDataModel systemDataModel = agentStates.getSystemDataModel();
 			if (systemDataModel != null) {
 				// If the memory is available less than 2%.
@@ -83,8 +82,6 @@ public class AgentDieHardListener implements SamplingLifeCycleListener, Runnable
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-
-
 	}
 
 	@Override

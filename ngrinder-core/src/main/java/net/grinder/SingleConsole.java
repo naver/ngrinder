@@ -28,6 +28,8 @@ import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
+import net.grinder.console.communication.AcceptDistFilesDigestListener;
+import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -35,6 +37,8 @@ import net.grinder.console.distribution.AgentCacheState;
 import net.grinder.console.distribution.FileDistribution;
 import net.grinder.console.distribution.FileDistributionHandler;
 import net.grinder.console.model.*;
+import net.grinder.messages.agent.RefreshCacheMessage;
+import net.grinder.messages.console.AgentAddress;
 import net.grinder.statistics.*;
 import net.grinder.util.*;
 import net.grinder.util.ListenerSupport.Informer;
@@ -61,7 +65,11 @@ import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ForkJoinPool;
 
+
+import static java.util.Arrays.stream;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -74,18 +82,22 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @author JunHo Yoon (clone Console and modify this for nGrinder)
  * @since 3.0
  */
-public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener {
+public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener, AcceptDistFilesDigestListener {
 	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
+
 	public static final Resources RESOURCE = new ResourcesImplementation(RESOURCE_CONSOLE);
 	public static final Logger LOGGER = LoggerFactory.getLogger("console");
-
+	public static final String REPORT_DATA = ".data";
 	private static final String REPORT_CSV = "output.csv";
-	private static final String REPORT_DATA = ".data";
+	private static final int NUM_OF_SEND_FILE_DIGEST_THREAD = 3;
 
 	private final Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
+
+	// It contains cached distribution files digest from each agents.
+	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
 	private boolean cancel = false;
 
 	// for displaying tps graph in test running page
@@ -96,8 +108,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private SampleModelViews modelView;
 	private long startTime = 0;
 	private long momentWhenTpsBeganToHaveVerySmall;
-	private long lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
-	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
+	private final ListenerSupport<ConsoleShutdownListener> shutdownListener = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingLifeCycleFollowupListener = ListenerHelper
 			.create();
@@ -173,6 +184,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
 					consoleCommunicationSetting, eventSyncCondition);
+			consoleFoundation.addDistFilesDigestAcceptListener(this);
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		} catch (GrinderException e) {
@@ -349,6 +361,27 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		return this.getConsoleProperties().getConsoleHost();
 	}
 
+	@Override
+	public void onAcceptDistFilesDigestListener(Set<String> distFilesDigest) {
+		this.agentCachedDistFilesDigestList.add(distFilesDigest);
+	}
+
+	/**
+	 * Send digest of unnecessary files to agents for refresh agent's distribution cache directory.
+	 *
+	 * @param distFilesDigest Required file's digest for currently running test.
+	 */
+	public void sendDistFilesDigestToAgents(Set<String> distFilesDigest) {
+		ForkJoinPool myPool = new ForkJoinPool(NUM_OF_SEND_FILE_DIGEST_THREAD);
+		myPool.submit(() -> stream(processReports)
+			.parallel()
+			.forEach(processReport -> getConsoleComponent(ConsoleCommunicationImplementationEx.class)
+				.sendToAddressedAgents(
+					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
+					new RefreshCacheMessage(distFilesDigest))));
+		LOGGER.info("Send digest of distribution files to agent for refresh agent's cache directory.");
+	}
+
 	/**
 	 * File distribution event listener.
 	 *
@@ -448,17 +481,18 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	/**
-	 * Wait until the given size of agents are all connected. It wait until 10
-	 * sec.
+	 * Wait until the given size of agents are all connected and receive digest from there cached files.
+	 * It wait until 10 sec.
 	 *
 	 * @param size size of agent.
 	 */
-	public void waitUntilAgentConnected(int size) {
+	public void waitUntilAgentPrepared(int size) {
 		int trial = 1;
 		while (trial++ < 10) {
 			// when agent finished one test, processReports will be updated as
 			// null
-			if (processReports == null || this.processReports.length != size) {
+			if ((processReports == null || this.processReports.length != size)
+				|| agentCachedDistFilesDigestList.size() != size) {
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(1000);
 				}
@@ -468,7 +502,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				return;
 			}
 		}
-		throw processException("Connection is not completed until 10 sec");
+		throw processException("Connection is not completed or cached files digest weren't received until 10 sec");
 	}
 
 	/**
@@ -541,7 +575,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	/*
      * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.grinder.ISingleConsole2#getStatisticsIndexMap()
 	 */
 	public StatisticsIndexMap getStatisticsIndexMap() {
@@ -638,7 +672,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					}
 				});
 			}
-			checkTooManyError(cumulativeStatistics);
+
 			lastSamplingPeriod = lastSamplingPeriod + (interval * gap);
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurred while updating the statistics : {}", e.getMessage());
@@ -655,11 +689,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param lastCall                    true if it's the last call of consequent call in a single
 	 *                                    sampling
 	 */
-	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, //
-												 boolean lastCall) {
+	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, boolean lastCall) {
 		if (intervalStatisticMapPerTest.size() > 1) {
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-				if (INTERESTING_PER_TEST_STATISTICS.contains(each.getKey())) {
+				if (isPerfTestInterestingStatistics(each.getKey())) {
 					for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
 						if (lastCall) {
 							StatisticsSet value = entry.getValue();
@@ -783,42 +816,19 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 	}
 
-	/**
-	 * Check if too many error has been occurred. If the half of total
-	 * transaction is error for the last 10 secs. It notifies the
-	 * {@link ConsoleShutdownListener}
-	 *
-	 * @param cumulativeStatistics accumulated Statistics
-	 */
-	private void checkTooManyError(StatisticsSet cumulativeStatistics) {
-		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
-		long testSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
-		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
-		if (((double) (testSum + errors)) / 2 < errors) {
-			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == 0) {
-				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = System.currentTimeMillis();
-			} else if (isOverLowTpsThreshold()) {
-				LOGGER.warn("Stop the test because the count of test error is more than"
-						+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
-				getListeners().apply(new Informer<ConsoleShutdownListener>() {
-					public void inform(ConsoleShutdownListener listener) {
-						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
-					}
-				});
-				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = 0;
-			}
-		}
+	private static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",
+			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)");
+
+	private static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
+			"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)");
+
+	public static boolean isPerfTestInterestingStatistics(String key) {
+		return INTERESTING_PER_TEST_STATISTICS.contains(key) || key.startsWith("User_defined");
 	}
 
-	private boolean isOverLowTpsThreshold() {
-		return (System.currentTimeMillis() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue) >= TOO_MANY_ERROR_TIME;
+	public static boolean isInterestingStatistics(String key) {
+		return INTERESTING_STATISTICS.contains(key) || key.startsWith("User_defined");
 	}
-
-	public static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",
-			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)", "User_defined");
-
-	public static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
-			"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)", "User_defined");
 
 	/**
 	 * Build up statistics for current sampling.
@@ -844,7 +854,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			// When only 1 test is running, it's better to use the parametrized
 			// snapshot.
 			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-				if (INTERESTING_STATISTICS.contains(each.getKey())) {
+				if (isInterestingStatistics(each.getKey())) {
 					accumulatedStatisticMap.put(each.getKey(),
 							getRealDoubleValue(each.getValue().getDoubleValue(accumulatedSet)));
 					intervalStatisticsMap.put(each.getKey(),
@@ -858,7 +868,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		Map<String, Object> totalStatistics = newHashMap();
 
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-			if (INTERESTING_STATISTICS.contains(each.getKey())) {
+			if (isInterestingStatistics(each.getKey())) {
 				totalStatistics.put(each.getKey(),
 						getRealDoubleValue(each.getValue().getDoubleValue(accumulatedStatistics)));
 			}
@@ -980,7 +990,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @see ConsoleShutdownListener
 	 */
 	public ListenerSupport<ConsoleShutdownListener> getListeners() {
-		return this.showdownListner;
+		return this.shutdownListener;
 	}
 
 	/**
@@ -990,7 +1000,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param listener listener to be registered.
 	 */
 	public void addListener(ConsoleShutdownListener listener) {
-		showdownListner.add(listener);
+		shutdownListener.add(listener);
 	}
 
 	/**
@@ -999,7 +1009,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 *
 	 * @param listener listener to be registered.
 	 */
-	public void addSamplingLifeCyleListener(SamplingLifeCycleListener listener) {
+	public void addSamplingLifeCycleListener(SamplingLifeCycleListener listener) {
 		samplingLifeCycleListener.add(listener);
 	}
 
@@ -1334,6 +1344,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	@Override
 	public int getRunningProcess() {
 		return runningProcess;
+	}
+
+	public List<Set<String>> getAgentCachedDistFilesDigestList() {
+		return agentCachedDistFilesDigestList;
 	}
 
 	/**

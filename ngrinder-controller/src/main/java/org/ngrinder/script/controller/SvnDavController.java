@@ -13,11 +13,11 @@
  */
 package org.ngrinder.script.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
@@ -54,18 +54,17 @@ import java.util.*;
  * <p/>
  * This implementation is borrowed from SVNKit-DAV project.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 @Controller("svnDavServlet")
+@RequiredArgsConstructor
 public class SvnDavController implements HttpRequestHandler, ServletConfig, ServletContextAware {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(SvnDavController.class);
 	public static final String XML_CONTENT_TYPE = "text/xml; charset=UTF-8";
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Initialize. Set the SVNParentPath as $(NGRINDER_HOME)/repos
@@ -81,7 +80,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 	}
 
-	private Map<String, String> initParam = new HashMap<String, String>();
+	private Map<String, String> initParam = new HashMap<>();
 	private DAVConfig myDAVConfig;
 	private ServletContext servletContext;
 
@@ -269,7 +268,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		StringBuffer xmlBuffer = new StringBuffer();
 		SVNXMLUtil.addXMLHeader(xmlBuffer);
 
-		Collection namespaces = new ArrayList();
+		Collection<String> namespaces = new ArrayList<>();
 		namespaces.add(DAVElement.DAV_NAMESPACE);
 		namespaces.add(DAVElement.SVN_APACHE_PROPERTY_NAMESPACE);
 		if (namespace != null) {

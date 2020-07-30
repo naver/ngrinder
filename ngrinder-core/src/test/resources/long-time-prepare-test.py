@@ -11,7 +11,7 @@ class TestRunner:
 	def __init__(self):
 		grinder.statistics.delayReports=True
 		grinder.logger.info("prepare")
-`		grinder.sleep(10)
+		grinder.sleep(10)
 		pass
 
 	def test(self):

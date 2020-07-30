@@ -20,15 +20,9 @@ import org.ngrinder.model.PerfTest;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
-/**
- * Class description.
- * 
- * @author Mavlarn
- * @since
- */
 public class PerfTestTest {
 
 	@Test
@@ -67,10 +61,11 @@ public class PerfTestTest {
 	@Test
 	public void testAddProgressMessage() {
 		PerfTest test = new PerfTest();
+		test.setProgressMessage("");
 		for (int i = 0; i < 1000; i++) {
-			test.setLastProgressMessage("HELLO");
-			assertThat(test.getProgressMessage().length(), lessThan(ControllerConstants.MAX_STACKTRACE_STRING_SIZE));
+			test.setLastProgressMessage("HELLO" + i);
 		}
+		assertThat(test.getProgressMessage().length(), lessThanOrEqualTo(ControllerConstants.MAX_STACKTRACE_STRING_SIZE));
 	}
 
 }

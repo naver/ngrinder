@@ -13,21 +13,16 @@
  */
 package org.ngrinder.security;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 
-/**
- * Class description.
- * 
- * @author Mavlarn
- * @since
- */
+import static org.junit.Assert.assertTrue;
+import static org.ngrinder.user.service.MockUserContext.TEST_USER_ID;
+import static org.ngrinder.user.service.MockUserContext.TEST_USER_PASSWORD;
+
 public class DefaultLoginPluginTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
@@ -35,15 +30,15 @@ public class DefaultLoginPluginTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testValidateUser() {
-		DefaultLoginPlugin plugin = new DefaultLoginPlugin();
-		Object salt = null;
+		DefaultLoginPlugin plugin = new DefaultLoginPlugin(null);
+		String salt = TEST_USER_ID;
 
 		try {
-			plugin.validateUser("testUserId", "123", "123", passwordEncoder, salt);
+			plugin.validateUser(TEST_USER_ID, TEST_USER_PASSWORD, TEST_USER_PASSWORD, passwordEncoder, salt);
 		} catch (BadCredentialsException e) {
 			assertTrue(true);
 		}
-		plugin.validateUser("testUserId", "123", passwordEncoder.encodePassword("123", salt), passwordEncoder, salt);
+		plugin.validateUser(TEST_USER_ID, TEST_USER_PASSWORD, passwordEncoder.encode(salt, TEST_USER_PASSWORD), passwordEncoder, salt);
 		assertTrue(true);
 	}
 }

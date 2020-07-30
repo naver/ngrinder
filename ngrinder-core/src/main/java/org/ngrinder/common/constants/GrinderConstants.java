@@ -32,6 +32,7 @@ public interface GrinderConstants {
 	public static final String GRINDER_PROP_SCRIPT = "grinder.script";
 	public static final String GRINDER_PROP_PARAM = "grinder.param";
 	public static final String GRINDER_PROP_JVM_CLASSPATH = "grinder.jvm.classpath";
+	public static final String GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH = "grinder.jvm.user.library.classpath";
 	public static final String GRINDER_PROP_JVM_ARGUMENTS = "grinder.jvm.arguments";
 	public static final String GRINDER_PROP_USE_CONSOLE = "grinder.useConsole";
 	public static final String GRINDER_PROP_REPORT_TO_CONSOLE = "grinder.reportToConsole.interval";

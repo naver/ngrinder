@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta charset="UTF-8">
+        <link rel="shortcut icon" type="image/png" href="{{ contextPath }}/img/favicon.png"/>
+        <link href="{{ contextPath }}/css/app.css" rel="stylesheet"/>
+        <link href="{{ contextPath }}/css/ngrinder.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <vue-scroll id="ngrinder">
+            <main class="vh-100 d-flex flex-column">
+                <div v-if="ngrinder.currentUser.role" class="flex-grow-0">
+                    <navigator></navigator>
+                    <tip></tip>
+                    <announcement></announcement>
+                </div>
+                <router-view class="flex-grow-1" :key="$route.fullPath"></router-view>
+                <copyright class="flex-grow-0" :version="ngrinder.version"></copyright>
+                <messages ref="messages"></messages>
+            </main>
+        </vue-scroll>
+        <script>
+            window.ngrinder = {
+                contextPath: '{{ contextPath }}',
+                version: '{{ version }}',
+                currentUser: {
+                    name: '{{ currentUser.userName }}',
+                    id: '{{ currentUser.userId }}',
+                    email: '{{ currentUser.email }}',
+                    role: '{{ currentUser.role.shortName }}',
+                    factualUser: {
+                        name: '{{ currentUser.factualUser.userName }}',
+                        id: '{{ currentUser.factualUser.userId }}',
+                        email: '{{ currentUser.factualUser.email }}',
+                        role: '{{ currentUser.role.shortName }}',
+                    },
+                    timeZone: '{{ currentUser.timeZone }}',
+                    language: '{{ currentUser.userLanguage }}',
+                },
+                config: {
+                    githubBaseUrl: '{{ githubBaseUrl }}',
+                    signUpEnabled : {{{ signUpEnabled }}},
+                    clustered: {{{ clustered }}},
+                    userSwitchMode: !!('{{ currentUser.ownerUser }}'),
+                    helpUrl: '{{ helpUrl }}',
+                    hasNewAnnouncement: {{{ hasNewAnnouncement }}},
+                },
+            };
+
+            {{{ vuserCalcScript }}}
+
+        </script>
+        <script type="text/javascript" src="{{ contextPath }}/js/app.js"></script>
+    </body>
+</html>

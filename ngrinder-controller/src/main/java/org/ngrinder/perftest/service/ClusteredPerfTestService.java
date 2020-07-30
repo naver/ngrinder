@@ -15,18 +15,30 @@ package org.ngrinder.perftest.service;
 
 import java.util.List;
 
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
+import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
+import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.GitHubFileEntryService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * {@link PerfTest} Service Class for cluster mode.
  * 
- * @author JunHo Yoon
- * @author Mavlarn
  * @since 3.0
  */
 public class ClusteredPerfTestService extends PerfTestService {
+	public ClusteredPerfTestService(PerfTestRepository perfTestRepository, ConsoleManager consoleManager,
+									AgentManager agentManager, Config config, FileEntryService fileEntryService,
+									TagService tagService, ScriptHandlerFactory scriptHandlerFactory,
+									HazelcastService hazelcastService, GitHubFileEntryService gitHubFileEntryService) {
+		super(perfTestRepository, consoleManager, agentManager, config, fileEntryService,
+			tagService, scriptHandlerFactory, hazelcastService, gitHubFileEntryService);
+	}
+
 	/**
 	 * Get next runnable {@link PerfTest}.
 	 * 

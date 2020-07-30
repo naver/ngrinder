@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
@@ -29,7 +28,6 @@ import java.util.List;
 /**
  * {@link PerfTest} Repository.
  *
- * @author junHo Yoon
  * @since 3.0
  */
 public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
@@ -61,29 +59,6 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 * @return perf test list
 	 */
 	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
-
-	/**
-	 * Update the runtime statistics on the perf test having the given {@link PerfTest} id.
-	 *
-	 * @param id            {@link PerfTest} id
-	 * @param runningSample running sample json string
-	 * @param agentState    agent status json string
-	 * @return the count of updated row
-	 */
-	@Modifying
-	@Query("update PerfTest p set p.runningSample=?2, p.agentState=?3 where p.id=?1")
-	int updateRuntimeStatistics(Long id, String runningSample, String agentState);
-
-	/**
-	 * Update the monitor statistics on the perf test having the given {@link PerfTest} id.
-	 *
-	 * @param id            {@link PerfTest} id
-	 * @param monitorStatus monitor status json string
-	 * @return the count of updated row
-	 */
-	@Modifying
-	@Query("update PerfTest p set p.monitorState=?2 where p.id=?1")
-	int updatetMonitorStatus(Long id, String monitorStatus);
 
 	/**
 	 * Find all {@link PerfTest}s created between the given start and end date and having the the given region.

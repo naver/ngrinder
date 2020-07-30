@@ -1,0 +1,63 @@
+sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
+description = "ngrinder-core"
+dependencies {
+    compile files("${rootDir}/lib/sigar-native-1.0.jar")
+    compile files("${rootDir}/lib/grinder-3.9.1-patch.jar")
+    compile (project(":ngrinder-runtime"))
+    compile (project(":ngrinder-groovy"))
+    compile (group: "org.fusesource", name: "sigar", version:"1.6.4")
+    compile (group: "org.pf4j", name: "pf4j", version:"3.0.1")
+    compile (group: "javax.servlet", name: "javax.servlet-api", version:"3.1.0")
+    compile (group: "commons-collections", name: "commons-collections", version:"3.2.1")
+    compile (group: "org.python", name: "jython-standalone", version:"2.5.3")
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
+    compile (group: "net.java.dev.jna", name: "jna", version:"3.4.0")
+    compile (group: "org.apache.commons", name: "commons-compress", version:"1.4.1")
+    compile (group: "commons-codec", name: "commons-codec", version: "1.14")
+    compile (group: "com.beust", name: "jcommander", version:"1.32")
+    compile (group: "ch.qos.logback", name: "logback-classic", version:"1.0.0")
+    compile (group: "org.slf4j", name: "slf4j-api", version: slf4j_version)
+    compile (group: "org.slf4j", name: "jcl-over-slf4j", version: slf4j_version)
+    compile (group: 'org.hibernate', name: 'hibernate-core', version: hibernate_version)
+    compile (group: 'org.jboss.spec.javax.transaction', name: 'jboss-transaction-api_1.2_spec', version: '1.0.1.Final')
+
+    compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+
+    testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
+    testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
+
+    testCompileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    testAnnotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+}
+
+task makeAgentDependencies {
+    doFirst {
+        def classpath = ""
+        sourceSets.main.compileClasspath.each {
+            def libName = it.getName()
+            if (libName == "grinder-3.9.1.jar") {
+                return
+            }
+            if (libName == "grinder-3.9.1-patch.jar") {
+                classpath += "grinder-3.9.1;"
+                return
+            }
+            def removedVersion = libName.findAll(/(.*?)-\d+/).join("")
+            if (removedVersion == "") {
+                return
+            }
+            classpath += "${removedVersion.substring(0, removedVersion.lastIndexOf("-"))};"
+        }
+        new File("${buildDir}/classes/java/main/dependencies.txt").write(classpath)
+    }
+}
+
+processResources {
+    filesMatching("internal.properties") {
+       expand(["ngrinder_version" :project.version])
+    }
+}
+
+tasks.jar.dependsOn makeAgentDependencies

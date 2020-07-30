@@ -31,6 +31,7 @@ import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.communication.ConsoleListener;
+import net.grinder.engine.communication.DistFilesDigestMessage;
 import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.messages.agent.StartGrinderMessage;
@@ -49,10 +50,11 @@ import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.IOException;
+import java.util.*;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static net.grinder.util.FileUtils.*;
 import static org.ngrinder.common.constants.GrinderConstants.*;
 
 /**
@@ -97,7 +99,6 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentIdentityImplementation(NetworkUtils.getLocalHostName());
-
 	}
 
 	/**
@@ -130,6 +131,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
+		final int connectionPort = grinderProperties.getInt(GrinderProperties.CONSOLE_PORT, 0);
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
@@ -139,7 +141,12 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				do {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
-					properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());
+					if (m_agentConfig.isConnectionMode()) {
+						properties.setProperty(GrinderProperties.CONSOLE_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+						properties.setInt(GrinderProperties.CONSOLE_PORT, connectionPort);
+					} else {
+						properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());
+					}
 					m_agentIdentity.setName(m_agentConfig.getAgentHostID());
 					final Connector connector = m_connectorFactory.create(properties);
 					// We only reconnect if the connection details have changed.
@@ -222,7 +229,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 								.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 					}
 					File logFile = new File(properties.getFile(GrinderProperties.LOG_DIRECTORY, new File(".")),
-							m_agentIdentity.getName() + "-" + m_agentIdentity.getNumber() + ".log");
+						m_agentIdentity.getName() + "-0.log");
 					m_logger.info("log file : {}", logFile);
 					AbstractLanguageHandler handler = Lang.getByFileName(script.getFile()).getHandler();
 					final WorkerFactory workerFactory;
@@ -377,11 +384,9 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_LIMIT_XMX),
 				m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_ENABLE_LOCAL_DNS),
 				m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JAVA_OPT));
+
 		String jvmArguments = builder.buildJVMArgument();
-		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
-				+ File.pathSeparator
-				+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
-		properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
+		properties.setProperty(GRINDER_PROP_JVM_CLASSPATH, buildClassPath(systemProperty, properties, handler, builder));
 
 		m_logger.info("grinder properties {}", properties);
 		m_logger.info("jvm arguments {}", jvmArguments);
@@ -391,6 +396,28 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			properties.setInt("grinder.runs", 0);
 		}
 		return jvmArguments;
+	}
+
+	private String buildClassPath(Properties systemProperty,
+								GrinderProperties properties,
+								AbstractLanguageHandler handler,
+								PropertyBuilder builder) {
+
+		String rebaseCustomClassPath = getForeMostClassPath(systemProperty, handler, m_logger)
+			+ File.pathSeparator
+			+ builder.rebaseUserLibraryClassPath(properties.getProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, ""));
+
+		String customJvmClassPath = properties.getProperty(GRINDER_PROP_JVM_CLASSPATH);
+		if (isNotBlank(customJvmClassPath)) {
+			rebaseCustomClassPath = (customJvmClassPath + File.pathSeparator) + rebaseCustomClassPath;
+		}
+
+		String agentJvmClassPath = m_agentConfig.getAgentProperties().getProperty(PROP_AGENT_JVM_CLASSPATH);
+		if (isNotBlank(agentJvmClassPath)) {
+			rebaseCustomClassPath = (agentJvmClassPath + File.pathSeparator) + rebaseCustomClassPath;
+		}
+
+		return rebaseCustomClassPath;
 	}
 
 	/**
@@ -496,7 +523,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 		private final MessagePump m_messagePump;
 
 		public ConsoleCommunication(Connector connector, String user) throws CommunicationException,
-				FileStore.FileStoreException {
+			FileStore.FileStoreException, IOException {
 
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
@@ -511,6 +538,11 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
 					.getCacheHighWaterMark()));
+
+			File cacheDir = m_fileStore.getIncomingDirectory().getFile();
+
+			m_sender.send(new DistFilesDigestMessage(getFilesDigest(cacheDir, getAllFilesInDirectory(cacheDir))));
+			m_logger.info("Send digest of cached files to controller.");
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);

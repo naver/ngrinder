@@ -13,13 +13,6 @@
  */
 package org.ngrinder.user.model;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -31,14 +24,21 @@ import org.ngrinder.perftest.repository.TagRepository;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class UserTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public UserRepository userRepository;
-	@Autowired
 
+	@Autowired
 	private PerfTestRepository perfTestRepository;
 
 	@Autowired
@@ -51,7 +51,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.deleteAll();
 		perfTestRepository.flush();
 		tagRepository.deleteAll();
@@ -62,8 +62,8 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testShareUser() {
-		List<User> sharedUsers = new ArrayList<User>();
-		List<User> shareUsers = new ArrayList<User>();
+		List<User> sharedUsers = new ArrayList<>();
+		List<User> shareUsers = new ArrayList<>();
 
 		User user = new User();
 		user.setUserName("MyName1");
@@ -136,7 +136,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		assertThat(userRepository.findAll(UserSpecification.emailLike("gmail")).size(), is(1));
 
 		assertThat(userRepository.findAll(
-						Specifications.where(UserSpecification.emailLike("@paran")).and(
+						Specification.where(UserSpecification.emailLike("@paran")).and(
 										UserSpecification.nameLike("MyName2"))).size(), is(1));
 
 	}

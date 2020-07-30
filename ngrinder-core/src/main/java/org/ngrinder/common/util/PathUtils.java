@@ -14,7 +14,6 @@
 package org.ngrinder.common.util;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility class for path manipulation.
@@ -23,8 +22,6 @@ import org.apache.commons.lang.StringUtils;
  * @since 3.0
  */
 public abstract class PathUtils {
-
-	public static final int MAX_PATH_LENGTH = 40;
 
 	/**
 	 * Remove prepended / from the given path.
@@ -85,19 +82,10 @@ public abstract class PathUtils {
 		return path;
 	}
 
-	/**
-	 * Get the shorten displayable path from the given path.
-	 *
-	 * @param path path
-	 * @return shortPath
-	 */
-	public static String getShortPath(String path) {
-		if (path.length() >= MAX_PATH_LENGTH && StringUtils.contains(path, "/")) {
-			String start = path.substring(0, path.indexOf("/") + 1);
-			String end = path.substring(path.lastIndexOf("/"), path.length());
-			return start + "..." + end;
-		} else {
+	public static String getSubPath(String basePath, String path) {
+		if (!path.contains(basePath)) {
 			return path;
 		}
+		return path.substring(path.lastIndexOf(basePath) + basePath.length());
 	}
 }

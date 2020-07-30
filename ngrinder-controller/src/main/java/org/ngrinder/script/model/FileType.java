@@ -13,12 +13,12 @@
  */
 package org.ngrinder.script.model;
 
+import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 
 /**
  * File type of FileEntity.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public enum FileType {
@@ -39,6 +39,8 @@ public enum FileType {
 	CSV("csv", "csv", FileCategory.DATA, false, true),
 	/** JSON. */
 	JSON("json", "json", FileCategory.DATA, false, true),
+	/** YAML. */
+	YAML("yaml", "yml", FileCategory.DATA, false, false),
 	/** Properties. */
 	PROPERTIES("properties", "properties", FileCategory.DATA, false, true),
 	/** Classes. */
@@ -54,10 +56,14 @@ public enum FileType {
 	UNKNOWN("unknown", "", FileCategory.ETC, false, true),
 	/** Dir. */
 	DIR("dir", "", FileCategory.ETC, false, false);
+
 	private String description;
+	@Getter
 	private final FileCategory fileCategory;
 	private final String extension;
+	@Getter
 	private final boolean libDistributable;
+	@Getter
 	private final boolean resourceDistributable;
 
 	/**
@@ -108,34 +114,13 @@ public enum FileType {
 	 * 
 	 * @return file type description.
 	 */
+	@Override
 	public String toString() {
 		return description;
 	}
 
-	public FileCategory getFileCategory() {
-		return fileCategory;
-	}
-
 	public boolean isEditable() {
 		return fileCategory.isEditable();
-	}
-
-	/**
-	 * Check if this file can be distributed in lib folder.
-	 * 
-	 * @return true if distributable
-	 */
-	public boolean isLibDistributable() {
-		return libDistributable;
-	}
-
-	/**
-	 * Check if this file can be distributed in resource folder.
-	 * 
-	 * @return true if distributable
-	 */
-	public boolean isResourceDistributable() {
-		return resourceDistributable;
 	}
 
 }

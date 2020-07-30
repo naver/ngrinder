@@ -4,9 +4,13 @@ agent.controller_port,16001,agent.controller.port,agent.console.port
 agent.region,,
 agent.host_id,,agent.hostid
 agent.server_mode,,
+agent.connection_mode,agent_to_controller,
+agent.connection_port,14000,
+agent.broadcast_ip,,
 agent.all_logs,false,agent.send.all.logs
 agent.limit_xmx,true,agent.useXmxLimit
 agent.java_opt,,agent.javaopt
+agent.jvm.classpath,,
 agent.keep_logs,false,
 agent.update_always,false,
 agent.enable_local_dns,true,

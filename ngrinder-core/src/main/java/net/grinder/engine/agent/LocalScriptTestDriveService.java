@@ -30,8 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_PROP_JVM_CLASSPATH;
+import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 /**
@@ -41,12 +45,16 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * in ngrinder-core is... some The Grinder core class doesn't have public
  * access..
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
-	public static final int DEFAULT_TIMEOUT = 100;
+	private static final int DEFAULT_TIMEOUT = 100;
+	private File requiredLibraryDirectory;
+
+	public LocalScriptTestDriveService(File requiredLibraryDirectory) {
+		this.requiredLibraryDirectory = requiredLibraryDirectory;
+	}
 
 	/**
 	 * Validate script with 100 sec timeout.
@@ -100,17 +108,24 @@ public class LocalScriptTestDriveService {
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
 			properties.setBoolean("grinder.script.validation", true);
-			String grinderJVMClassPath = classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
-					+ File.pathSeparator + classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER)
-					+ File.pathSeparator + builder.buildCustomClassPath(true);
-			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
-			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);
+			String grinderJVMClassPath = getHomeLibraryPath(classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER))
+				+ File.pathSeparator + getHomeLibraryPath(classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER))
+				+ File.pathSeparator + builder.buildCustomClassPath(true);
+			properties.setProperty(GRINDER_PROP_JVM_CLASSPATH, grinderJVMClassPath = grinderJVMClassPath.replace(";;", ";"));
+			LOGGER.info(GRINDER_PROP_JVM_CLASSPATH + " : {} ", grinderJVMClassPath);
 			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
 			agentIdentity.setNumber(0);
 			String newClassPath = classPathProcessor.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("validation class path " + newClassPath);
 			Properties systemProperties = new Properties();
-			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
+
+			String path;
+			if (isRunningOnWas()) {
+				path = getHomeLibraryPath(newClassPath);
+			} else {
+				path = runtimeClassPath() + newClassPath;
+			}
+			systemProperties.put("java.class.path", path);
 
 			Directory workingDirectory = new Directory(base);
 			String buildJVMArgumentWithoutMemory = builder.buildJVMArgumentWithoutMemory();
@@ -209,5 +224,27 @@ public class LocalScriptTestDriveService {
 		} finally {
 			IOUtils.closeQuietly(fileWriter);
 		}
+	}
+
+	private String getHomeLibraryPath(String classPath) {
+		StringBuilder homeLibraryPath = new StringBuilder();
+		for (String path : classPath.split(File.pathSeparator)) {
+			homeLibraryPath.append(requiredLibraryDirectory.getAbsolutePath()).append(File.separator).append(FilenameUtils.getName(path)).append(File.pathSeparator);
+		}
+		return homeLibraryPath.toString();
+	}
+
+	private boolean isRunningOnWas() {
+		return ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()[0].getProtocol().equals("jar");
+	}
+
+	private String runtimeClassPath() {
+		StringBuilder runtimeClassPath = new StringBuilder();
+		for (URL url : ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()) {
+			if (url.getPath().contains("ngrinder-runtime") || url.getPath().contains("ngrinder-groovy")) {
+				runtimeClassPath.append(decodePathWithUTF8(url.getFile())).append(File.pathSeparator);
+			}
+		}
+		return runtimeClassPath.toString();
 	}
 }

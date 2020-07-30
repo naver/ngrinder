@@ -28,7 +28,6 @@ import java.util.List;
 /**
  * Sampling LifeCycle listener to run the pluings implementing {@link OnTestSamplingRunnable}.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 public class PluginRunListener implements SamplingLifeCycleListener {
@@ -39,16 +38,7 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 	private final PerfTest perfTest;
 	private final PerfTestService perfTestService;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param plugins         plugins
-	 * @param singleConsole   singleConsole
-	 * @param perfTest        perfTest
-	 * @param perfTestService perfTestService
-	 */
-	public PluginRunListener(List<OnTestSamplingRunnable> plugins, SingleConsole singleConsole, PerfTest perfTest,
-	                         PerfTestService perfTestService) {
+	public PluginRunListener(List<OnTestSamplingRunnable> plugins, SingleConsole singleConsole, PerfTest perfTest, PerfTestService perfTestService) {
 		this.plugins = plugins;
 		this.singleConsole = singleConsole;
 		this.perfTest = perfTest;

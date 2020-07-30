@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,16 +9,16 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service.monitor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -30,13 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Used to save JMX connect for every request that want to observe monitor real-time system information.
  */
 @Service
+@RequiredArgsConstructor
 public class MonitorInfoStore implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorInfoStore.class);
 
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
-	private Map<String, MonitorClientService> monitorClientMap = new ConcurrentHashMap<String, MonitorClientService>();
+	private static final Map<String, MonitorClientService> monitorClientMap = new ConcurrentHashMap<>();
 
+	private final ScheduledTaskService scheduledTaskService;
 
 	@PostConstruct
 	public void init() {

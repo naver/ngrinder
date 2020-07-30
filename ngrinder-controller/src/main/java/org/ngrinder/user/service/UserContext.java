@@ -24,15 +24,11 @@ import org.springframework.stereotype.Component;
 /**
  * User Context which return current user.
  *
- * @author Tobi
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")
 @Component
 public class UserContext {
-
-
 	/**
 	 * Get current user object from context.
 	 *

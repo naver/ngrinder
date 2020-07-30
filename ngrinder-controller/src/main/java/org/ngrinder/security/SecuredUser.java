@@ -13,22 +13,23 @@
  */
 package org.ngrinder.security;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * {@link UserDetails} implementation.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class SecuredUser implements UserDetails {
@@ -39,6 +40,9 @@ public class SecuredUser implements UserDetails {
 	 * Plugin class name from which {@link User} instance is provided.
 	 */
 	private final String userInfoProviderClass;
+
+	@Getter
+	@Setter
 	private User user;
 
 	/**
@@ -59,9 +63,7 @@ public class SecuredUser implements UserDetails {
 	 */
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>(1);
-		roles.add(new SimpleGrantedAuthority(getUser().getRole().getShortName()));
-		return roles;
+		return ImmutableList.of(new SimpleGrantedAuthority(getUser().getRole().getShortName()));
 	}
 
 	/**
@@ -119,13 +121,5 @@ public class SecuredUser implements UserDetails {
 			return getUser().getAuthProviderClass();
 		}
 		return userInfoProviderClass;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 }

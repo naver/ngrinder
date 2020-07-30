@@ -13,14 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.model.PerfTest;
@@ -30,12 +22,16 @@ import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * {@link TagService} test.
- *
- * @author JunHo Yoon
- * @since 3.0
- */
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
+
 public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
@@ -56,7 +52,7 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 		tagRepository.deleteAll();
@@ -98,4 +94,14 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(perfTestWithTag.getTags().size(), is(2));
 	}
 
+	@Test
+	public void testGetAllTagStrings() {
+		String[] tags = new String[]{"aaaa", "AAA", "a123", "bbbb", "a12312", "a999", "a777"};
+		tagService.addTags(getTestUser(), tags);
+		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
+		newPerfTest.setTagString(String.join(",", tags));
+		perfTestService.save(getTestUser(), newPerfTest);
+
+		assertEquals(tagService.getAllTagStrings(getTestUser(), "a"), asList("AAA", "a123", "a12312", "a777", "a999", "aaaa"));
+	}
 }

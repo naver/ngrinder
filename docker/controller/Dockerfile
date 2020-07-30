@@ -14,10 +14,10 @@ EXPOSE 80 16001 12000-12009
 VOLUME $NGRINDER_HOME
 
 # Copy initial execution script
-ADD scripts /scripts
+COPY scripts /scripts
 
 # Copy final binary
-ADD binary/*.war ${BASE_DIR}
+COPY binary/*.war ${BASE_DIR}
 
 # Execution
 CMD ["/scripts/run.sh"]

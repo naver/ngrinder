@@ -1,0 +1,121 @@
+description = "ngrinder-controller"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.8.RELEASE")
+    }
+}
+
+apply plugin: "war"
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+
+sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
+
+def agentScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/agent"
+def monitorScriptPath = "${sourceSets.main.output.resourcesDir}/ngrinder-sh/monitor"
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${spring_boot_version}"
+    }
+}
+
+dependencies {
+    compile project(":ngrinder-core")
+
+    compile (group: "org.springframework.boot", name: "spring-boot-starter-web")
+    compile (group: "org.springframework.boot", name: "spring-boot-starter-freemarker")
+    compile (group: "org.springframework.boot", name: "spring-boot-starter-security")
+    compile (group: "org.springframework.boot", name: "spring-boot-starter-data-jpa")
+    compile (group: "org.springframework.boot", name: "spring-boot-starter-cache")
+
+    compile (group: "com.github.jknack", name: "handlebars-springmvc", version: handlebars_version)
+    compile (group: "com.github.jknack", name: "handlebars-helpers", version: handlebars_version)
+    compile (group: "rome", name: "rome", version: "1.0")
+    compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
+    compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
+    compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version)
+    compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
+    compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
+    compile (group: "com.google.guava", name: "guava", version: "20.0")
+    compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
+
+    compile (group: "org.apache.maven", name: "maven-embedder", version: "3.6.3")
+    compile (group: "org.apache.maven", name: "maven-compat", version: "3.6.3")
+    compile (group: "org.eclipse.aether", name: "aether-connector-basic", version: "1.1.0")
+    compile (group: "org.eclipse.aether", name: "aether-transport-wagon", version: "1.1.0")
+    compile (group: "org.apache.maven.wagon", name: "wagon-http", version: "2.8")
+    compile (group: "org.apache.maven.wagon", name: "wagon-provider-api", version: "2.8")
+
+    compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")
+    compile (group: "org.hibernate", name: "hibernate-jcache", version: hibernate_version)
+    compile (group: "com.github.ben-manes.caffeine", name: "caffeine", version: "2.6.2")
+    compile (group: "com.github.ben-manes.caffeine", name: "jcache", version: "2.6.2")
+    compile (group: "mysql", name: "mysql-connector-java", version: "8.0.13")
+    compile (group: "commons-httpclient", name: "commons-httpclient", version: "3.1")
+    compile (group: "com.h2database", name: "h2", version: "1.4.197")
+    compile (group: "commons-fileupload", name: "commons-fileupload", version: "1.3.1")
+    compile (group: "commons-dbcp", name: "commons-dbcp", version: "1.4")
+    compile (group: "cglib", name: "cglib", version: "2.2.2")
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
+    compile (group: "jaxen", name: "jaxen", version: "1.1.4")
+    compile (group: "com.beust", name: "jcommander", version: "1.32")
+    compile (group: "org.pf4j", name: "pf4j", version: "3.0.1")
+    compile (group: "org.yaml", name: "snakeyaml", version: "1.25")
+    compile (group: "commons-collections", name: "commons-collections", version: "3.2.1")
+    compile (group: "org.reflections", name: "reflections", version: "0.9.9")
+    compile (group: "com.hazelcast", name: "hazelcast", version: hazelcast_version)
+    compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
+    compile (group: "org.kohsuke", name: "github-api", version: "1.99")
+    compile (group: "commons-validator", name: "commons-validator", version: "1.6")
+
+    compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+
+    providedRuntime (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: spring_boot_version)
+
+    testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
+    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: spring_boot_version)
+
+    testCompileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    testAnnotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+}
+
+
+bootWar {
+    manifest {
+        attributes "Implementation-Version": project.version, mainClassName: "org.ngrinder.starter.NGrinderControllerStarter"
+    }
+    requiresUnpack "**/*.jar"
+    sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
+    sourceSets.test.java.outputDir = new File(buildDir, "classes/test")
+}
+
+task convert_cr_lf {
+    doFirst {
+        ant.fixcrlf(srcDir: agentScriptPath, destDir: agentScriptPath, includes:"**/*.sh" ,eol: "unix")
+        ant.fixcrlf(srcDir: agentScriptPath, destDir: agentScriptPath, includes:"**/*.bat" ,eol: "dos")
+        ant.fixcrlf(srcDir: monitorScriptPath, destDir: monitorScriptPath, includes:"**/*.sh" ,eol: "unix")
+        ant.fixcrlf(srcDir: monitorScriptPath, destDir: monitorScriptPath, includes:"**/*.bat" ,eol: "dos")
+    }
+}
+
+processResources {
+    filesMatching("ngrinder-sh/agent/run_agent_internal.*") {
+        expand(["ngrinder_core": String.format("lib/ngrinder-core-%s.jar", project.version)])
+    }
+}
+
+test {
+    jvmArgs "-Xms600m", "-Xmx1024m", "-XX:MaxPermSize=200m"
+}
+
+tasks.bootWar.dependsOn convert_cr_lf
+
+tasks.processResources.dependsOn tasks.getByPath(":ngrinder-frontend:webpack")

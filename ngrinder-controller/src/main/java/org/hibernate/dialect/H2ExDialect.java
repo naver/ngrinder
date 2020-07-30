@@ -20,7 +20,6 @@ import java.sql.Types;
  * dialect treats all float into float. So.. the Hibernate validation is failed
  * with that version.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public class H2ExDialect extends H2Dialect {

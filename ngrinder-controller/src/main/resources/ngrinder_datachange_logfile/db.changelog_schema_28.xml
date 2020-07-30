@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.5.0" id="28" dbms="h2">
+		<comment>Update for 3.5.0</comment>
+
+		<!--Drop unnecessary field from AGENT table, it shared from hazelcast shared map.-->
+		<dropTable cascadeConstraints="true" tableName="system_monitor"/>
+
+		<dropColumn tableName="AGENT" columnName="state"/>
+		<dropColumn tableName="AGENT" columnName="system_stat"/>
+		<dropColumn tableName="AGENT" columnName="region"/>
+		<dropColumn tableName="AGENT" columnName="port"/>
+		<dropColumn tableName="AGENT" columnName="version"/>
+
+		<!--drop unnecessary column by using hazelcast.-->
+		<dropColumn tableName="PERF_TEST" columnName="agent_stat"/>
+		<dropColumn tableName="PERF_TEST" columnName="running_sample"/>
+		<dropColumn tableName="PERF_TEST" columnName="monitor_stat"/>
+
+		<addColumn tableName="PERF_TEST">
+			<column name="scm" type="varchar(30)"/>
+		</addColumn>
+
+		<addColumn tableName="PERF_TEST">
+			<column name="ignore_too_many_error" type="char(1)" defaultValue="F" />
+		</addColumn>
+
+		<modifyDataType tableName="PERF_TEST" columnName="script_revision" newDataType="varchar(255)"/>
+
+		<createTable tableName="CONNECTION">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="ip" type="varchar(255)"/>
+			<column name="name" type="varchar(255)"/>
+			<column name="port" type="integer" defaultValue="0"/>
+			<column name="region" type="varchar(255)"/>
+		</createTable>
+	</changeSet>
+</databaseChangeLog>
+

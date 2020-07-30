@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,23 +9,25 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.monitor.controller.model;
 
-import com.google.gson.annotations.Expose;
 import org.ngrinder.model.BaseEntity;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * System data model class, to store the system monitor data.
  *
- * @author Mavlarn
- * @author JunHo Yoon
  * @since 2.0
  */
 @SuppressWarnings("UnusedDeclaration")
+@Getter
+@Setter
 public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	private static final long serialVersionUID = 790334226137464982L;
 
@@ -39,19 +41,14 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	private long collectTime;
 
-	@Expose
 	private long freeMemory;
 
-	@Expose
 	private long totalMemory;
 
-	@Expose
 	private float cpuUsedPercentage;
 
-	@Expose
 	private long receivedPerSec;
 
-	@Expose
 	private long sentPerSec;
 
 	private String version;
@@ -84,7 +81,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 		this.collectTime = systemInfo.getCollectTime();
 		this.freeMemory = systemInfo.getFreeMemory();
 		this.totalMemory = systemInfo.getTotalMemory();
-		this.cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
+		this.cpuUsedPercentage = systemInfo.getCpuUsedPercentage();
 		BandWidth bandWidth = systemInfo.getBandWidth();
 		if (bandWidth != null) {
 			this.receivedPerSec = bandWidth.getReceivedPerSec();
@@ -92,102 +89,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 		}
 		this.customValues = systemInfo.getCustomValues();
 		this.version = version;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public String getSystem() {
-		return system;
-	}
-
-	public void setSystem(String system) {
-		this.system = system;
-	}
-
-	public long getCollectTime() {
-		return collectTime;
-	}
-
-	public void setCollectTime(long collectTime) {
-		this.collectTime = collectTime;
-	}
-
-	public long getFreeMemory() {
-		return freeMemory;
-	}
-
-	public void setFreeMemory(long freeMemory) {
-		this.freeMemory = freeMemory;
-	}
-
-	public long getTotalMemory() {
-		return totalMemory;
-	}
-
-	public void setTotalMemory(long totalMemory) {
-		this.totalMemory = totalMemory;
-	}
-
-	public float getCpuUsedPercentage() {
-		return cpuUsedPercentage;
-	}
-
-	public void setCpuUsedPercentage(float cpuUsedPercentage) {
-		this.cpuUsedPercentage = cpuUsedPercentage;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public long getReceivedPerSec() {
-		return receivedPerSec;
-	}
-
-	public void setReceivedPerSec(long receivedPerSec) {
-		this.receivedPerSec = receivedPerSec;
-	}
-
-	public long getSentPerSec() {
-		return sentPerSec;
-	}
-
-	public void setSentPerSec(long sentPerSec) {
-		this.sentPerSec = sentPerSec;
-	}
-
-	public String getCustomValues() {
-		return customValues;
-	}
-
-	public void setCustomValues(String customValues) {
-		this.customValues = customValues;
 	}
 
 }

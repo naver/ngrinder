@@ -21,7 +21,6 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -33,18 +32,19 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.persistence.Entity;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Dynamic datasource bean configuration.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Configuration
+@RequiredArgsConstructor
 public class DatabaseConfig implements DatabaseConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
 	/**
 	 * Create the dataSource based on the database configuration.
@@ -81,7 +81,7 @@ public class DatabaseConfig implements DatabaseConstants {
 
 		Database database = Database.getDatabase(databaseProperties.getProperty(PROP_DATABASE_TYPE));
 		if (config.isClustered() && !database.isClusterSupport()) {
-			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select cubrid as database");
+			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select mysql as database");
 		}
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
 		hibernateJpaVendorAdapter.setShowSql(false);

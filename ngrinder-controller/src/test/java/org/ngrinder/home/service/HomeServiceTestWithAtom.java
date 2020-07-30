@@ -14,11 +14,8 @@
 package org.ngrinder.home.service;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.home.model.PanelEntry;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -26,7 +23,7 @@ import static org.junit.Assert.assertThat;
 
 public class HomeServiceTestWithAtom {
 
-	private HomeService homeService = new HomeService();
+	private HomeService homeService = new HomeService(null);
 
 	@Test
 	public void testAtom() {

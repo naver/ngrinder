@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,16 +9,19 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Role of the User.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Role {
 	/**
 	 * General user role who can create performance test entry.
@@ -32,9 +35,9 @@ public enum Role {
 
 		/**
 		 * Has admin permission or not.
-		 * 
+		 *
 		 * @param type	permission type
-		 * 
+		 *
 		 * @return has the permission or not
 		 */
 		public boolean hasPermission(Permission type) {
@@ -63,7 +66,7 @@ public enum Role {
 
 		/**
 		 * Has super permission or not.
-		 * 
+		 *
 		 * @param type	permission type
 		 * @return has the permission or not
 		 */
@@ -95,7 +98,7 @@ public enum Role {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param shortName	short name of role... usually 1 sing char
 	 * @param fullName	full name of role
 	 */
@@ -106,7 +109,7 @@ public enum Role {
 
 	/**
 	 * Get the short name.
-	 * 
+	 *
 	 * @return short name
 	 */
 	public String getShortName() {
@@ -115,7 +118,7 @@ public enum Role {
 
 	/**
 	 * Get full name.
-	 * 
+	 *
 	 * @return full name
 	 */
 	public String getFullName() {
@@ -124,11 +127,20 @@ public enum Role {
 
 	/**
 	 * check this role whether has permission.
-	 * 
+	 *
 	 * @param type permission type
 	 * @return true if can
 	 */
 	public boolean hasPermission(Permission type) {
 		return false;
+	}
+
+	/**
+	 * Get the enum name.
+	 *
+	 * @return enum name
+	 */
+	public String getName() {
+		return name();
 	}
 }

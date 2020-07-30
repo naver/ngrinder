@@ -1,3 +1,58 @@
+3.5.0 (2020.07.30)
+==================
+* New Feature
+    * Server mode agent
+        * Legacy nGrinder agents must be accessible to nGrinder controller via TCP, it was difficult to set up a private agents to connect to the controller behind a firewall. Now, nGrinder provides the server mode agent. You can easily connect the private agent to the nGrinder controller behind a firewall with the server mode agent.
+        * See https://github.com/donggyu04/ngrinder/wiki/Server-Mode-Agent
+    * GitHub script storage
+        * nGrinder is a SVN server itself to manage test scripts. SVN is very suitable for nGrinder, but it is an old technology. So, we added github as another script storage.
+        * See https://github.com/donggyu04/ngrinder/wiki/GitHub-script-storage
+    * Support MySQL
+        * Since 3.5.0, we support MySQL for main database and fade out Cubrid.
+        * We provide cubrid to mysql migration script.
+        * See https://github.com/donggyu04/ngrinder/wiki/MySQL-migration
+    * Improve test restart time
+        * Improve test restart time by caching test resources.
+        * Until previous version, nGrinder agent dosen't cache test lib & resources. So, if you run test that has large amount of resources, each test takes a long preparation time. From nGrinder 3.5.0, the agent caches test resources ran before and the controller sends only non-cached resources to agent.
+    * Fade out nGrinder-recorder
+        * nGrinder-recorder is no longer supported.
+    * Introducing Gradle
+        * From now, we use Gradle 6.3 as a build system.
+    * New options for perftest
+        * Multi user defined statistic
+            * User can define multiple custom statistic.
+            * See https://github.com/donggyu04/ngrinder/wiki/Multiple-user-defined-statistic-in-nGrinder
+        * Ignore error count
+            * Some of users want to continue testing even if there were many errors in the test. so we support that by test option. 
+            * You can find this option in advanced configuration.
+        * Custom classpath
+            * If you want to set classpath for test scripts, you can use this.
+            * See https://github.com/donggyu04/ngrinder/wiki/Custom-classpath
+
+* Modernize
+    * Back-end
+        * Spring boot
+            * Change from spring framework 4 to spring boot 2.
+            * Remove embedded Jetty.
+        * Hazelcast
+            * Use Hazelcast to share data among clusters
+            * Reduce load of database.
+    * Front-end
+        * Vue.js
+            * Introduce SPA for imporve responsibility & usability.
+            * Use webpack as module bundler.
+        * UX/UI
+            *  Use Billboard.js to drawing chart.
+            *  Bump bootstrap up from 2 to 4.
+
+* Bug fix
+    * #490 Fix log file name for agent command line
+    * #558 Fix agent state API to work in private agent
+    * #571 Prevent zombie agents from remaining in distributed cache
+    * #581 Set default locale to "en" when fail to detect user locale
+    * #587 Handle case of no sampling model
+    * #597 Fix log replacement to hide home path correctly
+
 3.4.4 (2020.01.17)
 ==================
 > nGrinder 3.4.4 
@@ -69,26 +124,26 @@
 3.4 (2016.05.24)
 ================
 
+
 > We have not been publically released nGrinder for last 2 years. It's true that we thought previous nGrinder was enough for our internal use.
 As time goes by, surrounding circumstances(for example Java version or Docker) was been changing.. So we decided to continuously enhance nGrinder.
 
 
-- New feature and changes
+- New features and changes
   * Support Java 1.8
-    - nGrinder now support Java 1.8. Controller supports java 1.7 or above and Agent supports java 1.6 or above.
+    - nGrinder now supports Java 1.8. Controller supports java 1.7 or above and Agent supports java 1.6 or above.
   * Provide elaborated script generator
-    - Since nGrinder 3.0, we provided the script generation wizard that helps you easily create a default script.
-    -  However, it only created simple script for GET method case and people frequently asked to us how to use the other methods and how to use cookies and headers in the script.
-    - In nGrinder 3.4, you can choose one of methods such as GET, POST and set HTTP headers and cookies even form data on the wizard    dialog, then it will create useful example codes for you.
-  * Provide brand-new nGrinder script recorder
-    - A few years ago, we had released a script recorder based on JXBrowser. However it was not easy to run it due to several reasons.
-    -  Now, we have developed brand-new script recorder from the beginning using the Chrome extension technology. If you are using Chrome browser, you have only to install nGrinder Script Recorder package.
-    - See https://github.com/naver/ngrinder/wiki/nGrinder-Recorder-Guide
-  * Provide dockerized nGrinder supporting easy clustering
+    - Since nGrinder 3.0, we provided the script generation wizard that helps users easily create a default script.
+    -  However, it only created simple scripts for GET method case and people frequently asked to us how to use the other methods, how to use cookies and headers in the script.
+    - In nGrinder 3.4, you can choose one of methods such as GET, POST and set HTTP headers and cookies in script creation form, then it will create useful example codes for you.
+  * Provide a brand new nGrinder script recorder
+    - A few years ago, we had released the script recorder based on JXBrowser. However it was not easy to run it due to several reasons.
+    -  Now, we have developed a brand-new script recorder from the scratch using the Chrome extension technology. If you are using Chrome browser, you can install nGrinder Script Recorder package.
+  * Provide the dockerized nGrinder
     - Now, dockerize is becoming as one of fashions now. You can easily run dockerized nGrinder.
     - See https://hub.docker.com/r/ngrinder/controller/
   * Introduce new plugin architecture based on the PF4J
-    - Previously we have used Atlassian Plugin Framework(APF) for plugin architecture. We found out it was too overwhelmed way for      ngrinder features and found there are no developers using it.
+    - Previously we have used Atlassian Plugin Framework(APF) for plugins. However we found out it was too overwhelmed way to ngrinder extension and also found there are not much developers familiar with it.
     - So we dropped APF and adopt PF4J instead. See https://github.com/naver/ngrinder/wiki/How-to-develop-plugin for details.
   * Add intro.js for easy understanding.
     - You can find the very small button "Tip" on every pages. Click it and see what it is.

@@ -13,15 +13,16 @@
  */
 package org.ngrinder.infra.spring;
 
+import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.common.util.PathUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.servlet.HandlerMapping;
 
 /**
  * Custom argument resolver to catch the unresolved remaining path.
@@ -35,7 +36,6 @@ import org.springframework.web.servlet.HandlerMapping;
  * 
  * When hello/world/1 url is called, world/1 will be provided in path.
  * 
- * @author JunHo Yoon
  * @since 3.0
  */
 public class RemainedPathMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -70,9 +70,8 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 		RequestMapping requestMappingOnMethod = parameter.getMethodAnnotation(RequestMapping.class);
 		RequestMapping requestMappingOnClass = getDeclaringClassRequestMapping(parameter);
 		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requestMappingOnMethod.value()[0]);
-		return PathUtils.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest
-				.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE,
-						NativeWebRequest.SCOPE_REQUEST)));
+		String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI().substring(webRequest.getContextPath().length());
+		return PathUtils.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, EncodingUtils.decodePathWithUTF8(path)));
 	}
 
 	/**

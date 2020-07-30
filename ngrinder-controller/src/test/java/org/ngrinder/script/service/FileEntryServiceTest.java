@@ -24,7 +24,7 @@ import org.ngrinder.script.handler.JythonScriptHandler;
 
 public class FileEntryServiceTest {
 
-	private FileEntryService fileEntryService = new FileEntryService();
+	private FileEntryService fileEntryService = new FileEntryService(null, null, null, null);
 
 	@Test
 	public void testFileTemplateWithoutOptions() {

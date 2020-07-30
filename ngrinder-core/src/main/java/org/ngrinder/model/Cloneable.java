@@ -22,7 +22,6 @@ import java.lang.annotation.Target;
 /**
  * Annotation which marks the field which is cloneable.
  * 
- * @author JunHo Yoon
  * @since 3.2.3
  */
 @Target({ ElementType.FIELD })

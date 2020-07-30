@@ -13,6 +13,8 @@
  */
 package org.ngrinder.common.service;
 
+import lombok.RequiredArgsConstructor;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -21,33 +23,29 @@ import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import static org.ngrinder.user.repository.UserSpecification.idEqual;
+
 /**
  * Aspect to inject the created/modified user and date to the model.
  *
- * @author Liu Zhifei
- * @author JunHo Yoon
  * @since 3.0
  */
 @Aspect
 @Service
+@RequiredArgsConstructor
 public class ModelAspect {
 
-	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
+	private static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
 
-	@Autowired
-	private UserContext userContext;
+	private final UserContext userContext;
 
-	@Autowired
-	private SpringContext springContext;
+	private final SpringContext springContext;
 
-	@Autowired
-	private UserRepository userRepository;
-
+	private final UserRepository userRepository;
 
 	/**
 	 * Inject the created/modified user and date to the model. It's only applied
@@ -60,30 +58,26 @@ public class ModelAspect {
 		for (Object object : joinPoint.getArgs()) {
 			// If the object is base model and it's on the servlet
 			// context, It's not executed by task scheduling.
-			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
-					&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
+					&& (springContext.isAuthenticationContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
+
 				User currentUser = userContext.getCurrentUser();
-				model.setLastModifiedUser(userRepository.findOne(currentUser.getId()));
+				long currentUserId = currentUser.getId();
+
+				model.setLastModifiedUser(userRepository.findOne(idEqual(currentUserId))
+					.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + currentUserId)));
 
 				if (!model.exist() || model.getCreatedUser() == null) {
+					long factualUserId = currentUser.getFactualUser().getId();
 					model.setCreatedDate(lastModifiedDate);
-					User factualUser = currentUser.getFactualUser();
-					model.setCreatedUser(userRepository.findOne(factualUser.getId()));
+					model.setCreatedUser(userRepository.findOne(idEqual(factualUserId))
+						.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + factualUserId)));
 				}
 			}
 		}
-	}
-
-	public SpringContext getSpringContext() {
-		return springContext;
-	}
-
-	public void setSpringContext(SpringContext springContext) {
-		this.springContext = springContext;
 	}
 
 }

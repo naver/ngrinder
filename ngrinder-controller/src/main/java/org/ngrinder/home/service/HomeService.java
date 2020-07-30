@@ -17,9 +17,11 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
+import org.ngrinder.infra.config.UserDefinedMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,23 +29,25 @@ import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * nGrinder index page data retrieval service.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
 @Component
+@RequiredArgsConstructor
 public class HomeService {
-	private static final int PANEL_ENTRY_SIZE = 6;
+	private static final int PANEL_ENTRY_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
+
+	private final UserDefinedMessageSource userDefinedMessageSource;
 
 	/**
 	 * Get the let panel entries from the given feed RUL.
@@ -52,7 +56,7 @@ public class HomeService {
 	 * @return the list of {@link PanelEntry}
 	 */
 	@SuppressWarnings("unchecked")
-	@Cacheable(value = "left_panel_entries")
+	@Cacheable(CACHE_LEFT_PANEL_ENTRIES)
 	public List<PanelEntry> getLeftPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, false);
 	}
@@ -64,9 +68,13 @@ public class HomeService {
 	 * @param feedURL rss url message
 	 * @return {@link PanelEntry} list
 	 */
-	@Cacheable(value = "right_panel_entries")
+	@Cacheable(CACHE_RIGHT_PANEL_ENTRIES)
 	public List<PanelEntry> getRightPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
+	}
+
+	public Map<String, String> getUserDefinedMessageSources(String locale) {
+		return userDefinedMessageSource.getMessageSourcesByLocale().get(locale);
 	}
 
 	/**
@@ -83,7 +91,7 @@ public class HomeService {
 		XmlReader reader = null;
 		HttpURLConnection feedConnection = null;
 		try {
-			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
+			List<PanelEntry> panelEntries = new ArrayList<>();
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
 			feedConnection.setConnectTimeout(8000);

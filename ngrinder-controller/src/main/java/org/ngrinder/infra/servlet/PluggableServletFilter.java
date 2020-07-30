@@ -24,9 +24,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.extension.OnServletFilter;
 import org.ngrinder.infra.plugin.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CompositeFilter;
@@ -34,15 +34,14 @@ import org.springframework.web.filter.CompositeFilter;
 /**
  * Proxy filter which run combined servlet plugins.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")
 @Component("pluggableServletFilter")
+@RequiredArgsConstructor
 public class PluggableServletFilter implements Filter {
 
-	@Autowired
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
 	private CompositeFilter compositeFilter;
 
@@ -58,23 +57,12 @@ public class PluggableServletFilter implements Filter {
 		this.compositeFilter.setFilters(enabledModulesByClass);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
-	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 		ServletException {
 		this.compositeFilter.doFilter(request, response, chain);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.Filter#destroy()
-	 */
 	@Override
 	public void destroy() {
 		this.compositeFilter.destroy();

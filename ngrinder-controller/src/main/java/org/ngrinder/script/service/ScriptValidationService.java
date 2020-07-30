@@ -13,6 +13,8 @@
  */
 package org.ngrinder.script.service;
 
+import lombok.RequiredArgsConstructor;
+
 import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
@@ -30,7 +32,6 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.service.AbstractScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -46,25 +47,21 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 /**
  * Script Validation Service.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Service
+@RequiredArgsConstructor
 public class ScriptValidationService extends AbstractScriptValidationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptValidationService.class);
 
-	@Autowired
-	private LocalScriptTestDriveService localScriptTestDriveService;
+	private final LocalScriptTestDriveService localScriptTestDriveService;
 
-	@Autowired
-	private FileEntryService fileEntryService;
+	private final FileEntryService fileEntryService;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private ScriptHandlerFactory scriptHandlerFactory;
+	private final ScriptHandlerFactory scriptHandlerFactory;
 
 	/*
 	 * (non-Javadoc)
@@ -115,10 +112,14 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 					config.isSecurityEnabled(), config.getSecurityLevel(), hostString, getTimeout());
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuilder output = new StringBuilder();
-			String path = config.getHome().getDirectory().getAbsolutePath();
+			File homeDirectory = config.getHome().getDirectory();
+			String absolutePath = homeDirectory.getAbsolutePath();
+			String realPath = homeDirectory.toPath().toRealPath().toString();
 			for (String each : readLines) {
 				if (!each.startsWith("*sys-package-mgr")) {
-					each = each.replace(path, "${NGRINDER_HOME}");
+					each = each
+						.replace(absolutePath, "${NGRINDER_HOME}")
+						.replace(realPath, "${NGRINDER_HOME}");
 					output.append(each).append("\n");
 				}
 			}

@@ -18,7 +18,6 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 /**
  * Exception which occurs when on-going PerfTest cancellation is detected.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class SingleConsoleCancellationException extends NGrinderRuntimeException {

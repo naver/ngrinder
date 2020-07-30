@@ -1,0 +1,14 @@
+{
+  "PERF_TEST": [
+    "running_sample",
+    "agent_stat",
+    "monitor_stat"
+  ],
+  "AGENT": [
+    "state",
+    "system_stat",
+    "region",
+    "port",
+    "version"
+  ]
+}

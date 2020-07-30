@@ -13,92 +13,26 @@
  */
 package org.ngrinder.agent.repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import net.grinder.message.console.AgentControllerState;
-
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.*;
 
 /**
  * Agent Manager JPA Specification.
  *
- * @author Mavlarn
- * @author JunHo Yoon
  * @since 3.1
  */
 public abstract class AgentManagerSpecification {
 
 	/**
-	 * Query specification to query the agent existing in the specified region.
+	 * Get the {@link Specification} checking if the {@link AgentInfo} has the given ID.
 	 *
-	 * @param region region to query
-	 * @return Specification of this query
+	 * @param id agent id
+	 * @return {@link Specification}
 	 */
-	public static Specification<AgentInfo> startWithRegion(final String region) {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<String> regionField = root.get("region").as(String.class);
-				return cb.or(cb.like(regionField, region + "/_owned%", cb.literal('/')), cb.equal(regionField,
-						region));
-			}
-		};
-	}
-
-	/**
-	 * Query specification to query the active agents.
-	 *
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> active() {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
-				return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
-						cb.notEqual(status, AgentControllerState.UNKNOWN),
-						cb.notEqual(status, AgentControllerState.WRONG_REGION));
-			}
-		};
-	}
-
-	/**
-	 * Query specification to query the visible agents. "visible" means.. it's
-	 * visible by the agent monitor.
-	 *
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> visible() {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
-				return cb.notEqual(status, AgentControllerState.INACTIVE);
-			}
-		};
-	}
-	
-	/**
-	 * Query specification to query the ready agents.
-	 * (state in READY,FINISHED,STARTED)
-	 *
-	 * @return Specification of this query
-	 */
-	public static Specification<AgentInfo> ready() {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query,
-				CriteriaBuilder cb) {
-				Expression<AgentControllerState> status = root.get("state").as(
-					AgentControllerState.class);
-				return cb.and(cb.equal(status, AgentControllerState.READY));
-			}
-		};
+	public static Specification<AgentInfo> idEqual(final Long id) {
+		return (Specification<AgentInfo>) (root, query, cb) -> cb.equal(root.get("id"), id);
 	}
 	
 }

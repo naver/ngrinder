@@ -13,11 +13,11 @@
  */
 package org.ngrinder.perftest.model;
 
+import com.google.common.collect.ImmutableMap;
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,16 +25,11 @@ import java.util.Map;
  *
  * This class is to ignore the default {@link SingleConsole} behavior.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class NullSingleConsole extends SingleConsole {
 
-	private static final Map<String, Object> EMPTY_RESULT = new HashMap<String, Object>(1);
-
-	static {
-		EMPTY_RESULT.put("test_time", 0);
-	}
+	private static final Map<String, Object> EMPTY_RESULT = ImmutableMap.of("test_time", 0);
 
 	@Override
 	protected void init(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting,
@@ -81,7 +76,7 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
-	public void waitUntilAgentConnected(int size) {
+	public void waitUntilAgentPrepared(int size) {
 		// Do nothing
 	}
 

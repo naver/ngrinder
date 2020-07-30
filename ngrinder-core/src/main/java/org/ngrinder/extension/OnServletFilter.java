@@ -1,8 +1,8 @@
 package org.ngrinder.extension;
 
-import javax.servlet.Filter;
+import org.pf4j.ExtensionPoint;
 
-import ro.fortsoft.pf4j.ExtensionPoint;
+import javax.servlet.Filter;
 
 /**
  * Plugin extension point Proxy filter which run combined servlet plugins.

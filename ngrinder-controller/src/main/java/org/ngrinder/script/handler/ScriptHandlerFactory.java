@@ -1,12 +1,12 @@
 package org.ngrinder.script.handler;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.script.model.FileEntry;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,15 +16,15 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 /**
  * ScriptHanderFactory which returns appropriate hander for the given {@link FileEntry}.
  * 
- * @author JunHo Yoon
  * @since 3.2
  */
 @Component
+@RequiredArgsConstructor
 public class ScriptHandlerFactory {
 
-	@Autowired
-	private List<ScriptHandler> scriptHandlers;
+	private final List<ScriptHandler> scriptHandlers;
 
+	@Getter
 	private List<ScriptHandler> visibleHandlers;
 
 	/**
@@ -33,12 +33,7 @@ public class ScriptHandlerFactory {
 	@PostConstruct
 	public void init() {
 		// Sort by the order of scriptHandlers..
-		Collections.sort(scriptHandlers, new Comparator<ScriptHandler>() {
-			@Override
-			public int compare(ScriptHandler o1, ScriptHandler o2) {
-				return o1.order().compareTo(o2.order());
-			}
-		});
+		scriptHandlers.sort(Comparator.comparing(ScriptHandler::order));
 
 		// Sort by the order of scriptHandlers..
 
@@ -48,22 +43,8 @@ public class ScriptHandlerFactory {
 				visibleHandlers.add(each);
 			}
 		}
-		Collections.sort(visibleHandlers, new Comparator<ScriptHandler>() {
-			@Override
-			public int compare(ScriptHandler o1, ScriptHandler o2) {
-				return o1.displayOrder().compareTo(o2.displayOrder());
-			}
-		});
+		visibleHandlers.sort(Comparator.comparing(ScriptHandler::displayOrder));
 
-	}
-
-	/**
-	 * Get the all handlers except NullScriptHandler.
-	 * 
-	 * @return all handlers but NullScriptHandler
-	 */
-	public List<ScriptHandler> getVisibleHandlers() {
-		return visibleHandlers;
 	}
 
 	/**

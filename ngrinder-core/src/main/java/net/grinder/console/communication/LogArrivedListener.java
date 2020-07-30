@@ -18,7 +18,7 @@ import java.util.EventListener;
 import net.grinder.messages.console.AgentAddress;
 
 /**
- * Listener which is invoked when log is arrived from agent controller.
+ * AgentStatusUpdateListener which is invoked when log is arrived from agent controller.
  * 
  * @author JunHo Yoon
  * @since 3.0

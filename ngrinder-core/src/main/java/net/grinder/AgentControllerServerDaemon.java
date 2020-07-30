@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -20,6 +20,7 @@ import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.*;
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatusUpdateListener;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.communication.AgentUpdateGrinderMessage;
@@ -30,11 +31,12 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.Socket;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
@@ -108,11 +110,7 @@ public class AgentControllerServerDaemon {
 	 * Start {@link AgentControllerServer} in the daemon thread.
 	 */
 	public void start() {
-		thread = new Thread(new Runnable() {
-			public void run() {
-				startSync();
-			}
-		});
+		thread = new Thread(this::startSync);
 		thread.setName("Agent controller server thread");
 		thread.setDaemon(true);
 		thread.start();
@@ -146,17 +144,7 @@ public class AgentControllerServerDaemon {
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
-				.getNumberOfLiveAgents();
-	}
-
-	/**
-	 * Add Listener which will be used to save log in somewhere.
-	 *
-	 * @param logArrivedListener listener
-	 */
-	public void addLogArrivedListener(LogArrivedListener logArrivedListener) {
-		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
+		return getComponent(AgentProcessControlImplementation.class).getNumberOfLiveAgents();
 	}
 
 	/**
@@ -164,8 +152,8 @@ public class AgentControllerServerDaemon {
 	 *
 	 * @param agentDownloadRequestListener listener
 	 */
-	public void setAgentDownloadRequestListener(AgentDownloadRequestListener agentDownloadRequestListener) {
-		getComponent(AgentProcessControlImplementation.class).setAgentDownloadListener(agentDownloadRequestListener);
+	public void addAgentDownloadRequestListener(AgentDownloadRequestListener agentDownloadRequestListener) {
+		getComponent(AgentProcessControlImplementation.class).addAgentDownloadRequestListener(agentDownloadRequestListener);
 	}
 
 	/**
@@ -175,8 +163,7 @@ public class AgentControllerServerDaemon {
 	 * @return port
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentConnectingPort(
-				agentIdentity);
+		return getComponent(AgentProcessControlImplementation.class).getAgentConnectingPort(agentIdentity);
 	}
 
 	/**
@@ -186,7 +173,7 @@ public class AgentControllerServerDaemon {
 	 * @return version
 	 */
 	public String getAgentVersion(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentVersion(agentIdentity);
+		return getComponent(AgentProcessControlImplementation.class).getAgentVersion(agentIdentity);
 	}
 
 	/**
@@ -197,7 +184,7 @@ public class AgentControllerServerDaemon {
 	 * @since 3.1.2
 	 */
 	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentStatusSet(predicate);
+		return getComponent(AgentProcessControlImplementation.class).getAgentStatusSet(predicate);
 	}
 
 	/**
@@ -207,8 +194,7 @@ public class AgentControllerServerDaemon {
 	 * @return agent controller status
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentControllerState(
-				agentIdentity);
+		return getComponent(AgentProcessControlImplementation.class).getAgentControllerState(agentIdentity);
 	}
 
 	/**
@@ -217,8 +203,7 @@ public class AgentControllerServerDaemon {
 	 * @return free agent list
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
-				AgentControllerState.READY, 0);
+		return getComponent(AgentProcessControlImplementation.class).getAgents(AgentControllerState.READY, 0);
 	}
 
 	/**
@@ -228,8 +213,7 @@ public class AgentControllerServerDaemon {
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getSystemDataModel(
-				agentIdentity);
+		return getComponent(AgentProcessControlImplementation.class).getSystemDataModel(agentIdentity);
 	}
 
 	/**
@@ -238,7 +222,7 @@ public class AgentControllerServerDaemon {
 	 * @return agent set
 	 */
 	public Set<AgentIdentity> getAllAvailableAgents() {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAllAgents();
+		return getComponent(AgentProcessControlImplementation.class).getAllAgents();
 	}
 
 	/**
@@ -289,5 +273,35 @@ public class AgentControllerServerDaemon {
 	public void updateAgent(AgentIdentity agentIdentity, String version) {
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
 				AgentUpdateGrinderMessage.getStartAgentUpdateGrinderMessage(version));
+	}
+
+	public void discriminateConnection(Socket socket) {
+		getComponent(ConsoleCommunicationImplementationEx.class).discriminateConnection(socket);
+	}
+
+	/**
+	 * Add Listener which will be used to catch agent status update.
+	 *
+	 * @param agentStatusUpdateListener listener
+	 */
+	public void addAgentStatusUpdateListener(AgentStatusUpdateListener agentStatusUpdateListener) {
+		getComponent(AgentProcessControlImplementation.class).addAgentStatusUpdateListener(agentStatusUpdateListener);
+	}
+
+	/**
+	 * Add Listener which will be used to save log in somewhere.
+	 *
+	 * @param logArrivedListener listener
+	 */
+	public void addLogArrivedListener(LogArrivedListener logArrivedListener) {
+		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
+	}
+
+	public void addConnectionAgentListener(ConnectionAgentListener connectionAgentListener) {
+		getComponent(AgentProcessControlImplementation.class).addConnectionAgentListener(connectionAgentListener);
+	}
+
+	public void addConnectionAgentCommunicationListener(ConnectionAgentCommunicationListener listener) {
+		getComponent(AgentProcessControlImplementation.class).addConnectionAgentCommunicationListener(listener);
 	}
 }

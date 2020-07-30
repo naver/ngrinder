@@ -36,34 +36,17 @@ public interface IAgentManagerService {
 	 * Get the available agent count map across all users including the free
 	 * agents and user's private agents.
 	 *
-	 * @param user current user
+	 * @param userId current user id
 	 * @return user available agent count map
 	 */
-	public abstract Map<String, MutableInt> getAvailableAgentCountMap(User user);
+	Map<String, MutableInt> getAvailableAgentCountMap(String userId);
 
 	/**
-	 * Get all local agents. The agent list is obtained from db and cached.
+	 * Get all attached agents. The agent list is obtained from IMap.
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getAllLocal();
-
-	/**
-	 * Get all local agent agents. The agent list is obtained by combining the data from
-	 * DB and {@link AgentManager}
-	 *
-	 * @return agent list
-	 */
-	@SuppressWarnings("UnusedDeclaration")
-	public abstract List<AgentInfo> getAllLocalWithFullInfo();
-
-	/**
-	 * Create the agent key from the given agent info.
-	 *
-	 * @param agentInfo agent information
-	 * @return agent key
-	 */
-	public abstract String createKey(AgentInfo agentInfo);
+	List<AgentInfo> getAllAttached();
 
 	/**
 	 * Create the agent key from the given agent identity.
@@ -71,7 +54,7 @@ public interface IAgentManagerService {
 	 * @param agentIdentity agent identity
 	 * @return agent key
 	 */
-	public abstract String createKey(AgentControllerIdentityImplementation agentIdentity);
+	String createKey(AgentControllerIdentityImplementation agentIdentity);
 
 	/**
 	 * Get the agent identity by IP and host name.
@@ -80,74 +63,75 @@ public interface IAgentManagerService {
 	 * @param name host name
 	 * @return {@link AgentControllerIdentityImplementation} instance.
 	 */
-	public abstract AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name);
+	AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name);
 
 	/**
-	 * Get all active agents from DB.
+	 * Get all active agents from IMap.
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getAllActive();
-
-
-	/**
-	 * Get local agents. This is only for backward compatibility.
-	 *
-	 * @return local agents
-	 * @deprecated Use IAgentManagerService#getAllLocal
-	 */
-	@SuppressWarnings("UnusedDeclaration")
-	public abstract List<AgentInfo> getLocalAgents();
-
-	/**
-	 * Get all visible agents from DB.
-	 *
-	 * @return agent list
-	 */
-	public abstract List<AgentInfo> getAllVisible();
+	List<AgentInfo> getAllActive();
 
 	/**
 	 * Get the agent for the given id without agent identity info. If it's called from the other controller, only
 	 * limited info available in db will be return.
 	 *
-	 * @param id agent id
+	 * @param ip   agent ip
+	 * @param name agent name
 	 * @return agent
 	 */
-	public abstract AgentInfo getOne(Long id);
-
-	/**
-	 * Get the agent for the given id. If it's called from the other controller, only
-	 * limited info available in db will be return.
-	 *
-	 * @param id                   agent id
-	 * @param includeAgentIdentity include agent identity field.
-	 * @return agent
-	 */
-	public abstract AgentInfo getOne(Long id, boolean includeAgentIdentity);
+	AgentInfo getAgent(String ip, String name);
 
 	/**
 	 * Get the agent system data model for the given ip. This method is cluster
 	 * aware.
 	 *
-	 * @param ip   agent ip.
+	 * @param ip   agent ip
 	 * @param name agent name
+	 * @param region region name
 	 * @return {@link SystemDataModel} instance.
 	 */
-	public abstract SystemDataModel getSystemDataModel(String ip, String name);
+	SystemDataModel getSystemDataModel(String ip, String name, String region);
 
 	/**
 	 * Update agent
 	 *
-	 * @param id ids.
+	 * @param ip   agent ip
+	 * @param name agent name
 	 */
-	public abstract void update(Long id) throws IOException;
-	
+	void update(String ip, String name) throws IOException;
+
+	/**
+	 * Stop agent
+	 *
+	 * @param ip   agent ip
+	 * @param name agent name
+	 */
+	void stop(String ip, String name) throws IOException;
+
 	/**
 	 * Get Ready agent state count return
 	 *
-	 * @param user current user
+	 * @param userId current user id
 	 * @return int readyAgentCnt
 	 */
-	public abstract int getReadyAgentCount(User user, String targetRegion);
+	int getReadyAgentCount(String userId, String targetRegion);
 
+	@Deprecated
+	int getReadyAgentCount(User user, String targetRegion);
+
+	@Deprecated
+	Map<String, MutableInt> getAvailableAgentCountMap(User user);
+
+	@Deprecated
+	List<AgentInfo> getLocalAgents();
+
+	@Deprecated
+	List<AgentInfo> getAllVisible();
+
+	@Deprecated
+	AgentInfo getOne(String ip, String name);
+
+	@Deprecated
+	String createKey(AgentInfo agentInfo);
 }

@@ -13,19 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
-import static org.ngrinder.perftest.repository.TagSpecification.isStartWith;
-import static org.ngrinder.perftest.repository.TagSpecification.lastModifiedOrCreatedBy;
-import static org.ngrinder.perftest.repository.TagSpecification.valueIn;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
@@ -33,26 +20,30 @@ import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
+import static org.ngrinder.perftest.repository.TagSpecification.*;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Tag Service. Tag support which is used to categorize {@link PerfTest}
  * 
- * @author JunHo Yoon
  * @since 3.0
  * 
  */
 @Service
+@RequiredArgsConstructor
 public class TagService {
 
-	@Autowired
-	private TagRepository tagRepository;
+	private final TagRepository tagRepository;
 
-	@Autowired
-	private PerfTestRepository perfTestRepository;
+	private final PerfTestRepository perfTestRepository;
 
 	/**
 	 * Add tags.
@@ -64,12 +55,12 @@ public class TagService {
 	@Transactional
 	public SortedSet<Tag> addTags(User user, String[] tags) {
 		if (ArrayUtils.isEmpty(tags)) {
-			return new TreeSet<Tag>();
+			return new TreeSet<>();
 		}
 
-		Specifications<Tag> spec = Specifications.where(lastModifiedOrCreatedBy(user)).and(valueIn(tags));
+		Specification<Tag> spec = Specification.where(lastModifiedOrCreatedBy(user)).and(valueIn(tags));
 		List<Tag> foundTags = tagRepository.findAll(spec);
-		SortedSet<Tag> allTags = new TreeSet<Tag>(foundTags);
+		SortedSet<Tag> allTags = new TreeSet<>(foundTags);
 		for (String each : tags) {
 			Tag newTag = new Tag(StringUtils.trimToEmpty(StringUtils.replace(each, ",", "")));
 			if (allTags.contains(newTag)) {
@@ -90,7 +81,7 @@ public class TagService {
 	 * @return found tags
 	 */
 	public List<Tag> getAllTags(User user, String startWith) {
-		Specifications<Tag> spec = Specifications.where(hasPerfTest());
+		Specification<Tag> spec = Specification.where(hasPerfTest());
 		spec = spec.and(lastModifiedOrCreatedBy(user));
 		if (StringUtils.isNotBlank(startWith)) {
 			spec = spec.and(isStartWith(StringUtils.trimToEmpty(startWith)));
@@ -106,12 +97,10 @@ public class TagService {
 	 * @return found tag string lists
 	 */
 	public List<String> getAllTagStrings(User user, String query) {
-		List<String> allString = new ArrayList<String>();
-		for (Tag each : getAllTags(user, query)) {
-			allString.add(each.getTagValue());
-		}
-		Collections.sort(allString);
-		return allString;
+		return getAllTags(user, query).stream()
+			.map(Tag::getTagValue)
+			.sorted()
+			.collect(toList());
 	}
 
 	/**
@@ -144,7 +133,7 @@ public class TagService {
 		for (PerfTest each : tag.getPerfTests()) {
 			each.getTags().remove(tag);
 		}
-		perfTestRepository.save(tag.getPerfTests());
+		perfTestRepository.saveAll(tag.getPerfTests());
 		tagRepository.delete(tag);
 	}
 
@@ -155,7 +144,7 @@ public class TagService {
 	 */
 	@Transactional
 	public void deleteTags(User user) {
-		Specifications<Tag> spec = Specifications.where(lastModifiedOrCreatedBy(user));
+		Specification<Tag> spec = Specification.where(lastModifiedOrCreatedBy(user));
 		List<Tag> userTags = tagRepository.findAll(spec);
 		for (Tag each : userTags) {
 			Set<PerfTest> perfTests = each.getPerfTests();
@@ -163,9 +152,9 @@ public class TagService {
 				for (PerfTest eachPerfTest : perfTests) {
 					eachPerfTest.getTags().remove(each);
 				}
-				perfTestRepository.save(each.getPerfTests());
+				perfTestRepository.saveAll(each.getPerfTests());
 			}
 		}
-		tagRepository.delete(userTags);
+		tagRepository.deleteAll(userTags);
 	}
 }

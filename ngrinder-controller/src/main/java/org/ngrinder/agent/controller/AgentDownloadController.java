@@ -13,14 +13,16 @@
  */
 package org.ngrinder.agent.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import org.ngrinder.agent.service.AgentPackageService;
-import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.util.FileDownloadUtils;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,18 +38,18 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 /**
  * Agent Download Controller.
  *
- * @author Tobi
  * @since 3.0
  */
 @Controller
-@RequestMapping("/agent")
-public class AgentDownloadController extends BaseController {
+@RequestMapping("/agent/download")
+@RequiredArgsConstructor
+public class AgentDownloadController {
 
-	@Autowired
-	private AgentPackageService agentPackageService;
+	private final AgentPackageService agentPackageService;
 
-	@Autowired
-	private RegionService regionService;
+	private final RegionService regionService;
+
+	private final Config config;
 
 	/**
 	 * Download agent.
@@ -55,9 +57,9 @@ public class AgentDownloadController extends BaseController {
 	 * @param fileName file path of agent
 	 * @param response response.
 	 */
-	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-_]+}")
+	@GetMapping("/{fileName:[a-zA-Z0-9\\.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
-		File home = getConfig().getHome().getDownloadDirectory();
+		File home = config.getHome().getDownloadDirectory();
 		File ngrinderFile = new File(home, fileName);
 		FileDownloadUtils.downloadFile(response, ngrinderFile);
 	}
@@ -70,7 +72,7 @@ public class AgentDownloadController extends BaseController {
 	 * @param region  agent region
 	 * @param request request.
 	 */
-	@RequestMapping(value = "/download/{region}/{owner}")
+	@GetMapping("/{region}/{owner}")
 	public String downloadDirect(@PathVariable(value = "owner") String owner,
 	                             @PathVariable(value = "region") String region,
 	                             ModelMap modelMap,
@@ -86,7 +88,7 @@ public class AgentDownloadController extends BaseController {
 	 * @param region  agent region
 	 * @param request request.
 	 */
-	@RequestMapping(value = "/download")
+	@GetMapping("")
 	public String download(@RequestParam(value = "owner", required = false) String owner,
 	                       @RequestParam(value = "region", required = false) String region,
 	                       ModelMap modelMap,
@@ -96,9 +98,9 @@ public class AgentDownloadController extends BaseController {
 
 	private String downloadFile(String owner, String region, ModelMap modelMap, HttpServletRequest request) {
 		String connectingIP = request.getServerName();
-		int port = getConfig().getControllerPort();
+		int port = config.getControllerPort();
 		try {
-			if (isClustered()) {
+			if (config.isClustered()) {
 				checkNotEmpty(region, "region should be provided to download agent in cluster mode.");
 				RegionInfo regionInfo = checkNotNull(regionService.getOne(region), "selecting region '" + region + "'" +
 						" is not valid");

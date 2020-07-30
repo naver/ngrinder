@@ -13,25 +13,27 @@
  */
 package org.ngrinder.region.model;
 
-import java.io.Serializable;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
-import net.grinder.common.processidentity.AgentIdentity;
+import java.io.Serializable;
 
 /**
  * Region info to be shared b/w controllers.
  *
- * @author JunHo Yoon
  * @since 3.1
  */
+@Getter
 @SuppressWarnings("UnusedDeclaration")
 public class RegionInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	@Setter
 	private String ip;
 	private Integer controllerPort;
+	@Setter
 	private boolean visible = true;
-	private Set<AgentIdentity> agentIdentities;
+	private String regionName;
 
 
 	/**
@@ -39,65 +41,38 @@ public class RegionInfo implements Serializable {
 	 *
 	 * @param ip              ip
 	 * @param controllerPort  controllerPort
-	 * @param agentIdentities agentIdentity Set
 	 */
-	public RegionInfo(String ip, int port, Set<AgentIdentity> agentIdentities) {
-		this(ip, port, agentIdentities, true);
+	public RegionInfo(String ip, int controllerPort) {
+		this(ip, controllerPort, true);
 	}
 
 	/**
 	 * Constructor.
 	 *
 	 * @param ip              ip
-	 * @param agentIdentities agentIdentity Set
 	 * @param visible         true if visible
 	 */
-	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities, boolean visible) {
-		this(ip, null, agentIdentities, visible);
+	public RegionInfo(String ip, boolean visible) {
+		this(ip, null, visible);
 	}
 
 	/**
 	 * Constructor.
 	 *
 	 * @param ip              ip
-	 * @param agentIdentities agentIdentity Set
 	 * @param controllerPort  controllerPort
 	 * @param visible         true if visible
 	 */
-	public RegionInfo(String ip, Integer controllerPort, Set<AgentIdentity> agentIdentities, boolean visible) {
+	public RegionInfo(String ip, Integer controllerPort, boolean visible) {
 		this.ip = ip;
 		this.controllerPort = controllerPort;
 		this.visible = visible;
-		this.agentIdentities = agentIdentities;
 	}
 
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
+	public RegionInfo(String regionName , String ip, Integer controllerPort) {
 		this.ip = ip;
+		this.controllerPort = controllerPort;
+		this.regionName = regionName;
 	}
 
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-
-	public Set<AgentIdentity> getAgentIdentities() {
-		return agentIdentities;
-	}
-
-	public void setAgentIdentities(Set<AgentIdentity> agentIdentities) {
-		this.agentIdentities = agentIdentities;
-	}
-
-	public Integer getControllerPort() {
-		return controllerPort;
-	}
 }

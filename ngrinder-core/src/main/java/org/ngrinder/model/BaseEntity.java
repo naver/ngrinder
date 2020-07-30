@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,18 +9,22 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.model;
 
-import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.ngrinder.common.util.ReflectionUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
@@ -28,28 +32,19 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * Base Entity. This has a long type ID field
  *
  * @param <M> wrapped entity type
- * @author Liu Zhifei
- * @author JunHo Yoon
  * @since 3.0
  */
+@Getter
+@Setter
 @MappedSuperclass
 public class BaseEntity<M> implements Serializable {
 
 	private static final long serialVersionUID = 8571113820348514692L;
 
-	@Expose
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
 	private Long id;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Override
 	public String toString() {
@@ -79,7 +74,7 @@ public class BaseEntity<M> implements Serializable {
 	public M merge(M source) {
 		Field forDisplay = null;
 		try {
-			Field[] fields = getClass().getDeclaredFields();
+			List<Field> fields = ReflectionUtils.getDeclaredFieldsIncludingParent(getClass());
 			// Iterate over all the attributes
 			for (Field each : fields) {
 				if (each.isSynthetic()) {

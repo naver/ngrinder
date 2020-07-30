@@ -19,12 +19,6 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- * @since
- */
 public class AgentManagerTest extends AbstractNGrinderTransactionalTest {
 	
 	@Autowired
@@ -39,20 +33,4 @@ public class AgentManagerTest extends AbstractNGrinderTransactionalTest {
 	public void testConvert() {
 		agentManager.convert(new AgentControllerIdentityImplementation("test", "127.0.0.1"));
 	}
-
-	@Test
-	public void testGetAllFreeApprovedAgentsForUser() {
-		agentManager.getAllFreeApprovedAgentsForUser(getTestUser());
-	}
-
-	@Test
-	public void testGetAllSharedAgents() {
-		agentManager.getAllSharedAgents();
-	}
-
-	@Test
-	public void testFilterSharedAgents() {
-		agentManager.filterSharedAgents(agentManager.getAllAttachedAgents());
-	}
-
 }

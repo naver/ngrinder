@@ -17,15 +17,19 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.PrintStream;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Processing Result PrintStream to store the result of the execution and logs.
  * 
- * @author JunHo Yoon
  * @since 3.2
  */
 public class ProcessingResultPrintStream extends PrintStream {
+	@Getter
+	@Setter
 	private boolean success = false;
 	private final ByteArrayOutputStream byteArrayOutputStream;
 
@@ -39,15 +43,6 @@ public class ProcessingResultPrintStream extends PrintStream {
 		this.byteArrayOutputStream = byteArrayOutputStream;
 
 	}
-
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
-
 	/**
 	 * Get the log's byte array.
 	 * 

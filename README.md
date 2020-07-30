@@ -29,6 +29,7 @@ nGrinder controller
 nGrinder agent
 * a virtual user generator that creates loads.
 
+
 Features
 --------
 
@@ -48,6 +49,7 @@ Download
 You can download the latest nGrinder in the following link. 
 * https://github.com/naver/ngrinder/releases
 
+
 Documentation
 -------------
 You can find the installation guide at the following link.
@@ -57,7 +59,6 @@ You can find the user guide at the following location link.
 * https://github.com/naver/ngrinder/wiki/User-Guide
 
 
-
 Contribution?
 -------------
 nGrinder welcomes any contributions from users. Please make all pull requests against master branches.
@@ -65,6 +66,7 @@ nGrinder welcomes any contributions from users. Please make all pull requests ag
 
 You can find general developer documents at the following link.
  * https://github.com/naver/ngrinder/wiki/Dev-Document
+
 
 Versioning
 ----------
@@ -79,7 +81,7 @@ Release will be constructed based on the following guidelines:
 
 * Breaking backward compatibility bumps the major (and resets the minor and patch)
 * New additions without breaking backward compatibility bump the minor (and reset the patch)
-* Bug fixes and misc. changes bump the patch
+* Bug fixes and small enhancement. changes bump the patch
 
 
 Q/A and Bug tracker
@@ -90,11 +92,15 @@ Found the apparent bug? Got a brilliant idea for an enhancement? Please create a
 You can join our forum as well
 * Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
 * User Forum : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
-* 中文论坛 (Chinese) http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
-* 한국어 유저 포럼 (Korean) http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
+* 中文论坛 (Chinese) : http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
+* 한국어 유저 포럼 (Korean): http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
 * [![Developer chat at https://gitter.im/naver/ngrinder-kr](https://badges.gitter.im/naver/ngrinder-kr.svg)](https://gitter.im/naver/ngrinder-kr?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
----------------------
+
+License
+-------
+
+     Copyright 2012-present NAVER Corp.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -109,5 +115,5 @@ You can join our forum as well
      limitations under the License. 
       
    
-nGrinder includes the following software and libraries as follows. See the LICENSE folder for the license and copyright details for each.
-* https://github.com/naver/ngrinder/tree/master/license
+nGrinder includes the following software and libraries as follows. See the NOTICE folder for the license and copyright details for each.
+* https://github.com/naver/ngrinder/tree/master/NOTICE

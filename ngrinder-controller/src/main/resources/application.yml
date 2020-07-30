@@ -1,0 +1,35 @@
+ngrinder:
+  version: 3.5.0
+
+server:
+  default-encoding: UTF-8
+  servlet:
+    session:
+      timeout: 10000m
+  task:
+    scheduler:
+      pool-size: 100
+    async-executor:
+      pool-size: 10
+
+spring:
+  application:
+    name: ngrinder
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+      - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+  profiles:
+    active: production
+  resources:
+    add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB

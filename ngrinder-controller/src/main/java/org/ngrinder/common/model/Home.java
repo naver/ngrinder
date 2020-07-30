@@ -22,6 +22,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * Home class which enables the easy resource access in ${NGRINDER_HOME}
  * directory.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public class Home {
@@ -53,7 +53,7 @@ public class Home {
 	private static final String PATH_STAT = "stat";
 	private final static Logger LOGGER = LoggerFactory.getLogger(Home.class);
 	private final File directory;
-	public static final String REPORT_CSV = "output.csv";
+	private static final String REPORT_CSV = "output.csv";
 
 	/**
 	 * Constructor.
@@ -124,6 +124,28 @@ public class Home {
 	}
 
 	/**
+	 * Copy the given resources.
+	 */
+	public void copyFrom(Resource[] resources) {
+		try {
+			for (Resource resource : resources) {
+				File resourceFile = new File(directory, resource.getFilename());
+				if (!resourceFile.exists()) {
+					FileUtils.copyInputStreamToFile(resource.getInputStream(), new File(directory, resource.getFilename()));
+				} else {
+					File orgConf = new File(directory, "org_conf");
+					if (orgConf.mkdirs()) {
+						LOGGER.info("{}", orgConf.getPath());
+					}
+					FileUtils.copyInputStreamToFile(resource.getInputStream(), new File(orgConf, resource.getFilename()));
+				}
+			}
+		} catch (IOException ie) {
+			throw processException("Fail to copy files from " + resources[0].getFilename());
+		}
+	}
+
+	/**
 	 * Make a sub directory on the home directory.
 	 *
 	 * @param subPathName sub-path name
@@ -165,17 +187,6 @@ public class Home {
 	 */
 	public File getSubFile(String subPathName) {
 		return new File(directory, subPathName);
-	}
-
-	/**
-	 * Get the plugin cache directory.
-	 *
-	 * @return plugin cache directory.
-	 */
-	public File getPluginsCacheDirectory() {
-		File cacheDir =  getSubFile(PATH_PLUGIN + "_cache");
-		cacheDir.mkdirs();
-		return cacheDir;
 	}
 
 	/**
@@ -270,7 +281,7 @@ public class Home {
 		return mkDir(file);
 	}
 
-	File getDistributedFolderName(String id) {
+	public File getDistributedFolderName(String id) {
 		int numericId = 0;
 		try {
 			numericId = (Integer.parseInt(id) / 1000) * 1000;

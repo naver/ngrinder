@@ -19,29 +19,27 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import ro.fortsoft.pf4j.DefaultPluginManager;
+import org.pf4j.DefaultPluginManager;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
  * It is built on Plugin Framework for Java.
  *
- * @author JunHo Yoon ,GeunWoo Son
- * @see https://github.com/decebals/pf4j
  * @since 3.0
  */
 @Profile("production")
 @Component
+@RequiredArgsConstructor
 public class PluginManager {
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private DefaultPluginManager manager;
+	private final DefaultPluginManager manager;
 
 	/**
 	 * Initialize plugin component.
@@ -89,16 +87,15 @@ public class PluginManager {
 	 *
 	 * @param <M>           module type
 	 * @param moduleClass   module class
-	 * @param defaultPlugin default plugin
+	 * @param defaultPlugins default plugins
 	 * @return plugin list
 	 */
-	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
-		ArrayList<M> pluginClasses = new ArrayList<M>();
-		if (defaultPlugin != null) {
-			pluginClasses.add(defaultPlugin);
+	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, List<M> defaultPlugins) {
+		ArrayList<M> pluginClasses = new ArrayList<>();
+		if (defaultPlugins != null) {
+			pluginClasses.addAll(defaultPlugins);
 		}
 		pluginClasses.addAll(manager.getExtensions(moduleClass));
 		return pluginClasses;
 	}
-
 }

@@ -15,18 +15,15 @@ package org.ngrinder.agent.service;
 
 import java.util.Set;
 
-import net.grinder.console.communication.AgentProcessControlImplementation;
+import lombok.RequiredArgsConstructor;
+
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 
 import org.ngrinder.extension.OnPeriodicWorkingAgentCheckRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.perftest.service.AgentManager;
-import org.python.google.common.base.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -36,22 +33,20 @@ import javax.annotation.PostConstruct;
  * This class runs the plugins implementing
  * {@link OnPeriodicWorkingAgentCheckRunnable}.
  * <p/>
- * It's separated from {@link AgentManagerService} to get rid of cyclic
+ * It's separated from {@link AgentService} to get rid of cyclic
  * injection.
  *
- * @author JunHo Yoon
  * @since 3.1.2
  */
 @Service
+@RequiredArgsConstructor
 public class PeriodicWorkingAgentCheckService implements Runnable {
-	@Autowired
-	private PluginManager pluginManager;
 
-	@Autowired
-	private AgentManager agentManager;
+	private final PluginManager pluginManager;
 
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
+	private final AgentManager agentManager;
+
+	private final ScheduledTaskService scheduledTaskService;
 
 	@PostConstruct
 	public void init() {
@@ -60,13 +55,7 @@ public class PeriodicWorkingAgentCheckService implements Runnable {
 
 	@Override
 	public void run() {
-		Set<AgentStatus> workingAgents = agentManager
-				.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
-					@Override
-					public boolean apply(AgentStatus agentStatus) {
-						return agentStatus.getConnectingPort() != 0;
-					}
-				});
+		Set<AgentStatus> workingAgents = agentManager.getAttachedAgentStatusSet(agentStatus -> agentStatus.getConnectingPort() != 0);
 		for (OnPeriodicWorkingAgentCheckRunnable runnable : pluginManager
 				.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
 			runnable.checkWorkingAgent(workingAgents);

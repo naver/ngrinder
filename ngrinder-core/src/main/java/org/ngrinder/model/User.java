@@ -13,14 +13,30 @@
  */
 package org.ngrinder.model;
 
-import com.google.gson.annotations.Expose;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import static java.util.stream.Collectors.toList;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -29,6 +45,8 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author Mavlarn
  * @since 3.0
  */
+@Getter
+@Setter
 @Entity
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -37,42 +55,34 @@ public class User extends BaseModel<User> {
 
 	private static final long serialVersionUID = 7398072895183814285L;
 
-	@Expose
 	@Column(name = "user_id", unique = true, nullable = false)
 	/** User Id */
 	private String userId;
 
-	@Expose
 	@Column(name = "user_name")
 	/** User Name e.g) Jone Dogh. */
 	private String userName;
 
 	private String password;
 
-	@Expose
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1)")
 	private Boolean enabled;
 
-	@Expose
 	private String email;
 
-	@Expose
+	@JsonDeserialize(using = RoleDeserializer.class)
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role_name", nullable = false)
 	private Role role;
 
-	@Expose
 	private String description;
 
-	@Expose
 	private String timeZone;
 
-	@Expose
 	@Column(name = "user_language")
 	private String userLanguage;
 
-	@Expose
 	@Column(name = "mobile_phone")
 	private String mobilePhone;
 
@@ -87,18 +97,19 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User follower;
 
-	@Expose
 	@Transient
 	private String followersStr;
 
 	@Transient
 	private User ownerUser;
 
+	@JsonSerialize(using = UserReferenceListSerializer.class)
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
 		inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), // LF
 		inverseJoinColumns = @JoinColumn(name = "owner_id"))
@@ -124,7 +135,6 @@ public class User extends BaseModel<User> {
 		this.password = password;
 		this.userName = name;
 		this.role = role;
-		isEnabled();
 	}
 
 	@PrePersist
@@ -160,7 +170,6 @@ public class User extends BaseModel<User> {
 		this.userName = name;
 		this.email = email;
 		this.role = role;
-		isEnabled();
 	}
 
 	/**
@@ -202,134 +211,19 @@ public class User extends BaseModel<User> {
 		return true;
 	}
 
-	public String getMobilePhone() {
-		return mobilePhone;
-	}
-
-	public void setMobilePhone(String mobilePhone) {
-		this.mobilePhone = mobilePhone;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
 	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
 	public void setEmail(String email) {
-		this.email = email.toLowerCase();
-	}
-
-	public String getTimeZone() {
-		return timeZone;
-	}
-
-	public void setTimeZone(String timeZone) {
-		this.timeZone = timeZone;
-	}
-
-	public String getUserLanguage() {
-		return userLanguage;
-	}
-
-	public void setUserLanguage(String userLanguage) {
-		this.userLanguage = userLanguage;
+		this.email = email == null ? "" : email.toLowerCase();
 	}
 
 	public boolean isExternal() {
-		return external;
+		return getSafe(external);
 	}
 
-	public void setExternal(boolean external) {
-		this.external = external;
-	}
-
-	public String getAuthProviderClass() {
-		return authProviderClass;
-	}
-
-	public void setAuthProviderClass(String authProviderClass) {
-		this.authProviderClass = authProviderClass;
-	}
-
-	public List<User> getFollowers() {
-		return followers;
-	}
-
-	public void setFollowers(List<User> followers) {
-		this.followers = followers;
-	}
-
-	public List<User> getOwners() {
-		return owners;
-	}
-
-	public void setOwners(List<User> owners) {
-		this.owners = owners;
-	}
-
-	public User getOwnerUser() {
-		return ownerUser;
-	}
-
-	public void setOwnerUser(User ownerUser) {
-		this.ownerUser = ownerUser;
-	}
-
-	public User getFollower() {
-		return follower;
-	}
-
-	public void setFollower(User follower) {
-		this.follower = follower;
-	}
-
+	@JsonIgnore
 	public User getFactualUser() {
 		return ownerUser == null ? this : ownerUser;
 	}
@@ -341,13 +235,13 @@ public class User extends BaseModel<User> {
 	 */
 	// It will throw StackOverflowException if return User that contains owners and followers value
 	// in getCurrentPerfTestStatistics() method.so just return base User info
+	@JsonIgnore
 	public User getUserBaseInfo() {
 		User userInfo = new User();
 		userInfo.setId(this.getId());
 		userInfo.setUserId(this.getUserId());
 		userInfo.setUserName(this.getUserName());
 		userInfo.setEmail(this.getEmail());
-
 		return userInfo;
 	}
 
@@ -362,11 +256,64 @@ public class User extends BaseModel<User> {
 		return "User[ID=" + this.getId() + ",name=" + this.getUserId() + ",Role=" + this.getRole() + "]";
 	}
 
-	public String getFollowersStr() {
-		return followersStr;
+	private static class UserReferenceListSerializer extends StdSerializer<List<User>> {
+		@SuppressWarnings("unused")
+		UserReferenceListSerializer() {
+			this(null);
+		}
+
+		UserReferenceListSerializer(Class<List<User>> t) {
+			super(t);
+		}
+
+		@Override
+		public void serialize(List<User> followers, JsonGenerator generator, SerializerProvider provider) throws IOException {
+			List<User> userBaseInfoList = followers.stream()
+				.map(User::getUserBaseInfo)
+				.collect(toList());
+			generator.writeObject(userBaseInfoList);
+		}
 	}
 
-	public void setFollowersStr(String followersStr) {
-		this.followersStr = followersStr;
+	public static class UserReferenceSerializer extends StdSerializer<User> {
+		@SuppressWarnings("unused")
+		UserReferenceSerializer() {
+			this(null);
+		}
+
+		UserReferenceSerializer(Class<User> t) {
+			super(t);
+		}
+
+		@Override
+		public void serialize(User user, JsonGenerator generator, SerializerProvider provider) throws IOException {
+			generator.writeObject(user.getUserBaseInfo());
+		}
+	}
+
+	public static class RoleDeserializer extends StdDeserializer<Role> {
+		@SuppressWarnings("unused")
+		RoleDeserializer() {
+			this(null);
+		}
+
+		RoleDeserializer(Class<?> vc) {
+			super(vc);
+		}
+
+		@Override
+		public Role deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+			JsonNode node = parser.getCodec().readTree(parser);
+			TreeNode nameNode = node.get("name");
+			if (nameNode == null) {
+				return null;
+			}
+
+			String name = node.get("name").asText();
+			return Arrays.stream(Role.values())
+				.filter(role -> role.name().equals(name))
+				.findFirst()
+				.orElse(null);
+		}
 	}
 }

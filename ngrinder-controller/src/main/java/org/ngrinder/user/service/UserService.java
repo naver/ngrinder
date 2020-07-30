@@ -22,23 +22,20 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.AbstractUserService;
-import org.ngrinder.user.controller.UserController;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.authentication.dao.SaltSource;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,45 +44,43 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * The Class UserService.
- *
- * @author Yubin Mao
- * @author AlexQin
- */
+import static org.hibernate.Hibernate.initialize;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
+import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
+
 @Service
 public class UserService extends AbstractUserService {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	@Autowired
-	private PerfTestService perfTestService;
+	private final PerfTestService perfTestService;
 
-	@Autowired
-	private FileEntryService scriptService;
+	private final FileEntryService scriptService;
 
-	@Autowired
-	private SaltSource saltSource;
+	private final ShaPasswordEncoder passwordEncoder;
 
-	@Autowired
-	private ShaPasswordEncoder passwordEncoder;
+	private final Config config;
 
-	@Autowired
-	private Config config;
-
-	@Autowired
-	private CacheManager cacheManager;
+	private final CacheManager cacheManager;
 
 	private Cache userCache;
 
 	private Cache userModelCache;
 
+	public UserService(UserRepository userRepository, PerfTestService perfTestService, FileEntryService scriptService,
+					   @Lazy ShaPasswordEncoder passwordEncoder, Config config, CacheManager cacheManager) {
+		this.userRepository = userRepository;
+		this.perfTestService = perfTestService;
+		this.scriptService = scriptService;
+		this.passwordEncoder = passwordEncoder;
+		this.config = config;
+		this.cacheManager = cacheManager;
+	}
+
 	@PostConstruct
 	public void init() {
-		userCache = cacheManager.getCache("users");
-		userModelCache = cacheManager.getCache("org.ngrinder.model.User");
+		userCache = cacheManager.getCache(CACHE_USERS);
+		userModelCache = cacheManager.getCache(CACHE_USER_ENTITY);
 	}
 
 	/**
@@ -95,10 +90,14 @@ public class UserService extends AbstractUserService {
 	 * @return user
 	 */
 	@Transactional
-	@Cacheable("users")
+	@Cacheable(value = CACHE_USERS, key = "#userId")
 	@Override
 	public User getOne(String userId) {
-		return userRepository.findOneByUserId(userId);
+		User user  = userRepository.findOneByUserId(userId);
+		if (user != null) {
+			initialize(user.getFollowers());
+		}
+		return user;
 	}
 
 	/**
@@ -122,8 +121,7 @@ public class UserService extends AbstractUserService {
 	 */
 	public void encodePassword(User user) {
 		if (StringUtils.isNotBlank(user.getPassword())) {
-			SecuredUser securedUser = new SecuredUser(user, null);
-			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
+			String encodePassword = passwordEncoder.encode(user.getUserId(), user.getPassword());
 			user.setPassword(encodePassword);
 		}
 	}
@@ -136,7 +134,7 @@ public class UserService extends AbstractUserService {
 	 * @return User
 	 */
 	@Transactional
-	@CachePut(value = "users", key = "#user.userId")
+	@CachePut(value = CACHE_USERS, key = "#user.userId")
 	@Override
 	public User save(User user) {
 		encodePassword(user);
@@ -150,7 +148,7 @@ public class UserService extends AbstractUserService {
 	 * @return User
 	 */
 	@Transactional
-	@CachePut(value = "users", key = "#user.userId")
+	@CachePut(value = CACHE_USERS, key = "#user.userId")
 	@Override
 	public User saveWithoutPasswordEncoding(User user) {
 		final List<User> followers = getFollowers(user.getFollowersStr());
@@ -186,7 +184,7 @@ public class UserService extends AbstractUserService {
 
 
 	private List<User> getFollowers(String followersStr) {
-		List<User> newShareUsers = new ArrayList<User>();
+		List<User> newShareUsers = new ArrayList<>();
 		String[] userIds = StringUtils.split(StringUtils.trimToEmpty(followersStr), ',');
 		for (String userId : userIds) {
 			User shareUser = userRepository.findOneByUserId(userId.trim());
@@ -204,7 +202,7 @@ public class UserService extends AbstractUserService {
 	 */
 	@SuppressWarnings("SpringElInspection")
 	@Transactional
-	@CacheEvict(value = "users", key = "#userId")
+	@CacheEvict(value = CACHE_USERS, key = "#userId")
 	public void delete(String userId) {
 		User user = getOne(userId);
 		List<PerfTest> deletePerfTests = perfTestService.deleteAll(user);
@@ -276,7 +274,7 @@ public class UserService extends AbstractUserService {
 	 * @return User
 	 */
 	@Transactional
-	@CachePut(value = "users", key = "#user.userId")
+	@CachePut(value = CACHE_USERS, key = "#user.userId")
 	@Override
 	public User createUser(User user) {
 		encodePassword(user);
@@ -289,14 +287,13 @@ public class UserService extends AbstractUserService {
 		return saveWithoutPasswordEncoding(user);
 	}
 
-
 	@Transactional
-	public List<UserController.UserSearchResult> getSharedUser(User user) {
-		List<UserController.UserSearchResult> result = new ArrayList<UserController.UserSearchResult>();
+	public List<User> getSharedUser(User user) {
 		User currUser = getOne(user.getUserId());
-		for (User each : currUser.getOwners()) {
-			result.add(new UserController.UserSearchResult(each));
-		}
-		return result;
+		return currUser.getOwners();
+	}
+
+	public void evictUserCacheById(String id) {
+		userCache.evict(id);
 	}
 }

@@ -13,18 +13,18 @@
  */
 package org.ngrinder.perftest.service;
 
-import com.google.common.collect.Lists;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
-import net.grinder.message.console.AgentControllerState;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.fest.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.service.AgentService;
+import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.model.AgentInfo;
@@ -38,10 +38,13 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import static net.grinder.message.console.AgentControllerState.READY;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 public class PerfTestRunnableTest extends AbstractAgentReadyTest implements ControllerConstants {
 
@@ -52,8 +55,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	private AgentManager agentManager;
 
 	@Autowired
-	private AgentManagerService agentService;
-
+	private AgentService agentService;
 
 	@Autowired
 	public MockFileEntityRepository fileEntityRepository;
@@ -62,6 +64,9 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 	@Autowired
 	public ConsoleManager consoleManager;
+
+	@Autowired
+	private AgentInfoStore agentInfoStore;
 
 	@Before
 	public void before() throws IOException {
@@ -91,19 +96,28 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 			sleep(1000);
 		}
 
-		sleep(1000);
-		agentService.expireLocalCache();
-		agentService.checkAgentState();
-		List<AgentInfo> agentList = agentService.getAllLocal();
-		for (AgentInfo each : agentList) {
-			agentService.approve(each.getId(), true);
+		List<AgentIdentity> agentIdentities = new ArrayList<>(agentManager.getAllAttachedAgents());
+		for (AgentIdentity agentIdentity : agentIdentities) {
+			AgentControllerIdentityImplementation identity = cast(agentIdentity);
+			AgentInfo agentInfo = new AgentInfo();
+			agentInfo.setIp(identity.getIp());
+			agentInfo.setPort(0);
+			agentInfo.setName(identity.getName());
+			agentInfo.setApproved(true);
+			agentInfo.setState(READY);
+			agentInfoStore.updateAgentInfo(agentInfo.getAgentKey(), agentInfo);
 		}
-		agentService.checkAgentState();
+
+		sleep(1000);
+		List<AgentInfo> agentList = agentService.getAllAttached();
+		for (AgentInfo each : agentList) {
+			agentService.approve(each.getIp(), each.getName(), true);
+		}
 	}
 
 	@Test
 	public void testDoTest() throws IOException {
-		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
+		assertThat(agentService.getAllAttachedFreeApprovedAgents().size(), is(1));
 		perfTestRunnable.doStart();
 		sleep(10000);
 		assertThat(perfTestService.getAllTesting().size(), is(1));
@@ -115,7 +129,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
-	boolean ended = false;
+	private boolean ended = false;
 
 	@Test
 	public void testStartConsole() throws IOException {
@@ -124,6 +138,9 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		perfTest.setScriptName("/hello/world.py");
 		assertThat(perfTest, not(nullValue()));
 
+		// Distribute files
+		GrinderProperties grinderProperties = perfTestService.prepareTest(perfTest);
+
 		// Start console
 		SingleConsole singleConsole = perfTestRunnable.startConsole(perfTest);
 		assertThat(singleConsole, not(nullValue()));
@@ -131,16 +148,13 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 		// Start agents
 		perfTest.setAgentCount(1);
-		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 
-		// Distribute files
-		perfTestService.prepareDistribution(perfTest);
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 		sleep(3000);
 		perfTestRunnable.distributeFileOn(perfTest, singleConsole);
 
-		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
+		singleConsole.addSamplingLifeCycleListener(new SamplingLifeCycleListener() {
 			@Override
 			public void onSamplingStarted() {
 				System.out.println("Sampling is started");

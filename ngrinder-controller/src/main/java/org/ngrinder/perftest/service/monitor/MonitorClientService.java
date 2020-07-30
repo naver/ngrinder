@@ -31,7 +31,6 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * Used to get monitor data directly from MBeanClient and save. For every
  * MBClient, one instance will be created. So it is not singleton.
  *
- * @author Mavlarn
  * @since 3.1
  */
 public class MonitorClientService implements Closeable, MonitorConstants {
@@ -105,7 +104,6 @@ public class MonitorClientService implements Closeable, MonitorConstants {
 	public void close() {
 		mBeanClient.disconnect();
 	}
-
 
 	public SystemInfo getSystemInfo() {
 		return systemInfo;

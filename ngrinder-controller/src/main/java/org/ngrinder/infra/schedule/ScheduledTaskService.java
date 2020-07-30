@@ -13,10 +13,10 @@
  */
 package org.ngrinder.infra.schedule;
 
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.infra.transaction.TransactionService;
 import org.ngrinder.service.IScheduledTaskService;
 import org.springframework.beans.factory.BeanCreationNotAllowedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -29,22 +29,19 @@ import static net.grinder.util.NoOp.noOp;
 /**
  * Convenient class which makes scheduled task.
  *
- * @author JunHo Yoon
  * @since 3.3
  */
 @Service
+@RequiredArgsConstructor
 public class ScheduledTaskService implements IScheduledTaskService {
 
-	@Autowired
-	private TaskScheduler taskScheduler;
+	private final TaskScheduler taskScheduler;
 
-	@Autowired
-	private InternalAsyncTaskService internalAsyncTaskService;
+	private final InternalAsyncTaskService internalAsyncTaskService;
 
-	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<Runnable, ScheduledFuture>();
+	private final TransactionService transactionService;
 
-	@Autowired
-	private TransactionService transactionService;
+	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<>();
 
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);
@@ -53,16 +50,11 @@ public class ScheduledTaskService implements IScheduledTaskService {
 
 
 	public void addFixedDelayedScheduledTaskInTransactionContext(final Runnable runnable, int delay) {
-		final Runnable transactionalRunnable = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					transactionService.runInTransaction(runnable);
-				} catch (IllegalStateException e) {
-					noOp();
-				} catch (BeanCreationNotAllowedException e) {
-					noOp();
-				}
+		final Runnable transactionalRunnable = () -> {
+			try {
+				transactionService.runInTransaction(runnable);
+			} catch (IllegalStateException | BeanCreationNotAllowedException e) {
+				noOp();
 			}
 		};
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(transactionalRunnable, delay);

@@ -346,7 +346,7 @@ public class PropertyBuilder {
 	 * @param classPath class path
 	 * @return converted path.
 	 */
-	public String rebaseCustomClassPath(String classPath) {
+	public String rebaseUserLibraryClassPath(String classPath) {
 		StringBuilder newClassPath = new StringBuilder();
 		boolean isFirst = true;
 		for (String each : StringUtils.split(classPath, ";:")) {

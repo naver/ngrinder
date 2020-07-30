@@ -13,12 +13,6 @@
  */
 package org.ngrinder.perftest.controller;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,19 +21,25 @@ import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.ui.ModelMap;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * {@link PerfTestController} test with repository supports.
  * 
- * @author mavlarn
- * @Since 3.0
+ * @since 3.0
  */
 public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 
 	@Autowired
-	private MockPerfTestController controller;
+	private MockPerfTestApiController mockPerfTestApiController;
 
 	@Autowired
 	public MockFileEntityRepository repo;
@@ -59,8 +59,10 @@ public class PerfTestControllerWithRepoTest extends AbstractAgentReadyTest {
 
 	@Test
 	public void testGetQuickStart() {
-		ModelMap model = new ModelMap();
-		controller.getQuickStart(getTestUser(), "http://naver.com", "jython", model);
+		Map<String, Object> params = new HashMap<>();
+		params.put("url", "http://naver.com");
+		params.put("scriptType", "jython");
+		mockPerfTestApiController.getQuickStart(getTestUser(), params);
 		assertThat(repo.findOne(getTestUser(), "naver.com/TestRunner.py", SVNRevision.HEAD), notNullValue());
 	}
 

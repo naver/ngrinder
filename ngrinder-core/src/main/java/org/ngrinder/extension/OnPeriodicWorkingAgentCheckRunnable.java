@@ -14,10 +14,9 @@
 package org.ngrinder.extension;
 
 import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
+import org.pf4j.ExtensionPoint;
 
 import java.util.Set;
-
-import ro.fortsoft.pf4j.ExtensionPoint;
 
 /**
  * Plugin extension point which is executed whenever the controller periodically check currently

@@ -27,11 +27,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- */
 public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired

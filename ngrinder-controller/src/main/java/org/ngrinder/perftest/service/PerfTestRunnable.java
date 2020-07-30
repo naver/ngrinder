@@ -13,6 +13,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.StopReason;
@@ -23,31 +25,37 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.UnitUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.*;
-import org.ngrinder.script.handler.ScriptHandler;
+import org.ngrinder.perftest.service.samplinglistener.TooManyErrorCheckPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+import static net.grinder.util.FileUtils.*;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORING;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.model.Status.*;
@@ -59,33 +67,33 @@ import static org.ngrinder.model.Status.*;
  * started from {@link #doStart()}  and {@link #doFinish()} method. These
  * methods are scheduled by Spring Task.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Profile("production")
 @Component
+@RequiredArgsConstructor
 public class PerfTestRunnable implements ControllerConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
-	@SuppressWarnings("SpringJavaAutowiringInspection")
-	@Autowired
-	private PerfTestService perfTestService;
+	@Getter
+	private final PerfTestService perfTestService;
 
-	@Autowired
-	private ConsoleManager consoleManager;
+	@Getter
+	private final AgentManager agentManager;
 
-	@Autowired
-	private AgentManager agentManager;
+	private final ConsoleManager consoleManager;
 
-	@Autowired
-	private PluginManager pluginManager;
+	private final PluginManager pluginManager;
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
+	private final ScheduledTaskService scheduledTaskService;
+
+	private final HazelcastService hazelcastService;
+
+	@Getter
+	private final AgentService agentService;
 
 	private Runnable startRunnable;
 
@@ -96,19 +104,9 @@ public class PerfTestRunnable implements ControllerConstants {
 		// Clean up db first.
 		doFinish(true);
 
-		this.startRunnable = new Runnable() {
-			@Override
-			public void run() {
-				startPeriodically();
-			}
-		};
+		this.startRunnable = this::startPeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTask(startRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
-		this.finishRunnable = new Runnable() {
-			@Override
-			public void run() {
-				finishPeriodically();
-			}
-		};
+		this.finishRunnable = this::finishPeriodically;
 		scheduledTaskService.addFixedDelayedScheduledTask(finishRunnable, PERFTEST_RUN_FREQUENCY_MILLISECONDS);
 
 	}
@@ -146,11 +144,9 @@ public class PerfTestRunnable implements ControllerConstants {
 		}
 
 		if (!isScheduledNow(runCandidate)) {
-			// this test project is reserved,but it isn't yet going to run test
-			// right now.
+			// Test is reserved, but it isn't yet going to run test right now.
 			return;
 		}
-
 
 		if (!hasEnoughFreeAgents(runCandidate)) {
 			return;
@@ -174,7 +170,6 @@ public class PerfTestRunnable implements ControllerConstants {
 		return current.after(scheduledDate);
 	}
 
-
 	/**
 	 * Check the free agent availability for the given {@link PerfTest}.
 	 *
@@ -182,7 +177,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @return true if enough agents
 	 */
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
-		int size = agentManager.getAllFreeApprovedAgentsForUser(test.getCreatedUser()).size();
+		int size = agentService.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedUser().getUserId()).size();
 		if (test.getAgentCount() != null && test.getAgentCount() > size) {
 			perfTestService.markProgress(test, "The test is tried to execute but there is not enough free agents."
 					+ "\n- Current free agent count : " + size + "  / Requested : " + test.getAgentCount() + "\n");
@@ -201,14 +196,15 @@ public class PerfTestRunnable implements ControllerConstants {
 	public void doTest(final PerfTest perfTest) {
 		SingleConsole singleConsole = null;
 		try {
+			GrinderProperties grinderProperties = perfTestService.prepareTest(perfTest);
 			singleConsole = startConsole(perfTest);
-			ScriptHandler prepareDistribution = perfTestService.prepareDistribution(perfTest);
-			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, checkCancellation(singleConsole));
-
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
+		} catch (PerfTestPrepareException ex) {
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
+				ex.getMessage());
 		} catch (SingleConsoleCancellationException ex) {
 			// In case of error, mark the occurs error on perftest.
 			doCancel(perfTest, singleConsole);
@@ -217,9 +213,57 @@ public class PerfTestRunnable implements ControllerConstants {
 			// In case of error, mark the occurs error on perftest.
 			LOG.error("Error while executing test: {} - {} ", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Stack Trace is : ", e);
-			doTerminate(perfTest, singleConsole);
+			doTerminate(perfTest, singleConsole, e.getMessage());
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
 		}
+	}
+
+	/**
+	 * Delete cached distribution files, These are already in the agent cache directory.
+	 *
+	 * @param distDir						   Directory containing files to be distributed for testing.
+	 * @param distFiles 					   Required files for currently running test.
+	 * @param distFilesDigest				   Required file's digest for currently running test.
+	 * @param agentCachedDistFilesDigestList   Digest of files in each agent cache directory.
+	 *
+	 * */
+	private void deleteCachedDistFiles(File distDir,
+									   List<File> distFiles,
+									   Set<String> distFilesDigest,
+									   List<Set<String>> agentCachedDistFilesDigestList) {
+		Set<String> cachedDistFilesDigest = extractCachedDistFilesDigest(distFilesDigest, agentCachedDistFilesDigestList);
+
+		distFiles
+			.stream()
+			.filter(file -> cachedDistFilesDigest.contains(getFileDigest(distDir, file)))
+			.forEach(FileUtils::deleteQuietly);
+	}
+
+	/**
+	 * Extract non cached distribution files for send to each agents.
+	 *
+	 * @param distFilesDigest					Required file's digest for currently running test.
+	 * @param agentCachedDistFilesDigestList    Digest of files in each agent cache directory.
+	 *
+	 * */
+	private Set<String> extractCachedDistFilesDigest(Set<String> distFilesDigest,
+													 List<Set<String>> agentCachedDistFilesDigestList) {
+		return distFilesDigest
+			.stream()
+			.filter(distFileDigest -> agentCachedDistFilesDigestList
+				.stream()
+				.allMatch(agentCachedDistFilesDigest -> agentCachedDistFilesDigest.contains(distFileDigest)))
+			.collect(toSet());
+	}
+
+	private void prepareFileDistribution(PerfTest perfTest, SingleConsole singleConsole) throws IOException {
+		File distDir = perfTestService.getDistributionPath(perfTest);
+		List<File> distFiles = getAllFilesInDirectory(distDir);
+
+		Set<String> distFilesDigest = getFilesDigest(distDir, distFiles);
+
+		singleConsole.sendDistFilesDigestToAgents(distFilesDigest);
+		deleteCachedDistFiles(distDir, distFiles, distFilesDigest, singleConsole.getAgentCachedDistFilesDigestList());
 	}
 
 	/**
@@ -258,11 +302,13 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param perfTest      perftest
 	 * @param singleConsole console to be used.
 	 */
-	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) {
+	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) throws IOException {
+		prepareFileDistribution(perfTest, singleConsole);
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
+
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
-		final long safeThreadHold = getSafeTransmissionThreshold();
+		final long safeThreshold = getSafeTransmissionThreshold();
 
 		listener.add(new SingleConsole.FileDistributionListener() {
 			@Override
@@ -277,14 +323,13 @@ public class PerfTestRunnable implements ControllerConstants {
 					return safe;
 				}
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
-				if (sizeOfDirectory > safeThreadHold) {
+				if (sizeOfDirectory > safeThreshold) {
 					perfTestService.markProgress(perfTest, "The total size of distributed files is over "
-							+ UnitUtils.byteCountToDisplaySize(safeThreadHold) + "B.\n- Safe file distribution mode is enabled by force.");
+							+ UnitUtils.byteCountToDisplaySize(safeThreshold) + ".\n- Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;
 			}
-
 		});
 
 		// the files have prepared before
@@ -314,12 +359,12 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param singleConsole     console to be used.
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(perfTest.getAgentCount())
+		int agentCount = perfTest.getAgentCount();
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(agentCount)
 				+ " agents are starting.");
-		agentManager.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties,
-				getSafe(perfTest.getAgentCount()));
-		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(perfTest.getAgentCount())
+		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties, getSafe(agentCount));
+		singleConsole.waitUntilAgentPrepared(agentCount);
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(agentCount)
 				+ " agents are ready.");
 	}
 
@@ -357,19 +402,18 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
 		// Add SamplingLifeCycleListener
-		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
+		singleConsole.addSamplingLifeCycleListener(new PerfTestSamplingCollectorListener(singleConsole,
 				perfTest.getId(), perfTestService, scheduledTaskService));
-		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
-				perfTestService, scheduledTaskService));
+		singleConsole.addSamplingLifeCycleListener(new AgentLostDetectionListener(singleConsole, perfTest,
+				perfTestService, scheduledTaskService));;
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
-				(OnTestSamplingRunnable.class, new MonitorCollectorPlugin(config, scheduledTaskService,
-						perfTestService, perfTest.getId()));
-		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
+				(OnTestSamplingRunnable.class, asList(new MonitorCollectorPlugin(config, scheduledTaskService,
+					perfTestService, perfTest.getId()), new TooManyErrorCheckPlugin()));
+		singleConsole.addSamplingLifeCycleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
-		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
+		singleConsole.addSamplingLifeCycleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
 				agentManager, scheduledTaskService));
 	}
-
 
 	/**
 	 * Notify test finish to plugins.
@@ -441,7 +485,8 @@ public class PerfTestRunnable implements ControllerConstants {
 	 */
 	private void cleanUp(PerfTest perfTest) {
 		perfTestService.cleanUpDistFolder(perfTest);
-		perfTestService.cleanUpRuntimeOnlyData(perfTest);
+		hazelcastService.delete(DIST_MAP_NAME_MONITORING, perfTest.getId());
+		hazelcastService.delete(DIST_MAP_NAME_SAMPLING, perfTest.getId());
 	}
 
 	/**
@@ -457,19 +502,19 @@ public class PerfTestRunnable implements ControllerConstants {
 				&& singleConsoleInUse.isCurrentRunningTimeOverDuration(perfTest.getDuration())) {
 			LOG.debug(
 					"Test {} is ready to finish. Current : {}, Planned : {}",
-					new Object[]{perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
-							perfTest.getDuration()});
+				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
+				perfTest.getDuration());
 			return true;
 		} else if (perfTest.isThresholdRunCount()
 				&& singleConsoleInUse.getCurrentExecutionCount() >= perfTest.getTotalRunCount()) {
 			LOG.debug("Test {} is ready to finish. Current : {}, Planned : {}",
-					new Object[]{perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
-							perfTest.getTotalRunCount()});
+				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
+				perfTest.getTotalRunCount());
 			return true;
 		} else if (singleConsoleInUse instanceof NullSingleConsole) {
 			LOG.debug("Test {} is ready to finish. Current : {}, Planned : {}",
-					new Object[]{perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
-							perfTest.getTotalRunCount()});
+				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
+				perfTest.getTotalRunCount());
 			return true;
 		}
 
@@ -496,18 +541,29 @@ public class PerfTestRunnable implements ControllerConstants {
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		doTerminate(perfTest, singleConsoleInUse, "");
+	}
+
 	/**
 	 * Terminate the given {@link PerfTest}.
 	 *
 	 * @param perfTest           {@link PerfTest} to be finished
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
 	 *                           {@link PerfTest}
+	 * @param errorMessage       error message
 	 */
-	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse, String errorMessage) {
 		singleConsoleInUse.unregisterSampling();
+		String progressMessage = "Stopped by error";
+
+		if (!errorMessage.isEmpty()) {
+			progressMessage += "\n" + errorMessage;
+		}
+
 		try {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
-					"Stopped by error");
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
+				Status.STOP_BY_ERROR, progressMessage);
 		} catch (Exception e) {
 			LOG.error("Error while terminating {} : {}", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Details : ", e);
@@ -529,10 +585,10 @@ public class PerfTestRunnable implements ControllerConstants {
 		try {
 			// stop target host monitor
 			if (perfTestService.hasTooManyError(perfTest)) {
-				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, FINISHED_WITH_WARNING,
 						"[WARNING] The test is finished but contains too much errors(over 30% of total runs).");
 			} else if (singleConsoleInUse.hasNoPerformedTest()) {
-				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED_WITH_WARNING,
 						"[WARNING] The test is finished but has no TPS.");
 			} else {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
@@ -544,14 +600,6 @@ public class PerfTestRunnable implements ControllerConstants {
 			LOG.debug("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
-	}
-
-	public PerfTestService getPerfTestService() {
-		return perfTestService;
-	}
-
-	public AgentManager getAgentManager() {
-		return agentManager;
 	}
 
 }

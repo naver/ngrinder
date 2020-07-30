@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,22 +9,25 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
+import lombok.RequiredArgsConstructor;
 import net.grinder.SingleConsole;
+import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.model.ConsoleCommunicationSetting;
 import net.grinder.console.model.ConsoleProperties;
-import org.h2.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,22 +47,19 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * requires a new console, it gets the one {@link ConsoleEntry} from the pool and creates new console with the
  * {@link ConsoleEntry}. Currently using consoles are kept in {@link #consoleInUse} member variable.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 @Component
+@RequiredArgsConstructor
 public class ConsoleManager {
 	private static final int MAX_PORT_NUMBER = 65000;
 	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
 	private volatile ArrayBlockingQueue<ConsoleEntry> consoleQueue;
-	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
+	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<>());
 
-	@Autowired
-	private Config config;
+	private final Config config;
 
-	@Autowired
-	private AgentManager agentManager;
-
+	private final AgentManager agentManager;
 
 	/**
 	 * Prepare console queue.
@@ -67,18 +67,28 @@ public class ConsoleManager {
 	@PostConstruct
 	public void init() {
 		int consoleSize = getConsoleSize();
-		consoleQueue = new ArrayBlockingQueue<ConsoleEntry>(consoleSize);
+		consoleQueue = new ArrayBlockingQueue<>(consoleSize);
 		final String currentIP = config.getCurrentIP();
-		for (int each : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
-			final ConsoleEntry e = new ConsoleEntry(config.getCurrentIP(), each);
+		for (int port : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
+			final ConsoleEntry consoleEntry = new ConsoleEntry(currentIP, port);
 			try {
-				e.occupySocket();
-				consoleQueue.add(e);
+				consoleEntry.occupySocket();
+				consoleQueue.add(consoleEntry);
 			} catch (Exception ex) {
-				LOG.error("socket binding to {}:{} is failed", config.getCurrentIP(), each);
+				LOG.error("socket binding to {}:{} is failed", currentIP, port);
 			}
-
 		}
+
+		agentManager.addConnectionAgentCommunicationListener((usingPort, ip, port) -> {
+			SingleConsole singleConsole = getConsoleUsingPort(usingPort);
+
+			try {
+				ConsoleCommunicationImplementationEx consoleCommunication = singleConsole.getConsoleComponent(ConsoleCommunicationImplementationEx.class);
+				consoleCommunication.discriminateConnection(new Socket(ip, port));
+			} catch (IOException e) {
+				LOG.error("Fail to connect to {}:{}", ip, port, e);
+			}
+		});
 	}
 
 	/**

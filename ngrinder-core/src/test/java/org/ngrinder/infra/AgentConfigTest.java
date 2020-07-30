@@ -15,6 +15,7 @@ package org.ngrinder.infra;
 
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public class AgentConfigTest {
 	 * @throws IOException
 	 */
 	@Test
+	@Ignore
 	public void testAgentConfigInitialization() throws IOException {
 		// Given
 		AgentConfig config = new AgentConfig();

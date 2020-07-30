@@ -24,7 +24,6 @@ import java.io.File;
 /**
  * Perf Test Sampling collection class.
  *
- * @author JunHo Yoon
  * @since 3.1.1
  */
 public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListener {
@@ -44,12 +43,7 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	                                         ScheduledTaskService scheduledTaskService) {
 		this.scheduledTaskService = scheduledTaskService;
 		// Make it separate asyc call to remove the delay on the sampling.
-		this.runnable = new Runnable() {
-			@Override
-			public void run() {
-				perfTestService.saveStatistics(singleConsole, perfTestId);
-			}
-		};
+		this.runnable = () -> perfTestService.saveStatistics(singleConsole, perfTestId);
 	}
 
 	@Override

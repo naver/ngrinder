@@ -36,19 +36,17 @@ import org.springframework.data.domain.Pageable;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Pageable.unpaged;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-/**
- * {@link PerfTestService} test.
- *
- * @author Mavlarn
- * @since 3.0
- */
 public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
@@ -71,16 +69,16 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTest candidate = testService.getNextRunnablePerfTestPerfTestCandidate();
 		assertThat(candidate, nullValue());
 
-		Pageable pageable = new PageRequest(0, 10);
+		Pageable pageable = PageRequest.of(0, 10);
 		Page<PerfTest> testList = testService.getPagedAll(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
 		testList = testService.getPagedAll(getTestUser(), null, null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
 
 		// test with no paging
-		testList = testService.getPagedAll(getTestUser(), null, null, null, null);
+		testList = testService.getPagedAll(getTestUser(), null, null, null, unpaged());
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPagedAll(getTestUser(), null, null, "F", null);
+		testList = testService.getPagedAll(getTestUser(), null, null, "F", unpaged());
 		assertThat(testList.getContent().size(), is(1));
 
 		List<PerfTest> list = testService.getAllTesting();
@@ -160,19 +158,18 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
-		Config mockConfig = spy(config);
-		when(mockConfig.getHome()).thenReturn(mockHome);
-		PerfTestService mockService = spy(testService);
-		mockService.setConfig(mockConfig);
+		Config spiedConfig = spy(config);
+		when(spiedConfig.getHome()).thenReturn(mockHome);
+		PerfTestService spiedService = spy(testService);
+		setField(spiedService, "config", spiedConfig);
 
 		// When
 		// TPS,Errors,Mean_Test_Time_(ms)
-		int interval = mockService.getReportDataInterval(testId, "TPS", 700);
+		int interval = spiedService.getReportDataInterval(testId, "TPS", 700);
 
 		// Then
-		assertThat(mockService.getSingleReportDataAsJson(testId, "TPS", interval).length(), greaterThan(100));
-		assertThat(mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval).length(),
-				greaterThan(100));
+		assertFalse(spiedService.getSingleReportData(testId, "TPS", interval).isEmpty());
+		assertFalse(spiedService.getSingleReportData(testId, "Mean_Test_Time_(ms)", interval).isEmpty());
 	}
 
 	@Test
@@ -182,20 +179,22 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
-		Config mockConfig = spy(config);
-		when(mockConfig.getHome()).thenReturn(mockHome);
-		PerfTestService mockService = spy(testService);
-		mockService.setConfig(mockConfig);
+		Config spiedConfig = spy(config);
+		when(spiedConfig.getHome()).thenReturn(mockHome);
+		PerfTestService spiedService = spy(testService);
+		setField(spiedService, "config", spiedConfig);
 
 		// When
-		int interval = mockService.getMonitorGraphInterval(testId, "127.0.0.1", 700);
-		Map<String, String> reportDataMap = mockService.getMonitorGraph(testId, "127.0.0.1", interval);
+		int interval = spiedService.getMonitorGraphInterval(testId, "127.0.0.1", 700);
+		Map<String, Object> reportDataMap = spiedService.getMonitorGraph(testId, "127.0.0.1", interval);
+
+		Predicate<Object> listNotEmpty = obj -> !((List) obj).isEmpty();
 
 		// Then
-		assertThat(reportDataMap.get("cpu").length(), greaterThanOrEqualTo(300));
-		assertThat(reportDataMap.get("memory").length(), greaterThanOrEqualTo(300));
-		assertThat(reportDataMap.get("received").length(), greaterThanOrEqualTo(300));
-		assertThat(reportDataMap.get("sent").length(), greaterThanOrEqualTo(300));
+		assertTrue(listNotEmpty.test(reportDataMap.get("cpu")));
+		assertTrue(listNotEmpty.test(reportDataMap.get("memory")));
+		assertTrue(listNotEmpty.test(reportDataMap.get("received")));
+		assertTrue(listNotEmpty.test(reportDataMap.get("sent")));
 	}
 
 	@Test
@@ -205,7 +204,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		tempRepo.deleteOnExit();
 		MonitorClientService client = new MonitorClientService("127.0.0.1", 13243);
 		client.init();
-		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
+		Map<String, SystemDataModel> rtnMap = new HashMap<>();
 
 		Random random = new Random();
 		for (int i = 0; i < 80; i++) {
@@ -222,25 +221,5 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		String statusString = perfTestService.getProperSizedStatusString(rtnMap);
 		System.out.println("Status string size is:" + statusString.length());
 		assertTrue(statusString.length() < 9950);
-	}
-
-	@Test
-	public void testCleanUpRuntimeOnlyData() {
-
-		PerfTest test = createPerfTest("new test", Status.READY, new Date());
-		test.setAgentState("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"receivedPerSec\":1874668,\"sentPerSec\":1881129}}");
-		test.setMonitorState("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"receivedPerSec\":102718,\"sentPerSec\":135072}}");
-		test.setRunningSample("{\"process\":1,\"peakTpsForGraph\":2192.0,\"lastSampleStatistics\":[{\"Peak_TPS\":0.0,\"Tests\":2145.0,\"Mean_time_to_first_byte\":0.3142191142191142,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":62205.0,\"Errors\":0.0,\"TPS\":2145.0,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4205128205128205}],\"thread\":1,\"cumulativeStatistics\":[{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4425539468012273}],\"tpsChartData\":2145.0,\"success\":true,\"totalStatistics\":{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"Mean_Test_Time_(ms)\":0.4425539468012273},\"test_time\":105}");
-		perfTestService.save(getTestUser(), test);
-
-		PerfTest testInDB = perfTestService.getOne(test.getId());
-		assertTrue(testInDB.getAgentState().length() > 0 && testInDB.getMonitorState().length() > 0);
-		test.setAgentState(null);
-		test.setMonitorState(null);
-		test.setRunningSample(null);
-		perfTestService.save(getTestUser(), test);
-		testInDB = perfTestService.getOne(test.getId());
-		assertTrue(testInDB.getAgentState() == null && testInDB.getMonitorState() == null);
-
 	}
 }

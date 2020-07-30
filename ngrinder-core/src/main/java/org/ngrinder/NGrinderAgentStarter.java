@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,12 +9,13 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder;
 
 import com.beust.jcommander.JCommander;
 import net.grinder.AgentControllerDaemon;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -130,25 +131,26 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 					+ "Otherwise you can not execute the agent in the security mode.");
 		}
 
-
 		boolean serverMode = agentConfig.isServerMode();
 		if (!serverMode) {
 			printLog("JVM server mode is disabled.");
 		}
 
-		String controllerIP = getIP(agentConfig.getControllerIP());
-		int controllerPort = agentConfig.getControllerPort();
-		agentConfig.setControllerHost(controllerIP);
-		LOG.info("connecting to controller {}:{}", controllerIP, controllerPort);
+		if (agentConfig.isConnectionMode()) {
+			LOG.info("waiting for connection on {}:{}", agentConfig.getBroadcastIP(), agentConfig.getConnectionAgentPort());
+		} else {
+			String controllerIP = getIP(agentConfig.getControllerIP());
+			agentConfig.setControllerHost(controllerIP);
+			LOG.info("connecting to controller {}:{}", controllerIP, agentConfig.getControllerPort());
+		}
 
 		try {
 			agentController = new AgentControllerDaemon(agentConfig);
 			agentController.run();
 		} catch (Exception e) {
-			LOG.error("Error while connecting to : {}:{}", controllerIP, controllerPort);
+			LOG.error("Error while starting Agent", e);
 			printHelpAndExit("Error while starting Agent", e);
 		}
-
 	}
 
 	private void printLog(String s, Object... args) {

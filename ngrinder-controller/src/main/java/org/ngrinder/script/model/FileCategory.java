@@ -18,7 +18,6 @@ package org.ngrinder.script.model;
  * 
  * This field is used for identifying the file type.
  * 
- * @author JunHo Yoon
  * @since 3.1
  */
 public enum FileCategory {
@@ -32,5 +31,4 @@ public enum FileCategory {
 	public boolean isEditable() {
 		return isEditable;
 	}
-
 }

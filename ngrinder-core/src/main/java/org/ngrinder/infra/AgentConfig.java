@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra;
 
@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -82,25 +83,23 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		checkNotNull(home);
 		final File agentConfig = home.getFile("agent.conf");
 		File newAgentConfig = new File(getCurrentDirectory(), "__agent.conf");
-		if (agentConfig.exists()) {
-			if (System.getProperty(CommonConstants.PROP_OVERWRITE_CONFIG) != null) {
-				LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
-			} else if (newAgentConfig.exists()) {
-				LOGGER.warn("The agent configuration file '{}' already exists.", agentConfig.getAbsolutePath());
-				LOGGER.warn("If you want to use the '{}' file", newAgentConfig.getAbsolutePath());
-				LOGGER.warn("Please run agent with -o option");
-				return;
-			}
-		}
+
 		if (newAgentConfig.exists()) {
+			LOGGER.info("Overwrite the existing agent.conf with __agent.conf");
 			home.copyFileTo(newAgentConfig, "agent.conf");
 			agentConfig.setLastModified(newAgentConfig.lastModified());
-		} else {
-			try {
-				home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
-			} catch (IOException e) {
-				throw processException(e);
-			}
+			deleteQuietly(newAgentConfig);
+			return;
+		}
+
+		if (agentConfig.exists()) {
+			return;
+		}
+
+		try {
+			home.writeFileTo(loadResource("/agent.conf"), "agent.conf");
+		} catch (IOException e) {
+			throw processException(e);
 		}
 	}
 
@@ -220,7 +219,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	public void removeAgentPidProperties() {
 		checkNotNull(home);
 		File file = home.getFile("pid");
-		FileUtils.deleteQuietly(file);
+		deleteQuietly(file);
 	}
 
 	/**
@@ -330,6 +329,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getAgentProperties().getPropertyInt(PROP_AGENT_CONTROLLER_PORT);
 	}
 
+	public int getConnectionAgentPort() {
+		return getAgentProperties().getPropertyInt(PROP_AGENT_CONNECTION_PORT);
+	}
+
 	public String getRegion() {
 		return getAgentProperties().getProperty(PROP_AGENT_REGION);
 	}
@@ -344,6 +347,15 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 
 	public boolean isServerMode() {
 		return getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE);
+	}
+
+	public boolean isConnectionMode() {
+		String connectionMode = getAgentProperties().getProperty(PROP_AGENT_CONNECTION_MODE, VALUE_AGENT_TO_CONTROLLER);
+		return VALUE_CONTROLLER_TO_AGENT.equals(connectionMode);
+	}
+
+	public String getBroadcastIP() {
+		return getAgentProperties().getProperty(PROP_AGENT_BROADCAST_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public boolean isSilentMode() {

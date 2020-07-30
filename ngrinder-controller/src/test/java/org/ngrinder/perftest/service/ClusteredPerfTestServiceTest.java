@@ -26,11 +26,6 @@ import org.ngrinder.model.PerfTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/**
- * {@link ClusteredPerfTestService} test.
- * 
- */
-
 public class ClusteredPerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private Config config;
@@ -39,8 +34,7 @@ public class ClusteredPerfTestServiceTest extends AbstractNGrinderTransactionalT
 
 	@Before
 	public void before() {
-		perfTestConfig = new PerfTestServiceConfig();
-		perfTestConfig.setApplicationContext(applicationContext);
+		perfTestConfig = new PerfTestServiceConfig(config, applicationContext);
 	}
 
 	@Test

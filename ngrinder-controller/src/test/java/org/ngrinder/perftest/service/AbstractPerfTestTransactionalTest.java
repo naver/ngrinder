@@ -30,7 +30,6 @@ import java.util.List;
  * In addition {@link org.ngrinder.AbstractNGrinderTransactionalTest}, this class provides basic function to
  * create {@link org.ngrinder.model.PerfTest} and run the test.
  *
- * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
@@ -54,7 +53,7 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
-		perfTestRepository.save(findAll);
+		perfTestRepository.saveAll(findAll);
 		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 		perfTestRepository.flush();
@@ -82,6 +81,7 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setCreatedUser(getTestUser());
 		test.setRegion(config.getRegion());
 		test.setSamplingInterval(1);
+		test.setScm("svn");
 		return test;
 	}
 

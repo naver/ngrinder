@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,14 +9,19 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.controller;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.ngrinder.common.constant.WebConstants.PARAM_TEST;
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.CompressionUtils;
 import org.ngrinder.infra.config.Config;
@@ -29,33 +34,27 @@ import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-/**
- * PerfTest Controller Test.
- *
- * @author mavlarn
- * @since 3.0
- */
-public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest implements WebConstants {
+public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private MockPerfTestController controller;
+	private PerfTestController controller;
+
+	@Autowired
+	private MockPerfTestApiController perfTestApiController;
 
 	@Autowired
 	private Config config;
@@ -67,29 +66,30 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 	public MockFileEntityRepository repo;
 
 	@Before
-	public void beforeCleanUp() throws IOException {
+	public void beforeCleanUp() {
 		clearAllPerfTest();
 	}
 
 	@Test
-	public void testGetPerfTestDetail() {
-		ModelMap model = new ModelMap();
-		controller.getOne(getTestUser(), null, model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
-		model.clear();
+	public void testCreatePerfTest() {
+		Map<String, Object> response = perfTestApiController.create(getTestUser());
+		assertNotNull(response.get(PARAM_TEST));
+	}
 
-		controller.getOne(getTestUser(), 0L, model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
-		model.clear();
+	@Test
+	public void testInvalidPerfTest() {
+		Map<String, Object> response = perfTestApiController.getOneDetail(getTestUser(), 0L);
+		assertNull(response.get(PARAM_TEST));
 		long invalidId = 123123123123L;
-		controller.getOne(getTestUser(), invalidId, model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
+		response = perfTestApiController.getOneDetail(getTestUser(), invalidId);
+		assertNull(response.get(PARAM_TEST));
+	}
 
+	@Test
+	public void testGetPerfTestDetail() {
 		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
-		model.clear();
-		controller.getOne(getTestUser(), createPerfTest.getId(), model);
-		assertThat(model.get(PARAM_TEST), notNullValue());
-
+		Map<String, Object> response = perfTestApiController.getOneDetail(getTestUser(), createPerfTest.getId());
+		assertNotNull(response.get(PARAM_TEST));
 	}
 
 	@Test
@@ -98,27 +98,32 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		FileUtils.deleteQuietly(file);
 		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		controller.getResources(getTestUser(), "filefilter.txt", null);
+		perfTestApiController.getResources(getTestUser(), "filefilter.txt", null);
 	}
 
 	@Test
 	public void testDeleteTests() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
-		ModelMap model = new ModelMap();
-		controller.delete(getTestUser(), String.valueOf(test.getId()));
-		model.clear();
+		perfTestApiController.delete(getTestUser(), String.valueOf(test.getId()));
+
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
-		String delIds = "" + test1.getId() + "," + test2.getId();
-		controller.delete(getTestUser(), delIds);
 
-		model.clear();
-		controller.getOne(getTestUser(), test1.getId(), model);
-		assertThat(((PerfTest) model.get(PARAM_TEST)).getId(), nullValue());
-		model.clear();
-		controller.getOne(getTestUser(), test2.getId(), model);
-		assertThat(((PerfTest) model.get(PARAM_TEST)).getId(), nullValue());
+		Function<Map<String, Object>, PerfTest> perfTestOf = map -> (PerfTest) map.get(PARAM_TEST);
+
+		PerfTest foundOne = perfTestOf.apply(perfTestApiController.getOneDetail(getTestUser(), test1.getId()));
+		assertNotNull(foundOne.getId());
+		foundOne = perfTestOf.apply(perfTestApiController.getOneDetail(getTestUser(), test2.getId()));
+		assertNotNull(foundOne.getId());
+
+		String delIds = "" + test1.getId() + "," + test2.getId();
+		perfTestApiController.delete(getTestUser(), delIds);
+
+		foundOne = perfTestOf.apply(perfTestApiController.getOneDetail(getTestUser(), test1.getId()));
+		assertNull(foundOne);
+		foundOne = perfTestOf.apply(perfTestApiController.getOneDetail(getTestUser(), test2.getId()));
+		assertNull(foundOne);
 	}
 
 	@Test
@@ -130,21 +135,21 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		PerfTest cloneTest = newPerfTest(testName, Status.READY, null);
 		cloneTest.setId(test.getId()); // set cloned test's ID as previous test
 
-		ModelMap model = new ModelMap();
-		controller.saveOne(getTestUser(), cloneTest, true, model);
+		perfTestApiController.saveOne(getTestUser(), cloneTest, true);
 		assertThat(preId, not(cloneTest.getId()));
 
 		// test leave comment
-		controller.leaveComment(getTestUser(), cloneTest.getId(), "TestComment", "");
-		model.clear();
-		controller.getOne(getTestUser(), cloneTest.getId(), model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB.getTestComment(), is("TestComment"));
+		Map<String, Object> params = new HashMap<>();
+		params.put("testComment", "TestComment");
+		params.put("tagString", "");
+		perfTestApiController.leaveComment(getTestUser(), cloneTest.getId(), params);
+		PerfTest foundOne = perfTestApiController.getOne(getTestUser(), cloneTest.getId());
+		assertEquals(foundOne.getTestComment(), "TestComment");
 
 		// test stop test
 		cloneTest.setStatus(Status.TESTING);
 		perfTestService.save(getTestUser(), cloneTest);
-		controller.stop(getTestUser(), String.valueOf(cloneTest.getId()));
+		perfTestApiController.stop(getTestUser(), String.valueOf(cloneTest.getId()));
 	}
 
 	/**
@@ -174,48 +179,41 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		newTest.setVuserPerAgent(newTest.getProcesses() * newTest.getThreads());
 		newTest.setRegion(config.getRegion());
 		newTest.setAgentCount(1);
+		newTest.setScm("svn");
 
-		ModelMap model = new ModelMap();
-		controller.saveOne(getTestUser(), newTest, false, model);
-		controller.getOne(getTestUser(), newTest.getId(), model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB.getTestName(), is(newName));
-		assertThat(testInDB.getId(), is(test.getId()));
+		perfTestApiController.saveOne(getTestUser(), newTest, false);
+		PerfTest savedTest = perfTestApiController.getOne(getTestUser(), newTest.getId());
+		assertEquals(savedTest.getTestName(), newName);
+		assertEquals(savedTest.getId(), test.getId());
 
-		model.clear();
 		newTest.setStatus(Status.READY);
-		controller.saveOne(getTestUser(), newTest, false, model);
-		controller.getOne(getTestUser(), newTest.getId(), model);
-		testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB.getTestName(), is(newName));
-		assertThat(testInDB.getId(), is(test.getId()));
+		perfTestApiController.saveOne(getTestUser(), newTest, false);
+		savedTest = perfTestApiController.getOne(getTestUser(), newTest.getId());
+		assertEquals(savedTest.getTestName(), newName);
+		assertEquals(savedTest.getId(), test.getId());
 
 		// test status id "START_TESTING", can not be saved.
 		newTest.setStatus(Status.START_TESTING);
 		try {
 			newTest.setStatus(Status.START_TESTING);
-			controller.saveOne(getTestUser(), newTest, false, model);
+			perfTestApiController.saveOne(getTestUser(), newTest, false);
 			fail("test status id START_TESTING, can not be saved");
 		} catch (IllegalArgumentException e) {
+			noOp();
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTestList() {
 		createPerfTest("new test1", Status.READY, new Date());
-		ModelMap model = new ModelMap();
-		controller.getAll(getTestUser(), null, null, null, new PageRequest(0, 10), model);
-		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
-		List<PerfTest> testList = testPage.getContent();
-		assertThat(testList.size(), is(1));
+		Map<String, Object> response = perfTestApiController.getAllList(getTestUser(), null, null, null, PageRequest.of(0, 10));
+		assertThat(((List) response.get("tests")).size(), is(1));
 	}
 
 	@Test
 	public void testGetTestListByAdmin() {
 		String testName = "new test1";
 		createPerfTest(testName, Status.READY, new Date());
-		ModelMap model = new ModelMap();
 		User testAdmin = new User();
 		testAdmin.setUserId("testAdmin");
 		testAdmin.setPassword("testAdmin");
@@ -223,17 +221,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		testAdmin.setTimeZone("Asia/Seoul");
 		testAdmin = userService.save(testAdmin);
 
-		controller.getAll(testAdmin, null, null, null, new PageRequest(0, 10), model);
-		@SuppressWarnings("unchecked")
-		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
-		List<PerfTest> testList = testPage.getContent();
-		boolean success = false;
-		for (PerfTest perfTest : testList) {
-			if (perfTest.getTestName().equals(testName)) {
-				success = true;
-			}
-		}
-		assertTrue(success);
+		Map<String, Object> response = perfTestApiController.getAllList(testAdmin, null, null, null, PageRequest.of(0, 10));
+		List<PerfTest> tests = cast(response.get("tests"));
+		assertTrue(tests.stream().anyMatch(test -> test.getTestName().equals(testName)));
 	}
 
 	@Test
@@ -241,74 +231,58 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		String testName = "new test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 
-		ModelMap model = new ModelMap();
-
 		User otherTestUser = new User();
 		otherTestUser.setUserId("testUser");
 		otherTestUser.setPassword("testUser");
 		otherTestUser.setRole(Role.USER);
 		otherTestUser = userService.save(otherTestUser);
 		otherTestUser.setTimeZone("Asia/Seoul");
-		controller.getAll(otherTestUser, null, null, null, new PageRequest(0, 10), model);
-		@SuppressWarnings("unchecked")
-		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
-		List<PerfTest> testList = testPage.getContent();
+		Map<String, Object> response = perfTestApiController.getAllList(otherTestUser, null, null, null, PageRequest.of(0, 10));
 
-		assertThat(testList.size(), is(0));
+		assertThat(((List) response.get("tests")).size(), is(0));
 
 		// test no permission for other user
-		model.clear();
 		try {
-			controller.getOne(otherTestUser, test.getId(), model);
+			perfTestApiController.getOne(otherTestUser, test.getId());
 			assertTrue(false);
 		} catch (NGrinderRuntimeException e) {
 			assertTrue(true);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTestListByKeyWord() {
 		String strangeName = "DJJHG^%R&*^%^565(^%&^%(^%(^";
 		createPerfTest(strangeName, Status.READY, new Date());
 
-		ModelMap model = new ModelMap();
+		Sort sort = new Sort(Sort.Direction.ASC, "testName");
+		Pageable pageable = PageRequest.of(0, 10, sort);
+		Map<String, Object> response = perfTestApiController.getAllList(getTestUser(), strangeName, null, null, pageable);
+		assertThat(((List) response.get("tests")).size(), is(1));
 
-		Sort sort = new Sort("testName");
-		Pageable pageable = new PageRequest(0, 10, sort);
-		controller.getAll(getTestUser(), strangeName, null, null, pageable, model);
-		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
-		List<PerfTest> testList = testPage.getContent();
-		assertThat(testList.size(), is(1));
-
-		controller.getAll(getTestUser(), strangeName.substring(2, 10), null, null, new PageRequest(0, 10), model);
-		testPage = (Page<PerfTest>) model.get("testListPage");
-		testList = testPage.getContent();
-		assertThat(testList.size(), is(1));
+		response = perfTestApiController.getAllList(getTestUser(), strangeName.substring(2, 10), null, null, PageRequest.of(0, 10));
+		assertThat(((List) response.get("tests")).size(), is(1));
 	}
 
 	@Test
 	public void testGetReportData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
-		ModelMap model = new ModelMap();
-		controller.getReport(model, test.getId());
+		controller.getReport(test.getId());
 
-		model.clear();
-		controller.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
+		perfTestApiController.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
 
-		model.clear();
-		controller.getReportSection(getTestUser(), model, test.getId(), 700);
+		perfTestApiController.getReportSection(getTestUser(), test.getId(), 700);
 	}
 
 	@Test
 	public void testGetMonitorData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
-		controller.getMonitorGraph(test.getId(), "127.0.0.1", 0);
+		perfTestApiController.getMonitorGraph(test.getId(), "127.0.0.1", 0);
 
 		long testId = 123456L;
-		controller.getMonitorGraph(testId, "127.0.0.1", 700);
+		perfTestApiController.getMonitorGraph(testId, "127.0.0.1", 700);
 	}
 
 	@Test
@@ -333,7 +307,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		test.setPort(11011);
 		try {
-			controller.refreshTestRunning(getTestUser(), test.getId());
+			perfTestApiController.refreshTestRunning(getTestUser(), test.getId());
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
@@ -347,16 +321,16 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest im
 		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
 
 		String ids = test.getId() + "," + test2.getId();
-		HttpEntity<String> rtnJson = controller.getStatuses(getTestUser(), ids);
-		assertThat(rtnJson.getBody(), notNullValue());
+		Map<String, Object> response = perfTestApiController.getStatuses(getTestUser(), ids);
+		assertThat(response, notNullValue());
 	}
 
 	@Test
 	public void testSearchTag() {
-		HttpEntity<String> rtn = controller.searchTag(getAdminUser(), "");
-		assertThat(rtn.getBody(), notNullValue());
-		rtn = controller.searchTag(getAdminUser(), "test");
-		assertThat(rtn.getBody(), notNullValue());
+		List<String> rtn = perfTestApiController.searchTag(getAdminUser(), "");
+		assertThat(rtn, notNullValue());
+		rtn = perfTestApiController.searchTag(getAdminUser(), "test");
+		assertThat(rtn, notNullValue());
 	}
 
 }

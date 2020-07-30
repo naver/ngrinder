@@ -15,8 +15,7 @@ package org.ngrinder.extension;
 
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
-
-import ro.fortsoft.pf4j.ExtensionPoint;
+import org.pf4j.ExtensionPoint;
 
 /**
  * Plugin extension point for {@link PerfTest} start and finish.

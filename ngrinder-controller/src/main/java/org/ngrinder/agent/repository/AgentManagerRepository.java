@@ -13,21 +13,16 @@
  */
 package org.ngrinder.agent.repository;
 
-import net.grinder.message.console.AgentControllerState;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
  * Agent Repository. This is necessary due to lack of agent info in the Grinder.
  * We need to keep the additional info for each agent in the DB not memory.
  *
- * @author Tobi
- * @author JunHo Yoon
  * @since 3.0
  */
 @Repository
@@ -37,10 +32,10 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 * Find a {@link AgentInfo} by ip and host name.
 	 *
 	 * @param ip       ip
-	 * @param hostName host name
+	 * @param name     host name
 	 * @return found agent
 	 */
-	AgentInfo findByIpAndHostName(String ip, String hostName);
+	AgentInfo findByIpAndName(String ip, String name);
 
 	/**
 	 * Find a {@link AgentInfo} by ip.
@@ -59,24 +54,4 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 */
 	long count(Specification<AgentInfo> spec);
 
-	/**
-	 * Update system stat.
-	 *
-	 * @param ip   ip
-	 * @param name name
-	 * @param s    status string
-	 */
-	@Modifying
-	@Query("update AgentInfo p set p.systemStat=?3 where p.ip=?1 and p.hostName=?2")
-	void updateSystemStat(String ip, String name, String s);
-
-	/**
-	 * Update agent state.
-	 *
-	 * @param id    id
-	 * @param state state
-	 */
-	@Modifying
-	@Query("update AgentInfo p set p.state=?2 where p.id = ?1")
-	void updateState(Long id, AgentControllerState state);
 }
