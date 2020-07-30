@@ -4,16 +4,23 @@
             <div data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
                 <select2 v-model="selectedTag" :value="selectedTag" @change="$emit('change-tag')"
                          name="tagSelect" ref="tagSelect"
+                         customStyle="margin-bottom: 1px;"
                          :option="{placeholder: i18n('perfTest.action.selectATag'), allowClear: true}">
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
-                <input type="search" name="search" class="search-query-without-radios form-control"
-                       placeholder="Keywords" v-model="searchText" @keydown.enter="$emit('search')" v-focus>
-                <button class="btn btn-info align-baseline" @click="$emit('search')">
-                    <i class="fa fa-search mr-1"></i>
-                    <span v-text="i18n('common.button.search')"></span>
-                </button>
+                <div class="d-inline-block">
+                    <div class="input-group">
+                        <input type="search" name="search" class="input-search-append form-control"
+                               placeholder="Keywords" v-model="searchText" @keydown.enter="$emit('search')" v-focus>
+                        <div class="input-group-append">
+                            <button class="btn btn-info align-baseline" @click="$emit('search')">
+                                <i class="fa fa-search mr-1"></i>
+                                <span v-text="i18n('common.button.search')"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <label class="checkbox-label">
                     <input type="checkbox" class="align-middle" v-model="running">
                     <span v-text="i18n('perfTest.action.running')"></span>
@@ -110,7 +117,7 @@
             display: inline-block;
         }
 
-        .search-query-without-radios {
+        .input-search-append{
             width: 250px;
             height: 30px;
         }
