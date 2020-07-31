@@ -15,6 +15,7 @@ package org.ngrinder.script.handler;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -33,8 +34,11 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.maven.wagon.PathUtils.filename;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -198,16 +202,12 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, // LF
 	                                String url, boolean createLib, String scriptContent) {
 		path = PathUtils.join(path, fileName);
-		try {
-			// Create Dir entry
-			createBaseDirectory(user, path);
-			// Create each template entries
-			createFileEntries(user, path, name, url, scriptContent);
-			if (createLib) {
-				createLibraryDirectory(user, path);
-			}
-		} catch (IOException e) {
-			throw processException("Error while patching script_template", e);
+		// Create Dir entry
+		createBaseDirectory(user, path);
+		// Create each template entries
+		createFileEntries(user, path, name, url, scriptContent);
+		if (createLib) {
+			createLibraryDirectory(user, path);
 		}
 		return false;
 	}
@@ -220,15 +220,12 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		getFileEntryRepository().save(user, fileEntry, null);
 	}
 
-	private void createFileEntries(User user, String path, String name, String url,
-		String scriptContent) throws IOException {
-		File scriptTemplateDir;
-		scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
-		for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
-			try {
-				String subpath = each.getPath().substring(scriptTemplateDir.getPath().length());
-				String fileContent = FileUtils.readFileToString(each, "UTF8");
-				if (subpath.endsWith("TestRunner.groovy")) {
+	private void createFileEntries(User user, String path, String name, String url, String scriptContent) {
+		String[] scriptTemplatePaths = { "pom.xml", "src/main/resources/resource1.txt", "src/main/java/TestRunner.groovy" };
+		for (String scriptTemplatePath : scriptTemplatePaths) {
+			try (InputStream inputStream = new ClassPathResource("/script_template/groovy_maven/" + scriptTemplatePath).getInputStream()) {
+				String fileContent = IOUtils.toString(inputStream, UTF_8.name());
+				if (scriptTemplatePath.endsWith("TestRunner.groovy")) {
 					fileContent = scriptContent;
 				} else {
 					fileContent = fileContent.replace("${userName}", user.getUserName());
@@ -237,7 +234,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				}
 				FileEntry fileEntry = new FileEntry();
 				fileEntry.setContent(fileContent);
-				fileEntry.setPath(FilenameUtils.normalize(PathUtils.join(path, subpath), true));
+				fileEntry.setPath(FilenameUtils.normalize(PathUtils.join(path, scriptTemplatePath), true));
 				fileEntry.setDescription("create groovy maven project");
 				String hostName = UrlUtils.getHost(url);
 				if (StringUtils.isNotEmpty(hostName)
@@ -248,7 +245,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				}
 				getFileEntryRepository().save(user, fileEntry, "UTF8");
 			} catch (IOException e) {
-				throw processException("Error while saving " + each.getName(), e);
+				throw processException("Error while saving " + filename(scriptTemplatePath), e);
 			}
 		}
 	}
