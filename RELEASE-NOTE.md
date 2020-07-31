@@ -4,6 +4,8 @@
     * Server mode agent
         * Legacy nGrinder agents must be accessible to nGrinder controller via TCP, it was difficult to set up a private agents to connect to the controller behind a firewall. Now, nGrinder provides the server mode agent. You can easily connect the private agent to the nGrinder controller behind a firewall with the server mode agent.
         * See https://github.com/donggyu04/ngrinder/wiki/Server-Mode-Agent
+    * Agent auto update
+        * When the test is executed with older version of agent, it triggers agent auto update.
     * GitHub script storage
         * nGrinder is a SVN server itself to manage test scripts. SVN is very suitable for nGrinder, but it is an old technology. So, we added github as another script storage.
         * See https://github.com/donggyu04/ngrinder/wiki/GitHub-script-storage
