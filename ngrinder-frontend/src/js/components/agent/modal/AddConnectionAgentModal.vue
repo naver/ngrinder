@@ -76,12 +76,6 @@
         ip = '';
         port = null;
 
-        created() {
-            if (!this.ngrinder.config.clustered) {
-                this.region = 'NONE';
-            }
-        }
-
         addConnectionAgent() {
             this.$validator.validateAll()
                 .then(result => {
@@ -94,7 +88,7 @@
         }
 
         beforeShown() {
-            this.region = '';
+            this.region = this.ngrinder.config.clustered ? '' : 'NONE';
             this.ip = '';
             this.port = null;
         }
