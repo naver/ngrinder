@@ -100,7 +100,7 @@
                 </vue-scroll>
             </pane>
         </splitpanes>
-        <div class="script-samples-link">
+        <div v-if="validationResult" class="script-samples-link">
             <a target="_blank" href="https://github.com/naver/ngrinder/tree/master/script-sample">Script Samples</a>
         </div>
         <host-modal ref="addHostModal" @add-host="addHost" focus="domain"></host-modal>
