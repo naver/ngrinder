@@ -46,6 +46,10 @@
                                 <i class="fa fa-save mr-1"></i>
                                 <span v-text="i18n('common.button.save')"></span>
                             </button>
+                            <button class="btn btn-success" @click="save(true)">
+                                <i class="fa fa-undo mr-1"></i>
+                                <span v-text="i18n('common.button.save.and.close')"></span>
+                            </button>
                         </template>
                     </div>
                 </div>
