@@ -528,4 +528,8 @@
         width: 164px;
         height: 30px;
     }
+
+    .splitpanes .splitpanes__pane {
+        transition: none;   // Remove splitpanes initial transition
+    }
 </style>
