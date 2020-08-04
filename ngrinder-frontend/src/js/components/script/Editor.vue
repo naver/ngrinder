@@ -1,6 +1,7 @@
 <template>
     <div ref="editorContainer" class="container d-flex flex-column overflow-y-auto h-100">
         <vue-headful :title="i18n('script.editor.title')"/>
+        <i v-show="isFullScreen()" class="fa fa-compress pointer-cursor" @click="fullScreen"></i>
         <div class="file-desc-container flex-grow-0">
             <div class="form-horizontal">
                 <button class="btn-return-to-list btn-primary border-0 position-absolute" @click="returnToList" v-text="i18n('common.list')"></button>
@@ -80,11 +81,14 @@
                     @resize="editorSize = $event[0].size"
                     horizontal>
             <pane :min-size="15" :size="editorSize">
-                <code-mirror ref="editor"
-                             class="h-100"
-                             :value="file.content"
-                             :options="cmOptions">
-                </code-mirror>
+                <div class="h-100 position-relative">
+                    <i v-show="!isFullScreen()" class="fa fa-expand pointer-cursor" @click="fullScreen"></i>
+                    <code-mirror ref="editor"
+                                 class="h-100"
+                                 :value="file.content"
+                                 :options="cmOptions">
+                    </code-mirror>
+                </div>
             </pane>
             <pane v-if="validationResult" :min-size="15" :size="100 - editorSize">
                 <vue-scroll class="border validation-result-container">
@@ -170,6 +174,10 @@
 
         created() {
             this.hideDescription = this.$localStorage.get(this.SCRIPT_DESCRIPTION_HIDE_KEY, false, Boolean);
+        }
+
+        fullScreen() {
+            this.$refs.editor.codemirror.setOption('fullScreen', !this.isFullScreen());
         }
 
         mounted() {
@@ -397,6 +405,10 @@
             this.$router.referer ? this.$router.back() : this.$router.push('/script/');
         }
 
+        isFullScreen() {
+            return this.$refs.editor && this.$refs.editor.codemirror.getOption('fullScreen');
+        }
+
         get basePath() {
             return this.remainedPath.substring(0, this.remainedPath.lastIndexOf('/'));
         }
@@ -515,13 +527,20 @@
         }
     }
 
-    .expand-btn-container {
+    .fa-expand {
+        font-size: 14px;
+        z-index: 100;
         position: absolute;
-        left: 50%;
-        width: 40px;
-        height: 20px;
-        margin-left: -20px;
-        margin-top: 6px;
+        right: 14px;
+        top: 7px;
+    }
+
+    .fa-compress {
+        font-size: 15px;
+        position: absolute;
+        z-index: 100;
+        right: 15px;
+        top: 42px;
     }
 
     input[type="text"] {
