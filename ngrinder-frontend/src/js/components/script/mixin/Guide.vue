@@ -23,7 +23,9 @@
                     '        test1.record(this, "test1")\n' +
                     '        test2.record(this, "test2")\n' +
                     '    }\n\n' +
-                    '    public void test1() { ... }\n' +
+                    '    @Test\n' +
+                    '    public void test1() { ... }\n\n' +
+                    '    @Test\n' +
                     '    public void test2() { ... }\n\n' +
                     'You can specify the test run rate with @RunRate annotation.\n' +
                     'ex) import net.grinder.scriptengine.groovy.junit.annotation.RunRate\n\n' +
