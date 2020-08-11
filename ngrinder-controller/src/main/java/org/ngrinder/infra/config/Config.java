@@ -76,6 +76,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	private PropertiesWrapper controllerProperties;
 	private PropertiesWrapper databaseProperties;
 	private PropertiesWrapper clusterProperties;
+	private PropertiesWrapper ldapProperties;
 	private String announcement = "";
 	private Date announcementDate;
 	private boolean verbose;
@@ -89,6 +90,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	protected PropertiesKeyMapper databasePropertiesKeyMapper = PropertiesKeyMapper.create("database-properties.map");
 	protected PropertiesKeyMapper controllerPropertiesKeyMapper = PropertiesKeyMapper.create("controller-properties.map");
 	protected PropertiesKeyMapper clusterPropertiesKeyMapper = PropertiesKeyMapper.create("cluster-properties.map");
+	protected PropertiesKeyMapper ldapPropertiesKeyMapper = PropertiesKeyMapper.create("ldap-properties.map");
 
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
@@ -388,6 +390,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		// Override if exists
 		controllerProperties = new PropertiesWrapper(properties, controllerPropertiesKeyMapper);
 		clusterProperties = new PropertiesWrapper(properties, clusterPropertiesKeyMapper);
+		ldapProperties = new PropertiesWrapper(properties, ldapPropertiesKeyMapper);
 	}
 
 	/**
@@ -704,6 +707,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 
 	public PropertiesWrapper getClusterProperties() {
 		return clusterProperties;
+	}
+
+	public PropertiesWrapper getLdapProperties() {
+		return ldapProperties;
 	}
 
 	/**
