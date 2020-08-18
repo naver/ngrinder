@@ -20,8 +20,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static javax.net.ssl.SSLSocketFactory.getDefault;
@@ -38,6 +39,7 @@ import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LE
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.SystemInfoUtils.getAvailableMemory;
 
 /**
  * Class which is responsible to build custom jvm arguments.
@@ -261,22 +263,14 @@ public class PropertyBuilder {
 		int reservedMemory = Math.max(reservedMemoryUnit, 0) * 1024 * 1024;
 		int processCount = NumberUtils.toInt(processCountStr, 1);
 		long desirableXmx; // make 500M as default.
-		long permGen = 32 * 1024 * 1024;
-		try {
-			// Make a free memory room size of reservedMemory.
-			long free = new Sigar().getMem().getActualFree() - reservedMemory;
-			long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
-			desirableXmx = (long) (perProcessTotalMemory * 0.5);
-			permGen = Math.min(Math.max((long) (perProcessTotalMemory * 0.2), 50L * 1024 * 1024), 128 * 1024 * 1024);
-			if (this.useXmxLimit) {
-				desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
-			}
-		} catch (UnsatisfiedLinkError e) {
-			LOGGER.error("Sigar lib link error: {}", e.getMessage());
-			desirableXmx = DEFAULT_XMX_SIZE;
-		} catch (SigarException e) {
-			LOGGER.error("Error occurred while calculating memory size : {}", e.getMessage());
-			desirableXmx = DEFAULT_XMX_SIZE;
+
+		// Make a free memory room size of reservedMemory.
+		long free = getAvailableMemory() - reservedMemory;
+		long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
+		desirableXmx = (long) (perProcessTotalMemory * 0.5);
+		long permGen = Math.min(Math.max((long) (perProcessTotalMemory * 0.2), 50L * 1024 * 1024), 128 * 1024 * 1024);
+		if (this.useXmxLimit) {
+			desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
 		}
 
 		jvmArguments.append(" -Xms").append(getMemorySize(desirableXmx)).append("m -Xmx").append(getMemorySize(desirableXmx)).append("m ");

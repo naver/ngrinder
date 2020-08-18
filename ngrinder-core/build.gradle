@@ -1,18 +1,18 @@
 sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 description = "ngrinder-core"
 dependencies {
-    compile files("${rootDir}/lib/sigar-native-1.0.jar")
     compile files("${rootDir}/lib/grinder-3.9.1-patch.jar")
     compile (project(":ngrinder-runtime"))
     compile (project(":ngrinder-groovy"))
-    compile (group: "org.fusesource", name: "sigar", version:"1.6.4")
+
+    compile (group: "com.github.oshi", name: "oshi-core", version: "5.2.2")
     compile (group: "org.pf4j", name: "pf4j", version:"3.0.1")
     compile (group: "javax.servlet", name: "javax.servlet-api", version:"3.1.0")
     compile (group: "commons-collections", name: "commons-collections", version:"3.2.1")
     compile (group: "org.python", name: "jython-standalone", version:"2.5.3")
     compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
     compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
-    compile (group: "net.java.dev.jna", name: "jna", version:"3.4.0")
+    compile (group: "net.java.dev.jna", name: "jna", version:"5.6.0")
     compile (group: "org.apache.commons", name: "commons-compress", version:"1.4.1")
     compile (group: "commons-codec", name: "commons-codec", version: "1.14")
     compile (group: "com.beust", name: "jcommander", version:"1.32")

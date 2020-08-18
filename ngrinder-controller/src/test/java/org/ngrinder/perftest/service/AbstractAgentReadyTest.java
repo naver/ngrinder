@@ -16,7 +16,6 @@ package org.ngrinder.perftest.service;
 import net.grinder.AgentControllerDaemon;
 import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.monitor.agent.MonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +30,6 @@ public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransaction
 
 	static {
 		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1).init();
-		try {
-			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
-		} catch (Exception e) {
-			LOG.error("ArchLoader failed", e);
-		}
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig);
 		agentControllerDaemon.run();
 		try {
