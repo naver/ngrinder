@@ -36,7 +36,7 @@ public class JsonUtils {
 		}
 	}
 
-	public static <T> T deserialize(String jsonString, TypeReference typeReference) {
+	public static <T> T deserialize(String jsonString, TypeReference<T> typeReference) {
 		try {
 			return objectMapper.readValue(jsonString, typeReference);
 		} catch (IOException e) {

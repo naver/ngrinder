@@ -2,7 +2,6 @@ sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 description = "ngrinder-core"
 dependencies {
     compile files("${rootDir}/lib/grinder-3.9.1-patch.jar")
-    compile (project(":ngrinder-runtime"))
     compile (project(":ngrinder-groovy"))
 
     compile (group: "com.github.oshi", name: "oshi-core", version: "5.2.2")

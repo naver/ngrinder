@@ -21,7 +21,6 @@ import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.GrinderConstants;
-import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.JsonUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
@@ -45,7 +44,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,6 +63,8 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.*;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
+import static org.springframework.data.domain.Sort.Direction.*;
+import static org.springframework.data.domain.Sort.by;
 
 /**
  * Performance Test api Controller.
@@ -408,11 +408,11 @@ public class PerfTestApiController {
 
 	private Pair<Page<PerfTest>, Pageable> getPerfTests(User user, String query, String tag, String queryFilter, Pageable pageableParam) {
 		Pageable pageable = PageRequest.of(pageableParam.getPageNumber(), pageableParam.getPageSize(),
-			pageableParam.getSort().isUnsorted() ? new Sort(Direction.DESC, "id") : pageableParam.getSort());
+			pageableParam.getSort().isUnsorted() ? by(DESC, "id") : pageableParam.getSort());
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		if (tests.getNumberOfElements() == 0) {
 			pageable = PageRequest.of(0, pageableParam.getPageSize(),
-				pageableParam.getSort().isUnsorted() ? new Sort(Direction.DESC, "id") : pageableParam.getSort());
+				pageableParam.getSort().isUnsorted() ? by(DESC, "id") : pageableParam.getSort());
 			tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageableParam);
 		}
 		return Pair.of(tests, pageable);
@@ -682,7 +682,7 @@ public class PerfTestApiController {
 	@GetMapping({"/last", "", "/"})
 	public List<PerfTest> getAll(User user, @RequestParam(defaultValue = "0") int page,
 								 @RequestParam(defaultValue = "1") int size) {
-		PageRequest pageRequest = PageRequest.of(page, size, new Sort(Direction.DESC, "id"));
+		PageRequest pageRequest = PageRequest.of(page, size, by(DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPagedAll(user, null, null, null, pageRequest);
 		return testList.getContent();
 	}

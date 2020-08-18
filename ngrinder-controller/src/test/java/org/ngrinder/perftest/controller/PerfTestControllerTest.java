@@ -255,7 +255,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String strangeName = "DJJHG^%R&*^%^565(^%&^%(^%(^";
 		createPerfTest(strangeName, Status.READY, new Date());
 
-		Sort sort = new Sort(Sort.Direction.ASC, "testName");
+		Sort sort = Sort.by(Sort.Direction.ASC, "testName");
 		Pageable pageable = PageRequest.of(0, 10, sort);
 		Map<String, Object> response = perfTestApiController.getAllList(getTestUser(), strangeName, null, null, pageable);
 		assertThat(((List) response.get("tests")).size(), is(1));
