@@ -1,6 +1,7 @@
 package org.ngrinder.user.controller;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.ngrinder.common.constant.ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID;
 import static org.ngrinder.common.constant.WebConstants.JSON_SUCCESS;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
@@ -9,6 +10,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/user/api")
 @RequiredArgsConstructor
@@ -173,15 +176,13 @@ public class UserApiController {
 			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
 				updatedUser);
 		}
-		save(updatedUser);
+		save(updatedUser, user.getUserId());
 	}
 
-	private User save(User user) {
-		if (StringUtils.isBlank(user.getPassword())) {
-			return userService.saveWithoutPasswordEncoding(user);
-		} else {
-			return userService.save(user);
-		}
+	private User save(User user, String modifiedBy) {
+		User result = isBlank(user.getPassword()) ? userService.saveWithoutPasswordEncoding(user) : userService.save(user);
+		log.info("'{}' is saved(updated) by '{}', info: {}", user.getUserId(), modifiedBy, user.toString());
+		return result;
 	}
 
 
@@ -204,6 +205,7 @@ public class UserApiController {
 		for (String eachId : ids) {
 			if (!user.getUserId().equals(eachId)) {
 				userService.delete(eachId);
+				log.info("'{}' is deleted by '{}'", eachId, user.getUserId());
 			}
 		}
 	}
@@ -253,9 +255,9 @@ public class UserApiController {
 	 */
 	@PostMapping({"/", ""})
 	@PreAuthorize("hasAnyRole('A')")
-	public User create(@ModelAttribute("user") User newUser) {
+	public User create(User user, @ModelAttribute("user") User newUser) {
 		checkNull(newUser.getId(), "User DB ID should be null");
-		return save(newUser);
+		return save(newUser, user.getUserId());
 	}
 
 	/**
@@ -267,10 +269,10 @@ public class UserApiController {
 	 */
 	@PutMapping("/{userId}")
 	@PreAuthorize("hasAnyRole('A')")
-	public User update(@PathVariable("userId") String userId, User update) {
+	public User update(User user, @PathVariable("userId") String userId, User update) {
 		update.setUserId(userId);
 		checkNull(update.getId(), "User DB ID should be null");
-		return save(update);
+		return save(update, user.getUserId());
 	}
 
 	/**
@@ -284,6 +286,7 @@ public class UserApiController {
 	public void delete(User user, @PathVariable("userId") String userId) {
 		if (!user.getUserId().equals(userId)) {
 			userService.delete(userId);
+			log.info("'{}' is deleted by '{}'", userId, user.getUserId());
 		}
 	}
 
