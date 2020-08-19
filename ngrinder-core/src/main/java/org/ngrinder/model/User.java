@@ -83,9 +83,6 @@ public class User extends BaseModel<User> {
 	@Column(name = "user_language")
 	private String userLanguage;
 
-	@Column(name = "mobile_phone")
-	private String mobilePhone;
-
 	@Column(name = "is_external", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean external;
@@ -143,7 +140,6 @@ public class User extends BaseModel<User> {
 		this.userId = StringUtils.trim(this.userId);
 		this.userName = StringUtils.trim(this.userName);
 		this.email = StringUtils.trim(this.email);
-		this.mobilePhone = StringUtils.trim(this.mobilePhone);
 		this.enabled = getSafe(this.enabled, true);
 		this.external = getSafe(this.enabled);
 		this.role = getSafe(this.role, Role.USER);

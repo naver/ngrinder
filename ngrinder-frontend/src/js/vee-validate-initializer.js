@@ -10,7 +10,6 @@ class VeeValidateInitializer {
                     case 'ip': return I18n.i18n('perfTest.config.addHost.inputTargetIp');
                     case 'folderName': return I18n.i18n('common.message.validate.format');
                     case 'userId': return I18n.i18n('user.info.userId.help');
-                    case 'mobilePhone': return I18n.i18n('user.info.phone.help');
                     case 'param': return I18n.i18n('perfTest.message.param');
                 }
             },
