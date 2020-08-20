@@ -15,7 +15,6 @@ package org.ngrinder;
 
 import com.beust.jcommander.JCommander;
 import net.grinder.AgentControllerDaemon;
-import net.grinder.util.VersionNumber;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constants.AgentConstants;
@@ -162,8 +161,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		agentController.shutdown();
 	}
 
-
-	public static NGrinderAgentStarterParam.NGrinderModeParam modeParam;
+	private static NGrinderAgentStarterParam.NGrinderModeParam modeParam;
 
 	/**
 	 * Agent starter.
@@ -173,7 +171,6 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 	public static void main(String[] args) {
 		NGrinderAgentStarter starter = new NGrinderAgentStarter();
 		final NGrinderAgentStarterParam param = new NGrinderAgentStarterParam();
-		checkJavaVersion();
 		JCommander commander = new JCommander(param);
 		commander.setProgramName("ngrinder-agent");
 		commander.setAcceptUnknownOptions(true);
@@ -228,17 +225,6 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			IOUtils.closeQuietly(inputStream);
 		}
 		return properties.getProperty("ngrinder.version", "UNKNOWN");
-	}
-
-	static void checkJavaVersion() {
-		String curJavaVersion = System.getProperty("java.version", "1.6");
-		checkJavaVersion(curJavaVersion);
-	}
-
-	static void checkJavaVersion(String curJavaVersion) {
-		if (new VersionNumber(curJavaVersion).compareTo(new VersionNumber("1.6")) < 0) {
-			LOG.info("- Current java version {} is less than 1.6. nGrinder Agent might not work well", curJavaVersion);
-		}
 	}
 
 	/**

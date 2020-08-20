@@ -276,16 +276,11 @@ public class PropertyBuilder {
 		long free = getAvailableMemory() - reservedMemory;
 		long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
 		desirableXmx = (long) (perProcessTotalMemory * 0.5);
-		long permGen = Math.min(Math.max((long) (perProcessTotalMemory * 0.2), 50L * 1024 * 1024), 128 * 1024 * 1024);
 		if (this.useXmxLimit) {
 			desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
 		}
 
 		jvmArguments.append(" -Xms").append(getMemorySize(desirableXmx)).append("m -Xmx").append(getMemorySize(desirableXmx)).append("m ");
-		jvmArguments.append(" -XX:PermSize=")
-				.append(properties.getInt("grinder.memory.permsize", getMemorySize(permGen))).append("m ");
-		jvmArguments.append(" -XX:MaxPermSize=")
-				.append(properties.getInt("grinder.memory.maxpermsize", getMemorySize(permGen))).append("m ");
 		return jvmArguments;
 	}
 
