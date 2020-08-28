@@ -1,3 +1,14 @@
+3.5.1 (2020.08.31)
+==================
+* Changes
+    * Support Java 11.
+        * nGrinder now supports Java 11. Controller & Agent supports Java 1.8 or above.
+        * Bump several libraries version up.
+        
+* Trivial Fix
+    * Remove mobile phone column from NUSER table.
+    * Make several UI improvements.
+  
 3.5.0 (2020.07.30)
 ==================
 * New Feature
