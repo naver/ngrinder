@@ -1,0 +1,213 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.ngrinder",
+    "module": "ngrinder-runtime",
+    "version": "3.5.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "44nzrnhzsreuvllbzowwuoxrva"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.json",
+          "module": "json",
+          "version": {
+            "requires": "20090211"
+          }
+        },
+        {
+          "group": "dnsjava",
+          "module": "dnsjava",
+          "version": {
+            "requires": "3.2.2"
+          }
+        },
+        {
+          "group": "commons-io",
+          "module": "commons-io",
+          "version": {
+            "requires": "2.2"
+          }
+        },
+        {
+          "group": "commons-lang",
+          "module": "commons-lang",
+          "version": {
+            "requires": "2.6"
+          }
+        },
+        {
+          "group": "org.hamcrest",
+          "module": "hamcrest-all",
+          "version": {
+            "requires": "1.1"
+          }
+        },
+        {
+          "group": "junit",
+          "module": "junit-dep",
+          "version": {
+            "requires": "4.8.2"
+          }
+        },
+        {
+          "group": "asm",
+          "module": "asm",
+          "version": {
+            "requires": "3.3.1"
+          }
+        },
+        {
+          "group": "net.sf.grinder",
+          "module": "grinder",
+          "version": {
+            "requires": "3.9.1"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "grinder-xmlbeans"
+            },
+            {
+              "group": "*",
+              "module": "jython"
+            },
+            {
+              "group": "*",
+              "module": "clojure"
+            },
+            {
+              "group": "*",
+              "module": "jedit-syntax"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "ngrinder-runtime-3.5.1.jar",
+          "url": "ngrinder-runtime-3.5.1.jar",
+          "size": 55299,
+          "sha512": "fb2114eddff69e6401296ddfedab3970b2e6a55ffa7910f41fd40611dc96678aa48b6a1a74c1344bca95f277e18754953b62e3b7344e6c7d00953b1239c83aea",
+          "sha256": "245c7a35e2bfccd30061fa201d6b809166ee38199d5510c57fae1713c5023ac9",
+          "sha1": "52d0d029e20307e9412f4e29c72c6fbed1a4471a",
+          "md5": "476143baf512d5662797c8c09010b862"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.json",
+          "module": "json",
+          "version": {
+            "requires": "20090211"
+          }
+        },
+        {
+          "group": "dnsjava",
+          "module": "dnsjava",
+          "version": {
+            "requires": "3.2.2"
+          }
+        },
+        {
+          "group": "commons-io",
+          "module": "commons-io",
+          "version": {
+            "requires": "2.2"
+          }
+        },
+        {
+          "group": "commons-lang",
+          "module": "commons-lang",
+          "version": {
+            "requires": "2.6"
+          }
+        },
+        {
+          "group": "org.hamcrest",
+          "module": "hamcrest-all",
+          "version": {
+            "requires": "1.1"
+          }
+        },
+        {
+          "group": "junit",
+          "module": "junit-dep",
+          "version": {
+            "requires": "4.8.2"
+          }
+        },
+        {
+          "group": "asm",
+          "module": "asm",
+          "version": {
+            "requires": "3.3.1"
+          }
+        },
+        {
+          "group": "net.sf.grinder",
+          "module": "grinder",
+          "version": {
+            "requires": "3.9.1"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "grinder-xmlbeans"
+            },
+            {
+              "group": "*",
+              "module": "jython"
+            },
+            {
+              "group": "*",
+              "module": "clojure"
+            },
+            {
+              "group": "*",
+              "module": "jedit-syntax"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "ngrinder-runtime-3.5.1.jar",
+          "url": "ngrinder-runtime-3.5.1.jar",
+          "size": 55299,
+          "sha512": "fb2114eddff69e6401296ddfedab3970b2e6a55ffa7910f41fd40611dc96678aa48b6a1a74c1344bca95f277e18754953b62e3b7344e6c7d00953b1239c83aea",
+          "sha256": "245c7a35e2bfccd30061fa201d6b809166ee38199d5510c57fae1713c5023ac9",
+          "sha1": "52d0d029e20307e9412f4e29c72c6fbed1a4471a",
+          "md5": "476143baf512d5662797c8c09010b862"
+        }
+      ]
+    }
+  ]
+}
