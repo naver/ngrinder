@@ -13,30 +13,21 @@
  */
 package org.ngrinder;
 
+import net.grinder.AgentControllerServerDaemon;
+import net.grinder.AgentDaemon.AgentShutDownListener;
+import net.grinder.SingleConsole;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.util.thread.Condition;
+import org.junit.Before;
+import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.AgentConfig;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import net.grinder.AgentControllerServer;
-import net.grinder.AgentControllerServerDaemon;
-import net.grinder.AgentDaemon.AgentShutDownListener;
-import net.grinder.Console;
-import net.grinder.SingleConsole;
-import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.util.thread.Condition;
-
-import org.hamcrest.Matchers;
-import org.hyperic.jni.ArchLoaderException;
-import org.hyperic.jni.ArchNotSupportedException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.ngrinder.common.util.ThreadUtils;
-import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.infra.ArchLoaderInit;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -46,24 +37,20 @@ abstract public class AbstractMultiGrinderTestBase {
 	public AgentConfig.NullAgentConfig agentConfig2;
 	public AgentConfig.NullAgentConfig agentConfig3;
 
-
-
 	static {
 		System.setProperty("ngrinder.agent.home", "./tmp/agent-home");
 	}
 
 	@Before
-	public void agentInit() throws ArchNotSupportedException, ArchLoaderException {
+	public void agentInit() {
 		agentConfig1 = new AgentConfig.NullAgentConfig(1);
 		agentConfig1.init();
-		ArchLoaderInit archLoaderInit = new ArchLoaderInit();
-		archLoaderInit.init(agentConfig1.getHome().getNativeDirectory());
+
 		agentConfig2 = new AgentConfig.NullAgentConfig(1);
 		agentConfig2.init();
-		archLoaderInit.init(agentConfig2.getHome().getNativeDirectory());
+
 		agentConfig3 = new AgentConfig.NullAgentConfig(1);
 		agentConfig3.init();
-		archLoaderInit.init(agentConfig3.getHome().getNativeDirectory());
 	}
 
 	/**
@@ -119,7 +106,7 @@ abstract public class AbstractMultiGrinderTestBase {
 	 *         free port
 	 */
 	public List<Integer> getFreePorts(int count) {
-		List<Integer> ports = new ArrayList<Integer>();
+		List<Integer> ports = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			ports.add(getFreePort());
 		}

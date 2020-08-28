@@ -2,8 +2,8 @@ package org.ngrinder.infra.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.Member;
+import com.hazelcast.map.IMap;
+import com.hazelcast.cluster.Member;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.slf4j.Logger;

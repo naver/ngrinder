@@ -10,6 +10,7 @@
 			<property name="hibernate.max_fetch_depth" value="0"/>
 			<property name="hibernate.cache.use_second_level_cache" value="true"/>
 			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
+			<property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
 		</properties>
 	</persistence-unit> 
 </persistence>

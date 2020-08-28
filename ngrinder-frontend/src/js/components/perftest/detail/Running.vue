@@ -213,10 +213,7 @@
         getPackageState(targetPackage) {
             let packageState = `CPU-${this.formatPercentage(targetPackage.cpuUsedPercentage)}
             MEM-${this.formatPercentage(((targetPackage.totalMemory - targetPackage.freeMemory) / targetPackage.totalMemory) * 100)}`;
-
-            if (targetPackage.receivedPerSec !== 0 || targetPackage.sentPerSec !== 0) {
-                packageState += ` RX-${this.formatNetwork(targetPackage.receivedPerSec)} TX-${this.formatNetwork(targetPackage.sentPerSec)}`;
-            }
+            packageState += ` RX-${this.formatNetwork(targetPackage.receivedPerSec)} TX-${this.formatNetwork(targetPackage.sentPerSec)}`;
             return packageState;
         }
 

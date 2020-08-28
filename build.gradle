@@ -31,14 +31,14 @@ subprojects {
   ext {
     profile = project.hasProperty('profile') ? profile : 'development'
     slf4j_version = "1.7.28"
-    spring_security_version = "5.1.6.RELEASE"
-    spring_boot_version = "2.1.8.RELEASE"
+    spring_security_version = "5.3.4.RELEASE"
+    spring_boot_version = "2.3.3.RELEASE"
     svnkit_version = "1.8.3-scm1"
-    hibernate_version = "5.3.11.Final"
-    hazelcast_version = "3.11.1"
+    hibernate_version = "5.4.20.Final"
+    hazelcast_version = "4.0.2"
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
-    jackson_version = "2.9.9"
+    jackson_version = "2.11.2"
   }
 
   repositories {

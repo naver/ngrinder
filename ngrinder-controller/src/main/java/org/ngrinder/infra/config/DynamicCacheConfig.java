@@ -17,10 +17,10 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ITopic;
 import com.hazelcast.spi.merge.LatestUpdateMergePolicy;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import com.hazelcast.spring.context.SpringManagedContext;
+import com.hazelcast.topic.ITopic;
 import lombok.RequiredArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.ngrinder.common.constant.ClusterConstants;
@@ -131,8 +131,8 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return topicConfig;
 	}
 
-	private Map<String, Object> getClusterMemberAttributes() {
-		Map<String, Object> attributes = new HashMap<>();
+	private Map<String, String> getClusterMemberAttributes() {
+		Map<String, String> attributes = new HashMap<>();
 		attributes.put(REGION_ATTR_KEY, config.getRegion());
 		return attributes;
 	}
@@ -184,14 +184,16 @@ public class DynamicCacheConfig implements ClusterConstants {
 			nearCacheConfig.setTimeToLiveSeconds(timeout);
 
 			if (count > 0) {
-				mapConfig.setEvictionPolicy(EvictionPolicy.LRU)
-					.getMaxSizeConfig()
-					.setSize(count)
-					.setMaxSizePolicy(MaxSizeConfig.MaxSizePolicy.PER_NODE);
+				EvictionConfig evictionConfig = new EvictionConfig();
+				evictionConfig.setEvictionPolicy(EvictionPolicy.LRU);
+				evictionConfig.setSize(count);
+				evictionConfig.setMaxSizePolicy(MaxSizePolicy.PER_NODE);
+
+				mapConfig.setEvictionConfig(evictionConfig);
 
 				nearCacheConfig.getEvictionConfig()
 					.setSize(count)
-					.setMaximumSizePolicy(EvictionConfig.MaxSizePolicy.ENTRY_COUNT)
+					.setMaxSizePolicy(MaxSizePolicy.ENTRY_COUNT)
 					.setEvictionPolicy(EvictionPolicy.LRU);
 			}
 
