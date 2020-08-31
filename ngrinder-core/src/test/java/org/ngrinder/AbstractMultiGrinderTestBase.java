@@ -143,7 +143,7 @@ abstract public class AbstractMultiGrinderTestBase {
 			if (size == expected) {
 				return;
 			}
-			sleep(1000);
+			sleep(2000);
 		}
 		assertThat(size, equalTo(expected));
 	}
@@ -159,7 +159,7 @@ abstract public class AbstractMultiGrinderTestBase {
 			if (size == expected) {
 				return;
 			}
-			sleep(1000);
+			sleep(2000);
 		}
 		assertThat(size, equalTo(expected));
 	}

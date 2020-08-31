@@ -192,6 +192,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 			}
 		});
 		console1.startTest(properties);
+
 		for (int i = 0; i < 20; i++) {
 			if (timeouted.isTrue()) {
 				break;
@@ -224,7 +225,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		agentControllerServerDaemon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 0));
 		agentControllerServerDaemon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 1));
 
-		waitAndAssertUntilAgentAttachedTo(console1, 2, 2);
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 10);
 
 		// Shutdown agent controller
 		agentControllerServerDaemon.shutdown();
@@ -236,7 +237,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		agentControllerServerDaemon.start();
 
 		// See the agent controller is attached automatically
-		waitAndAssertUntilAgentAttachedTo(agentControllerServerDaemon, 2, 3);
+		waitAndAssertUntilAgentAttachedTo(agentControllerServerDaemon, 2, 10);
 		sleep(2000);
 		allAvailableAgents = agentControllerServerDaemon.getAllAvailableAgents();
 
@@ -245,7 +246,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		agentControllerServerDaemon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 1));
 
 		// They should be successfully attached into the existing console.
-		waitAndAssertUntilAgentAttachedTo(console1, 2, 2);
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 10);
 
 	}
 }

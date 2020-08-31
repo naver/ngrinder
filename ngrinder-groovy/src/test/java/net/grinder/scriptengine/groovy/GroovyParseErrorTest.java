@@ -2,7 +2,6 @@ package net.grinder.scriptengine.groovy;
 
 import groovy.lang.GroovyClassLoader;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.text.StringContains.containsString;
@@ -17,7 +16,7 @@ public class GroovyParseErrorTest {
 			classLoader.parseClass("class WOW {{}");
 			fail("Exception should be occurred.");
 		} catch (Exception e) {
-			assertThat(e.getMessage(), containsString("1: expecting '}'"));
+			assertThat(e.getMessage(), containsString("1: Unexpected input"));
 		}
 	}
 }
