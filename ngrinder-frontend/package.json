@@ -8,10 +8,10 @@
     "url": "https://github.com/naver/ngrinder.git"
   },
   "scripts": {
-    "build-dev": "webpack",
-    "build-prod": "webpack --p",
-    "watch-dev": "webpack --watch",
-    "watch-prod": "webpack --watch --p",
+    "build-dev": "webpack --d",
+    "build-prod": "webpack",
+    "watch-dev": "webpack --watch --d",
+    "watch-prod": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
