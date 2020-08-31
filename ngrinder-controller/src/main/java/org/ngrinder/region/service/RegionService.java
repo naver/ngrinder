@@ -17,7 +17,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
+import com.hazelcast.cluster.Member;
 import lombok.RequiredArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.StringUtils;

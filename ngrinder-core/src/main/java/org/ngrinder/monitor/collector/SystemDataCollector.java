@@ -14,9 +14,7 @@
 package org.ngrinder.monitor.collector;
 
 import org.apache.commons.io.IOUtils;
-import org.hyperic.sigar.*;
 import org.ngrinder.common.constants.MonitorConstants;
-import org.ngrinder.common.util.NoOp;
 import org.ngrinder.monitor.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
@@ -28,6 +26,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static com.sun.jna.Platform.isWindows;
+import static org.ngrinder.common.util.SystemInfoUtils.*;
+
 /**
  * System data collector class.
  *
@@ -37,11 +38,7 @@ import java.io.IOException;
 public class SystemDataCollector extends DataCollector implements MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemDataCollector.class);
 
-	private Sigar sigar = null;
-
 	private SystemInfo prev = null;
-
-	private String[] netInterfaces = new String[]{};
 
 	private File customDataFile = null;
 
@@ -58,25 +55,19 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 
 	@Override
 	public synchronized void refresh() {
-		initSigar();
+		initializeSystemInfo();
 	}
 
-	private void initSigar() {
-		if (sigar == null) {
-			sigar = new Sigar();
-			try {
-				netInterfaces = sigar.getNetInterfaceList();
-				prev = new SystemInfo();
-				prev.setBandWidth(getNetworkUsage());
-			} catch (SigarException e) {
-				LOGGER.error("Network usage data retrieval failed.", e);
-			}
+	private void initializeSystemInfo() {
+		if (prev == null) {
+			prev = new SystemInfo();
+			prev.setBandWidth(getNetworkUsage());
 		}
 	}
 
 	@Override
 	public void run() {
-		initSigar();
+		initializeSystemInfo();
 		SystemMonitoringData systemMonitoringData = (SystemMonitoringData) getMXBean(SYSTEM);
 		systemMonitoringData.setSystemInfo(execute());
 	}
@@ -93,41 +84,17 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			BandWidth networkUsage = getNetworkUsage();
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
 			systemInfo.setBandWidth(bandWidth);
-			systemInfo.setCpuUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
-			Cpu cpu = sigar.getCpu();
-			systemInfo.setTotalCpuValue(cpu.getTotal());
-			systemInfo.setIdleCpuValue(cpu.getIdle());
-			Mem mem = sigar.getMem();
-			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
-			systemInfo.setFreeMemory(mem.getActualFree() / 1024L);
-			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
+			systemInfo.setCpuUsedPercentage(getCpuUsedPercentage());
+			systemInfo.setTotalMemory(getTotalMemory() / 1024L);
+			systemInfo.setFreeMemory(getAvailableMemory() / 1024L);
+			systemInfo.setSystem(isWindows() ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 			systemInfo.setCustomValues(getCustomMonitorData());
 		} catch (Throwable e) {
-			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
+			LOGGER.error("Error while getting system perf data: {}", e.getMessage());
 			LOGGER.debug("Error trace is ", e);
 		}
 		prev = systemInfo;
 		return systemInfo;
-	}
-
-	/**
-	 * Get the current network usage.
-	 *
-	 * @return BandWith
-	 * @throws SigarException thrown when the underlying lib is not linked
-	 */
-	public BandWidth getNetworkUsage() throws SigarException {
-		BandWidth bandWidth = new BandWidth(System.currentTimeMillis());
-		for (String each : netInterfaces) {
-			try {
-				NetInterfaceStat netInterfaceStat = sigar.getNetInterfaceStat(each);
-				bandWidth.setReceived(bandWidth.getReceived() + netInterfaceStat.getRxBytes());
-				bandWidth.setSent(bandWidth.getSent() + netInterfaceStat.getTxBytes());
-			} catch (Exception e) {
-				NoOp.noOp();
-			}
-		}
-		return bandWidth;
 	}
 
 	private String getCustomMonitorData() {

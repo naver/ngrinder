@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +46,8 @@ import java.util.List;
 import static org.hibernate.Hibernate.initialize;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
+import static org.springframework.data.domain.Sort.Direction.*;
+import static org.springframework.data.domain.Sort.by;
 
 @Service
 public class UserService extends AbstractUserService {
@@ -243,7 +244,7 @@ public class UserService extends AbstractUserService {
 	 * @return found user list
 	 */
 	public List<User> getAll(Role role) {
-		return getAll(role, new Sort(Direction.ASC, "userName"));
+		return getAll(role, by(ASC, "userName"));
 	}
 
 	/**

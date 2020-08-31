@@ -60,10 +60,6 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	protected BandWidth bandWidth;
 
-	private long totalCpuValue;
-
-	private long idleCpuValue;
-
 	private long freeMemory;
 
 	private long totalMemory;
@@ -84,8 +80,6 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			setCollectTime(collectTime);
 			String string = getString(cd, "system");
 			this.system = System.valueOf(string);
-			this.totalCpuValue = getLong(cd, "totalCpuValue");
-			this.idleCpuValue = getLong(cd, "idleCpuValue");
 			this.freeMemory = getLong(cd, "freeMemory");
 			this.totalMemory = getLong(cd, "totalMemory");
 			this.cpuUsedPercentage = getFloat(cd, "cpuUsedPercentage");

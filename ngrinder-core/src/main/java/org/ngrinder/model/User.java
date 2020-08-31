@@ -37,6 +37,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -82,9 +83,6 @@ public class User extends BaseModel<User> {
 
 	@Column(name = "user_language")
 	private String userLanguage;
-
-	@Column(name = "mobile_phone")
-	private String mobilePhone;
 
 	@Column(name = "is_external", columnDefinition = "char(1)")
 	@Type(type = "true_false")
@@ -140,10 +138,9 @@ public class User extends BaseModel<User> {
 	@PrePersist
 	@PreUpdate
 	public void init() {
-		this.userId = StringUtils.trim(this.userId);
-		this.userName = StringUtils.trim(this.userName);
-		this.email = StringUtils.trim(this.email);
-		this.mobilePhone = StringUtils.trim(this.mobilePhone);
+		this.userId = trim(this.userId);
+		this.userName = trim(this.userName);
+		this.email = getSafe(trim(this.email), "");
 		this.enabled = getSafe(this.enabled, true);
 		this.external = getSafe(this.enabled);
 		this.role = getSafe(this.role, Role.USER);
@@ -253,7 +250,9 @@ public class User extends BaseModel<User> {
 	// avoid lazy initialization issues ,method toString not contain followers and owners
 	@Override
 	public String toString() {
-		return "User[ID=" + this.getId() + ",name=" + this.getUserId() + ",Role=" + this.getRole() + "]";
+		return "User[id=" + this.getId() + ",userId=" + this.getUserId() +
+			",userName=" + this.getUserName() + ",role=" + this.getRole() +
+			",e-mail=" + this.getEmail() + "]";
 	}
 
 	private static class UserReferenceListSerializer extends StdSerializer<List<User>> {

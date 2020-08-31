@@ -1,4 +1,4 @@
-* nGrinder 3.5.0 has been released. See https://github.com/naver/ngrinder/releases
+* nGrinder 3.5.1 has been released. See https://github.com/naver/ngrinder/releases
 
 nGrinder 
 ========
@@ -48,6 +48,16 @@ Download
 
 You can download the latest nGrinder in the following link. 
 * https://github.com/naver/ngrinder/releases
+
+Quick Start
+-------------
+You can start nGrinder by executing following command.
+
+```
+java -jar ngrinder-controller-{version}.war
+```
+
+And then access it by using a browser. http://localhost:8080
 
 
 Documentation

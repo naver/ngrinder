@@ -32,11 +32,6 @@ public class NGrinderAgentStarterTest {
 	}
 
 	@Test
-	public void testJavaVersionCheck() {
-		NGrinderAgentStarter.checkJavaVersion("1.6");
-	}
-
-	@Test
 	public void testGetStartModeAndVersion() {
 		String startMode = starter.getStartMode();
 		assertTrue(startMode.equals("monitor") || startMode.equals("agent"));

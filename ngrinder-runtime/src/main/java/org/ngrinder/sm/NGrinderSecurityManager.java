@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
+import java.security.AllPermission;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	{
 		this.init();
+	}
+
+	public NGrinderSecurityManager() {
+		this.checkPermission(new AllPermission());
 	}
 
 	void init() {

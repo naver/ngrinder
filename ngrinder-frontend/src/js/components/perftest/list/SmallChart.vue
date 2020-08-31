@@ -31,9 +31,9 @@
         legend: {
             position: 'inset',
             inset: {
-                anchor: 'top-right',
+                anchor: 'bottom-right',
                 x: 20,
-                y: 10,
+                y: 50,
             },
             item: {
                 onclick() { }, // disable default click event

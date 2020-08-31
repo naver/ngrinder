@@ -1,8 +1,7 @@
 package org.ngrinder.infra.hazelcast.topic.subscriber;
 
-
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
+import com.hazelcast.topic.Message;
+import com.hazelcast.topic.MessageListener;
 import org.ngrinder.infra.hazelcast.topic.listener.TopicListener;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 
