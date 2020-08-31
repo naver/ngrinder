@@ -74,12 +74,14 @@ dependencies {
     compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
     compile (group: "org.kohsuke", name: "github-api", version: "1.99")
     compile (group: "commons-validator", name: "commons-validator", version: "1.6")
+    compile (group: 'org.codehaus.groovy', name: 'groovy-jsr223', version: '3.0.5')
 
     compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
     annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
 
     providedRuntime (group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: spring_boot_version)
 
+    testCompile (group: 'junit', name: 'junit', version: '4.13')
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
     testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: spring_boot_version)
 

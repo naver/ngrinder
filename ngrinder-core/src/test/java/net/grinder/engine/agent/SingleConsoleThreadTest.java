@@ -59,47 +59,41 @@ public class SingleConsoleThreadTest extends AbstractMultiGrinderTestBase {
 	}
 
 	@Test
-	public void testConsole() throws GrinderException, InterruptedException {
+	public void testConsole() {
 		agentThread1 = new AgentDaemon(agentConfig1);
 		agentThread1.run(console1.getConsolePort());
 		agentThread2 = new AgentDaemon(agentConfig2);
 		agentThread2.run(console1.getConsolePort());
-		// Wait until all agents are started. They will connect main console.
-		sleep(4000);
 
-		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents().size(), is(2));
+		// Wait until all agents are started. They will connect main console.
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 15);
 
 		// if we shut down one agent.
 		agentThread2.addListener(new AgentShutDownSynchronizeListener(condition));
 		agentThread2.shutdown();
-		sleep(5000);
 		waitOnCondition(condition, 5000);
 
-		assertThat("There must be 1 agents connecting console1", console1.getAllAttachedAgents().size(), is(1));
+		waitAndAssertUntilAgentAttachedTo(console1, 1, 5);
 
 		// If we connect console1 again
 		agentThread2.run(console1.getConsolePort());
-		sleep(4000);
 
-		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents().size(), is(2));
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 10);
 
 		// enable one agent more.
 		agentThread3 = new AgentDaemon(agentConfig3);
 		agentThread3.run(console2.getConsolePort());
 
-		Thread.sleep(4000);
-
 		// Now it should be 2 agents
-		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents().size(), is(2));
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 10);
 
 		// Now it should be 1 agents on console2
-		assertThat("There must be 1 agents connecting console2", console2.getAllAttachedAgents().size(), is(1));
+		waitAndAssertUntilAgentAttachedTo(console2, 1, 10);
 
 		console1.shutdown();
 		console1 = new SingleConsole(getFreePort());
 		console1.start();
 		console1.shutdown();
-
 	}
 
 }
