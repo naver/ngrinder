@@ -39,6 +39,7 @@ subprojects {
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
     jackson_version = "2.11.2"
+    groovy_version = "3.0.5"
   }
 
   repositories {
