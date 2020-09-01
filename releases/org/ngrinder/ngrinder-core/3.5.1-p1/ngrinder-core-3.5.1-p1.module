@@ -1,0 +1,303 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.ngrinder",
+    "module": "ngrinder-core",
+    "version": "3.5.1-p1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "vcpl3sp3xjf7vb7vn45jrgo56q"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.ngrinder",
+          "module": "ngrinder-groovy",
+          "version": {
+            "requires": "3.5.1-p1"
+          }
+        },
+        {
+          "group": "com.github.oshi",
+          "module": "oshi-core",
+          "version": {
+            "requires": "5.2.2"
+          }
+        },
+        {
+          "group": "org.pf4j",
+          "module": "pf4j",
+          "version": {
+            "requires": "3.0.1"
+          }
+        },
+        {
+          "group": "javax.servlet",
+          "module": "javax.servlet-api",
+          "version": {
+            "requires": "3.1.0"
+          }
+        },
+        {
+          "group": "commons-collections",
+          "module": "commons-collections",
+          "version": {
+            "requires": "3.2.1"
+          }
+        },
+        {
+          "group": "org.python",
+          "module": "jython-standalone",
+          "version": {
+            "requires": "2.5.3"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-annotations",
+          "version": {
+            "requires": "2.11.2"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.11.2"
+          }
+        },
+        {
+          "group": "net.java.dev.jna",
+          "module": "jna",
+          "version": {
+            "requires": "5.6.0"
+          }
+        },
+        {
+          "group": "org.apache.commons",
+          "module": "commons-compress",
+          "version": {
+            "requires": "1.4.1"
+          }
+        },
+        {
+          "group": "commons-codec",
+          "module": "commons-codec",
+          "version": {
+            "requires": "1.14"
+          }
+        },
+        {
+          "group": "com.beust",
+          "module": "jcommander",
+          "version": {
+            "requires": "1.32"
+          }
+        },
+        {
+          "group": "ch.qos.logback",
+          "module": "logback-classic",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "1.7.28"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "jcl-over-slf4j",
+          "version": {
+            "requires": "1.7.28"
+          }
+        },
+        {
+          "group": "org.hibernate",
+          "module": "hibernate-core",
+          "version": {
+            "requires": "5.4.20.Final"
+          }
+        },
+        {
+          "group": "org.jboss.spec.javax.transaction",
+          "module": "jboss-transaction-api_1.2_spec",
+          "version": {
+            "requires": "1.0.1.Final"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ngrinder-core-3.5.1-p1.jar",
+          "url": "ngrinder-core-3.5.1-p1.jar",
+          "size": 703757,
+          "sha512": "56e5242dd8d845af336d117b63bbefe6e9f777a83a62b10780ba7f03ebc6ebf268a3c17748fb2da2352af6a6347b818b5b006a960142e257f725b51c9f0d655a",
+          "sha256": "a957e8e363a0baa6326755de81922ef42e0193c44c0905e70e1ca94040173f0d",
+          "sha1": "a381d2b30a6d0c021bc6010ba7c5df7bc94218f6",
+          "md5": "12076abb19c02fa020a90732252cbfce"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.ngrinder",
+          "module": "ngrinder-groovy",
+          "version": {
+            "requires": "3.5.1-p1"
+          }
+        },
+        {
+          "group": "com.github.oshi",
+          "module": "oshi-core",
+          "version": {
+            "requires": "5.2.2"
+          }
+        },
+        {
+          "group": "org.pf4j",
+          "module": "pf4j",
+          "version": {
+            "requires": "3.0.1"
+          }
+        },
+        {
+          "group": "javax.servlet",
+          "module": "javax.servlet-api",
+          "version": {
+            "requires": "3.1.0"
+          }
+        },
+        {
+          "group": "commons-collections",
+          "module": "commons-collections",
+          "version": {
+            "requires": "3.2.1"
+          }
+        },
+        {
+          "group": "org.python",
+          "module": "jython-standalone",
+          "version": {
+            "requires": "2.5.3"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-annotations",
+          "version": {
+            "requires": "2.11.2"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.11.2"
+          }
+        },
+        {
+          "group": "net.java.dev.jna",
+          "module": "jna",
+          "version": {
+            "requires": "5.6.0"
+          }
+        },
+        {
+          "group": "org.apache.commons",
+          "module": "commons-compress",
+          "version": {
+            "requires": "1.4.1"
+          }
+        },
+        {
+          "group": "commons-codec",
+          "module": "commons-codec",
+          "version": {
+            "requires": "1.14"
+          }
+        },
+        {
+          "group": "com.beust",
+          "module": "jcommander",
+          "version": {
+            "requires": "1.32"
+          }
+        },
+        {
+          "group": "ch.qos.logback",
+          "module": "logback-classic",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "1.7.28"
+          }
+        },
+        {
+          "group": "org.slf4j",
+          "module": "jcl-over-slf4j",
+          "version": {
+            "requires": "1.7.28"
+          }
+        },
+        {
+          "group": "org.hibernate",
+          "module": "hibernate-core",
+          "version": {
+            "requires": "5.4.20.Final"
+          }
+        },
+        {
+          "group": "org.jboss.spec.javax.transaction",
+          "module": "jboss-transaction-api_1.2_spec",
+          "version": {
+            "requires": "1.0.1.Final"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ngrinder-core-3.5.1-p1.jar",
+          "url": "ngrinder-core-3.5.1-p1.jar",
+          "size": 703757,
+          "sha512": "56e5242dd8d845af336d117b63bbefe6e9f777a83a62b10780ba7f03ebc6ebf268a3c17748fb2da2352af6a6347b818b5b006a960142e257f725b51c9f0d655a",
+          "sha256": "a957e8e363a0baa6326755de81922ef42e0193c44c0905e70e1ca94040173f0d",
+          "sha1": "a381d2b30a6d0c021bc6010ba7c5df7bc94218f6",
+          "md5": "12076abb19c02fa020a90732252cbfce"
+        }
+      ]
+    }
+  ]
+}
