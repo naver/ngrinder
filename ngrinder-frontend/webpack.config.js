@@ -6,12 +6,12 @@ var webpack = require('webpack');
 var outputDir = path.resolve('../ngrinder-controller/build/classes/main/static');
 
 var argv = require('yargs').argv;
-var productionBuild = argv.p || argv.prod || argv.production || false;
+var developmentBuild = argv.d || argv.dev || argv.development || false;
 
-if (productionBuild) {
-    console.log('### production build is enabled. ga is included and javascript is optimized\r');
-} else {
+if (developmentBuild) {
     console.log('### production build is disabled.\r');
+} else {
+    console.log('### production build is enabled. ga is included and javascript is optimized\r');
 }
 
 if (argv.w || argv.watch) {
@@ -23,14 +23,14 @@ console.log('### passed env is ' + JSON.stringify(argv.env));
 var cssLoader = {
     loader: 'css-loader',
     options: {
-        sourceMap: !productionBuild,
+        sourceMap: developmentBuild,
     },
 };
 
 var lessLoader = {
     loader: 'less-loader',
     options: {
-        sourceMap: !productionBuild,
+        sourceMap: developmentBuild,
     },
 };
 
@@ -42,7 +42,7 @@ module.exports = function (env) {
     console.log('### frontend version is ' + ngrinderVersion + '\r');
 
     var webpackConfig = {
-        mode: productionBuild ? 'production' : 'development',
+        mode: developmentBuild ? 'development' : 'production',
         performance: {
             hints: false,
         },
@@ -166,7 +166,7 @@ module.exports = function (env) {
                 },
             ]),
             new webpack.LoaderOptionsPlugin({
-                debug: !productionBuild,
+                debug: developmentBuild,
                 options: {
                     context: __dirname,
                     htmlLoader: {
@@ -180,7 +180,7 @@ module.exports = function (env) {
         ],
     };
 
-    if (!productionBuild) {
+    if (developmentBuild) {
         console.log('### sourcemap is enabled.\r');
         webpackConfig.devtool = "#inline-source-map";
     } else {
