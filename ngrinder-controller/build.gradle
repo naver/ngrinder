@@ -74,7 +74,7 @@ dependencies {
     compile (group: "com.hazelcast", name: "hazelcast-spring", version: hazelcast_version)
     compile (group: "org.kohsuke", name: "github-api", version: "1.99")
     compile (group: "commons-validator", name: "commons-validator", version: "1.6")
-    compile (group: 'org.codehaus.groovy', name: 'groovy-jsr223', version: '3.0.5')
+    compile (group: 'org.codehaus.groovy', name: 'groovy-jsr223', version: groovy_version)
 
     compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
     annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
