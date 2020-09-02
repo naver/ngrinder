@@ -250,7 +250,7 @@
                                            message="perfTest.config.param"
                                            customStyle="width: 125px;"
                                            errStyle="white-space: nowrap;"
-                                           :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }">
+                                           :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,256}$/ }">
                             </input-popover>
                         </control-group>
                     </div>
