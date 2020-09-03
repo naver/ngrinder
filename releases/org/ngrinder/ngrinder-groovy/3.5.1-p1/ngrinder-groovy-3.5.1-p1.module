@@ -1,0 +1,163 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.ngrinder",
+    "module": "ngrinder-groovy",
+    "version": "3.5.1-p1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "wrxvjpkzg5cqng7xkheyr2mjta"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.ngrinder",
+          "module": "ngrinder-runtime",
+          "version": {
+            "requires": "3.5.1-p1"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-datetime",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-templates",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-json",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-sql",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-xml",
+          "version": {
+            "requires": "3.0.5"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ngrinder-groovy-3.5.1-p1.jar",
+          "url": "ngrinder-groovy-3.5.1-p1.jar",
+          "size": 43020,
+          "sha512": "a37883f2c80989140b4b37f1ab2faa15d7e7730200733c5d5dfb0d26fa9ca3f9e825c786fb3caa10b21601886a6832bc7c9ba4875ca7cd6de33f7593ec6211cd",
+          "sha256": "9bc7db193c6ee71ff622f98bc6e47551d42fcfe63baa1e65b7413431ba64cbcc",
+          "sha1": "0a63184394ae691b3f77b07173e5aa2dfe949871",
+          "md5": "2c07f52533c7a60787d0c85a8516172e"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.ngrinder",
+          "module": "ngrinder-runtime",
+          "version": {
+            "requires": "3.5.1-p1"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-datetime",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-templates",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-json",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-sql",
+          "version": {
+            "requires": "3.0.5"
+          }
+        },
+        {
+          "group": "org.codehaus.groovy",
+          "module": "groovy-xml",
+          "version": {
+            "requires": "3.0.5"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ngrinder-groovy-3.5.1-p1.jar",
+          "url": "ngrinder-groovy-3.5.1-p1.jar",
+          "size": 43020,
+          "sha512": "a37883f2c80989140b4b37f1ab2faa15d7e7730200733c5d5dfb0d26fa9ca3f9e825c786fb3caa10b21601886a6832bc7c9ba4875ca7cd6de33f7593ec6211cd",
+          "sha256": "9bc7db193c6ee71ff622f98bc6e47551d42fcfe63baa1e65b7413431ba64cbcc",
+          "sha1": "0a63184394ae691b3f77b07173e5aa2dfe949871",
+          "md5": "2c07f52533c7a60787d0c85a8516172e"
+        }
+      ]
+    }
+  ]
+}
