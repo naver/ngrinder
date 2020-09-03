@@ -8,7 +8,12 @@ configurations {
 
 dependencies {
     compile (project(":ngrinder-runtime"))
-    compile (group: "org.codehaus.groovy", name: "groovy", version:"3.0.5")
+    compile (group: "org.codehaus.groovy", name: "groovy", version: groovy_version)
+    compile (group: 'org.codehaus.groovy', name: 'groovy-datetime', version: groovy_version)
+    compile (group: 'org.codehaus.groovy', name: 'groovy-templates', version: groovy_version)
+    compile (group: 'org.codehaus.groovy', name: 'groovy-json', version: groovy_version)
+    compile (group: 'org.codehaus.groovy', name: 'groovy-sql', version: groovy_version)
+    compile (group: 'org.codehaus.groovy', name: 'groovy-xml', version: groovy_version)
 
     testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 

@@ -2,7 +2,7 @@ allprojects  {
   apply plugin: "idea"
 
   group = "org.ngrinder"
-  version = "3.5.1"
+  version = "3.5.1-p1"
 
   idea {
     module {
@@ -29,7 +29,7 @@ subprojects {
   targetCompatibility = 1.8
 
   ext {
-    profile = project.hasProperty('profile') ? profile : 'development'
+    profile = project.hasProperty('profile') ? profile : 'production'
     slf4j_version = "1.7.28"
     spring_security_version = "5.3.4.RELEASE"
     spring_boot_version = "2.3.3.RELEASE"
@@ -39,6 +39,7 @@ subprojects {
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
     jackson_version = "2.11.2"
+    groovy_version = "3.0.5"
   }
 
   repositories {

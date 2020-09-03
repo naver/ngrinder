@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.util.CompressionUtils.*;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
+import static org.ngrinder.common.util.StringUtils.replaceLast;
 
 /**
  * Agent package service.
@@ -125,11 +126,13 @@ public class AgentPackageService {
 	 * @param libs    lib set
 	 * @return true if dependent lib
 	 */
-	private boolean isDependentLib(File libFile, Set<String> libs) {
+	protected boolean isDependentLib(File libFile, Set<String> libs) {
 		if (libFile.getName().contains("grinder-3.9.1.jar")) {
 			return false;
 		}
-		String name = libFile.getName().replace("-SNAPSHOT", "").replace("-GA", "");
+
+		// Replace release types (-SNAPSHOT, -GA, -p1, ...)
+		String name = replaceLast(libFile.getName(), "-[a-zA-Z][a-zA-Z1-9]+\\.", ".");
 		final int libVersionStartIndex = name.lastIndexOf("-");
 		name = name.substring(0, (libVersionStartIndex == -1) ? name.lastIndexOf(".") : libVersionStartIndex);
 		return libs.contains(name);
