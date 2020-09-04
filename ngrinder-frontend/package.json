@@ -56,7 +56,7 @@
     "vue-form-wizard": "^0.8.4",
     "vue-headful": "^2.0.1",
     "vue-localstorage": "^0.6.2",
-    "vue-moment": "^2.1.0",
+    "vue-moment": "^4.1.0",
     "vue-property-decorator": "^6.0.0",
     "vue-router": "^2.7.0",
     "vue-slide-up-down": "^2.0.0",
