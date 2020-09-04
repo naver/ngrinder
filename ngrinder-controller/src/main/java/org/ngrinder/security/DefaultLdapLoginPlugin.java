@@ -13,6 +13,9 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -43,25 +46,48 @@ public class DefaultLdapLoginPlugin implements OnLoginRunnable {
 	}
 
 	private Attributes getUserFromLDAP(String userId) {
-		SearchResult searchResult = search(userId);
+		SearchResult searchResult = searchUser(userId);
 		if (searchResult == null) {
 			return null;
 		}
 		return searchResult.getAttributes();
 	}
 
-	private SearchResult search(String userId) {
+	private SearchResult searchUser(String userId) {
 		SearchResult searchResult = null;
 		try {
-			String name = String.format("cn=%s,%s", userId, ldapContext.getUserDN());
-			NamingEnumeration<SearchResult> enumeration = ldapContext.getLdapContext().search(name, ldapContext.getUserFilter(), ldapContext.getSearchControls());
-			if (enumeration.hasMore()) {
-				searchResult = enumeration.next();
+
+			String searchBase = normalizeUserSearchBase(ldapContext.getBaseDN(), ldapContext.getUserSearchBase());
+			NamingEnumeration<SearchResult> enumeration = ldapContext.getLdapContext().search(searchBase, ldapContext.getUserFilter(), ldapContext.getSearchControls());
+			while (enumeration.hasMore()) {
+				SearchResult result = enumeration.next();
+				String commonName = (String) result.getAttributes().get("CN").get();
+
+				if (userId.equalsIgnoreCase(commonName)) {
+					searchResult = result;
+					break;
+				}
 			}
 		} catch (NamingException e) {
 			log.error("Cannot find {} in LDAP, ", userId, e);
 		}
 		return searchResult;
+	}
+
+	private String normalizeUserSearchBase(String baseDN, String userSearchBase) {
+		if (isBlank(baseDN) && isBlank(userSearchBase)) {
+			return EMPTY;
+		}
+
+		if (isBlank(baseDN)) {
+			return userSearchBase;
+		}
+
+		if (isBlank(userSearchBase)) {
+			return baseDN;
+		}
+
+		return userSearchBase.trim() + "," + baseDN.trim();
 	}
 
 	@Override

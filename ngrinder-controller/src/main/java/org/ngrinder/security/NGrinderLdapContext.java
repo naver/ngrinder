@@ -96,11 +96,15 @@ public class NGrinderLdapContext {
 		return config.getLdapProperties().getProperty(PROP_LDAP_USER_EMAIL);
 	}
 
-	public String getUserDN() {
-		return config.getLdapProperties().getProperty(PROP_LDAP_USER_DN, "");
+	public String getBaseDN() {
+		return config.getLdapProperties().getProperty(PROP_LDAP_BASE_DN, "");
+	}
+
+	public String getUserSearchBase() {
+		return config.getLdapProperties().getProperty(PROP_LDAP_USER_SEARCH_BASE, "");
 	}
 
 	public String getUserFilter() {
-		return config.getLdapProperties().getProperty(PROP_LDAP_USER_FILTER);
+		return config.getLdapProperties().getProperty(PROP_LDAP_USER_SEARCH_FILTER);
 	}
 }
