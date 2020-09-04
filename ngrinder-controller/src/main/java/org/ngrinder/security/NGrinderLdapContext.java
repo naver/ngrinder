@@ -21,6 +21,7 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import java.util.Hashtable;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.LdapConstants.*;
 
 @Slf4j
@@ -28,7 +29,8 @@ import static org.ngrinder.common.constant.LdapConstants.*;
 @RequiredArgsConstructor
 public class NGrinderLdapContext {
 	private static final String LDAP_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
-	private static final String LDAP_SIMPLE_AUTH = "Simple";
+	private static final String LDAP_AUTH_SIMPLE = "Simple";
+	private static final String LDAP_AUTH_NONE = "None";
 
 <<<<<<< HEAD
 =======
@@ -71,10 +73,17 @@ public class NGrinderLdapContext {
 		Hashtable<String, String> env = new Hashtable<>();
 
 		env.put(Context.PROVIDER_URL, ldapProperties.getProperty(PROP_LDAP_SERVER));
-		env.put(Context.SECURITY_PRINCIPAL, ldapProperties.getProperty(PROP_LDAP_BASE_DN));
-		env.put(Context.SECURITY_CREDENTIALS, ldapProperties.getProperty(PROP_LDAP_PASSWORD));
 		env.put(Context.INITIAL_CONTEXT_FACTORY, LDAP_FACTORY);
-		env.put(Context.SECURITY_AUTHENTICATION, LDAP_SIMPLE_AUTH);
+		env.put(Context.SECURITY_AUTHENTICATION, LDAP_AUTH_NONE);
+
+		String managerDn = ldapProperties.getProperty(PROP_LDAP_MANAGER_DN);
+		String managerPassword = ldapProperties.getProperty(PROP_LDAP_MANAGER_PASSWORD);
+
+		if (isNotEmpty(managerDn) && isNotEmpty(managerPassword)) {
+			env.put(Context.SECURITY_AUTHENTICATION, LDAP_AUTH_SIMPLE);
+			env.put(Context.SECURITY_PRINCIPAL, managerDn);
+			env.put(Context.SECURITY_CREDENTIALS, managerPassword);
+		}
 
 		return env;
 	}
