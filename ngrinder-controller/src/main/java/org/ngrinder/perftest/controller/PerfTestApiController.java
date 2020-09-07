@@ -240,7 +240,9 @@ public class PerfTestApiController {
 	 * @param imgWidth image width
 	 */
 	@GetMapping("/{id}/basic_report")
-	public Map<String, Object> getReportSection(User user, @PathVariable long id, @RequestParam int imgWidth) {
+	public Map<String, Object> getReportSection(User user,
+												@PathVariable long id,
+												@RequestParam(defaultValue = "100") int imgWidth) {
 		Map<String, Object> model = new HashMap<>();
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
