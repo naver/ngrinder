@@ -1,17 +1,14 @@
 package org.ngrinder.security;
 
+import com.unboundid.ldap.sdk.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.user.service.UserService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
-
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.SearchResult;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -22,56 +19,76 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class DefaultLdapLoginPlugin implements OnLoginRunnable {
 	private final NGrinderLdapContext ldapContext;
 
+	private final UserService userService;
+
 	@Override
 	public User loadUser(String userId) {
-		Attributes userAttributes = getUserFromLDAP(userId);
-		if (userAttributes == null) {
+		if (!ldapContext.isEnabled()) {
 			return null;
 		}
 
-		try {
-			User user = new User();
-			user.setUserId(userId);
-			user.setUserName((String) userAttributes.get(ldapContext.getUserNameKey()).get());
-			user.setEmail((String) userAttributes.get(ldapContext.getUserEmailKey()).get());
-			user.setAuthProviderClass(this.getClass().getName());
-			user.setEnabled(true);
-			user.setExternal(true);
-			user.setRole(Role.USER);
-			return user;
-		} catch (NamingException e) {
-			log.error("Fail to load user by LDAP login plugin", e);
-			throw new NGrinderRuntimeException(e);
-		}
-	}
-
-	private Attributes getUserFromLDAP(String userId) {
-		SearchResult searchResult = searchUser(userId);
-		if (searchResult == null) {
+		Entry userEntry = getUserFromLDAP(userId);
+		if (userEntry == null) {
 			return null;
 		}
-		return searchResult.getAttributes();
+
+		User user = new User();
+		user.setUserId(userId);
+		user.setUserName(userEntry.getAttribute(ldapContext.getUserNameKey()).getValue());
+		user.setEmail(userEntry.getAttribute(ldapContext.getUserEmailKey()).getValue());
+		user.setAuthProviderClass(this.getClass().getName());
+		user.setEnabled(true);
+		user.setExternal(true);
+		user.setRole(Role.USER);
+
+		User foundOne = userService.getOne(userId);
+		if (foundOne != null) {
+			user.setId(foundOne.getId());
+			user.setRole(foundOne.getRole());
+			userService.saveWithoutPasswordEncoding(user);
+		}
+
+		return user;
 	}
 
-	private SearchResult searchUser(String userId) {
-		SearchResult searchResult = null;
+	private Entry getUserFromLDAP(String userId) {
 		try {
-
 			String searchBase = normalizeUserSearchBase(ldapContext.getBaseDN(), ldapContext.getUserSearchBase());
-			NamingEnumeration<SearchResult> enumeration = ldapContext.getLdapContext().search(searchBase, ldapContext.getUserFilter(), ldapContext.getSearchControls());
-			while (enumeration.hasMore()) {
-				SearchResult result = enumeration.next();
-				String commonName = (String) result.getAttributes().get("CN").get();
+			String searchFilter = normalizeUserSearchFilter(ldapContext.getUserFilter(), userId);
 
-				if (userId.equalsIgnoreCase(commonName)) {
-					searchResult = result;
-					break;
-				}
+			SearchRequest request = new SearchRequest(searchBase, SearchScope.ONE, searchFilter);
+			SearchResult result = ldapContext.getLdapConnection().search(request);
+			if (result == null) {
+				return null;
 			}
-		} catch (NamingException e) {
+			if (result.getEntryCount() > 0) {
+				return result.getSearchEntries().get(0);
+			}
+		} catch (LDAPException e) {
 			log.error("Cannot find {} in LDAP, ", userId, e);
 		}
-		return searchResult;
+		return null;
+	}
+
+	private String normalizeUserSearchFilter(String userFilter, String userId) {
+		if (!userFilter.startsWith("(") || !userFilter.endsWith(")")) {
+			userFilter = "(" + userFilter + ")";
+		}
+		String userIdFilter = String.format("(CN=%s)", userId);
+
+		if (isBlank(userFilter) && isBlank(userId)) {
+			return EMPTY;
+		}
+
+		if (isBlank(userFilter)) {
+			return userIdFilter;
+		}
+
+		if (isBlank(userId)) {
+			return userFilter;
+		}
+
+		return String.format("(&%s%s)", userFilter, userIdFilter);
 	}
 
 	private String normalizeUserSearchBase(String baseDN, String userSearchBase) {
@@ -92,8 +109,17 @@ public class DefaultLdapLoginPlugin implements OnLoginRunnable {
 
 	@Override
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
-		// TODO: validate user with LDAP
-		return false;
+		if (!ldapContext.isEnabled()) {
+			throw new BadCredentialsException("LDAP login is disabled");
+		}
+
+		Entry userEntry = getUserFromLDAP(userId);
+		try {
+			LDAPConnection authConnection = ldapContext.getLdapConnection(userEntry.getDN(), password);
+			return authConnection.isConnected();
+		} catch (Exception e) {
+			throw new BadCredentialsException("Invalid LDAP credential", e);
+		}
 	}
 
 	@Deprecated

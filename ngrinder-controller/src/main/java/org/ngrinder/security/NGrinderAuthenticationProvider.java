@@ -63,6 +63,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	private DefaultLoginPlugin defaultLoginPlugin;
 
+	private DefaultLdapLoginPlugin defaultLdapLoginPlugin;
+
 	@Getter(AccessLevel.PROTECTED)
 	private ShaPasswordEncoder passwordEncoder;
 
@@ -72,10 +74,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	private UserService userService;
 
-	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin,
+	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin, DefaultLdapLoginPlugin defaultLdapLoginPlugin,
 										  @Lazy ShaPasswordEncoder passwordEncoder, UserDetailsService userDetailsService, UserService userService) {
 		this.pluginManager = pluginManager;
 		this.defaultLoginPlugin = defaultLoginPlugin;
+		this.defaultLdapLoginPlugin = defaultLdapLoginPlugin;
 		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
 		this.userService = userService;
@@ -102,7 +105,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		SecuredUser user = ((SecuredUser) userDetails);
 		boolean authorized = false;
 
-		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLoginPlugin))) {
+		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLdapLoginPlugin, defaultLoginPlugin))) {
 			try {
 				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, user.getUsername());
 				LOG.info("{} is logined by {}", user.getUsername(), each.getClass().getName());
@@ -121,7 +124,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		// If It's the first time to login
 		if (user.getUser().getId() == null) {
 			addNewUserIntoLocal(user);
-			LOG.info("{} is saved by password {}", user.getUser().getId(), user.getUser().getPassword());
+			LOG.info("{} is saved by password {}", user.getUser().getUserId(), user.getUser().getPassword());
 		}
 	}
 
