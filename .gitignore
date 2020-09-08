@@ -29,3 +29,6 @@ package-lock.json
 /atlassian-ide-plugin.xml
 src/main/generated/
 
+ngrinder-controller/bin/*
+ngrinder-core/bin/*
+ngrinder-groovy/bin/*
