@@ -106,20 +106,17 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		boolean authorized = false;
 
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLdapLoginPlugin, defaultLoginPlugin))) {
-			try {
-				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, user.getUsername());
-				LOG.info("{} is logined by {}", user.getUsername(), each.getClass().getName());
-				authorized = true;
+			if (each.getClass().getName().equals(user.getAuthProviderClass())) {
+				authorized = each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, user.getUsername());
 				break;
-			} catch (BadCredentialsException exception) {
-				LOG.info("{} is not logined by {}", user.getUsername(), each.getClass().getName());
-				authorized = false;
 			}
 		}
 
 		if (!authorized) {
+			LOG.info("{} is not logined by {}", user.getUsername(), user.getAuthProviderClass());
 			throw new BadCredentialsException(message);
 		}
+		LOG.info("{} is logined by {}", user.getUsername(), user.getAuthProviderClass());
 
 		// If It's the first time to login
 		if (user.getUser().getId() == null) {
