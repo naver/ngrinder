@@ -122,6 +122,9 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		if (user.getUser().getId() == null) {
 			addNewUserIntoLocal(user);
 			LOG.info("{} is saved by password {}", user.getUser().getUserId(), user.getUser().getPassword());
+		} else {
+			// update user information
+			userService.saveWithoutPasswordEncoding(user.getUser());
 		}
 	}
 
