@@ -3,6 +3,9 @@
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 	<changeSet author="ngrinder.3.5.2" id="30" dbms="h2, mysql">
+
+		<modifyDataType tableName="PERF_TEST" columnName="param" newDataType="varchar(2048)"/>
+
 		<createTable tableName="WEBHOOK_CONFIG">
 			<column name="id" type="bigint" autoIncrement="true">
 				<constraints primaryKey="true"/>
@@ -19,6 +22,7 @@
 			<column name="created_time" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
 			<column name="last_modified_time" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
 		</createTable>
+
 		<createTable tableName="WEBHOOK_ACTIVATION">
 			<column name="id" type="bigint" autoIncrement="true">
 				<constraints primaryKey="true"/>
@@ -31,5 +35,6 @@
 			<column name="response" type="varchar(2048)"/>
 			<column name="created_time" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
 		</createTable>
+
 	</changeSet>
 </databaseChangeLog>

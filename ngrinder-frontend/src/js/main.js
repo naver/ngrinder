@@ -14,6 +14,7 @@ import store from 'store/vuex-store.js';
 import VueRouterReferer from 'vue-router-referer.js';
 import VueClipboard from 'vue-clipboard2';
 import { AllHtmlEntities } from 'html-entities';
+import jsonlint from 'jsonlint';
 
 import Event from 'bus-event.js';
 import Login from 'Login.vue';
@@ -66,6 +67,9 @@ axiosInstance.interceptors.request.use(config => {
     }
     return config;
 });
+
+// It used in codemirror internally.
+window.jsonlint = jsonlint;
 
 Vue.use(VueShortkey);
 Vue.use(vuescroll);

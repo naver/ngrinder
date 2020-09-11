@@ -250,7 +250,8 @@
                                            message="perfTest.config.param"
                                            customStyle="width: 125px;"
                                            errStyle="white-space: nowrap;"
-                                           :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }">
+                                           @focus="$refs.inputParamModal.show()"
+                                           :validationRules="{ regex: paramValidationRule }">
                             </input-popover>
                         </control-group>
                     </div>
@@ -270,6 +271,7 @@
         </div>
         <host-modal ref="addHostModal" @add-host="addHost" focus="domain"></host-modal>
         <target-host-info-modal ref="targetHostInfoModal" :ip="targetHostIp"></target-host-info-modal>
+        <input-param-modal :value="test.config.param" ref="inputParamModal" @save="saveParam"></input-param-modal>
     </div>
 </template>
 
@@ -284,13 +286,14 @@
     import InputPopover from '../../common/InputPopover.vue';
     import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
     import HostModal from '../modal/HostModal.vue';
+    import InputParamModal from '../modal/InputParamModal.vue';
     import RampUp from './RampUp.vue';
     import TargetHostInfoModal from '../modal/TargetHostInfoModal.vue';
     import DurationSlider from './DurationSlider.vue';
 
     @Component({
         name: 'config',
-        components: { DurationSlider, TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, HostModal, Select2, RampUp },
+        components: { DurationSlider, TargetHostInfoModal, ControlGroup, InputAppend, InputPrepend, InputPopover, HostModal, InputParamModal, Select2, RampUp },
     })
     export default class Config extends Mixins(Base, MessagesMixin) {
         @Inject() $validator;
@@ -306,6 +309,7 @@
 
         scripts = [];
         resources = [];
+        paramValidationRule = /^[a-zA-Z0-9_\\.,\\|\\\-=:{}\\/\s[\\\]\\"]{0,2000}$/;
 
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
         regionAgentCountMap = {};
@@ -352,6 +356,11 @@
                 $('[data-toggle="popover"]').popover();
                 this.toggleGitHubScriptRefreshBtn();
             });
+        }
+
+        saveParam(param) {
+            this.test.config.param = param;
+            this.$nextTick(() => this.$validator.validate('param'));
         }
 
         initRegion() {

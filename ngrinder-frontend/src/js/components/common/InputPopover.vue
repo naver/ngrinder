@@ -16,6 +16,7 @@
                    :data-placement="dataPlacement"
                    :style="customStyle ? customStyle : false"
                    :value="value"
+                   @focus="$emit('focus')"
                    @input="$emit('input', $event.target.value)"/>
         </div>
         <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
