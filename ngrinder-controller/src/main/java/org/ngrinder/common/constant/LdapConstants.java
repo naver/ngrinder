@@ -31,5 +31,6 @@ public interface LdapConstants {
 	String PROP_LDAP_USER_EMAIL = "ldap.user.email";
 	String PROP_LDAP_MANAGER_DN = "ldap.manager.dn";
 	String PROP_LDAP_MANAGER_PASSWORD = "ldap.manager.password";
+	String PROP_LDAP_CONNECT_TIMEOUT = "ldap.connect.timeout";
 	String PROP_LDAP_RESPONSE_TIMEOUT = "ldap.response.timeout";
 }

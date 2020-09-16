@@ -83,6 +83,7 @@ public class NGrinderLdapContext {
 		String managerPassword = properties.getProperty(PROP_LDAP_MANAGER_PASSWORD);
 
 		LDAPConnectionOptions ldapConnectionOptions = new LDAPConnectionOptions();
+		ldapConnectionOptions.setConnectTimeoutMillis(properties.getPropertyInt(PROP_LDAP_CONNECT_TIMEOUT));
 		ldapConnectionOptions.setResponseTimeoutMillis(properties.getPropertyInt(PROP_LDAP_RESPONSE_TIMEOUT));
 
 		try {
