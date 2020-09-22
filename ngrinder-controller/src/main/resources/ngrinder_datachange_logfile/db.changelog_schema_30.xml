@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.5.2" id="30" dbms="h2, mysql">
+		<createTable tableName="WEBHOOK_CONFIG">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="created_user_id" type="varchar(255)">
+				<constraints unique="true" nullable="false"/>
+			</column>
+			<column name="payload_url" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="content_type" type="varchar(64)"/>
+			<column name="events" type="varchar(48)"/>
+			<column name="active" type="boolean"/>
+			<column name="created_time" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+			<column name="last_modified_time" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+		</createTable>
+		<createTable tableName="WEBHOOK_ACTIVATION">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="created_user_id" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="varchar(64)"/>
+			<column name="request" type="varchar(4096)"/>
+			<column name="response" type="varchar(2048)"/>
+			<column name="created_time" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+		</createTable>
+	</changeSet>
+</databaseChangeLog>
