@@ -22,9 +22,15 @@ package org.ngrinder.infra.webhook.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.ngrinder.infra.webhook.model.WebhookConfig;
+import org.ngrinder.infra.webhook.model.WebhookActivation;
+import org.ngrinder.infra.webhook.service.WebhookActivationService;
 import org.ngrinder.infra.webhook.service.WebhookConfigService;
 import org.ngrinder.model.User;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +38,8 @@ import org.springframework.web.bind.annotation.*;
 public class WebhookApiController {
 
 	private final WebhookConfigService webhookConfigService;
+
+	private final WebhookActivationService webhookActivationService;
 
 	@PostMapping
 	public void save(@RequestBody WebhookConfig webhookConfig) {
@@ -41,5 +49,11 @@ public class WebhookApiController {
 	@GetMapping
 	public WebhookConfig getOne(User user) {
 		return webhookConfigService.getOne(user.getUserId());
+	}
+
+	@GetMapping("/activation")
+	public List<WebhookActivation> getActivations(@RequestParam String createdUserId,
+												  @PageableDefault Pageable pageable) {
+		return webhookActivationService.findAll(createdUserId, pageable);
 	}
 }

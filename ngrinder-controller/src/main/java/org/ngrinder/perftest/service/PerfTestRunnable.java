@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.grinder.SingleConsole;
@@ -34,11 +35,13 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
+import org.ngrinder.infra.webhook.plugin.NGrinderWebhookPlugin;
+import org.ngrinder.infra.webhook.service.WebhookConfigService;
+import org.ngrinder.infra.webhook.service.WebhookService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.*;
-import org.ngrinder.perftest.service.samplinglistener.TooManyErrorCheckPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -48,7 +51,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
@@ -94,6 +100,10 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	@Getter
 	private final AgentService agentService;
+
+	private final WebhookService webhookService;
+
+	private final WebhookConfigService webhookConfigService;
 
 	private Runnable startRunnable;
 
@@ -378,7 +388,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 */
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
-		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class)) {
+		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class, getDefaultTestLifeCyclePlugins())) {
 			run.start(perfTest, perfTestService, config.getVersion());
 		}
 
@@ -423,9 +433,13 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @see OnTestLifeCycleRunnable
 	 */
 	public void notifyFinish(PerfTest perfTest, StopReason reason) {
-		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class)) {
+		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class, getDefaultTestLifeCyclePlugins())) {
 			run.finish(perfTest, reason.name(), perfTestService, config.getVersion());
 		}
+	}
+
+	private List<OnTestLifeCycleRunnable> getDefaultTestLifeCyclePlugins() {
+		return ImmutableList.of(new NGrinderWebhookPlugin(webhookService, webhookConfigService));
 	}
 
 	/**

@@ -67,12 +67,61 @@
                 </dl>
             </div>
         </div>
+
+        <div class="webhook-activation">
+            <div class="subhead">
+                <h2>Recent Activaion</h2>
+            </div>
+            <ul class="p-0 list-group">
+                <li v-if="!hasActivations" class="w-100 no-data list-group-item list-group-item-light border-0">No Data</li>
+                <li v-for="(activation, index) in activations" class="list-group-item list-group-item-light">
+                    <i v-if="isSuccess(activation.statusCode)" class="fa fa-check"></i>
+                    <i v-else class="fa fa-exclamation"></i>
+                    <span class="pointer-cursor" v-text="activation.uuid" @click="toggleDetail(activation)"></span>
+                    <span class="createdTime float-right">{{ activation.createdTime | dateFormat('YYYY-MM-DD HH:mm') }}</span>
+                    <div v-show="activation.showDetail" class="activation-detail mt-4">
+                        <nav>
+                            <div class="nav nav-tabs" role="tablist">
+                                <a class="nav-item nav-link active" :id="`nav-request-tab-${index}`" data-toggle="tab" :href="`#nav-request-${index}`"
+                                   role="tab" aria-controls="nav-request" aria-selected="true">Request</a>
+                                <a class="nav-item nav-link" :id="`nav-response-tab-${index}`" data-toggle="tab" :href="`#nav-response-${index}`"
+                                   role="tab" aria-controls="nav-response" aria-selected="false">
+                                    Response <span class="activation-response-status"
+                                                   :class="{'success' : isSuccess(activation.statusCode)}"
+                                                   v-text="activation.statusCode"></span>
+                                </a>
+                            </div>
+                        </nav>
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane show active" :id="`nav-request-${index}`"
+                                 role="tabpanel" :aria-labelledby="`nav-request-tab-${index}`">
+                                <label>Header</label>
+                                <pre v-text="activation.requestHeader"></pre>
+                                <label>Payload</label>
+                                <pre v-text="activation.requestPayload"></pre>
+                            </div>
+                            <div class="tab-pane" :id="`nav-response-${index}`"
+                                 role="tabpanel" :aria-labelledby="`nav-response-tab-${index}`">
+                                <label>Header</label>
+                                <pre v-text="activation.responseHeader"></pre>
+                                <label>Body</label>
+                                <pre v-text="activation.responseBody"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div v-if="hasActivations">
+                <button class="btn btn-default w-100 btn-load-more" @click="loadMore">Load more</button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
+    import { jsonc } from 'jsonc';
 
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import Base from '../Base.vue';
@@ -87,6 +136,8 @@
         eventStart = false;
         eventFinish = false;
 
+        activations = [];
+
         config = {
             payloadUrl: '',
             contentType: 'JSON',
@@ -94,6 +145,8 @@
             events: '',
             createdUserId: '',
         };
+
+        activationPage = 0;
 
         created() {
             this.$http.get('/webhook/api').then(res => {
@@ -138,6 +191,71 @@
                 events = events.slice(0, -1);
             }
             return events;
+        }
+
+        loadMore() {
+            this.$http.get('/webhook/api/activation', this.getActivationRequestParams).then(res => {
+                res.data = res.data.map(activation => this.parseActivation(activation));
+                this.activations = this.activations.concat(res.data);
+                this.activationPage++;
+            });
+        }
+
+        parseActivation(activation) {
+            activation.responseBody = 'No Contents';
+
+            if (jsonc.isJSON(activation.response)) {
+                let response = JSON.parse(activation.response);
+
+                if (response.body) {
+                    activation.responseBody = response.body;
+
+                    if (jsonc.isJSON(response.body)) {
+                        activation.responseBody = jsonc.beautify(response.body);
+                    }
+                }
+                activation.statusCode = response.statusCode;
+                activation.responseHeader = JSON.stringify(response.header, null, 4);
+            } else {
+                activation.statusCode = 400;
+                activation.responseHeader = '';
+            }
+
+            if (jsonc.isJSON(activation.request)) {
+                let request = JSON.parse(activation.request);
+
+                activation.requestHeader = JSON.stringify(request.header, null, 4);
+                delete request.header;
+                activation.requestPayload = JSON.stringify(request, null, 4);
+            }
+            return activation;
+        }
+
+        isSuccess(statusCode) {
+            return statusCode >= 200 && statusCode < 300;
+        }
+
+        toggleDetail(activation) {
+            if (activation.showDetail === undefined) {
+                this.$set(activation, 'showDetail', true);
+                return;
+            }
+            activation.showDetail = !activation.showDetail;
+        }
+
+        get getActivationRequestParams() {
+            return {
+                params: {
+                    createdUserId: this.ngrinder.currentUser.factualUser.id,
+                    sort: 'id,DESC',
+                    'page.page': this.activationPage,
+                    'page.size': 10,
+                }
+            };
+        }
+
+        get hasActivations() {
+            return this.activations.length > 0;
         }
     }
 </script>
@@ -223,5 +341,116 @@
                 }
             }
         }
+
+        .webhook-activation {
+            width: 977px;
+            margin-top: 10px;
+
+            ul {
+                list-style: none;
+
+                li {
+                    margin: 0;
+                    padding: 9px;
+                    background-color: white;
+                    font-size: 13px;
+                    border: none;
+                    border-bottom: 1px solid #e1e4e8;
+
+                    .createdTime {
+                        font-size: 11px;
+                    }
+
+                    .fa-check {
+                        margin-left: -3px;
+                        margin-right: 5px;
+                        color: green;
+                    }
+
+                    .fa-exclamation {
+                        margin-right: 11px;
+                        color: red;
+                    }
+                }
+            }
+
+            pre {
+                padding: 7px 12px;
+                word-break: break-all;
+                overflow: auto;
+                font-size: 13px;
+                line-height: 1.5;
+                background-color: #f8f8f8;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+            }
+
+            label {
+                color: #24292e;
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            .nav-tabs {
+                .nav-link {
+                    border-radius: 6px 6px 0 0;
+                    padding: 8px 16px;
+                    color: #24292e;
+                    font-weight: 500;
+
+                    &:hover {
+                        &:not(.active) {
+                            border-color: transparent transparent transparent;
+                        }
+                    }
+
+                    &.active {
+                        color: #6a737d;
+                    }
+                }
+            }
+
+            .activation {
+                height: 25px;
+
+            }
+
+            .activation-response-status {
+                display: inline-block;
+                padding: 4px 6px 3px;
+                margin-left: 4px;
+                font-weight: 600;
+                font-size: 10px;
+                line-height: 1.1;
+                color: #fff;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                background-color: #d73a49;
+
+                &.success {
+                    background-color: #28a745;
+                }
+            }
+
+            .no-data {
+                text-align: center;
+                height: 30px;
+                margin-top: 20px;
+                font-size: 15px;
+                font-weight: 400;
+                color: #586069;
+            }
+
+            .btn-load-more {
+                color: #24292e;
+                font-weight: 500;
+                height: 35px;
+                font-size: 14px;;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                margin-top: 10px;
+            }
+        }
+
     }
 </style>
