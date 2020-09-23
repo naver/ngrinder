@@ -1,13 +1,13 @@
 <template>
     <div class="webhook">
         <div class="subhead">
-            <h2>Webhook Settings</h2>
+            <h2 v-text="i18n('webhook.settings')"></h2>
         </div>
         <div class="webhook-config d-flex">
             <div class="form-container">
                 <dl class="form-group" :class="{'hasError': errors.has('payloadUrl')}">
                     <dt>
-                        <label for="payload-url">Payload URL</label>
+                        <label for="payload-url" v-text="i18n('common.payloadUrl')"></label>
                         <span class="required-mark">*</span>
                     </dt>
                     <dd class="input-payloadUrl-container">
@@ -24,7 +24,7 @@
                 </dl>
                 <dl class="form-group">
                     <dt>
-                        <label for="content-type">Content-Type</label>
+                        <label for="content-type" v-text="i18n('common.contentType')"></label>
                     </dt>
                     <dd>
                         <select id="content-type" class="custom-select" v-model="config.contentType">
@@ -33,35 +33,35 @@
                         </select>
                     </dd>
                 </dl>
-                <button class="btn btn-primary mt-3" @click="save">Save</button>
+                <button class="btn btn-primary mt-3" @click="save" v-text="i18n('common.button.save')"></button>
             </div>
             <div class="form-container">
                 <dl class="form-group mb-0">
                     <dt>
-                        <label>Event</label>
+                        <label v-text="i18n('common.event')"></label>
                     </dt>
                     <dd>
                         <div class="form-checkout custom-control custom-checkbox">
                             <input id="event-start" type="checkbox" class="custom-control-input" v-model="eventStart">
-                            <label class="custom-control-label" for="event-start">Start</label>
-                            <p>You can check this option if you want to trigger a hook at the start of the test</p>
+                            <label class="custom-control-label" for="event-start" v-text="i18n('common.start')"></label>
+                            <p v-text="i18n('webhook.config.event.help', { event: i18n('common.start') })"></p>
                         </div>
                         <div class="form-checkout custom-control custom-checkbox">
                             <input id="event-finish" type="checkbox" class="custom-control-input" v-model="eventFinish">
-                            <label class="custom-control-label" for="event-finish">Finish</label>
-                            <p>You can check this option if you want to trigger a hook at the finish of the test</p>
+                            <label class="custom-control-label" for="event-finish" v-text="i18n('common.finish')"></label>
+                            <p v-text="i18n('webhook.config.event.help', { event: i18n('common.finish') })"></p>
                         </div>
                     </dd>
                 </dl>
                 <dl class="form-group m-0">
                     <dt>
-                        <label>Activation</label>
+                        <label v-text="i18n('common.activation')"></label>
                     </dt>
                     <dd>
                         <div class="form-checkout custom-control custom-checkbox">
                             <input id="active" type="checkbox" class="custom-control-input" v-model="config.active">
-                            <label class="custom-control-label" for="active">Active</label>
-                            <p>We will send webhook request if this option is checked</p>
+                            <label class="custom-control-label" for="active" v-text="i18n('common.active')"></label>
+                            <p v-text="i18n('webhook.config.active.help')"></p>
                         </div>
                     </dd>
                 </dl>
@@ -70,10 +70,10 @@
 
         <div class="webhook-activation">
             <div class="subhead">
-                <h2>Recent Activaion</h2>
+                <h2 v-text="i18n('webhook.recent.activation')"></h2>
             </div>
             <ul class="p-0 list-group">
-                <li v-if="!hasActivations" class="w-100 no-data list-group-item list-group-item-light border-0">No Data</li>
+                <li v-if="!hasActivations" class="w-100 no-data list-group-item list-group-item-light border-0" v-text="i18n('common.message.noData')"></li>
                 <li v-for="(activation, index) in activations" class="list-group-item list-group-item-light">
                     <i v-if="isSuccess(activation.statusCode)" class="fa fa-check"></i>
                     <i v-else class="fa fa-exclamation"></i>
@@ -83,10 +83,10 @@
                         <nav>
                             <div class="nav nav-tabs" role="tablist">
                                 <a class="nav-item nav-link active" :id="`nav-request-tab-${index}`" data-toggle="tab" :href="`#nav-request-${index}`"
-                                   role="tab" aria-controls="nav-request" aria-selected="true">Request</a>
+                                   role="tab" aria-controls="nav-request" aria-selected="true" v-text="i18n('common.request')">Request</a>
                                 <a class="nav-item nav-link" :id="`nav-response-tab-${index}`" data-toggle="tab" :href="`#nav-response-${index}`"
                                    role="tab" aria-controls="nav-response" aria-selected="false">
-                                    Response <span class="activation-response-status"
+                                    {{ i18n('common.response') }} <span class="activation-response-status"
                                                    :class="{'success' : isSuccess(activation.statusCode)}"
                                                    v-text="activation.statusCode"></span>
                                 </a>
@@ -112,7 +112,7 @@
                 </li>
             </ul>
             <div v-if="hasActivations">
-                <button class="btn btn-default w-100 btn-load-more" @click="loadMore">Load more</button>
+                <button class="btn btn-default w-100 btn-load-more" @click="loadMore" v-text="i18n('common.button.loadMore')"></button>
             </div>
         </div>
     </div>

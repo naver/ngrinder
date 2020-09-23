@@ -1,12 +1,12 @@
 <template>
     <div class="container settings">
-        <vue-headful :title="'Settings'"/>
+        <vue-headful :title="i18n('common.settings')"/>
         <div class="container d-flex p-0">
             <div class="sidebar-nav">
                 <div class="card bg-light d-inline-block">
                     <ul class="nav flex-column">
                         <li class="nav-item border-bottom-0" :class="{'selected' : selectedMenu === 'webhook'}">
-                            <a class="nav-link pointer-cursor"  v-text="'Webhook'" @click="clickMenu('webhook')"></a>
+                            <a class="nav-link pointer-cursor"  v-text="i18n('common.webhook')" @click="clickMenu('webhook')"></a>
                         </li>
                     </ul>
                 </div>
