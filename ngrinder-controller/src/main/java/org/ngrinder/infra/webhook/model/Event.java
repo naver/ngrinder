@@ -23,12 +23,16 @@ package org.ngrinder.infra.webhook.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
+import org.ngrinder.model.User;
 
 import java.util.Map;
 import java.util.function.Function;
 
 import static java.time.LocalDateTime.now;
+import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.model.Status.UNKNOWN;
 
 /**
  * Webhook event.
@@ -45,32 +49,40 @@ public enum Event {
 		return payload;
 	}),
 
-	FINISH(finishedTest -> {
-		Map<String, Object> payload = createBasePayload(finishedTest);
+	FINISH(finishedPerfTest -> {
+		Map<String, Object> payload = createBasePayload(finishedPerfTest);
 
-		long errors = finishedTest.getErrors();
-		long run = finishedTest.getRunCount();
+		long errors = getSafe(finishedPerfTest.getErrors(), 0L);
+		long run = getSafe(finishedPerfTest.getRunCount(), 0);
+		Status status = getSafe(finishedPerfTest.getStatus(), UNKNOWN);
 
 		payload.put("finishTime",  now().toString());
-		payload.put("peakTPS", finishedTest.getPeakTps());
-		payload.put("TPS", finishedTest.getTps());
+		payload.put("peakTPS", getSafe(finishedPerfTest.getPeakTps(), 0.0));
+		payload.put("TPS", getSafe(finishedPerfTest.getTps(), 0.0));
 		payload.put("errors", errors);
 		payload.put("executedTests", run);
 		payload.put("successfulTests", run - errors);
-		payload.put("status", finishedTest.getStatus().getName());
-		payload.put("meanTestTime", finishedTest.getMeanTestTime());
-		payload.put("runTime", finishedTest.getRuntimeStr());
+		payload.put("status", getSafe(status.getName(), ""));
+		payload.put("meanTestTime", getSafe(finishedPerfTest.getMeanTestTime(), 0.0));
+		payload.put("runTime", getSafe(finishedPerfTest.getRuntimeStr(), "0"));
+
 		return payload;
 	});
 
 	private Function<PerfTest, Map<String, Object>> payloadBuilder;
-	
+
 	private static Map<String, Object> createBasePayload(PerfTest perfTest) {
 		Map<String, Object> payload = newHashMap();
-		payload.put("createdUserId", perfTest.getCreatedUser().getUserId());
-		payload.put("testId", perfTest.getId());
-		payload.put("scriptName", perfTest.getScriptName());
-		payload.put("vuser", perfTest.getVuserPerAgent() * perfTest.getAgentCount());
+
+		int vuserPerAgent = getSafe(perfTest.getVuserPerAgent(), 0);
+		int agentCount = getSafe(perfTest.getAgentCount(), 0);
+		User createdUser = getSafe(perfTest.getCreatedUser(), new User());
+
+		payload.put("createdUserId", getSafe(createdUser.getUserId(), ""));
+		payload.put("testId", getSafe(perfTest.getId(), 0L));
+		payload.put("scriptName", getSafe(perfTest.getScriptName(), ""));
+		payload.put("vuser", vuserPerAgent * agentCount);
+
 		return payload;
 	}
 }

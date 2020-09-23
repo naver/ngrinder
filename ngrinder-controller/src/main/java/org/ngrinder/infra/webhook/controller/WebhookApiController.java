@@ -21,16 +21,19 @@
 package org.ngrinder.infra.webhook.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.ngrinder.infra.webhook.model.WebhookConfig;
 import org.ngrinder.infra.webhook.model.WebhookActivation;
+import org.ngrinder.infra.webhook.model.WebhookConfig;
 import org.ngrinder.infra.webhook.service.WebhookActivationService;
 import org.ngrinder.infra.webhook.service.WebhookConfigService;
+import org.ngrinder.infra.webhook.service.WebhookService;
 import org.ngrinder.model.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.ngrinder.infra.webhook.model.Event.FINISH;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,11 +42,18 @@ public class WebhookApiController {
 
 	private final WebhookConfigService webhookConfigService;
 
+	private final WebhookService webhookService;
+
 	private final WebhookActivationService webhookActivationService;
 
 	@PostMapping
 	public void save(@RequestBody WebhookConfig webhookConfig) {
 		webhookConfigService.save(webhookConfig);
+	}
+
+	@PostMapping("/validate")
+	public void validatePayloadUrl(User user, @RequestBody WebhookConfig webhookConfig) {
+		webhookService.sendDummyWebhookRequest(user, webhookConfig, FINISH);
 	}
 
 	@GetMapping

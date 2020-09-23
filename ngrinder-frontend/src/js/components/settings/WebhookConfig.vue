@@ -19,6 +19,16 @@
                                placeholder="http://www.target.com"
                                v-validate="{ required: true, url: {require_protocol: true} }"
                                v-model="config.payloadUrl"/>
+                        <button class="btn btn-primary validationBtn"
+                                data-toggle="popover"
+                                data-html="true"
+                                data-trigger="hover"
+                                data-placement="bottom"
+                                ref="validationBtn"
+                                v-text="i18n('script.editor.button.validate')"
+                                @click="checkValidation"
+                                :data-content="i18n('webhook.button.validate.help')">
+                        </button>
                         <div v-show="errors.has('payloadUrl')" class="validation-message" v-text="errors.first('payloadUrl')"></div>
                     </dd>
                 </dl>
@@ -133,6 +143,8 @@
         },
     })
     export default class WebhookConfig extends Mixins(Base, MessagesMixin) {
+        VALIDATION_RETRY_MILLISECOND = 2000;
+
         eventStart = false;
         eventFinish = false;
 
@@ -149,16 +161,12 @@
         activationPage = 0;
 
         created() {
-            this.$http.get('/webhook/api').then(res => {
-                Object.assign(this.config, res.data);
-                if (this.config.events.includes('START')) {
-                    this.eventStart = true;
-                }
-                if (this.config.events.includes('FINISH')) {
-                    this.eventFinish = true;
-                }
-            });
+            this.loadWebhookConfig();
             this.loadMore();
+        }
+
+        mounted() {
+            $('[data-toggle="popover"]').popover();
         }
 
         save() {
@@ -191,6 +199,18 @@
                 events = events.slice(0, -1);
             }
             return events;
+        }
+
+        loadWebhookConfig() {
+            this.$http.get('/webhook/api').then(res => {
+                Object.assign(this.config, res.data);
+                if (this.config.events.includes('START')) {
+                    this.eventStart = true;
+                }
+                if (this.config.events.includes('FINISH')) {
+                    this.eventFinish = true;
+                }
+            });
         }
 
         loadMore() {
@@ -243,6 +263,41 @@
             activation.showDetail = !activation.showDetail;
         }
 
+        checkValidation() {
+            this.$validator.validate('payloadUrl').then(result => {
+                if (result) {
+                    this.sendDummyWebhookRequest();
+                    return;
+                }
+                this.showErrorMsg(this.i18n('webhook.message.invalidUrlFormat'));
+            });
+        }
+
+        sendDummyWebhookRequest() {
+            this.$refs.validationBtn.disabled = true;
+
+            const params = {
+                payloadUrl : this.config.payloadUrl,
+                contentType : this.config.contentType,
+            };
+
+            this.showProgressBar(this.i18n('script.editor.message.validate'));
+            this.$http.post('/webhook/api/validate', params).then(res => {
+                if (res.data.success) {
+                    this.refreshRecentActivation();
+                }
+            }).finally(() => {
+                this.hideProgressBar();
+                setTimeout(() => this.$refs.validationBtn.disabled = false, this.VALIDATION_RETRY_MILLISECOND);
+            });
+        }
+
+        refreshRecentActivation() {
+            this.activationPage = 0;
+            this.activations = [];
+            this.loadMore();
+        }
+
         get getActivationRequestParams() {
             return {
                 params: {
@@ -289,6 +344,15 @@
                     }
                 }
 
+                .validationBtn {
+                    height: 32px;
+                    margin-bottom: 1px;
+
+                    &:disabled {
+                        cursor: wait;
+                    }
+                }
+
                 input, select {
                     height: 32px;
                 }
@@ -302,7 +366,7 @@
                     height: 45px;
 
                     #payload-url {
-                        width: 400px;
+                        width: 350px;
                     }
 
                     .validation-message {

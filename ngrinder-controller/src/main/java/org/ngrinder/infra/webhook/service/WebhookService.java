@@ -28,6 +28,7 @@ import org.ngrinder.infra.webhook.model.Event;
 import org.ngrinder.infra.webhook.model.WebhookActivation;
 import org.ngrinder.infra.webhook.model.WebhookConfig;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,12 @@ public class WebhookService {
 		} finally {
 			saveWebhookActivation(perfTest, webhookConfig, event, payLoad, responseEntity);
 		}
+	}
+
+	public void sendDummyWebhookRequest(User user, WebhookConfig webhookConfig, Event event) {
+		PerfTest perfTest = new PerfTest();
+		perfTest.setCreatedUser(user);
+		sendWebhookRequest(perfTest, webhookConfig, event);
 	}
 
 	private void saveWebhookActivation(PerfTest perfTest,
