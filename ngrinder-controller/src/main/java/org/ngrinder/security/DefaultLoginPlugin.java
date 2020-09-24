@@ -45,7 +45,9 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	@Override
 	public User loadUser(String userId) {
 		User user = userService.getOne(userId);
-		user.setAuthProviderClass(this.getClass().getName());
+		if (user != null) {
+			user.setAuthProviderClass(this.getClass().getName());
+		}
 		return user;
 	}
 
