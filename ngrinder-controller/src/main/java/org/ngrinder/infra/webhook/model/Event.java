@@ -80,6 +80,7 @@ public enum Event {
 
 		payload.put("createdUserId", getSafe(createdUser.getUserId(), ""));
 		payload.put("testId", getSafe(perfTest.getId(), 0L));
+		payload.put("testName", getSafe(perfTest.getTestName(), ""));
 		payload.put("scriptName", getSafe(perfTest.getScriptName(), ""));
 		payload.put("vuser", vuserPerAgent * agentCount);
 
