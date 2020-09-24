@@ -10,35 +10,35 @@
                     name: '__slot:state',
                     title: this.i18n('agent.list.state'),
                     dataClass: 'center aligned',
-                    width: '80px',
+                    width: '55px',
                 },
                 {
                     name: '__slot:domain',
                     title: this.i18n('agent.list.IPAndDns'),
-                    width: '130px',
+                    width: '160px',
                 },
                 {
                     name: 'port',
                     title: this.i18n('agent.list.port'),
-                    width: '60px',
+                    width: '65px',
                 },
                 {
                     name: '__slot:name',
                     title: this.i18n('agent.list.name'),
                     sortField: 'name',
-                    width: '230px',
+                    width: '365px',
                 },
                 {
                     name: '__slot:version',
                     title: this.i18n('agent.list.version'),
                     sortField: 'version',
-                    width: '100px',
+                    width: '145px',
                 },
                 {
                     name: '__slot:region',
                     title: this.i18n('agent.list.region'),
                     sortField: 'region',
-                    width: '100px',
+                    width: '220px',
                 },
             ];
 
@@ -47,14 +47,14 @@
                     name: '__checkbox',
                     titleClass: 'center aligned',
                     dataClass: 'center aligned',
-                    width: '30px',
+                    width: '35px',
                 });
 
                 fields.push({
                     name: '__slot:approved',
                     title: this.i18n('agent.list.approved'),
                     dataClass: 'center aligned',
-                    width: '160px',
+                    width: '155px',
                 });
             }
 

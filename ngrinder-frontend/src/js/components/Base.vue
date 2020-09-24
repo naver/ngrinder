@@ -172,6 +172,12 @@
             &.table-striped tbody > tr:nth-child(odd) > td {
                 background-color: #f9f9f9;
             }
+
+            .vuetable-checkboxes, [class*='vuetable-th-checkbox'] {
+                input {
+                    margin-top: 5px;
+                }
+            }
         }
 
         .pagination {
