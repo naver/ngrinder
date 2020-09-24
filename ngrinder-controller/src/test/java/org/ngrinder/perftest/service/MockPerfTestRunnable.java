@@ -20,7 +20,10 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
+import org.ngrinder.infra.webhook.service.WebhookConfigService;
+import org.ngrinder.infra.webhook.service.WebhookService;
 import org.ngrinder.model.PerfTest;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +40,10 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 	public MockPerfTestRunnable(PerfTestService perfTestService, AgentManager agentManager,
 								ConsoleManager consoleManager, PluginManager pluginManager,
 								Config config, ScheduledTaskService scheduledTaskService,
-								HazelcastService hazelcastService, AgentService agentService) {
-		super(perfTestService, agentManager, consoleManager, pluginManager, config, scheduledTaskService, hazelcastService, agentService);
+								HazelcastService hazelcastService, AgentService agentService,
+								@Lazy WebhookService webhookService, WebhookConfigService webhookConfigService) {
+		super(perfTestService, agentManager, consoleManager, pluginManager, config,
+			scheduledTaskService, hazelcastService, agentService, webhookService, webhookConfigService);
 	}
 
 	@Override

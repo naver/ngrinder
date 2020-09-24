@@ -65,6 +65,9 @@
             </template>
             <li class="dropdown-divider"></li>
             <li>
+                <router-link class="dropdown-item" to="/settings/webhook" v-text="i18n('common.settings')"></router-link>
+            </li>
+            <li>
                 <a class="dropdown-item" :href="`${contextPath}/logout`" v-text="i18n('navigator.dropDown.logout')"></a>
             </li>
         </ul>

@@ -43,6 +43,9 @@ module.exports = function (env) {
 
     var webpackConfig = {
         mode: developmentBuild ? 'development' : 'production',
+        node: {
+            fs: 'empty'
+        },
         performance: {
             hints: false,
         },

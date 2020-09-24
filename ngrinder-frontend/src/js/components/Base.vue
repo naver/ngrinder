@@ -263,6 +263,12 @@
             text-align: right;
         }
 
+        .required-mark {
+            vertical-align: middle;
+            margin-right: 2px;
+            color: red;
+        }
+
         div {
             &.datepicker {
                 z-index: 1200;
