@@ -63,6 +63,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	private DefaultLoginPlugin defaultLoginPlugin;
 
+	private DefaultLdapLoginPlugin defaultLdapLoginPlugin;
+
 	@Getter(AccessLevel.PROTECTED)
 	private ShaPasswordEncoder passwordEncoder;
 
@@ -72,10 +74,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	private UserService userService;
 
-	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin,
+	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin, DefaultLdapLoginPlugin defaultLdapLoginPlugin,
 										  @Lazy ShaPasswordEncoder passwordEncoder, UserDetailsService userDetailsService, UserService userService) {
 		this.pluginManager = pluginManager;
 		this.defaultLoginPlugin = defaultLoginPlugin;
+		this.defaultLdapLoginPlugin = defaultLdapLoginPlugin;
 		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
 		this.userService = userService;
@@ -102,26 +105,26 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		SecuredUser user = ((SecuredUser) userDetails);
 		boolean authorized = false;
 
-		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLoginPlugin))) {
-			try {
-				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, user.getUsername());
-				LOG.info("{} is logined by {}", user.getUsername(), each.getClass().getName());
-				authorized = true;
+		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLdapLoginPlugin, defaultLoginPlugin))) {
+			if (each.getClass().getName().equals(user.getAuthProviderClass())) {
+				authorized = each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, user.getUsername());
 				break;
-			} catch (BadCredentialsException exception) {
-				LOG.info("{} is not logined by {}", user.getUsername(), each.getClass().getName());
-				authorized = false;
 			}
 		}
 
 		if (!authorized) {
+			LOG.info("{} is not logined by {}", user.getUsername(), user.getAuthProviderClass());
 			throw new BadCredentialsException(message);
 		}
+		LOG.info("{} is logined by {}", user.getUsername(), user.getAuthProviderClass());
 
 		// If It's the first time to login
 		if (user.getUser().getId() == null) {
 			addNewUserIntoLocal(user);
-			LOG.info("{} is saved by password {}", user.getUser().getId(), user.getUser().getPassword());
+			LOG.info("{} is saved by password {}", user.getUser().getUserId(), user.getUser().getPassword());
+		} else {
+			// update user information
+			userService.saveWithoutPasswordEncoding(user.getUser());
 		}
 	}
 
