@@ -71,7 +71,7 @@ public enum Event {
 		return payload;
 	});
 
-	private Function<PerfTest, Map<String, Object>> payloadBuilder;
+	private final Function<PerfTest, Map<String, Object>> payloadBuilder;
 
 	private static Map<String, Object> createBasePayload(PerfTest perfTest) {
 		Map<String, Object> payload = newHashMap();
@@ -85,6 +85,7 @@ public enum Event {
 		payload.put("testName", getSafe(perfTest.getTestName(), ""));
 		payload.put("scriptName", getSafe(perfTest.getScriptName(), ""));
 		payload.put("vuser", vuserPerAgent * agentCount);
+		payload.put("tags", getSafe(perfTest.getTagString(), ""));
 
 		return payload;
 	}
