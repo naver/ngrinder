@@ -25,18 +25,16 @@
 
     import Base from '../Base.vue';
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
-    import WebhookConfig from './WebhookConfig.vue';
 
     @Component({
         name: 'settings',
-        components: { VueHeadful, WebhookConfig },
+        components: { VueHeadful },
     })
     export default class Settings extends Mixins(Base, MessagesMixin) {
         selectedMenu = 'webhook';
-        currentMenuComponent = WebhookConfig;
+        currentMenuComponent;
 
         menuComponents = {
-            webhook: WebhookConfig,
         };
 
         created() {
