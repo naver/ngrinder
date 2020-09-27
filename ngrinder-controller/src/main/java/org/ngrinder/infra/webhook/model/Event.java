@@ -45,6 +45,7 @@ public enum Event {
 
 	START(perfTest -> {
 		Map<String, Object> payload = createBasePayload(perfTest);
+		payload.put("eventType", "START");
 		payload.put("startTime", now().toString());
 		return payload;
 	}),
@@ -56,6 +57,7 @@ public enum Event {
 		long run = getSafe(finishedPerfTest.getRunCount(), 0);
 		Status status = getSafe(finishedPerfTest.getStatus(), UNKNOWN);
 
+		payload.put("eventType", "FINISH");
 		payload.put("finishTime",  now().toString());
 		payload.put("peakTPS", getSafe(finishedPerfTest.getPeakTps(), 0.0));
 		payload.put("TPS", getSafe(finishedPerfTest.getTps(), 0.0));

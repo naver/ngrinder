@@ -21,16 +21,13 @@
 package org.ngrinder.infra.webhook.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static java.time.Duration.ofSeconds;
 import static java.util.Objects.requireNonNull;
@@ -47,8 +44,7 @@ public class NGrinderWebhookClient {
 
 	Mono<ResponseEntity<String>> post(String url,
 									  MediaType mediaType,
-									  Map<String, Object> payLoad,
-									  Consumer<HttpHeaders> headers) {
+									  Map<String, Object> payLoad) {
 
 		Object payloadBody = payLoad;
 
@@ -60,7 +56,6 @@ public class NGrinderWebhookClient {
 			.post()
 			.uri(url)
 			.contentType(mediaType)
-			.headers(headers)
 			.body(fromValue(payloadBody))
 			.exchange()
 			.block(ofSeconds(REQUEST_TIME_OUT_SECOND)))
