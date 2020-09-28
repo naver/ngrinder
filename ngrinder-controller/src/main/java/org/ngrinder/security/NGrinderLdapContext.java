@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.config.Config;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +37,7 @@ import static org.ngrinder.common.constant.LdapConstants.*;
 
 @Slf4j
 @Component
+@Profile("production")
 @RequiredArgsConstructor
 public class NGrinderLdapContext {
 	private static final int LDAP_CONNECTION_POOL_SIZE = 4;
