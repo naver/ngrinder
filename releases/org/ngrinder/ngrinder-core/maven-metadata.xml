@@ -3,8 +3,8 @@
   <groupId>org.ngrinder</groupId>
   <artifactId>ngrinder-core</artifactId>
   <versioning>
-    <latest>3.5.1-p1</latest>
-    <release>3.5.1-p1</release>
+    <latest>3.5.2</latest>
+    <release>3.5.2</release>
     <versions>
       <version>3.4</version>
       <version>3.4.2</version>
@@ -13,7 +13,8 @@
       <version>3.5.0</version>
       <version>3.5.1</version>
       <version>3.5.1-p1</version>
+      <version>3.5.2</version>
     </versions>
-    <lastUpdated>20200901100652</lastUpdated>
+    <lastUpdated>20200928084755</lastUpdated>
   </versioning>
 </metadata>
