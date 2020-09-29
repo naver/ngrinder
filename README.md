@@ -1,4 +1,4 @@
-* nGrinder 3.5.1-p1 has been released. See https://github.com/naver/ngrinder/releases
+* nGrinder 3.5.2 has been released. See https://github.com/naver/ngrinder/releases
 
 nGrinder 
 ========
