@@ -43,11 +43,13 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 	@Getter
 	private final PluginManager pluginManager;
 
-	private final DefaultLoginPlugin defaultPlugin;
+	private final DefaultLoginPlugin defaultLoginPlugin;
+
+	private final DefaultLdapLoginPlugin defaultLdapLoginPlugin;
 
 	@Override
 	public UserDetails loadUserByUsername(String userId) {
-		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultPlugin))) {
+		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, asList(defaultLdapLoginPlugin, defaultLoginPlugin))) {
 			User user = each.loadUser(userId);
 			if (user != null) {
 				checkNotEmpty(user.getUserId(), "User info's userId provided by " + each.getClass().getName()

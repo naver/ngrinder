@@ -172,6 +172,12 @@
             &.table-striped tbody > tr:nth-child(odd) > td {
                 background-color: #f9f9f9;
             }
+
+            .vuetable-checkboxes, [class*='vuetable-th-checkbox'] {
+                input {
+                    margin-top: 5px;
+                }
+            }
         }
 
         .pagination {
@@ -261,6 +267,12 @@
         .control-label {
             float: left;
             text-align: right;
+        }
+
+        .required-mark {
+            vertical-align: middle;
+            margin-right: 2px;
+            color: red;
         }
 
         div {

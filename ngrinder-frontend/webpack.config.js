@@ -35,7 +35,7 @@ var lessLoader = {
 };
 
 module.exports = function (env) {
-    var ngrinderVersion = '3.5.1-p1';
+    var ngrinderVersion = '3.5.2';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
     }
@@ -43,6 +43,9 @@ module.exports = function (env) {
 
     var webpackConfig = {
         mode: developmentBuild ? 'development' : 'production',
+        node: {
+            fs: 'empty'
+        },
         performance: {
             hints: false,
         },

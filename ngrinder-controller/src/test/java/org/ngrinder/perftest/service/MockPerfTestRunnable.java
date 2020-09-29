@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -20,6 +20,8 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
+import org.ngrinder.infra.webhook.service.WebhookConfigService;
+import org.ngrinder.infra.webhook.service.WebhookService;
 import org.ngrinder.model.PerfTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -37,8 +39,10 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 	public MockPerfTestRunnable(PerfTestService perfTestService, AgentManager agentManager,
 								ConsoleManager consoleManager, PluginManager pluginManager,
 								Config config, ScheduledTaskService scheduledTaskService,
-								HazelcastService hazelcastService, AgentService agentService) {
-		super(perfTestService, agentManager, consoleManager, pluginManager, config, scheduledTaskService, hazelcastService, agentService);
+								HazelcastService hazelcastService, AgentService agentService,
+								WebhookService webhookService, WebhookConfigService webhookConfigService) {
+		super(perfTestService, agentManager, consoleManager, pluginManager, config,
+			scheduledTaskService, hazelcastService, agentService, webhookService, webhookConfigService);
 	}
 
 	@Override

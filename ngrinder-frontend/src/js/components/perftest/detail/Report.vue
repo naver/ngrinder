@@ -66,6 +66,7 @@
                 <fieldSet>
                     <legend class="border-bottom">
                         <span v-text="i18n('perfTest.report.logs')"></span>
+                        <i @click="fetchAgentLogs" class="fa fa-refresh pointer-cursor ml-1"></i>
                         <span class="log-comment"
                               data-toggle="popover"
                               data-trigger="hover"
@@ -154,6 +155,17 @@
                 }).catch(() => this.showErrorMsg(this.i18n('perfTest.report.message.fetch.basicReport.error')));
         }
 
+        fetchAgentLogs() {
+            if (this.logs.length > 0) {
+                return;
+            }
+            this.showProgressBar();
+            this.$http.get(`/perftest/api/${this.id}/basic_report`)
+                .then(res => this.logs = res.data.logs)
+                .catch(() => this.showErrorMsg(this.i18n('perfTest.report.message.fetch.agentLogs.error')))
+                .finally(this.hideProgressBar);
+        }
+
         leaveComment() {
             this.$http.post(`/perftest/api/${this.id}/leave_comment`, {
                 testComment: this.report.test.testComment,
@@ -194,11 +206,6 @@
 
             img {
                 margin-top: -3px;
-            }
-
-            .log-comment {
-                margin-top: 10px;
-                margin-left: 10px;
             }
         }
 

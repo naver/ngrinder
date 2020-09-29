@@ -79,7 +79,7 @@ public class GitHubFileEntryService {
 
 	private static final RateLimitHandlerEx rateLimitHandlerEx = new RateLimitHandlerEx();
 
-	public GitHubFileEntryService(FileEntryService fileEntryService, @Lazy ObjectMapper objectMapper,
+	public GitHubFileEntryService(FileEntryService fileEntryService, ObjectMapper objectMapper,
 								  Config config, @Lazy PerfTestService perfTestService,
 								  GroovyMavenProjectScriptHandler groovyMavenProjectScriptHandler) {
 		this.fileEntryService = fileEntryService;
