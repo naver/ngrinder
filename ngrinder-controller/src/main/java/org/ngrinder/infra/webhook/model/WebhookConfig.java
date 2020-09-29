@@ -58,10 +58,10 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
 	private String events;
 
-	@Column(name = "created_time", insertable = false, updatable = false)
+	@Column(name = "created_time")
 	private Date createdTime;
 
-	@Column(name = "last_modified_time", insertable = false)
+	@Column(name = "last_modified_time")
 	private Date lastModifiedTime;
 
 	@Transient

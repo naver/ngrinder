@@ -47,7 +47,7 @@ public class WebhookActivation extends BaseEntity<WebhookActivation> {
 	@Column(name = "created_user_id")
 	private String createdUserId;
 
-	@Column(name = "created_time", insertable = false, updatable = false)
+	@Column(name = "created_time")
 	private Date createdTime;
 
 	private String request;
