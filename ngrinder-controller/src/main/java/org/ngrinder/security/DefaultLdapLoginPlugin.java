@@ -75,7 +75,7 @@ public class DefaultLdapLoginPlugin implements OnLoginRunnable {
 			String searchBase = normalizeUserSearchBase(ldapContext.getBaseDN(), ldapContext.getUserSearchBase());
 			String searchFilter = normalizeUserSearchFilter(ldapContext.getUserFilter(), userId);
 
-			SearchRequest request = new SearchRequest(searchBase, SearchScope.ONE, searchFilter);
+			SearchRequest request = new SearchRequest(searchBase, SearchScope.SUB, searchFilter);
 			SearchResult result = ldapContext.getLdapConnection().search(request);
 			if (result == null) {
 				return null;
