@@ -1,3 +1,15 @@
+3.5.2 (2020.09.29)
+==================
+- Changes
+   * Support LDAP login
+       - From now on you can use LDAP for user authentication.
+       - See [LDAP guide](https://github.com/naver/ngrinder/wiki/LDAP-Configuration)
+   * Support webhook
+       - When the specified events happen, we'll send a webhook request depends on your configuration.
+       - See [webhook guide](https://github.com/naver/ngrinder/wiki/Webhook)
+- Trivial Fix
+   * Make several UI improvements.
+
 3.5.1-p1 (2020.09.01)
 ==================
 - Changes
