@@ -27,6 +27,7 @@ import org.ngrinder.infra.webhook.repository.WebhookConfigRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -48,6 +49,7 @@ public class WebhookConfigService {
 			existingWebhookConfig.update(webhookConfig);
 			return;
 		}
+		webhookConfig.setCreatedTime(new Date());
 		webhookConfigRepository.save(webhookConfig);
 	}
 

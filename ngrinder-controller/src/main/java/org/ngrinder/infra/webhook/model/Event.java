@@ -45,6 +45,7 @@ public enum Event {
 
 	START(perfTest -> {
 		Map<String, Object> payload = createBasePayload(perfTest);
+		payload.put("eventType", "START");
 		payload.put("startTime", now().toString());
 		return payload;
 	}),
@@ -56,6 +57,7 @@ public enum Event {
 		long run = getSafe(finishedPerfTest.getRunCount(), 0);
 		Status status = getSafe(finishedPerfTest.getStatus(), UNKNOWN);
 
+		payload.put("eventType", "FINISH");
 		payload.put("finishTime",  now().toString());
 		payload.put("peakTPS", getSafe(finishedPerfTest.getPeakTps(), 0.0));
 		payload.put("TPS", getSafe(finishedPerfTest.getTps(), 0.0));
@@ -69,7 +71,7 @@ public enum Event {
 		return payload;
 	});
 
-	private Function<PerfTest, Map<String, Object>> payloadBuilder;
+	private final Function<PerfTest, Map<String, Object>> payloadBuilder;
 
 	private static Map<String, Object> createBasePayload(PerfTest perfTest) {
 		Map<String, Object> payload = newHashMap();
@@ -83,6 +85,7 @@ public enum Event {
 		payload.put("testName", getSafe(perfTest.getTestName(), ""));
 		payload.put("scriptName", getSafe(perfTest.getScriptName(), ""));
 		payload.put("vuser", vuserPerAgent * agentCount);
+		payload.put("tags", getSafe(perfTest.getTagString(), ""));
 
 		return payload;
 	}

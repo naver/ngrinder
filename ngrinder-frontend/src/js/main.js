@@ -26,7 +26,7 @@ import ScriptEditor from 'script/Editor.vue';
 import ScriptConsole from 'operation/ScriptConsole.vue';
 import SystemConfig from 'operation/SystemConfig.vue';
 import AnnouncementEditor from 'operation/Announcement.vue';
-import Settings from 'settings/Settings.vue';
+import WebhookSettings from 'settings/WebhookSettings.vue';
 import UserList from 'user/List.vue';
 import AgentList from 'agent/List.vue';
 import AgentDetail from 'agent/Detail.vue';
@@ -145,8 +145,10 @@ const routes = [
     {path: '/operation/script_console', component: ScriptConsole, name: 'scriptConsole'},
     {path: '/operation/system_config', component: SystemConfig, name: 'systemConfig'},
     {path: '/operation/announcement', component: AnnouncementEditor, name: 'announcementEditor'},
-    {path: '/settings', component: Home, redirect: '/settings/webhook'},
-    {path: '/settings/:currentMenu(.*)?', component: Settings, name: 'settings'},
+    {path: '/webhook/settings', component: WebhookSettings, name: 'webhookSettings'},
+    // To be used in later version.
+    // {path: '/settings', component: Home, redirect: '/settings/webhook'},
+    // {path: '/settings/:currentMenu(.*)?', component: Settings, name: 'settings'},
     {path: '/user', component: UserList, name: 'userList'},
     {path: '/agent', component: AgentList, name: 'agentList'},
     {path: '/agent/:ip/:name', component: AgentDetail, name: 'agentDetail', props: true},

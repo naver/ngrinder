@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ngrinder.operation.cotroller;
+package org.ngrinder.infra.webhook.controller;
 
 import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.model.User;
@@ -26,18 +26,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-/**
- * Settings controller.
- *
- * @since 3.5.2
- */
 @Controller
-@RequestMapping("/settings")
 @GlobalControllerModel
-public class SettingsController {
+@RequestMapping("/webhook")
+public class WebhookController {
 
-	@GetMapping("**")
-	public String systemConfig(User user) {
+	@GetMapping("/settings")
+	public String webhookSettings(User user) {
 		return "app";
 	}
 }

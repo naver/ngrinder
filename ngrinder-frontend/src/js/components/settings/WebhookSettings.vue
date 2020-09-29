@@ -1,9 +1,9 @@
 <template>
-    <div class="webhook">
-        <div class="subhead">
-            <h2 v-text="i18n('webhook.settings')"></h2>
-        </div>
-        <div class="webhook-config d-flex">
+    <div class="container webhook d-flex">
+        <div class="webhook-config">
+            <div class="subhead">
+                <h2 v-text="i18n('webhook.settings')"></h2>
+            </div>
             <div class="form-container">
                 <dl class="form-group" :class="{'hasError': errors.has('payloadUrl')}">
                     <dt>
@@ -16,7 +16,7 @@
                                type="text"
                                name="payloadUrl"
                                ref="payloadUrl"
-                               placeholder="http://www.target.com"
+                               placeholder="http://please-input-webhook-url/"
                                v-validate="{ required: true, url: {require_protocol: true} }"
                                v-model="config.payloadUrl"/>
                         <button class="btn btn-primary validationBtn"
@@ -43,9 +43,8 @@
                         </select>
                     </dd>
                 </dl>
-                <button class="btn btn-primary mt-3" @click="save" v-text="i18n('common.button.save')"></button>
             </div>
-            <div class="form-container">
+            <div class="form-container mt-4">
                 <dl class="form-group mb-0">
                     <dt>
                         <label v-text="i18n('common.event')"></label>
@@ -72,6 +71,12 @@
                             <input id="active" type="checkbox" class="custom-control-input" v-model="config.active">
                             <label class="custom-control-label" for="active" v-text="i18n('common.active')"></label>
                             <p v-text="i18n('webhook.config.active.help')"></p>
+                        </div>
+                        <div class="form-checkout">
+                            <button class="btn btn-primary float-right"
+                                    @click="save"
+                                    v-text="i18n('common.button.save')">
+                            </button>
                         </div>
                     </dd>
                 </dl>
@@ -105,8 +110,6 @@
                         <div class="tab-content mt-3">
                             <div class="tab-pane show active" :id="`nav-request-${index}`"
                                  role="tabpanel" :aria-labelledby="`nav-request-tab-${index}`">
-                                <label>Header</label>
-                                <pre v-text="activation.requestHeader"></pre>
                                 <label>Payload</label>
                                 <pre v-text="activation.requestPayload"></pre>
                             </div>
@@ -137,12 +140,12 @@
     import Base from '../Base.vue';
 
     @Component({
-        name: 'webhookConfig',
+        name: 'webhookSettings',
         $_veeValidate: {
             validator: 'new',
         },
     })
-    export default class WebhookConfig extends Mixins(Base, MessagesMixin) {
+    export default class WebhookSettings extends Mixins(Base, MessagesMixin) {
         VALIDATION_RETRY_MILLISECOND = 2000;
 
         eventStart = false;
@@ -159,6 +162,7 @@
         };
 
         activationPage = 0;
+        $popoverElements;
 
         created() {
             this.loadWebhookConfig();
@@ -166,7 +170,8 @@
         }
 
         mounted() {
-            $('[data-toggle="popover"]').popover();
+            this.$popoverElements = $('[data-toggle="popover"]');
+            this.$popoverElements.popover();
         }
 
         save() {
@@ -175,7 +180,7 @@
                     this.config.events = this.getEventToken();
                     this.config.createdUserId = this.ngrinder.currentUser.factualUser.id;
 
-                    this.$http.post(`/webhook/api/`, this.config)
+                    this.$http.post('/webhook/api/', this.config)
                         .then(() => this.showSuccessMsg('save successfully'))
                         .catch(() => this.showErrorMsg('save failed'));
 
@@ -225,7 +230,7 @@
             activation.responseBody = 'No Contents';
 
             if (jsonc.isJSON(activation.response)) {
-                let response = JSON.parse(activation.response);
+                const response = JSON.parse(activation.response);
 
                 if (response.body) {
                     activation.responseBody = response.body;
@@ -242,10 +247,7 @@
             }
 
             if (jsonc.isJSON(activation.request)) {
-                let request = JSON.parse(activation.request);
-
-                activation.requestHeader = JSON.stringify(request.header, null, 4);
-                delete request.header;
+                const request = JSON.parse(activation.request);
                 activation.requestPayload = JSON.stringify(request, null, 4);
             }
             return activation;
@@ -275,10 +277,11 @@
 
         sendDummyWebhookRequest() {
             this.$refs.validationBtn.disabled = true;
+            this.$popoverElements.popover('hide');
 
             const params = {
-                payloadUrl : this.config.payloadUrl,
-                contentType : this.config.contentType,
+                payloadUrl: this.config.payloadUrl,
+                contentType: this.config.contentType,
             };
 
             this.showProgressBar(this.i18n('script.editor.message.validate'));
@@ -305,7 +308,7 @@
                     sort: 'id,DESC',
                     'page.page': this.activationPage,
                     'page.size': 10,
-                }
+                },
             };
         }
 
@@ -324,14 +327,10 @@
         }
 
         .webhook-config {
-            padding: 5px 22px;
-            border-radius: 4px;
-            margin-top: 11px;
+            padding-right: 15px;
+            flex-basis: 500px;
 
             .form-container {
-                display: inline-block;
-                flex: 1;
-
                 .form-group {
                     &.hasError {
                         label, input, input::placeholder {
@@ -366,7 +365,7 @@
                     height: 45px;
 
                     #payload-url {
-                        width: 350px;
+                        width: 396px;
                     }
 
                     .validation-message {
@@ -407,8 +406,7 @@
         }
 
         .webhook-activation {
-            width: 977px;
-            margin-top: 10px;
+            flex: 1;
 
             ul {
                 list-style: none;
@@ -439,6 +437,7 @@
             }
 
             pre {
+                width: 680px;
                 padding: 7px 12px;
                 word-break: break-all;
                 overflow: auto;
