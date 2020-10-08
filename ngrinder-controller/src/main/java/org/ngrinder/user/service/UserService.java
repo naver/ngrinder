@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.hibernate.Hibernate.initialize;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
@@ -114,7 +115,6 @@ public class UserService extends AbstractUserService {
 		return one;
 	}
 
-
 	/**
 	 * Encoding given user's password.
 	 *
@@ -126,7 +126,6 @@ public class UserService extends AbstractUserService {
 			user.setPassword(encodePassword);
 		}
 	}
-
 
 	/**
 	 * Save user.
@@ -154,7 +153,22 @@ public class UserService extends AbstractUserService {
 	public User saveWithoutPasswordEncoding(User user) {
 		final List<User> followers = getFollowers(user.getFollowersStr());
 		user.setFollowers(followers);
-		if (user.getPassword() != null && StringUtils.isBlank(user.getPassword())) {
+
+		User savedUser = saveWithoutFollowers(user);
+
+		// Then expires new followers so that new followers info can be loaded.
+		for (User eachFollower : followers) {
+			userCache.evict(eachFollower.getUserId());
+			userModelCache.evict(eachFollower.getId());
+		}
+		prepareUserEnv(savedUser);
+		return savedUser;
+	}
+
+	@Transactional
+	@CachePut(value = CACHE_USERS, key = "#user.userId")
+	public User saveWithoutFollowers(User user) {
+		if (user.getPassword() != null && isBlank(user.getPassword())) {
 			user.setPassword(null);
 		}
 		final User existing = userRepository.findOneByUserId(user.getUserId());
@@ -169,14 +183,7 @@ public class UserService extends AbstractUserService {
 			}
 			user = existing.merge(user);
 		}
-		User createdUser = userRepository.save(user);
-		// Then expires new followers so that new followers info can be loaded.
-		for (User eachFollower : followers) {
-			userCache.evict(eachFollower.getUserId());
-			userModelCache.evict(eachFollower.getId());
-		}
-		prepareUserEnv(createdUser);
-		return createdUser;
+		return userRepository.save(user);
 	}
 
 	private void prepareUserEnv(User user) {

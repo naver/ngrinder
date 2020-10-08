@@ -123,8 +123,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 			addNewUserIntoLocal(user);
 			LOG.info("{} is saved by password {}", user.getUser().getUserId(), user.getUser().getPassword());
 		} else {
-			// update user information
-			userService.saveWithoutPasswordEncoding(user.getUser());
+			// update user information without followers
+			userService.saveWithoutFollowers(user.getUser());
 		}
 	}
 
