@@ -52,7 +52,7 @@ public class SecuredUser implements UserDetails {
 	 * @param userInfoProviderClass class name who provides the user info
 	 */
 	public SecuredUser(User user, String userInfoProviderClass) {
-		this.setUser(user);
+		this.user = user;
 		this.userInfoProviderClass = userInfoProviderClass;
 	}
 
