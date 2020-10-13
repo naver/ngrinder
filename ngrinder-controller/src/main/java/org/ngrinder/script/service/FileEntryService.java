@@ -48,7 +48,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
 import static org.apache.commons.compress.utils.CharsetNames.UTF_8;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_FILE_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.DIST_CACHE_FILE_ENTRIES;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -97,7 +97,7 @@ public class FileEntryService {
 			}
 		});
 		svnClientManager = fileEntityRepository.getSVNClientManager();
-		fileEntryCache = cacheManager.getCache(CACHE_FILE_ENTRIES);
+		fileEntryCache = cacheManager.getCache(DIST_CACHE_FILE_ENTRIES);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class FileEntryService {
 	 * @param user user
 	 * @return cached {@link FileEntry} list
 	 */
-	@Cacheable(value = CACHE_FILE_ENTRIES, key = "#user.userId")
+	@Cacheable(value = DIST_CACHE_FILE_ENTRIES, key = "#user.userId")
 	public List<FileEntry> getAll(User user) {
 		prepare(user);
 		List<FileEntry> allFileEntries;

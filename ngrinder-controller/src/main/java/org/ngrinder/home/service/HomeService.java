@@ -31,8 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
-import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_LEFT_PANEL_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_RIGHT_PANEL_ENTRIES;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -56,7 +56,7 @@ public class HomeService {
 	 * @return the list of {@link PanelEntry}
 	 */
 	@SuppressWarnings("unchecked")
-	@Cacheable(CACHE_LEFT_PANEL_ENTRIES)
+	@Cacheable(LOCAL_CACHE_LEFT_PANEL_ENTRIES)
 	public List<PanelEntry> getLeftPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, false);
 	}
@@ -68,7 +68,7 @@ public class HomeService {
 	 * @param feedURL rss url message
 	 * @return {@link PanelEntry} list
 	 */
-	@Cacheable(CACHE_RIGHT_PANEL_ENTRIES)
+	@Cacheable(LOCAL_CACHE_RIGHT_PANEL_ENTRIES)
 	public List<PanelEntry> getRightPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
 	}

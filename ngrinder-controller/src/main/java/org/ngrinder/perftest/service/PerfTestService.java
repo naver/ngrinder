@@ -1079,7 +1079,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 *
 	 * @return PerfTestStatisticsList PerfTestStatistics list
 	 */
-	@Cacheable(CACHE_CURRENT_PERFTEST_STATISTICS)
+	@Cacheable(LOCAL_CACHE_CURRENT_PERFTEST_STATISTICS)
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();

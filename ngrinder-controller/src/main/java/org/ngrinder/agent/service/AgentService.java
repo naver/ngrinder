@@ -357,7 +357,7 @@ public class AgentService extends AbstractAgentService
 				"\nPlease restart perftest after few minutes.");
 		}
 
-		hazelcastService.put(DIST_MAP_CACHE_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);
+		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);
 
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
 		for (AgentInfo agentInfo : necessaryAgents) {
@@ -386,7 +386,7 @@ public class AgentService extends AbstractAgentService
 	 * @return selected agents.
 	 */
 	Set<AgentInfo> selectAgent(User user, Set<AgentInfo> allFreeAgents, int agentCount) {
-		Set<AgentInfo> recentlyUsedAgents = hazelcastService.getOrDefault(DIST_MAP_CACHE_RECENTLY_USED_AGENTS, user.getUserId(), emptySet());
+		Set<AgentInfo> recentlyUsedAgents = hazelcastService.getOrDefault(DIST_MAP_NAME_RECENTLY_USED_AGENTS, user.getUserId(), emptySet());
 
 		Comparator<AgentInfo> recentlyUsedPriorityComparator = (agent1, agent2) -> {
 			if (recentlyUsedAgents.contains(agent1)) {
