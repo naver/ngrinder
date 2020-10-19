@@ -14,6 +14,8 @@ dependencies {
     compile (group: "org.codehaus.groovy", name: "groovy-json", version: groovy_version)
     compile (group: "org.codehaus.groovy", name: "groovy-sql", version: groovy_version)
     compile (group: "org.codehaus.groovy", name: "groovy-xml", version: groovy_version)
+    compile (group: "com.squareup.okhttp3", name: "okhttp", version: "4.9.0")
+    compile (group: "org.conscrypt", name: "conscrypt-openjdk-uber", version: "2.5.1")
 
     testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
 

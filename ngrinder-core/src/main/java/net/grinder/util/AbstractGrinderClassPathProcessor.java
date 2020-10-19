@@ -160,6 +160,10 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("junit");
 		usefulJarList.add("hamcrest");
 		usefulJarList.add("commons-lang");
+		usefulJarList.add("okhttp");
+		usefulJarList.add("okio");
+		usefulJarList.add("kotlin-stdlib");
+		usefulJarList.add("conscrypt-openjdk-uber");
 
 		uselessJarList.add("jython-2.2");
 		uselessJarList.add("ngrinder-core");
