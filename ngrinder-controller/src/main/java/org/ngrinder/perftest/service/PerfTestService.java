@@ -73,6 +73,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import static java.lang.Long.valueOf;
+import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static java.util.Arrays.asList;
@@ -376,7 +377,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
-		perfTest.setFinishTime(new Date());
+		perfTest.setFinishTime(now());
 		updatePerfTestAfterTestFinish(perfTest);
 		return markProgressAndStatus(perfTest, status, message);
 	}

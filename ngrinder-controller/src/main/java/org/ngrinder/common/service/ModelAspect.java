@@ -25,8 +25,9 @@ import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.Instant;
 
+import static java.time.Instant.now;
 import static org.ngrinder.user.repository.UserSpecification.idEqual;
 
 /**
@@ -61,7 +62,7 @@ public class ModelAspect {
 			if (object instanceof BaseModel
 					&& (springContext.isAuthenticationContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
-				Date lastModifiedDate = new Date();
+				Instant lastModifiedDate = now();
 				model.setLastModifiedDate(lastModifiedDate);
 
 				User currentUser = userContext.getCurrentUser();

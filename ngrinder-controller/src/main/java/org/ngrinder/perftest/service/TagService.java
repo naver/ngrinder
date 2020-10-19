@@ -24,8 +24,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.*;
 
+import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.perftest.repository.TagSpecification.*;
 
@@ -112,7 +114,7 @@ public class TagService {
 	 * @return saved {@link Tag} instance
 	 */
 	public Tag saveTag(User user, Tag tag) {
-		Date createdDate = new Date();
+		Instant createdDate = now();
 		if (tag.getCreatedUser() == null) {
 			tag.setCreatedUser(user);
 			tag.setCreatedDate(createdDate);

@@ -29,7 +29,7 @@ import org.ngrinder.model.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Webhook activation model.
@@ -48,7 +48,7 @@ public class WebhookActivation extends BaseEntity<WebhookActivation> {
 	private String createdUserId;
 
 	@Column(name = "created_time")
-	private Date createdTime;
+	private Instant createdTime;
 
 	private String request;
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -25,7 +25,6 @@ import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.UnitUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.exception.PerfTestPrepareException;
@@ -51,11 +50,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
+import static java.time.Instant.now;
+import static java.time.Instant.ofEpochSecond;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static net.grinder.util.FileUtils.*;
@@ -64,6 +65,7 @@ import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORI
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.model.Status.*;
 
 /**
@@ -174,10 +176,9 @@ public class PerfTestRunnable implements ControllerConstants {
 	}
 
 	private boolean isScheduledNow(PerfTest test) {
-		Date current = new Date();
-		Date scheduledDate = DateUtils
-				.truncate((Date) defaultIfNull(test.getScheduledTime(), current), Calendar.MINUTE);
-		return current.after(scheduledDate);
+		Instant now = now();
+		Instant scheduledTime = cast(defaultIfNull(test.getScheduledTime(), now));
+		return (now.truncatedTo(MINUTES).getEpochSecond() - scheduledTime.truncatedTo(MINUTES).getEpochSecond()) >= 0;
 	}
 
 	/**
@@ -403,11 +404,10 @@ public class PerfTestRunnable implements ControllerConstants {
 			}
 		});
 		long startTime = singleConsole.startTest(grinderProperties);
-		perfTest.setStartTime(new Date(startTime));
+		perfTest.setStartTime(ofEpochSecond(startTime / 1000));
 		addSamplingListeners(perfTest, singleConsole);
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
 		singleConsole.startSampling();
-
 	}
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
@@ -415,7 +415,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		singleConsole.addSamplingLifeCycleListener(new PerfTestSamplingCollectorListener(singleConsole,
 				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCycleListener(new AgentLostDetectionListener(singleConsole, perfTest,
-				perfTestService, scheduledTaskService));;
+				perfTestService, scheduledTaskService));
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass
 				(OnTestSamplingRunnable.class, asList(new MonitorCollectorPlugin(config, scheduledTaskService,
 					perfTestService, perfTest.getId()), new TooManyErrorCheckPlugin()));

@@ -26,10 +26,11 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.function.Function;
 
-import static java.time.LocalDateTime.now;
+import static java.time.Instant.now;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.model.Status.UNKNOWN;

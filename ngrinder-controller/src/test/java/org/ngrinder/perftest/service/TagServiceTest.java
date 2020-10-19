@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -82,7 +83,7 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testTagging() {
-		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
+		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, now());
 		newPerfTest.setTagString("HELLO,world");
 		createPerfTest(newPerfTest);
 		newPerfTest.setTagString("HELLO,WORLD");
@@ -98,7 +99,7 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testGetAllTagStrings() {
 		String[] tags = new String[]{"aaaa", "AAA", "a123", "bbbb", "a12312", "a999", "a777"};
 		tagService.addTags(getTestUser(), tags);
-		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
+		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, now());
 		newPerfTest.setTagString(String.join(",", tags));
 		perfTestService.save(getTestUser(), newPerfTest);
 

@@ -39,8 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -285,7 +285,7 @@ public class UserService extends AbstractUserService {
 	@Override
 	public User createUser(User user) {
 		encodePassword(user);
-		Date createdDate = new Date();
+		Instant createdDate = Instant.now();
 		user.setCreatedDate(createdDate);
 		user.setLastModifiedDate(createdDate);
 		User createdUser = getOne(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID);

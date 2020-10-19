@@ -26,10 +26,11 @@ import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import static java.time.Instant.now;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -44,7 +45,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private TagRepository tagRepository;
 
-	
+
 	@Before
 	public void before() {
 		List<PerfTest> findAll = perfTestRepository.findAll();
@@ -59,17 +60,18 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		userRepository.deleteAll();
 		userRepository.flush();
 	}
-	
+
 	@Test
 	public void testShareUser() {
 		List<User> sharedUsers = new ArrayList<>();
 		List<User> shareUsers = new ArrayList<>();
 
+		Instant now = now();
 		User user = new User();
 		user.setUserName("MyName1");
 		user.setEmail("junoyoon@gmail.com");
 		user.setCreatedUser(getUser("user"));
-		user.setCreatedDate(new Date());
+		user.setCreatedDate(now);
 		user.setUserId("hello");
 		user.setRole(Role.USER);
 		user = userRepository.save(user);
@@ -78,25 +80,25 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		user2.setUserName("MyName2");
 		user2.setEmail("junoyoon2@paran.com");
 		user2.setCreatedUser(getUser("user"));
-		user2.setCreatedDate(new Date());
+		user2.setCreatedDate(now);
 		user2.setRole(Role.USER);
 		userRepository.save(user2);
-		
+
 		User user3 = new User();
 		user3.setUserId("hello3");
 		user3.setUserName("MyName3");
 		user3.setEmail("junoyoon3@paran.com");
 		user3.setCreatedUser(getUser("user"));
-		user3.setCreatedDate(new Date());
+		user3.setCreatedDate(now);
 		user3.setRole(Role.USER);
 		userRepository.save(user3);
-		
+
 		User user4 = new User();
 		user4.setUserId("hello4");
 		user4.setUserName("MyName4");
 		user4.setEmail("junoyoon4@paran.com");
 		user4.setCreatedUser(getUser("user"));
-		user4.setCreatedDate(new Date());
+		user4.setCreatedDate(now);
 		user4.setRole(Role.USER);
 		sharedUsers.add(user3);
 		sharedUsers.add(user2);
@@ -110,15 +112,16 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		List<User> sh = sharedUser.getFollowers();
 		LOG.debug("sharedUser.getFollowers:{}", sh);
 	}
-	
+
 
 	@Test
 	public void testUser() {
+		Instant now = now();
 		User user = new User();
 		user.setUserName("MyName1");
 		user.setEmail("junoyoon@gmail.com");
 		user.setCreatedUser(getUser("user"));
-		user.setCreatedDate(new Date());
+		user.setCreatedDate(now);
 		user.setUserId("hello");
 		user.setRole(Role.USER);
 		user = userRepository.save(user);
@@ -127,7 +130,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		user2.setUserName("MyName2");
 		user2.setEmail("junoyoon@paran.com");
 		user2.setCreatedUser(getUser("user"));
-		user2.setCreatedDate(new Date());
+		user2.setCreatedDate(now);
 		user2.setRole(Role.USER);
 		userRepository.save(user2);
 

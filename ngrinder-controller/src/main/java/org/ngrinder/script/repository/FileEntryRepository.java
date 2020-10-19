@@ -142,8 +142,8 @@ public class FileEntryRepository {
 						return;
 					}
 					script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
-					script.setCreatedDate(dirEntry.getDate());
-					script.setLastModifiedDate(dirEntry.getDate());
+					script.setCreatedDate(dirEntry.getDate().toInstant());
+					script.setLastModifiedDate(dirEntry.getDate().toInstant());
 					script.setDescription(dirEntry.getCommitMessage());
 					script.setRevision(dirEntry.getRevision());
 					if (dirEntry.getKind() == SVNNodeKind.DIR) {
@@ -183,8 +183,8 @@ public class FileEntryRepository {
 					if (StringUtils.isBlank(relativePath)) {
 						return;
 					}
-					script.setCreatedDate(dirEntry.getDate());
-					script.setLastModifiedDate(dirEntry.getDate());
+					script.setCreatedDate(dirEntry.getDate().toInstant());
+					script.setLastModifiedDate(dirEntry.getDate().toInstant());
 					script.setPath(relativePath);
 					script.setDescription(dirEntry.getCommitMessage());
 					long reversion = dirEntry.getRevision();

@@ -492,7 +492,7 @@
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status.name = 'READY';
-            this.test.scheduledTime = scheduledTime;
+            this.test.scheduledTime = scheduledTime ? scheduledTime.getTime() : scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))

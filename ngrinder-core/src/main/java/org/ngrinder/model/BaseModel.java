@@ -22,7 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import java.util.Date;
+import java.time.Instant;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +41,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 	private static final long serialVersionUID = -3876339828833595694L;
 
 	@Column(name = "created_date", insertable = true, updatable = false)
-	private Date createdDate;
+	private Instant createdDate;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
@@ -51,7 +51,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 	private User createdUser;
 
 	@Column(name = "last_modified_date", insertable = true, updatable = true)
-	private Date lastModifiedDate;
+	private Instant lastModifiedDate;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne

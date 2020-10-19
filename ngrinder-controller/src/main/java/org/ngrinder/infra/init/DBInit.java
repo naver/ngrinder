@@ -22,8 +22,9 @@ import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
+import java.time.Instant;
 
+import static java.time.Instant.now;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ADMIN_PASSWORD_RESET;
 import static org.ngrinder.model.Role.*;
 
@@ -89,7 +90,7 @@ public class DBInit {
 			user.setUserName(userName);
 			user.setEmail(email);
 
-			Date now = new Date();
+			Instant now = now();
 			user.setCreatedDate(now);
 			user.setLastModifiedDate(now);
 			user.setCreatedUser(user);

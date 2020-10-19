@@ -24,11 +24,11 @@ import lombok.*;
 import org.ngrinder.model.BaseEntity;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
+import static java.time.Instant.now;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 
 /**
@@ -59,10 +59,10 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 	private String events;
 
 	@Column(name = "created_time")
-	private Date createdTime;
+	private Instant createdTime;
 
 	@Column(name = "last_modified_time")
-	private Date lastModifiedTime;
+	private Instant lastModifiedTime;
 
 	@Transient
 	@Getter(value = AccessLevel.NONE)
@@ -70,7 +70,7 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
 	@PreUpdate
 	public void preUpdate() {
-		this.lastModifiedTime = new Date();
+		this.lastModifiedTime = now();
 	}
 
 	public Set<Event> getEvents() {

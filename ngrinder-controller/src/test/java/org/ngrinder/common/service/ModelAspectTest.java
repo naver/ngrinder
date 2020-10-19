@@ -21,7 +21,7 @@ import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
@@ -44,7 +44,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 		BaseModel<Object> baseModel = mock(BaseModel.class);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { baseModel });
 		modelAspect.beforeSave(joinPoint);
-		verify(baseModel, times(1)).setCreatedDate(any(Date.class));
+		verify(baseModel, times(1)).setCreatedDate(any(Instant.class));
 	}
 
 	@Test
@@ -58,6 +58,6 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 		when(joinPoint.getArgs()).thenReturn(new Object[] { baseModel });
 		setField(modelAspect, "springContext", springContext);
 		modelAspect.beforeSave(joinPoint);
-		verify(baseModel, times(1)).setLastModifiedDate(any(Date.class));
+		verify(baseModel, times(1)).setLastModifiedDate(any(Instant.class));
 	}
 }

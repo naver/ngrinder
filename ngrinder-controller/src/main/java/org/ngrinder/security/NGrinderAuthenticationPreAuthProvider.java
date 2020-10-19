@@ -13,7 +13,6 @@
  */
 package org.ngrinder.security;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import org.ngrinder.model.Role;
@@ -26,6 +25,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.Setter;
+
+import static java.time.Instant.now;
 
 /**
  * nGrinder {@link PreAuthenticatedAuthenticationProvider}.
@@ -91,7 +92,7 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
-		user.setCreatedDate(new Date());
+		user.setCreatedDate(now());
 		User findOneByUserId = userService.getOne(user.getUserId());
 		if (findOneByUserId != null) {
 			user = findOneByUserId.merge(user);

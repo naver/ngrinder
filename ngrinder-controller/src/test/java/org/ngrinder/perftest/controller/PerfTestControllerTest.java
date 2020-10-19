@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.controller;
 
+import static java.time.Instant.now;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.ngrinder.common.constant.WebConstants.PARAM_TEST;
@@ -42,7 +43,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +87,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testGetPerfTestDetail() {
-		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
+		PerfTest createPerfTest = createPerfTest("hello", Status.READY, now());
 		Map<String, Object> response = perfTestApiController.getOneDetail(getTestUser(), createPerfTest.getId());
 		assertNotNull(response.get(PARAM_TEST));
 	}
@@ -104,11 +104,11 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testDeleteTests() {
 		String testName = "test1";
-		PerfTest test = createPerfTest(testName, Status.READY, new Date());
+		PerfTest test = createPerfTest(testName, Status.READY, now());
 		perfTestApiController.delete(getTestUser(), String.valueOf(test.getId()));
 
-		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
-		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
+		PerfTest test1 = createPerfTest(testName, Status.READY, now());
+		PerfTest test2 = createPerfTest(testName, Status.READY, now());
 
 		Function<Map<String, Object>, PerfTest> perfTestOf = map -> (PerfTest) map.get(PARAM_TEST);
 
@@ -160,7 +160,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testSavePerfTestExist() {
 		String testName = "test1";
 		String newName = "new test1";
-		PerfTest test = createPerfTest(testName, Status.READY, new Date());
+		PerfTest test = createPerfTest(testName, Status.READY, now());
 		test.setTestName(newName);
 
 		PerfTest newTest = new PerfTest();
@@ -205,7 +205,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testGetTestList() {
-		createPerfTest("new test1", Status.READY, new Date());
+		createPerfTest("new test1", Status.READY, now());
 		Map<String, Object> response = perfTestApiController.getAllList(getTestUser(), null, null, null, PageRequest.of(0, 10));
 		assertThat(((List) response.get("tests")).size(), is(1));
 	}
@@ -213,7 +213,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testGetTestListByAdmin() {
 		String testName = "new test1";
-		createPerfTest(testName, Status.READY, new Date());
+		createPerfTest(testName, Status.READY, now());
 		User testAdmin = new User();
 		testAdmin.setUserId("testAdmin");
 		testAdmin.setPassword("testAdmin");
@@ -229,7 +229,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testGetTestListByOtherUser() {
 		String testName = "new test1";
-		PerfTest test = createPerfTest(testName, Status.READY, new Date());
+		PerfTest test = createPerfTest(testName, Status.READY, now());
 
 		User otherTestUser = new User();
 		otherTestUser.setUserId("testUser");
@@ -253,7 +253,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testGetTestListByKeyWord() {
 		String strangeName = "DJJHG^%R&*^%^565(^%&^%(^%(^";
-		createPerfTest(strangeName, Status.READY, new Date());
+		createPerfTest(strangeName, Status.READY, now());
 
 		Sort sort = Sort.by(Sort.Direction.ASC, "testName");
 		Pageable pageable = PageRequest.of(0, 10, sort);
@@ -267,7 +267,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testGetReportData() {
 		String testName = "test1";
-		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
+		PerfTest test = createPerfTest(testName, Status.FINISHED, now());
 		controller.getReport(test.getId());
 
 		perfTestApiController.getPerfGraph(test.getId(), "TPS,mean_time(ms)", true, 0);
@@ -278,7 +278,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testGetMonitorData() {
 		String testName = "test1";
-		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
+		PerfTest test = createPerfTest(testName, Status.FINISHED, now());
 		perfTestApiController.getMonitorGraph(test.getId(), "127.0.0.1", 0);
 
 		long testId = 123456L;
@@ -288,7 +288,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testDownloadReportData() {
 		String testName = "test1";
-		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
+		PerfTest test = createPerfTest(testName, Status.FINISHED, now());
 		HttpServletResponse resp = new MockHttpServletResponse();
 		try {
 			controller.downloadCSV(getTestUser(), test.getId(), resp);
@@ -304,7 +304,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testRefreshTestRunning() {
 		String testName = "test1";
 		// it is not a running test, can not test get statistic data.
-		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
+		PerfTest test = createPerfTest(testName, Status.TESTING, now());
 		test.setPort(11011);
 		try {
 			perfTestApiController.refreshTestRunning(getTestUser(), test.getId());
@@ -316,9 +316,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testUpdateStatus() {
 		String testName = "test1";
-		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
+		PerfTest test = createPerfTest(testName, Status.TESTING, now());
 		String testName2 = "test1";
-		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
+		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, now());
 
 		String ids = test.getId() + "," + test2.getId();
 		Map<String, Object> response = perfTestApiController.getStatuses(getTestUser(), ids);

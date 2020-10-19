@@ -38,8 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Date;
-
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 
 /**
@@ -137,7 +136,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
-		user.setCreatedDate(new Date());
+		user.setCreatedDate(now());
 		User newUser = userService.getOne(user.getUserId());
 		if (newUser != null) {
 			user = newUser.merge(user);
