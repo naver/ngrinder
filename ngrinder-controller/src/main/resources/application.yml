@@ -33,3 +33,7 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  h2:
+    console:
+      enabled: false
+      path: /h2-console

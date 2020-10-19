@@ -171,7 +171,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.key("ngrinder")
 			.userDetailsService(ngrinderUserDetailsService)
 			.and()
-			.csrf().disable().exceptionHandling().authenticationEntryPoint(delegatingAuthenticationEntryPoint());
+			.csrf().disable().exceptionHandling().authenticationEntryPoint(delegatingAuthenticationEntryPoint())
+			.and()
+			.headers().frameOptions().sameOrigin();
 	}
 
 	/**
