@@ -45,7 +45,7 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.hibernate.Hibernate.initialize;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_USERS;
+import static org.ngrinder.common.constant.CacheConstants.DIST_CACHE_USERS;
 import static org.ngrinder.common.constant.CacheConstants.CACHE_USER_ENTITY;
 import static org.springframework.data.domain.Sort.Direction.*;
 import static org.springframework.data.domain.Sort.by;
@@ -81,7 +81,7 @@ public class UserService extends AbstractUserService {
 
 	@PostConstruct
 	public void init() {
-		userCache = cacheManager.getCache(CACHE_USERS);
+		userCache = cacheManager.getCache(DIST_CACHE_USERS);
 		userModelCache = cacheManager.getCache(CACHE_USER_ENTITY);
 	}
 
@@ -92,7 +92,7 @@ public class UserService extends AbstractUserService {
 	 * @return user
 	 */
 	@Transactional
-	@Cacheable(value = CACHE_USERS, key = "#userId")
+	@Cacheable(value = DIST_CACHE_USERS, key = "#userId")
 	@Override
 	public User getOne(String userId) {
 		User user  = userRepository.findOneByUserId(userId);
@@ -134,7 +134,7 @@ public class UserService extends AbstractUserService {
 	 * @return User
 	 */
 	@Transactional
-	@CachePut(value = CACHE_USERS, key = "#user.userId")
+	@CachePut(value = DIST_CACHE_USERS, key = "#user.userId")
 	@Override
 	public User save(User user) {
 		encodePassword(user);
@@ -148,7 +148,7 @@ public class UserService extends AbstractUserService {
 	 * @return User
 	 */
 	@Transactional
-	@CachePut(value = CACHE_USERS, key = "#user.userId")
+	@CachePut(value = DIST_CACHE_USERS, key = "#user.userId")
 	@Override
 	public User saveWithoutPasswordEncoding(User user) {
 		final List<User> followers = getFollowers(user.getFollowersStr());
@@ -166,7 +166,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	@Transactional
-	@CachePut(value = CACHE_USERS, key = "#user.userId")
+	@CachePut(value = DIST_CACHE_USERS, key = "#user.userId")
 	public User saveWithoutFollowers(User user) {
 		if (user.getPassword() != null && isBlank(user.getPassword())) {
 			user.setPassword(null);
@@ -210,7 +210,7 @@ public class UserService extends AbstractUserService {
 	 */
 	@SuppressWarnings("SpringElInspection")
 	@Transactional
-	@CacheEvict(value = CACHE_USERS, key = "#userId")
+	@CacheEvict(value = DIST_CACHE_USERS, key = "#userId")
 	public void delete(String userId) {
 		User user = getOne(userId);
 		List<PerfTest> deletePerfTests = perfTestService.deleteAll(user);
@@ -282,7 +282,7 @@ public class UserService extends AbstractUserService {
 	 * @return User
 	 */
 	@Transactional
-	@CachePut(value = CACHE_USERS, key = "#user.userId")
+	@CachePut(value = DIST_CACHE_USERS, key = "#user.userId")
 	@Override
 	public User createUser(User user) {
 		encodePassword(user);

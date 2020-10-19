@@ -42,8 +42,8 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_GITHUB_IS_MAVEN_GROOVY;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_GITHUB_SCRIPTS;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_GITHUB_IS_MAVEN_GROOVY;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_GITHUB_SCRIPTS;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_GITHUB_BASE_URL;
 import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
@@ -185,7 +185,7 @@ public class GitHubFileEntryService {
 		return new File(directory.getPath() + "/.svn").exists();
 	}
 
-	@Cacheable(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
+	@Cacheable(value = LOCAL_CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
 	public boolean isGroovyMavenProject(GHRepository ghRepository, String scriptPath, String activeBranch) {
 		if (!groovyMavenProjectScriptHandler.isGroovyMavenPath(scriptPath)) {
 			return false;
@@ -331,7 +331,7 @@ public class GitHubFileEntryService {
 	 *
 	 * @since 3.5.0
 	 */
-	@Cacheable(value = CACHE_GITHUB_SCRIPTS, key = "#user.userId")
+	@Cacheable(value = LOCAL_CACHE_GITHUB_SCRIPTS, key = "#user.userId")
 	public Map<String, List<GHTreeEntry>> getScripts(User user) throws FileNotFoundException {
 		Map<String, List<GHTreeEntry>> scriptMap = new HashMap<>();
 		getAllGitHubConfig(user).forEach(gitHubConfig -> {
@@ -424,12 +424,12 @@ public class GitHubFileEntryService {
 		return (!configuredGitHubBaseUrl.isEmpty()) ? configuredGitHubBaseUrl : config.getControllerProperties().getProperty(PROP_CONTROLLER_GITHUB_BASE_URL);
 	}
 
-	@CacheEvict(value = CACHE_GITHUB_SCRIPTS, key = "#user.userId")
+	@CacheEvict(value = LOCAL_CACHE_GITHUB_SCRIPTS, key = "#user.userId")
 	public void evictGitHubScriptCache(User user) {
 		noOp();
 	}
 
-	@CacheEvict(value = CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
+	@CacheEvict(value = LOCAL_CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
 	public void evictGitHubMavenGroovyCache(GHRepository ghRepository, String scriptPath, String activeBranch) {
 		noOp();
 	}
