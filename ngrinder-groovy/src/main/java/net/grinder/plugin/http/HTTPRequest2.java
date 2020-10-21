@@ -20,18 +20,30 @@
  */
 package net.grinder.plugin.http;
 
+import net.grinder.script.Statistics;
+import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
+import org.apache.commons.lang.time.StopWatch;
 import org.conscrypt.Conscrypt;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.security.Security;
+import java.util.List;
 
 public class HTTPRequest2 {
 	static {
 		// To support ALPN
 		Security.insertProviderAt(Conscrypt.newProvider(), 1);
+
+		// Ensure plugin is loaded
+		HTTPPlugin.getPlugin();
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest2.class);
@@ -41,6 +53,7 @@ public class HTTPRequest2 {
 	public HTTPRequest2() {
 		client = new OkHttpClient()
 			.newBuilder()
+			.eventListener(new ConnectionTimeAggregateListener())
 			.hostnameVerifier((s, sslSession) -> true)
 			.build();
 	}
@@ -92,4 +105,58 @@ public class HTTPRequest2 {
 	private void aggregate(final Response response) {
 		// TODO: Implement aggregate statistics
 	}
+
+	private static class ConnectionTimeAggregateListener extends EventListener {
+		private final Logger LOGGER = LoggerFactory.getLogger(ConnectionTimeAggregateListener.class);
+
+		private final StopWatch dnsStopWatch = new StopWatch();
+		private final StopWatch connectStopWatch = new StopWatch();
+
+		@Override
+		public void dnsStart(@NotNull Call call, @NotNull String domainName) {
+			dnsStopWatch.start();
+		}
+
+		@Override
+		public void dnsEnd(@NotNull Call call, @NotNull String domainName, @NotNull List<InetAddress> inetAddressList) {
+			dnsStopWatch.stop();
+			long dnsTime = dnsStopWatch.getTime();
+			dnsStopWatch.reset();
+
+			LOGGER.debug("DNS time : " + dnsTime);
+			accumulate(StatisticsIndexMap.HTTP_PLUGIN_DNS_TIME_KEY, dnsTime);
+		}
+
+		@Override
+		public void connectStart(@NotNull Call call, @NotNull InetSocketAddress inetSocketAddress, @NotNull Proxy proxy) {
+			connectStopWatch.start();
+		}
+
+		@Override
+		public void connectEnd(@NotNull Call call, @NotNull InetSocketAddress inetSocketAddress, @NotNull Proxy proxy, @Nullable Protocol protocol) {
+			connectStopWatch.stop();
+			long connectTime = connectStopWatch.getTime();
+			connectStopWatch.reset();
+
+			LOGGER.debug("Connect time : " + connectTime);
+			accumulate(StatisticsIndexMap.HTTP_PLUGIN_CONNECT_TIME_KEY, connectTime);
+		}
+
+		private void accumulate(String key, long time) {
+			Statistics statistics = HTTPPlugin.getPlugin()
+				.getPluginProcessContext()
+				.getScriptContext()
+				.getStatistics();
+
+			if (statistics.isTestInProgress()) {
+				try {
+					Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
+					statisticsForTest.addLong(key, time);
+				} catch (Exception e) {
+					LOGGER.error("Fail to accumulate HTTP statistics", e);
+				}
+			}
+		}
+	}
 }
+
