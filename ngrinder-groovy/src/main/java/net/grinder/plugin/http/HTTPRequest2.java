@@ -111,6 +111,7 @@ public class HTTPRequest2 {
 
 		private final StopWatch dnsStopWatch = new StopWatch();
 		private final StopWatch connectStopWatch = new StopWatch();
+		private final StopWatch timeToFirstByteStopWatch = new StopWatch();
 
 		@Override
 		public void dnsStart(@NotNull Call call, @NotNull String domainName) {
@@ -123,7 +124,6 @@ public class HTTPRequest2 {
 			long dnsTime = dnsStopWatch.getTime();
 			dnsStopWatch.reset();
 
-			LOGGER.debug("DNS time : " + dnsTime);
 			accumulate(StatisticsIndexMap.HTTP_PLUGIN_DNS_TIME_KEY, dnsTime);
 		}
 
@@ -138,8 +138,21 @@ public class HTTPRequest2 {
 			long connectTime = connectStopWatch.getTime();
 			connectStopWatch.reset();
 
-			LOGGER.debug("Connect time : " + connectTime);
 			accumulate(StatisticsIndexMap.HTTP_PLUGIN_CONNECT_TIME_KEY, connectTime);
+		}
+
+		@Override
+		public void connectionAcquired(@NotNull Call call, @NotNull Connection connection) {
+			timeToFirstByteStopWatch.start();
+		}
+
+		@Override
+		public void responseHeadersStart(@NotNull Call call) {
+			timeToFirstByteStopWatch.stop();
+			long timeToFirstByte = timeToFirstByteStopWatch.getTime();
+			timeToFirstByteStopWatch.reset();
+
+			accumulate(StatisticsIndexMap.HTTP_PLUGIN_FIRST_BYTE_TIME_KEY, timeToFirstByte);
 		}
 
 		private void accumulate(String key, long time) {
