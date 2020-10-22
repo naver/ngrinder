@@ -69,8 +69,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * @param createdUser crested user.
 	 */
 	public PerfTest(User createdUser) {
-		this.setCreatedUser(createdUser);
-		this.setLastModifiedUser(createdUser);
+		this.setCreatedBy(createdUser);
+		this.setLastModifiedBy(createdUser);
 	}
 
 	@Cloneable
@@ -322,7 +322,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@JsonIgnore
 	public String getTestIdentifier() {
-		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
+		return "perftest_" + getId() + "_" + getLastModifiedBy().getUserId();
 	}
 
 	/**
@@ -341,8 +341,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	@JsonIgnore
-	public String getLastModifiedDateToStr() {
-		return dateToString(from(getLastModifiedDate()));
+	public String getLastModifiedAtToStr() {
+		return dateToString(from(getLastModifiedAt()));
 	}
 
 	/**

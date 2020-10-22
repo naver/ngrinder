@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.security;
 
@@ -43,11 +43,11 @@ import static java.util.Arrays.asList;
 
 /**
  * nGrinder UserDetailsAuthenticationProvider.
- * 
+ *
  * This class validates the user provided ID / Password from login page. Internally it uses the plugins implementing
  * {@link OnLoginRunnable}. If you want to extend user authentification, please create the plugin implementing
  * {@link OnLoginRunnable} interface.
- * 
+ *
  * @since 3.0
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -129,14 +129,14 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	/**
 	 * Add new user into local db.
-	 * 
+	 *
 	 * @param securedUser user
 	 */
 	@Transactional
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
-		user.setCreatedDate(now());
+		user.setCreatedAt(now());
 		User newUser = userService.getOne(user.getUserId());
 		if (newUser != null) {
 			user = newUser.merge(user);

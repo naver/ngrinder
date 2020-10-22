@@ -26,7 +26,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map.Entry;
@@ -142,8 +142,8 @@ public class FileEntryRepository {
 						return;
 					}
 					script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
-					script.setCreatedDate(dirEntry.getDate().toInstant());
-					script.setLastModifiedDate(dirEntry.getDate().toInstant());
+					script.setCreatedAt(dirEntry.getDate().toInstant());
+					script.setLastModifiedAt(dirEntry.getDate().toInstant());
 					script.setDescription(dirEntry.getCommitMessage());
 					script.setRevision(dirEntry.getRevision());
 					if (dirEntry.getKind() == SVNNodeKind.DIR) {
@@ -183,8 +183,9 @@ public class FileEntryRepository {
 					if (StringUtils.isBlank(relativePath)) {
 						return;
 					}
-					script.setCreatedDate(dirEntry.getDate().toInstant());
-					script.setLastModifiedDate(dirEntry.getDate().toInstant());
+					Instant lastModifiedAt = dirEntry.getDate().toInstant();
+					script.setCreatedAt(lastModifiedAt);
+					script.setLastModifiedAt(lastModifiedAt);
 					script.setPath(relativePath);
 					script.setDescription(dirEntry.getCommitMessage());
 					long reversion = dirEntry.getRevision();
@@ -255,7 +256,7 @@ public class FileEntryRepository {
 			script.setDescription(info.getCommitMessage());
 			script.setRevision(revisionNumber);
 			script.setLastRevision(lastRevisionNumber);
-			script.setCreatedUser(user);
+			script.setCreatedBy(user);
 		} catch (Exception e) {
 			LOG.error("Error while fetching a file from SVN {}", user.getUserId() + "_" + path, e);
 			return null;

@@ -73,7 +73,7 @@ public class WebhookService {
 
 	public void sendDummyWebhookRequest(User user, WebhookConfig webhookConfig, Event event) {
 		PerfTest perfTest = new PerfTest();
-		perfTest.setCreatedUser(user);
+		perfTest.setCreatedBy(user);
 		sendWebhookRequest(perfTest, webhookConfig, event);
 	}
 
@@ -89,7 +89,7 @@ public class WebhookService {
 		}
 
 		WebhookActivation webhookActivation = new WebhookActivation();
-		webhookActivation.setCreatedUserId(perfTest.getCreatedUser().getUserId());
+		webhookActivation.setCreatorId(perfTest.getCreatedBy().getUserId());
 		webhookActivation.setUuid(UUID.randomUUID().toString());
 
 		try {
@@ -103,7 +103,7 @@ public class WebhookService {
 		} catch (JsonProcessingException e) {
 			webhookActivation.setResponse(response.toString());
 		}
-		webhookActivation.setCreatedTime(now());
+		webhookActivation.setCreatedAt(now());
 		webhookActivationService.save(webhookActivation);
 	}
 

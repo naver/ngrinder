@@ -30,7 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public abstract class WebhookActivationSpecification {
 
-	public static Specification<WebhookActivation> createdUserIdEqual(String createdUerId) {
-		return (Specification<WebhookActivation>) (root, query, cb) -> cb.equal(root.get("createdUserId"), createdUerId);
+	public static Specification<WebhookActivation> creatorIdEqual(String creatorId) {
+		return (Specification<WebhookActivation>) (root, query, cb) -> cb.equal(root.get("creatorId"), creatorId);
 	}
 }

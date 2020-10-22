@@ -577,7 +577,7 @@
         showScript() {
             let showScriptUrl = `${this.contextPath}/script/detail/${this.test.config.scriptName}?r=${this.test.config.scriptRevision}`;
             if (this.isAdmin || this.isSuperUser) {
-                showScriptUrl += `&ownerId=${this.test.createdUser.userId}`;
+                showScriptUrl += `&ownerId=${this.test.createdBy.userId}`;
             }
             const openedWindow = window.open(showScriptUrl, 'scriptSource');
             openedWindow.focus();

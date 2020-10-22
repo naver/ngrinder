@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.5.3" id="31" dbms="h2, mysql">
+
+		<renameColumn columnDataType="timestamp" tableName="PERF_TEST" oldColumnName="created_date" newColumnName="created_at"/>
+		<renameColumn columnDataType="timestamp" tableName="PERF_TEST" oldColumnName="last_modified_date" newColumnName="last_modified_at"/>
+		<renameColumn columnDataType="bigint" tableName="PERF_TEST" oldColumnName="created_user" newColumnName="created_by"/>
+		<renameColumn columnDataType="bigint" tableName="PERF_TEST" oldColumnName="last_modified_user" newColumnName="last_modified_by"/>
+
+		<renameColumn columnDataType="timestamp" tableName="NUSER" oldColumnName="created_date" newColumnName="created_at"/>
+		<renameColumn columnDataType="timestamp" tableName="NUSER" oldColumnName="last_modified_date" newColumnName="last_modified_at"/>
+		<renameColumn columnDataType="bigint" tableName="NUSER" oldColumnName="created_user" newColumnName="created_by"/>
+		<renameColumn columnDataType="bigint" tableName="NUSER" oldColumnName="last_modified_user" newColumnName="last_modified_by"/>
+
+		<renameColumn columnDataType="timestamp" tableName="TAG" oldColumnName="created_date" newColumnName="created_at"/>
+		<renameColumn columnDataType="timestamp" tableName="TAG" oldColumnName="last_modified_date" newColumnName="last_modified_at"/>
+		<renameColumn columnDataType="bigint" tableName="TAG" oldColumnName="created_user" newColumnName="created_by"/>
+		<renameColumn columnDataType="bigint" tableName="TAG" oldColumnName="last_modified_user" newColumnName="last_modified_by"/>
+
+		<renameColumn columnDataType="timestamp" tableName="WEBHOOK_ACTIVATION" oldColumnName="created_time" newColumnName="created_at"/>
+		<renameColumn columnDataType="varchar(255)" tableName="WEBHOOK_ACTIVATION" oldColumnName="created_user_id" newColumnName="creator_id"/>
+
+		<renameColumn columnDataType="timestamp" tableName="WEBHOOK_CONFIG" oldColumnName="created_time" newColumnName="created_at"/>
+		<renameColumn columnDataType="timestamp" tableName="WEBHOOK_CONFIG" oldColumnName="last_modified_time" newColumnName="last_modified_at"/>
+		<renameColumn columnDataType="varchar(255)" tableName="WEBHOOK_CONFIG" oldColumnName="created_user_id" newColumnName="creator_id"/>
+
+	</changeSet>
+
+	<changeSet id="31-1" author="ngrinder.3.5.3" dbms="mysql">
+		<sql splitStatements="false">
+			alter table PERF_TEST rename index created_user_index to created_by_index;
+			alter table PERF_TEST rename index last_modified_user_index to last_modified_by_index;
+			alter table NUSER rename index created_user_index to created_by_index;
+			alter table NUSER rename index last_modified_user_index to last_modified_by_index;
+			alter table TAG rename index created_user_index to created_by_index;
+			alter table TAG rename index last_modified_user_index to last_modified_by_index;
+		</sql>
+	</changeSet>
+
+	<changeSet id="31-2" author="ngrinder.3.5.3" dbms="h2">
+		<sql splitStatements="false">
+			alter index created_user_index rename to created_by_index_NUSER;
+			alter index last_modified_user_index_NUSER rename to last_modified_by_index_NUSER;
+			alter index created_user_index_PERF_TEST rename to created_by_index_PERF_TEST;
+			alter index last_modified_user_index_PERF_TEST rename to last_modified_by_index_PERF_TEST;
+			alter index created_user_index_TAG rename to created_by_index_TAG;
+			alter index last_modified_user_index_TAG rename to last_modified_by_index_TAG;
+		</sql>
+	</changeSet>
+</databaseChangeLog>

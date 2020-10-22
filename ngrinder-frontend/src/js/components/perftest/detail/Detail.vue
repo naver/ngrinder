@@ -76,7 +76,7 @@
                         <a v-show="tab.display.report" href="#report-section" class="nav-link"
                            data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                     </li>
-                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdUser.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
+                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdBy.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdBy.userId}`" v-text="switchUserTitle"></a>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
@@ -110,7 +110,7 @@
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
     import Utils from '../../../utils.js';
-    import { TipType } from "../../../constants";
+    import { TipType } from '../../../constants';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -155,7 +155,7 @@
         static deserialize(test) {
             return {
                 id: test.id,
-                createdUser: test.createdUser,
+                createdBy: test.createdBy,
                 progressMessage: test.progressMessage,
                 lastProgressMessage: test.lastProgressMessage,
                 testName: test.testName,
@@ -286,9 +286,9 @@
         }
 
         static prepareSvnScripts(route) {
-            let apiUrl = `/perftest/api/script`;
+            let apiUrl = '/perftest/api/script';
             if (route.params.isAdmin) {
-                apiUrl += `?ownerId=${route.params.test.createdUser.userId}`;
+                apiUrl += `?ownerId=${route.params.test.createdBy.userId}`;
             }
             return Base.prototype.$http.get(apiUrl)
                 .then(res => route.params.scriptsMap.svn = res.data);
@@ -513,11 +513,11 @@
         }
 
         get switchUserTitle() {
-            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdUser.userName} (${this.test.createdUser.userId})`;
+            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdBy.userName} (${this.test.createdBy.userId})`;
         }
 
         get disabled() {
-            return this.test.createdUser.userId !== this.ngrinder.currentUser.factualUser.id;
+            return this.test.createdBy.userId !== this.ngrinder.currentUser.factualUser.id;
         }
     }
 </script>

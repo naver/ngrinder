@@ -66,8 +66,8 @@
                 <div class="ellipsis description" :title="props.rowData.description" v-text="props.rowData.description"></div>
             </template>
 
-            <template slot="createdDate" slot-scope="props">
-                {{ props.rowData.createdDate | dateFormat('YYYY-MM-DD HH:mm') }}
+            <template slot="createdAt" slot-scope="props">
+                {{ props.rowData.createdAt | dateFormat('YYYY-MM-DD HH:mm') }}
             </template>
 
             <template slot="edit" slot-scope="props">

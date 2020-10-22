@@ -49,7 +49,7 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS,
 				perfTest.getAgentCount() + " agents are starting.");
-		getAgentService().runAgent(perfTest.getLastModifiedUser(), singleConsole, grinderProperties,
+		getAgentService().runAgent(perfTest.getLastModifiedBy(), singleConsole, grinderProperties,
 				perfTest.getAgentCount());
 		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS_FINISHED,
 				perfTest.getAgentCount() + " agents are started.");

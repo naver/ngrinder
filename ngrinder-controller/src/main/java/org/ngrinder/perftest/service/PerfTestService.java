@@ -447,10 +447,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
 		final Set<User> currentlyRunningTestOwners = newHashSet();
 		for (PerfTest each : currentlyRunningTests) {
-			currentlyRunningTestOwners.add(each.getCreatedUser());
+			currentlyRunningTestOwners.add(each.getCreatedBy());
 		}
 		return perfTestLists.stream()
-			.filter(perfTest -> !currentlyRunningTestOwners.contains(perfTest.getCreatedUser()))
+			.filter(perfTest -> !currentlyRunningTestOwners.contains(perfTest.getCreatedBy()))
 			.collect(toList());
 	}
 
@@ -561,7 +561,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			// Use default properties first
 			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
 
-			User user = perfTest.getCreatedUser();
+			User user = perfTest.getCreatedBy();
 
 			// Get all files in the script path
 			String scriptName = perfTest.getScriptName();
@@ -608,7 +608,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
 			grinderProperties.setInt(GRINDER_PROP_REPORT_TO_CONSOLE, 500);
-			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
+			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedBy().getUserId());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, geUserLibraryClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
@@ -643,7 +643,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	public ScriptHandler prepareDistribution(PerfTest perfTest) throws IOException {
 		File perfTestDistDirectory = getDistributionPath(perfTest);
-		User user = perfTest.getCreatedUser();
+		User user = perfTest.getCreatedBy();
 		String scm = perfTest.getScm();
 		FileEntry scriptEntry;
 
@@ -1045,7 +1045,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return true if it has
 	 */
 	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {
-		return perfTest != null && (user.getRole().hasPermission(type) || user.equals(perfTest.getCreatedUser()));
+		return perfTest != null && (user.getRole().hasPermission(type) || user.equals(perfTest.getCreatedBy()));
 	}
 
 	/*
@@ -1085,11 +1085,11 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();
 		for (PerfTest each : getAll(null, getProcessingOrTestingTestStatus())) {
-			User lastModifiedUser = each.getCreatedUser().getUserBaseInfo();
-			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
+			User lastModifiedBy = each.getCreatedBy().getUserBaseInfo();
+			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedBy);
 			if (perfTestStatistics == null) {
-				perfTestStatistics = new PerfTestStatistics(lastModifiedUser);
-				perfTestPerUser.put(lastModifiedUser, perfTestStatistics);
+				perfTestStatistics = new PerfTestStatistics(lastModifiedBy);
+				perfTestPerUser.put(lastModifiedBy, perfTestStatistics);
 			}
 			perfTestStatistics.addPerfTest(each);
 		}
@@ -1524,7 +1524,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@Override
 	public List<PerfTest> getAll(Date start, Date end) {
-		return perfTestRepository.findAllByCreatedTime(start, end);
+		return perfTestRepository.findAllByCreatedAt(start, end);
 	}
 
 	/*
@@ -1534,7 +1534,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@Override
 	public List<PerfTest> getAll(Date start, Date end, String region) {
-		return perfTestRepository.findAllByCreatedTimeAndRegion(start, end, region);
+		return perfTestRepository.findAllByCreatedAtAndRegion(start, end, region);
 	}
 
 

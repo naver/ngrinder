@@ -54,8 +54,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.Instant.now;
-import static java.time.Instant.ofEpochSecond;
+import static java.time.Instant.*;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
@@ -188,7 +187,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @return true if enough agents
 	 */
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
-		int size = agentService.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedUser().getUserId()).size();
+		int size = agentService.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedBy().getUserId()).size();
 		if (test.getAgentCount() != null && test.getAgentCount() > size) {
 			perfTestService.markProgress(test, "The test is tried to execute but there is not enough free agents."
 					+ "\n- Current free agent count : " + size + "  / Requested : " + test.getAgentCount() + "\n");
@@ -373,7 +372,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		int agentCount = perfTest.getAgentCount();
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(agentCount)
 				+ " agents are starting.");
-		agentService.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties, getSafe(agentCount));
+		agentService.runAgent(perfTest.getCreatedBy(), singleConsole, grinderProperties, getSafe(agentCount));
 		singleConsole.waitUntilAgentPrepared(agentCount);
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(agentCount)
 				+ " agents are ready.");
@@ -404,7 +403,7 @@ public class PerfTestRunnable implements ControllerConstants {
 			}
 		});
 		long startTime = singleConsole.startTest(grinderProperties);
-		perfTest.setStartTime(ofEpochSecond(startTime / 1000));
+		perfTest.setStartTime(ofEpochMilli(startTime));
 		addSamplingListeners(perfTest, singleConsole);
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
 		singleConsole.startSampling();

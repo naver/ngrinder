@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.repository;
 
@@ -44,14 +44,14 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get lastModifiedUser and createBy {@link Specification} to get the {@link Tag} whose creator or last modifier is
+	 * Get lastModifiedBy and createBy {@link Specification} to get the {@link Tag} whose creator or last modifier is
 	 * the given user.
 	 *
 	 * @param user user
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> lastModifiedOrCreatedBy(final User user) {
-		return (Specification<Tag>) (root, query, cb) -> cb.or(cb.equal(root.get("lastModifiedUser"), user), cb.equal(root.get("createdUser"), user));
+		return (Specification<Tag>) (root, query, cb) -> cb.or(cb.equal(root.get("lastModifiedBy"), user), cb.equal(root.get("createdBy"), user));
 	}
 
 	/**

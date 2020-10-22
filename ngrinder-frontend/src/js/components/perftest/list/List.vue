@@ -43,7 +43,7 @@
             </template>
 
             <template slot="testName" slot-scope="props">
-                <span :class="{ today : isToday(props.rowData.createdDate) }"/>
+                <span :class="{ today : isToday(props.rowData.createdAt) }"/>
                 <div class="ellipsis testName"
                      data-toggle="popover"
                      data-trigger="hover"
@@ -63,7 +63,7 @@
                      :data-content="`${props.rowData.scriptName}\n - ${i18n('script.list.revision')} : ${(props.rowData.scriptRevision)}`">
                     <template v-if="props.rowData.scm === 'svn'">
                         <a v-if="isAdmin"
-                           :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdUser.userId)}`"
+                           :href="`/script/detail/${props.rowData.scriptName}?r=${(props.rowData.scriptRevision)}&ownerId=${(props.rowData.createdBy.userId)}`"
                            v-text="props.rowData.scriptName"
                            target="_blank">
                         </a>
@@ -84,7 +84,7 @@
             </template>
 
             <template slot="createUser" slot-scope="props">
-                <div class="ellipsis createUser" :title="props.rowData.createdUser.userName" v-text="props.rowData.createdUser.userName"></div>
+                <div class="ellipsis createUser" :title="props.rowData.createdBy.userName" v-text="props.rowData.createdBy.userName"></div>
             </template>
 
             <template slot="threshold" slot-scope="props">
@@ -288,9 +288,9 @@
         }
 
         getOwnerPopoverContent(test) {
-            let content = `${this.i18n('perfTest.list.owner')} : ${test.createdUser.userName} (${test.createdUser.userId})`;
-            if (test.lastModifiedUser) {
-                content += `\n${this.i18n('perfTest.list.modifier.oneLine')} : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})`;
+            let content = `${this.i18n('perfTest.list.owner')} : ${test.createdBy.userName} (${test.createdBy.userId})`;
+            if (test.lastModifiedBy) {
+                content += `\n${this.i18n('perfTest.list.modifier.oneLine')} : ${test.lastModifiedBy.userName} (${test.lastModifiedBy.userId})`;
             }
             return content;
         }
@@ -318,7 +318,7 @@
             if (test.scheduledTime) {
                 content += `${this.i18n('perfTest.list.scheduledTime')} : ${this.$options.filters.dateFormat(test.scheduledTime, 'YYYY-MM-DD HH:mm')}\n`;
             }
-            content += `${this.i18n('perfTest.list.modifiedTime')} : ${this.$options.filters.dateFormat(test.lastModifiedDate, 'YYYY-MM-DD HH:mm')}\n`;
+            content += `${this.i18n('perfTest.list.modifiedTime')} : ${this.$options.filters.dateFormat(test.lastModifiedAt, 'YYYY-MM-DD HH:mm')}\n`;
             if (test.tagString) {
                 content += `${this.i18n('perfTest.config.tags')} : ${test.tagString}\n`;
             }

@@ -119,8 +119,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setUserId(userId);
 		newUser.setUserName(userName);
 		newUser.setEmail("junoyoon@gmail.com");
-		newUser.setCreatedUser(getTestUser());
-		newUser.setCreatedDate(now());
+		newUser.setCreatedBy(getTestUser());
+		newUser.setCreatedAt(now());
 		newUser.setRole(Role.USER);
 		userApiController.save(getAdminUser(), newUser);
 	}

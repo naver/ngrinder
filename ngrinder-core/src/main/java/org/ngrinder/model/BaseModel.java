@@ -40,24 +40,24 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Column(name = "created_date", insertable = true, updatable = false)
-	private Instant createdDate;
+	@Column(name = "created_at", insertable = true, updatable = false)
+	private Instant createdAt;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
-	@JoinColumn(name = "created_user", insertable = true, updatable = false)
-	@Index(name = "created_user_index")
+	@JoinColumn(name = "created_by", insertable = true, updatable = false)
+	@Index(name = "created_by_index")
 	@NotFound(action = NotFoundAction.IGNORE)
-	private User createdUser;
+	private User createdBy;
 
-	@Column(name = "last_modified_date", insertable = true, updatable = true)
-	private Instant lastModifiedDate;
+	@Column(name = "last_modified_at", insertable = true, updatable = true)
+	private Instant lastModifiedAt;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
-	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
-	@Index(name = "last_modified_user_index")
+	@JoinColumn(name = "last_modified_By", insertable = true, updatable = true)
+	@Index(name = "last_modified_by_index")
 	@NotFound(action = NotFoundAction.IGNORE)
-	private User lastModifiedUser;
+	private User lastModifiedBy;
 
 }

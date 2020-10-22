@@ -78,10 +78,10 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		if (isGitHubFileEntry(fileEntry)) {
 			return StringUtils.equals(fileEntry.getProperties().get("type"), "groovy-maven");
 		} else {
-			if (fileEntry.getCreatedUser() == null) {
+			if (fileEntry.getCreatedBy() == null) {
 				return false;
 			}
-			return getFileEntryRepository().hasOne(fileEntry.getCreatedUser(), getBasePath(path) + "pom.xml");
+			return getFileEntryRepository().hasOne(fileEntry.getCreatedBy(), getBasePath(path) + "pom.xml");
 		}
 	}
 

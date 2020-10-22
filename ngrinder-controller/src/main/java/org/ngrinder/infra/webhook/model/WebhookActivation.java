@@ -44,11 +44,11 @@ import java.time.Instant;
 @Table(name = "WEBHOOK_ACTIVATION")
 public class WebhookActivation extends BaseEntity<WebhookActivation> {
 
-	@Column(name = "created_user_id")
-	private String createdUserId;
+	@Column(name = "creator_id")
+	private String creatorId;
 
-	@Column(name = "created_time")
-	private Instant createdTime;
+	@Column(name = "created_at")
+	private Instant createdAt;
 
 	private String request;
 

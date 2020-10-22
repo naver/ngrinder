@@ -38,7 +38,6 @@ import static org.ngrinder.infra.webhook.model.Event.START;
  *
  * @since 3.5.2
  */
-@SuppressWarnings("DuplicatedCode")
 @Slf4j
 @AllArgsConstructor
 public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
@@ -67,7 +66,7 @@ public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
 	}
 
 	private void sendWebhookRequest(PerfTest perfTest, Event event) {
-		WebhookConfig webhookConfig = webhookConfigService.getOne(perfTest.getCreatedUser().getUserId());
+		WebhookConfig webhookConfig = webhookConfigService.getOne(perfTest.getCreatedBy().getUserId());
 
 		if (webhookConfig == null) {
 			return;

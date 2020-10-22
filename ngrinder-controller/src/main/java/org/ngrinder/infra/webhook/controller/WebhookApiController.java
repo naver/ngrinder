@@ -62,8 +62,8 @@ public class WebhookApiController {
 	}
 
 	@GetMapping("/activation")
-	public List<WebhookActivation> getActivations(@RequestParam String createdUserId,
+	public List<WebhookActivation> getActivations(@RequestParam String creatorId,
 												  @PageableDefault Pageable pageable) {
-		return webhookActivationService.findAll(createdUserId, pageable);
+		return webhookActivationService.findAll(creatorId, pageable);
 	}
 }

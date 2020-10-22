@@ -44,8 +44,8 @@ import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 @Table(name = "WEBHOOK_CONFIG")
 public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
-	@Column(name = "created_user_id")
-	private String createdUserId;
+	@Column(name = "creator_id")
+	private String creatorId;
 
 	private boolean active;
 
@@ -58,11 +58,11 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
 	private String events;
 
-	@Column(name = "created_time")
-	private Instant createdTime;
+	@Column(name = "created_at")
+	private Instant createdAt;
 
-	@Column(name = "last_modified_time")
-	private Instant lastModifiedTime;
+	@Column(name = "last_modified_at")
+	private Instant lastModifiedAt;
 
 	@Transient
 	@Getter(value = AccessLevel.NONE)
@@ -70,7 +70,7 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
 	@PreUpdate
 	public void preUpdate() {
-		this.lastModifiedTime = now();
+		this.lastModifiedAt = now();
 	}
 
 	public Set<Event> getEvents() {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.service;
 
@@ -62,19 +62,19 @@ public class ModelAspect {
 			if (object instanceof BaseModel
 					&& (springContext.isAuthenticationContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
-				Instant lastModifiedDate = now();
-				model.setLastModifiedDate(lastModifiedDate);
+				Instant lastModifiedAt = now();
+				model.setLastModifiedAt(lastModifiedAt);
 
 				User currentUser = userContext.getCurrentUser();
 				long currentUserId = currentUser.getId();
 
-				model.setLastModifiedUser(userRepository.findOne(idEqual(currentUserId))
+				model.setLastModifiedBy(userRepository.findOne(idEqual(currentUserId))
 					.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + currentUserId)));
 
-				if (!model.exist() || model.getCreatedUser() == null) {
+				if (!model.exist() || model.getCreatedBy() == null) {
 					long factualUserId = currentUser.getFactualUser().getId();
-					model.setCreatedDate(lastModifiedDate);
-					model.setCreatedUser(userRepository.findOne(idEqual(factualUserId))
+					model.setCreatedAt(lastModifiedAt);
+					model.setCreatedBy(userRepository.findOne(idEqual(factualUserId))
 						.orElseThrow(() -> new IllegalArgumentException("No user found with id : " + factualUserId)));
 				}
 			}

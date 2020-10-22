@@ -207,7 +207,7 @@ public class PerfTestController {
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return perfTest;
 		}
-		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
+		if (perfTest != null && !user.equals(perfTest.getCreatedBy())) {
 			throw processException("User " + user.getUserId() + " has no right on PerfTest " + id);
 		}
 		return perfTest;
