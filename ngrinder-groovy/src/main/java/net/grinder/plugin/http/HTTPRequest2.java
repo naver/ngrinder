@@ -38,6 +38,8 @@ import java.net.Proxy;
 import java.security.Security;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class HTTPRequest2 {
 	static {
 		// To support ALPN
@@ -52,8 +54,17 @@ public class HTTPRequest2 {
 	private final OkHttpClient client;
 
 	public HTTPRequest2() {
+		this(null);
+	}
+
+	public HTTPRequest2(List<Protocol> protocols) {
+		if (protocols == null || protocols.isEmpty()) {
+			protocols = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
+		}
+
 		client = new OkHttpClient()
 			.newBuilder()
+			.protocols(protocols)
 			.eventListener(new ConnectionTimeAggregateListener())
 			.hostnameVerifier((s, sslSession) -> true)
 			.build();
