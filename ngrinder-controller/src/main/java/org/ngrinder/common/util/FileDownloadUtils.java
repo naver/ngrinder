@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
@@ -59,12 +59,10 @@ public abstract class FileDownloadUtils {
 		response.addHeader("Content-Disposition", "attachment;filename=" + file.getName());
 		response.setContentType("application/octet-stream");
 		response.addHeader("Content-Length", "" + file.length());
-		InputStream fis = null;
 		byte[] buffer = new byte[FILE_DOWNLOAD_BUFFER_SIZE];
-		OutputStream toClient = null;
-		try {
-			fis = new BufferedInputStream(new FileInputStream(file));
-			toClient = new BufferedOutputStream(response.getOutputStream());
+
+		try (InputStream fis = new BufferedInputStream(new FileInputStream(file));
+			 OutputStream toClient = new BufferedOutputStream(response.getOutputStream())) {
 			int readLength;
 			while (((readLength = fis.read(buffer)) != -1)) {
 				toClient.write(buffer, 0, readLength);
@@ -76,10 +74,8 @@ public abstract class FileDownloadUtils {
 		} catch (IOException e) {
 			LOGGER.error("read file error:" + file.getAbsolutePath(), e);
 			result = false;
-		} finally {
-			IOUtils.closeQuietly(fis);
-			IOUtils.closeQuietly(toClient);
 		}
+
 		return result;
 	}
 }

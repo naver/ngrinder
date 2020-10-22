@@ -19,7 +19,6 @@ package org.ngrinder.infra.config;
   import net.grinder.util.ListenerSupport.Informer;
   import org.apache.commons.io.FileUtils;
   import org.apache.commons.io.FilenameUtils;
-  import org.apache.commons.io.IOUtils;
   import org.apache.commons.lang.StringUtils;
   import org.ngrinder.common.constant.ClusterConstants;
   import org.ngrinder.common.constant.ControllerConstants;
@@ -348,17 +347,13 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 * Load internal properties which is not modifiable by user.
 	 */
 	protected void loadInternalProperties() {
-		InputStream inputStream = null;
 		Properties properties = new Properties();
-		try {
-			inputStream = new ClassPathResource("/internal.properties").getInputStream();
+		try (InputStream inputStream = new ClassPathResource("/internal.properties").getInputStream()) {
 			properties.load(inputStream);
 			internalProperties = new PropertiesWrapper(properties, internalPropertiesKeyMapper);
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while load internal.properties", e);
 			internalProperties = new PropertiesWrapper(properties, internalPropertiesKeyMapper);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
 		}
 	}
 

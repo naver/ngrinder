@@ -85,9 +85,10 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		Throwable throwable = ExceptionUtils.sanitize(ex);
 
 		StringWriter out = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(out);
-		throwable.printStackTrace(printWriter);
-		IOUtils.closeQuietly(printWriter);
+
+		try (PrintWriter printWriter = new PrintWriter(out)) {
+			throwable.printStackTrace(printWriter);
+		}
 
 		Map<String, Object> jsonResponse = buildMap(
 			JSON_SUCCESS, false,

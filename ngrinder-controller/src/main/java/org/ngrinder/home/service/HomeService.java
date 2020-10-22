@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.home.service;
 
@@ -88,37 +88,39 @@ public class HomeService {
 	 */
 	public List<PanelEntry> getPanelEntries(String feedURL, int maxSize, boolean includeReply) {
 		SyndFeedInput input = new SyndFeedInput();
-		XmlReader reader = null;
 		HttpURLConnection feedConnection = null;
+
 		try {
 			List<PanelEntry> panelEntries = new ArrayList<>();
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
 			feedConnection.setConnectTimeout(8000);
 			feedConnection.setReadTimeout(8000);
-			reader = new XmlReader(feedConnection);
-			SyndFeed feed = input.build(reader);
-			int count = 0;
 
-			for (Object eachObj : feed.getEntries()) {
-				SyndEntryImpl each = cast(eachObj);
-				if (!includeReply && StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
-					continue;
+			try (XmlReader reader = new XmlReader(feedConnection)) {
+				SyndFeed feed = input.build(reader);
+				int count = 0;
+
+				for (Object eachObj : feed.getEntries()) {
+					SyndEntryImpl each = cast(eachObj);
+					if (!includeReply && StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
+						continue;
+					}
+					if (count++ >= maxSize) {
+						break;
+					}
+					panelEntries.add(getPanelEntry(each));
 				}
-				if (count++ >= maxSize) {
-					break;
-				}
-				panelEntries.add(getPanelEntry(each));
+				Collections.sort(panelEntries);
+				return panelEntries;
 			}
-			Collections.sort(panelEntries);
-			return panelEntries;
+
 		} catch (Exception e) {
 			LOG.error("Error while patching the feed entries for {} : {}", feedURL, e.getMessage());
 		} finally {
 			if (feedConnection != null) {
 				feedConnection.disconnect();
 			}
-			IOUtils.closeQuietly(reader);
 		}
 		return Collections.emptyList();
 	}

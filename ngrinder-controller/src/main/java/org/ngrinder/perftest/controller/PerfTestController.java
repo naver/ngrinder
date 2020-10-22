@@ -127,9 +127,8 @@ public class PerfTestController {
 		response.reset();
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(targetFile);
+
+		try (FileInputStream fileInputStream = new FileInputStream(targetFile)) {
 			ServletOutputStream outputStream = response.getOutputStream();
 			if (FilenameUtils.isExtension(targetFile.getName(), "zip")) {
 				// Limit log view to 1MB
@@ -141,8 +140,6 @@ public class PerfTestController {
 			}
 		} catch (Exception e) {
 			CoreLogger.LOGGER.error("Error while processing log. {}", targetFile, e);
-		} finally {
-			IOUtils.closeQuietly(fileInputStream);
 		}
 	}
 

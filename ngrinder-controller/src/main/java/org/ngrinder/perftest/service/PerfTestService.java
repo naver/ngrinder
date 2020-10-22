@@ -27,7 +27,6 @@ import net.grinder.util.Pair;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.BooleanUtils;
@@ -763,25 +762,18 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			LOGGER.warn("Report {} for test {} does not exist.", dataType, testId);
 			return 0;
 		}
-		LineNumberReader lnr = null;
 
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		try {
-			in = new FileInputStream(targetFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
+		try (FileInputStream in = new FileInputStream(targetFile);
+			 InputStreamReader isr = new InputStreamReader(in);
+			 LineNumberReader lnr = new LineNumberReader(isr)) {
+
 			lnr.skip(targetFile.length());
 			int lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max(lineNumber / pointCount, 1);
+
 		} catch (Exception e) {
 			LOGGER.error("Failed to get report data for {}", dataType, e);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
 		}
-
 		return interval;
 	}
 
@@ -1172,25 +1164,19 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				MONITOR_FILE_PREFIX + targetIP + ".data");
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		LineNumberReader lnr = null;
 		int interval = 0;
-		try {
-			in = new FileInputStream(monitorDataFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
+		try (FileInputStream in = new FileInputStream(monitorDataFile);
+			 InputStreamReader isr = new InputStreamReader(in);
+			 LineNumberReader lnr = new LineNumberReader(isr)) {
+
 			lnr.skip(monitorDataFile.length());
 			int lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max(lineNumber / pointCount, 1);
+
 		} catch (FileNotFoundException e) {
 			LOGGER.info("Monitor data file does not exist at {}", monitorDataFile);
 		} catch (IOException e) {
 			LOGGER.info("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
 		}
 		return interval;
 	}
@@ -1207,9 +1193,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public Map<String, Object> getMonitorGraph(long testId, String targetIP, int dataInterval) {
 		Map<String, Object> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				MONITOR_FILE_PREFIX + targetIP + ".data");
-		BufferedReader br = null;
-		try {
+			MONITOR_FILE_PREFIX + targetIP + ".data");
+
+		try (BufferedReader br = new BufferedReader(new FileReader(monitorDataFile))) {
+
 			List<Long> userMemoryMetrics = new ArrayList<>();
 			List<String> cpuUsedMetrics = new ArrayList<>();
 			List<String> networkReceivedMetrics = new ArrayList<>();
@@ -1220,7 +1207,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			List<String> customData4Metrics = new ArrayList<>();
 			List<String> customData5Metrics = new ArrayList<>();
 
-			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
 			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec"
 			String line = br.readLine();
@@ -1260,9 +1246,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			returnMap.put("customData5", customData5Metrics);
 		} catch (IOException e) {
 			LOGGER.info("Error while getting monitor {} data file at {}", targetIP, monitorDataFile);
-		} finally {
-			IOUtils.closeQuietly(br);
 		}
+
 		return returnMap;
 	}
 
@@ -1336,26 +1321,20 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	private int getRecordInterval(int imageWidth, File dataFile) {
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		LineNumberReader lnr = null;
 		int interval = 0;
-		try {
-			in = new FileInputStream(dataFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
+		try (FileInputStream in = new FileInputStream(dataFile);
+			 InputStreamReader isr = new InputStreamReader(in);
+			 LineNumberReader lnr = new LineNumberReader(isr)) {
+
 			lnr.skip(dataFile.length());
 			interval = Math.max((lnr.getLineNumber() + 1) / pointCount, 1);
+
 		} catch (FileNotFoundException e) {
 			LOGGER.error("data file not exist:{}", dataFile);
 			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
 			LOGGER.error("Error while getting data file:{}", dataFile);
 			LOGGER.error(e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
 		}
 		return interval;
 	}
@@ -1373,11 +1352,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public Map<String, Object> getReportPluginGraph(long testId, String plugin, String kind, int interval) {
 		Map<String, Object> returnMap = Maps.newHashMap();
 		File pluginDataFile = getReportPluginDataFile(testId, plugin, kind);
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(pluginDataFile));
-			String header = br.readLine();
 
+		try (BufferedReader br = new BufferedReader(new FileReader(pluginDataFile))) {
+
+			String header = br.readLine();
 			StringBuilder headerSB = new StringBuilder("[");
 			String[] headers = StringUtils.split(header, ",");
 			String[] refinedHeaders = StringUtils.split(header, ",");
@@ -1422,9 +1400,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		} catch (IOException e) {
 			LOGGER.error("Error while getting monitor: {} data file:{}", plugin, pluginDataFile);
 			LOGGER.error(e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(br);
 		}
+
 		return returnMap;
 	}
 
@@ -1492,7 +1469,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 		List<Float> metrics = new ArrayList<>();
 		try (FileReader reader = new FileReader(targetFile);
-			 BufferedReader br = new BufferedReader(reader);){
+			 BufferedReader br = new BufferedReader(reader)) {
 
 			String data = br.readLine();
 			int current = 0;
