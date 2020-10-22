@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -103,7 +104,31 @@ public class HTTPRequest2 {
 	}
 
 	private void aggregate(final Response response) {
-		// TODO: Implement aggregate statistics
+		Statistics statistics = HTTPPlugin.getPlugin()
+			.getPluginProcessContext()
+			.getScriptContext()
+			.getStatistics();
+
+		if (!statistics.isTestInProgress()) {
+			return;
+		}
+
+		try {
+			Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
+
+			statisticsForTest.addLong(
+				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, response.body().contentLength());
+
+			statisticsForTest.setLong(
+				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_STATUS_KEY, response.code());
+
+			if (response.code() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+				statisticsForTest.addLong(
+					StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_ERRORS_KEY, 1);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Fail to aggregate HTTP statistics", e);
+		}
 	}
 
 	private static class ConnectionTimeAggregateListener extends EventListener {
@@ -161,13 +186,15 @@ public class HTTPRequest2 {
 				.getScriptContext()
 				.getStatistics();
 
-			if (statistics.isTestInProgress()) {
-				try {
-					Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
-					statisticsForTest.addLong(key, time);
-				} catch (Exception e) {
-					LOGGER.error("Fail to accumulate HTTP statistics", e);
-				}
+			if (!statistics.isTestInProgress()) {
+				return;
+			}
+
+			try {
+				Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
+				statisticsForTest.addLong(key, time);
+			} catch (Exception e) {
+				LOGGER.error("Fail to accumulate HTTP statistics", e);
 			}
 		}
 	}
