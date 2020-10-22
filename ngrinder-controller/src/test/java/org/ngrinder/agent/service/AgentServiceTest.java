@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_CACHE_RECENTLY_USED_AGENTS;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_RECENTLY_USED_AGENTS;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 
 public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
@@ -39,7 +39,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void selectAgentsTest() {
 		Set<AgentInfo> recentlyUsedAgents = getRecentlyUsedAgents();
-		hazelcastService.put(DIST_MAP_CACHE_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
+		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
 
 		User testUser = new User();
 		testUser.setUserId(TEST_USER_ID);
@@ -65,7 +65,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 
 		recentlyUsedAgents.add(createAgentInfo("test-agent-11", "test-region_owned_test-user"));
 		recentlyUsedAgents.add(createAgentInfo("test-agent-14", "test-region_owned_test-user"));
-		hazelcastService.put(DIST_MAP_CACHE_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
+		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
 
 		// Add owned agents for another test.
 		allFreeAgents.add(createAgentInfo("test-agent-8", "test-region_owned_test-user"));
@@ -85,7 +85,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-11", "test-region_owned_test-user")));
 		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-14", "test-region_owned_test-user")));
 
-		hazelcastService.delete(DIST_MAP_CACHE_RECENTLY_USED_AGENTS, TEST_USER_ID);
+		hazelcastService.delete(DIST_MAP_NAME_RECENTLY_USED_AGENTS, TEST_USER_ID);
 	}
 
 	private Set<AgentInfo> getRecentlyUsedAgents() {
