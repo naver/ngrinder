@@ -32,7 +32,7 @@ import java.util.Set;
 
 import static net.grinder.StopReason.SCRIPT_ERROR;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class AgentControllerTest extends AbstractMultiGrinderTestBase {

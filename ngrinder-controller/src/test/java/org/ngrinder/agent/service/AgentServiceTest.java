@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_RECENTLY_USED_AGENTS;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;

@@ -14,6 +14,7 @@
 package org.ngrinder.perftest.controller;
 
 import static java.time.Instant.now;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.ngrinder.common.constant.WebConstants.PARAM_TEST;
