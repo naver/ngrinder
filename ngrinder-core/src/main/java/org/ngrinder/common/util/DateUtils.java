@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Date Utility.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -47,18 +47,18 @@ public abstract class DateUtils {
 
 	/**
 	 * Get the time in long format : "yyyyMMddHHmmss".
-	 * 
+	 *
 	 * @param date	date to be format
 	 * @return time time in format of long type
 	 */
 	public static long getCollectTimeInLong(Date date) {
 		SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-		return Long.valueOf(collectTimeFormat.format(date));
+		return Long.parseLong(collectTimeFormat.format(date));
 	}
 
 	/**
 	 * Convert user date to new date with server side Locale.
-	 * 
+	 *
 	 * @param userTimeZone	user TimeZone id
 	 * @param userDate		date in user's Local
 	 * @return serverDate data in server's Local
@@ -71,7 +71,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Convert server date to new date with user Locale.
-	 * 
+	 *
 	 * @param userTimeZone	user TimeZone id
 	 * @param serverDate	date in server's Local
 	 * @return serverDate data in user's Local
@@ -84,7 +84,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Format date to {@value #FULL_DATE_FORMAT}.
-	 * 
+	 *
 	 * @param date	date
 	 * @return formatted string
 	 */
@@ -94,12 +94,12 @@ public abstract class DateUtils {
 
 	/**
 	 * Get time zones.
-	 * 
+	 *
 	 * @return map time zone id and GMT
 	 */
 	public static Map<String, String> getFilteredTimeZoneMap() {
 		if (timezoneIDMap == null) {
-			timezoneIDMap = new LinkedHashMap<String, String>();
+			timezoneIDMap = new LinkedHashMap<>();
 			String[] ids = TimeZone.getAvailableIDs();
 			for (String id : ids) {
 				TimeZone zone = TimeZone.getTimeZone(id);
@@ -116,7 +116,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Convert string date to Date with {@value #SIMPLE_DATE_FORMAT}.
-	 * 
+	 *
 	 * @param strDate	date string
 	 * @return date
 	 * @throws ParseException
@@ -129,11 +129,11 @@ public abstract class DateUtils {
 
 	/**
 	 * Convert string date to Date with {@value #FULL_DATE_FORMAT}.
-	 * 
+	 *
 	 * @param strDate
 	 *            date string
 	 * @return date
-	 * 
+	 *
 	 * @throws ParseException
 	 *             thrown when the given strDate is not {@link #FULL_DATE_FORMAT}
 	 */
@@ -144,7 +144,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Add days on date.
-	 * 
+	 *
 	 * @param date	base date
 	 * @param days	days to be added.
 	 * @return added Date
@@ -158,7 +158,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Convert millisecond to DD:HH:MM:SS style.
-	 * 
+	 *
 	 * @param ms	Millisecond
 	 * @return DD:HH:MM:SS formatted string
 	 */
@@ -178,7 +178,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Convert time to millisecond.
-	 * 
+	 *
 	 * @param day	day
 	 * @param hour	hour
 	 * @param min	min
@@ -191,7 +191,7 @@ public abstract class DateUtils {
 
 	/**
 	 * Compare two date in minute detail.
-	 * 
+	 *
 	 * @param d1	date
 	 * @param d2	date
 	 * @return true if two {@link Date} are same in minute level

@@ -145,9 +145,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private static final int TOO_LOW_TPS_TIME = 60000;
 	private static final int TOO_MANY_ERROR_TIME = 10000;
 	private Map<Test, StatisticsSet> intervalStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
+			.synchronizedMap(new LinkedHashMap<>());
 	private Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
+			.synchronizedMap(new LinkedHashMap<>());
     /**
      * cvs file Separator value.
      */
@@ -838,8 +838,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
 		Map<String, Object> result = newHashMap();
 		result.put("testTime", getCurrentRunningTime() / 1000);
-		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
-		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> cumulativeStatistics = new ArrayList<>();
+		List<Map<String, Object>> lastSampleStatistics = new ArrayList<>();
 		for (Test test : accumulatedStatisticMapPerTest.keySet()) {
 			Map<String, Object> accumulatedStatisticMap = newHashMap();
 			Map<String, Object> intervalStatisticsMap = newHashMap();
@@ -1119,7 +1119,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	protected Map<String, Object> getNullStatisticsData() {
-		Map<String, Object> result = new HashMap<String, Object>(1);
+		Map<String, Object> result = new HashMap<>(1);
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
 	}

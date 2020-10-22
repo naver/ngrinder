@@ -249,10 +249,8 @@ public class FileEntryRepository {
 				String autoDetectedEncoding = EncodingUtils.detectEncoding(byteArray, "UTF-8");
 				script.setContent((new String(byteArray, autoDetectedEncoding)).replaceAll("&quot;","\""));
 				script.setEncoding(autoDetectedEncoding);
-				script.setContentBytes(byteArray);
-			} else {
-				script.setContentBytes(byteArray);
 			}
+			script.setContentBytes(byteArray);
 			script.setDescription(info.getCommitMessage());
 			script.setRevision(revisionNumber);
 			script.setLastRevision(lastRevisionNumber);
@@ -400,10 +398,7 @@ public class FileEntryRepository {
 			while (true) {
 				editor.closeDir();
 			}
-		} catch (EmptyStackException e) {
-			// FALL THROUGH
-			noOp();
-		} catch (SVNException e) {
+		} catch (EmptyStackException | SVNException e) {
 			// FALL THROUGH
 			noOp();
 		} finally {

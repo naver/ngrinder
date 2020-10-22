@@ -83,7 +83,6 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		this.userService = userService;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) {
@@ -149,7 +148,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	@Override
-	protected void doAfterPropertiesSet() throws Exception {
+	protected void doAfterPropertiesSet() {
 		Assert.notNull(this.userDetailsService, "A UserDetailsService must be set");
 	}
 

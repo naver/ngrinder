@@ -53,8 +53,7 @@ public class MonitorDownloadController {
 	 * @param fileName monitor file name.
 	 * @param response response.
 	 */
-
-	@GetMapping("/{fileName:[a-zA-Z0-9\\.\\-_]+}")
+	@GetMapping("/{fileName:[a-zA-Z0-9.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
 		File home = config.getHome().getDownloadDirectory();
 		File monitorFile = new File(home, fileName);

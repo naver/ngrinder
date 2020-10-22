@@ -42,20 +42,15 @@ public enum Role {
 		 */
 		public boolean hasPermission(Permission type) {
 			switch (type) {
-			case GET_ALL_TESTS:
-				return true;
-			case DELETE_TEST_OF_OTHER:
-				return true;
-			case CHECK_SCRIPT_OF_OTHER:
-				return true;
-			case VALIDATE_SCRIPT_OF_OTHER:
-				return true;
-			case STOP_TEST_OF_OTHER:
-				return true;
-			case SWITCH_TO_ANYONE:
-				return true;
-			default:
-				return false;
+				case GET_ALL_TESTS:
+				case DELETE_TEST_OF_OTHER:
+				case CHECK_SCRIPT_OF_OTHER:
+				case VALIDATE_SCRIPT_OF_OTHER:
+				case STOP_TEST_OF_OTHER:
+				case SWITCH_TO_ANYONE:
+					return true;
+				default:
+					return false;
 			}
 		}
 	},
@@ -73,15 +68,12 @@ public enum Role {
 		public boolean hasPermission(Permission type) {
 			switch (type) {
 			case GET_ALL_TESTS:
-				return true;
-			case CHECK_SCRIPT_OF_OTHER:
-				return true;
-			case VALIDATE_SCRIPT_OF_OTHER:
-				return true;
-			case SWITCH_TO_ANYONE:
-				return true;
-			default:
-				return false;
+				case CHECK_SCRIPT_OF_OTHER:
+				case VALIDATE_SCRIPT_OF_OTHER:
+				case SWITCH_TO_ANYONE:
+					return true;
+				default:
+					return false;
 			}
 		}
 	},

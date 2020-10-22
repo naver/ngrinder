@@ -68,7 +68,6 @@ public class SvnSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @return ShaPasswordEncoder with "SHA-256" algorithm if ngrinder.security.sha256=true. Otherwise
 	 *         returns with "SHA-1"
 	 */
-	@SuppressWarnings("deprecation")
 	@Bean
 	public ShaPasswordEncoder shaPasswordEncoder() {
 		boolean useEnhancedEncoding = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_USER_PASSWORD_SHA256);

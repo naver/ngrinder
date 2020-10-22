@@ -25,10 +25,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -120,7 +117,7 @@ public abstract class NetworkUtils {
 			try {
 				addr = getFirstNonLoopbackAddress(true, false);
 			} catch (SocketException e2) {
-				addr = null;
+				noOp();
 			}
 		}
 		return addr;
@@ -222,7 +219,7 @@ public abstract class NetworkUtils {
 	 * @return port list
 	 */
 	public static List<Integer> getAvailablePorts(String ip, int size, int from, int limit) {
-		List<Integer> ports = new ArrayList<Integer>(size);
+		List<Integer> ports = new ArrayList<>(size);
 		int freePort;
 		InetAddress inetAddress = null;
 		if (StringUtils.isNotBlank(ip)) {
@@ -345,7 +342,7 @@ public abstract class NetworkUtils {
 			try {
 				this.ip = InetAddress.getByName(ip);
 			} catch (UnknownHostException e) {
-				LOGGER.error("{} is not accessible ip");
+				LOGGER.error("{} is not accessible ip", ip);
 			}
 			this.port = port;
 		}
@@ -478,7 +475,7 @@ public abstract class NetworkUtils {
 
 
 	private static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
-		List<InetAddress> addresses = new ArrayList<InetAddress>();
+		List<InetAddress> addresses = new ArrayList<>();
 		final Enumeration<NetworkInterface> networkInterfaces;
 		try {
 			networkInterfaces = getNetworkInterfaces();
@@ -528,10 +525,10 @@ public abstract class NetworkUtils {
 	}
 
 	public static List<String> getDnsServers() throws NamingException {
-		Hashtable<String, String> env = new Hashtable<String, String>();
+		Hashtable<String, String> env = new Hashtable<>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
 		DirContext ctx = null;
-		List<String> dnsServers = new ArrayList<String>();
+		List<String> dnsServers = new ArrayList<>();
 		try {
 			ctx = new InitialDirContext(env);
 			String dnsString = (String) ctx.getEnvironment().get("java.naming.provider.url");

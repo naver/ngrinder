@@ -372,7 +372,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public static class NullAgentConfig extends AgentConfig {
-		public int counter = 0;
+		public int counter;
 		private int controllerPort = 0;
 
 		public NullAgentConfig(int i) {
@@ -397,7 +397,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		@Override
 		protected AgentHome resolveHome() {
 			AgentHome resolveHome = super.resolveHome();
-			File directory = new File(resolveHome.getDirectory(), "tmp_" + String.valueOf(counter));
+			File directory = new File(resolveHome.getDirectory(), "tmp_" + counter);
 			resolveHome = new AgentHome(directory);
 			try {
 				FileUtils.forceDeleteOnExit(directory);

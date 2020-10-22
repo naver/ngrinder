@@ -80,7 +80,7 @@ public class RegionService {
 			List<String> regionNames = new ArrayList<>();
 			for (Member member : members) {
 				if (member.getAttributes().containsKey(REGION_ATTR_KEY)) {
-					regionNames.add((String) member.getAttributes().get(REGION_ATTR_KEY));
+					regionNames.add(member.getAttributes().get(REGION_ATTR_KEY));
 				}
 			}
 			return regionNames;

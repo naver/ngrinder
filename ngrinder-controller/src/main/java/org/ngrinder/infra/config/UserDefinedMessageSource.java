@@ -1,7 +1,6 @@
 package org.ngrinder.infra.config;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.*;
@@ -64,14 +63,6 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 		public boolean equals(Object obj) {
 			return EqualsBuilder.reflectionEquals(this, obj);
 		}
-	}
-
-	/**
-	 * Refresh i18n messages.
-	 * @throws IOException IO exception
-	 */
-	public void refresh() throws IOException {
-		init();
 	}
 
 	/**

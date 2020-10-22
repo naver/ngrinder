@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.scriptengine.groovy.junit;
 
@@ -87,7 +87,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	private PerThreadStatement finalPerThreadStatement;
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 	private boolean enableRateRunner = true;
-	private Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<FrameworkMethod, Statement>();
+	private Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<>();
 
 	/**
 	 * Constructor.
@@ -128,7 +128,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 			}
 
 			@Override
-			public Object createTest() throws Exception {
+			public Object createTest() {
 				return runner;
 			}
 		};
@@ -298,22 +298,22 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	protected void registerRunNotifierListener(RunNotifier notifier) {
 		notifier.addFirstListener(new RunListener() {
 			@Override
-			public void testStarted(Description description) throws Exception {
+			public void testStarted(Description description) {
 
 			}
 
 			@Override
-			public void testRunStarted(Description description) throws Exception {
+			public void testRunStarted(Description description) {
 				attachWorker();
 			}
 
 			@Override
-			public void testRunFinished(Result result) throws Exception {
+			public void testRunFinished(Result result) {
 				detachWorker();
 			}
 
 			@Override
-			public void testFailure(Failure failure) throws Exception {
+			public void testFailure(Failure failure) {
 				Throwable exception = failure.getException();
 				Throwable filtered = exceptionProcessor.filterException(exception);
 				if (exception != filtered) {

@@ -40,7 +40,7 @@ public class MBeanClient {
 
     private static final String JMX_URI = "/jndi/rmi://%s:%s/jmxrmi";
 
-    private JMXServiceURL jmxUrl = null;
+    private JMXServiceURL jmxUrl;
 
     private volatile boolean connected = false;
 

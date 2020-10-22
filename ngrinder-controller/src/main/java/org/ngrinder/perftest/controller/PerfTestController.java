@@ -134,7 +134,7 @@ public class PerfTestController {
 				// Limit log view to 1MB
 				outputStream.println(" Only the last 1MB of a log shows.\n");
 				outputStream.println("==========================================================================\n\n");
-				LogCompressUtils.decompress(fileInputStream, outputStream, 1 * 1024 * 1024);
+				LogCompressUtils.decompress(fileInputStream, outputStream, 1024 * 1024);
 			} else {
 				IOUtils.copy(fileInputStream, outputStream);
 			}
@@ -159,7 +159,7 @@ public class PerfTestController {
 	 * @param id test id
 	 * @return perftest/detail_report/perf
 	 */
-	@SuppressWarnings({"MVCPathVariableInspection", "UnusedParameters"})
+	@SuppressWarnings("UnusedParameters")
 	@GetMapping("/{id}/detail_report/perf")
 	public String getDetailPerfReport(@PathVariable("id") long id) {
 		return "perftest/detail_report/perf";

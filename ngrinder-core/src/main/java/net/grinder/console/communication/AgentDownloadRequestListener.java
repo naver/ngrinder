@@ -21,5 +21,5 @@ import net.grinder.engine.communication.AgentUpdateGrinderMessage;
  * @since 3.3
  */
 public interface AgentDownloadRequestListener {
-	public AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset);
+	AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset);
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -36,9 +36,9 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 public class AgentDaemon implements Agent {
 	private volatile AgentImplementationEx agent;
-	private Thread thread = new Thread();
+	private Thread thread;
 	private GrinderProperties properties;
-	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
+	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<>();
 	private boolean forceShutdown = false;
 	public static final Logger LOGGER = LoggerFactory.getLogger("agent daemon");
 	private final AgentConfig m_agentConfig;
@@ -153,7 +153,7 @@ public class AgentDaemon implements Agent {
 		/**
 		 * AgentShutdown listening method.
 		 */
-		public void shutdownAgent();
+		void shutdownAgent();
 	}
 
 	public ListenerSupport<AgentShutDownListener> getListeners() {
@@ -164,7 +164,7 @@ public class AgentDaemon implements Agent {
 	 * Reset all shutdown listener.
 	 */
 	public void resetListeners() {
-		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<AgentDaemon.AgentShutDownListener>();
+		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<>();
 		getListeners().apply(new Informer<AgentShutDownListener>() {
 			public void inform(AgentShutDownListener listener) {
 				backup.add(listener);

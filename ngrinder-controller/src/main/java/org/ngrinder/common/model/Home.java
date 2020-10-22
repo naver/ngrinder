@@ -100,30 +100,6 @@ public class Home {
 	}
 
 	/**
-	 * Copy the given file from given location.
-	 *
-	 * @param from file location
-	 */
-	public void copyFrom(File from) {
-		// Copy missing files
-		try {
-			for (File file : checkNotNull(from.listFiles())) {
-				if (!(new File(directory, file.getName()).exists())) {
-					FileUtils.copyFileToDirectory(file, directory);
-				} else {
-					File orgConf = new File(directory, "org_conf");
-					if (orgConf.mkdirs()) {
-						LOGGER.info("{}", orgConf.getPath());
-					}
-					FileUtils.copyFile(file, new File(orgConf, file.getName()));
-				}
-			}
-		} catch (IOException e) {
-			throw processException("Fail to copy files from " + from.getAbsolutePath(), e);
-		}
-	}
-
-	/**
 	 * Copy the given resources.
 	 */
 	public void copyFrom(Resource[] resources) {

@@ -76,7 +76,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	@SuppressWarnings("UnusedDeclaration")
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
 	                                            ErrorHandler errorHandler, TimeAuthority timeAuthority,
-												ConsoleCommunicationSetting consoleCommunicationSetting) throws DisplayMessageConsoleException {
+												ConsoleCommunicationSetting consoleCommunicationSetting) {
 		m_resources = resources;
 		m_properties = properties;
 		m_errorHandler = errorHandler;

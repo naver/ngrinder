@@ -352,14 +352,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	@JsonIgnore
 	public List<String> getTargetHostIP() {
-		List<String> targetIPList = new ArrayList<String>();
+		List<String> targetIPList = new ArrayList<>();
 		String[] hostsList = StringUtils.split(StringUtils.trimToEmpty(targetHosts), ",");
 		for (String hosts : hostsList) {
 			String[] addresses = StringUtils.split(hosts, ":");
 			if (addresses.length <= 2) {
 				targetIPList.add(addresses[addresses.length - 1]);
 			} else {
-				targetIPList.add(hosts.substring(hosts.indexOf(":") + 1, hosts.length()));
+				targetIPList.add(hosts.substring(hosts.indexOf(":") + 1));
 			}
 		}
 		return targetIPList;

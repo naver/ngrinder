@@ -44,7 +44,6 @@ import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
  *
  * @author JunHo Yoon
  */
-@SuppressWarnings("SynchronizeOnNonFinalField")
 public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private final ConsoleCommunication m_consoleCommunication;
@@ -255,7 +254,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		boolean shouldPurge();
 	}
 
-	private abstract class AbstractTimedReference implements Purgable {
+	private static abstract class AbstractTimedReference implements Purgable {
 		private int m_purgeDelayCount;
 
 		@Override
@@ -276,7 +275,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
-	private final class AgentReference extends AbstractTimedReference {
+	private static final class AgentReference extends AbstractTimedReference {
 		private final AgentControllerProcessReportMessage m_agentProcessReportMessage;
 
 		/**
@@ -294,7 +293,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 *
 	 * @author JunHo Yoon
 	 */
-	public final class AgentStatus implements Purgable {
+	public static final class AgentStatus implements Purgable {
 		private volatile AgentReference m_agentReference;
 
 		/**

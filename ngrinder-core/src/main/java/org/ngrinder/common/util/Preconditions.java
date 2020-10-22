@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
@@ -337,20 +337,20 @@ public final class Preconditions {
 
 	/*
 	 * All recent hotspots (as of 2009) *really* like to have the natural code
-	 * 
+	 *
 	 * if (guardExpression) { throw new BadException(messageExpression); }
-	 * 
+	 *
 	 * refactored so that messageExpression is moved to a separate String-returning method.
-	 * 
+	 *
 	 * if (guardExpression) { throw new BadException(badMsg(...)); }
-	 * 
+	 *
 	 * The alternative natural refactorings into void or Exception-returning methods are much slower. This is a big deal
 	 * - we're talking factors of 2-8 in microbenchmarks, not just 10-20%. (This is a hotspot optimizer bug, which
 	 * should be fixed, but that's a separate, big project).
-	 * 
+	 *
 	 * The coding pattern above is heavily used in java.util, e.g. in ArrayList. There is a RangeCheckMicroBenchmark in
 	 * the JDK that was used to test this.
-	 * 
+	 *
 	 * But the methods in this class want to throw different exceptions, depending on the args, so it appears that this
 	 * pattern is not directly applicable. But we can use the ridiculous, devious trick of throwing an exception in the
 	 * middle of the construction of another exception. Hotspot is fine with that.
@@ -485,7 +485,7 @@ public final class Preconditions {
 			if (placeholderStart == -1) {
 				break;
 			}
-			builder.append(template.substring(templateStart, placeholderStart));
+			builder.append(template, templateStart, placeholderStart);
 			builder.append(args[i++]);
 			templateStart = placeholderStart + 2;
 		}

@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Groovy script engine service.
- * 
+ *
  * @author Mavlarn
  * @since 3.0
  */
@@ -48,7 +48,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param properties		Properties.
 	 * @param dcrContext		DCR context.
 	 * @param scriptLocation	Script location.
@@ -79,9 +79,9 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Instrumenter> createInstrumenters() throws EngineException {
+	public List<Instrumenter> createInstrumenters() {
 
-		final List<Instrumenter> instrumenters = new ArrayList<Instrumenter>();
+		final List<Instrumenter> instrumenters = new ArrayList<>();
 
 		/*
 		 * if (!m_forceDCRInstrumentation) {
@@ -89,9 +89,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 		 * }
 		 */
 		if (m_dcrContext != null) {
-			if (instrumenters.size() == 0) {
-				instrumenters.add(new JavaDCRInstrumenterEx(m_dcrContext));
-			}
+			instrumenters.add(new JavaDCRInstrumenterEx(m_dcrContext));
 		}
 
 		return instrumenters;

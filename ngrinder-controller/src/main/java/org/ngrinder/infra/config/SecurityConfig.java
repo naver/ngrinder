@@ -179,7 +179,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/**
 	 * configure static resource and login page
 	 * @param web WebSecurity
-	 * @throws Exception
 	 */
 	@Override
 	public void configure(WebSecurity web) {

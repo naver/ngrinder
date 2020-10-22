@@ -114,7 +114,6 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	protected abstract Integer order();
 
-	@SuppressWarnings("SpellCheckingInspection")
 	@JsonProperty
 	public boolean isValidatable() {
 		return true;

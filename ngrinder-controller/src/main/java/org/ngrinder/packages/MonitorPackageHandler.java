@@ -13,7 +13,7 @@ public class MonitorPackageHandler extends PackageHandler {
 
 	@Override
 	public Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner) {
-		return buildMap("monitorPort", (Object) String.valueOf(port));
+		return buildMap("monitorPort", String.valueOf(port));
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder;
 
@@ -32,10 +32,10 @@ import static org.ngrinder.common.constants.AgentConstants.*;
  */
 @Parameters(separators = "= ")
 public class NGrinderAgentStarterParam {
-	@Parameter(names = {"-m", "-mode", "--mode"}, required = false,
+	@Parameter(names = {"-m", "-mode", "--mode"},
 			description = "run mode. The agent/monitor modes are available.", hidden = true)
 	public String mode = null;
-	@Parameter(names = {"-c", "-command", "--command"}, required = false, description = "execution command. " +
+	@Parameter(names = {"-c", "-command", "--command"}, description = "execution command. " +
 			"The stop/start command are available.", hidden = true)
 	public String command = "start";
 
@@ -52,17 +52,17 @@ public class NGrinderAgentStarterParam {
 	public enum NGrinderModeParam {
 		agent("run_agent") {
 
-			@Parameter(names = {"-ch", "--controller-host"}, required = false, description = "controller host or ip.")
+			@Parameter(names = {"-ch", "--controller-host"}, description = "controller host or ip.")
 			public String controllerHost = null;
 
-			@Parameter(names = {"-cp", "--controller-port"}, required = false, description = "controller port.")
+			@Parameter(names = {"-cp", "--controller-port"}, description = "controller port.")
 			public Integer controllerPort = null;
 
-			@Parameter(names = {"-r", "--region"}, required = false, description = "region")
+			@Parameter(names = {"-r", "--region"}, description = "region")
 			public String region = null;
 
 
-			@Parameter(names = {"-hi", "--host-id"}, required = false, description = "this agent's unique host id")
+			@Parameter(names = {"-hi", "--host-id"}, description = "this agent's unique host id")
 			public String hostId = null;
 
 
@@ -92,8 +92,7 @@ public class NGrinderAgentStarterParam {
 			}
 		};
 
-		@Parameter(names = {"-ah", "--agent-home"}, required = false,
-				description = "this agent's unique home path. The default is ~/.ngrinder_agent")
+		@Parameter(names = {"-ah", "--agent-home"}, description = "this agent's unique home path. The default is ~/.ngrinder_agent")
 		public String agentHome = null;
 
 
@@ -105,7 +104,7 @@ public class NGrinderAgentStarterParam {
 
 
 		@DynamicParameter(names = "-D", description = "dynamic parameters", hidden = true)
-		public Map<String, String> params = new HashMap<String, String>();
+		public Map<String, String> params = new HashMap<>();
 
 
 		@SuppressWarnings("FieldCanBeLocal")

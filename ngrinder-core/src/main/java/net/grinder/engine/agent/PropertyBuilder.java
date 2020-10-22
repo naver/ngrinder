@@ -257,7 +257,6 @@ public class PropertyBuilder {
 	}
 
 	protected static final long MIN_PER_PROCESS_MEM_SIZE = 50 * 1024 * 1024;
-	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
 	protected static final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
@@ -293,7 +292,7 @@ public class PropertyBuilder {
 	}
 
 	protected StringBuilder addSecurityManager(StringBuilder jvmArguments) {
-		return jvmArguments.append(" -Djava.security.manager=" + getSecurityManagerBySecurityLevel(securityLevel) + " ");
+		return jvmArguments.append(" -Djava.security.manager=").append(getSecurityManagerBySecurityLevel(securityLevel)).append(" ");
 	}
 
 	private String getSecurityManagerBySecurityLevel(String securityLevel) {
@@ -411,7 +410,7 @@ public class PropertyBuilder {
 	}
 
 	private StringBuilder addUserDir(StringBuilder jvmArguments) {
-		jvmArguments.append(" -Duser.dir=" + baseDirectory.getFile().getPath() + " ");
+		jvmArguments.append(" -Duser.dir=").append(baseDirectory.getFile().getPath()).append(" ");
 		return jvmArguments;
 	}
 

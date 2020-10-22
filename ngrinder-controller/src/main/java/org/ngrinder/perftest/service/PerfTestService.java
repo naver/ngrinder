@@ -71,6 +71,7 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static java.lang.Long.parseLong;
 import static java.lang.Long.valueOf;
 import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
@@ -584,9 +585,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				grinderProperties.setInt(GRINDER_PROP_RUNS, 0);
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_RUNS, getSafe(perfTest.getRunCount()));
-				if (grinderProperties.containsKey(GRINDER_PROP_DURATION)) {
-					grinderProperties.remove(GRINDER_PROP_DURATION);
-				}
+				grinderProperties.remove(GRINDER_PROP_DURATION);
 			}
 			grinderProperties.setProperty(GRINDER_PROP_ETC_HOSTS,
 					StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
@@ -1223,7 +1222,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					if (NULL_STRING.equals(dataList[4]) || UNDEFINED_STRING.equals(dataList[4])) {
 						userMemoryMetrics.add(null);
 					} else {
-						userMemoryMetrics.add(valueOf(dataList[4]) - valueOf(dataList[3]));
+						userMemoryMetrics.add(parseLong(dataList[4]) - parseLong(dataList[3]));
 					}
 					addCustomData(cpuUsedMetrics, 5, dataList);
 					addCustomData(networkReceivedMetrics, 6, dataList);

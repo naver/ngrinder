@@ -18,7 +18,6 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.infra.config.UserDefinedMessageSource;
@@ -55,7 +54,6 @@ public class HomeService {
 	 * @param feedURL feed url
 	 * @return the list of {@link PanelEntry}
 	 */
-	@SuppressWarnings("unchecked")
 	@Cacheable(LOCAL_CACHE_LEFT_PANEL_ENTRIES)
 	public List<PanelEntry> getLeftPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, false);

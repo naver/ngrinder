@@ -34,7 +34,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings({"deprecation", "UnusedDeclaration", "JpaDataSourceORMInspection"})
+@SuppressWarnings({"UnusedDeclaration", "JpaDataSourceORMInspection"})
 @Getter
 @Setter
 @ToString

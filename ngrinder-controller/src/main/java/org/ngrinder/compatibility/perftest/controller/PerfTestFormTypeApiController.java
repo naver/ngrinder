@@ -15,7 +15,6 @@ import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,8 +34,12 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 @Deprecated
 public class PerfTestFormTypeApiController extends PerfTestApiController {
 
-	public PerfTestFormTypeApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager, RegionService regionService, AgentService agentService, FileEntryService fileEntryService, UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory, UserContext userContext, Config config, MessageSource messageSource) {
-		super(perfTestService, tagService, agentManager, regionService, agentService, fileEntryService, userService, hazelcastService, scriptHandlerFactory, userContext, config, messageSource);
+	public PerfTestFormTypeApiController(PerfTestService perfTestService, TagService tagService, AgentManager agentManager,
+										 RegionService regionService, AgentService agentService, FileEntryService fileEntryService,
+										 UserService userService, HazelcastService hazelcastService, ScriptHandlerFactory scriptHandlerFactory,
+										 UserContext userContext, Config config) {
+		super(perfTestService, tagService, agentManager, regionService, agentService, fileEntryService,
+			userService, hazelcastService,scriptHandlerFactory, userContext, config);
 	}
 
 	@PostMapping("/save")

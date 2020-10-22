@@ -19,5 +19,5 @@ package org.ngrinder.common.constants;
  * @since 3.3
  */
 public interface InternalConstants {
-	public static final String PROP_INTERNAL_NGRINDER_VERSION = "ngrinder.version";
+	String PROP_INTERNAL_NGRINDER_VERSION = "ngrinder.version";
 }
