@@ -14,15 +14,11 @@
 package org.ngrinder.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import java.time.Instant;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -46,7 +42,6 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
 	@JoinColumn(name = "created_by", insertable = true, updatable = false)
-	@Index(name = "created_by_index")
 	@NotFound(action = NotFoundAction.IGNORE)
 	private User createdBy;
 
@@ -56,7 +51,6 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
 	@JoinColumn(name = "last_modified_By", insertable = true, updatable = true)
-	@Index(name = "last_modified_by_index")
 	@NotFound(action = NotFoundAction.IGNORE)
 	private User lastModifiedBy;
 
