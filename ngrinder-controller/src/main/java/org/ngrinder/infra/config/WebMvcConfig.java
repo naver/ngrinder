@@ -1,11 +1,11 @@
 package org.ngrinder.infra.config;
 
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
+import lombok.RequiredArgsConstructor;
 import org.ngrinder.infra.interceptor.DefaultSuccessJsonInterceptor;
 import org.ngrinder.infra.spring.ApiExceptionHandlerResolver;
 import org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver;
 import org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,19 +32,17 @@ import java.util.List;
 	useDefaultFilters = false,
 	includeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = org.springframework.stereotype.Controller.class)}
 )
+@RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
 	@Value("${server.default-encoding}")
 	private String defaultEncoding;
 
-	@Autowired
-	private LocaleChangeInterceptor localeChangeInterceptor;
+	private final LocaleChangeInterceptor localeChangeInterceptor;
 
-	@Autowired
-	private DefaultSuccessJsonInterceptor defaultSuccessJsonInterceptor;
+	private final DefaultSuccessJsonInterceptor defaultSuccessJsonInterceptor;
 
-	@Autowired
-	private ResourceProperties resourceProperties = new ResourceProperties();
+	private final ResourceProperties resourceProperties;
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
