@@ -13,7 +13,6 @@
  */
 package net.grinder;
 
-import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
@@ -40,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -185,12 +183,10 @@ public class AgentController implements Agent, AgentConstants {
 					if (agentConfig.isConnectionMode()) {
 						final int localConnectionPort = NetworkUtils.getFreePort();
 						grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, localConnectionPort);
-						communicationProxy = new ConnectionAgentCommunicationProxy(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationProxy.CommunicationMessageSender() {
-							@Override
-							public void send() {
-								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort()));
-							}
-						});
+						communicationProxy = new ConnectionAgentCommunicationProxy(localConnectionPort,
+							agentConfig.getConnectionAgentPort(),
+							LOGGER,
+							() -> conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort())));
 						releaseConnectionAgentSocket();
 						communicationProxy.start();
 					}
@@ -198,17 +194,14 @@ public class AgentController implements Agent, AgentConstants {
 					agentDaemon.run(grinderProperties);
 
 					agentDaemon.resetListeners();
-					agentDaemon.addListener(new AgentShutDownListener() {
-						@Override
-						public void shutdownAgent() {
-							LOGGER.info("Send log for {}", testId);
-							sendLog(conCom, testId);
-							m_state = AgentControllerState.READY;
-							m_connectionPort = 0;
-							communicationProxy.shutdown();
-							communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
-							occupyConnectionAgentSocket();
-						}
+					agentDaemon.addListener(() -> {
+						LOGGER.info("Send log for {}", testId);
+						sendLog(conCom, testId);
+						m_state = AgentControllerState.READY;
+						m_connectionPort = 0;
+						communicationProxy.shutdown();
+						communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
+						occupyConnectionAgentSocket();
 					});
 				}
 				// Ignore any pending start messages.
@@ -299,12 +292,7 @@ public class AgentController implements Agent, AgentConstants {
 		if (!logFolder.exists()) {
 			return;
 		}
-		File[] logFiles = logFolder.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return (name.endsWith(".log"));
-			}
-		});
+		File[] logFiles = logFolder.listFiles((dir, name) -> (name.endsWith(".log")));
 
 		if (logFiles == null || ArrayUtils.isEmpty(logFiles)) {
 			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());

@@ -19,7 +19,6 @@ import net.grinder.communication.CommunicationDefaults;
 import net.grinder.engine.agent.Agent;
 import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -133,11 +132,9 @@ public class AgentDaemon implements Agent {
 			} catch (Exception e) {
 				LOGGER.error("While running an agent thread, an error occurred", e);
 			}
-			getListeners().apply(new Informer<AgentShutDownListener>() {
-				public void inform(AgentShutDownListener listener) {
-					listener.shutdownAgent();
-				}
-			});
+
+			getListeners().apply(AgentShutDownListener::shutdownAgent);
+
 			if (isForceShutdown()) {
 				setForceShutdown(false);
 			}
@@ -165,16 +162,11 @@ public class AgentDaemon implements Agent {
 	 */
 	public void resetListeners() {
 		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<>();
-		getListeners().apply(new Informer<AgentShutDownListener>() {
-			public void inform(AgentShutDownListener listener) {
-				backup.add(listener);
-			}
-		});
 
-		backup.apply(new Informer<AgentShutDownListener>() {
-			public void inform(AgentShutDownListener listener) {
-				getListeners().remove(listener);
-			}
+		getListeners().apply(backup::add);
+
+		backup.apply(listener -> {
+			getListeners().remove(listener);
 		});
 	}
 

@@ -17,7 +17,6 @@ import net.grinder.common.GrinderException;
 import net.grinder.engine.agent.Agent;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -62,30 +61,24 @@ public class AgentControllerDaemon implements Agent {
 	private long count = 0;
 
 	public void run() {
-		thread = new Thread(new Runnable() {
-			public void run() {
-				do {
-					try {
-						if (count++ % LOG_FREQUENCY == 0) {
-							LOGGER.info("The agent controller daemon is started.");
-						}
-						getAgentController().run();
-						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
-							public void inform(AgentControllerShutDownListener listener) {
-								listener.shutdownAgentController();
-							}
-						});
-					} catch (Exception e) {
-						LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
-						LOGGER.debug("The error detail is  ", e);
+		thread = new Thread(() -> {
+			do {
+				try {
+					if (count++ % LOG_FREQUENCY == 0) {
+						LOGGER.info("The agent controller daemon is started.");
 					}
-					if (isForceShutdown()) {
-						setForceShutdown(false);
-						break;
-					}
-					ThreadUtils.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
-				} while (true);
-			}
+					getAgentController().run();
+					getListeners().apply(AgentControllerShutDownListener::shutdownAgentController);
+				} catch (Exception e) {
+					LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
+					LOGGER.debug("The error detail is  ", e);
+				}
+				if (isForceShutdown()) {
+					setForceShutdown(false);
+					break;
+				}
+				ThreadUtils.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
+			} while (true);
 		}, "Agent Controller Thread");
 		thread.start();
 	}

@@ -132,10 +132,7 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
-					svnRevision, svnRevision, true, recursive, new ISVNDirEntryHandler() {
-				@Override
-				public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
-
+				svnRevision, svnRevision, true, recursive, dirEntry -> {
 					FileEntry script = new FileEntry();
 					// Exclude base path "/"
 					if (StringUtils.isBlank(dirEntry.getRelativePath())) {
@@ -153,8 +150,7 @@ public class FileEntryRepository {
 						script.setFileSize(dirEntry.getSize());
 					}
 					fileEntries.add(script);
-				}
-			});
+				});
 		} catch (Exception e) {
 			LOG.debug("findAll() to the not existing folder {}", path);
 		} finally {
@@ -175,9 +171,7 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
-					SVNRevision.HEAD, false, true, new ISVNDirEntryHandler() {
-				@Override
-				public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+				SVNRevision.HEAD, false, true, dirEntry -> {
 					FileEntry script = new FileEntry();
 					String relativePath = dirEntry.getRelativePath();
 					if (StringUtils.isBlank(relativePath)) {
@@ -193,8 +187,7 @@ public class FileEntryRepository {
 					script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
 					script.setFileSize(dirEntry.getSize());
 					scripts.add(script);
-				}
-			});
+				});
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN for {}", user.getUserId());
 			LOG.debug("Error details :", e);
@@ -331,7 +324,7 @@ public class FileEntryRepository {
 
 				// Calc diff
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-				
+
 				if (fileEntry.getContentBytes() == null && fileEntry.getFileType().isEditable()) {
 					bais = new ByteArrayInputStream(checkNotNull(fileEntry.getContent()).getBytes(
 						encoding == null ? "UTF-8" : encoding));

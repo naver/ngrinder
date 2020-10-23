@@ -322,15 +322,12 @@ public class PropertyBuilder {
 		customClassPath.append(getPath(baseFile, useAbsolutePath));
 		if (libFolder.exists()) {
 			customClassPath.append(File.pathSeparator).append(getPath(new File(baseFile, "lib"), useAbsolutePath));
-			libFolder.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator)
-								.append(getPath(new File(dir, name), useAbsolutePath));
-					}
-					return true;
+			libFolder.list((dir, name) -> {
+				if (name.endsWith(".jar")) {
+					customClassPath.append(File.pathSeparator)
+							.append(getPath(new File(dir, name), useAbsolutePath));
 				}
+				return true;
 			});
 		}
 		return customClassPath.toString();

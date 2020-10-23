@@ -126,11 +126,7 @@ public class MBeanClient {
     private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws NGrinderRuntimeException, TimeoutException {
         try {
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<JMXConnector> future = executor.submit(new Callable<JMXConnector>() {
-                public JMXConnector call() throws IOException {
-                    return JMXConnectorFactory.connect(jmxUrl);
-                }
-            });
+            Future<JMXConnector> future = executor.submit(() -> JMXConnectorFactory.connect(jmxUrl));
 
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {

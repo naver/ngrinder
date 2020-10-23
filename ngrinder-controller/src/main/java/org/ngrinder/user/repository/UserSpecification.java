@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,14 +9,9 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.user.repository;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,13 +30,10 @@ public abstract class UserSpecification {
 	 * @return created spec
 	 */
 	public static Specification<User> nameLike(final String query) {
-		return new Specification<User>() {
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-				String pattern = ("%" + query + "%").toLowerCase();
-				return cb.or(cb.like(cb.lower(root.get("userName").as(String.class)), pattern), 
-						cb.like(cb.lower(root.get("userId").as(String.class)), pattern));
-			}
+		return (Specification<User>) (root, criteriaQuery, cb) -> {
+			String pattern = ("%" + query + "%").toLowerCase();
+			return cb.or(cb.like(cb.lower(root.get("userName").as(String.class)), pattern),
+					cb.like(cb.lower(root.get("userId").as(String.class)), pattern));
 		};
 	}
 
@@ -51,12 +43,9 @@ public abstract class UserSpecification {
 	 * @return created spec
 	 */
 	public static Specification<User> emailLike(final String query) {
-		return new Specification<User>() {
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-				String pattern = ("%" + query + "%").toLowerCase();
-				return cb.like(cb.lower(root.get("email").as(String.class)), pattern);
-			}
+		return (Specification<User>) (root, criteriaQuery, cb) -> {
+			String pattern = ("%" + query + "%").toLowerCase();
+			return cb.like(cb.lower(root.get("email").as(String.class)), pattern);
 		};
 	}
 
@@ -67,12 +56,7 @@ public abstract class UserSpecification {
 	 * @return {@link Specification}
 	 */
 	public static Specification<User> idEqual(final Long id) {
-		return new Specification<User>() {
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.equal(root.get("id"), id);
-			}
-		};
+		return (Specification<User>) (root, query, cb) -> cb.equal(root.get("id"), id);
 	}
 
 }

@@ -434,11 +434,8 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 				try {
 					CoreLogger.LOGGER.info("System configuration(system.conf) is changed.");
 					loadProperties();
-					systemConfListeners.apply(new Informer<PropertyChangeListener>() {
-						@Override
-						public void inform(PropertyChangeListener listener) {
-							listener.propertyChange(null);
-						}
+					systemConfListeners.apply(listener -> {
+						listener.propertyChange(null);
 					});
 					CoreLogger.LOGGER.info("New system configuration is applied.");
 				} catch (Exception e) {

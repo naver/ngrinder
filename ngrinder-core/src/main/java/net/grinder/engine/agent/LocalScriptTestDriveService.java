@@ -202,15 +202,12 @@ public class LocalScriptTestDriveService {
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void deleteLogs(File base) {
-		base.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathName) {
-				String extension = FilenameUtils.getExtension(pathName.getName());
-				if (extension.startsWith("log")) {
-					pathName.delete();
-				}
-				return true;
+		base.listFiles(pathName -> {
+			String extension = FilenameUtils.getExtension(pathName.getName());
+			if (extension.startsWith("log")) {
+				pathName.delete();
 			}
+			return true;
 		});
 	}
 
