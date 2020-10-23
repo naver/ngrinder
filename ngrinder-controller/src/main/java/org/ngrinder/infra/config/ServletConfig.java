@@ -10,9 +10,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 public class ServletConfig {
 	@Bean
-	@SuppressWarnings("unchecked")
-	public ServletRegistrationBean appServletRegisterBean() {
-		ServletRegistrationBean appServletRegistrationBean = new ServletRegistrationBean(dispatcherServlet(), dispatcherServletPath().getPath());
+	public ServletRegistrationBean<DispatcherServlet> appServletRegisterBean() {
+		ServletRegistrationBean<DispatcherServlet> appServletRegistrationBean = new ServletRegistrationBean<>(dispatcherServlet(), dispatcherServletPath().getPath());
 		appServletRegistrationBean.setLoadOnStartup(1);
 		appServletRegistrationBean.setName("appServlet");
 		return appServletRegistrationBean;
@@ -24,9 +23,8 @@ public class ServletConfig {
 	}
 
 	@Bean
-	@SuppressWarnings("unchecked")
-	public ServletRegistrationBean svnDavServletRegisterBean() {
-		ServletRegistrationBean svnDavServletRegistrationBean = new ServletRegistrationBean(new HttpRequestHandlerServlet(), "/svn/*");
+	public ServletRegistrationBean<HttpRequestHandlerServlet> svnDavServletRegisterBean() {
+		ServletRegistrationBean<HttpRequestHandlerServlet> svnDavServletRegistrationBean = new ServletRegistrationBean<>(new HttpRequestHandlerServlet(), "/svn/*");
 		svnDavServletRegistrationBean.setLoadOnStartup(1);
 		svnDavServletRegistrationBean.setName("svnDavServlet");
 		return svnDavServletRegistrationBean;

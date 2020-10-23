@@ -31,7 +31,6 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -69,17 +68,17 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	@Getter(AccessLevel.PROTECTED)
 	@Setter
-	private UserDetailsService userDetailsService;
+	private NGrinderUserDetailsService nGrinderUserDetailsService;
 
 	private UserService userService;
 
 	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin, DefaultLdapLoginPlugin defaultLdapLoginPlugin,
-										  @Lazy ShaPasswordEncoder passwordEncoder, UserDetailsService userDetailsService, UserService userService) {
+										  @Lazy ShaPasswordEncoder passwordEncoder, NGrinderUserDetailsService nGrinderUserDetailsService, UserService userService) {
 		this.pluginManager = pluginManager;
 		this.defaultLoginPlugin = defaultLoginPlugin;
 		this.defaultLdapLoginPlugin = defaultLdapLoginPlugin;
 		this.passwordEncoder = passwordEncoder;
-		this.userDetailsService = userDetailsService;
+		this.nGrinderUserDetailsService = nGrinderUserDetailsService;
 		this.userService = userService;
 	}
 
@@ -149,7 +148,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	@Override
 	protected void doAfterPropertiesSet() {
-		Assert.notNull(this.userDetailsService, "A UserDetailsService must be set");
+		Assert.notNull(this.nGrinderUserDetailsService, "A UserDetailsService must be set");
 	}
 
 	@Override
@@ -157,7 +156,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		UserDetails loadedUser;
 
 		try {
-			loadedUser = this.getUserDetailsService().loadUserByUsername(username);
+			loadedUser = this.nGrinderUserDetailsService.loadUserByUsername(username);
 		} catch (UsernameNotFoundException notFound) {
 			throw notFound;
 		} catch (Exception repositoryProblem) {
