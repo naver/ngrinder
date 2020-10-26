@@ -52,6 +52,8 @@ public class HTTPRequest2 {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest2.class);
 
+	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
+
 	private final OkHttpClient client;
 
 	public HTTPRequest2() {
@@ -60,7 +62,7 @@ public class HTTPRequest2 {
 
 	public HTTPRequest2(List<Protocol> protocols) {
 		if (protocols == null || protocols.isEmpty()) {
-			protocols = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
+			protocols = DEFAULT_PROTOCOLS;
 		}
 
 		client = new OkHttpClient()
