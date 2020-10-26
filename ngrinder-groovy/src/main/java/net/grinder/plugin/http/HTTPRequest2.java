@@ -23,6 +23,7 @@ package net.grinder.plugin.http;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
+import okio.BufferedSource;
 import org.apache.commons.lang.time.StopWatch;
 import org.conscrypt.Conscrypt;
 import org.jetbrains.annotations.NotNull;
@@ -127,15 +128,21 @@ public class HTTPRequest2 {
 		try {
 			Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
 
-			statisticsForTest.addLong(
-				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, response.body().contentLength());
-
 			statisticsForTest.setLong(
 				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_STATUS_KEY, response.code());
 
 			if (response.code() >= HttpURLConnection.HTTP_BAD_REQUEST) {
 				statisticsForTest.addLong(
 					StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_ERRORS_KEY, 1);
+			}
+
+			ResponseBody body = response.body();
+			if (body != null) {
+				BufferedSource source = body.source();
+				source.request(Long.MAX_VALUE);
+
+				statisticsForTest.addLong(
+					StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, source.getBuffer().snapshot().size());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Fail to aggregate HTTP statistics", e);
