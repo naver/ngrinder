@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -68,6 +69,7 @@ public class HTTPRequest2 {
 		client = new OkHttpClient()
 			.newBuilder()
 			.protocols(protocols)
+			.cookieJar(new ThreadContextCookieJar())
 			.eventListener(new ConnectionTimeAggregateListener())
 			.hostnameVerifier((s, sslSession) -> true)
 			.build();
@@ -148,6 +150,24 @@ public class HTTPRequest2 {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Fail to aggregate HTTP statistics", e);
+		}
+	}
+
+	private static class ThreadContextCookieJar implements CookieJar {
+		private static final ThreadLocal<List<Cookie>> cookieJar = ThreadLocal.withInitial(ArrayList::new);
+
+		@Override
+		public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
+			synchronized (cookieJar) {
+				cookieJar.get().clear();
+				cookieJar.get().addAll(list);
+			}
+		}
+
+		@NotNull
+		@Override
+		public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
+			return cookieJar.get();
 		}
 	}
 
