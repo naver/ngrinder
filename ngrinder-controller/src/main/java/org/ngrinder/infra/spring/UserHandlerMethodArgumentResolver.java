@@ -50,7 +50,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		User currentUser = getUserContext().getCurrentUser();
 
 		String userParam = webRequest.getParameter("ownerId");
@@ -71,11 +71,11 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		}
 		// Let this can be done with parameter as well.
 		switchUser = StringUtils.defaultIfBlank(webRequest.getParameter("switchUser"), switchUser);
-		
+
 		if (currentUser.getUserId().equals(switchUser)) {
 			currentUser.setOwnerUser(null);
 		} else if (StringUtils.isNotEmpty(switchUser)) {
-			User ownerUser = getUserService().getOne(switchUser);
+			User ownerUser = getUserService().getOneWithEagerFetch(switchUser);
 			// CurrentUser should remember whose status he used
 			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)
 					|| (ownerUser.getFollowers() != null && ownerUser.getFollowers().contains(currentUser))) {

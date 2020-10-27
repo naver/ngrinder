@@ -95,24 +95,23 @@ public class UserService extends AbstractUserService {
 	@Cacheable(value = DIST_CACHE_USERS, key = "#userId")
 	@Override
 	public User getOne(String userId) {
-		User user  = userRepository.findOneByUserId(userId);
-		if (user != null) {
-			initialize(user.getFollowers());
-		}
-		return user;
+		return userRepository.findOneByUserId(userId);
 	}
 
 	/**
-	 * Get user by user id with followers.
+	 * Get user by user id with eager fetch.
 	 *
 	 * @param userId user id
 	 * @return user
 	 */
 	@Transactional
-	public User getOneWithFollowers(String userId) {
-		User one = userRepository.findOneByUserId(userId);
-		one.getFollowers().size();
-		return one;
+	public User getOneWithEagerFetch(String userId) {
+		User user = userRepository.findOneByUserId(userId);
+		if (user != null) {
+			initialize(user.getOwners());
+			initialize(user.getFollowers());
+		}
+		return user;
 	}
 
 	/**

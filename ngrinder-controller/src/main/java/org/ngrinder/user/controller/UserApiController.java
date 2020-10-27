@@ -66,7 +66,7 @@ public class UserApiController {
 	@GetMapping("/profile")
 	public Map<String, Object> getOne(User user) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User one = userService.getOneWithFollowers(user.getUserId());
+		User one = userService.getOneWithEagerFetch(user.getUserId());
 
 		Map<String, Object> viewConfig = new HashMap<>();
 		viewConfig.put("allowPasswordChange", !config.isDemo());
@@ -117,7 +117,7 @@ public class UserApiController {
 	@GetMapping("/{userId}/detail")
 	@PreAuthorize("hasAnyRole('A')")
 	public Map<String, Object> getOneDetail(@PathVariable final String userId) {
-		User one = userService.getOneWithFollowers(userId);
+		User one = userService.getOneWithEagerFetch(userId);
 
 		Map<String, Object> viewConfig = new HashMap<>();
 		viewConfig.put("allowPasswordChange", true);
