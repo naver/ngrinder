@@ -213,11 +213,16 @@ public class HTTPRequest2 {
 
 		@Override
 		public void responseHeadersStart(@NotNull Call call) {
-			timeToFirstByteStopWatch.stop();
-			long timeToFirstByte = timeToFirstByteStopWatch.getTime();
-			timeToFirstByteStopWatch.reset();
+			try {
+				timeToFirstByteStopWatch.stop();
+				long timeToFirstByte = timeToFirstByteStopWatch.getTime();
+				timeToFirstByteStopWatch.reset();
 
-			accumulate(StatisticsIndexMap.HTTP_PLUGIN_FIRST_BYTE_TIME_KEY, timeToFirstByte);
+				accumulate(StatisticsIndexMap.HTTP_PLUGIN_FIRST_BYTE_TIME_KEY, timeToFirstByte);
+			} catch (IllegalStateException e) {
+				// Do nothing.
+				// responseHeadersStart event can be occurred multiple times when redirecting to the same server
+			}
 		}
 
 		private void accumulate(String key, long time) {
