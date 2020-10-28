@@ -39,8 +39,10 @@ import java.net.Proxy;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 public class HTTPRequest2 {
 	static {
@@ -159,8 +161,7 @@ public class HTTPRequest2 {
 		@Override
 		public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
 			synchronized (cookieJar) {
-				cookieJar.get().clear();
-				cookieJar.get().addAll(list);
+				cookieJar.set(merge(cookieJar.get(), list));
 			}
 		}
 
@@ -168,6 +169,18 @@ public class HTTPRequest2 {
 		@Override
 		public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
 			return cookieJar.get();
+		}
+
+		private List<Cookie> merge(List<Cookie> origin, List<Cookie> cookies) {
+			Predicate<Cookie> cookieNameNotContains = originCookie ->
+				cookies.stream().anyMatch(cookie -> !cookie.name().equalsIgnoreCase(originCookie.name()));
+
+			List<Cookie> merged = origin.stream()
+				.filter(cookieNameNotContains)
+				.collect(toList());
+			merged.addAll(cookies);
+
+			return merged;
 		}
 	}
 
