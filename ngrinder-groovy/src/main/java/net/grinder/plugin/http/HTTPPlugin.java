@@ -70,7 +70,7 @@ public class HTTPPlugin implements GrinderPlugin {
 	 *
 	 * @return The plug-in instance.
 	 */
-	static final HTTPPlugin getPlugin() {
+	public static final HTTPPlugin getPlugin() {
 		return s_singleton;
 	}
 
@@ -78,7 +78,7 @@ public class HTTPPlugin implements GrinderPlugin {
 	private SSLContextFactory m_sslContextFactory;
 	private Sleeper m_slowClientSleeper;
 
-	final PluginProcessContext getPluginProcessContext() {
+	public final PluginProcessContext getPluginProcessContext() {
 		return m_pluginProcessContext;
 	}
 

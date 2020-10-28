@@ -18,8 +18,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.grinder.plugin.http;
+package org.ngrinder.http;
 
+import net.grinder.plugin.http.HTTPPlugin;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
@@ -44,7 +45,7 @@ import java.util.function.Predicate;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
-public class HTTPRequest2 {
+public class HTTPRequest {
 	static {
 		// To support ALPN
 		Security.insertProviderAt(Conscrypt.newProvider(), 1);
@@ -53,17 +54,17 @@ public class HTTPRequest2 {
 		HTTPPlugin.getPlugin();
 	}
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest2.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
 
 	private final OkHttpClient client;
 
-	public HTTPRequest2() {
+	public HTTPRequest() {
 		this(null);
 	}
 
-	public HTTPRequest2(List<Protocol> protocols) {
+	public HTTPRequest(List<Protocol> protocols) {
 		if (protocols == null || protocols.isEmpty()) {
 			protocols = DEFAULT_PROTOCOLS;
 		}
