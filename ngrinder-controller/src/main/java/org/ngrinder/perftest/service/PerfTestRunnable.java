@@ -568,7 +568,9 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param errorMessage       error message
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse, String errorMessage) {
-		singleConsoleInUse.unregisterSampling();
+		if (singleConsoleInUse != null) {
+			singleConsoleInUse.unregisterSampling();
+		}
 		String progressMessage = "Stopped by error";
 
 		if (!errorMessage.isEmpty()) {
