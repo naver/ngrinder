@@ -38,12 +38,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.Security;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 
 public class HTTPRequest {
 	static {
@@ -157,31 +154,15 @@ public class HTTPRequest {
 	}
 
 	private static class ThreadContextCookieJar implements CookieJar {
-		private static final ThreadLocal<List<Cookie>> cookieJar = ThreadLocal.withInitial(ArrayList::new);
-
 		@Override
 		public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
-			synchronized (cookieJar) {
-				cookieJar.set(merge(cookieJar.get(), list));
-			}
+			CookieManager.addCookies(list);
 		}
 
 		@NotNull
 		@Override
 		public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
-			return cookieJar.get();
-		}
-
-		private List<Cookie> merge(List<Cookie> origin, List<Cookie> cookies) {
-			Predicate<Cookie> cookieNameNotContains = originCookie ->
-				cookies.stream().anyMatch(cookie -> !cookie.name().equalsIgnoreCase(originCookie.name()));
-
-			List<Cookie> merged = origin.stream()
-				.filter(cookieNameNotContains)
-				.collect(toList());
-			merged.addAll(cookies);
-
-			return merged;
+			return CookieManager.getCookies();
 		}
 	}
 
