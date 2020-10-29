@@ -30,9 +30,9 @@
                     width: '390px',
                 },
                 {
-                    name: '__slot:lastModifiedDate',
+                    name: '__slot:lastModifiedAt',
                     title: this.i18n('script.list.lastDate'),
-                    sortField: 'lastModifiedDate',
+                    sortField: 'lastModifiedAt',
                     width: '180px',
                 },
                 {

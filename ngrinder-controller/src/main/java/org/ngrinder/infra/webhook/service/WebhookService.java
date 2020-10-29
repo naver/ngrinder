@@ -33,11 +33,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.time.Duration.ofSeconds;
+import static java.time.Instant.now;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -73,7 +73,7 @@ public class WebhookService {
 
 	public void sendDummyWebhookRequest(User user, WebhookConfig webhookConfig, Event event) {
 		PerfTest perfTest = new PerfTest();
-		perfTest.setCreatedUser(user);
+		perfTest.setCreatedBy(user);
 		sendWebhookRequest(perfTest, webhookConfig, event);
 	}
 
@@ -89,7 +89,7 @@ public class WebhookService {
 		}
 
 		WebhookActivation webhookActivation = new WebhookActivation();
-		webhookActivation.setCreatedUserId(perfTest.getCreatedUser().getUserId());
+		webhookActivation.setCreatorId(perfTest.getCreatedBy().getUserId());
 		webhookActivation.setUuid(UUID.randomUUID().toString());
 
 		try {
@@ -103,7 +103,7 @@ public class WebhookService {
 		} catch (JsonProcessingException e) {
 			webhookActivation.setResponse(response.toString());
 		}
-		webhookActivation.setCreatedTime(new Date());
+		webhookActivation.setCreatedAt(now());
 		webhookActivationService.save(webhookActivation);
 	}
 

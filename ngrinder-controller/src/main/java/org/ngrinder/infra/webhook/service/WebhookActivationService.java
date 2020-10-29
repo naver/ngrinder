@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.infra.webhook.repository.WebhookActivationSpecification.createdUserIdEqual;
+import static org.ngrinder.infra.webhook.repository.WebhookActivationSpecification.creatorIdEqual;
 
 @Slf4j
 @Service
@@ -40,8 +40,8 @@ public class WebhookActivationService {
 
 	private final WebhookActivationRepository webhookActivationRepository;
 
-	public List<WebhookActivation> findAll(String createdUserId, Pageable pageable) {
-		Page<WebhookActivation> webhookActivation = webhookActivationRepository.findAll(createdUserIdEqual(createdUserId), pageable);
+	public List<WebhookActivation> findAll(String creatorId, Pageable pageable) {
+		Page<WebhookActivation> webhookActivation = webhookActivationRepository.findAll(creatorIdEqual(creatorId), pageable);
 		return webhookActivation.getContent();
 	}
 

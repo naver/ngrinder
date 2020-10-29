@@ -225,8 +225,8 @@
 
         .control-group.error {
             input, select, .input-group-text {
-                color: @error-color;
-                border-color: @error-color;
+                color: @error-color !important;
+                border-color: @error-color !important;
                 box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 
                 &.input-group-text {

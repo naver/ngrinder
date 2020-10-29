@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -35,9 +35,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static java.time.Instant.now;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -63,8 +65,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testGetTestListAll() {
-		createPerfTest("new Test1", Status.TESTING, new Date());
-		createPerfTest("new Test2", Status.FINISHED, new Date());
+		createPerfTest("new Test1", Status.TESTING, now());
+		createPerfTest("new Test2", Status.FINISHED, now());
 
 		PerfTest candidate = testService.getNextRunnablePerfTestPerfTestCandidate();
 		assertThat(candidate, nullValue());
@@ -85,12 +87,12 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(list.size(), is(1));
 
 		for (PerfTest test : list) {
-			long systemTimeMills = System.currentTimeMillis();
-			test.setStartTime(new Date(systemTimeMills));
+			Instant now = now();
+			test.setStartTime(now);
 
 			PerfTest testTemp = testService.getOne(getTestUser(), test.getId());
 			assertThat(testTemp.getId(), is(test.getId()));
-			assertThat(testTemp.getStartTime().getTime(), is(systemTimeMills));
+			assertThat(testTemp.getStartTime(), is(now));
 
 			testService.markAbnormalTermination(testTemp, StopReason.CANCEL_BY_USER);
 			testService.markProgress(testTemp, "this test will be TESTING again");
@@ -107,18 +109,18 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		}
 
-		createPerfTest("new Test2", Status.getProcessingOrTestingTestStatus()[0], new Date());
+		createPerfTest("new Test2", Status.getProcessingOrTestingTestStatus()[0], now());
 		list = testService.getCurrentlyRunningTest();
 		assertThat(list.size(), is(2));
 
-		PerfTest finishedTest = createPerfTest("new Test3", Status.ABNORMAL_TESTING, new Date());
+		PerfTest finishedTest = createPerfTest("new Test3", Status.ABNORMAL_TESTING, now());
 		finishedTest.setPort(0); // need port number for finishing
 		list = testService.getAllAbnormalTesting();
 		assertThat(list.size(), is(1));
 
 		testService.updatePerfTestAfterTestFinish(finishedTest);
 
-		createPerfTest("new Test3", Status.START_AGENTS, new Date());
+		createPerfTest("new Test3", Status.START_AGENTS, now());
 
 		List<PerfTest> errorList = testService.getAll(getTestUser(), new Status[]{Status.START_AGENTS});
 		assertThat(errorList.size(), is(1));
@@ -130,7 +132,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		int maxConcurrent = testService.getMaximumConcurrentTestCount();
 		assertThat(maxConcurrent, is(10));
 
-		PerfTest testScript = createPerfTest("new TestScript", Status.READY, new Date());
+		PerfTest testScript = createPerfTest("new TestScript", Status.READY, now());
 		testService.addCommentOn(getTestUser(), testScript.getId(), "this is TestScript method", "");
 
 		PerfTest testing = testService.markProgressAndStatus(testScript, Status.TESTING, "It is testing from ready");

@@ -34,9 +34,9 @@
                     title: this.i18n('common.label.description'),
                 },
                 {
-                    name: '__slot:createdDate',
+                    name: '__slot:createdAt',
                     title: this.i18n('user.list.table.date'),
-                    sortField: 'createdDate',
+                    sortField: 'createdAt',
                     width: '140px',
                 },
                 {

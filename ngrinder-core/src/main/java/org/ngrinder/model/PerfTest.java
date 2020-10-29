@@ -24,17 +24,19 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
-import org.ngrinder.common.util.DateUtils;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 
 import static com.sun.jmx.mbeanserver.Util.cast;
+import static java.util.Date.from;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
+import static org.ngrinder.common.util.DateUtils.dateToString;
+import static org.ngrinder.common.util.DateUtils.ms2Time;
 
 /**
  * Performance Test Entity.
@@ -67,8 +69,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * @param createdUser crested user.
 	 */
 	public PerfTest(User createdUser) {
-		this.setCreatedUser(createdUser);
-		this.setLastModifiedUser(createdUser);
+		this.setCreatedBy(createdUser);
+		this.setLastModifiedBy(createdUser);
 	}
 
 	@Cloneable
@@ -95,15 +97,15 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** the scheduled time of this test. */
 	@Column(name = "scheduled_time")
 	@Index(name = "scheduled_time_index")
-	private Date scheduledTime;
+	private Instant scheduledTime;
 
 	/** the start time of this test. */
 	@Column(name = "start_time")
-	private Date startTime;
+	private Instant startTime;
 
 	/** the finish time of this test. */
 	@Column(name = "finish_time")
-	private Date finishTime;
+	private Instant finishTime;
 
 	/**
 	 * the target host to test.
@@ -320,7 +322,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@JsonIgnore
 	public String getTestIdentifier() {
-		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
+		return "perftest_" + getId() + "_" + getLastModifiedBy().getUserId();
 	}
 
 	/**
@@ -339,8 +341,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	@JsonIgnore
-	public String getLastModifiedDateToStr() {
-		return DateUtils.dateToString(getLastModifiedDate());
+	public String getLastModifiedAtToStr() {
+		return dateToString(from(getLastModifiedAt()));
 	}
 
 	/**
@@ -386,8 +388,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	@JsonProperty("runtime")
 	public String getRuntimeStr() {
-		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime() - this.startTime.getTime();
-		return DateUtils.ms2Time(ms);
+		long runtimeSecond = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getEpochSecond() - this.startTime.getEpochSecond();
+		return ms2Time(runtimeSecond * 1000);
 	}
 
 	@Override

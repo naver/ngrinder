@@ -21,22 +21,27 @@
 package org.ngrinder.infra.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.text.SimpleDateFormat;
-
 @Configuration
 public class JacksonConfig {
+
 	@Bean
 	public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
 		return customizer -> {
 			customizer.serializationInclusion(JsonInclude.Include.NON_NULL);
 			customizer.indentOutput(true);
-			customizer.timeZone("GMT");
-			customizer.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 			customizer.modules(new NumberModule());
+			customizer.modules(new JavaTimeModule());
+
+			customizer.featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+			customizer.featuresToDisable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
+			customizer.featuresToDisable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
 		};
 	}
 }

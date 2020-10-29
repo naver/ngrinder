@@ -39,10 +39,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import static java.time.Instant.now;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.hibernate.Hibernate.initialize;
 import static org.ngrinder.common.constant.CacheConstants.DIST_CACHE_USERS;
@@ -285,12 +286,12 @@ public class UserService extends AbstractUserService {
 	@Override
 	public User createUser(User user) {
 		encodePassword(user);
-		Date createdDate = new Date();
-		user.setCreatedDate(createdDate);
-		user.setLastModifiedDate(createdDate);
-		User createdUser = getOne(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID);
-		user.setCreatedUser(createdUser);
-		user.setLastModifiedUser(createdUser);
+		Instant createdAt = now();
+		user.setCreatedAt(createdAt);
+		user.setLastModifiedAt(createdAt);
+		User createdBy = getOne(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID);
+		user.setCreatedBy(createdBy);
+		user.setLastModifiedBy(createdBy);
 		return saveWithoutPasswordEncoding(user);
 	}
 
