@@ -38,7 +38,7 @@
                                              :src="`${contextPath}${perftestStatus.iconPath}`"/>
                                     </div>
                                     <div class="ml-auto" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
-                                        <div class="control-group">
+                                        <div class="control-group start-btn-container">
                                             <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
                                                 <i class="fa fa-clone mr-1"></i>
                                                 <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
@@ -535,7 +535,7 @@
 
         fieldset {
             .d-flex {
-                width: 275px;
+                width: 304px;
             }
         }
 
@@ -544,7 +544,7 @@
         }
 
         .tag-container {
-            width: 414px;
+            width: 385px;
 
             label.control-label {
                 width: 60px;
@@ -635,6 +635,19 @@
             input {
                 vertical-align: top;
                 margin-left: 2px
+            }
+        }
+
+        .start-btn-container {
+            text-align: right;
+            width: 194px;
+
+            .btn-success {
+                width: 70px;
+            }
+
+            .btn-primary {
+                width: 120px;
             }
         }
 
