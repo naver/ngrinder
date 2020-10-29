@@ -164,6 +164,9 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("okio");
 		usefulJarList.add("kotlin-stdlib");
 		usefulJarList.add("conscrypt-openjdk-uber");
+		usefulJarList.add("jackson-annotations");
+		usefulJarList.add("jackson-core");
+		usefulJarList.add("jackson-databind");
 
 		uselessJarList.add("jython-2.2");
 		uselessJarList.add("ngrinder-core");

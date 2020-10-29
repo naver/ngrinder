@@ -39,6 +39,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.Security;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 
@@ -54,6 +56,7 @@ public class HTTPRequest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
+	private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
 	private final OkHttpClient client;
 
@@ -97,7 +100,25 @@ public class HTTPRequest {
 	}
 
 	public Response POST(String url, byte[] data, Headers headers) {
-		RequestBody body = RequestBody.create(data);
+		Optional<MediaType> mediaTypeOptional = Optional.ofNullable(headers.get("Content-Type")).map(MediaType::parse);
+		RequestBody body = RequestBody.create(data, mediaTypeOptional.orElse(DEFAULT_MEDIA_TYPE));
+		return POST(url, body, headers);
+	}
+
+	public Response POST(String url, Map<?, ?> map) {
+		return POST(url, map, Headers.of());
+	}
+
+	public Response POST(String url, Map<?, ?> map, Headers headers) {
+		RequestBody body = RequestBody.create(JsonUtils.serialize(map), DEFAULT_MEDIA_TYPE);
+		return POST(url, body, headers);
+	}
+
+	public Response POST(String url, RequestBody body) {
+		return POST(url, body, Headers.of());
+	}
+
+	public Response POST(String url, RequestBody body, Headers headers) {
 		Request request = new Request.Builder()
 			.url(url)
 			.post(body)
