@@ -489,19 +489,21 @@
 </style>
 
 <style lang="less">
-    span {
-        &.today {
-            position: absolute;
-            width: 32px;
-            height: 8px;
-            top: 0;
-            left: 0;
-            background: url('/img/icon_today.png') no-repeat right;
-            background-size: 32px 8px;
+    .perftest-list-container {
+        span {
+            &.today {
+                position: absolute;
+                width: 32px;
+                height: 8px;
+                top: 0;
+                left: 0;
+                background: url('/img/icon_today.png') no-repeat right;
+                background-size: 32px 8px;
+            }
         }
-    }
 
-    tr.vuetable-detail-row > td {
-        padding: 0;
+        tr.vuetable-detail-row > td {
+            padding: 0;
+        }
     }
 </style>
