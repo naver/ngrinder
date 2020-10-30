@@ -78,11 +78,11 @@ public class HTTPRequest {
 			.build();
 	}
 
-	public Response GET(String url) {
+	public HTTPResponse GET(String url) {
 		return GET(url, Headers.of());
 	}
 
-	public Response GET(String url, Headers headers) {
+	public HTTPResponse GET(String url, Headers headers) {
 		Request request = new Request.Builder()
 			.url(url)
 			.headers(headers)
@@ -91,34 +91,34 @@ public class HTTPRequest {
 		return doRequest(request);
 	}
 
-	public Response POST(String url) {
+	public HTTPResponse POST(String url) {
 		return POST(url, "".getBytes());
 	}
 
-	public Response POST(String url, byte[] data) {
+	public HTTPResponse POST(String url, byte[] data) {
 		return POST(url, data, Headers.of());
 	}
 
-	public Response POST(String url, byte[] data, Headers headers) {
+	public HTTPResponse POST(String url, byte[] data, Headers headers) {
 		Optional<MediaType> mediaTypeOptional = Optional.ofNullable(headers.get("Content-Type")).map(MediaType::parse);
 		RequestBody body = RequestBody.create(data, mediaTypeOptional.orElse(DEFAULT_MEDIA_TYPE));
 		return POST(url, body, headers);
 	}
 
-	public Response POST(String url, Map<?, ?> map) {
+	public HTTPResponse POST(String url, Map<?, ?> map) {
 		return POST(url, map, Headers.of());
 	}
 
-	public Response POST(String url, Map<?, ?> map, Headers headers) {
+	public HTTPResponse POST(String url, Map<?, ?> map, Headers headers) {
 		RequestBody body = RequestBody.create(JsonUtils.serialize(map), DEFAULT_MEDIA_TYPE);
 		return POST(url, body, headers);
 	}
 
-	public Response POST(String url, RequestBody body) {
+	public HTTPResponse POST(String url, RequestBody body) {
 		return POST(url, body, Headers.of());
 	}
 
-	public Response POST(String url, RequestBody body, Headers headers) {
+	public HTTPResponse POST(String url, RequestBody body, Headers headers) {
 		Request request = new Request.Builder()
 			.url(url)
 			.post(body)
@@ -128,7 +128,7 @@ public class HTTPRequest {
 		return doRequest(request);
 	}
 
-	private Response doRequest(Request request) {
+	private HTTPResponse doRequest(Request request) {
 		Response response = null;
 		try {
 			response = client.newCall(request).execute();
@@ -137,7 +137,7 @@ public class HTTPRequest {
 			LOGGER.error("Fail to get response {}", request, e);
 		}
 
-		return response;
+		return HTTPResponse.of(response);
 	}
 
 	private void aggregate(final Response response) {
