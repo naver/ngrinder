@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public class HTTPRequest {
 	static {
@@ -60,15 +61,7 @@ public class HTTPRequest {
 
 	private final OkHttpClient client;
 
-	public HTTPRequest() {
-		this(null);
-	}
-
-	public HTTPRequest(List<Protocol> protocols) {
-		if (protocols == null || protocols.isEmpty()) {
-			protocols = DEFAULT_PROTOCOLS;
-		}
-
+	private HTTPRequest(List<Protocol> protocols) {
 		client = new OkHttpClient()
 			.newBuilder()
 			.protocols(protocols)
@@ -172,6 +165,14 @@ public class HTTPRequest {
 		} catch (Exception e) {
 			LOGGER.error("Fail to aggregate HTTP statistics", e);
 		}
+	}
+
+	public static HTTPRequest create() {
+		return new HTTPRequest(DEFAULT_PROTOCOLS);
+	}
+
+	public static HTTPRequest createHTTPRequest() {
+		return new HTTPRequest(singletonList(Protocol.HTTP_1_1));
 	}
 
 	private static class ThreadContextCookieJar implements CookieJar {
