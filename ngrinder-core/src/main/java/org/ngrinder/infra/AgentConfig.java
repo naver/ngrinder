@@ -60,10 +60,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private PropertiesWrapper commonProperties;
 	private PropertiesWrapper internalProperties;
 
-	private PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
-	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
-	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
-	private PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
+	private final PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
+	private final PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
+	private final PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
+	private final PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
 
 	/**
 	 * Initialize.

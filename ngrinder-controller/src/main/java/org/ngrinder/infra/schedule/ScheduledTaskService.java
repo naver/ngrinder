@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.schedule;
 
@@ -41,7 +41,7 @@ public class ScheduledTaskService implements IScheduledTaskService {
 
 	private final TransactionService transactionService;
 
-	private Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<>();
+	private final Map<Runnable, ScheduledFuture> scheduledRunnable = new ConcurrentHashMap<>();
 
 	public void addFixedDelayedScheduledTask(Runnable runnable, int delay) {
 		final ScheduledFuture scheduledFuture = taskScheduler.scheduleWithFixedDelay(runnable, delay);

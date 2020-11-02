@@ -59,34 +59,26 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class AgentController implements Agent, AgentConstants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
+	private static final SystemDataModel emptySystemDataModel = new SystemDataModel();
 
-	private final AgentConfig agentConfig;
-
-	private Timer m_timer;
 	@SuppressWarnings("FieldCanBeLocal")
 	private final Condition m_eventSynchronization = new Condition();
+	private final AgentConfig agentConfig;
 	private final AgentControllerIdentityImplementation m_agentIdentity;
 	private final AgentControllerServerListener m_agentControllerServerListener;
-	private FanOutStreamSender m_fanOutStreamSender;
-	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
-			ConnectionType.AGENT);
+	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(ConnectionType.AGENT);
 	private final Condition m_eventSyncCondition;
+	private final SystemDataCollector agentSystemDataCollector;
+	private final String version;
+
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
 
-	private SystemDataCollector agentSystemDataCollector;
-
 	private int m_connectionPort = 0;
-
-	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
-
-	private AgentUpdateHandler agentUpdateHandler;
-
 	private int retryCount = 0;
-
-	private String version;
-
+	private Timer m_timer;
+	private FanOutStreamSender m_fanOutStreamSender;
+	private AgentUpdateHandler agentUpdateHandler;
 	private ConnectionAgentCommunicationProxy communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
-
 	private ServerSocket connectionAgentSocket;
 
 	/**

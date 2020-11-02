@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
  */
 public class JUnitThreadContextInitializer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JUnitThreadContextInitializer.class);
-	private ThreadContexts m_threadContexts = new ThreadContexts();
+	private final ThreadContexts m_threadContexts = new ThreadContexts();
+	private final Times m_times = new Times();
 	private StatisticsServices m_statisticsServices;
-	private Times m_times = new Times();
 
 	/**
 	 * Constructor.

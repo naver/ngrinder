@@ -32,17 +32,17 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 public class AgentControllerDaemon implements Agent {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
 	private static final int LOG_FREQUENCY = 5;
-	private final AgentController agentController;
-	private Thread thread;
-	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
-	private boolean forceShutdown = false;
+
 	// event synchronization for
 	@SuppressWarnings("FieldCanBeLocal")
-	private Condition m_eventSyncCondition = new Condition();
+	private final Condition m_eventSyncCondition = new Condition();
+	private final AgentController agentController;
+	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
 
-	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
-
+	private Thread thread;
+	private boolean forceShutdown = false;
 
 	/**
 	 * Constructor.

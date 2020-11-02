@@ -40,10 +40,12 @@ import static net.grinder.util.NoOp.noOp;
  * @author JunHo Yoon (modified by)
  */
 public class GroovyScriptEngine implements ScriptEngine {
-	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+
+	private final AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+	private final GrinderContextExecutor m_grinderRunner;
+
 	// For unit test, make it package protected.
 	Class<?> m_groovyClass;
-	private GrinderContextExecutor m_grinderRunner;
 
 	/**
 	 * Construct a GroovyScriptEngine that will use the supplied ScriptLocation.
@@ -99,7 +101,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
 		private final GrinderContextExecutor m_groovyThreadRunner;
-		private RunNotifier notifier = new RunNotifier() {
+		private final RunNotifier notifier = new RunNotifier() {
 			@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 			public void fireTestFailure(Failure failure) {
 				if (exceptionProcessor.isGenericShutdown(failure.getException())) {

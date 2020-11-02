@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.model;
 
@@ -18,19 +18,19 @@ import org.apache.commons.io.FilenameUtils;
 
 /**
  * File type of FileEntity.
- * 
+ *
  * @since 3.0
  */
 public enum FileType {
 	/** Python/Jython. */
 	PYTHON_SCRIPT("Jython Script", "py", FileCategory.SCRIPT, true, false),
-	
+
 	/** Groovy Script. */
 	GROOVY_SCRIPT("Groovy Script", "groovy", FileCategory.SCRIPT, true, false),
-	
+
 	/** Groovy Maven project. */
 	GROOVY_MAVEN_PROJECT("Groovy maven project", "pom", FileCategory.PROJECT, true, false),
-	
+
 	/** Xml. */
 	XML("xml", "xml", FileCategory.DATA, true, true),
 	/** Text. */
@@ -57,7 +57,7 @@ public enum FileType {
 	/** Dir. */
 	DIR("dir", "", FileCategory.ETC, false, false);
 
-	private String description;
+	private final String description;
 	@Getter
 	private final FileCategory fileCategory;
 	private final String extension;
@@ -68,7 +68,7 @@ public enum FileType {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param description	description of this file type
 	 * @param extension		file extension.
 	 * @param fileCategory	category of FileType.
@@ -86,7 +86,7 @@ public enum FileType {
 
 	/**
 	 * Get file type by extension of given name.
-	 * 
+	 *
 	 * @param name	name of file.
 	 * @return FileType which matches to extension. UNKNOWN otherwise.
 	 */
@@ -96,7 +96,7 @@ public enum FileType {
 
 	/**
 	 * Get file type by extension.
-	 * 
+	 *
 	 * @param extension	extension
 	 * @return FileType which matches to extension. UNKNOWN otherwise.
 	 */
@@ -111,7 +111,7 @@ public enum FileType {
 
 	/**
 	 * Get description of file type.
-	 * 
+	 *
 	 * @return file type description.
 	 */
 	@Override

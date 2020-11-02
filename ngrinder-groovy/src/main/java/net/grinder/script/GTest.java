@@ -35,7 +35,7 @@ public class GTest extends Test {
 	 */
 	private static final long serialVersionUID = 8370116882992463352L;
 
-	private String context;
+	private final String context;
 	/**
 	 * Constructor.
 	 *
@@ -70,7 +70,7 @@ public class GTest extends Test {
 	 * @since 3.2.1
 	 */
 	static class MethodNameFilter implements InstrumentationFilter {
-		private String methodName;
+		private final String methodName;
 
 		/**
 		 * Constructor.

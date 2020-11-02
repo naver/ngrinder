@@ -67,6 +67,7 @@ import java.util.concurrent.ForkJoinPool;
 
 
 import static java.util.Arrays.stream;
+import static java.util.Collections.synchronizedMap;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -94,7 +95,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private ProcessReports[] processReports;
 
 	// It contains cached distribution files digest from each agents.
-	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
+	private final CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
 	private boolean cancel = false;
 
 	// for displaying tps graph in test running page
@@ -118,7 +119,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private boolean headerAdded = false;
 	private GrinderProperties properties;
 
-	private Map<String, BufferedWriter> fileWriterMap = newHashMap();
+	private final Map<String, BufferedWriter> fileWriterMap = newHashMap();
 	/**
 	 * the count of current sampling.
 	 */
@@ -141,10 +142,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	private static final int TOO_LOW_TPS_TIME = 60000;
 	private static final int TOO_MANY_ERROR_TIME = 10000;
-	private Map<Test, StatisticsSet> intervalStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<>());
-	private Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<>());
+	private final Map<Test, StatisticsSet> intervalStatisticMapPerTest = synchronizedMap(new LinkedHashMap<>());
+	private final Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = synchronizedMap(new LinkedHashMap<>());
     /**
      * cvs file Separator value.
      */

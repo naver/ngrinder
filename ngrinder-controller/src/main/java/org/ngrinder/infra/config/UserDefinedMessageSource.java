@@ -46,8 +46,8 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 	 */
 	static class LocaleAndCode {
 
-		private String locale;
-		private String code;
+		private final String locale;
+		private final String code;
 
 		public LocaleAndCode(String locale, String code) {
 			this.locale = locale;

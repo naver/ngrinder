@@ -30,7 +30,8 @@ import org.junit.runners.model.TestClass;
  * @since 3.2
  */
 abstract class TestObjectFactory {
-	private Map<TestClass, Object> testObjectMap = new HashMap<>();
+
+	private final Map<TestClass, Object> testObjectMap = new HashMap<>();
 
 	public TestObjectFactory() {
 	}

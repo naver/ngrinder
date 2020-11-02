@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -42,10 +42,11 @@ public class AgentUpdateHandler implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentUpdateHandler.class);
 
 	private final AgentConfig agentConfig;
-	private File download;
+	private final File download;
+	private final FileOutputStream agentOutputStream;
+
 	@SuppressWarnings("FieldCanBeLocal")
 	private int offset = 0;
-	private FileOutputStream agentOutputStream;
 
 	/**
 	 * Agent Update handler.

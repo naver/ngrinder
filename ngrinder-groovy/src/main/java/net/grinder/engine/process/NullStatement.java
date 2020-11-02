@@ -24,7 +24,7 @@ import org.junit.runners.model.Statement;
  * @since 3.2
  */
 public class NullStatement extends Statement {
-	private static NullStatement instance = new NullStatement();
+	private static final NullStatement instance = new NullStatement();
 
 	NullStatement() {
 

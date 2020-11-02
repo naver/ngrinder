@@ -64,7 +64,7 @@ public class PropertyBuilder {
 	private final boolean server;
 	private final boolean useXmxLimit;
 	private final String additionalJavaOpt;
-	private boolean enableLocalDNS;
+	private final boolean enableLocalDNS;
 
 
 	/**

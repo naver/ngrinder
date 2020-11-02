@@ -111,7 +111,7 @@ public class NGrinderAgentStarterParam {
 		@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
 		public Boolean help = null;
 
-		private JCommander commander;
+		private final JCommander commander;
 
 		NGrinderModeParam(String programName) {
 			this.commander = new JCommander(NGrinderModeParam.this);

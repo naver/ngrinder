@@ -10,7 +10,7 @@ import java.util.Set;
  * @since 3.5.0
  * */
 public final class RefreshCacheMessage implements Message {
-	private Set<String> disFilesDigest;
+	private final Set<String> disFilesDigest;
 
 	public RefreshCacheMessage(Set<String> disFilesDigest) {
 		this.disFilesDigest = disFilesDigest;

@@ -46,7 +46,7 @@ import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
 public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private final ConsoleCommunication m_consoleCommunication;
-	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<>();
+	private final Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<>();
 	private final ListenerSupport<AgentStatusUpdateListener> m_agentStatusUpdateListeners = new ListenerSupport<>();
 	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<>();
 	private final ListenerSupport<AgentDownloadRequestListener> m_agentDownloadRequestListeners = new ListenerSupport<>();

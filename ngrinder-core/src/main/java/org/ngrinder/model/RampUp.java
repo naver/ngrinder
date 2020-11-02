@@ -27,7 +27,7 @@ public enum RampUp {
 	 * Thread Ramp Up
 	 */
 	THREAD("thread");
-	private String messageKey;
+	private final String messageKey;
 
 	RampUp(String messageKey) {
 		this.messageKey = messageKey;

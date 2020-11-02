@@ -9,8 +9,8 @@ import java.util.*;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 public class PropertiesKeyMapper {
-	private Map<String, List<String>> keyMaps = new HashMap<>();
-	private Map<String, String> defaultValues = new HashMap<>();
+	private final Map<String, List<String>> keyMaps = new HashMap<>();
+	private final Map<String, String> defaultValues = new HashMap<>();
 
 	private PropertiesKeyMapper() {
 	}

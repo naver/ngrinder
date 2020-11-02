@@ -81,13 +81,15 @@ import org.junit.runners.model.TestClass;
  * @since 1.0
  */
 public class GrinderRunner extends BlockJUnit4ClassRunner {
+
+	private final TestObjectFactory testTargetFactory;
+	private final AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+	private final Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<>();
+
 	private JUnitThreadContextInitializer threadContextInitializer;
 	private JUnitThreadContextUpdater threadContextUpdater;
-	private TestObjectFactory testTargetFactory;
 	private PerThreadStatement finalPerThreadStatement;
-	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 	private boolean enableRateRunner = true;
-	private Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<>();
 
 	/**
 	 * Constructor.

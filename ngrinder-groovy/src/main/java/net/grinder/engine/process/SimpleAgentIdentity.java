@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.engine.process;
 
@@ -17,19 +17,19 @@ import net.grinder.common.processidentity.AgentIdentity;
 
 /**
  * Simplified Agent Identity implementation which will be ignored in the unit test context.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
 public class SimpleAgentIdentity implements AgentIdentity {
 	/** UUID. */
 	private static final long serialVersionUID = 2674072961464183737L;
-	private String name;
-	private int number;
+	private final String name;
+	private final int number;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param name		agent identity name
 	 * @param number	agent number.
 	 */

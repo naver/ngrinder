@@ -50,7 +50,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
 	private static final int DEFAULT_TIMEOUT = 100;
-	private File requiredLibraryDirectory;
+	private final File requiredLibraryDirectory;
 
 	public LocalScriptTestDriveService(File requiredLibraryDirectory) {
 		this.requiredLibraryDirectory = requiredLibraryDirectory;

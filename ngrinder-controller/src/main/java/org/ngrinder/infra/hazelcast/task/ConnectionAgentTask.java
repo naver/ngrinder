@@ -11,8 +11,8 @@ import java.util.concurrent.Callable;
 @SpringAware
 public class ConnectionAgentTask implements Callable<Void>, Serializable {
 
-	private String ip;
-	private int port;
+	private final String ip;
+	private final int port;
 
 	public ConnectionAgentTask(String ip, int port) {
 		this.ip = ip;

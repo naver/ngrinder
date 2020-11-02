@@ -79,7 +79,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 	}
 
-	private Map<String, String> initParam = new HashMap<>();
+	private final Map<String, String> initParam = new HashMap<>();
 	private DAVConfig myDAVConfig;
 	private ServletContext servletContext;
 

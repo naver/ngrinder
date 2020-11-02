@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2.0
  */
 public final class MXBeanStorage {
-	private Map<String, MXBean> cachedMxBeans = new ConcurrentHashMap<>();
 	private static final MXBeanStorage INSTANCE = new MXBeanStorage();
+	private final Map<String, MXBean> cachedMxBeans = new ConcurrentHashMap<>();
 
 	private MXBeanStorage() {
 	}

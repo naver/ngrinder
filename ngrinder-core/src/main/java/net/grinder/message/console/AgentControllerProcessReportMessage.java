@@ -36,9 +36,9 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	private final SystemDataModel systemDataModel;
 
-	private int connectingPort;
+	private final int connectingPort;
 
-	private String version;
+	private final String version;
 
 	/**
 	 * Creates a new <code>AgentProcessReportMessage</code> instance.

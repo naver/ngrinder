@@ -38,15 +38,14 @@ public abstract class FileWatchdog extends Thread {
 	/**
 	 * The name of the file to observe for changes.
 	 */
-	private String filename;
+	private final String filename;
+	private final File file;
 
 	/**
 	 * The delay to observe between every check. By default set
 	 * {@link #DEFAULT_DELAY}.
 	 */
 	private long delay = DEFAULT_DELAY;
-
-	private File file;
 	private long lastModified = 0;
 	private boolean warnedAlready = false;
 	private boolean interrupted = false;

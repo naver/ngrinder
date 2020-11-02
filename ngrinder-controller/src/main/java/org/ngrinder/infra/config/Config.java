@@ -65,9 +65,13 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 @Component
 public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
+	public static final String NONE_REGION = "NONE";
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
+
+	private final ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<>();
+
 	private Home home = null;
 	private Home exHome = null;
 	private PropertiesWrapper internalProperties;
@@ -78,11 +82,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	private String announcement = "";
 	private Date announcementDate;
 	private boolean verbose;
-
-
-	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
-	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<>();
 
 	protected PropertiesKeyMapper internalPropertiesKeyMapper = PropertiesKeyMapper.create("internal-properties.map");
 	protected PropertiesKeyMapper databasePropertiesKeyMapper = PropertiesKeyMapper.create("database-properties.map");

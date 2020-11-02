@@ -55,22 +55,20 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
 
+	private final DefaultLoginPlugin defaultLoginPlugin;
+	private final DefaultLdapLoginPlugin defaultLdapLoginPlugin;
+	private final UserService userService;
+
+	@Getter(AccessLevel.PROTECTED)
+	private final ShaPasswordEncoder passwordEncoder;
+
 	@Getter
 	@Setter
 	private PluginManager pluginManager;
 
-	private DefaultLoginPlugin defaultLoginPlugin;
-
-	private DefaultLdapLoginPlugin defaultLdapLoginPlugin;
-
-	@Getter(AccessLevel.PROTECTED)
-	private ShaPasswordEncoder passwordEncoder;
-
 	@Getter(AccessLevel.PROTECTED)
 	@Setter
 	private NGrinderUserDetailsService nGrinderUserDetailsService;
-
-	private UserService userService;
 
 	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin, DefaultLdapLoginPlugin defaultLdapLoginPlugin,
 										  @Lazy ShaPasswordEncoder passwordEncoder, NGrinderUserDetailsService nGrinderUserDetailsService, UserService userService) {

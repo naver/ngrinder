@@ -34,7 +34,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 @Component
 public class NullScriptHandler extends ScriptHandler {
 
-	private Map<FileType, String> codeMirrorKey = newHashMap();
+	private final Map<FileType, String> codeMirrorKey = newHashMap();
 
 	public NullScriptHandler() {
 		super("", "", null, null);

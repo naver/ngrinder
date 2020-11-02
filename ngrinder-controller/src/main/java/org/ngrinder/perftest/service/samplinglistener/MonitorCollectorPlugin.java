@@ -48,12 +48,13 @@ import static org.ngrinder.common.util.LoggingUtils.format;
  */
 public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable, MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorPlugin.class);
+
+	private final Map<MonitorClientService, BufferedWriter> clientMap = new ConcurrentHashMap<>();
 	private final int port;
-	private Map<MonitorClientService, BufferedWriter> clientMap = new ConcurrentHashMap<>();
+	private final Long perfTestId;
 
 	private final IScheduledTaskService scheduledTaskService;
 	private final PerfTestService perfTestService;
-	private Long perfTestId;
 
 	/**
 	 * Constructor.

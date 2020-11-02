@@ -44,9 +44,9 @@ import static org.ngrinder.infra.webhook.model.Event.START;
 public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
 
 	// Be injected manually for backward compatibility.
-	private WebhookService webhookService;
+	private final WebhookService webhookService;
 
-	private WebhookConfigService webhookConfigService;
+	private final WebhookConfigService webhookConfigService;
 
 	@Override
 	public void start(PerfTest perfTest, IPerfTestService perfTestService, String version) {

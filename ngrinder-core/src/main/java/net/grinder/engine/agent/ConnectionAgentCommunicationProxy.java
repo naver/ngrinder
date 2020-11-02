@@ -68,8 +68,8 @@ public class ConnectionAgentCommunicationProxy extends Thread {
 	}
 
 	private static class SocketPipeline extends Thread {
-		private Socket one;
-		private Socket other;
+		private final Socket one;
+		private final Socket other;
 
 		public SocketPipeline(Socket one, Socket other) {
 			this.one = one;
