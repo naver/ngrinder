@@ -85,6 +85,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -626,7 +627,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, property);
 				}
 			}
-			LOGGER.info("Grinder Properties : {} ", grinderProperties);
+			LOGGER.info(format(perfTest, "Grinder Properties : {} ", grinderProperties));
 			return grinderProperties;
 		} catch (Exception e) {
 			throw processException("error while prepare grinder property for " + perfTest.getTestName(), e);
@@ -666,12 +667,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 		// Get all files in the script path.
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
-		LOGGER.info("Script type is '{}'.", handler.getKey());
+		LOGGER.info(format(perfTest, "Script type is '{}'.", handler.getKey()));
 
 		ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
-		handler.prepareDist(perfTest.getId(), user, scriptEntry, perfTestDistDirectory, config.getControllerProperties(),
+		handler.prepareDist(perfTest, user, scriptEntry, perfTestDistDirectory, config.getControllerProperties(),
 				processingResult);
-		LOGGER.info("File write is completed in {}", perfTestDistDirectory);
+		LOGGER.info(format(perfTest, "File write is completed in {}", perfTestDistDirectory));
 		if (!processingResult.isSuccess()) {
 			File logDir = new File(getLogFileDirectory(perfTest), "distribution_log.txt");
 			try {
@@ -983,7 +984,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatisticsData();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
-		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
+		LOGGER.info(format(perfTest, "Total Statistics is {}", totalStatistics));
 		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
 		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));

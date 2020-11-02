@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service.samplinglistener;
 
@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.LoggingUtils.format;
 
 /**
  * Monitor data collector plugin.
@@ -82,7 +83,7 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 			scheduledTaskService.runAsync(new Runnable() {
 				@Override
 				public void run() {
-					LOGGER.info("Start JVM monitoring for IP:{}", target);
+					LOGGER.info(format(perfTest, "Start JVM monitoring for IP:{}", target));
 					MonitorClientService client = new MonitorClientService(target, MonitorCollectorPlugin.this.port);
 					client.init();
 					if (client.isConnected()) {
@@ -100,7 +101,7 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 							bw.flush();
 							clientMap.put(client, bw);
 						} catch (IOException e) {
-							LOGGER.error("Error to write to file:{}, Error:{}", dataFile.getPath(), e.getMessage());
+							LOGGER.error(format(perfTest, "Error to write to file: {}, Error: {}", dataFile.getPath(), e.getMessage()));
 						}
 					}
 				}
@@ -122,7 +123,7 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 				bw.write(currentInfo.toRecordString());
 				bw.newLine();
 			} catch (IOException e) {
-				LOGGER.error("Error while saving file :" + e.getMessage());
+				LOGGER.error(format(perfTest, "Error while saving file: {}", e.getMessage()));
 			}
 		}
 	}

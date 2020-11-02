@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.service;
 
@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.script.handler.ProcessingResultPrintStream;
 import org.ngrinder.script.handler.ScriptHandler;
@@ -65,7 +66,7 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.ngrinder.script.service.IScriptValidationService#validate(org
 	 * .ngrinder.model.User, org.ngrinder.model.IFileEntry, boolean,
@@ -96,7 +97,11 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 			Preconditions.checkTrue(scriptDirectory.mkdirs(), "Script directory {} creation is failed.");
 
 			ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
-			handler.prepareDist(0L, user, scriptEntry, scriptDirectory, config.getControllerProperties(), processingResult);
+
+			PerfTest dummyTest = new PerfTest();
+			dummyTest.setId(0L);
+
+			handler.prepareDist(dummyTest, user, scriptEntry, scriptDirectory, config.getControllerProperties(), processingResult);
 			if (!processingResult.isSuccess()) {
 				return new String(processingResult.getLogByteArray());
 			}

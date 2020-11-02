@@ -11,6 +11,7 @@ import org.ngrinder.service.IPerfTestService;
 import org.ngrinder.service.ISingleConsole;
 
 import static net.grinder.util.NoOp.noOp;
+import static org.ngrinder.common.util.LoggingUtils.format;
 
 @Slf4j
 public class TooManyErrorCheckPlugin implements OnTestSamplingRunnable {
@@ -64,8 +65,8 @@ public class TooManyErrorCheckPlugin implements OnTestSamplingRunnable {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == 0) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = System.currentTimeMillis();
 			} else if (isOverLowTpsThreshold()) {
-				log.warn("Stop the test because the count of test error is more than"
-					+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
+				log.warn(format(perfTest, "Stop the test because the count of test error is more than"
+					+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000));
 
 				if (perfTest.getStatus() != Status.ABNORMAL_TESTING) {
 					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, "Too many errors");

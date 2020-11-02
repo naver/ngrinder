@@ -379,7 +379,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				.sendToAddressedAgents(
 					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
 					new RefreshCacheMessage(distFilesDigest))));
-		LOGGER.info("Send digest of distribution files to agent for refresh agent's cache directory.");
 	}
 
 	/**
@@ -1192,7 +1191,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		});
 		informTestSamplingStart();
 		this.sampleModel.start();
-		LOGGER.info("Sampling is started");
 	}
 
 	/**
@@ -1204,7 +1202,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			this.sampleModel.reset();
 			this.sampleModel.stop();
 		}
-		LOGGER.info("Sampling is stopped");
 		informTestSamplingEnd();
 	}
 
