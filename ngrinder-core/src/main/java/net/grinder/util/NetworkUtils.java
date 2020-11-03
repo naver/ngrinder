@@ -49,6 +49,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @author Mavlarn
  * @since 3.0
  */
+@SuppressWarnings("SameParameterValue")
 public abstract class NetworkUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
 	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();

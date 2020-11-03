@@ -40,6 +40,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  *
  * @author JunHo Yoon
  */
+@SuppressWarnings({"ResultOfMethodCallIgnored", "unused"})
 public abstract class CompressionUtils {
 
 	/**
@@ -476,11 +477,11 @@ public abstract class CompressionUtils {
 	/**
 	 * Add the given byte into tar.
 	 *
-	 * @param tarStream   TarArchive outputStream
-	 * @param data        data byte array
-	 * @param path        relative path to append
-	 * @param size        size of stream
-	 * @param mode        mode for this entry
+	 * @param tarArchiveOutputStream   TarArchive outputStream
+	 * @param data                     data byte array
+	 * @param path                     relative path to append
+	 * @param size                     size of stream
+	 * @param mode                     mode for this entry
 	 * @throws IOException thrown when having IO problem.
 	 */
 	public static void addByteToTar(TarArchiveOutputStream tarArchiveOutputStream, byte[] data, String path, long size, int mode) throws IOException {

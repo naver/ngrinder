@@ -68,6 +68,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	 * javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 * java.lang.Exception)
 	 */
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 		if (!(handler instanceof HandlerMethod)) {

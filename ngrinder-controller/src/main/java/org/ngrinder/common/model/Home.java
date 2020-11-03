@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.model;
 
@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
+import static java.util.Objects.requireNonNull;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -105,7 +106,7 @@ public class Home {
 	public void copyFrom(Resource[] resources) {
 		try {
 			for (Resource resource : resources) {
-				File resourceFile = new File(directory, resource.getFilename());
+				File resourceFile = new File(directory, requireNonNull(resource.getFilename()));
 				if (!resourceFile.exists()) {
 					FileUtils.copyInputStreamToFile(resource.getInputStream(), new File(directory, resource.getFilename()));
 				} else {

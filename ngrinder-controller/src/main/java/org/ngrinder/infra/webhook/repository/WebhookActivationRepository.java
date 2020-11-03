@@ -34,6 +34,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  */
 public interface WebhookActivationRepository extends JpaRepository<WebhookActivation, Long>, JpaSpecificationExecutor<WebhookActivation> {
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	Page<WebhookActivation> findAll(Specification<WebhookActivation> spec, Pageable pageable);
 }

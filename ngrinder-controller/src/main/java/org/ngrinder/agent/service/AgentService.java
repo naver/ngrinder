@@ -527,7 +527,7 @@ public class AgentService extends AbstractAgentService
 
 		for (AgentProcessControlImplementation.AgentStatus status : agentMap.values()) {
 			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
-			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(agentIdentity));
+			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(requireNonNull(agentIdentity)));
 			// check new agent
 			if (agentInfo == null) {
 				agentInfo = new AgentInfo();

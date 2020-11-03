@@ -114,6 +114,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	protected abstract Integer order();
 
+	@SuppressWarnings("unused")
 	@JsonProperty
 	public boolean isValidatable() {
 		return true;
@@ -196,8 +197,9 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @param createLibAndResources true if lib and resources should be created
 	 * @return true if process more.
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
-	                                boolean createLibAndResources, String scriptContent) {
+									boolean createLibAndResources, String scriptContent) {
 		return true;
 	}
 

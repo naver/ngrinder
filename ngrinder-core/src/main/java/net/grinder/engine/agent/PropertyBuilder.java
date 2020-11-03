@@ -51,6 +51,7 @@ import static org.ngrinder.common.util.SystemInfoUtils.getJDKVersion;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("UnusedReturnValue")
 public class PropertyBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessBuilder.class);
 	private static final Set<String> DISABLED_SSL_PROTOCOLS = new HashSet<>(singletonList("SSLv2Hello"));
@@ -446,6 +447,7 @@ public class PropertyBuilder {
 		return newHostString.toString();
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	void addProperties(String key, String value) {
 		this.properties.put(key, value);
 	}

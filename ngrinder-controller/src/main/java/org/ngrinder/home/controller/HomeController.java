@@ -45,6 +45,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @since 3.0
  */
+@SuppressWarnings("SpringMVCViewInspection")
 @Slf4j
 @Controller
 @GlobalControllerModel

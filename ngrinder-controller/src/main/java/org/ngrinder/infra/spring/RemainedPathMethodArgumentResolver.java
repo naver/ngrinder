@@ -24,6 +24,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Custom argument resolver to catch the unresolved remaining path.
  *
@@ -69,7 +71,7 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 		AntPathMatcher pathMatcher = new AntPathMatcher();
 		RequestMapping requestMappingOnMethod = parameter.getMethodAnnotation(RequestMapping.class);
 		RequestMapping requestMappingOnClass = getDeclaringClassRequestMapping(parameter);
-		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requestMappingOnMethod.value()[0]);
+		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requireNonNull(requestMappingOnMethod).value()[0]);
 		String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI().substring(webRequest.getContextPath().length());
 		return PathUtils.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, EncodingUtils.decodePathWithUTF8(path)));
 	}

@@ -30,6 +30,7 @@ import java.util.List;
  *
  * @since 3.0
  */
+@SuppressWarnings("NullableProblems")
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 	/**

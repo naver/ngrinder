@@ -274,6 +274,7 @@ public class FileEntryRepository {
 	 * @param encoding  file encoding with which fileEntry is saved. It is meaningful
 	 *                  only FileEntry is editable.
 	 */
+	@SuppressWarnings("JavadocReference")
 	public void save(User user, FileEntry fileEntry, String encoding) {
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;

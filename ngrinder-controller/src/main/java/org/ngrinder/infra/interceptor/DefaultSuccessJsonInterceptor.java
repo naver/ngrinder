@@ -23,6 +23,7 @@ public class DefaultSuccessJsonInterceptor implements HandlerInterceptor, WebCon
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		if (modelAndView == null && !response.isCommitted() &&

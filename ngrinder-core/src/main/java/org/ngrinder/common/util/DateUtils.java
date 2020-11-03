@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("JavadocReference")
 public abstract class DateUtils {
 
 	private static final int CONSTANT_10 = 10;

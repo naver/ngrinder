@@ -56,6 +56,7 @@ import java.util.Set;
 import static java.time.Instant.*;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 import static net.grinder.util.FileUtils.*;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
@@ -219,7 +220,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		} catch (SingleConsoleCancellationException ex) {
 			// In case of error, mark the occurs error on perftest.
 			LOG.error(format(perfTest, "Error while preparing a single console : {} ", ex.getMessage()));
-			doCancel(perfTest, singleConsole);
+			doCancel(perfTest, requireNonNull(singleConsole));
 			notifyFinish(perfTest, StopReason.CANCEL_BY_USER);
 		} catch (Exception ex) {
 			// In case of error, mark the occurs error on perftest.
@@ -329,6 +330,7 @@ public class PerfTestRunnable implements ControllerConstants {
 				perfTestService.markProgress(perfTest, " - " + fileName);
 			}
 
+			@SuppressWarnings("ConstantConditions")
 			@Override
 			public boolean start(File dir, boolean safe) {
 				if (safe) {

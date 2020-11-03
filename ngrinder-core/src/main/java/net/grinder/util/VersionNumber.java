@@ -88,6 +88,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public int compareTo(VersionNumber rhs) {
 		for (int i = 0; ; i++) {

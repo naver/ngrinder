@@ -31,6 +31,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.by;
 
+@SuppressWarnings({"JavaDoc", "SpringElInspection"})
 @Slf4j
 @RestController
 @RequestMapping("/user/api")

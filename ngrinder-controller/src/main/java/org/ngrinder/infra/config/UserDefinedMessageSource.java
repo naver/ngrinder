@@ -118,6 +118,7 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 			.collect(Collectors.toMap(entry -> entry.getKey().code, entry -> entry.getValue().toPattern()));
 	}
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
 		MessageFormat resolved = langMessageMap.get(new LocaleAndCode(locale.getLanguage(), code));

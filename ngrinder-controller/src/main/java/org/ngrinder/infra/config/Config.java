@@ -212,6 +212,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 *
 	 * @return true if enabled.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isUsageReportEnabled() {
 		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_USAGE_REPORT);
 	}
@@ -295,6 +296,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+
 		if (isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
@@ -650,12 +652,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		}
 	}
 
-
 	/**
 	 * Check if the current ngrinder instance is hidden instance from the cluster.
 	 *
 	 * @return true if hidden.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isInvisibleRegion() {
 		return getClusterProperties().getPropertyBoolean(PROP_CLUSTER_HIDDEN_REGION);
 	}

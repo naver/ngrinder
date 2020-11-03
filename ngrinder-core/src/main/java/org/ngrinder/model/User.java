@@ -45,6 +45,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author Mavlarn
  * @since 3.0
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @Entity

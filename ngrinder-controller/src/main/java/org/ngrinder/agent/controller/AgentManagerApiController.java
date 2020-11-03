@@ -40,6 +40,7 @@ import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities
 /**
  * @since 3.5.0
  */
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/agent/api")
 @PreAuthorize("hasAnyRole('A', 'S')")

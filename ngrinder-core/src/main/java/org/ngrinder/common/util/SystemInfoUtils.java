@@ -67,6 +67,7 @@ public class SystemInfoUtils {
 		return operatingSystem.getProcess(pid);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public static List<String> killProcess(int pid) {
 		return isWindows() ? runNative("taskkill /f /pid " + pid) : runNative("kill -9 " + pid);
 	}

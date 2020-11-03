@@ -74,6 +74,7 @@ import java.util.Map.Entry;
 import static java.lang.Long.parseLong;
 import static java.lang.Long.valueOf;
 import static java.time.Instant.now;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static java.util.Arrays.asList;
@@ -100,6 +101,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
  *
  * @since 3.0
  */
+@SuppressWarnings({"ResultOfMethodCallIgnored", "BooleanMethodIsAlwaysInverted", "UnusedReturnValue", "SameParameterValue", "ConstantConditions"})
 @RequiredArgsConstructor
 public class PerfTestService extends AbstractPerfTestService implements ControllerConstants, GrinderConstants {
 
@@ -201,7 +203,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(createdBy(user));
 		}
-		spec = spec.and(idSetEqual(ids));
+		spec = requireNonNull(spec).and(idSetEqual(ids));
 		return perfTestRepository.findAll(spec);
 	}
 
@@ -231,7 +233,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			spec = spec.and(createdBy(user));
 		}
 		if (statuses.length != 0) {
-			spec = spec.and(statusSetEqual(statuses));
+			spec = requireNonNull(spec).and(statusSetEqual(statuses));
 		}
 
 		return perfTestRepository.findAll(spec);
@@ -830,7 +832,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (!logFileDirectory.exists() || !logFileDirectory.isDirectory()) {
 			return Collections.emptyList();
 		}
-		return asList(logFileDirectory.list());
+		return asList(requireNonNull(logFileDirectory.list()));
 	}
 
 	/**
@@ -1456,7 +1458,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		FileFilter fileFilter = new WildcardFileFilter(key + "*.data");
 		File[] files = reportFolder.listFiles(fileFilter);
-		return Arrays.stream(files)
+		return Arrays.stream(requireNonNull(files))
 			.sorted(Comparator.comparing(o -> FilenameUtils.getBaseName(o.getName())))
 			.collect(toList());
 	}

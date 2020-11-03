@@ -18,6 +18,7 @@ package org.ngrinder.common.constant;
  *
  * @since 3.0
  */
+@SuppressWarnings("unused")
 public interface ControllerConstants {
 
 	String DEFAULT_PACKAGE_NAME = "org.ngrinder";

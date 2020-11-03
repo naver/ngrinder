@@ -147,6 +147,7 @@ public class FileEntryService {
 		return getOne(user, ".gitconfig.yml", -1L) != null;
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
 		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
 	}

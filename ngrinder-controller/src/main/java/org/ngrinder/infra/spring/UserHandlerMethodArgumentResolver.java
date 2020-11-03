@@ -48,6 +48,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		return parameter.getParameterIndex() == 0 && parameter.getParameterType().equals(User.class);
 	}
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AnnouncementController {
 
+	@SuppressWarnings("SpringMVCViewInspection")
 	@GetMapping("")
 	public String open() {
 		return "app";

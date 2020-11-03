@@ -268,7 +268,7 @@ public final class Preconditions {
 	 * @param errorMessageTemplate error message template
 	 * @param errorMessageArgs     arguments to be filled in the template.
 	 */
-
+	@SuppressWarnings("UnusedReturnValue")
 	public static <T> T checkNull(T reference, String errorMessageTemplate, Object... errorMessageArgs) {
 		if (reference != null) {
 			// If either of these parameters is null, the right thing happens anyway

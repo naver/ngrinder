@@ -141,7 +141,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private int currentNotFinishedProcessCount = 0;
 
 	private static final int TOO_LOW_TPS_TIME = 60000;
-	private static final int TOO_MANY_ERROR_TIME = 10000;
+
 	private final Map<Test, StatisticsSet> intervalStatisticMapPerTest = synchronizedMap(new LinkedHashMap<>());
 	private final Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = synchronizedMap(new LinkedHashMap<>());
     /**
@@ -864,6 +864,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 *
 	 * @see net.grinder.ISingleConsole2#getCurrentExecutionCount()
 	 */
+	@SuppressWarnings("WrapperTypeMayBePrimitive")
 	@Override
 	public long getCurrentExecutionCount() {
 		Map<?, ?> totalStatistics = (Map<?, ?>) getStatisticsData().get("totalStatistics");

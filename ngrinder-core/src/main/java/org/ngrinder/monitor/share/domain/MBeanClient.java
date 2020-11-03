@@ -56,7 +56,8 @@ public class MBeanClient {
      * @param timeout  the connection timeout og mbean client.
      * @throws IOException wraps JMX MalformedURLException exception
      */
-    public MBeanClient(String hostName, int port, int timeout) throws IOException {
+    @SuppressWarnings("unused")
+	public MBeanClient(String hostName, int port, int timeout) throws IOException {
         this(hostName, port);
         this.timeout = timeout;
     }
@@ -79,7 +80,7 @@ public class MBeanClient {
         try {
             connectClient();
         } catch (Exception e) {
-            LOGGER.error("Timeout while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
+            LOGGER.error("Timeout while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort(), e.getMessage());
         }
     }
 

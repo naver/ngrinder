@@ -41,7 +41,7 @@ import static org.ngrinder.common.util.DateUtils.ms2Time;
  * Performance Test Entity.
  */
 
-@SuppressWarnings({"JpaDataSourceORMInspection", "UnusedDeclaration", "JpaAttributeTypeInspection"})
+@SuppressWarnings({"JpaDataSourceORMInspection", "UnusedDeclaration", "JpaAttributeTypeInspection", "DanglingJavadoc"})
 @Getter
 @Setter
 @Entity

@@ -55,7 +55,7 @@ import java.util.*;
  *
  * @since 3.0
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes", "NullableProblems", "SameParameterValue"})
 @Controller("svnDavServlet")
 @RequiredArgsConstructor
 public class SvnDavController implements HttpRequestHandler, ServletConfig, ServletContextAware {

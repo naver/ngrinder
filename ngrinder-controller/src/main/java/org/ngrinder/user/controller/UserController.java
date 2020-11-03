@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @since 3.0
  */
+@SuppressWarnings({"unused", "SpringMVCViewInspection"})
 @Controller
 @RequestMapping("/user")
 @GlobalControllerModel
@@ -56,6 +57,7 @@ public class UserController {
 	 *
 	 * @return app
 	 */
+	@SuppressWarnings({"SpringElInspection"})
 	@GetMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String openForm(User user) {

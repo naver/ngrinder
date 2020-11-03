@@ -177,6 +177,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
 		}
 
+		@SuppressWarnings("SameParameterValue")
 		void addDistCache(String cacheName, int timeout, int count) {
 			MapConfig mapConfig = createDistMapConfig(cacheName, timeout);
 

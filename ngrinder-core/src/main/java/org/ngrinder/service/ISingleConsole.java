@@ -24,6 +24,7 @@ import net.grinder.statistics.StatisticsIndexMap;
  * {@link SingleConsole} interface for plugin use.
  *
  */
+@SuppressWarnings("JavadocReference")
 public interface ISingleConsole {
 
 	/**

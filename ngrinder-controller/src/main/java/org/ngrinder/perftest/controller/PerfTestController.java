@@ -39,6 +39,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 /**
  * Performance Test Controller.
  */
+@SuppressWarnings({"SpringMVCViewInspection", "unused"})
 @Controller
 @RequestMapping("/perftest")
 @GlobalControllerModel
@@ -199,6 +200,7 @@ public class PerfTestController {
 	}
 
 
+	@SuppressWarnings("SameParameterValue")
 	private PerfTest getOneWithPermissionCheck(User user, Long id, boolean withTag) {
 		PerfTest perfTest = withTag ? perfTestService.getOneWithTag(id) : perfTestService.getOne(id);
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {

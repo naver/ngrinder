@@ -79,6 +79,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return this;
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
 		final File agentConfig = home.getFile("agent.conf");

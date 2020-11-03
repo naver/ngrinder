@@ -199,6 +199,7 @@ public class AgentDaemon implements Agent {
 		return forceShutdown;
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private void setForceShutdown(boolean force) {
 		this.forceShutdown = force;
 	}

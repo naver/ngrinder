@@ -42,6 +42,7 @@ public class NGrinderWebhookClient {
 
 	private final WebClient webClient;
 
+	@SuppressWarnings("BlockingMethodInNonBlockingContext")
 	Mono<ResponseEntity<String>> post(String url,
 									  MediaType mediaType,
 									  Map<String, Object> payLoad) {

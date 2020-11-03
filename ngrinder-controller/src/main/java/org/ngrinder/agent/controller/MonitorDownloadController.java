@@ -63,6 +63,7 @@ public class MonitorDownloadController {
 	/**
 	 * Download monitor.
 	 */
+	@SuppressWarnings("SpringMVCViewInspection")
 	@GetMapping("")
 	public String download(ModelMap model) {
 		try {

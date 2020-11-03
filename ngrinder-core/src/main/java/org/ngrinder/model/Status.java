@@ -226,6 +226,7 @@ public enum Status {
 	 *
 	 * @return message key
 	 */
+	@SuppressWarnings("unused")
 	public String getSpringMessageKey() {
 		return "perftest.status." + name().toLowerCase();
 	}
