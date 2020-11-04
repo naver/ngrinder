@@ -197,15 +197,13 @@ public class User extends BaseModel<User> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		User other = (User) obj;
+
 		if (userId == null) {
-			if (other.userId != null) {
-				return false;
-			}
-		} else if (!userId.equals(other.userId)) {
-			return false;
+			return other.userId == null;
 		}
-		return true;
+		return userId.equals(other.userId);
 	}
 
 	public Boolean isEnabled() {

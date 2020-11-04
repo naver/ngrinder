@@ -764,14 +764,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			return 0;
 		}
 
-		try (FileInputStream in = new FileInputStream(targetFile);
-			 InputStreamReader isr = new InputStreamReader(in);
-			 LineNumberReader lnr = new LineNumberReader(isr)) {
-
+		try (LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)))) {
 			lnr.skip(targetFile.length());
 			int lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max(lineNumber / pointCount, 1);
-
 		} catch (Exception e) {
 			LOGGER.error("Failed to get report data for {}", dataType, e);
 		}
@@ -1166,14 +1162,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		int interval = 0;
-		try (FileInputStream in = new FileInputStream(monitorDataFile);
-			 InputStreamReader isr = new InputStreamReader(in);
-			 LineNumberReader lnr = new LineNumberReader(isr)) {
-
+		try (LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(monitorDataFile)))) {
 			lnr.skip(monitorDataFile.length());
 			int lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max(lineNumber / pointCount, 1);
-
 		} catch (FileNotFoundException e) {
 			LOGGER.info("Monitor data file does not exist at {}", monitorDataFile);
 		} catch (IOException e) {
@@ -1323,13 +1315,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	private int getRecordInterval(int imageWidth, File dataFile) {
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		int interval = 0;
-		try (FileInputStream in = new FileInputStream(dataFile);
-			 InputStreamReader isr = new InputStreamReader(in);
-			 LineNumberReader lnr = new LineNumberReader(isr)) {
-
+		try (LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(dataFile)))) {
 			lnr.skip(dataFile.length());
 			interval = Math.max((lnr.getLineNumber() + 1) / pointCount, 1);
-
 		} catch (FileNotFoundException e) {
 			LOGGER.error("data file not exist:{}", dataFile);
 			LOGGER.error(e.getMessage(), e);
@@ -1469,9 +1457,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		}
 
 		List<Float> metrics = new ArrayList<>();
-		try (FileReader reader = new FileReader(targetFile);
-			 BufferedReader br = new BufferedReader(reader)) {
-
+		try (BufferedReader br = new BufferedReader(new FileReader(targetFile))) {
 			String data = br.readLine();
 			int current = 0;
 			while (StringUtils.isNotBlank(data)) {

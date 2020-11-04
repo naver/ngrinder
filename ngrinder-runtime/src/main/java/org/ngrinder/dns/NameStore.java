@@ -90,12 +90,7 @@ public class NameStore {
 	 * @param ipAddress ip address
 	 */
 	public void put(String hostName, String ipAddress) {
-		Set<InetAddress> ipAddresses = globalNames.get(hostName);
-		if (ipAddresses == null) {
-			ipAddresses = new HashSet<>();
-			globalNames.put(hostName, ipAddresses);
-		}
-
+		Set<InetAddress> ipAddresses = globalNames.computeIfAbsent(hostName, k -> new HashSet<>());
 		try {
 			InetAddress address = InetAddress.getByAddress(DnsUtils.textToNumericFormat(ipAddress));
 			ipAddresses.add(address);

@@ -521,10 +521,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				// However sometimes runningThread is over 0 but all process is
 				// marked as
 				// FINISHED.. It can be treated as finished status as well.
-			} else if (this.currentNotFinishedProcessCount == 0) {
-				return true;
 			}
-			return false;
+			return this.currentNotFinishedProcessCount == 0;
 		}
 	}
 

@@ -87,12 +87,10 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 				if (client.isConnected()) {
 					File testReportDir = singleConsole.getReportPath();
 					File dataFile = null;
-					FileWriter fw;
 					BufferedWriter bw;
 					try {
 						dataFile = new File(testReportDir, MONITOR_FILE_PREFIX + target + ".data");
-						fw = new FileWriter(dataFile, false);
-						bw = new BufferedWriter(fw);
+						bw = new BufferedWriter(new FileWriter(dataFile, false));
 						// write header info
 						bw.write(SystemInfo.HEADER);
 						bw.newLine();

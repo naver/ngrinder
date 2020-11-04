@@ -60,15 +60,13 @@ public class ConsoleEntry {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		ConsoleEntry other = (ConsoleEntry) obj;
+
 		if (port == null) {
-			if (other.port != null) {
-				return false;
-			}
-		} else if (!port.equals(other.port)) {
-			return false;
+			return other.port == null;
 		}
-		return true;
+		return port.equals(other.port);
 	}
 
 	@Override

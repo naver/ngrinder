@@ -13,21 +13,20 @@
  */
 package org.ngrinder.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+
+import static org.apache.commons.io.IOUtils.copyLarge;
 
 /**
  * File download utilities.
  *
  * @since 3.0
  */
+@Slf4j
 public abstract class FileDownloadUtils {
-
-	private static final int FILE_DOWNLOAD_BUFFER_SIZE = 4096;
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadUtils.class);
 
 	/**
 	 * Download the given file to the given {@link HttpServletResponse}.
@@ -52,25 +51,21 @@ public abstract class FileDownloadUtils {
 		if (file == null || !file.exists()) {
 			return false;
 		}
+
 		boolean result = true;
 		response.reset();
 		response.addHeader("Content-Disposition", "attachment;filename=" + file.getName());
 		response.setContentType("application/octet-stream");
 		response.addHeader("Content-Length", "" + file.length());
-		byte[] buffer = new byte[FILE_DOWNLOAD_BUFFER_SIZE];
 
 		try (InputStream fis = new BufferedInputStream(new FileInputStream(file));
 			 OutputStream toClient = new BufferedOutputStream(response.getOutputStream())) {
-			int readLength;
-			while (((readLength = fis.read(buffer)) != -1)) {
-				toClient.write(buffer, 0, readLength);
-			}
-			toClient.flush();
+			copyLarge(fis, toClient);
 		} catch (FileNotFoundException e) {
-			LOGGER.error("file not found:" + file.getAbsolutePath(), e);
+			log.error("file not found:" + file.getAbsolutePath(), e);
 			result = false;
 		} catch (IOException e) {
-			LOGGER.error("read file error:" + file.getAbsolutePath(), e);
+			log.error("read file error:" + file.getAbsolutePath(), e);
 			result = false;
 		}
 
