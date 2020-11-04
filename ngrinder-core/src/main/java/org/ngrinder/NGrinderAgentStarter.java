@@ -182,7 +182,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		}
 		final List<String> unknownOptions = commander.getUnknownOptions();
 		modeParam = param.getModeParam();
-		modeParam.parse(unknownOptions.toArray(new String[unknownOptions.size()]));
+		modeParam.parse(unknownOptions.toArray(new String[0]));
 
 		if (modeParam.version != null) {
 			LOG.info("nGrinder v" + getStaticVersion());

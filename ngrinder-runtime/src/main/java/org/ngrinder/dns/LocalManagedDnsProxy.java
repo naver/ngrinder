@@ -56,7 +56,7 @@ public class LocalManagedDnsProxy implements NameServiceProxy {
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
 		Set<InetAddress> ipAddresses = instance.get(name);
 		if (ipAddresses != null) {
-			return DnsUtils.shuffle(ipAddresses.toArray(new InetAddress[ipAddresses.size()]));
+			return DnsUtils.shuffle(ipAddresses.toArray(new InetAddress[0]));
 		} else {
 			return defaultDnsImpl.lookupAllHostAddr(name);
 		}
