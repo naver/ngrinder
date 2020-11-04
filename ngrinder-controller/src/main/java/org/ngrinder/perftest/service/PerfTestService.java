@@ -89,8 +89,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
-import static org.ngrinder.model.Status.PREPARE_DISTRIBUTION;
-import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
+import static org.ngrinder.model.Status.*;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
 
 /**
@@ -1033,7 +1032,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		// This will be not be effective on cluster mode.
 		consoleManager.getConsoleUsingPort(perfTest.getPort()).cancel();
 		perfTest.setStopRequest(true);
-		perfTestRepository.save(perfTest);
 	}
 
 	/**

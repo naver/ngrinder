@@ -398,10 +398,14 @@ public class PerfTestRunnable implements ControllerConstants {
 		singleConsole.addListener(new ConsoleShutdownListener() {
 			@Override
 			public void readyToStop(StopReason stopReason) {
-				perfTestService.markAbnormalTermination(perfTest, stopReason);
-				LOG.error("Abnormal test {} due to {}", perfTest.getId(), stopReason.name());
+				PerfTest fetchedPerftest = perfTestService.getOne(perfTest.getId());
+				if (fetchedPerftest.getStatus().isStoppable()) {
+					perfTestService.markAbnormalTermination(perfTest, stopReason);
+					LOG.error("Abnormal test {} due to {}", perfTest.getId(), stopReason.name());
+				}
 			}
 		});
+
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(ofEpochMilli(startTime));
 		addSamplingListeners(perfTest, singleConsole);

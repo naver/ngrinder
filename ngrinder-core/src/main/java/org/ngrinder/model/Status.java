@@ -90,7 +90,7 @@ public enum Status {
 	/**
 	 * Detected Abnormal testing.
 	 */
-	ABNORMAL_TESTING(StatusCategory.TESTING),
+	ABNORMAL_TESTING(StatusCategory.ABNORMAL_TESTING),
 	/**
 	 * Test finished.
 	 */
@@ -198,10 +198,12 @@ public enum Status {
 	 * Check this status is the working status.
 	 *
 	 * @param status status
-	 * @return true if it's in {@link StatusCategory}'s PROCESSING or TESTING.
+	 * @return true if it's in {@link StatusCategory}'s PROCESSING or TESTING or ABNORMAL_TESTING.
 	 */
 	private static boolean isWorkingStatus(Status status) {
-		return status.getCategory() == StatusCategory.PROGRESSING || status.getCategory() == StatusCategory.TESTING;
+		return status.getCategory() == StatusCategory.PROGRESSING ||
+			status.getCategory() == StatusCategory.TESTING ||
+			status.getCategory() == StatusCategory.ABNORMAL_TESTING;
 	}
 
 	/**
