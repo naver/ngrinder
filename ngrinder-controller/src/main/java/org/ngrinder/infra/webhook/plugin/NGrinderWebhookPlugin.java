@@ -30,6 +30,7 @@ import org.ngrinder.infra.webhook.service.WebhookService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
 
+import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.infra.webhook.model.Event.FINISH;
 import static org.ngrinder.infra.webhook.model.Event.START;
 
@@ -52,7 +53,7 @@ public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
 		try {
 			sendWebhookRequest(perfTest, START);
 		} catch (RuntimeException e) {
-			log.error("[{}] An exception occurred while sending the webhook start request.", perfTest.getId(), e);
+			log.error(format(perfTest, "An exception occurred while sending the webhook start request."), e);
 		}
 	}
 
@@ -61,7 +62,7 @@ public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
 		try {
 			sendWebhookRequest(perfTest, FINISH);
 		} catch (RuntimeException e) {
-			log.error("[{}] An exception occurred while sending the webhook finish request.", perfTest.getId(), e);
+			log.error(format(perfTest, "An exception occurred while sending the webhook finish request."), e);
 		}
 	}
 

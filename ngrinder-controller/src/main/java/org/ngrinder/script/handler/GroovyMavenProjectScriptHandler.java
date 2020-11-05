@@ -22,6 +22,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.common.util.UrlUtils;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
@@ -42,6 +43,7 @@ import static org.apache.maven.wagon.PathUtils.filename;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.LoggingUtils.format;
 
 /**
  * Groovy Maven project {@link ScriptHandler}.
@@ -170,8 +172,8 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	protected void prepareDistMore(Long testId, User user, FileEntry script, File distDir,
-	                               PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+	protected void prepareDistMore(PerfTest perfTest, User user, FileEntry script, File distDir,
+								   PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 		String pomPathInSVN = PathUtils.join(getBasePath(script), "pom.xml");
 		MavenCli cli = new MavenCli();
 		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
@@ -188,10 +190,10 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		boolean success = (result == 0);
 		if (success) {
 			processingResult.printf("\nDependencies in %s was copied.\n", pomPathInSVN);
-			LOGGER.info("Dependencies in {} is copied into {}/lib folder", pomPathInSVN, distDir.getAbsolutePath());
+			LOGGER.info(format(perfTest, "Dependencies in {} is copied into {}/lib folder", pomPathInSVN, distDir.getAbsolutePath()));
 		} else {
 			processingResult.printf("\nDependencies copy in %s is failed.\n", pomPathInSVN);
-			LOGGER.info("Dependencies copy in {} is failed.", pomPathInSVN);
+			LOGGER.info(format(perfTest, "Dependencies copy in {} is failed.", pomPathInSVN));
 		}
 		// Then it's not necessary to include pom.xml anymore.
 		FileUtils.deleteQuietly(new File(distDir, "pom.xml"));

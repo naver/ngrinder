@@ -64,6 +64,7 @@ import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_MONITORI
 import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_SAMPLING;
 import static org.ngrinder.common.constant.ClusterConstants.PROP_CLUSTER_SAFE_DIST;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
+import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.model.Status.*;
 
@@ -213,17 +214,19 @@ public class PerfTestRunnable implements ControllerConstants {
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 		} catch (PerfTestPrepareException ex) {
+			LOG.error(format(perfTest, "Error while preparing a test : {} ", ex.getMessage()));
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 				ex.getMessage());
 		} catch (SingleConsoleCancellationException ex) {
 			// In case of error, mark the occurs error on perftest.
+			LOG.error(format(perfTest, "Error while preparing a single console : {} ", ex.getMessage()));
 			doCancel(perfTest, singleConsole);
 			notifyFinish(perfTest, StopReason.CANCEL_BY_USER);
-		} catch (Exception e) {
+		} catch (Exception ex) {
 			// In case of error, mark the occurs error on perftest.
-			LOG.error("Error while executing test: {} - {} ", perfTest.getTestIdentifier(), e.getMessage());
-			LOG.debug("Stack Trace is : ", e);
-			doTerminate(perfTest, singleConsole, e.getMessage());
+			LOG.error(format(perfTest, "Error while executing a test: {}", ex.getMessage()));
+			LOG.debug("Stack Trace is : ", ex);
+			doTerminate(perfTest, singleConsole, ex.getMessage());
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
 		}
 	}
@@ -273,6 +276,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		Set<String> distFilesDigest = getFilesDigest(distDir, distFiles);
 
 		singleConsole.sendDistFilesDigestToAgents(distFilesDigest);
+		LOG.info(format(perfTest, "Send digest of distribution files to agent for refresh agent's cache directory."));
 		deleteCachedDistFiles(distDir, distFiles, distFilesDigest, singleConsole.getAgentCachedDistFilesDigestList());
 	}
 
@@ -372,7 +376,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		int agentCount = perfTest.getAgentCount();
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, getSafe(agentCount)
 				+ " agents are starting.");
-		agentService.runAgent(perfTest.getCreatedBy(), singleConsole, grinderProperties, getSafe(agentCount));
+		agentService.runAgent(perfTest, singleConsole, grinderProperties, getSafe(agentCount));
 		singleConsole.waitUntilAgentPrepared(agentCount);
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, getSafe(agentCount)
 				+ " agents are ready.");
@@ -401,7 +405,7 @@ public class PerfTestRunnable implements ControllerConstants {
 				PerfTest fetchedPerftest = perfTestService.getOne(perfTest.getId());
 				if (fetchedPerftest.getStatus().isStoppable()) {
 					perfTestService.markAbnormalTermination(perfTest, stopReason);
-					LOG.error("Abnormal test {} due to {}", perfTest.getId(), stopReason.name());
+					LOG.error(format(perfTest, "Abnormal test due to {}", stopReason.name()));
 				}
 			}
 		});
@@ -411,6 +415,7 @@ public class PerfTestRunnable implements ControllerConstants {
 		addSamplingListeners(perfTest, singleConsole);
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
 		singleConsole.startSampling();
+		LOG.info(format(perfTest, "Sampling is started"));
 	}
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
@@ -470,17 +475,17 @@ public class PerfTestRunnable implements ControllerConstants {
 
 	void doFinish() {
 		for (PerfTest each : perfTestService.getAllAbnormalTesting()) {
-			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doTerminate(each, consoleUsingPort);
+			LOG.info(format(each, "Abnormal test is terminated.", each.getId()));
 			cleanUp(each);
 			notifyFinish(each, StopReason.TOO_MANY_ERRORS);
 		}
 
 		for (PerfTest each : perfTestService.getAllStopRequested()) {
-			LOG.info("Stop test {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doCancel(each, consoleUsingPort);
+			LOG.info(format(each, "Test is Stopped."));
 			cleanUp(each);
 			notifyFinish(each, StopReason.CANCEL_BY_USER);
 		}
@@ -489,6 +494,7 @@ public class PerfTestRunnable implements ControllerConstants {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
 				doNormalFinish(each, consoleUsingPort);
+				LOG.info(format(each, "Test is finished.", each.getId()));
 				cleanUp(each);
 				notifyFinish(each, StopReason.NORMAL);
 			}
@@ -517,24 +523,20 @@ public class PerfTestRunnable implements ControllerConstants {
 		// Give 5 seconds to be finished
 		if (perfTest.isThresholdDuration()
 				&& singleConsoleInUse.isCurrentRunningTimeOverDuration(perfTest.getDuration())) {
-			LOG.debug(
-					"Test {} is ready to finish. Current : {}, Planned : {}",
-				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
-				perfTest.getDuration());
+			LOG.debug(format(perfTest,
+					"Test is ready to finish. Current : {}, Planned : {}",
+				singleConsoleInUse.getCurrentRunningTime(), perfTest.getDuration()));
 			return true;
 		} else if (perfTest.isThresholdRunCount()
 				&& singleConsoleInUse.getCurrentExecutionCount() >= perfTest.getTotalRunCount()) {
-			LOG.debug("Test {} is ready to finish. Current : {}, Planned : {}",
-				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
-				perfTest.getTotalRunCount());
+			LOG.debug(format(perfTest, "Test is ready to finish. Current : {}, Planned : {}",
+				singleConsoleInUse.getCurrentExecutionCount(), perfTest.getTotalRunCount()));
 			return true;
 		} else if (singleConsoleInUse instanceof NullSingleConsole) {
-			LOG.debug("Test {} is ready to finish. Current : {}, Planned : {}",
-				perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
-				perfTest.getTotalRunCount());
+			LOG.debug(format(perfTest, "Test is ready to finish. Current : {}, Planned : {}",
+				singleConsoleInUse.getCurrentExecutionCount(), perfTest.getTotalRunCount()));
 			return true;
 		}
-
 		return false;
 	}
 
@@ -546,14 +548,15 @@ public class PerfTestRunnable implements ControllerConstants {
 	 *                           {@link PerfTest}
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		LOG.info("Cancel test {} by user request.", perfTest.getId());
+		LOG.info(format(perfTest, "Cancel test."));
 		singleConsoleInUse.unregisterSampling();
+		LOG.info(format(perfTest, "Sampling is stopped"));
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
 					"Stop requested by user");
 		} catch (Exception e) {
-			LOG.error("Error while canceling test {} : {}", perfTest.getId(), e.getMessage());
-			LOG.debug("Details : ", e);
+			LOG.error(format(perfTest,"Error while canceling test : {}", e.getMessage()));
+			LOG.debug(format(perfTest, "Details : "), e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
@@ -573,6 +576,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse, String errorMessage) {
 		if (singleConsoleInUse != null) {
 			singleConsoleInUse.unregisterSampling();
+			LOG.info(format(perfTest, "Sampling is stopped"));
 		}
 		String progressMessage = "Stopped by error";
 
@@ -584,8 +588,8 @@ public class PerfTestRunnable implements ControllerConstants {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
 				Status.STOP_BY_ERROR, progressMessage);
 		} catch (Exception e) {
-			LOG.error("Error while terminating {} : {}", perfTest.getTestIdentifier(), e.getMessage());
-			LOG.debug("Details : ", e);
+			LOG.error(format(perfTest, "Error while terminating : {}", e.getMessage()));
+			LOG.debug(format(perfTest, "Details : "), e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
@@ -598,9 +602,9 @@ public class PerfTestRunnable implements ControllerConstants {
 	 *                           {@link PerfTest}
 	 */
 	public void doNormalFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
-				singleConsoleInUse.getCurrentRunningTime());
+		LOG.debug(format(perfTest, "PerfTest status - currentRunningTime {} ", singleConsoleInUse.getCurrentRunningTime()));
 		singleConsoleInUse.unregisterSampling();
+		LOG.info(format(perfTest, "Sampling is stopped"));
 		try {
 			// stop target host monitor
 			if (perfTestService.hasTooManyError(perfTest)) {
@@ -615,8 +619,8 @@ public class PerfTestRunnable implements ControllerConstants {
 			}
 		} catch (Exception e) {
 			perfTestService.markStatusAndProgress(perfTest, Status.STOP_BY_ERROR, e.getMessage());
-			LOG.error("Error while finishing {} : {}", perfTest.getTestIdentifier(), e.getMessage());
-			LOG.debug("Details : ", e);
+			LOG.error(format(perfTest, "Error while finishing : {}", e.getMessage()));
+			LOG.debug(format(perfTest, "Details : "), e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}

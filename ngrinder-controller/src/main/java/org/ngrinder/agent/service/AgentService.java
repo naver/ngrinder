@@ -40,6 +40,7 @@ import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
 import org.ngrinder.infra.hazelcast.topic.subscriber.TopicSubscriber;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -74,6 +75,7 @@ import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -337,13 +339,14 @@ public class AgentService extends AbstractAgentService
 	/**
 	 * Assign the agents on the given console.
 	 *
-	 * @param user              user
-	 * @param singleConsole     {@link SingleConsole} to which agents will be assigned
+	 * @param perfTest          current performance test.
+	 * @param singleConsole     {@link SingleConsole} to which agents will be assigned.
 	 * @param grinderProperties {@link GrinderProperties} to be distributed.
 	 * @param agentCount        the count of agents.
 	 */
-	public synchronized void runAgent(User user, final SingleConsole singleConsole,
+	public synchronized void runAgent(PerfTest perfTest, final SingleConsole singleConsole,
 									  final GrinderProperties grinderProperties, final Integer agentCount) {
+		User user = perfTest.getCreatedBy();
 		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId());
 		final Set<AgentInfo> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 
@@ -359,9 +362,9 @@ public class AgentService extends AbstractAgentService
 
 		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);
 
-		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
+		LOGGER.info(format(perfTest, "{} agents are starting.", agentCount));
 		for (AgentInfo agentInfo : necessaryAgents) {
-			LOGGER.info("- Agent {}", agentInfo.getName());
+			LOGGER.info(format(perfTest, "- Agent {}", agentInfo.getName()));
 		}
 		agentManager.runAgent(singleConsole, grinderProperties, necessaryAgents);
 	}
