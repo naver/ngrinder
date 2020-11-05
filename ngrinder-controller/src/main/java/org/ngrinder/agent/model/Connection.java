@@ -6,6 +6,7 @@ import org.ngrinder.model.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @ToString

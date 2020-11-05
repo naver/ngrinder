@@ -4,20 +4,20 @@ import net.grinder.engine.process.GrinderProcess.ThreadContexts;
 
 /**
  * ThreadContext updater in JUnit context.
- * 
+ *
  * This class is responsible to update the Grinder thread context values when it's not executed in
  * the Grinder agent.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2.1
- * 
+ *
  */
 public class JUnitThreadContextUpdater {
-	private ThreadContexts m_threadContexts;
+	private final ThreadContexts m_threadContexts;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param threadContexts	threadContexts
 	 */
 	public JUnitThreadContextUpdater(ThreadContexts threadContexts) {
@@ -25,12 +25,12 @@ public class JUnitThreadContextUpdater {
 	}
 
 	/**
-	 * Set run count in thread context.
-	 * 
+	 * Set run count in thread context.NullStatement
+	 *
 	 * @param count	count
 	 */
 	public void setRunCount(int count) {
 		m_threadContexts.get().setCurrentRunNumber(count);
 	}
-	
+
 }

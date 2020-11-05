@@ -20,7 +20,6 @@
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.grinder.console;
 
-import net.grinder.common.GrinderException;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
 import net.grinder.console.common.ErrorQueue;
@@ -74,11 +73,10 @@ public class ConsoleFoundationEx {
 	 * @param logger		Logger.
 	 * @param properties	The properties.
 	 * @param eventSyncCondition	event synchronization condition.
-	 * @exception GrinderException	occurs If an error occurs.
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
 							   ConsoleCommunicationSetting consoleCommunicationSetting,
-							   Condition eventSyncCondition) throws GrinderException {
+							   Condition eventSyncCondition) {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
@@ -96,7 +94,6 @@ public class ConsoleFoundationEx {
 		m_timer = new Timer(true);
 		m_container.addComponent(m_timer);
 
-		//noinspection RedundantArrayCreation
 		m_container.addComponent(FileDistributionImplementation.class, FileDistributionImplementation.class,
 			new ComponentParameter(DistributionControlImplementation.class),
 			new ComponentParameter(ProcessControlImplementation.class),
@@ -120,7 +117,7 @@ public class ConsoleFoundationEx {
 
 	/**
 	 * Get the component of the given type.
-	 * 
+	 *
 	 * @param <T>	component type
 	 * @param componentType	component type class
 	 * @return component
@@ -131,7 +128,7 @@ public class ConsoleFoundationEx {
 
 	/**
 	 * Shut down the console.
-	 * 
+	 *
 	 */
 	public void shutdown() {
 		m_shutdown = true;

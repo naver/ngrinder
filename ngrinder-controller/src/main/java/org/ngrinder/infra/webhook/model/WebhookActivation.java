@@ -36,6 +36,7 @@ import java.time.Instant;
  *
  * @since 3.5.2
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @Entity

@@ -68,8 +68,8 @@ public class ConnectionAgentCommunicationProxy extends Thread {
 	}
 
 	private static class SocketPipeline extends Thread {
-		private Socket one;
-		private Socket other;
+		private final Socket one;
+		private final Socket other;
 
 		public SocketPipeline(Socket one, Socket other) {
 			this.one = one;
@@ -90,21 +90,18 @@ public class ConnectionAgentCommunicationProxy extends Thread {
 		}
 
 		private Thread transfer(InputStream in, OutputStream out) {
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-						int len = in.read(buffer);
-						while (len > -1 && !isClosed()) {
-							out.write(buffer, 0, len);
-							len = in.read(buffer);
-						}
-					} catch (SocketException e) {
-						// normal case. shutdown.
-					} catch (Exception e) {
-						throw new RuntimeException(e);
+			Thread thread = new Thread(() -> {
+				try {
+					byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+					int len = in.read(buffer);
+					while (len > -1 && !isClosed()) {
+						out.write(buffer, 0, len);
+						len = in.read(buffer);
 					}
+				} catch (SocketException e) {
+					// normal case. shutdown.
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
 			});
 			thread.start();
@@ -117,11 +114,8 @@ public class ConnectionAgentCommunicationProxy extends Thread {
 	}
 
 	public static ConnectionAgentCommunicationProxy empty() {
-		return new ConnectionAgentCommunicationProxy(0, 0, null, new ConnectionAgentCommunicationProxy.CommunicationMessageSender() {
-			@Override
-			public void send() {
-				// noop
-			}
+		return new ConnectionAgentCommunicationProxy(0, 0, null, () -> {
+			// noop
 		}) {
 			@Override
 			public void shutdown() {

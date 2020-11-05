@@ -40,7 +40,7 @@ public class MBeanClient {
 
     private static final String JMX_URI = "/jndi/rmi://%s:%s/jmxrmi";
 
-    private JMXServiceURL jmxUrl = null;
+    private final JMXServiceURL jmxUrl;
 
     private volatile boolean connected = false;
 
@@ -56,7 +56,8 @@ public class MBeanClient {
      * @param timeout  the connection timeout og mbean client.
      * @throws IOException wraps JMX MalformedURLException exception
      */
-    public MBeanClient(String hostName, int port, int timeout) throws IOException {
+    @SuppressWarnings("unused")
+	public MBeanClient(String hostName, int port, int timeout) throws IOException {
         this(hostName, port);
         this.timeout = timeout;
     }
@@ -79,7 +80,7 @@ public class MBeanClient {
         try {
             connectClient();
         } catch (Exception e) {
-            LOGGER.error("Timeout while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
+            LOGGER.error("Timeout while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort(), e.getMessage());
         }
     }
 
@@ -126,11 +127,7 @@ public class MBeanClient {
     private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws NGrinderRuntimeException, TimeoutException {
         try {
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<JMXConnector> future = executor.submit(new Callable<JMXConnector>() {
-                public JMXConnector call() throws IOException {
-                    return JMXConnectorFactory.connect(jmxUrl);
-                }
-            });
+            Future<JMXConnector> future = executor.submit(() -> JMXConnectorFactory.connect(jmxUrl));
 
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {

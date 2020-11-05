@@ -29,7 +29,7 @@ import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 
 public class TagServiceTest extends AbstractPerfTestTransactionalTest {

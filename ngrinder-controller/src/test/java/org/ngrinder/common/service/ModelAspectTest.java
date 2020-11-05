@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.Instant;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 

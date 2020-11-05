@@ -31,7 +31,6 @@ import net.grinder.util.Directory;
 import net.grinder.util.FileContents;
 import net.grinder.util.StreamCopier;
 import org.apache.commons.io.FileUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 
 import java.io.File;

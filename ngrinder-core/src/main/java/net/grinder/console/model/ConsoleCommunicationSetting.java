@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.console.model;
 
@@ -31,8 +31,6 @@ public class ConsoleCommunicationSetting {
 	/**
 	 * How long before we consider a client connection that presents no data to be
 	 * inactive.
-	 *
-	 * @return
 	 */
 	public long getInactiveClientTimeOut() {
 		return inactiveClientTimeOut;
@@ -45,8 +43,6 @@ public class ConsoleCommunicationSetting {
 	/**
 	 * Time in milliseconds that our ServerReceiver threads should sleep for if there's
 	 * no incoming messages.
-	 *
-	 * @return
 	 */
 	public long getIdlePollDelay() {
 		return idlePollDelay;

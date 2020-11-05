@@ -2,7 +2,6 @@ package org.ngrinder.agent.service;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.AgentPackageHandler;
 import org.ngrinder.packages.PackageHandler;
@@ -14,13 +13,10 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import lombok.RequiredArgsConstructor;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.ngrinder.common.util.CompressionUtils.*;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.StringUtils.replaceLast;
 
@@ -137,30 +133,4 @@ public class AgentPackageService {
 		name = name.substring(0, (libVersionStartIndex == -1) ? name.lastIndexOf(".") : libVersionStartIndex);
 		return libs.contains(name);
 	}
-
-	static class TarArchivingZipEntryProcessor implements ZipEntryProcessor {
-		private TarArchiveOutputStream tao;
-		private FilePredicate filePredicate;
-		private String basePath;
-		private int mode;
-
-		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, FilePredicate filePredicate, String basePath, int mode) {
-			this.tao = tao;
-			this.filePredicate = filePredicate;
-			this.basePath = basePath;
-			this.mode = mode;
-		}
-
-		@Override
-		public void process(ZipFile file, ZipEntry entry) throws IOException {
-			try (InputStream inputStream = file.getInputStream(entry)) {
-				if (filePredicate.evaluate(entry)) {
-					addInputStreamToTar(this.tao, inputStream, basePath + FilenameUtils.getName(entry.getName()),
-							entry.getSize(),
-							this.mode);
-				}
-			}
-		}
-	}
-
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.service;
 
@@ -28,14 +28,14 @@ public interface IConfig {
 	 *
 	 * @return true if test mode
 	 */
-	public abstract boolean isDevMode();
+	boolean isDevMode();
 
 	/**
 	 * Check if it's the security enabled mode.
 	 *
 	 * @return true if security is enabled.
 	 */
-	public abstract boolean isSecurityEnabled();
+	boolean isSecurityEnabled();
 
 	/**
 	 * Check if plugin support is enabled. The reason why we need this configuration is that it
@@ -43,21 +43,21 @@ public interface IConfig {
 	 *
 	 * @return true if plugin is supported.
 	 */
-	public abstract boolean isPluginSupported();
+	boolean isPluginSupported();
 
 	/**
 	 * Get the controller properties.
 	 *
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
-	public abstract PropertiesWrapper getControllerProperties();
+	PropertiesWrapper getControllerProperties();
 
 	/**
 	 * Get the cluster properties.
 	 *
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
-	public abstract PropertiesWrapper getClusterProperties();
+	PropertiesWrapper getClusterProperties();
 
 	/**
 	 * Get the system properties.
@@ -65,6 +65,6 @@ public interface IConfig {
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 * @deprecated use #getControllerProperties() instead
 	 */
-	public abstract PropertiesWrapper getSystemProperties();
+	PropertiesWrapper getSystemProperties();
 
 }

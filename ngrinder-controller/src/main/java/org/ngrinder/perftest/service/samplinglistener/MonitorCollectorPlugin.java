@@ -14,7 +14,6 @@
 package org.ngrinder.perftest.service.samplinglistener;
 
 import net.grinder.statistics.ImmutableStatisticsSet;
-import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.extension.OnTestSamplingRunnable;
@@ -49,12 +48,13 @@ import static org.ngrinder.common.util.LoggingUtils.format;
  */
 public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable, MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorPlugin.class);
+
+	private final Map<MonitorClientService, BufferedWriter> clientMap = new ConcurrentHashMap<>();
 	private final int port;
-	private Map<MonitorClientService, BufferedWriter> clientMap = new ConcurrentHashMap<>();
+	private final Long perfTestId;
 
 	private final IScheduledTaskService scheduledTaskService;
 	private final PerfTestService perfTestService;
-	private Long perfTestId;
 
 	/**
 	 * Constructor.
@@ -80,29 +80,24 @@ public class MonitorCollectorPlugin implements OnTestSamplingRunnable, Runnable,
 		final List<String> targetHostIP = perfTest.getTargetHostIP();
 		final Integer samplingInterval = perfTest.getSamplingInterval();
 		for (final String target : targetHostIP) {
-			scheduledTaskService.runAsync(new Runnable() {
-				@Override
-				public void run() {
-					LOGGER.info(format(perfTest, "Start JVM monitoring for IP:{}", target));
-					MonitorClientService client = new MonitorClientService(target, MonitorCollectorPlugin.this.port);
-					client.init();
-					if (client.isConnected()) {
-						File testReportDir = singleConsole.getReportPath();
-						File dataFile = null;
-						FileWriter fw = null;
-						BufferedWriter bw = null;
-						try {
-							dataFile = new File(testReportDir, MONITOR_FILE_PREFIX + target + ".data");
-							fw = new FileWriter(dataFile, false);
-							bw = new BufferedWriter(fw);
-							// write header info
-							bw.write(SystemInfo.HEADER);
-							bw.newLine();
-							bw.flush();
-							clientMap.put(client, bw);
-						} catch (IOException e) {
-							LOGGER.error(format(perfTest, "Error to write to file: {}, Error: {}", dataFile.getPath(), e.getMessage()));
-						}
+			scheduledTaskService.runAsync(() -> {
+				LOGGER.info(format(perfTest, "Start JVM monitoring for IP:{}", target));
+				MonitorClientService client = new MonitorClientService(target, MonitorCollectorPlugin.this.port);
+				client.init();
+				if (client.isConnected()) {
+					File testReportDir = singleConsole.getReportPath();
+					File dataFile = null;
+					BufferedWriter bw;
+					try {
+						dataFile = new File(testReportDir, MONITOR_FILE_PREFIX + target + ".data");
+						bw = new BufferedWriter(new FileWriter(dataFile, false));
+						// write header info
+						bw.write(SystemInfo.HEADER);
+						bw.newLine();
+						bw.flush();
+						clientMap.put(client, bw);
+					} catch (IOException e) {
+						LOGGER.error(format(perfTest, "Error to write to file: {}, Error: {}", dataFile.getPath(), e.getMessage()));
 					}
 				}
 			});

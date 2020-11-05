@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -26,8 +26,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
-import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.persistence.Entity;
@@ -88,14 +86,11 @@ public class DatabaseConfig implements DatabaseConstants {
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 		// To search entity packages from other jar files..
 		emf.setPackagesToScan("empty");
-		emf.setPersistenceUnitPostProcessors(new PersistenceUnitPostProcessor() {
-			@Override
-			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
-				Reflections reflections = new Reflections(ControllerConstants.DEFAULT_PACKAGE_NAME);
-				for (Class<?> each : reflections.getTypesAnnotatedWith(Entity.class)) {
-					LOGGER.trace("Entity class {} is detected as the SpringData entity.", each.getName());
-					pui.addManagedClassName(each.getName());
-				}
+		emf.setPersistenceUnitPostProcessors(pui -> {
+			Reflections reflections = new Reflections(ControllerConstants.DEFAULT_PACKAGE_NAME);
+			for (Class<?> each : reflections.getTypesAnnotatedWith(Entity.class)) {
+				LOGGER.trace("Entity class {} is detected as the SpringData entity.", each.getName());
+				pui.addManagedClassName(each.getName());
 			}
 		});
 		return emf;

@@ -50,7 +50,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
 	private static final int DEFAULT_TIMEOUT = 100;
-	private File requiredLibraryDirectory;
+	private final File requiredLibraryDirectory;
 
 	public LocalScriptTestDriveService(File requiredLibraryDirectory) {
 		this.requiredLibraryDirectory = requiredLibraryDirectory;
@@ -202,15 +202,12 @@ public class LocalScriptTestDriveService {
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void deleteLogs(File base) {
-		base.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathName) {
-				String extension = FilenameUtils.getExtension(pathName.getName());
-				if (extension.startsWith("log")) {
-					pathName.delete();
-				}
-				return true;
+		base.listFiles(pathName -> {
+			String extension = FilenameUtils.getExtension(pathName.getName());
+			if (extension.startsWith("log")) {
+				pathName.delete();
 			}
+			return true;
 		});
 	}
 

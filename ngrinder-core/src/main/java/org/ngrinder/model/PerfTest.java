@@ -21,7 +21,6 @@ import lombok.Setter;
 import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
 
@@ -42,7 +41,7 @@ import static org.ngrinder.common.util.DateUtils.ms2Time;
  * Performance Test Entity.
  */
 
-@SuppressWarnings({"JpaDataSourceORMInspection", "UnusedDeclaration", "JpaAttributeTypeInspection"})
+@SuppressWarnings({"JpaDataSourceORMInspection", "UnusedDeclaration", "JpaAttributeTypeInspection", "DanglingJavadoc"})
 @Getter
 @Setter
 @Entity
@@ -96,7 +95,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	/** the scheduled time of this test. */
 	@Column(name = "scheduled_time")
-	@Index(name = "scheduled_time_index")
 	private Instant scheduledTime;
 
 	/** the start time of this test. */
@@ -354,14 +352,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	@JsonIgnore
 	public List<String> getTargetHostIP() {
-		List<String> targetIPList = new ArrayList<String>();
+		List<String> targetIPList = new ArrayList<>();
 		String[] hostsList = StringUtils.split(StringUtils.trimToEmpty(targetHosts), ",");
 		for (String hosts : hostsList) {
 			String[] addresses = StringUtils.split(hosts, ":");
 			if (addresses.length <= 2) {
 				targetIPList.add(addresses[addresses.length - 1]);
 			} else {
-				targetIPList.add(hosts.substring(hosts.indexOf(":") + 1, hosts.length()));
+				targetIPList.add(hosts.substring(hosts.indexOf(":") + 1));
 			}
 		}
 		return targetIPList;

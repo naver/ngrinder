@@ -124,7 +124,7 @@ public class GitHubFileEntryService {
 			File checkoutDir = new File(checkoutDirPath);
 			SVNURL checkoutUrl = createCheckoutUrl(ghRepository, scriptPath, gitHubConfig.getBranch(), defaultBranch);
 
-			cleanUpGitHubStorage(svnClientManager.getStatusClient(), checkoutDir, checkoutUrl);
+			cleanUpGitHubStorage(svnClientManager.getStatusClient(), checkoutDir);
 
 			perfTestService.markProgressAndStatus(perfTest, Status.CHECKOUT_SCRIPT, "Getting script from github.");
 			if (!isSvnWorkingCopyDir(checkoutDir)) {
@@ -148,7 +148,7 @@ public class GitHubFileEntryService {
 		}
 	}
 
-	private void cleanUpGitHubStorage(SVNStatusClient svnStatusClient, File checkoutDir, SVNURL checkoutUrl) {
+	private void cleanUpGitHubStorage(SVNStatusClient svnStatusClient, File checkoutDir) {
 		try {
 			SVNStatus svnStatus = svnStatusClient.doStatus(checkoutDir, true);
 			if (!svnStatus.getRemoteRevision().equals(UNDEFINED)) {

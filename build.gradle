@@ -29,7 +29,7 @@ subprojects {
   targetCompatibility = 1.8
 
   ext {
-    profile = project.hasProperty('profile') ? profile : 'production'
+    profile = project.hasProperty("profile") ? profile : "production"
     slf4j_version = "1.7.28"
     spring_security_version = "5.3.4.RELEASE"
     spring_boot_version = "2.3.3.RELEASE"

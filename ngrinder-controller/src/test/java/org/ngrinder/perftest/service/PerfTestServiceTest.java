@@ -42,7 +42,7 @@ import java.util.function.Predicate;
 import static java.time.Instant.now;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;

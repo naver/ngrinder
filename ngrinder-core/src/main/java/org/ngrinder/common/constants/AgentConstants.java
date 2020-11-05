@@ -19,23 +19,23 @@ package org.ngrinder.common.constants;
  * @since 3.3
  */
 public interface AgentConstants {
-	public static final String PROP_AGENT_ALL_LOGS = "agent.all_logs";
-	public static final String PROP_AGENT_KEEP_LOGS = "agent.keep_logs";
-	public static final String PROP_AGENT_UPDATE_ALWAYS = "agent.update_always";
-	public static final String PROP_AGENT_CONTROLLER_HOST = "agent.controller_host";
-	public static final String PROP_AGENT_CONTROLLER_PORT = "agent.controller_port";
-	public static final String PROP_AGENT_HOST_ID = "agent.host_id";
-	public static final String PROP_AGENT_JAVA_OPT = "agent.java_opt";
-	public static final String PROP_AGENT_JVM_CLASSPATH = "agent.jvm.classpath";
-	public static final String PROP_AGENT_LIMIT_XMX = "agent.limit_xmx";
-	public static final String PROP_AGENT_REGION = "agent.region";
-	public static final String PROP_AGENT_SERVER_MODE = "agent.server_mode";
-	public static final String PROP_AGENT_CONNECTION_MODE = "agent.connection_mode";
-	public static final String PROP_AGENT_CONNECTION_PORT = "agent.connection_port";
-	public static final String PROP_AGENT_BROADCAST_IP = "agent.broadcast_ip";
-	public static final String PROP_AGENT_ENABLE_LOCAL_DNS = "agent.enable_local_dns";
-	public static final String PROP_AGENT_ENABLE_SECURITY = "agent.enable_security";
+	String PROP_AGENT_ALL_LOGS = "agent.all_logs";
+	String PROP_AGENT_KEEP_LOGS = "agent.keep_logs";
+	String PROP_AGENT_UPDATE_ALWAYS = "agent.update_always";
+	String PROP_AGENT_CONTROLLER_HOST = "agent.controller_host";
+	String PROP_AGENT_CONTROLLER_PORT = "agent.controller_port";
+	String PROP_AGENT_HOST_ID = "agent.host_id";
+	String PROP_AGENT_JAVA_OPT = "agent.java_opt";
+	String PROP_AGENT_JVM_CLASSPATH = "agent.jvm.classpath";
+	String PROP_AGENT_LIMIT_XMX = "agent.limit_xmx";
+	String PROP_AGENT_REGION = "agent.region";
+	String PROP_AGENT_SERVER_MODE = "agent.server_mode";
+	String PROP_AGENT_CONNECTION_MODE = "agent.connection_mode";
+	String PROP_AGENT_CONNECTION_PORT = "agent.connection_port";
+	String PROP_AGENT_BROADCAST_IP = "agent.broadcast_ip";
+	String PROP_AGENT_ENABLE_LOCAL_DNS = "agent.enable_local_dns";
+	String PROP_AGENT_ENABLE_SECURITY = "agent.enable_security";
 
-	public static final String VALUE_AGENT_TO_CONTROLLER = "agent_to_controller";
-	public static final String VALUE_CONTROLLER_TO_AGENT = "controller_to_agent";
+	String VALUE_AGENT_TO_CONTROLLER = "agent_to_controller";
+	String VALUE_CONTROLLER_TO_AGENT = "controller_to_agent";
 }

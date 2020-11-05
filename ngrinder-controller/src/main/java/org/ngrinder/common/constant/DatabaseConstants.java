@@ -19,10 +19,10 @@ package org.ngrinder.common.constant;
  * @since 3.3
  */
 public interface DatabaseConstants {
-	public static final String PROP_DATABASE_TYPE = "database.type";
-	public static final String PROP_DATABASE_URL = "database.url";
-	public static final String PROP_DATABASE_UNIT_TEST = "database.unit-test";
-	public static final String PROP_DATABASE_URL_OPTION = "database.url_option";
-	public static final String PROP_DATABASE_USERNAME = "database.username";
-	public static final String PROP_DATABASE_PASSWORD = "database.password";
+	String PROP_DATABASE_TYPE = "database.type";
+	String PROP_DATABASE_URL = "database.url";
+	String PROP_DATABASE_UNIT_TEST = "database.unit-test";
+	String PROP_DATABASE_URL_OPTION = "database.url_option";
+	String PROP_DATABASE_USERNAME = "database.username";
+	String PROP_DATABASE_PASSWORD = "database.password";
 }

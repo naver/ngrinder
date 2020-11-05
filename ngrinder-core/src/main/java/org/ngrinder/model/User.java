@@ -45,6 +45,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author Mavlarn
  * @since 3.0
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @Entity
@@ -56,11 +57,11 @@ public class User extends BaseModel<User> {
 	private static final long serialVersionUID = 7398072895183814285L;
 
 	@Column(name = "user_id", unique = true, nullable = false)
-	/** User Id */
+	/* User Id */
 	private String userId;
 
 	@Column(name = "user_name")
-	/** User Name e.g) Jone Dogh. */
+	/* User Name e.g) Jone Dogh. */
 	private String userName;
 
 	private String password;
@@ -88,7 +89,7 @@ public class User extends BaseModel<User> {
 	private Boolean external;
 
 	@Column(name = "authentication_provider_class")
-	/** Who provide the authentication */
+	/* Who provide the authentication */
 	private String authProviderClass;
 
 	@Transient
@@ -196,15 +197,13 @@ public class User extends BaseModel<User> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		User other = (User) obj;
+
 		if (userId == null) {
-			if (other.userId != null) {
-				return false;
-			}
-		} else if (!userId.equals(other.userId)) {
-			return false;
+			return other.userId == null;
 		}
-		return true;
+		return userId.equals(other.userId);
 	}
 
 	public Boolean isEnabled() {

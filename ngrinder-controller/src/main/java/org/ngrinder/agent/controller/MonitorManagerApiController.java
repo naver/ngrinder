@@ -68,7 +68,7 @@ public class MonitorManagerApiController {
 	 * Close the monitor JXM connection to the given target.
 	 *
 	 * @param ip target host IP
-	 * @return success if succeeded.
+	 *
 	 */
 	@GetMapping("/close")
 	public void closeMonitorConnection(@RequestParam String ip) {

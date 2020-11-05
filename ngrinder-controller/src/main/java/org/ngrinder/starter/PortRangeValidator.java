@@ -4,6 +4,8 @@ import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.ParameterException;
 
 public class PortRangeValidator implements IValueValidator<Integer> {
+
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public void validate(String name, Integer value) throws ParameterException {
 		if (value > Character.MAX_VALUE && value < 0) {

@@ -191,7 +191,7 @@ public enum Status {
 				status.add(each);
 			}
 		}
-		return status.toArray(new Status[status.size()]);
+		return status.toArray(new Status[0]);
 	}
 
 	/**
@@ -218,7 +218,7 @@ public enum Status {
 				status.add(each);
 			}
 		}
-		return status.toArray(new Status[status.size()]);
+		return status.toArray(new Status[0]);
 	}
 
 	/**
@@ -226,6 +226,7 @@ public enum Status {
 	 *
 	 * @return message key
 	 */
+	@SuppressWarnings("unused")
 	public String getSpringMessageKey() {
 		return "perftest.status." + name().toLowerCase();
 	}

@@ -46,17 +46,18 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * @author JunHo Yoon
  */
 public class AgentControllerServerDaemon {
-	private final ConsoleProperties consoleProperties;
-	private Thread thread;
-	private AgentControllerServer agentControllerServer;
-	public static final Resources RESOURCES = new ResourcesImplementation(
-			"net.grinder.console.common.resources.Console");
-	private final Condition m_eventSyncCondition = new Condition();
 
+	public static final Resources RESOURCES = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCES.getString("shortTitle"));
+
 	private static final long AGENT_CONTROLLER_SERVER_SHUTDOWN_WAITING_TIMEOUT = 10000;
 	private static final long AGENT_CONTROLLER_SERVER_EVENT_EXPIRATION_TIMEOUT = 10000;
 
+	private final ConsoleProperties consoleProperties;
+	private final AgentControllerServer agentControllerServer;
+	private final Condition m_eventSyncCondition = new Condition();
+
+	private Thread thread;
 	/**
 	 * Agent controller daemon constructor with default
 	 * {@link ConsoleProperties}.

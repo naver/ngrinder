@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @since 3.0
  */
+@SuppressWarnings({"SpringMVCViewInspection", "unused"})
 @Controller
 @RequestMapping("/script")
 @GlobalControllerModel

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @PreAuthorize("hasAnyRole('A')")
 public class ScriptConsoleController {
 
+	@SuppressWarnings("SpringMVCViewInspection")
 	@GetMapping({"", "/"})
 	public String scriptConsole() {
 		return "app";

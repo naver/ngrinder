@@ -34,10 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import static java.nio.charset.Charset.defaultCharset;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
 
 public class AgentManagerApiControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -86,7 +86,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 		File tmpDownFile;
 		try {
 			tmpDownFile = File.createTempFile("ngrinder", "zip", directory);
-			FileUtils.writeStringToFile(tmpDownFile, "test data");
+			FileUtils.writeStringToFile(tmpDownFile, "test data", defaultCharset());
 			tmpDownFile.deleteOnExit();
 		} catch (IOException e) {
 			e.printStackTrace();

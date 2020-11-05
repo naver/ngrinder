@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLSocket;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -51,6 +50,7 @@ import static org.ngrinder.common.util.SystemInfoUtils.getJDKVersion;
  * @author JunHo Yoon
  * @since 3.0
  */
+@SuppressWarnings("UnusedReturnValue")
 public class PropertyBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessBuilder.class);
 	private static final Set<String> DISABLED_SSL_PROTOCOLS = new HashSet<>(singletonList("SSLv2Hello"));
@@ -64,7 +64,7 @@ public class PropertyBuilder {
 	private final boolean server;
 	private final boolean useXmxLimit;
 	private final String additionalJavaOpt;
-	private boolean enableLocalDNS;
+	private final boolean enableLocalDNS;
 
 
 	/**
@@ -257,7 +257,6 @@ public class PropertyBuilder {
 	}
 
 	protected static final long MIN_PER_PROCESS_MEM_SIZE = 50 * 1024 * 1024;
-	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
 	protected static final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
@@ -293,7 +292,7 @@ public class PropertyBuilder {
 	}
 
 	protected StringBuilder addSecurityManager(StringBuilder jvmArguments) {
-		return jvmArguments.append(" -Djava.security.manager=" + getSecurityManagerBySecurityLevel(securityLevel) + " ");
+		return jvmArguments.append(" -Djava.security.manager=").append(getSecurityManagerBySecurityLevel(securityLevel)).append(" ");
 	}
 
 	private String getSecurityManagerBySecurityLevel(String securityLevel) {
@@ -323,15 +322,12 @@ public class PropertyBuilder {
 		customClassPath.append(getPath(baseFile, useAbsolutePath));
 		if (libFolder.exists()) {
 			customClassPath.append(File.pathSeparator).append(getPath(new File(baseFile, "lib"), useAbsolutePath));
-			libFolder.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator)
-								.append(getPath(new File(dir, name), useAbsolutePath));
-					}
-					return true;
+			libFolder.list((dir, name) -> {
+				if (name.endsWith(".jar")) {
+					customClassPath.append(File.pathSeparator)
+							.append(getPath(new File(dir, name), useAbsolutePath));
 				}
+				return true;
 			});
 		}
 		return customClassPath.toString();
@@ -411,7 +407,7 @@ public class PropertyBuilder {
 	}
 
 	private StringBuilder addUserDir(StringBuilder jvmArguments) {
-		jvmArguments.append(" -Duser.dir=" + baseDirectory.getFile().getPath() + " ");
+		jvmArguments.append(" -Duser.dir=").append(baseDirectory.getFile().getPath()).append(" ");
 		return jvmArguments;
 	}
 
@@ -450,6 +446,7 @@ public class PropertyBuilder {
 		return newHostString.toString();
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	void addProperties(String key, String value) {
 		this.properties.put(key, value);
 	}

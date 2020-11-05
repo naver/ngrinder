@@ -31,7 +31,6 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,34 +55,31 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
 
+	private final DefaultLoginPlugin defaultLoginPlugin;
+	private final DefaultLdapLoginPlugin defaultLdapLoginPlugin;
+	private final UserService userService;
+
+	@Getter(AccessLevel.PROTECTED)
+	private final ShaPasswordEncoder passwordEncoder;
+
 	@Getter
 	@Setter
 	private PluginManager pluginManager;
 
-	private DefaultLoginPlugin defaultLoginPlugin;
-
-	private DefaultLdapLoginPlugin defaultLdapLoginPlugin;
-
-	@Getter(AccessLevel.PROTECTED)
-	private ShaPasswordEncoder passwordEncoder;
-
 	@Getter(AccessLevel.PROTECTED)
 	@Setter
-	private UserDetailsService userDetailsService;
-
-	private UserService userService;
+	private NGrinderUserDetailsService nGrinderUserDetailsService;
 
 	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin, DefaultLdapLoginPlugin defaultLdapLoginPlugin,
-										  @Lazy ShaPasswordEncoder passwordEncoder, UserDetailsService userDetailsService, UserService userService) {
+										  @Lazy ShaPasswordEncoder passwordEncoder, NGrinderUserDetailsService nGrinderUserDetailsService, UserService userService) {
 		this.pluginManager = pluginManager;
 		this.defaultLoginPlugin = defaultLoginPlugin;
 		this.defaultLdapLoginPlugin = defaultLdapLoginPlugin;
 		this.passwordEncoder = passwordEncoder;
-		this.userDetailsService = userDetailsService;
+		this.nGrinderUserDetailsService = nGrinderUserDetailsService;
 		this.userService = userService;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) {
@@ -149,8 +145,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	@Override
-	protected void doAfterPropertiesSet() throws Exception {
-		Assert.notNull(this.userDetailsService, "A UserDetailsService must be set");
+	protected void doAfterPropertiesSet() {
+		Assert.notNull(this.nGrinderUserDetailsService, "A UserDetailsService must be set");
 	}
 
 	@Override
@@ -158,7 +154,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		UserDetails loadedUser;
 
 		try {
-			loadedUser = this.getUserDetailsService().loadUserByUsername(username);
+			loadedUser = this.nGrinderUserDetailsService.loadUserByUsername(username);
 		} catch (UsernameNotFoundException notFound) {
 			throw notFound;
 		} catch (Exception repositoryProblem) {

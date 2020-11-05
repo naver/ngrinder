@@ -36,6 +36,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashSet;
  *
  * @since 3.5.2
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @Entity

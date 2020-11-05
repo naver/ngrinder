@@ -14,7 +14,6 @@
 package org.ngrinder.infra.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +68,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 	 * javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 * java.lang.Exception)
 	 */
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 		if (!(handler instanceof HandlerMethod)) {
@@ -85,9 +85,10 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		Throwable throwable = ExceptionUtils.sanitize(ex);
 
 		StringWriter out = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(out);
-		throwable.printStackTrace(printWriter);
-		IOUtils.closeQuietly(printWriter);
+
+		try (PrintWriter printWriter = new PrintWriter(out)) {
+			throwable.printStackTrace(printWriter);
+		}
 
 		Map<String, Object> jsonResponse = buildMap(
 			JSON_SUCCESS, false,

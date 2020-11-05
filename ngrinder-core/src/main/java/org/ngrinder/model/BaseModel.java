@@ -14,15 +14,11 @@
 package org.ngrinder.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import java.time.Instant;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -40,23 +36,24 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Column(name = "created_at", insertable = true, updatable = false)
+	@Column(name = "created_at", updatable = false)
 	private Instant createdAt;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
-	@JoinColumn(name = "created_by", insertable = true, updatable = false)
-	@Index(name = "created_by_index")
+	@JoinColumn(name = "created_by", updatable = false)
+
 	@NotFound(action = NotFoundAction.IGNORE)
 	private User createdBy;
 
-	@Column(name = "last_modified_at", insertable = true, updatable = true)
+
+	@Column(name = "last_modified_at")
 	private Instant lastModifiedAt;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
-	@JoinColumn(name = "last_modified_By", insertable = true, updatable = true)
-	@Index(name = "last_modified_by_index")
+	@JoinColumn(name = "last_modified_By")
+
 	@NotFound(action = NotFoundAction.IGNORE)
 	private User lastModifiedBy;
 

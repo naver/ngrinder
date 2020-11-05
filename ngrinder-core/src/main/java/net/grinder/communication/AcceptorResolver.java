@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AcceptorResolver {
-	public final Map<Address, ResourcePool.Resource> sockets = new ConcurrentHashMap<Address, ResourcePool.Resource>();
+	public final Map<Address, ResourcePool.Resource> sockets = new ConcurrentHashMap<>();
 
 	public void addSocketListener(Acceptor acceptor) throws Acceptor.ShutdownException {
 		final ResourcePool socketSet = acceptor.getSocketSet(ConnectionType.AGENT);

@@ -17,8 +17,8 @@ import java.util.concurrent.Callable;
  */
 @SpringAware
 public class AgentStateTask implements Callable<SystemDataModel>, Serializable {
-	private String ip;
-	private String name;
+	private final String ip;
+	private final String name;
 
 	public AgentStateTask(String ip, String name) {
 		this.ip = ip;

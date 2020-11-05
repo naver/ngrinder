@@ -34,7 +34,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 @Component
 public class NullScriptHandler extends ScriptHandler {
 
-	private Map<FileType, String> codeMirrorKey = newHashMap();
+	private final Map<FileType, String> codeMirrorKey = newHashMap();
 
 	public NullScriptHandler() {
 		super("", "", null, null);
@@ -54,7 +54,6 @@ public class NullScriptHandler extends ScriptHandler {
 
 	}
 
-	@SuppressWarnings("SpellCheckingInspection")
 	@Override
 	public boolean isValidatable() {
 		return false;
@@ -66,7 +65,7 @@ public class NullScriptHandler extends ScriptHandler {
 	 * @param fileType file type
 	 * @return appropriate code mirror key. if nothing, return shell
 	 */
-	@SuppressWarnings({"UnusedDeclaration", "SpellCheckingInspection"})
+	@SuppressWarnings("UnusedDeclaration")
 	public String getCodemirrorKey(FileType fileType) {
 		return getValue(codeMirrorKey, fileType, "shell");
 	}

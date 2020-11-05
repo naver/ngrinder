@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  *
  * @since 3.1
  */
+@SuppressWarnings("unused")
 @Controller
 @RequestMapping("/agent")
 @GlobalControllerModel

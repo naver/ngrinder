@@ -38,7 +38,6 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,8 +97,6 @@ public class PerfTestApiController {
 	private final UserContext userContext;
 
 	private final Config config;
-
-	private final MessageSource messageSource;
 
 	/**
 	 * Get the perf test lists.
@@ -476,7 +473,6 @@ public class PerfTestApiController {
 		return replace(message, "\n", "<br>");
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
 		if (oldOne == null) {
 			oldOne = new PerfTest();

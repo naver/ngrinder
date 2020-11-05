@@ -30,6 +30,7 @@ import java.util.List;
  *
  * @since 3.0
  */
+@SuppressWarnings("JavaDoc")
 public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
 	/**
 	 * Find the paged {@link PerfTest}s based on the given spec.
@@ -38,6 +39,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 * @param pageable page info
 	 * @return {@link PerfTest} list
 	 */
+	@SuppressWarnings("NullableProblems")
 	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
 
 
@@ -68,6 +70,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 * @param region region
 	 * @return {@link PerfTest} list
 	 */
+	@SuppressWarnings("JpaQlInspection")
 	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2 and region=?3")
 	List<PerfTest> findAllByCreatedAtAndRegion(Date start, Date end, String region);
 

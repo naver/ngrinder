@@ -147,6 +147,7 @@ public class FileEntryService {
 		return getOne(user, ".gitconfig.yml", -1L) != null;
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
 		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
 	}
@@ -279,7 +280,7 @@ public class FileEntryService {
 		try {
 			URL url = new URL(urlString);
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
-			return (url.getHost() + urlPath).replaceAll("[;\\&\\?\\%\\$\\-\\#]", "_");
+			return (url.getHost() + urlPath).replaceAll("[;&?%$\\-#]", "_");
 		} catch (MalformedURLException e) {
 			throw processException("Error while translating " + urlString, e);
 		}
@@ -337,13 +338,12 @@ public class FileEntryService {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
-		String nullOptions = null;
 		if (scriptHandler instanceof ProjectHandler) {
 			String[] pathPart = dividePathAndFile(path);
-			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, nullOptions);
+			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, null);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-					false, nullOptions);
+					false, null);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}

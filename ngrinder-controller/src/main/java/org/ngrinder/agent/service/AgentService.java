@@ -74,7 +74,6 @@ import static org.ngrinder.agent.model.AgentRequest.RequestType.UPDATE_AGENT;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
@@ -528,7 +527,7 @@ public class AgentService extends AbstractAgentService
 
 		for (AgentProcessControlImplementation.AgentStatus status : agentMap.values()) {
 			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
-			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(agentIdentity));
+			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(requireNonNull(agentIdentity)));
 			// check new agent
 			if (agentInfo == null) {
 				agentInfo = new AgentInfo();

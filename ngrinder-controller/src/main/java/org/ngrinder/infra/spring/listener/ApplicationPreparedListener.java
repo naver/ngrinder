@@ -13,6 +13,7 @@ import java.util.Iterator;
  * */
 public class ApplicationPreparedListener implements ApplicationListener<ApplicationPreparedEvent> {
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public void onApplicationEvent(ApplicationPreparedEvent event) {
 		removeCacheProviderExceptCaffeineCacheProvider();

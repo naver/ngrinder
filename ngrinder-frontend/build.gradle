@@ -1,15 +1,15 @@
 plugins {
-    id 'com.github.node-gradle.node' version '2.2.2'
+    id "com.github.node-gradle.node" version "2.2.2"
 }
 
 node {
-    version = '12.16.2'
+    version = "12.16.2"
     // Enabled the automatic download. False is the default (for now).
     download = true
 }
 
-task webpack(dependsOn: 'npmInstall', type: NodeTask) {
-    script = file('node_modules/webpack/bin/webpack.js')
+task webpack(dependsOn: "npmInstall", type: NodeTask) {
+    script = file("node_modules/webpack/bin/webpack.js")
     if (profile) {
         args = ["--$profile"]
     }

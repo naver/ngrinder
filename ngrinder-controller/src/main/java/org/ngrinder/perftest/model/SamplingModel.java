@@ -11,8 +11,8 @@ import java.io.Serializable;
  */
 @Getter
 public class SamplingModel implements Serializable {
-	private String runningSample;
-	private String agentState;
+	private final String runningSample;
+	private final String agentState;
 
 	public SamplingModel(String runningSample, String agentState) {
 		this.runningSample = runningSample;

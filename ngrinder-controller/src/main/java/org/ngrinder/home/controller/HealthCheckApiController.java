@@ -16,7 +16,6 @@ package org.ngrinder.home.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ngrinder.common.constant.ControllerConstants;
-import org.ngrinder.common.controller.annotation.GlobalControllerModel;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.service.RegionService;

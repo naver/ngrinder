@@ -17,7 +17,7 @@ public abstract class CollectionUtils {
 	 * @return {@link HashMap}
 	 */
 	public static <K, V> Map<K, V> newHashMap() {
-		return new HashMap<K, V>();
+		return new HashMap<>();
 	}
 
 	/**
@@ -28,7 +28,7 @@ public abstract class CollectionUtils {
 	 * @return {@link LinkedHashMap}
 	 */
 	public static <K, V> Map<K, V> newLinkedHashMap() {
-		return new LinkedHashMap<K, V>();
+		return new LinkedHashMap<>();
 	}
 
 	/**
@@ -38,7 +38,7 @@ public abstract class CollectionUtils {
 	 * @return {@link HashSet}
 	 */
 	public static <K> Set<K> newHashSet() {
-		return new HashSet<K>();
+		return new HashSet<>();
 	}
 
 	/**
@@ -48,7 +48,7 @@ public abstract class CollectionUtils {
 	 * @return {@link LinkedHashSet}
 	 */
 	public static <K> Set<K> newLinkedHashSet() {
-		return new LinkedHashSet<K>();
+		return new LinkedHashSet<>();
 	}
 
 	/**
@@ -59,7 +59,7 @@ public abstract class CollectionUtils {
 	 * @return {@link ArrayList}
 	 */
 	public static <L> List<L> newArrayList(int size) {
-		return new ArrayList<L>(size);
+		return new ArrayList<>(size);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public abstract class CollectionUtils {
 	 * @return {@link ArrayList}
 	 */
 	public static <L> List<L> newArrayList() {
-		return new ArrayList<L>();
+		return new ArrayList<>();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public abstract class CollectionUtils {
 	 * @return created map
 	 */
 	public static <K, V> Map<K, V> buildMap(K key1, V value1) {
-		Map<K, V> map = new HashMap<K, V>(1);
+		Map<K, V> map = new HashMap<>(1);
 		map.put(key1, value1);
 		return map;
 	}
@@ -99,7 +99,7 @@ public abstract class CollectionUtils {
 	 * @return create map
 	 */
 	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2) {
-		Map<K, V> map = new HashMap<K, V>(2);
+		Map<K, V> map = new HashMap<>(2);
 		map.put(key1, value1);
 		map.put(key2, value2);
 		return map;
@@ -119,7 +119,7 @@ public abstract class CollectionUtils {
 	 * @return create map
 	 */
 	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2, K key3, V value3) {
-		Map<K, V> map = new HashMap<K, V>(3);
+		Map<K, V> map = new HashMap<>(3);
 		map.put(key1, value1);
 		map.put(key2, value2);
 		map.put(key3, value3);
@@ -186,7 +186,7 @@ public abstract class CollectionUtils {
 	 * @return set
 	 */
 	public static <T> Set<T> selectSome(Set<T> set, int count) {
-		Set<T> newSet = new HashSet<T>();
+		Set<T> newSet = new HashSet<>();
 		int i = 0;
 		for (T each : set) {
 			if (++i > count) {
@@ -206,7 +206,7 @@ public abstract class CollectionUtils {
 	 * @return created {@link HashMap} instance
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(int size) {
-		return new HashMap<K, V>(size);
+		return new HashMap<>(size);
 	}
 
 	/**
@@ -218,7 +218,7 @@ public abstract class CollectionUtils {
 	 * @return created {@link HashMap} instance
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(Collection<?> base) {
-		return new HashMap<K, V>(base.size());
+		return new HashMap<>(base.size());
 	}
 
 	/**

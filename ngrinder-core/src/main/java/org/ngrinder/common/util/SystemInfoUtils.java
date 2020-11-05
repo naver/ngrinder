@@ -43,14 +43,14 @@ import static oshi.util.ExecutingCommand.runNative;
  */
 public class SystemInfoUtils {
 
-	private static OperatingSystem operatingSystem;
-	private static CentralProcessor centralProcessor;
-	private static GlobalMemory globalMemory;
+	private static final OperatingSystem operatingSystem;
+	private static final CentralProcessor centralProcessor;
+	private static final GlobalMemory globalMemory;
+
+	private static final List<NetworkIF> networkIFs;
 
 	// For calculate current cpu load.
 	private static long[] prevTicks;
-
-	private static List<NetworkIF> networkIFs;
 
 	static {
 		SystemInfo systemInfo = new SystemInfo();
@@ -67,6 +67,7 @@ public class SystemInfoUtils {
 		return operatingSystem.getProcess(pid);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public static List<String> killProcess(int pid) {
 		return isWindows() ? runNative("taskkill /f /pid " + pid) : runNative("kill -9 " + pid);
 	}

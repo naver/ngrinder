@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static java.time.Instant.now;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static org.ngrinder.perftest.repository.TagSpecification.*;
 
@@ -86,7 +87,7 @@ public class TagService {
 		Specification<Tag> spec = Specification.where(hasPerfTest());
 		spec = spec.and(lastModifiedOrCreatedBy(user));
 		if (StringUtils.isNotBlank(startWith)) {
-			spec = spec.and(isStartWith(StringUtils.trimToEmpty(startWith)));
+			spec = requireNonNull(spec).and(isStartWith(StringUtils.trimToEmpty(startWith)));
 		}
 		return tagRepository.findAll(spec);
 	}
@@ -130,6 +131,7 @@ public class TagService {
 	 * @param user	user
 	 * @param tag	tag
 	 */
+	@SuppressWarnings("unused")
 	@Transactional
 	public void deleteTag(User user, Tag tag) {
 		for (PerfTest each : tag.getPerfTests()) {

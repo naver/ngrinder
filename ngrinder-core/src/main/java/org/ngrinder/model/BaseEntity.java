@@ -43,7 +43,7 @@ public class BaseEntity<M> implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
+	@Column(name = "id", unique = true, nullable = false, updatable = false)
 	private Long id;
 
 	@Override

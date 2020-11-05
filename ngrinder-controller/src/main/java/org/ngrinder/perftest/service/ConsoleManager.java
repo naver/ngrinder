@@ -55,6 +55,8 @@ public class ConsoleManager {
 	private static final int MAX_PORT_NUMBER = 65000;
 	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
 	private volatile ArrayBlockingQueue<ConsoleEntry> consoleQueue;
+
+	@SuppressWarnings("FieldMayBeFinal")
 	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<>());
 
 	private final Config config;

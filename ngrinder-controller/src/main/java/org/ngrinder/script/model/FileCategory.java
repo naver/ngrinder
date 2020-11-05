@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,22 +9,22 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.model;
 
 /**
  * Category of FileEntity.
- * 
+ *
  * This field is used for identifying the file type.
- * 
+ *
  * @since 3.1
  */
 public enum FileCategory {
 	SCRIPT(true), DATA(true), LIBRARY(false), ETC(false), PROJECT(true);
 	private final boolean isEditable;
 
-	private FileCategory(boolean isEditable) {
+	FileCategory(boolean isEditable) {
 		this.isEditable = isEditable;
 	}
 

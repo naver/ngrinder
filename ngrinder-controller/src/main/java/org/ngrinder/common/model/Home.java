@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.model;
 
@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
+import static java.util.Objects.requireNonNull;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -100,36 +101,12 @@ public class Home {
 	}
 
 	/**
-	 * Copy the given file from given location.
-	 *
-	 * @param from file location
-	 */
-	public void copyFrom(File from) {
-		// Copy missing files
-		try {
-			for (File file : checkNotNull(from.listFiles())) {
-				if (!(new File(directory, file.getName()).exists())) {
-					FileUtils.copyFileToDirectory(file, directory);
-				} else {
-					File orgConf = new File(directory, "org_conf");
-					if (orgConf.mkdirs()) {
-						LOGGER.info("{}", orgConf.getPath());
-					}
-					FileUtils.copyFile(file, new File(orgConf, file.getName()));
-				}
-			}
-		} catch (IOException e) {
-			throw processException("Fail to copy files from " + from.getAbsolutePath(), e);
-		}
-	}
-
-	/**
 	 * Copy the given resources.
 	 */
 	public void copyFrom(Resource[] resources) {
 		try {
 			for (Resource resource : resources) {
-				File resourceFile = new File(directory, resource.getFilename());
+				File resourceFile = new File(directory, requireNonNull(resource.getFilename()));
 				if (!resourceFile.exists()) {
 					FileUtils.copyInputStreamToFile(resource.getInputStream(), new File(directory, resource.getFilename()));
 				} else {

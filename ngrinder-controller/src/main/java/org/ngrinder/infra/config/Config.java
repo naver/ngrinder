@@ -13,51 +13,49 @@
  */
 package org.ngrinder.infra.config;
 
-  import ch.qos.logback.classic.Level;
-  import ch.qos.logback.classic.LoggerContext;
-  import net.grinder.util.ListenerSupport;
-  import net.grinder.util.ListenerSupport.Informer;
-  import org.apache.commons.io.FileUtils;
-  import org.apache.commons.io.FilenameUtils;
-  import org.apache.commons.io.IOUtils;
-  import org.apache.commons.lang.StringUtils;
-  import org.ngrinder.common.constant.ClusterConstants;
-  import org.ngrinder.common.constant.ControllerConstants;
-  import org.ngrinder.common.constants.InternalConstants;
-  import org.ngrinder.common.exception.ConfigurationException;
-  import org.ngrinder.common.model.Home;
-  import org.ngrinder.common.util.FileWatchdog;
-  import org.ngrinder.common.util.PropertiesKeyMapper;
-  import org.ngrinder.common.util.PropertiesWrapper;
-  import org.ngrinder.infra.logger.CoreLogger;
-  import org.ngrinder.infra.spring.SpringContext;
-  import org.ngrinder.service.AbstractConfig;
-  import org.slf4j.Logger;
-  import org.slf4j.LoggerFactory;
-  import org.springframework.beans.factory.annotation.Autowired;
-  import org.springframework.context.ApplicationContext;
-  import org.springframework.core.io.ClassPathResource;
-  import org.springframework.core.io.Resource;
-  import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-  import org.springframework.core.io.support.ResourcePatternResolver;
-  import org.springframework.stereotype.Component;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import net.grinder.util.ListenerSupport;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.ClusterConstants;
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constants.InternalConstants;
+import org.ngrinder.common.exception.ConfigurationException;
+import org.ngrinder.common.model.Home;
+import org.ngrinder.common.util.FileWatchdog;
+import org.ngrinder.common.util.PropertiesKeyMapper;
+import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.infra.spring.SpringContext;
+import org.ngrinder.service.AbstractConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.stereotype.Component;
 
-  import javax.annotation.PostConstruct;
-  import javax.annotation.PreDestroy;
-  import java.beans.PropertyChangeListener;
-  import java.io.File;
-  import java.io.IOException;
-  import java.io.InputStream;
-  import java.util.Date;
-  import java.util.Properties;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Properties;
 
-  import static java.nio.charset.StandardCharsets.UTF_8;
-  import static net.grinder.util.NoOp.noOp;
-  import static org.apache.commons.io.FileUtils.readFileToString;
-  import static org.apache.commons.lang.StringUtils.isEmpty;
-  import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
-  import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
-  import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static net.grinder.util.NoOp.noOp;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
@@ -67,9 +65,13 @@ package org.ngrinder.infra.config;
 
 @Component
 public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
+	public static final String NONE_REGION = "NONE";
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
+
+	private final ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<>();
+
 	private Home home = null;
 	private Home exHome = null;
 	private PropertiesWrapper internalProperties;
@@ -80,11 +82,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	private String announcement = "";
 	private Date announcementDate;
 	private boolean verbose;
-
-
-	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
-	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<PropertyChangeListener>();
 
 	protected PropertiesKeyMapper internalPropertiesKeyMapper = PropertiesKeyMapper.create("internal-properties.map");
 	protected PropertiesKeyMapper databasePropertiesKeyMapper = PropertiesKeyMapper.create("database-properties.map");
@@ -214,6 +212,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 *
 	 * @return true if enabled.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isUsageReportEnabled() {
 		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_USAGE_REPORT);
 	}
@@ -297,6 +296,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+
 		if (isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		} else if (StringUtils.startsWith(userHome, "~" + File.separator)) {
@@ -348,17 +348,13 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 * Load internal properties which is not modifiable by user.
 	 */
 	protected void loadInternalProperties() {
-		InputStream inputStream = null;
 		Properties properties = new Properties();
-		try {
-			inputStream = new ClassPathResource("/internal.properties").getInputStream();
+		try (InputStream inputStream = new ClassPathResource("/internal.properties").getInputStream()) {
 			properties.load(inputStream);
 			internalProperties = new PropertiesWrapper(properties, internalPropertiesKeyMapper);
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while load internal.properties", e);
 			internalProperties = new PropertiesWrapper(properties, internalPropertiesKeyMapper);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
 		}
 	}
 
@@ -440,11 +436,8 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 				try {
 					CoreLogger.LOGGER.info("System configuration(system.conf) is changed.");
 					loadProperties();
-					systemConfListeners.apply(new Informer<PropertyChangeListener>() {
-						@Override
-						public void inform(PropertyChangeListener listener) {
-							listener.propertyChange(null);
-						}
+					systemConfListeners.apply(listener -> {
+						listener.propertyChange(null);
 					});
 					CoreLogger.LOGGER.info("New system configuration is applied.");
 				} catch (Exception e) {
@@ -659,12 +652,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		}
 	}
 
-
 	/**
 	 * Check if the current ngrinder instance is hidden instance from the cluster.
 	 *
 	 * @return true if hidden.
 	 */
+	@SuppressWarnings("unused")
 	public boolean isInvisibleRegion() {
 		return getClusterProperties().getPropertyBoolean(PROP_CLUSTER_HIDDEN_REGION);
 	}
@@ -715,8 +708,6 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 
 	/**
 	 * Get the time out milliseconds which would be used between the console and the agent while preparing to test.
-	 *
-	 * @return
 	 */
 	public long getInactiveClientTimeOut() {
 		return getControllerProperties().getPropertyLong(PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT);

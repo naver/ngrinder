@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.spring;
 
@@ -30,9 +30,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 /**
  * {@link HandlerMethodArgumentResolver} for {@link User} argument.
- * 
+ *
  * It passes the current user instance on {@link User} argument.
- * 
+ *
  * @since 3.0
  */
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -48,6 +48,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		return parameter.getParameterIndex() == 0 && parameter.getParameterType().equals(User.class);
 	}
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
@@ -96,7 +97,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	/**
 	 * Get current user context.<br/>
 	 * This method is provided for XML based spring bean injection.
-	 * 
+	 *
 	 * @return user context
 	 */
 	public UserContext getUserContext() {
@@ -106,7 +107,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	/**
 	 * Set the current user context.<br/>
 	 * This method is provided for XML based spring bean injection.
-	 * 
+	 *
 	 * @param userContext
 	 *            user context.
 	 */
