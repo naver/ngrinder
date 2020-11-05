@@ -28,20 +28,18 @@ import java.util.Map;
 
 public class HTTPResponse extends ResponseProxy {
 	private final Response response;
+	private final int statusCode;
 
 	private String body = null;
 
 	private HTTPResponse(Response response) {
 		super(response);
 		this.response = response;
+		this.statusCode = response.code();
 	}
 
 	public Response response() {
 		return response;
-	}
-
-	public int statusCode() {
-		return code();
 	}
 
 	public InputStream byteStream() {
@@ -64,6 +62,10 @@ public class HTTPResponse extends ResponseProxy {
 		} finally {
 			response.body().close();
 		}
+	}
+
+	public int getStatusCode() {
+		return statusCode;
 	}
 
 	public static HTTPResponse of(Response response) {
