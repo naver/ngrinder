@@ -30,7 +30,7 @@ public class AgentUpdateGrinderMessage implements Message {
 	/**
 	 * -1 is ending, -2 is error
 	 */
-	private final int next;
+	private int next;
 	private final long checksum;
 
 	/**
