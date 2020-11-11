@@ -45,14 +45,6 @@ dependencies {
     compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
     compile (group: "com.google.guava", name: "guava", version: "20.0")
     compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
-
-    compile (group: "org.apache.maven", name: "maven-embedder", version: "3.6.3")
-    compile (group: "org.apache.maven", name: "maven-compat", version: "3.6.3")
-    compile (group: "org.eclipse.aether", name: "aether-connector-basic", version: "1.1.0")
-    compile (group: "org.eclipse.aether", name: "aether-transport-wagon", version: "1.1.0")
-    compile (group: "org.apache.maven.wagon", name: "wagon-http", version: "2.8")
-    compile (group: "org.apache.maven.wagon", name: "wagon-provider-api", version: "2.8")
-
     compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")
     compile (group: "org.hibernate", name: "hibernate-jcache", version: hibernate_version)
     compile (group: "com.github.ben-manes.caffeine", name: "caffeine", version: "2.6.2")

@@ -17,7 +17,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.cli.MavenCli;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
@@ -44,6 +43,7 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.LoggingUtils.format;
+import static oshi.util.ExecutingCommand.runNative;
 
 /**
  * Groovy Maven project {@link ScriptHandler}.
@@ -175,19 +175,11 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	protected void prepareDistMore(PerfTest perfTest, User user, FileEntry script, File distDir,
 								   PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 		String pomPathInSVN = PathUtils.join(getBasePath(script), "pom.xml");
-		MavenCli cli = new MavenCli();
-		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
-				+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
+		String mavenCommand = getMavenCommand(distDir);
+		processingResult.println("\nCopy dependencies by running '" + mavenCommand + "'");
 
-		System.setProperty(MavenCli.MULTIMODULE_PROJECT_DIRECTORY, distDir.getAbsolutePath());
+		boolean success = isSuccess(runNative(mavenCommand));
 
-		int result = cli.doMain(new String[]{ // goal specification
-				"dependency:copy-dependencies", // run dependency goal
-				"-DoutputDirectory=./lib", // to the lib folder
-				"-DexcludeScope=provided" // but exclude the provided
-				// library
-		}, distDir.getAbsolutePath(), processingResult, processingResult);
-		boolean success = (result == 0);
 		if (success) {
 			processingResult.printf("\nDependencies in %s was copied.\n", pomPathInSVN);
 			LOGGER.info(format(perfTest, "Dependencies in {} is copied into {}/lib folder", pomPathInSVN, distDir.getAbsolutePath()));
@@ -197,7 +189,20 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		}
 		// Then it's not necessary to include pom.xml anymore.
 		FileUtils.deleteQuietly(new File(distDir, "pom.xml"));
-		processingResult.setSuccess(result == 0);
+		processingResult.setSuccess(success);
+	}
+
+	private String getMavenCommand(File distDir) {
+		String distDirPath = distDir.getAbsolutePath();
+		return "mvn -f " + distDirPath + " dependency:copy-dependencies -DoutputDirectory=./lib " +
+			"-DexcludeScope=provided -Dmaven.multiModuleProjectDirectory=" + distDirPath;
+	}
+
+	private boolean isSuccess(List<String> results) {
+		if (results.isEmpty()) {
+			return false;
+		}
+		return results.stream().noneMatch(str -> str.contains("[ERROR]"));
 	}
 
 	@Override
