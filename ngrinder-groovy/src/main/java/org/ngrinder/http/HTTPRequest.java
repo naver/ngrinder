@@ -34,6 +34,7 @@ import java.net.HttpURLConnection;
 import java.security.Security;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -122,11 +123,35 @@ public class HTTPRequest {
 		try {
 			response = client.newCall(request).execute();
 			aggregate(response);
+			summarize(response);
 		} catch (IOException e) {
 			LOGGER.error("Fail to get response {}", request, e);
 		}
 
 		return HTTPResponse.of(response);
+	}
+
+	private void summarize(Response response) {
+		Logger logger = HTTPPlugin.getPlugin()
+			.getPluginProcessContext()
+			.getScriptContext()
+			.getLogger();
+
+		Function<Response, String> generateMessage = new Function<Response, String>() {
+			@Override
+			public String apply(Response response) {
+				return response.request().url() + " -> " + response.code() + " " + response.message() + ", " + getBodyLength(response.body()) + " bytes";
+			}
+		};
+
+		String message = "";
+		Response res = response.priorResponse();
+		if (res != null) {
+			summarize(res);
+			message += " L ";
+		}
+
+		logger.info(message + generateMessage.apply(response));
 	}
 
 	private void aggregate(final Response response) {
@@ -151,16 +176,25 @@ public class HTTPRequest {
 			}
 
 			ResponseBody body = response.body();
-			if (body != null) {
-				BufferedSource source = body.source();
-				source.request(Long.MAX_VALUE);
-
-				statisticsForTest.addLong(
-					StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, source.getBuffer().snapshot().size());
-			}
+			statisticsForTest.addLong(
+				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, getBodyLength(body));
 		} catch (Exception e) {
 			LOGGER.error("Fail to aggregate HTTP statistics", e);
 		}
+	}
+
+	private long getBodyLength(ResponseBody body) {
+		if (body != null) {
+			try {
+				BufferedSource source = body.source();
+				source.request(Long.MAX_VALUE);
+				return source.getBuffer().snapshot().size();
+			} catch (IOException e) {
+				LOGGER.error("", e);
+			}
+		}
+
+		return 0L;
 	}
 
 	public static HTTPRequest create() {
