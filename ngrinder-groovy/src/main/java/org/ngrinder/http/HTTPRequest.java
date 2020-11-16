@@ -25,22 +25,15 @@ import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
 import okio.BufferedSource;
-import org.apache.commons.lang.time.StopWatch;
 import org.conscrypt.Conscrypt;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.security.Security;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -59,13 +52,15 @@ public class HTTPRequest {
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
 	private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
+	private static final CookieJar threadContextCookieJar = new ThreadContextCookieJar();
+
 	private final OkHttpClient client;
 
 	private HTTPRequest(List<Protocol> protocols) {
 		client = new OkHttpClient()
 			.newBuilder()
 			.protocols(protocols)
-			.cookieJar(new ThreadContextCookieJar())
+			.cookieJar(threadContextCookieJar)
 			.eventListener(new ConnectionTimeAggregateListener())
 			.hostnameVerifier((s, sslSession) -> true)
 			.build();
@@ -93,8 +88,9 @@ public class HTTPRequest {
 	}
 
 	public HTTPResponse POST(String url, byte[] data, Headers headers) {
-		Optional<MediaType> mediaTypeOptional = Optional.ofNullable(headers.get("Content-Type")).map(MediaType::parse);
-		RequestBody body = RequestBody.create(data, mediaTypeOptional.orElse(DEFAULT_MEDIA_TYPE));
+		String contentType = headers.get("Content-Type");
+		MediaType mediaType = contentType == null ? DEFAULT_MEDIA_TYPE : MediaType.parse(contentType);
+		RequestBody body = RequestBody.create(data, mediaType);
 		return POST(url, body, headers);
 	}
 
@@ -175,90 +171,5 @@ public class HTTPRequest {
 		return new HTTPRequest(singletonList(Protocol.HTTP_1_1));
 	}
 
-	private static class ThreadContextCookieJar implements CookieJar {
-		@Override
-		public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
-			CookieManager.addCookies(list);
-		}
-
-		@NotNull
-		@Override
-		public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
-			return CookieManager.getCookies();
-		}
-	}
-
-	private static class ConnectionTimeAggregateListener extends EventListener {
-		private final Logger LOGGER = LoggerFactory.getLogger(ConnectionTimeAggregateListener.class);
-
-		private final StopWatch dnsStopWatch = new StopWatch();
-		private final StopWatch connectStopWatch = new StopWatch();
-		private final StopWatch timeToFirstByteStopWatch = new StopWatch();
-
-		@Override
-		public void dnsStart(@NotNull Call call, @NotNull String domainName) {
-			dnsStopWatch.start();
-		}
-
-		@Override
-		public void dnsEnd(@NotNull Call call, @NotNull String domainName, @NotNull List<InetAddress> inetAddressList) {
-			dnsStopWatch.stop();
-			long dnsTime = dnsStopWatch.getTime();
-			dnsStopWatch.reset();
-
-			accumulate(StatisticsIndexMap.HTTP_PLUGIN_DNS_TIME_KEY, dnsTime);
-		}
-
-		@Override
-		public void connectStart(@NotNull Call call, @NotNull InetSocketAddress inetSocketAddress, @NotNull Proxy proxy) {
-			connectStopWatch.start();
-		}
-
-		@Override
-		public void connectEnd(@NotNull Call call, @NotNull InetSocketAddress inetSocketAddress, @NotNull Proxy proxy, @Nullable Protocol protocol) {
-			connectStopWatch.stop();
-			long connectTime = connectStopWatch.getTime();
-			connectStopWatch.reset();
-
-			accumulate(StatisticsIndexMap.HTTP_PLUGIN_CONNECT_TIME_KEY, connectTime);
-		}
-
-		@Override
-		public void connectionAcquired(@NotNull Call call, @NotNull Connection connection) {
-			timeToFirstByteStopWatch.start();
-		}
-
-		@Override
-		public void responseHeadersStart(@NotNull Call call) {
-			try {
-				timeToFirstByteStopWatch.stop();
-				long timeToFirstByte = timeToFirstByteStopWatch.getTime();
-				timeToFirstByteStopWatch.reset();
-
-				accumulate(StatisticsIndexMap.HTTP_PLUGIN_FIRST_BYTE_TIME_KEY, timeToFirstByte);
-			} catch (IllegalStateException e) {
-				// Do nothing.
-				// responseHeadersStart event can be occurred multiple times when redirecting to the same server
-			}
-		}
-
-		private void accumulate(String key, long time) {
-			Statistics statistics = HTTPPlugin.getPlugin()
-				.getPluginProcessContext()
-				.getScriptContext()
-				.getStatistics();
-
-			if (!statistics.isTestInProgress()) {
-				return;
-			}
-
-			try {
-				Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
-				statisticsForTest.addLong(key, time);
-			} catch (Exception e) {
-				LOGGER.error("Fail to accumulate HTTP statistics", e);
-			}
-		}
-	}
 }
 
