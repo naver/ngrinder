@@ -29,7 +29,10 @@ public enum FileType {
 	GROOVY_SCRIPT("Groovy Script", "groovy", FileCategory.SCRIPT, true, false),
 
 	/** Groovy Maven project. */
-	GROOVY_MAVEN_PROJECT("Groovy maven project", "pom", FileCategory.PROJECT, true, false),
+	GROOVY_MAVEN_PROJECT("Groovy maven project", "", FileCategory.PROJECT, true, false),
+
+	/** Groovy Gradle project. */
+	GROOVY_GRADLE_PROJECT("Groovy gradle project", "", FileCategory.PROJECT, true, false),
 
 	/** Xml. */
 	XML("xml", "xml", FileCategory.DATA, true, true),
@@ -41,6 +44,8 @@ public enum FileType {
 	JSON("json", "json", FileCategory.DATA, false, true),
 	/** YAML. */
 	YAML("yaml", "yml", FileCategory.DATA, false, false),
+	/** GRADLE. */
+	GRADLE("Gradle build script", "gradle", FileCategory.DATA, false, false),
 	/** Properties. */
 	PROPERTIES("properties", "properties", FileCategory.DATA, false, true),
 	/** Classes. */

@@ -14,6 +14,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.script.handler.GroovyGradleProjectScriptHandler;
 import org.ngrinder.script.handler.GroovyMavenProjectScriptHandler;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.GitHubConfig;
@@ -42,7 +43,7 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_GITHUB_IS_MAVEN_GROOVY;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_GITHUB_GROOVY_PROJECT_SCRIPT_TYPE;
 import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_GITHUB_SCRIPTS;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_GITHUB_BASE_URL;
 import static org.ngrinder.common.util.AopUtils.proxy;
@@ -77,24 +78,29 @@ public class GitHubFileEntryService {
 
 	private final GroovyMavenProjectScriptHandler groovyMavenProjectScriptHandler;
 
+	private final GroovyGradleProjectScriptHandler groovyGradleProjectScriptHandler;
+
 	private static final RateLimitHandlerEx rateLimitHandlerEx = new RateLimitHandlerEx();
 
 	public GitHubFileEntryService(FileEntryService fileEntryService, ObjectMapper objectMapper,
 								  Config config, @Lazy PerfTestService perfTestService,
-								  GroovyMavenProjectScriptHandler groovyMavenProjectScriptHandler) {
+								  GroovyMavenProjectScriptHandler groovyMavenProjectScriptHandler,
+								  GroovyGradleProjectScriptHandler groovyGradleProjectScriptHandler) {
 		this.fileEntryService = fileEntryService;
 		this.objectMapper = objectMapper;
 		this.config = config;
 		this.perfTestService = perfTestService;
 		this.groovyMavenProjectScriptHandler = groovyMavenProjectScriptHandler;
+		this.groovyGradleProjectScriptHandler = groovyGradleProjectScriptHandler;
 	}
 
 	public FileEntry getOne(GHRepository ghRepository, GitHubConfig gitHubConfig, String scriptPath) {
 		String fullPath = getCheckoutDirPath(ghRepository, gitHubConfig, scriptPath);
-		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath, gitHubConfig.getBranch())) {
-			fullPath += groovyMavenProjectScriptHandler.getGroovyMavenPath(scriptPath);
+		String activeBranch = gitHubConfig.getBranch();
+		if (isGroovyProjectScript(ghRepository, scriptPath, activeBranch)) {
+			fullPath += groovyMavenProjectScriptHandler.getGroovyProjectPath(scriptPath);
 			FileEntry fileEntry = createGitHubScriptFileEntry(fullPath);
-			fileEntry.getProperties().put("type", "groovy-maven");
+			fileEntry.getProperties().put("type", proxy(this).getGroovyProjectType(ghRepository, scriptPath, activeBranch));
 			fileEntry.getProperties().put("scriptPath", scriptPath);
 			return fileEntry;
 		} else {
@@ -185,18 +191,31 @@ public class GitHubFileEntryService {
 		return new File(directory.getPath() + "/.svn").exists();
 	}
 
-	@Cacheable(value = LOCAL_CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
-	public boolean isGroovyMavenProject(GHRepository ghRepository, String scriptPath, String activeBranch) {
-		if (!groovyMavenProjectScriptHandler.isGroovyMavenPath(scriptPath)) {
+	public boolean isGroovyProjectScript(GHRepository ghRepository, String scriptPath, String activeBranch) {
+		if (!groovyMavenProjectScriptHandler.isGroovyProjectScriptPath(scriptPath)) {
 			return false;
 		}
+		return proxy(this).getGroovyProjectType(ghRepository, scriptPath, activeBranch) != null;
+	}
 
+	@Cacheable(value = LOCAL_CACHE_GITHUB_GROOVY_PROJECT_SCRIPT_TYPE, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
+	public String getGroovyProjectType(GHRepository ghRepository, String scriptPath, String activeBranch) {
 		try {
 			List<GHContent> ghContents = ghRepository.getDirectoryContent(groovyMavenProjectScriptHandler.getBasePath(scriptPath), activeBranch);
-			return ghContents.stream().anyMatch(ghContent -> ghContent.getName().equals("pom.xml"));
-		} catch (IOException e) {
-			return false;
+			for (GHContent ghContent : ghContents) {
+				String fileName = ghContent.getName();
+				if (StringUtils.equals(fileName, groovyMavenProjectScriptHandler.getBuildScriptName())) {
+					return groovyMavenProjectScriptHandler.getKey();
+				}
+
+				if (StringUtils.equals(fileName, groovyGradleProjectScriptHandler.getBuildScriptName())) {
+					return groovyGradleProjectScriptHandler.getKey();
+				}
+			}
+		} catch (IOException ignored) {
+			noOp();
 		}
+		return null;
 	}
 
 	private FileEntry createGitHubScriptFileEntry(String fullPath) {
@@ -230,7 +249,7 @@ public class GitHubFileEntryService {
 		try {
 			String checkoutScriptPath;
 			URI uri = new URI(getGitHubBaseUrl(gitHubConfig));
-			if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath, gitHubConfig.getBranch())) {
+			if (isGroovyProjectScript(ghRepository, scriptPath, gitHubConfig.getBranch())) {
 				checkoutScriptPath = groovyMavenProjectScriptHandler.getBasePath(scriptPath);
 			} else {
 				checkoutScriptPath = getFullPath(scriptPath);
@@ -370,7 +389,7 @@ public class GitHubFileEntryService {
 		String checkoutBaseUrl = ghRepository.getSvnUrl();
 		checkoutBaseUrl += isDefaultBranch ? "/trunk" : "/branches/" + activeBranch;
 		SVNURL checkoutUrl;
-		if (proxy(this).isGroovyMavenProject(ghRepository, scriptPath, activeBranch)) {
+		if (isGroovyProjectScript(ghRepository, scriptPath, activeBranch)) {
 			checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + groovyMavenProjectScriptHandler.getBasePath(scriptPath));
 		} else {
 			checkoutUrl = parseURIEncoded(checkoutBaseUrl + "/" + getFullPath(scriptPath));
@@ -429,8 +448,8 @@ public class GitHubFileEntryService {
 		noOp();
 	}
 
-	@CacheEvict(value = LOCAL_CACHE_GITHUB_IS_MAVEN_GROOVY, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
-	public void evictGitHubMavenGroovyCache(GHRepository ghRepository, String scriptPath, String activeBranch) {
+	@CacheEvict(value = LOCAL_CACHE_GITHUB_GROOVY_PROJECT_SCRIPT_TYPE, key = "#ghRepository.svnUrl + #scriptPath + #activeBranch")
+	public void evictGitHubGroovyProjectScriptTypeCache(GHRepository ghRepository, String scriptPath, String activeBranch) {
 		noOp();
 	}
 
