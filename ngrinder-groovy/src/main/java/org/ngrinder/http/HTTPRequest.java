@@ -65,7 +65,7 @@ public class HTTPRequest {
 			.newBuilder()
 			.protocols(protocols)
 			.cookieJar(threadContextCookieJar)
-			.eventListener(new ConnectionTimeAggregateListener())
+			.eventListenerFactory(ConnectionTimeAggregateListener.FACTORY)
 			.hostnameVerifier((s, sslSession) -> true)
 			.build();
 	}

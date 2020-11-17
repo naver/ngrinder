@@ -39,7 +39,14 @@ import java.net.Proxy;
 import java.util.List;
 
 public class ConnectionTimeAggregateListener extends EventListener {
-	private final Logger LOGGER = LoggerFactory.getLogger(ConnectionTimeAggregateListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionTimeAggregateListener.class);
+	public static final Factory FACTORY = new Factory() {
+		@NotNull
+		@Override
+		public EventListener create(@NotNull Call call) {
+			return new ConnectionTimeAggregateListener();
+		}
+	};
 
 	private final StopWatch dnsStopWatch = new StopWatch();
 	private final StopWatch connectStopWatch = new StopWatch();
@@ -90,6 +97,12 @@ public class ConnectionTimeAggregateListener extends EventListener {
 			// Do nothing.
 			// responseHeadersStart event can be occurred multiple times when redirecting to the same server
 		}
+	}
+
+	@Override
+	public void connectionReleased(@NotNull Call call, @NotNull Connection connection) {
+		timeToFirstByteStopWatch.reset();
+		// connectionReleased can be occurred immediately without responseHeaderStart event
 	}
 
 	private void accumulate(String key, long time) {
