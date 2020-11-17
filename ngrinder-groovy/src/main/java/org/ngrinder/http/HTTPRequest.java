@@ -20,7 +20,10 @@
  */
 package org.ngrinder.http;
 
+import net.grinder.common.GrinderException;
 import net.grinder.plugin.http.HTTPPlugin;
+import net.grinder.plugin.http.HTTPPluginThreadState;
+import net.grinder.plugininterface.PluginThreadContext;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
@@ -122,13 +125,29 @@ public class HTTPRequest {
 		Response response = null;
 		try {
 			response = client.newCall(request).execute();
+
+			getThreadContext().pauseClock();
+
 			aggregate(response);
 			summarize(response);
+
+			getThreadContext().resumeClock();
 		} catch (IOException e) {
 			LOGGER.error("Fail to get response {}", request, e);
 		}
 
 		return HTTPResponse.of(response);
+	}
+
+	private PluginThreadContext getThreadContext() {
+		try {
+			HTTPPluginThreadState threadState = (HTTPPluginThreadState) HTTPPlugin.getPlugin()
+				.getPluginProcessContext()
+				.getPluginThreadListener();
+			return threadState.getThreadContext();
+		} catch (GrinderException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void summarize(Response response) {

@@ -40,7 +40,7 @@ import java.util.Map;
  *
  * @author Philip Aston
  */
-class HTTPPluginThreadState
+public class HTTPPluginThreadState
 	extends SkeletonThreadLifeCycleListener implements PluginThreadListener {
 
 	private final PluginThreadContext m_threadContext;
