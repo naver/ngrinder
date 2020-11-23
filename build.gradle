@@ -102,8 +102,8 @@ subprojects {
   }
 
   bintray {
-    user =  project.bintrayUser
-    key =  project.bintrayKey
+    user =  project.hasProperty("bintrayUser") ? bintrayUser : ""
+    key =  project.hasProperty("bintrayKey") ? bintrayKey : ""
     publications = ["nGrinerModules"]
     publish = true
     override = true
@@ -123,9 +123,10 @@ subprojects {
         released = new Date()
         gpg {
           sign = true
-          passphrase = project.bintrayGpgPassphrase
+          passphrase = project.hasProperty("bintrayGpgPassphrase") ? bintrayGpgPassphrase : ""
         }
       }
     }
   }
+
 }
