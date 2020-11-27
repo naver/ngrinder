@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.ngrinder.common.util.CollectionUtils.getValue;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.script.model.FileType.*;
 
 /**
  * Null {@link ScriptHandler} which implements Null object pattern.
@@ -37,10 +38,11 @@ public class NullScriptHandler extends ScriptHandler {
 	private final Map<FileType, String> codeMirrorKey = newHashMap();
 
 	public NullScriptHandler() {
-		super("", "", null, null);
-		codeMirrorKey.put(FileType.PROPERTIES, "properties");
-		codeMirrorKey.put(FileType.XML, "xml");
-		codeMirrorKey.put(FileType.YAML, "yaml");
+		super("", "", null, null, false);
+		codeMirrorKey.put(PROPERTIES, "properties");
+		codeMirrorKey.put(XML, "xml");
+		codeMirrorKey.put(YAML, "yaml");
+		codeMirrorKey.put(GRADLE, "groovy");
 	}
 
 	@Override

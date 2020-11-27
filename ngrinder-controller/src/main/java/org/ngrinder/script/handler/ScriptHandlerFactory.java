@@ -15,7 +15,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * ScriptHanderFactory which returns appropriate hander for the given {@link FileEntry}.
- * 
+ *
  * @since 3.2
  */
 @Component
@@ -39,7 +39,7 @@ public class ScriptHandlerFactory {
 
 		visibleHandlers = newArrayList();
 		for (ScriptHandler each : this.scriptHandlers) {
-			if (!(each instanceof NullScriptHandler)) {
+			if (each.isCreatable()) {
 				visibleHandlers.add(each);
 			}
 		}
@@ -49,7 +49,7 @@ public class ScriptHandlerFactory {
 
 	/**
 	 * Get the appropriate {@link ScriptHandler} for the given fileEntry.
-	 * 
+	 *
 	 * @param fileEntry	fileEntry to be handled
 	 * @return {@link ScriptHandler}. {@link NullScriptHandler} if none is available.
 	 */
@@ -65,7 +65,7 @@ public class ScriptHandlerFactory {
 
 	/**
 	 * Get the appropriate {@link ScriptHandler} for the given key.
-	 * 
+	 *
 	 * @param key	ScriptHandler key
 	 * @return {@link ScriptHandler}. {@link NullScriptHandler} if none is available.
 	 */

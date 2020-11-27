@@ -1,22 +1,25 @@
 package org.ngrinder.infra.spring.listener;
 
 import com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.context.ApplicationListener;
 
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
 import java.util.Iterator;
 
+import static org.ngrinder.starter.InstallationChecker.checkAll;
+
 /**
  * @since 3.5.0
  * */
-public class ApplicationPreparedListener implements ApplicationListener<ApplicationPreparedEvent> {
+public class ApplicationPreparedListener implements ApplicationListener<ApplicationContextInitializedEvent> {
 
 	@SuppressWarnings("NullableProblems")
 	@Override
-	public void onApplicationEvent(ApplicationPreparedEvent event) {
+	public void onApplicationEvent(ApplicationContextInitializedEvent event) {
 		removeCacheProviderExceptCaffeineCacheProvider();
+		checkAll();
 	}
 
 	/**
@@ -31,4 +34,5 @@ public class ApplicationPreparedListener implements ApplicationListener<Applicat
 			}
 		}
 	}
+
 }

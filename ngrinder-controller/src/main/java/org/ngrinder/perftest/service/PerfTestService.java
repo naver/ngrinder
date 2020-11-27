@@ -657,7 +657,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			String scriptName = perfTest.getScriptName();
 			gitHubFileEntryService.checkoutGitHubScript(perfTest, ghRepository, gitHubConfig);
 			scriptEntry = gitHubFileEntryService.getOne(ghRepository, gitHubConfig, scriptName);
-			gitHubFileEntryService.evictGitHubMavenGroovyCache(ghRepository, scriptName, gitHubConfig.getBranch());
+			gitHubFileEntryService.evictGitHubGroovyProjectScriptTypeCache(ghRepository, scriptName, gitHubConfig.getBranch());
 		} else {
 			scriptEntry = checkNotNull(
 				fileEntryService.getOne(user,
@@ -680,7 +680,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			} catch (IOException e) {
 				noOp();
 			}
-			throw processException("Error while file distribution is prepared.");
+			throw processException("Error while file distribution is prepared.\n" +
+				"If you run groovy project type script, Please check your build script and make sure Maven or Gradle is installed.");
 		}
 		return handler;
 	}
