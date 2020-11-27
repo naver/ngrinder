@@ -1,3 +1,24 @@
+3.5.3 (2020.11.27)
+==================
+- Changes
+   - Support gradle groovy script
+       * Maven groovy script is deprecated and can't create any more but, it can still run
+   - Use maven central repository to manage submodules
+       * Use maven central repository instead of github repository
+   - Support UTC
+       * Use linux timestamp instead of string format of date time.
+- Trivial Fix
+    - Make several UI improvements
+    - Add identity information to perftest related log
+    - Make the H2 console optionally available
+    - Clean up code
+- Bug fix
+    - #669 Prevent lazy initialize exception in spring security authentication object
+    - #672 Make the modified file distribution handler to be loaded first
+    - #681 Prevent NPE if start console is failed
+    - #682 Escape response body in result console
+    - #684 Fix unstoppable abnormal test
+
 3.5.2 (2020.09.29)
 ==================
 - Changes
