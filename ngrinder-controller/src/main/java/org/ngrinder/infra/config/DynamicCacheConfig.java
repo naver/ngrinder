@@ -149,16 +149,16 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addDistMap(DIST_MAP_NAME_SAMPLING, 15);
 		cm.addDistMap(DIST_MAP_NAME_MONITORING, 15);
 		cm.addDistMap(DIST_MAP_NAME_AGENT, 10);
+		cm.addDistMap(DIST_MAP_NAME_RECENTLY_USED_AGENTS, 1 * DAY);
 
-		cm.addDistCache(CACHE_USERS, 30, 300);
-		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 300);
+		cm.addDistCache(DIST_CACHE_USERS, 30, 300);
+		cm.addDistCache(DIST_CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 300);
 
-		cm.addLocalCache(CACHE_GITHUB_SCRIPTS, 5 * MIN, 300);
-		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
-		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 1);
-		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
-		cm.addLocalCache(CACHE_GITHUB_IS_MAVEN_GROOVY, 5 * MIN, 300);
-		cm.addLocalCache(CACHE_RECENTLY_USED_AGENTS, 1 * DAY, 100);
+		cm.addLocalCache(LOCAL_CACHE_GITHUB_SCRIPTS, 5 * MIN, 300);
+		cm.addLocalCache(LOCAL_CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
+		cm.addLocalCache(LOCAL_CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 1);
+		cm.addLocalCache(LOCAL_CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
+		cm.addLocalCache(LOCAL_CACHE_GITHUB_GROOVY_PROJECT_SCRIPT_TYPE, 5 * MIN, 300);
 		return cm;
 	}
 
@@ -177,6 +177,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
 		}
 
+		@SuppressWarnings("SameParameterValue")
 		void addDistCache(String cacheName, int timeout, int count) {
 			MapConfig mapConfig = createDistMapConfig(cacheName, timeout);
 

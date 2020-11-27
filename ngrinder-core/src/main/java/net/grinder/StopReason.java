@@ -26,7 +26,7 @@ public enum StopReason {
 	TOO_MANY_ERRORS("Too many errors"),
 	/** Error while test preparation. */
 	ERROR_WHILE_PREPARE("Test preparation error"),
-	/** Error while first execution. */
+	/** Error while first execution or no recording. */
 	SCRIPT_ERROR("Script error"),
 	/** Error by too much overall traffic on the given region. */
 	TOO_MUCH_TRAFFIC_ON_REGION("Too much traffic error"),

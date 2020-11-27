@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.util;
 
@@ -62,7 +62,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String filterClassPath(String classPath, Logger logger) {
-		List<String> classPathList = new ArrayList<String>();
+		List<String> classPathList = new ArrayList<>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
 			String filename = FilenameUtils.getName(eachClassPath);
 			if (isUsefulJar(filename) || isUsefulReferenceProject(eachClassPath)) {
@@ -88,7 +88,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String filterForeMostClassPath(String classPath, Logger logger) {
-		List<String> classPathList = new ArrayList<String>();
+		List<String> classPathList = new ArrayList<>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
 			String filename = FilenameUtils.getName(eachClassPath);
 			if (isForemostJar(filename) || isUsefulForForemostReferenceProject(eachClassPath)) {
@@ -108,7 +108,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String filterPatchClassPath(String classPath, Logger logger) {
-		List<String> classPathList = new ArrayList<String>();
+		List<String> classPathList = new ArrayList<>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
 			String filename = FilenameUtils.getName(eachClassPath);
 			if (isPatchJar(filename)) {

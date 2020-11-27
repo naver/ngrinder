@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
@@ -27,7 +27,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Automatic encoding detection utility.
- * 
+ *
  * @since 3.0
  */
 public abstract class EncodingUtils {
@@ -36,7 +36,7 @@ public abstract class EncodingUtils {
 
 	/**
 	 * Decode the byte array with auto encoding detection feature.
-	 * 
+	 *
 	 * @param data
 	 *            byte array
 	 * @param defaultEncoding
@@ -51,16 +51,14 @@ public abstract class EncodingUtils {
 
 	/**
 	 * Detect encoding of given data.
-	 * 
+	 *
 	 * @param data
 	 *            byte array
 	 * @param defaultEncoding
 	 *            the default encoding if no encoding is sure.
 	 * @return encoding name detected encoding name
-	 * @throws IOException
-	 *             occurs when the detection is failed.
 	 */
-	public static String detectEncoding(byte[] data, String defaultEncoding) throws IOException {
+	public static String detectEncoding(byte[] data, String defaultEncoding) {
 		CharsetDetector detector = new CharsetDetector();
 		detector.setText(data);
 		CharsetMatch cm = detector.detect();

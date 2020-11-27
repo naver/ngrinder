@@ -38,7 +38,6 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Maps;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -99,8 +98,6 @@ public class PerfTestApiController {
 
 	private final Config config;
 
-	private final MessageSource messageSource;
-
 	/**
 	 * Get the perf test lists.
 	 *
@@ -127,7 +124,7 @@ public class PerfTestApiController {
 		result.put("size", tests.getSize());
 		result.put("queryFilter", queryFilter);
 		result.put("query", query);
-		result.put("createdUserId", user.getUserId());
+		result.put("createdBy", user.getUserId());
 		result.put("tests", tests.getContent());
 		putPageIntoModelMap(result, pageable);
 		return result;
@@ -290,7 +287,7 @@ public class PerfTestApiController {
 
 		// Retrieve the agent count map based on create user, if the test is
 		// created by the others.
-		user = test.getCreatedUser();
+		user = test.getCreatedBy();
 		result.putAll(getDefaultAttributes(user));
 		return result;
 	}
@@ -402,7 +399,7 @@ public class PerfTestApiController {
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return perfTest;
 		}
-		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
+		if (perfTest != null && !user.equals(perfTest.getCreatedBy())) {
 			throw processException("User " + user.getUserId() + " has no right on PerfTest " + id);
 		}
 		return perfTest;
@@ -472,11 +469,10 @@ public class PerfTestApiController {
 			message += progressMessage + "<br>";
 		}
 		message += "<b>" + perfTest.getLastProgressMessage() + "</b><br>";
-		message += perfTest.getLastModifiedDateToStr();
+		message += perfTest.getLastModifiedAtToStr();
 		return replace(message, "\n", "<br>");
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	private void validate(User user, PerfTest oldOne, PerfTest newOne) {
 		if (oldOne == null) {
 			oldOne = new PerfTest();

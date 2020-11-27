@@ -26,10 +26,11 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.function.Function;
 
-import static java.time.LocalDateTime.now;
+import static java.time.Instant.now;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.model.Status.UNKNOWN;
@@ -46,7 +47,7 @@ public enum Event {
 	START(perfTest -> {
 		Map<String, Object> payload = createBasePayload(perfTest);
 		payload.put("eventType", "START");
-		payload.put("startTime", now().toString());
+		payload.put("startTime", now());
 		return payload;
 	}),
 
@@ -58,7 +59,7 @@ public enum Event {
 		Status status = getSafe(finishedPerfTest.getStatus(), UNKNOWN);
 
 		payload.put("eventType", "FINISH");
-		payload.put("finishTime",  now().toString());
+		payload.put("finishTime", now());
 		payload.put("peakTPS", getSafe(finishedPerfTest.getPeakTps(), 0.0));
 		payload.put("TPS", getSafe(finishedPerfTest.getTps(), 0.0));
 		payload.put("errors", errors);
@@ -78,9 +79,9 @@ public enum Event {
 
 		int vuserPerAgent = getSafe(perfTest.getVuserPerAgent(), 0);
 		int agentCount = getSafe(perfTest.getAgentCount(), 0);
-		User createdUser = getSafe(perfTest.getCreatedUser(), new User());
+		User createdBy = getSafe(perfTest.getCreatedBy(), new User());
 
-		payload.put("createdUserId", getSafe(createdUser.getUserId(), ""));
+		payload.put("createdBy", getSafe(createdBy.getUserId(), ""));
 		payload.put("testId", getSafe(perfTest.getId(), 0L));
 		payload.put("testName", getSafe(perfTest.getTestName(), ""));
 		payload.put("scriptName", getSafe(perfTest.getScriptName(), ""));

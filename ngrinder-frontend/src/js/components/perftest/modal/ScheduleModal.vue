@@ -10,7 +10,11 @@
                     <div class="control-group d-flex justify-content-center align-items-center" :class="{'error': !validation}">
                         <label class="mr-5 mb-0" v-text="i18n('perfTest.running.schedule')"></label>
                         <div>
-                            <input type="text" class="form-control" ref="scheduledDate" :value="schedule.date">&nbsp;
+                            <datepicker :value="schedule.date"
+                                        format="yyyy-MM-dd"
+                                        @selected="datePickerSelected"
+                                        name="scheduleDatePicker">
+                            </datepicker>
                             <select class="select-item form-control" v-model="schedule.hour">
                                 <option v-for="(val, hour) in 24" :value="hour" v-text="hour < 10 ? `0${hour}` : hour"></option>
                             </select> :
@@ -39,11 +43,13 @@
 
 <script>
     import Component from 'vue-class-component';
+    import Datepicker from 'vuejs-datepicker';
+    import Dateformat from 'dateformat';
     import ModalBase from '../../common/modal/ModalBase.vue';
-    import '../../../../plugins/datepicker/js/bootstrap-datepicker.js';
 
     @Component({
         name: 'scheduleModal',
+        components: { Datepicker },
         props: {
             timezoneOffset: {
                 type: [Number],
@@ -69,11 +75,6 @@
             this.schedule.hour = date.getHours();
             this.schedule.minute = date.getMinutes();
             this.schedule.date = `${year}-${(month < 10 ? `0${month}` : month)}-${(day < 10 ? `0${day}` : day)}`;
-
-            $(this.$refs.scheduledDate).val(this.schedule.date);
-            $(this.$refs.scheduledDate).datepicker({
-                format: 'yyyy-mm-dd',
-            });
         }
 
         beforeHidden() {
@@ -92,7 +93,7 @@
         }
 
         runSchedule() {
-            let scheduledTime = new Date(`${this.schedule.date} ${this.schedule.hour}:${this.schedule.minute}:0`.replace(/-/g, '/'));
+            let scheduledTime = new Date(`${this.schedule.date} ${this.schedule.hour}:${this.schedule.minute}:0`);
             scheduledTime = this.getBrowserTimeApplyingTimezone(scheduledTime.getTime());
             this.validation = new Date() <= scheduledTime;
             if (!this.validation) {
@@ -100,11 +101,32 @@
             }
             this.$emit('run', scheduledTime);
         }
+
+        datePickerSelected(date) {
+            this.schedule.date = Dateformat(date, 'yyyy-mm-dd');
+        }
     }
 </script>
 
+<style lang="less">
+
+    #schedule-modal {
+        .vdp-datepicker {
+            display: inline-block;
+
+            input {
+                height: 29px;
+                padding-left: 8px;
+                color: #495057;
+                border: 1px solid #ced4da;
+                border-radius: 0.25rem;
+            }
+        }
+    }
+
+</style>
+
 <style lang="less" scoped>
-    @import '../../../../plugins/datepicker/css/datepicker.css';
 
     #schedule-modal {
         .modal-body {

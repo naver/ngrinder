@@ -3,7 +3,6 @@ package org.ngrinder.infra.plugin.extension;
 import org.ngrinder.infra.config.Config;
 import org.pf4j.ExtensionFactory;
 import org.pf4j.JarPluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -18,12 +17,11 @@ import javax.annotation.PostConstruct;
 @Component
 public class NGrinderPluginManager extends JarPluginManager {
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	@Autowired
-	public NGrinderPluginManager(Config config) {
+	public NGrinderPluginManager(Config config, ApplicationContext applicationContext) {
 		super(config.getHome().getPluginsDirectory().toPath());
+		this.applicationContext = applicationContext;
 	}
 
 	@PostConstruct

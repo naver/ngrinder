@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-import static org.ngrinder.common.constant.CacheConstants.CACHE_RECENTLY_USED_AGENTS;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_RECENTLY_USED_AGENTS;
 
 @Profile("unit-test")
 @Service
@@ -44,7 +44,7 @@ public class MockAgentService extends AgentService {
 		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId());
 		final Set<AgentInfo> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 
-		hazelcastService.put(CACHE_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);
+		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);
 
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
 		for (AgentInfo agentInfo : necessaryAgents) {

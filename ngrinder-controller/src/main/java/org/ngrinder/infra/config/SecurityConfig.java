@@ -171,13 +171,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.key("ngrinder")
 			.userDetailsService(ngrinderUserDetailsService)
 			.and()
-			.csrf().disable().exceptionHandling().authenticationEntryPoint(delegatingAuthenticationEntryPoint());
+			.csrf().disable().exceptionHandling().authenticationEntryPoint(delegatingAuthenticationEntryPoint())
+			.and()
+			.headers().frameOptions().sameOrigin();
 	}
 
 	/**
 	 * configure static resource and login page
 	 * @param web WebSecurity
-	 * @throws Exception
 	 */
 	@Override
 	public void configure(WebSecurity web) {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.security;
 
@@ -31,24 +31,22 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Date;
-
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 
 /**
  * nGrinder UserDetailsAuthenticationProvider.
- * 
+ *
  * This class validates the user provided ID / Password from login page. Internally it uses the plugins implementing
  * {@link OnLoginRunnable}. If you want to extend user authentification, please create the plugin implementing
  * {@link OnLoginRunnable} interface.
- * 
+ *
  * @since 3.0
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -57,34 +55,31 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
 
+	private final DefaultLoginPlugin defaultLoginPlugin;
+	private final DefaultLdapLoginPlugin defaultLdapLoginPlugin;
+	private final UserService userService;
+
+	@Getter(AccessLevel.PROTECTED)
+	private final ShaPasswordEncoder passwordEncoder;
+
 	@Getter
 	@Setter
 	private PluginManager pluginManager;
 
-	private DefaultLoginPlugin defaultLoginPlugin;
-
-	private DefaultLdapLoginPlugin defaultLdapLoginPlugin;
-
-	@Getter(AccessLevel.PROTECTED)
-	private ShaPasswordEncoder passwordEncoder;
-
 	@Getter(AccessLevel.PROTECTED)
 	@Setter
-	private UserDetailsService userDetailsService;
-
-	private UserService userService;
+	private NGrinderUserDetailsService nGrinderUserDetailsService;
 
 	public NGrinderAuthenticationProvider(PluginManager pluginManager, DefaultLoginPlugin defaultLoginPlugin, DefaultLdapLoginPlugin defaultLdapLoginPlugin,
-										  @Lazy ShaPasswordEncoder passwordEncoder, UserDetailsService userDetailsService, UserService userService) {
+										  @Lazy ShaPasswordEncoder passwordEncoder, NGrinderUserDetailsService nGrinderUserDetailsService, UserService userService) {
 		this.pluginManager = pluginManager;
 		this.defaultLoginPlugin = defaultLoginPlugin;
 		this.defaultLdapLoginPlugin = defaultLdapLoginPlugin;
 		this.passwordEncoder = passwordEncoder;
-		this.userDetailsService = userDetailsService;
+		this.nGrinderUserDetailsService = nGrinderUserDetailsService;
 		this.userService = userService;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) {
@@ -123,21 +118,21 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 			addNewUserIntoLocal(user);
 			LOG.info("{} is saved by password {}", user.getUser().getUserId(), user.getUser().getPassword());
 		} else {
-			// update user information
-			userService.saveWithoutPasswordEncoding(user.getUser());
+			// update user information without followers
+			userService.saveWithoutFollowers(user.getUser());
 		}
 	}
 
 	/**
 	 * Add new user into local db.
-	 * 
+	 *
 	 * @param securedUser user
 	 */
 	@Transactional
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
-		user.setCreatedDate(new Date());
+		user.setCreatedAt(now());
 		User newUser = userService.getOne(user.getUserId());
 		if (newUser != null) {
 			user = newUser.merge(user);
@@ -150,8 +145,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	@Override
-	protected void doAfterPropertiesSet() throws Exception {
-		Assert.notNull(this.userDetailsService, "A UserDetailsService must be set");
+	protected void doAfterPropertiesSet() {
+		Assert.notNull(this.nGrinderUserDetailsService, "A UserDetailsService must be set");
 	}
 
 	@Override
@@ -159,7 +154,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		UserDetails loadedUser;
 
 		try {
-			loadedUser = this.getUserDetailsService().loadUserByUsername(username);
+			loadedUser = this.nGrinderUserDetailsService.loadUserByUsername(username);
 		} catch (UsernameNotFoundException notFound) {
 			throw notFound;
 		} catch (Exception repositoryProblem) {

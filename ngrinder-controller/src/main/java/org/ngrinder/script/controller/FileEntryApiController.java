@@ -388,7 +388,7 @@ public class FileEntryApiController {
 	@PostMapping("/validate")
 	public String validate(User user, @RequestBody ScriptValidationParams scriptValidationParams) {
 		FileEntry fileEntry = scriptValidationParams.getFileEntry();
-		fileEntry.setCreatedUser(user);
+		fileEntry.setCreatedBy(user);
 		return scriptValidationService.validate(user, fileEntry, false, scriptValidationParams.getHostString());
 	}
 

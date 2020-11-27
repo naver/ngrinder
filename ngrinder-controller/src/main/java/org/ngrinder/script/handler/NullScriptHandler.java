@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,11 +9,12 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.handler;
 
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import static org.ngrinder.common.util.CollectionUtils.getValue;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.script.model.FileType.*;
 
 /**
  * Null {@link ScriptHandler} which implements Null object pattern.
@@ -33,13 +35,14 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 @Component
 public class NullScriptHandler extends ScriptHandler {
 
-	private Map<FileType, String> codeMirrorKey = newHashMap();
+	private final Map<FileType, String> codeMirrorKey = newHashMap();
 
 	public NullScriptHandler() {
-		super("", "", null, null);
-		codeMirrorKey.put(FileType.PROPERTIES, "properties");
-		codeMirrorKey.put(FileType.XML, "xml");
-		codeMirrorKey.put(FileType.YAML, "yaml");
+		super("", "", null, null, false);
+		codeMirrorKey.put(PROPERTIES, "properties");
+		codeMirrorKey.put(XML, "xml");
+		codeMirrorKey.put(YAML, "yaml");
+		codeMirrorKey.put(GRADLE, "groovy");
 	}
 
 	@Override
@@ -48,12 +51,11 @@ public class NullScriptHandler extends ScriptHandler {
 	}
 
 	@Override
-	public void prepareDist(Long testId, User user, FileEntry script, //
-	                        File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+	public void prepareDist(PerfTest perfTest, User user, FileEntry script, //
+							File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 
 	}
 
-	@SuppressWarnings("SpellCheckingInspection")
 	@Override
 	public boolean isValidatable() {
 		return false;
@@ -65,7 +67,7 @@ public class NullScriptHandler extends ScriptHandler {
 	 * @param fileType file type
 	 * @return appropriate code mirror key. if nothing, return shell
 	 */
-	@SuppressWarnings({"UnusedDeclaration", "SpellCheckingInspection"})
+	@SuppressWarnings("UnusedDeclaration")
 	public String getCodemirrorKey(FileType fileType) {
 		return getValue(codeMirrorKey, fileType, "shell");
 	}

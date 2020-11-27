@@ -26,7 +26,6 @@ import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +43,10 @@ import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
  *
  * @author JunHo Yoon
  */
-@SuppressWarnings("SynchronizeOnNonFinalField")
 public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private final ConsoleCommunication m_consoleCommunication;
-	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<>();
+	private final Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<>();
 	private final ListenerSupport<AgentStatusUpdateListener> m_agentStatusUpdateListeners = new ListenerSupport<>();
 	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<>();
 	private final ListenerSupport<AgentDownloadRequestListener> m_agentDownloadRequestListeners = new ListenerSupport<>();
@@ -113,24 +111,18 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		messageDispatchRegistry.set(LogReportGrinderMessage.class, new AbstractHandler<LogReportGrinderMessage>() {
 			public void handle(final LogReportGrinderMessage message) {
-				m_logListeners.apply(new Informer<LogArrivedListener>() {
-					@Override
-					public void inform(LogArrivedListener listener) {
-						listener.logArrived(message.getTestId(), message.getAddress(), message.getLogs());
-					}
+				m_logListeners.apply(listener -> {
+					listener.logArrived(message.getTestId(), message.getAddress(), message.getLogs());
 				});
 			}
 		});
 
 		messageDispatchRegistry.set(AgentDownloadGrinderMessage.class, new AbstractHandler<AgentDownloadGrinderMessage>() {
 			public void handle(final AgentDownloadGrinderMessage message) {
-				m_agentDownloadRequestListeners.apply(new Informer<AgentDownloadRequestListener>() {
-					@Override
-					public void inform(AgentDownloadRequestListener listener) {
-						AgentUpdateGrinderMessage agentUpdateGrinderMessage = listener.onAgentDownloadRequested(message.getVersion(), message.getNext());
-						if (agentUpdateGrinderMessage != null) {
-							m_consoleCommunication.sendToAddressedAgents(message.getAddress(), agentUpdateGrinderMessage);
-						}
+				m_agentDownloadRequestListeners.apply(listener -> {
+					AgentUpdateGrinderMessage agentUpdateGrinderMessage = listener.onAgentDownloadRequested(message.getVersion(), message.getNext());
+					if (agentUpdateGrinderMessage != null) {
+						m_consoleCommunication.sendToAddressedAgents(message.getAddress(), agentUpdateGrinderMessage);
 					}
 				});
 			}
@@ -138,22 +130,16 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		messageDispatchRegistry.set(ConnectionAgentMessage.class, new AbstractHandler<ConnectionAgentMessage>() {
 			public void handle(final ConnectionAgentMessage message) {
-				m_connectionAgentListener.apply(new Informer<ConnectionAgentListener>() {
-					@Override
-					public void inform(ConnectionAgentListener listener) {
-						listener.onConnectionAgentMessage(message.getIp(), message.getName(), message.getPort());
-					}
+				m_connectionAgentListener.apply(listener -> {
+					listener.onConnectionAgentMessage(message.getIp(), message.getName(), message.getPort());
 				});
 			}
 		});
 
 		messageDispatchRegistry.set(ConnectionAgentCommunicationMessage.class, new AbstractHandler<ConnectionAgentCommunicationMessage>() {
 			public void handle(final ConnectionAgentCommunicationMessage message) {
-				m_connectionAgentCommunicationListener.apply(new Informer<ConnectionAgentCommunicationListener>() {
-					@Override
-					public void inform(ConnectionAgentCommunicationListener listener) {
-						listener.onConnectionAgentCommunication(message.getUsingPort(), message.getIp(), message.getPort());
-					}
+				m_connectionAgentCommunicationListener.apply(listener -> {
+					listener.onConnectionAgentCommunication(message.getUsingPort(), message.getIp(), message.getPort());
 				});
 			}
 		});
@@ -192,10 +178,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		m_newData = false;
 
-		m_agentStatusUpdateListeners.apply(new ListenerSupport.Informer<AgentStatusUpdateListener>() {
-			public void inform(AgentStatusUpdateListener agentStatusUpdateListener) {
-				agentStatusUpdateListener.update(unmodifiableMap(m_agentMap));
-			}
+		m_agentStatusUpdateListeners.apply(agentStatusUpdateListener -> {
+			agentStatusUpdateListener.update(unmodifiableMap(m_agentMap));
 		});
 	}
 
@@ -255,7 +239,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		boolean shouldPurge();
 	}
 
-	private abstract class AbstractTimedReference implements Purgable {
+	private static abstract class AbstractTimedReference implements Purgable {
 		private int m_purgeDelayCount;
 
 		@Override
@@ -276,7 +260,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
-	private final class AgentReference extends AbstractTimedReference {
+	private static final class AgentReference extends AbstractTimedReference {
 		private final AgentControllerProcessReportMessage m_agentProcessReportMessage;
 
 		/**
@@ -294,7 +278,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 *
 	 * @author JunHo Yoon
 	 */
-	public final class AgentStatus implements Purgable {
+	public static final class AgentStatus implements Purgable {
 		private volatile AgentReference m_agentReference;
 
 		/**

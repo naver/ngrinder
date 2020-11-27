@@ -39,6 +39,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 /**
  * Performance Test Controller.
  */
+@SuppressWarnings({"SpringMVCViewInspection", "unused"})
 @Controller
 @RequestMapping("/perftest")
 @GlobalControllerModel
@@ -127,22 +128,19 @@ public class PerfTestController {
 		response.reset();
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(targetFile);
+
+		try (FileInputStream fileInputStream = new FileInputStream(targetFile)) {
 			ServletOutputStream outputStream = response.getOutputStream();
 			if (FilenameUtils.isExtension(targetFile.getName(), "zip")) {
 				// Limit log view to 1MB
 				outputStream.println(" Only the last 1MB of a log shows.\n");
 				outputStream.println("==========================================================================\n\n");
-				LogCompressUtils.decompress(fileInputStream, outputStream, 1 * 1024 * 1024);
+				LogCompressUtils.decompress(fileInputStream, outputStream, 1024 * 1024);
 			} else {
 				IOUtils.copy(fileInputStream, outputStream);
 			}
 		} catch (Exception e) {
 			CoreLogger.LOGGER.error("Error while processing log. {}", targetFile, e);
-		} finally {
-			IOUtils.closeQuietly(fileInputStream);
 		}
 	}
 
@@ -162,7 +160,7 @@ public class PerfTestController {
 	 * @param id test id
 	 * @return perftest/detail_report/perf
 	 */
-	@SuppressWarnings({"MVCPathVariableInspection", "UnusedParameters"})
+	@SuppressWarnings("UnusedParameters")
 	@GetMapping("/{id}/detail_report/perf")
 	public String getDetailPerfReport(@PathVariable("id") long id) {
 		return "perftest/detail_report/perf";
@@ -202,12 +200,13 @@ public class PerfTestController {
 	}
 
 
+	@SuppressWarnings("SameParameterValue")
 	private PerfTest getOneWithPermissionCheck(User user, Long id, boolean withTag) {
 		PerfTest perfTest = withTag ? perfTestService.getOneWithTag(id) : perfTestService.getOne(id);
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return perfTest;
 		}
-		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
+		if (perfTest != null && !user.equals(perfTest.getCreatedBy())) {
 			throw processException("User " + user.getUserId() + " has no right on PerfTest " + id);
 		}
 		return perfTest;

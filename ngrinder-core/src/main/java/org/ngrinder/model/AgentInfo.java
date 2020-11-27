@@ -34,7 +34,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings({"deprecation", "UnusedDeclaration", "JpaDataSourceORMInspection"})
+@SuppressWarnings({"UnusedDeclaration", "JpaDataSourceORMInspection"})
 @Getter
 @Setter
 @ToString
@@ -114,7 +114,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	public boolean isApproved() {
-		return approved == null ? false : approved;
+		return approved != null && approved;
 	}
 
 	@JsonIgnore

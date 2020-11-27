@@ -362,7 +362,7 @@
                 },
                 hostString: this.targetHosts.join(','),
             }).then(res => {
-                this.showScriptValidationResult(this.appendEditorLink(res.data));
+                this.showScriptValidationResult(this.appendEditorLink(this.$htmlEntities.encode(res.data)));
                 this.validated = true;
             }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
               .finally(this.hideProgressBar);

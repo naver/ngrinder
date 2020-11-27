@@ -47,9 +47,9 @@ public enum ContentType {
 	JSON("application/json", APPLICATION_JSON),
 	FORM_URL_ENCODED("application/x-www-form-urlencoded", APPLICATION_FORM_URLENCODED);
 
-	private String name;
+	private final String name;
 
-	private MediaType mediaType;
+	private final MediaType mediaType;
 
 	public static class ContentTypeDeserializer extends JsonDeserializer<ContentType> {
 		@Override

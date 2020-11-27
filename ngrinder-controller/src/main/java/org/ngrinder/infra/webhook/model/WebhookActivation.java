@@ -29,13 +29,14 @@ import org.ngrinder.model.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Webhook activation model.
  *
  * @since 3.5.2
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @Entity
@@ -44,11 +45,11 @@ import java.util.Date;
 @Table(name = "WEBHOOK_ACTIVATION")
 public class WebhookActivation extends BaseEntity<WebhookActivation> {
 
-	@Column(name = "created_user_id")
-	private String createdUserId;
+	@Column(name = "creator_id")
+	private String creatorId;
 
-	@Column(name = "created_time")
-	private Date createdTime;
+	@Column(name = "created_at")
+	private Instant createdAt;
 
 	private String request;
 

@@ -30,6 +30,7 @@ import org.ngrinder.infra.webhook.service.WebhookService;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
 
+import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.infra.webhook.model.Event.FINISH;
 import static org.ngrinder.infra.webhook.model.Event.START;
 
@@ -38,22 +39,21 @@ import static org.ngrinder.infra.webhook.model.Event.START;
  *
  * @since 3.5.2
  */
-@SuppressWarnings("DuplicatedCode")
 @Slf4j
 @AllArgsConstructor
 public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
 
 	// Be injected manually for backward compatibility.
-	private WebhookService webhookService;
+	private final WebhookService webhookService;
 
-	private WebhookConfigService webhookConfigService;
+	private final WebhookConfigService webhookConfigService;
 
 	@Override
 	public void start(PerfTest perfTest, IPerfTestService perfTestService, String version) {
 		try {
 			sendWebhookRequest(perfTest, START);
 		} catch (RuntimeException e) {
-			log.error("[{}] An exception occurred while sending the webhook start request.", perfTest.getId(), e);
+			log.error(format(perfTest, "An exception occurred while sending the webhook start request."), e);
 		}
 	}
 
@@ -62,12 +62,12 @@ public class NGrinderWebhookPlugin implements OnTestLifeCycleRunnable {
 		try {
 			sendWebhookRequest(perfTest, FINISH);
 		} catch (RuntimeException e) {
-			log.error("[{}] An exception occurred while sending the webhook finish request.", perfTest.getId(), e);
+			log.error(format(perfTest, "An exception occurred while sending the webhook finish request."), e);
 		}
 	}
 
 	private void sendWebhookRequest(PerfTest perfTest, Event event) {
-		WebhookConfig webhookConfig = webhookConfigService.getOne(perfTest.getCreatedUser().getUserId());
+		WebhookConfig webhookConfig = webhookConfigService.getOne(perfTest.getCreatedBy().getUserId());
 
 		if (webhookConfig == null) {
 			return;

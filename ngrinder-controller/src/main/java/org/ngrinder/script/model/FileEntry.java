@@ -22,9 +22,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
+import org.ngrinder.model.User;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -134,6 +134,15 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		} else {
 			return 0;
 		}
+	}
+
+	/**
+	 * For backward compatibility.
+	 * */
+	@Override
+	@JsonSerialize(using = User.UserReferenceSerializer.class)
+	public User getCreatedUser() {
+		return getCreatedBy();
 	}
 
 	private static class UnixPathSerializer extends StdSerializer<String> {

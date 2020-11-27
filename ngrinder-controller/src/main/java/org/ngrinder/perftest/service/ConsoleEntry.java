@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -30,7 +30,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  */
 public class ConsoleEntry {
 
-	private String ip;
+	private final String ip;
 	/**
 	 * Console port number.
 	 */
@@ -60,15 +60,13 @@ public class ConsoleEntry {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		ConsoleEntry other = (ConsoleEntry) obj;
+
 		if (port == null) {
-			if (other.port != null) {
-				return false;
-			}
-		} else if (!port.equals(other.port)) {
-			return false;
+			return other.port == null;
 		}
-		return true;
+		return port.equals(other.port);
 	}
 
 	@Override

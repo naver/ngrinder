@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
@@ -22,8 +22,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -42,9 +40,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  *
  * @author JunHo Yoon
  */
-@SuppressWarnings("All")
+@SuppressWarnings({"ResultOfMethodCallIgnored", "unused"})
 public abstract class CompressionUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CompressionUtils.class);
 
 	/**
 	 * Unzip the given zipped file with given character set.
@@ -110,9 +107,9 @@ public abstract class CompressionUtils {
 		ZipInputStream zis = null;
 		FileOutputStream fos = null;
 		try {
-			File folder = destDir;
-			if (!folder.exists()) {
-				folder.mkdir();
+
+			if (!destDir.exists()) {
+				destDir.mkdir();
 			}
 
 			zis = new ZipInputStream(is);
@@ -246,7 +243,7 @@ public abstract class CompressionUtils {
 		byte[] buf = new byte[8 * 1024];
 		String name;
 
-		Stack<File> stack = new Stack<File>();
+		Stack<File> stack = new Stack<>();
 		File root;
 		if (src.isDirectory()) {
 			if (includeSrc) {
@@ -254,8 +251,8 @@ public abstract class CompressionUtils {
 				root = src.getParentFile();
 			} else {
 				File[] fs = checkNotNull(src.listFiles());
-				for (int i = 0; i < fs.length; i++) {
-					stack.push(fs[i]);
+				for (File f : fs) {
+					stack.push(f);
 				}
 
 				root = src;
@@ -270,11 +267,11 @@ public abstract class CompressionUtils {
 			name = toPath(root, f);
 			if (f.isDirectory()) {
 				File[] fs = checkNotNull(f.listFiles());
-				for (int i = 0; i < fs.length; i++) {
-					if (fs[i].isDirectory()) {
-						stack.push(fs[i]);
+				for (File file : fs) {
+					if (file.isDirectory()) {
+						stack.push(file);
 					} else {
-						stack.add(0, fs[i]);
+						stack.add(0, file);
 					}
 				}
 			} else {
@@ -319,7 +316,7 @@ public abstract class CompressionUtils {
 	 */
 	@SuppressWarnings("resource")
 	public static List<File> untar(final File inFile, final File outputDir) {
-		final List<File> untaredFiles = new LinkedList<File>();
+		final List<File> untaredFiles = new LinkedList<>();
 		InputStream is = null;
 		TarArchiveInputStream debInputStream = null;
 		try {
@@ -405,7 +402,6 @@ public abstract class CompressionUtils {
 	 *
 	 * @param jarFile   jar file
 	 * @param processor jar file entry predicate
-	 * @throws IOException thrown when having IO problem.
 	 */
 	public static void processJarEntries(File jarFile, ZipEntryProcessor processor) {
 		try {
@@ -481,11 +477,11 @@ public abstract class CompressionUtils {
 	/**
 	 * Add the given byte into tar.
 	 *
-	 * @param tarStream   TarArchive outputStream
-	 * @param data        data byte array
-	 * @param path        relative path to append
-	 * @param size        size of stream
-	 * @param mode        mode for this entry
+	 * @param tarArchiveOutputStream   TarArchive outputStream
+	 * @param data                     data byte array
+	 * @param path                     relative path to append
+	 * @param size                     size of stream
+	 * @param mode                     mode for this entry
 	 * @throws IOException thrown when having IO problem.
 	 */
 	public static void addByteToTar(TarArchiveOutputStream tarArchiveOutputStream, byte[] data, String path, long size, int mode) throws IOException {
@@ -530,10 +526,10 @@ public abstract class CompressionUtils {
 
 
 	public interface ZipEntryProcessor {
-		public void process(ZipFile zipFile, ZipEntry je) throws IOException;
+		void process(ZipFile zipFile, ZipEntry je) throws IOException;
 	}
 
 	public interface FilePredicate {
-		public boolean evaluate(Object object);
+		boolean evaluate(Object object);
 	}
 }

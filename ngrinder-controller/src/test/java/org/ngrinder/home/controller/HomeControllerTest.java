@@ -26,9 +26,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.Map;
 

@@ -38,7 +38,7 @@
                                              :src="`${contextPath}${perftestStatus.iconPath}`"/>
                                     </div>
                                     <div class="ml-auto" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
-                                        <div class="control-group">
+                                        <div class="control-group start-btn-container">
                                             <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
                                                 <i class="fa fa-clone mr-1"></i>
                                                 <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
@@ -76,7 +76,7 @@
                         <a v-show="tab.display.report" href="#report-section" class="nav-link"
                            data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                     </li>
-                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdUser.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
+                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdBy.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdBy.userId}`" v-text="switchUserTitle"></a>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
@@ -110,7 +110,7 @@
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
     import Utils from '../../../utils.js';
-    import { TipType } from "../../../constants";
+    import { TipType } from '../../../constants';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -155,7 +155,7 @@
         static deserialize(test) {
             return {
                 id: test.id,
-                createdUser: test.createdUser,
+                createdBy: test.createdBy,
                 progressMessage: test.progressMessage,
                 lastProgressMessage: test.lastProgressMessage,
                 testName: test.testName,
@@ -286,9 +286,9 @@
         }
 
         static prepareSvnScripts(route) {
-            let apiUrl = `/perftest/api/script`;
+            let apiUrl = '/perftest/api/script';
             if (route.params.isAdmin) {
-                apiUrl += `?ownerId=${route.params.test.createdUser.userId}`;
+                apiUrl += `?ownerId=${route.params.test.createdBy.userId}`;
             }
             return Base.prototype.$http.get(apiUrl)
                 .then(res => route.params.scriptsMap.svn = res.data);
@@ -492,7 +492,7 @@
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status.name = 'READY';
-            this.test.scheduledTime = scheduledTime;
+            this.test.scheduledTime = scheduledTime ? scheduledTime.getTime() : scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
@@ -513,11 +513,11 @@
         }
 
         get switchUserTitle() {
-            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdUser.userName} (${this.test.createdUser.userId})`;
+            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdBy.userName} (${this.test.createdBy.userId})`;
         }
 
         get disabled() {
-            return this.test.createdUser.userId !== this.ngrinder.currentUser.factualUser.id;
+            return this.test.createdBy.userId !== this.ngrinder.currentUser.factualUser.id;
         }
     }
 </script>
@@ -535,7 +535,7 @@
 
         fieldset {
             .d-flex {
-                width: 275px;
+                width: 304px;
             }
         }
 
@@ -544,7 +544,7 @@
         }
 
         .tag-container {
-            width: 414px;
+            width: 385px;
 
             label.control-label {
                 width: 60px;
@@ -635,6 +635,19 @@
             input {
                 vertical-align: top;
                 margin-left: 2px
+            }
+        }
+
+        .start-btn-container {
+            text-align: right;
+            width: 194px;
+
+            .btn-success {
+                width: 70px;
+            }
+
+            .btn-primary {
+                width: 120px;
             }
         }
 

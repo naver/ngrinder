@@ -27,7 +27,6 @@ import net.grinder.util.Pair;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.BooleanUtils;
@@ -72,7 +71,10 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static java.lang.Long.parseLong;
 import static java.lang.Long.valueOf;
+import static java.time.Instant.now;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static java.util.Arrays.asList;
@@ -84,12 +86,12 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.AopUtils.proxy;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.LoggingUtils.format;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
-import static org.ngrinder.model.Status.PREPARE_DISTRIBUTION;
-import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
+import static org.ngrinder.model.Status.*;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
 
 /**
@@ -99,6 +101,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.*;
  *
  * @since 3.0
  */
+@SuppressWarnings({"ResultOfMethodCallIgnored", "BooleanMethodIsAlwaysInverted", "UnusedReturnValue", "SameParameterValue", "ConstantConditions"})
 @RequiredArgsConstructor
 public class PerfTestService extends AbstractPerfTestService implements ControllerConstants, GrinderConstants {
 
@@ -200,7 +203,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(createdBy(user));
 		}
-		spec = spec.and(idSetEqual(ids));
+		spec = requireNonNull(spec).and(idSetEqual(ids));
 		return perfTestRepository.findAll(spec);
 	}
 
@@ -230,7 +233,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			spec = spec.and(createdBy(user));
 		}
 		if (statuses.length != 0) {
-			spec = spec.and(statusSetEqual(statuses));
+			spec = requireNonNull(spec).and(statusSetEqual(statuses));
 		}
 
 		return perfTestRepository.findAll(spec);
@@ -376,7 +379,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
-		perfTest.setFinishTime(new Date());
+		perfTest.setFinishTime(now());
 		updatePerfTestAfterTestFinish(perfTest);
 		return markProgressAndStatus(perfTest, status, message);
 	}
@@ -446,10 +449,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
 		final Set<User> currentlyRunningTestOwners = newHashSet();
 		for (PerfTest each : currentlyRunningTests) {
-			currentlyRunningTestOwners.add(each.getCreatedUser());
+			currentlyRunningTestOwners.add(each.getCreatedBy());
 		}
 		return perfTestLists.stream()
-			.filter(perfTest -> !currentlyRunningTestOwners.contains(perfTest.getCreatedUser()))
+			.filter(perfTest -> !currentlyRunningTestOwners.contains(perfTest.getCreatedBy()))
 			.collect(toList());
 	}
 
@@ -560,7 +563,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			// Use default properties first
 			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
 
-			User user = perfTest.getCreatedUser();
+			User user = perfTest.getCreatedBy();
 
 			// Get all files in the script path
 			String scriptName = perfTest.getScriptName();
@@ -584,9 +587,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				grinderProperties.setInt(GRINDER_PROP_RUNS, 0);
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_RUNS, getSafe(perfTest.getRunCount()));
-				if (grinderProperties.containsKey(GRINDER_PROP_DURATION)) {
-					grinderProperties.remove(GRINDER_PROP_DURATION);
-				}
+				grinderProperties.remove(GRINDER_PROP_DURATION);
 			}
 			grinderProperties.setProperty(GRINDER_PROP_ETC_HOSTS,
 					StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
@@ -607,7 +608,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
 			grinderProperties.setInt(GRINDER_PROP_REPORT_TO_CONSOLE, 500);
-			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
+			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedBy().getUserId());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, geUserLibraryClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
@@ -626,7 +627,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, property);
 				}
 			}
-			LOGGER.info("Grinder Properties : {} ", grinderProperties);
+			LOGGER.info(format(perfTest, "Grinder Properties : {} ", grinderProperties));
 			return grinderProperties;
 		} catch (Exception e) {
 			throw processException("error while prepare grinder property for " + perfTest.getTestName(), e);
@@ -642,7 +643,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	public ScriptHandler prepareDistribution(PerfTest perfTest) throws IOException {
 		File perfTestDistDirectory = getDistributionPath(perfTest);
-		User user = perfTest.getCreatedUser();
+		User user = perfTest.getCreatedBy();
 		String scm = perfTest.getScm();
 		FileEntry scriptEntry;
 
@@ -656,7 +657,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			String scriptName = perfTest.getScriptName();
 			gitHubFileEntryService.checkoutGitHubScript(perfTest, ghRepository, gitHubConfig);
 			scriptEntry = gitHubFileEntryService.getOne(ghRepository, gitHubConfig, scriptName);
-			gitHubFileEntryService.evictGitHubMavenGroovyCache(ghRepository, scriptName, gitHubConfig.getBranch());
+			gitHubFileEntryService.evictGitHubGroovyProjectScriptTypeCache(ghRepository, scriptName, gitHubConfig.getBranch());
 		} else {
 			scriptEntry = checkNotNull(
 				fileEntryService.getOne(user,
@@ -666,12 +667,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 		// Get all files in the script path.
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
-		LOGGER.info("Script type is '{}'.", handler.getKey());
+		LOGGER.info(format(perfTest, "Script type is '{}'.", handler.getKey()));
 
 		ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
-		handler.prepareDist(perfTest.getId(), user, scriptEntry, perfTestDistDirectory, config.getControllerProperties(),
+		handler.prepareDist(perfTest, user, scriptEntry, perfTestDistDirectory, config.getControllerProperties(),
 				processingResult);
-		LOGGER.info("File write is completed in {}", perfTestDistDirectory);
+		LOGGER.info(format(perfTest, "File write is completed in {}", perfTestDistDirectory));
 		if (!processingResult.isSuccess()) {
 			File logDir = new File(getLogFileDirectory(perfTest), "distribution_log.txt");
 			try {
@@ -679,7 +680,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			} catch (IOException e) {
 				noOp();
 			}
-			throw processException("Error while file distribution is prepared.");
+			throw processException("Error while file distribution is prepared.\n" +
+				"If you run groovy project type script, Please check your build script and make sure Maven or Gradle is installed.");
 		}
 		return handler;
 	}
@@ -762,25 +764,14 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			LOGGER.warn("Report {} for test {} does not exist.", dataType, testId);
 			return 0;
 		}
-		LineNumberReader lnr = null;
 
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		try {
-			in = new FileInputStream(targetFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
+		try (LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)))) {
 			lnr.skip(targetFile.length());
 			int lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max(lineNumber / pointCount, 1);
 		} catch (Exception e) {
 			LOGGER.error("Failed to get report data for {}", dataType, e);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
 		}
-
 		return interval;
 	}
 
@@ -838,7 +829,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (!logFileDirectory.exists() || !logFileDirectory.isDirectory()) {
 			return Collections.emptyList();
 		}
-		return asList(logFileDirectory.list());
+		return asList(requireNonNull(logFileDirectory.list()));
 	}
 
 	/**
@@ -983,7 +974,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatisticsData();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
-		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
+		LOGGER.info(format(perfTest, "Total Statistics is {}", totalStatistics));
 		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
 		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));
@@ -1032,7 +1023,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		// This will be not be effective on cluster mode.
 		consoleManager.getConsoleUsingPort(perfTest.getPort()).cancel();
 		perfTest.setStopRequest(true);
-		perfTestRepository.save(perfTest);
 	}
 
 	/**
@@ -1044,7 +1034,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 * @return true if it has
 	 */
 	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {
-		return perfTest != null && (user.getRole().hasPermission(type) || user.equals(perfTest.getCreatedUser()));
+		return perfTest != null && (user.getRole().hasPermission(type) || user.equals(perfTest.getCreatedBy()));
 	}
 
 	/*
@@ -1079,16 +1069,16 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 *
 	 * @return PerfTestStatisticsList PerfTestStatistics list
 	 */
-	@Cacheable(CACHE_CURRENT_PERFTEST_STATISTICS)
+	@Cacheable(LOCAL_CACHE_CURRENT_PERFTEST_STATISTICS)
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();
 		for (PerfTest each : getAll(null, getProcessingOrTestingTestStatus())) {
-			User lastModifiedUser = each.getCreatedUser().getUserBaseInfo();
-			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
+			User lastModifiedBy = each.getCreatedBy().getUserBaseInfo();
+			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedBy);
 			if (perfTestStatistics == null) {
-				perfTestStatistics = new PerfTestStatistics(lastModifiedUser);
-				perfTestPerUser.put(lastModifiedUser, perfTestStatistics);
+				perfTestStatistics = new PerfTestStatistics(lastModifiedBy);
+				perfTestPerUser.put(lastModifiedBy, perfTestStatistics);
 			}
 			perfTestStatistics.addPerfTest(each);
 		}
@@ -1172,14 +1162,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 				MONITOR_FILE_PREFIX + targetIP + ".data");
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		LineNumberReader lnr = null;
 		int interval = 0;
-		try {
-			in = new FileInputStream(monitorDataFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
+		try (LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(monitorDataFile)))) {
 			lnr.skip(monitorDataFile.length());
 			int lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max(lineNumber / pointCount, 1);
@@ -1187,10 +1171,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			LOGGER.info("Monitor data file does not exist at {}", monitorDataFile);
 		} catch (IOException e) {
 			LOGGER.info("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
 		}
 		return interval;
 	}
@@ -1207,9 +1187,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public Map<String, Object> getMonitorGraph(long testId, String targetIP, int dataInterval) {
 		Map<String, Object> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				MONITOR_FILE_PREFIX + targetIP + ".data");
-		BufferedReader br = null;
-		try {
+			MONITOR_FILE_PREFIX + targetIP + ".data");
+
+		try (BufferedReader br = new BufferedReader(new FileReader(monitorDataFile))) {
+
 			List<Long> userMemoryMetrics = new ArrayList<>();
 			List<String> cpuUsedMetrics = new ArrayList<>();
 			List<String> networkReceivedMetrics = new ArrayList<>();
@@ -1220,7 +1201,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			List<String> customData4Metrics = new ArrayList<>();
 			List<String> customData5Metrics = new ArrayList<>();
 
-			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
 			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec"
 			String line = br.readLine();
@@ -1237,7 +1217,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					if (NULL_STRING.equals(dataList[4]) || UNDEFINED_STRING.equals(dataList[4])) {
 						userMemoryMetrics.add(null);
 					} else {
-						userMemoryMetrics.add(valueOf(dataList[4]) - valueOf(dataList[3]));
+						userMemoryMetrics.add(parseLong(dataList[4]) - parseLong(dataList[3]));
 					}
 					addCustomData(cpuUsedMetrics, 5, dataList);
 					addCustomData(networkReceivedMetrics, 6, dataList);
@@ -1260,9 +1240,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			returnMap.put("customData5", customData5Metrics);
 		} catch (IOException e) {
 			LOGGER.info("Error while getting monitor {} data file at {}", targetIP, monitorDataFile);
-		} finally {
-			IOUtils.closeQuietly(br);
 		}
+
 		return returnMap;
 	}
 
@@ -1336,14 +1315,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	private int getRecordInterval(int imageWidth, File dataFile) {
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		LineNumberReader lnr = null;
 		int interval = 0;
-		try {
-			in = new FileInputStream(dataFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
+		try (LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(dataFile)))) {
 			lnr.skip(dataFile.length());
 			interval = Math.max((lnr.getLineNumber() + 1) / pointCount, 1);
 		} catch (FileNotFoundException e) {
@@ -1352,10 +1325,6 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		} catch (IOException e) {
 			LOGGER.error("Error while getting data file:{}", dataFile);
 			LOGGER.error(e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
 		}
 		return interval;
 	}
@@ -1373,11 +1342,10 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	public Map<String, Object> getReportPluginGraph(long testId, String plugin, String kind, int interval) {
 		Map<String, Object> returnMap = Maps.newHashMap();
 		File pluginDataFile = getReportPluginDataFile(testId, plugin, kind);
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(pluginDataFile));
-			String header = br.readLine();
 
+		try (BufferedReader br = new BufferedReader(new FileReader(pluginDataFile))) {
+
+			String header = br.readLine();
 			StringBuilder headerSB = new StringBuilder("[");
 			String[] headers = StringUtils.split(header, ",");
 			String[] refinedHeaders = StringUtils.split(header, ",");
@@ -1422,9 +1390,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		} catch (IOException e) {
 			LOGGER.error("Error while getting monitor: {} data file:{}", plugin, pluginDataFile);
 			LOGGER.error(e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(br);
 		}
+
 		return returnMap;
 	}
 
@@ -1480,7 +1447,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		FileFilter fileFilter = new WildcardFileFilter(key + "*.data");
 		File[] files = reportFolder.listFiles(fileFilter);
-		return Arrays.stream(files)
+		return Arrays.stream(requireNonNull(files))
 			.sorted(Comparator.comparing(o -> FilenameUtils.getBaseName(o.getName())))
 			.collect(toList());
 	}
@@ -1491,9 +1458,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		}
 
 		List<Float> metrics = new ArrayList<>();
-		try (FileReader reader = new FileReader(targetFile);
-			 BufferedReader br = new BufferedReader(reader);){
-
+		try (BufferedReader br = new BufferedReader(new FileReader(targetFile))) {
 			String data = br.readLine();
 			int current = 0;
 			while (StringUtils.isNotBlank(data)) {
@@ -1523,7 +1488,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@Override
 	public List<PerfTest> getAll(Date start, Date end) {
-		return perfTestRepository.findAllByCreatedTime(start, end);
+		return perfTestRepository.findAllByCreatedAt(start, end);
 	}
 
 	/*
@@ -1533,7 +1498,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	 */
 	@Override
 	public List<PerfTest> getAll(Date start, Date end, String region) {
-		return perfTestRepository.findAllByCreatedTimeAndRegion(start, end, region);
+		return perfTestRepository.findAllByCreatedAtAndRegion(start, end, region);
 	}
 
 

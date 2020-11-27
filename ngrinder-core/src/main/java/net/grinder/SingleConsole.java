@@ -41,7 +41,6 @@ import net.grinder.messages.agent.RefreshCacheMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.statistics.*;
 import net.grinder.util.*;
-import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,8 +56,6 @@ import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -70,6 +67,7 @@ import java.util.concurrent.ForkJoinPool;
 
 
 import static java.util.Arrays.stream;
+import static java.util.Collections.synchronizedMap;
 import static org.ngrinder.common.util.CollectionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -97,7 +95,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private ProcessReports[] processReports;
 
 	// It contains cached distribution files digest from each agents.
-	private CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
+	private final CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
 	private boolean cancel = false;
 
 	// for displaying tps graph in test running page
@@ -121,7 +119,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private boolean headerAdded = false;
 	private GrinderProperties properties;
 
-	private Map<String, BufferedWriter> fileWriterMap = newHashMap();
+	private final Map<String, BufferedWriter> fileWriterMap = newHashMap();
 	/**
 	 * the count of current sampling.
 	 */
@@ -143,11 +141,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	private int currentNotFinishedProcessCount = 0;
 
 	private static final int TOO_LOW_TPS_TIME = 60000;
-	private static final int TOO_MANY_ERROR_TIME = 10000;
-	private Map<Test, StatisticsSet> intervalStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
-	private Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Collections
-			.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
+
+	private final Map<Test, StatisticsSet> intervalStatisticMapPerTest = synchronizedMap(new LinkedHashMap<>());
+	private final Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = synchronizedMap(new LinkedHashMap<>());
     /**
      * cvs file Separator value.
      */
@@ -210,11 +206,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			return; // the console is not a valid console.(NullSingleConsole)
 		}
 		synchronized (eventSyncCondition) {
-			consoleFoundationThread = new Thread(new Runnable() {
-				public void run() {
-					getConsoleFoundation().run();
-				}
-			}, "console on port " + getConsolePort());
+			consoleFoundationThread = new Thread(() -> getConsoleFoundation().run(), "console on port " + getConsolePort());
 			consoleFoundationThread.setDaemon(true);
 			consoleFoundationThread.start();
 			eventSyncCondition.waitNoInterrruptException(5000);
@@ -271,11 +263,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 						getConsoleFoundation().getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
 				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
-		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
-			public void objectAndNumber(Object object, int number) {
-				agentIdentities.add((AgentIdentity) object);
-			}
-		});
+		agentIdentity.forEach((object, number) -> agentIdentities.add((AgentIdentity) object));
 		return agentIdentities;
 	}
 
@@ -379,7 +367,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				.sendToAddressedAgents(
 					new AgentAddress(processReport.getAgentProcessReport().getAgentIdentity()),
 					new RefreshCacheMessage(distFilesDigest))));
-		LOGGER.info("Send digest of distribution files to agent for refresh agent's cache directory.");
 	}
 
 	/**
@@ -416,22 +403,17 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		final FileDistribution fileDistribution = getConsoleComponent(FileDistribution.class);
 		final AgentCacheState agentCacheState = fileDistribution.getAgentCacheState();
 		final Condition cacheStateCondition = new Condition();
-		agentCacheState.addListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent ignored) {
-				synchronized (cacheStateCondition) {
-					cacheStateCondition.notifyAll();
-				}
+		agentCacheState.addListener(ignored -> {
+			synchronized (cacheStateCondition) {
+				cacheStateCondition.notifyAll();
 			}
 		});
 		final MutableBoolean safeDist = new MutableBoolean(safe);
 		ConsoleProperties consoleComponent = getConsoleComponent(ConsoleProperties.class);
 		final File file = consoleComponent.getDistributionDirectory().getFile();
 		if (listener != null) {
-			listener.apply(new Informer<FileDistributionListener>() {
-				@Override
-				public void inform(FileDistributionListener listener) {
-					safeDist.setValue(listener.start(file, safe));
-				}
+			listener.apply(fileDistributionListener -> {
+				safeDist.setValue(fileDistributionListener.start(file, safe));
 			});
 		}
 		final FileDistributionHandler distributionHandler = fileDistribution.getHandler();
@@ -445,11 +427,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					break;
 				}
 				if (listener != null) {
-					listener.apply(new Informer<FileDistributionListener>() {
-						@Override
-						public void inform(FileDistributionListener listener) {
-							listener.distributed(result.getFileName());
-						}
+					listener.apply(fileDistributionListener -> {
+						fileDistributionListener.distributed(result.getFileName());
 					});
 				}
 
@@ -542,10 +521,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				// However sometimes runningThread is over 0 but all process is
 				// marked as
 				// FINISHED.. It can be treated as finished status as well.
-			} else if (this.currentNotFinishedProcessCount == 0) {
-				return true;
 			}
-			return false;
+			return this.currentNotFinishedProcessCount == 0;
 		}
 	}
 
@@ -653,11 +630,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			// Adjust sampling delay.. run write data multiple times... when it
 			// takes longer than 1 sec.
 
-			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
-				@Override
-				public void inform(SamplingLifeCycleListener listener) {
-					listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics);
-				}
+			samplingLifeCycleListener.apply(listener -> {
+				listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics);
 			});
 			for (long index = 0, repeatCounts = gap + 1; index < repeatCounts; index++) {
 				final boolean lastCall = (samplingCount == 1 && index == 0) || (samplingCount != 1 && index == gap);
@@ -665,11 +639,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest, lastCall);
 				}
-				samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
-					@Override
-					public void inform(SamplingLifeCycleFollowUpListener listener) {
-						listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics, lastCall);
-					}
+				samplingLifeCycleFollowupListener.apply(listener -> {
+					listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics, lastCall);
 				});
 			}
 
@@ -803,10 +774,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			} else if (new Date().getTime() - momentWhenTpsBeganToHaveVerySmall >= TOO_LOW_TPS_TIME) {
 				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
 						TOO_LOW_TPS_TIME / 60000);
-				getListeners().apply(new Informer<ConsoleShutdownListener>() {
-					public void inform(ConsoleShutdownListener listener) {
-						listener.readyToStop(StopReason.TOO_LOW_TPS);
-					}
+				getListeners().apply(listener -> {
+					listener.readyToStop(StopReason.TOO_LOW_TPS);
 				});
 				momentWhenTpsBeganToHaveVerySmall = 0;
 
@@ -839,8 +808,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
 		Map<String, Object> result = newHashMap();
 		result.put("testTime", getCurrentRunningTime() / 1000);
-		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
-		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> cumulativeStatistics = new ArrayList<>();
+		List<Map<String, Object>> lastSampleStatistics = new ArrayList<>();
 		for (Test test : accumulatedStatisticMapPerTest.keySet()) {
 			Map<String, Object> accumulatedStatisticMap = newHashMap();
 			Map<String, Object> intervalStatisticsMap = newHashMap();
@@ -893,6 +862,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 *
 	 * @see net.grinder.ISingleConsole2#getCurrentExecutionCount()
 	 */
+	@SuppressWarnings("WrapperTypeMayBePrimitive")
 	@Override
 	public long getCurrentExecutionCount() {
 		Map<?, ?> totalStatistics = (Map<?, ?>) getStatisticsData().get("totalStatistics");
@@ -1034,10 +1004,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	private void checkExecutionErrors(ProcessReports[] processReports) {
 		if (samplingCount == 0 && ArrayUtils.isNotEmpty(this.processReports) && ArrayUtils.isEmpty(processReports)) {
-			getListeners().apply(new Informer<ConsoleShutdownListener>() {
-				public void inform(ConsoleShutdownListener listener) {
-					listener.readyToStop(StopReason.SCRIPT_ERROR);
-				}
+			getListeners().apply(listener -> {
+				listener.readyToStop(StopReason.SCRIPT_ERROR);
 			});
 		}
 	}
@@ -1120,7 +1088,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	}
 
 	protected Map<String, Object> getNullStatisticsData() {
-		Map<String, Object> result = new HashMap<String, Object>(1);
+		Map<String, Object> result = new HashMap<>(1);
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
 	}
@@ -1176,12 +1144,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			@Override
 			public void newTests(Set<Test> newTests, ModelTestIndex modelTestIndex) {
 				for (final Test each : newTests) {
-					SingleConsole.this.sampleModel.addSampleListener(each, new SampleListener() {
-						@Override
-						public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-							intervalStatisticMapPerTest.put(each, intervalStatistics.snapshot());
-							accumulatedStatisticMapPerTest.put(each, cumulativeStatistics.snapshot());
-						}
+					SingleConsole.this.sampleModel.addSampleListener(each, (intervalStatistics, cumulativeStatistics) -> {
+						intervalStatisticMapPerTest.put(each, intervalStatistics.snapshot());
+						accumulatedStatisticMapPerTest.put(each, cumulativeStatistics.snapshot());
 					});
 				}
 			}
@@ -1192,7 +1157,6 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		});
 		informTestSamplingStart();
 		this.sampleModel.start();
-		LOGGER.info("Sampling is started");
 	}
 
 	/**
@@ -1204,52 +1168,39 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			this.sampleModel.reset();
 			this.sampleModel.stop();
 		}
-		LOGGER.info("Sampling is stopped");
 		informTestSamplingEnd();
 	}
 
 	private void informTestSamplingStart() {
-		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
-			@Override
-			public void inform(SamplingLifeCycleListener listener) {
-				try {
-					listener.onSamplingStarted();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while running sampling start listener", e);
-				}
+		samplingLifeCycleListener.apply(listener -> {
+			try {
+				listener.onSamplingStarted();
+			} catch (Exception e) {
+				LOGGER.error("Error occurred while running sampling start listener", e);
 			}
 		});
-		samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
-			@Override
-			public void inform(SamplingLifeCycleFollowUpListener listener) {
-				try {
-					listener.onSamplingStarted();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while running sampling start listener", e);
-				}
+		samplingLifeCycleFollowupListener.apply(listener -> {
+			try {
+				listener.onSamplingStarted();
+			} catch (Exception e) {
+				LOGGER.error("Error occurred while running sampling start listener", e);
 			}
 		});
 	}
 
 	private void informTestSamplingEnd() {
-		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
-			@Override
-			public void inform(SamplingLifeCycleListener listener) {
-				try {
-					listener.onSamplingEnded();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while running sampling end listener", e);
-				}
+		samplingLifeCycleListener.apply(listener -> {
+			try {
+				listener.onSamplingEnded();
+			} catch (Exception e) {
+				LOGGER.error("Error occurred while running sampling end listener", e);
 			}
 		});
-		samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
-			@Override
-			public void inform(SamplingLifeCycleFollowUpListener listener) {
-				try {
-					listener.onSamplingEnded();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while running sampling end listener", e);
-				}
+		samplingLifeCycleFollowupListener.apply(listener -> {
+			try {
+				listener.onSamplingEnded();
+			} catch (Exception e) {
+				LOGGER.error("Error occurred while running sampling end listener", e);
 			}
 		});
 	}

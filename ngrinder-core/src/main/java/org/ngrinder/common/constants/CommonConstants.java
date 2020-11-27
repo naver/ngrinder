@@ -19,8 +19,8 @@ package org.ngrinder.common.constants;
  * @since 3.3
  */
 public interface CommonConstants {
-	public static final String PROP_COMMON_VERBOSE = "common.verbose";
-	public static final String PROP_COMMON_START_MODE = "common.start_mode";
-	public static final String PROP_COMMON_DEV_MODE = "common.dev_mode";
-	public static final String PROP_COMMON_SILENT_MODE = "common.silent_mode";
+	String PROP_COMMON_VERBOSE = "common.verbose";
+	String PROP_COMMON_START_MODE = "common.start_mode";
+	String PROP_COMMON_DEV_MODE = "common.dev_mode";
+	String PROP_COMMON_SILENT_MODE = "common.silent_mode";
 }

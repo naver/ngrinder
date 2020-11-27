@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -23,8 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 
 /**
  * In addition {@link org.ngrinder.AbstractNGrinderTransactionalTest}, this class provides basic function to
@@ -61,7 +64,7 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		tagRepository.flush();
 	}
 
-	public PerfTest newPerfTest(String testName, Status status, Date scheduledTime) {
+	public PerfTest newPerfTest(String testName, Status status, Instant scheduledTime) {
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
 		test.setThreshold("D");
@@ -78,14 +81,14 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setRampUpInitSleepTime(0);
 		test.setRampUpIncrementInterval(1000);
 		test.setStatus(status);
-		test.setCreatedUser(getTestUser());
+		test.setCreatedBy(getTestUser());
 		test.setRegion(config.getRegion());
 		test.setSamplingInterval(1);
 		test.setScm("svn");
 		return test;
 	}
 
-	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
+	public PerfTest createPerfTest(String testName, Status status, Instant scheduledTime) {
 		PerfTest perftest = newPerfTest(testName, status, scheduledTime);
 		return createPerfTest(perftest);
 	}

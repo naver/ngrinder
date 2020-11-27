@@ -2,4 +2,4 @@
 echo "copying ngrinder-controller"
 mkdir -p controller/binary
 rm controller/binary/ngrinder*
-cp ../ngrinder-controller/target/*.war controller/binary/
+cp ../ngrinder-controller/build/libs/*.war controller/binary/

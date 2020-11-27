@@ -19,6 +19,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -26,13 +27,12 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
 import org.ngrinder.script.repository.GitHubFileEntryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -47,6 +47,7 @@ import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.FileUtils.copyResourceToFile;
+import static org.ngrinder.common.util.LoggingUtils.format;
 
 /**
  * Script per language handler. This is the superclass for all sub
@@ -56,12 +57,14 @@ import static org.ngrinder.common.util.FileUtils.copyResourceToFile;
  * @since 3.2
  */
 @Getter
+@Slf4j
 public abstract class ScriptHandler implements ControllerConstants {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(JythonScriptHandler.class);
+
 	private final String codemirrorKey;
 	private final String title;
 	private final String extension;
 	private final String key;
+	private final boolean creatable;
 
 	/**
 	 * Constructor.
@@ -71,11 +74,12 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @param title         title of the handler
 	 * @param codeMirrorKey code mirror key
 	 */
-	public ScriptHandler(String key, String extension, String title, String codeMirrorKey) {
+	public ScriptHandler(String key, String extension, String title, String codeMirrorKey, boolean creatable) {
 		this.key = key;
 		this.extension = extension;
 		this.title = title;
 		this.codemirrorKey = codeMirrorKey;
+		this.creatable = creatable;
 	}
 
 	@Autowired
@@ -112,7 +116,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 */
 	protected abstract Integer order();
 
-	@SuppressWarnings("SpellCheckingInspection")
+	@SuppressWarnings("unused")
 	@JsonProperty
 	public boolean isValidatable() {
 		return true;
@@ -133,17 +137,17 @@ public abstract class ScriptHandler implements ControllerConstants {
 	/**
 	 * Prepare the distribution.
 	 *
-	 * @param testCaseId       id of the test case. This is for the log identification.
+	 * @param perfTest         current running test.
 	 * @param user             user who will distribute the script.
 	 * @param scriptEntry      script to be distributed.
 	 * @param distDir          distribution target dir.
 	 * @param properties       properties set which is used for detailed distribution control.
 	 * @param processingResult processing result holder.
 	 */
-	public void prepareDist(Long testCaseId,
-	                        User user,
-	                        FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
-	                        ProcessingResultPrintStream processingResult) {
+	public void prepareDist(PerfTest perfTest,
+							User user,
+							FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
+							ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		if (scriptEntry.getRevision() != 0) {
@@ -160,7 +164,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 				}
 				File toDir = new File(distDir, calcDistSubPath(basePath, each));
 				processingResult.printf("%s is being written.\n", each.getPath());
-				LOGGER.info("{} is being written in {} for test {}", each.getPath(), toDir, testCaseId);
+				log.info(format(perfTest, "{} is being written in {}", each.getPath(), toDir));
 				if (isGitHubFileEntry(each)) {
 					gitHubFileEntryRepository.writeContentTo(each.getPath(), toDir);
 				} else {
@@ -172,7 +176,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 				"If you change your branch configuration, please click script refresh button before running test.", ex);
 		}
 		processingResult.setSuccess(true);
-		prepareDistMore(testCaseId, user, scriptEntry, distDir, properties, processingResult);
+		prepareDistMore(perfTest, user, scriptEntry, distDir, properties, processingResult);
 	}
 
 	protected boolean isGitHubFileEntry(FileEntry fileEntry) {
@@ -195,8 +199,9 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @param createLibAndResources true if lib and resources should be created
 	 * @return true if process more.
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
-	                                boolean createLibAndResources, String scriptContent) {
+									boolean createLibAndResources, String scriptContent) {
 		return true;
 	}
 
@@ -204,14 +209,14 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * Prepare the distribution more. This method is subject to be extended by
 	 * the subclass.
 	 *
-	 * @param testCaseId       test case id. This is for the log identification.
+	 * @param perfTest         current running test.
 	 * @param user             user
 	 * @param script           script entry to be distributed.
 	 * @param distDir          distribution directory
 	 * @param properties       properties
 	 * @param processingResult processing result holder
 	 */
-	protected void prepareDistMore(Long testCaseId, User user, FileEntry script, File distDir,
+	protected void prepareDistMore(PerfTest perfTest, User user, FileEntry script, File distDir,
 	                               PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 	}
 

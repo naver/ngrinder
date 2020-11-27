@@ -71,7 +71,6 @@ public class UserSignUpApiController {
 	 * Save a user.
 	 *
 	 * @param newUser user to be added.
-	 * @return success
 	 */
 	@PostMapping("/save")
 	public void save(@RequestBody User newUser) {

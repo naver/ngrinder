@@ -15,7 +15,7 @@ public class ScriptHandlerFactoryTest extends AbstractNGrinderTransactionalTest 
 	public void testFactoryCreation() {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/hello/world.groovy");
-		fileEntry.setCreatedUser(getTestUser());
+		fileEntry.setCreatedBy(getTestUser());
 		assertThat(factory.getHandler(fileEntry)).isInstanceOf(GroovyScriptHandler.class);
 		fileEntry.setPath("/hello/world.py");
 		assertThat(factory.getHandler(fileEntry)).isInstanceOf(JythonScriptHandler.class);

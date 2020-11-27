@@ -20,10 +20,13 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.*;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS;
+import static java.nio.charset.Charset.defaultCharset;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CompressionUtils.*;
@@ -42,7 +45,7 @@ public abstract class PackageHandler {
 	protected Set<String> getDependentLibs(URLClassLoader urlClassLoader) {
 		Set<String> libs = new HashSet<>();
 		try (InputStream dependencyStream = urlClassLoader.getResourceAsStream(this.getDependenciesFileName())) {
-			final String dependencies = IOUtils.toString(dependencyStream);
+			final String dependencies = IOUtils.toString(dependencyStream, defaultCharset());
 			for (String each : StringUtils.split(dependencies, ";")) {
 				libs.add(each.trim().replace("-SNAPSHOT", ""));
 			}
@@ -147,9 +150,9 @@ public abstract class PackageHandler {
 	 */
 	private String convertToConfigString(Map<String, Object> values) {
 		try (StringWriter writer = new StringWriter()) {
-			Configuration config = new Configuration();
+			Configuration config = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			config.setClassForTemplateLoading(this.getClass(), "/ngrinder_agent_home_template");
-			config.setObjectWrapper(new DefaultObjectWrapper());
+			config.setObjectWrapper(new DefaultObjectWrapper(DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 			Template template = config.getTemplate(getTemplateName());
 			template.process(values, writer);
 			return writer.toString();

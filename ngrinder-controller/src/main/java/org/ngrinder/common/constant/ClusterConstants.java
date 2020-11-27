@@ -19,12 +19,12 @@ package org.ngrinder.common.constant;
  * @since 3.3
  */
 public interface ClusterConstants {
-	public static final String PROP_CLUSTER_ENABLED = "cluster.enabled";
-	public static final String PROP_CLUSTER_HIDDEN_REGION = "cluster.hidden_region";
-	public static final String PROP_CLUSTER_MEMBERS = "cluster.members";
-	public static final String PROP_CLUSTER_PORT = "cluster.port";
-	public static final String PROP_CLUSTER_REGION = "cluster.region";
-	public static final String PROP_CLUSTER_HOST = "cluster.host";
-	public static final String PROP_CLUSTER_MODE = "cluster.mode";
-	public static final String PROP_CLUSTER_SAFE_DIST = "cluster.safe_dist";
+	String PROP_CLUSTER_ENABLED = "cluster.enabled";
+	String PROP_CLUSTER_HIDDEN_REGION = "cluster.hidden_region";
+	String PROP_CLUSTER_MEMBERS = "cluster.members";
+	String PROP_CLUSTER_PORT = "cluster.port";
+	String PROP_CLUSTER_REGION = "cluster.region";
+	String PROP_CLUSTER_HOST = "cluster.host";
+	String PROP_CLUSTER_MODE = "cluster.mode";
+	String PROP_CLUSTER_SAFE_DIST = "cluster.safe_dist";
 }

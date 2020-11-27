@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.scriptengine.exception;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Exception filtering processor.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
@@ -28,7 +28,7 @@ public abstract class AbstractExceptionProcessor {
 
 	/**
 	 * Filter exception.
-	 * 
+	 *
 	 * @param throwable	throwable
 	 * @return filtered {@link Throwable}
 	 */
@@ -38,10 +38,10 @@ public abstract class AbstractExceptionProcessor {
 
 	/**
 	 * Get the root cause of the given {@link Throwable} instance.
-	 * 
+	 *
 	 * It stops finding the root cause until it meets the null root cause or
 	 * net.grinder.engine.process.ShutdownException.
-	 * 
+	 *
 	 * @param throwable	throwable
 	 * @return root cause of the given {@link Throwable} instance.
 	 */
@@ -61,7 +61,7 @@ public abstract class AbstractExceptionProcessor {
 	/**
 	 * Return true if the given {@link Throwable} is by the generic grinder
 	 * shutdown event.
-	 * 
+	 *
 	 * @param cause	cause
 	 * @return true if generic shutdown
 	 */
@@ -78,7 +78,7 @@ public abstract class AbstractExceptionProcessor {
 
 	/**
 	 * Filter the stack trace elements with only interesting one.
-	 * 
+	 *
 	 * @param throwable throwable
 	 * @return {@link Throwable} instance with interested stacktrace elements.
 	 */
@@ -87,7 +87,7 @@ public abstract class AbstractExceptionProcessor {
 		while (t != null) {
 			// Note that this getBoolean access may well be synced...
 			StackTraceElement[] trace = t.getStackTrace();
-			List<StackTraceElement> newTrace = new ArrayList<StackTraceElement>();
+			List<StackTraceElement> newTrace = new ArrayList<>();
 			for (StackTraceElement stackTraceElement : trace) {
 				if (isApplicationClass(stackTraceElement.getClassName())) {
 					newTrace.add(stackTraceElement);
@@ -103,7 +103,7 @@ public abstract class AbstractExceptionProcessor {
 
 	/**
 	 * Check if the given class name is the application class or not.
-	 * 
+	 *
 	 * @param className	class name including package name
 	 * @return true if application class
 	 */
@@ -118,7 +118,7 @@ public abstract class AbstractExceptionProcessor {
 
 	/**
 	 * Get interesting packages.
-	 * 
+	 *
 	 * @return interesting packages
 	 */
 	@SuppressWarnings("UnusedDeclaration")
@@ -126,7 +126,7 @@ public abstract class AbstractExceptionProcessor {
 
 	/**
 	 * Get interesting packages.
-	 * 
+	 *
 	 * @return interesting packages
 	 */
 	protected abstract String[] getUninterestingPackages();

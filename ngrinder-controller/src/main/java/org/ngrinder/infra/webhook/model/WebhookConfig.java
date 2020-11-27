@@ -24,11 +24,11 @@ import lombok.*;
 import org.ngrinder.model.BaseEntity;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
+import static java.time.Instant.now;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 
 /**
@@ -36,6 +36,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashSet;
  *
  * @since 3.5.2
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Getter
 @Setter
 @Entity
@@ -44,8 +45,8 @@ import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 @Table(name = "WEBHOOK_CONFIG")
 public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
-	@Column(name = "created_user_id")
-	private String createdUserId;
+	@Column(name = "creator_id")
+	private String creatorId;
 
 	private boolean active;
 
@@ -58,11 +59,11 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
 	private String events;
 
-	@Column(name = "created_time")
-	private Date createdTime;
+	@Column(name = "created_at")
+	private Instant createdAt;
 
-	@Column(name = "last_modified_time")
-	private Date lastModifiedTime;
+	@Column(name = "last_modified_at")
+	private Instant lastModifiedAt;
 
 	@Transient
 	@Getter(value = AccessLevel.NONE)
@@ -70,7 +71,7 @@ public class WebhookConfig extends BaseEntity<WebhookConfig> {
 
 	@PreUpdate
 	public void preUpdate() {
-		this.lastModifiedTime = new Date();
+		this.lastModifiedAt = now();
 	}
 
 	public Set<Event> getEvents() {

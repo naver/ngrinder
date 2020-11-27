@@ -48,8 +48,8 @@
                 </div>
             </template>
 
-            <template slot="lastModifiedDate" slot-scope="props">
-                <span v-if="!!props.rowData.lastModifiedDate">{{ props.rowData.lastModifiedDate | dateFormat('YYYY-MM-DD HH:mm') }}</span>
+            <template slot="lastModifiedAt" slot-scope="props">
+                <span v-if="!!props.rowData.lastModifiedAt">{{ props.rowData.lastModifiedAt | dateFormat('YYYY-MM-DD HH:mm') }}</span>
             </template>
 
             <template slot="fileSize" slot-scope="props">

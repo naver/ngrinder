@@ -90,7 +90,7 @@ public enum Status {
 	/**
 	 * Detected Abnormal testing.
 	 */
-	ABNORMAL_TESTING(StatusCategory.TESTING),
+	ABNORMAL_TESTING(StatusCategory.ABNORMAL_TESTING),
 	/**
 	 * Test finished.
 	 */
@@ -191,17 +191,19 @@ public enum Status {
 				status.add(each);
 			}
 		}
-		return status.toArray(new Status[status.size()]);
+		return status.toArray(new Status[0]);
 	}
 
 	/**
 	 * Check this status is the working status.
 	 *
 	 * @param status status
-	 * @return true if it's in {@link StatusCategory}'s PROCESSING or TESTING.
+	 * @return true if it's in {@link StatusCategory}'s PROCESSING or TESTING or ABNORMAL_TESTING.
 	 */
 	private static boolean isWorkingStatus(Status status) {
-		return status.getCategory() == StatusCategory.PROGRESSING || status.getCategory() == StatusCategory.TESTING;
+		return status.getCategory() == StatusCategory.PROGRESSING ||
+			status.getCategory() == StatusCategory.TESTING ||
+			status.getCategory() == StatusCategory.ABNORMAL_TESTING;
 	}
 
 	/**
@@ -216,7 +218,7 @@ public enum Status {
 				status.add(each);
 			}
 		}
-		return status.toArray(new Status[status.size()]);
+		return status.toArray(new Status[0]);
 	}
 
 	/**
@@ -224,6 +226,7 @@ public enum Status {
 	 *
 	 * @return message key
 	 */
+	@SuppressWarnings("unused")
 	public String getSpringMessageKey() {
 		return "perftest.status." + name().toLowerCase();
 	}

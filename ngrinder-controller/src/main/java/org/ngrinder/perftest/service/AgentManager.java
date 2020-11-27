@@ -28,7 +28,6 @@ import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentPackageService;
@@ -332,9 +331,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	public synchronized AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset) {
 		final int updateChunkSize = getUpdateChunkSize();
 		byte[] buffer = new byte[updateChunkSize];
-		RandomAccessFile agentPackageReader = null;
-		try {
-			agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r");
+
+		try (RandomAccessFile agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r")) {
 			agentPackageReader.seek(offset);
 			int count = agentPackageReader.read(buffer, 0, updateChunkSize);
 			byte[] bytes = buffer;
@@ -347,8 +345,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 					CRC32ChecksumUtils.getCRC32Checksum(bytes));
 		} catch (Exception e) {
 			LOGGER.error("Error while reading agent package, its offset is {} and details {}:", offset, e);
-		} finally {
-			IOUtils.closeQuietly(agentPackageReader);
 		}
 		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 	}

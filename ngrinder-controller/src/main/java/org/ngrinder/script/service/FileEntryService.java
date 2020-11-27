@@ -48,7 +48,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
 import static org.apache.commons.compress.utils.CharsetNames.UTF_8;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_FILE_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.DIST_CACHE_FILE_ENTRIES;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -97,7 +97,7 @@ public class FileEntryService {
 			}
 		});
 		svnClientManager = fileEntityRepository.getSVNClientManager();
-		fileEntryCache = cacheManager.getCache(CACHE_FILE_ENTRIES);
+		fileEntryCache = cacheManager.getCache(DIST_CACHE_FILE_ENTRIES);
 	}
 
 	/**
@@ -147,6 +147,7 @@ public class FileEntryService {
 		return getOne(user, ".gitconfig.yml", -1L) != null;
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
 		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
 	}
@@ -162,7 +163,7 @@ public class FileEntryService {
 	 * @param user user
 	 * @return cached {@link FileEntry} list
 	 */
-	@Cacheable(value = CACHE_FILE_ENTRIES, key = "#user.userId")
+	@Cacheable(value = DIST_CACHE_FILE_ENTRIES, key = "#user.userId")
 	public List<FileEntry> getAll(User user) {
 		prepare(user);
 		List<FileEntry> allFileEntries;
@@ -279,7 +280,7 @@ public class FileEntryService {
 		try {
 			URL url = new URL(urlString);
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
-			return (url.getHost() + urlPath).replaceAll("[;\\&\\?\\%\\$\\-\\#]", "_");
+			return (url.getHost() + urlPath).replaceAll("[;&?%$\\-#]", "_");
 		} catch (MalformedURLException e) {
 			throw processException("Error while translating " + urlString, e);
 		}
@@ -337,13 +338,12 @@ public class FileEntryService {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
-		String nullOptions = null;
 		if (scriptHandler instanceof ProjectHandler) {
 			String[] pathPart = dividePathAndFile(path);
-			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, nullOptions);
+			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, null);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-					false, nullOptions);
+					false, null);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}

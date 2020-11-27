@@ -27,11 +27,11 @@ import org.ngrinder.infra.webhook.repository.WebhookConfigRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Optional;
 
+import static java.time.Instant.now;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.infra.webhook.repository.WebhookConfigSpecification.createdUserIdEqual;
+import static org.ngrinder.infra.webhook.repository.WebhookConfigSpecification.creatorIdEqual;
 
 @Slf4j
 @Service
@@ -43,18 +43,18 @@ public class WebhookConfigService {
 	@Transactional
 	public void save(WebhookConfig webhookConfig) {
 		checkNotNull(webhookConfig);
-		Optional<WebhookConfig> findOne = webhookConfigRepository.findOne(createdUserIdEqual(webhookConfig.getCreatedUserId()));
+		Optional<WebhookConfig> findOne = webhookConfigRepository.findOne(creatorIdEqual(webhookConfig.getCreatorId()));
 		if (findOne.isPresent()) {
 			WebhookConfig existingWebhookConfig = findOne.get();
 			existingWebhookConfig.update(webhookConfig);
 			return;
 		}
-		webhookConfig.setCreatedTime(new Date());
+		webhookConfig.setCreatedAt(now());
 		webhookConfigRepository.save(webhookConfig);
 	}
 
-	public WebhookConfig getOne(String createdUserId) {
-		Optional<WebhookConfig> webhookConfig = webhookConfigRepository.findOne(createdUserIdEqual(createdUserId));
+	public WebhookConfig getOne(String createdBy) {
+		Optional<WebhookConfig> webhookConfig = webhookConfigRepository.findOne(creatorIdEqual(createdBy));
 		return webhookConfig.orElse(null);
 	}
 }

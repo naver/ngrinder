@@ -1,0 +1,24 @@
+apply plugin: "java"
+
+group = "ngrinder"
+version = "0.0.1"
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+ext {
+    ngrinder_version = "3.5.3"
+}
+
+dependencies {
+    compileOnly (group: "org.ngrinder", name: "ngrinder-groovy", version: ngrinder_version)
+    // implementation (group: "commons-io", name: "commons-io", version: "2.0.1")
+}

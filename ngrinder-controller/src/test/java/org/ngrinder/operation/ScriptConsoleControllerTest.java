@@ -13,8 +13,8 @@
  */
 package org.ngrinder.operation;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTe
 
 		Map<String, Object> param = buildMap("script", "");
 		result = scriptController.run(param);
-		assertThat((String) result.get("result"), isEmptyString());
+		assertThat((String) result.get("result"), is(emptyString()));
 		param.put("script", "print \'hello\'");
 		result = scriptController.run(param);
 		assertThat(result.get("result"), notNullValue());

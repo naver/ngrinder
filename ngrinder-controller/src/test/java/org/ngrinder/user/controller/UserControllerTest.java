@@ -13,9 +13,10 @@
  */
 package org.ngrinder.user.controller;
 
+import static java.time.Instant.now;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.ngrinder.common.constant.WebConstants.JSON_SUCCESS;
 
@@ -29,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -119,8 +119,8 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setUserId(userId);
 		newUser.setUserName(userName);
 		newUser.setEmail("junoyoon@gmail.com");
-		newUser.setCreatedUser(getTestUser());
-		newUser.setCreatedDate(new Date());
+		newUser.setCreatedBy(getTestUser());
+		newUser.setCreatedAt(now());
 		newUser.setRole(Role.USER);
 		userApiController.save(getAdminUser(), newUser);
 	}

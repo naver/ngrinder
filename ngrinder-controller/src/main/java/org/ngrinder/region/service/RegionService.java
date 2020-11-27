@@ -56,7 +56,7 @@ public class RegionService {
 
 	private final HazelcastInstance hazelcastInstance;
 
-	private Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
+	private final Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
 		@Override
 		public Map<String, RegionInfo> get() {
 			Map<String, RegionInfo> regions = Maps.newHashMap();
@@ -73,14 +73,14 @@ public class RegionService {
 		}
 	}, REGION_CACHE_TIME_TO_LIVE_SECONDS, TimeUnit.SECONDS);
 
-	private Supplier<List<String>> allRegionNames = Suppliers.memoizeWithExpiration(new Supplier<List<String>>() {
+	private final Supplier<List<String>> allRegionNames = Suppliers.memoizeWithExpiration(new Supplier<List<String>>() {
 		@Override
 		public List<String> get() {
 			Set<Member> members = hazelcastInstance.getCluster().getMembers();
 			List<String> regionNames = new ArrayList<>();
 			for (Member member : members) {
 				if (member.getAttributes().containsKey(REGION_ATTR_KEY)) {
-					regionNames.add((String) member.getAttributes().get(REGION_ATTR_KEY));
+					regionNames.add(member.getAttributes().get(REGION_ATTR_KEY));
 				}
 			}
 			return regionNames;

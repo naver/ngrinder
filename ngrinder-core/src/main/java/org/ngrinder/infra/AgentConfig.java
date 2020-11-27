@@ -60,10 +60,10 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private PropertiesWrapper commonProperties;
 	private PropertiesWrapper internalProperties;
 
-	private PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
-	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
-	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
-	private PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
+	private final PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
+	private final PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
+	private final PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
+	private final PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
 
 	/**
 	 * Initialize.
@@ -79,6 +79,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return this;
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
 		final File agentConfig = home.getFile("agent.conf");
@@ -372,7 +373,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public static class NullAgentConfig extends AgentConfig {
-		public int counter = 0;
+		public int counter;
 		private int controllerPort = 0;
 
 		public NullAgentConfig(int i) {
@@ -397,7 +398,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		@Override
 		protected AgentHome resolveHome() {
 			AgentHome resolveHome = super.resolveHome();
-			File directory = new File(resolveHome.getDirectory(), "tmp_" + String.valueOf(counter));
+			File directory = new File(resolveHome.getDirectory(), "tmp_" + counter);
 			resolveHome = new AgentHome(directory);
 			try {
 				FileUtils.forceDeleteOnExit(directory);

@@ -10,7 +10,6 @@ import org.springframework.web.filter.*;
 import javax.servlet.Filter;
 
 @Configuration
-@SuppressWarnings("unchecked")
 public class ServletFilterConfig {
 
 	@Value("${server.default-encoding}")

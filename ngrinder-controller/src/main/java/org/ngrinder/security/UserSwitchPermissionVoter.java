@@ -18,9 +18,11 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.user.service.UserService;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
@@ -33,7 +35,10 @@ import org.springframework.stereotype.Component;
  * @since 3.2
  */
 @Component("userSwitchPermissionVoter")
+@AllArgsConstructor
 public class UserSwitchPermissionVoter implements AccessDecisionVoter<FilterInvocation> {
+
+	private final UserService userService;
 
 	@Override
 	public boolean supports(ConfigAttribute attribute) {
@@ -54,8 +59,8 @@ public class UserSwitchPermissionVoter implements AccessDecisionVoter<FilterInvo
 			return ACCESS_DENIED;
 		}
 		SecuredUser secureUser = cast(authentication.getPrincipal());
-		User user = secureUser.getUser();
-		if (user.getRole() == Role.ADMIN) {
+		User loginUser = secureUser.getUser();
+		if (loginUser.getRole() == Role.ADMIN) {
 			return ACCESS_GRANTED;
 		}
 
@@ -63,6 +68,7 @@ public class UserSwitchPermissionVoter implements AccessDecisionVoter<FilterInvo
 		if (secureUser.getUsername().equals(realm)) {
 			return ACCESS_GRANTED;
 		} else {
+			User user = userService.getOneWithEagerFetch(loginUser.getUserId());
 			List<User> owners = user.getOwners();
 			for (User each : owners) {
 				if (realm.equals(each.getUserId())) {

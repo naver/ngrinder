@@ -93,7 +93,7 @@
                     <i v-if="isSuccess(activation.statusCode)" class="fa fa-check"></i>
                     <i v-else class="fa fa-exclamation"></i>
                     <span class="pointer-cursor" v-text="activation.uuid" @click="toggleDetail(activation)"></span>
-                    <span class="createdTime float-right">{{ activation.createdTime | dateFormat('YYYY-MM-DD HH:mm') }}</span>
+                    <span class="createdTime float-right">{{ activation.createdAt | dateFormat('YYYY-MM-DD HH:mm') }}</span>
                     <div v-show="activation.showDetail" class="activation-detail mt-4">
                         <nav>
                             <div class="nav nav-tabs" role="tablist">
@@ -158,7 +158,7 @@
             contentType: 'JSON',
             active: true,
             events: '',
-            createdUserId: '',
+            creatorId: '',
         };
 
         activationPage = 0;
@@ -178,7 +178,7 @@
             this.$validator.validate('payloadUrl').then(result => {
                 if (result) {
                     this.config.events = this.getEventToken();
-                    this.config.createdUserId = this.ngrinder.currentUser.factualUser.id;
+                    this.config.creatorId = this.ngrinder.currentUser.factualUser.id;
 
                     this.$http.post('/webhook/api/', this.config)
                         .then(() => this.showSuccessMsg('save successfully'))
@@ -304,7 +304,7 @@
         get getActivationRequestParams() {
             return {
                 params: {
-                    createdUserId: this.ngrinder.currentUser.factualUser.id,
+                    creatorId: this.ngrinder.currentUser.factualUser.id,
                     sort: 'id,DESC',
                     'page.page': this.activationPage,
                     'page.size': 10,

@@ -13,8 +13,6 @@
  */
 package net.grinder;
 
-import net.grinder.AgentDaemon.AgentShutDownListener;
-import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.*;
 import net.grinder.engine.agent.Agent;
@@ -41,9 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -61,34 +59,26 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class AgentController implements Agent, AgentConstants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
+	private static final SystemDataModel emptySystemDataModel = new SystemDataModel();
 
-	private final AgentConfig agentConfig;
-
-	private Timer m_timer;
 	@SuppressWarnings("FieldCanBeLocal")
 	private final Condition m_eventSynchronization = new Condition();
+	private final AgentConfig agentConfig;
 	private final AgentControllerIdentityImplementation m_agentIdentity;
 	private final AgentControllerServerListener m_agentControllerServerListener;
-	private FanOutStreamSender m_fanOutStreamSender;
-	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
-			ConnectionType.AGENT);
+	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(ConnectionType.AGENT);
 	private final Condition m_eventSyncCondition;
+	private final SystemDataCollector agentSystemDataCollector;
+	private final String version;
+
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
 
-	private SystemDataCollector agentSystemDataCollector = new SystemDataCollector();
-
 	private int m_connectionPort = 0;
-
-	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
-
-	private AgentUpdateHandler agentUpdateHandler;
-
 	private int retryCount = 0;
-
-	private String version;
-
+	private Timer m_timer;
+	private FanOutStreamSender m_fanOutStreamSender;
+	private AgentUpdateHandler agentUpdateHandler;
 	private ConnectionAgentCommunicationProxy communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
-
 	private ServerSocket connectionAgentSocket;
 
 	/**
@@ -96,7 +86,7 @@ public class AgentController implements Agent, AgentConstants {
 	 *
 	 * @param eventSyncCondition event sync condition to wait until agent start to run.
 	 */
-	public AgentController(Condition eventSyncCondition, AgentConfig agentConfig) throws GrinderException {
+	public AgentController(Condition eventSyncCondition, AgentConfig agentConfig) {
 		this.m_eventSyncCondition = eventSyncCondition;
 
 		this.agentConfig = agentConfig;
@@ -112,11 +102,9 @@ public class AgentController implements Agent, AgentConstants {
 
 	/**
 	 * Run the agent controller.
-	 *
-	 * @throws GrinderException occurs when the test execution is failed.
 	 */
 	@SuppressWarnings("ConstantConditions")
-	public void run() throws GrinderException {
+	public void run() {
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
 		}
@@ -187,12 +175,10 @@ public class AgentController implements Agent, AgentConstants {
 					if (agentConfig.isConnectionMode()) {
 						final int localConnectionPort = NetworkUtils.getFreePort();
 						grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, localConnectionPort);
-						communicationProxy = new ConnectionAgentCommunicationProxy(localConnectionPort, agentConfig.getConnectionAgentPort(), LOGGER, new ConnectionAgentCommunicationProxy.CommunicationMessageSender() {
-							@Override
-							public void send() {
-								conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort()));
-							}
-						});
+						communicationProxy = new ConnectionAgentCommunicationProxy(localConnectionPort,
+							agentConfig.getConnectionAgentPort(),
+							LOGGER,
+							() -> conCom.sendMessage(new ConnectionAgentCommunicationMessage(m_connectionPort, m_agentIdentity.getIp(), agentConfig.getConnectionAgentPort())));
 						releaseConnectionAgentSocket();
 						communicationProxy.start();
 					}
@@ -200,17 +186,14 @@ public class AgentController implements Agent, AgentConstants {
 					agentDaemon.run(grinderProperties);
 
 					agentDaemon.resetListeners();
-					agentDaemon.addListener(new AgentShutDownListener() {
-						@Override
-						public void shutdownAgent() {
-							LOGGER.info("Send log for {}", testId);
-							sendLog(conCom, testId);
-							m_state = AgentControllerState.READY;
-							m_connectionPort = 0;
-							communicationProxy.shutdown();
-							communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
-							occupyConnectionAgentSocket();
-						}
+					agentDaemon.addListener(() -> {
+						LOGGER.info("Send log for {}", testId);
+						sendLog(conCom, testId);
+						m_state = AgentControllerState.READY;
+						m_connectionPort = 0;
+						communicationProxy.shutdown();
+						communicationProxy = ConnectionAgentCommunicationProxy.EMPTY;
+						occupyConnectionAgentSocket();
 					});
 				}
 				// Ignore any pending start messages.
@@ -301,12 +284,7 @@ public class AgentController implements Agent, AgentConstants {
 		if (!logFolder.exists()) {
 			return;
 		}
-		File[] logFiles = logFolder.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return (name.endsWith(".log"));
-			}
-		});
+		File[] logFiles = logFolder.listFiles((dir, name) -> (name.endsWith(".log")));
 
 		if (logFiles == null || ArrayUtils.isEmpty(logFiles)) {
 			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());
@@ -318,7 +296,7 @@ public class AgentController implements Agent, AgentConstants {
 			logFiles = new File[]{logFiles[0]};
 		}
 		final byte[] compressedLog = LogCompressUtils.compress(logFiles,
-				Charset.defaultCharset(), Charset.forName("UTF-8")
+				Charset.defaultCharset(), StandardCharsets.UTF_8
 		);
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, compressedLog, new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
@@ -342,7 +320,7 @@ public class AgentController implements Agent, AgentConstants {
 		if (consoleCommunication != null) {
 			try {
 				consoleCommunication.sendCurrentState();
-			} catch (CommunicationException e) {
+			} catch (RuntimeException e) {
 				LOGGER.error("Error while sending current state : {}.", e.getMessage());
 				LOGGER.debug("The error detail is ", e);
 			}
@@ -422,7 +400,7 @@ public class AgentController implements Agent, AgentConstants {
 				public void run() {
 					try {
 						sendCurrentState();
-					} catch (CommunicationException e) {
+					} catch (RuntimeException e) {
 						cancel();
 						LOGGER.error("Error while sending current state:" + e.getMessage());
 						LOGGER.debug("The error detail is", e);
@@ -443,7 +421,7 @@ public class AgentController implements Agent, AgentConstants {
 			}
 		}
 
-		public void sendCurrentState() throws CommunicationException {
+		public void sendCurrentState() {
 			sendMessage(new AgentControllerProcessReportMessage(m_state, getSystemDataModel(), m_connectionPort, version));
 		}
 

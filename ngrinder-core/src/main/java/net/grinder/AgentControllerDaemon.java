@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -17,7 +17,6 @@ import net.grinder.common.GrinderException;
 import net.grinder.engine.agent.Agent;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -33,17 +32,17 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 public class AgentControllerDaemon implements Agent {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
 	private static final int LOG_FREQUENCY = 5;
-	private final AgentController agentController;
-	private Thread thread;
-	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
-	private boolean forceShutdown = false;
+
 	// event synchronization for
 	@SuppressWarnings("FieldCanBeLocal")
-	private Condition m_eventSyncCondition = new Condition();
+	private final Condition m_eventSyncCondition = new Condition();
+	private final AgentController agentController;
+	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
 
-	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
-
+	private Thread thread;
+	private boolean forceShutdown = false;
 
 	/**
 	 * Constructor.
@@ -53,7 +52,7 @@ public class AgentControllerDaemon implements Agent {
 	public AgentControllerDaemon(AgentConfig agentConfig) {
 		try {
 			agentController = new AgentController(m_eventSyncCondition, agentConfig);
-		} catch (GrinderException e) {
+		} catch (RuntimeException e) {
 			throw processException("Exception occurred while initiating the agent controller daemon", e);
 		}
 	}
@@ -62,30 +61,24 @@ public class AgentControllerDaemon implements Agent {
 	private long count = 0;
 
 	public void run() {
-		thread = new Thread(new Runnable() {
-			public void run() {
-				do {
-					try {
-						if (count++ % LOG_FREQUENCY == 0) {
-							LOGGER.info("The agent controller daemon is started.");
-						}
-						getAgentController().run();
-						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
-							public void inform(AgentControllerShutDownListener listener) {
-								listener.shutdownAgentController();
-							}
-						});
-					} catch (Exception e) {
-						LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
-						LOGGER.debug("The error detail is  ", e);
+		thread = new Thread(() -> {
+			do {
+				try {
+					if (count++ % LOG_FREQUENCY == 0) {
+						LOGGER.info("The agent controller daemon is started.");
 					}
-					if (isForceShutdown()) {
-						setForceShutdown(false);
-						break;
-					}
-					ThreadUtils.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
-				} while (true);
-			}
+					getAgentController().run();
+					getListeners().apply(AgentControllerShutDownListener::shutdownAgentController);
+				} catch (Exception e) {
+					LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
+					LOGGER.debug("The error detail is  ", e);
+				}
+				if (isForceShutdown()) {
+					setForceShutdown(false);
+					break;
+				}
+				ThreadUtils.sleep(GrinderConstants.AGENT_CONTROLLER_RETRY_INTERVAL);
+			} while (true);
 		}, "Agent Controller Thread");
 		thread.start();
 	}
@@ -99,7 +92,7 @@ public class AgentControllerDaemon implements Agent {
 		/**
 		 * Method which will be called when agent controller.
 		 */
-		public void shutdownAgentController();
+		void shutdownAgentController();
 	}
 
 	public ListenerSupport<AgentControllerShutDownListener> getListeners() {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -19,7 +19,6 @@ import net.grinder.communication.CommunicationDefaults;
 import net.grinder.engine.agent.Agent;
 import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
-import net.grinder.util.ListenerSupport.Informer;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -36,9 +35,9 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  */
 public class AgentDaemon implements Agent {
 	private volatile AgentImplementationEx agent;
-	private Thread thread = new Thread();
+	private Thread thread;
 	private GrinderProperties properties;
-	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
+	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<>();
 	private boolean forceShutdown = false;
 	public static final Logger LOGGER = LoggerFactory.getLogger("agent daemon");
 	private final AgentConfig m_agentConfig;
@@ -133,11 +132,9 @@ public class AgentDaemon implements Agent {
 			} catch (Exception e) {
 				LOGGER.error("While running an agent thread, an error occurred", e);
 			}
-			getListeners().apply(new Informer<AgentShutDownListener>() {
-				public void inform(AgentShutDownListener listener) {
-					listener.shutdownAgent();
-				}
-			});
+
+			getListeners().apply(AgentShutDownListener::shutdownAgent);
+
 			if (isForceShutdown()) {
 				setForceShutdown(false);
 			}
@@ -153,7 +150,7 @@ public class AgentDaemon implements Agent {
 		/**
 		 * AgentShutdown listening method.
 		 */
-		public void shutdownAgent();
+		void shutdownAgent();
 	}
 
 	public ListenerSupport<AgentShutDownListener> getListeners() {
@@ -164,17 +161,12 @@ public class AgentDaemon implements Agent {
 	 * Reset all shutdown listener.
 	 */
 	public void resetListeners() {
-		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<AgentDaemon.AgentShutDownListener>();
-		getListeners().apply(new Informer<AgentShutDownListener>() {
-			public void inform(AgentShutDownListener listener) {
-				backup.add(listener);
-			}
-		});
+		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<>();
 
-		backup.apply(new Informer<AgentShutDownListener>() {
-			public void inform(AgentShutDownListener listener) {
-				getListeners().remove(listener);
-			}
+		getListeners().apply(backup::add);
+
+		backup.apply(listener -> {
+			getListeners().remove(listener);
 		});
 	}
 
@@ -207,6 +199,7 @@ public class AgentDaemon implements Agent {
 		return forceShutdown;
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private void setForceShutdown(boolean force) {
 		this.forceShutdown = force;
 	}

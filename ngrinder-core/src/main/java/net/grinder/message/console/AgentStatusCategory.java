@@ -27,7 +27,7 @@ public enum AgentStatusCategory {
 	 */
 	ERROR("red.png", false);
 	private final String iconName;
-	private boolean active;
+	private final boolean active;
 
 	AgentStatusCategory(String iconName, boolean active) {
 		this.iconName = iconName;

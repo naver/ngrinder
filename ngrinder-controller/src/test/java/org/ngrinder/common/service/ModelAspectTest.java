@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.service;
 
@@ -21,10 +21,10 @@ import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -44,7 +44,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 		BaseModel<Object> baseModel = mock(BaseModel.class);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { baseModel });
 		modelAspect.beforeSave(joinPoint);
-		verify(baseModel, times(1)).setCreatedDate(any(Date.class));
+		verify(baseModel, times(1)).setCreatedAt(any(Instant.class));
 	}
 
 	@Test
@@ -58,6 +58,6 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 		when(joinPoint.getArgs()).thenReturn(new Object[] { baseModel });
 		setField(modelAspect, "springContext", springContext);
 		modelAspect.beforeSave(joinPoint);
-		verify(baseModel, times(1)).setLastModifiedDate(any(Date.class));
+		verify(baseModel, times(1)).setLastModifiedAt(any(Instant.class));
 	}
 }
