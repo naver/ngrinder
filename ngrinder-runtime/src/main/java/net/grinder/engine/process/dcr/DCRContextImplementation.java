@@ -28,8 +28,8 @@ import net.grinder.util.weave.Weaver;
 import net.grinder.util.weave.Weaver.TargetSource;
 import net.grinder.util.weave.WeavingException;
 import net.grinder.util.weave.agent.ExposeInstrumentation;
-import net.grinder.util.weave.j2se6.ASMTransformerFactory;
-import net.grinder.util.weave.j2se6.DCRWeaver;
+import net.grinder.util.weave.j2se8.ASMTransformerFactory;
+import net.grinder.util.weave.j2se8.DCRWeaver;
 import org.slf4j.Logger;
 
 import java.lang.instrument.Instrumentation;
