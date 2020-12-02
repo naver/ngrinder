@@ -206,7 +206,7 @@ public final class ASMTransformerFactory
 		}
 	}
 
-	private final class AddAdviceClassAdapter extends ClassAdapter {
+	private final class AddAdviceClassAdapter extends ClassVisitor {
 
 		private final Type m_internalClassType;
 		private final Map<Pair<String, String>, List<WeavingDetails>> m_weavingDetails;
@@ -216,7 +216,7 @@ public final class ASMTransformerFactory
 			Type internalClassType,
 			Map<Pair<String, String>, List<WeavingDetails>> weavingDetails) {
 
-			super(classVisitor);
+			super(Opcodes.ASM9, classVisitor);
 			m_internalClassType = internalClassType;
 			m_weavingDetails = weavingDetails;
 		}
@@ -229,7 +229,7 @@ public final class ASMTransformerFactory
 						  String superName,
 						  String[] interfaces) {
 
-			cv.visit(Math.max(originalVersion & 0xFFFF, Opcodes.V1_5),
+			cv.visit(Math.max(originalVersion & 0xFFFF, Opcodes.V1_8),
 				access,
 				name,
 				signature,
@@ -297,8 +297,12 @@ public final class ASMTransformerFactory
 		}
 	}
 
-	private interface ContextMethodVisitor extends MethodVisitor {
+	private interface ContextMethodVisitor {
 		Type getInternalClassName();
+
+		void visitVarInsn(int opcode, int var);
+
+		void visitLdcInsn(Object cst);
 	}
 
 	/**
@@ -334,7 +338,7 @@ public final class ASMTransformerFactory
 	 *
 	 * @author Philip Aston
 	 */
-	private final class AdviceMethodVisitor extends MethodAdapter implements ContextMethodVisitor, Opcodes {
+	private final class AdviceMethodVisitor extends MethodVisitor implements ContextMethodVisitor, Opcodes {
 
 		private final Type m_internalClassType;
 		private final List<WeavingDetails> m_weavingDetails;
@@ -349,7 +353,7 @@ public final class ASMTransformerFactory
 									int access,
 									String name,
 									List<WeavingDetails> weavingDetails) {
-			super(mv);
+			super(Opcodes.ASM9, mv);
 
 			m_internalClassType = internalClassType;
 			m_weavingDetails = weavingDetails;
