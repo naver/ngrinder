@@ -6,13 +6,14 @@ dependencies {
     compile (group: "commons-lang", name: "commons-lang", version:"2.6")
     compile (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
     compile (group: "junit", name: "junit", version: junit_version)
-    compile (group: "asm", name: "asm", version:"3.3.1")
+    compile (group: "org.ow2.asm", name: "asm", version: "9.0")
     compile (group: "org.python", name: "jython-standalone", version:"2.7.2")
     compile (group: "net.sf.grinder", name: "grinder", version:"3.9.1") {
         exclude (module: "clojure")
         exclude (module: "jython")
         exclude (module: "grinder-xmlbeans")
         exclude (module: "jedit-syntax")
+        exclude (module: "asm")
     }
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
