@@ -20,28 +20,23 @@
  */
 package net.grinder.scriptengine.groovy;
 
-import static net.grinder.script.Grinder.grinder;
-import net.grinder.plugin.http.HTTPRequest;
 import net.grinder.script.GTest;
 import net.grinder.script.InvalidContextException;
 import net.grinder.script.NonInstrumentableTypeException;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
-import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
-import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
-import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
-import net.grinder.scriptengine.groovy.junit.annotation.RunRate;
-
+import net.grinder.scriptengine.groovy.junit.annotation.*;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
+import org.ngrinder.http.HTTPRequest;
+import org.ngrinder.http.HTTPResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import HTTPClient.HTTPResponse;
+import static net.grinder.script.Grinder.grinder;
 
 /**
  * Grinder Runner Test
@@ -74,7 +69,7 @@ public class GrinderRunnerTest {
 
 		@BeforeClass
 		public static void beforeProcess() {
-			request = new HTTPRequest();
+			request = HTTPRequest.create();
 			try {
 				test.record(request);
 			} catch (NonInstrumentableTypeException e) {
@@ -90,7 +85,7 @@ public class GrinderRunnerTest {
 		@Test
 		public void doTest() throws Exception {
 			HTTPResponse result = request.GET("http://www.naver.com");
-			if (result.getStatusCode() != 200) {
+			if (result.code() != 200) {
 				grinder.getStatistics().getForLastTest().setSuccess(false);
 			} else {
 				grinder.getStatistics().getForLastTest().setSuccess(true);
@@ -102,7 +97,7 @@ public class GrinderRunnerTest {
 		public void doTest2() throws Exception {
 			grinder.getStatistics().setDelayReports(true);
 			HTTPResponse result = request.GET("http://www.google.co.kr");
-			if (result.getStatusCode() != 200) {
+			if (result.code() != 200) {
 				grinder.getStatistics().getForLastTest().setSuccess(false);
 			} else {
 				grinder.getStatistics().getForLastTest().setSuccess(true);
