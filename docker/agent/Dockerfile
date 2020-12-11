@@ -5,6 +5,7 @@ RUN apk update; apk add curl bash
 
 
 # Set up environment variables
+ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
 ENV BASE_DIR=/opt \
     NGRINDER_AGENT_BASE=/opt/ngrinder-agent \
     NGRINDER_AGENT_HOME=/opt/ngrinder-agent/.ngrinder-agent
