@@ -55,7 +55,6 @@ dependencies {
     compile (group: "com.h2database", name: "h2", version: "1.4.197")
     compile (group: "commons-fileupload", name: "commons-fileupload", version: "1.3.1")
     compile (group: "commons-dbcp", name: "commons-dbcp", version: "1.4")
-    compile (group: "cglib", name: "cglib", version: "2.2.2")
     compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
     compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
     compile (group: "jaxen", name: "jaxen", version: "1.1.4")
