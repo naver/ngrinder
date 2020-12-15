@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
+import static org.ngrinder.http.util.PredicateUtils.not;
 
 public class CookieManager {
 	private static final ThreadLocal<List<Cookie>> cookieJar = ThreadLocal.withInitial(ArrayList::new);
@@ -42,11 +43,11 @@ public class CookieManager {
 	}
 
 	private static List<Cookie> merge(List<Cookie> origin, List<Cookie> cookies) {
-		Predicate<Cookie> sameCookieFilter = originCookie ->
-			cookies.stream().anyMatch(cookie -> !cookie.name().equalsIgnoreCase(originCookie.name()));
+		Predicate<Cookie> sameCookieName = originCookie ->
+			cookies.stream().anyMatch(cookie -> cookie.name().equalsIgnoreCase(originCookie.name()));
 
 		List<Cookie> merged = origin.stream()
-			.filter(sameCookieFilter)
+			.filter(not(sameCookieName))
 			.collect(toList());
 		merged.addAll(cookies);
 

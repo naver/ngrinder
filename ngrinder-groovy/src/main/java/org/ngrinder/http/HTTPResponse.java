@@ -21,6 +21,7 @@
 package org.ngrinder.http;
 
 import okhttp3.Response;
+import org.ngrinder.http.util.JsonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

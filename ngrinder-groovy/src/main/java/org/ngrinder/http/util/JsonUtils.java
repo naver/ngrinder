@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ngrinder.http;
+package org.ngrinder.http.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +28,9 @@ import java.util.Map;
 
 public class JsonUtils {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	private JsonUtils() {
+	}
 
 	public static String serialize(Object object) {
 		try {
