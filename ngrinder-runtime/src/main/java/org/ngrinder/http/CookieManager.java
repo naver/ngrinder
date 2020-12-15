@@ -53,4 +53,8 @@ public class CookieManager {
 
 		return merged;
 	}
+
+	public static void reset() {
+		cookieJar.remove();
+	}
 }

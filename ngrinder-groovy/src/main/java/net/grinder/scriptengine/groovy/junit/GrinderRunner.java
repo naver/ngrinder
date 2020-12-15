@@ -291,10 +291,6 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	protected void registerRunNotifierListener(RunNotifier notifier) {
 		notifier.addFirstListener(new RunListener() {
-			@Override
-			public void testStarted(Description description) {
-
-			}
 
 			@Override
 			public void testRunStarted(Description description) {

@@ -30,6 +30,8 @@ import net.grinder.plugininterface.PluginThreadContext;
 import net.grinder.plugininterface.PluginThreadListener;
 import net.grinder.util.Sleeper;
 import net.grinder.util.TimeAuthority;
+import org.ngrinder.http.CookieManager;
+import org.ngrinder.http.ThreadContextHTTPClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -115,6 +117,12 @@ public class HTTPPluginThreadState
 		}
 
 		m_httpConnectionWrappers.clear();
+
+		// Discard all cookies
+		CookieManager.reset();
+
+		// Close connections from previous run
+		ThreadContextHTTPClient.reset();
 	}
 
 	public void setLastResponse(HTTPResponse lastResponse) {

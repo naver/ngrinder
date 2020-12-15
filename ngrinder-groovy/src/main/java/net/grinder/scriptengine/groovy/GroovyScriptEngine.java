@@ -118,6 +118,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		private GroovyWorkerRunnable(GrinderContextExecutor groovyRunner) throws EngineException {
 			this.m_groovyThreadRunner = groovyRunner;
 			this.notifier.addListener(new RunListener() {
+
 				@Override
 				public void testFailure(Failure failure) {
 					// Skip Generic Shutdown... It's not failure.

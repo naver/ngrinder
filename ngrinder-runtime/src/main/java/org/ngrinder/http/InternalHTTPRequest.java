@@ -39,6 +39,7 @@ import java.security.Security;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class InternalHTTPRequest {
 	static {
@@ -55,16 +56,16 @@ public class InternalHTTPRequest {
 
 	private static final CookieJar threadContextCookieJar = new ThreadContextCookieJar();
 
-	private final OkHttpClient client;
-
 	InternalHTTPRequest(List<Protocol> protocols) {
-		client = new OkHttpClient()
+		Supplier<OkHttpClient> clientSupplier = () -> new OkHttpClient()
 			.newBuilder()
 			.protocols(protocols)
 			.cookieJar(threadContextCookieJar)
 			.eventListenerFactory(ConnectionTimeAggregateListener.FACTORY)
 			.hostnameVerifier((s, sslSession) -> true)
 			.build();
+
+		ThreadContextHTTPClient.init(clientSupplier);
 	}
 
 	public HTTPResponse GET(String url) {
@@ -121,7 +122,9 @@ public class InternalHTTPRequest {
 	private HTTPResponse doRequest(Request request) {
 		Response response = null;
 		try {
-			response = client.newCall(request).execute();
+			response = ThreadContextHTTPClient.get()
+				.newCall(request)
+				.execute();
 
 			getThreadContext().pauseClock();
 
