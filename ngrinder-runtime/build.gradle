@@ -15,6 +15,9 @@ dependencies {
         exclude (module: "jedit-syntax")
         exclude (module: "asm")
     }
+    compile (group: "com.squareup.okhttp3", name: "okhttp", version: "4.9.0")
+    compile (group: "org.conscrypt", name: "conscrypt-openjdk-uber", version: "2.5.1")
+    compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
     testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
