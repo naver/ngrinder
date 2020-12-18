@@ -151,26 +151,36 @@ public class InternalHTTPRequest {
 	}
 
 	private void summarize(Response response) {
+		int maxDepth = 0;
+		Response priorResponse = response.priorResponse();
+		while (priorResponse != null) {
+			maxDepth++;
+			priorResponse = priorResponse.priorResponse();
+		}
+
+		summarize(response, maxDepth);
+	}
+
+	private void summarize(Response response, int depth) {
 		Logger logger = HTTPPlugin.getPlugin()
 			.getPluginProcessContext()
 			.getScriptContext()
 			.getLogger();
 
-		Function<Response, String> generateMessage = new Function<Response, String>() {
-			@Override
-			public String apply(Response response) {
-				return response.request().url() + " -> " + response.code() + " " + response.message() + ", " + getBodyLength(response.body()) + " bytes";
-			}
-		};
+		Function<Response, String> generateMessage = res ->
+			String.format("%s -> %s %s, %d bytes", res.request().url(), res.code(), res.message(), getBodyLength(res.body()));
 
-		String message = "";
-		Response res = response.priorResponse();
-		if (res != null) {
-			summarize(res);
-			message += " L ";
+		StringBuilder depthIndicatorBuilder = new StringBuilder();
+		Response priorResponse = response.priorResponse();
+		if (priorResponse != null) {
+			for (int i = 0; i < depth - 1; i++) {
+				depthIndicatorBuilder.append("    ");
+			}
+			depthIndicatorBuilder.append("└── ");
+			summarize(priorResponse, depth - 1);
 		}
 
-		logger.info(message + generateMessage.apply(response));
+		logger.info(depthIndicatorBuilder.toString() + generateMessage.apply(response));
 	}
 
 	private void aggregate(final Response response) {
