@@ -211,10 +211,10 @@ public enum Status {
 	 *
 	 * @return status list
 	 */
-	public static Status[] getTestingTestStates() {
+	public static Status[] getTestStatesByCategory(StatusCategory statusCategory) {
 		List<Status> status = new ArrayList<>();
 		for (Status each : values()) {
-			if (each.getCategory() == StatusCategory.TESTING) {
+			if (each.getCategory().equals(statusCategory)) {
 				status.add(each);
 			}
 		}

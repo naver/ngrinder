@@ -35,6 +35,7 @@ public class TaskConfig implements SchedulingConfigurer, AsyncConfigurer {
 		taskScheduler.initialize();
 		return taskScheduler;
 	}
+
 	@Override
 	public Executor getAsyncExecutor() {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();

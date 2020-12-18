@@ -458,7 +458,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	@Override
 	public List<PerfTest> getAllTesting() {
-		return getAll(null, config.getRegion(), Status.getTestingTestStates());
+		return getAll(null, config.getRegion(), Status.getTestStatesByCategory(StatusCategory.TESTING));
+	}
+
+	@Override
+	public List<PerfTest> getAllProgressing() {
+		return getAll(null, config.getRegion(), Status.getTestStatesByCategory(StatusCategory.PROGRESSING));
 	}
 
 	public List<PerfTest> getAllAbnormalTesting() {
