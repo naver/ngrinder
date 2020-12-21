@@ -30,34 +30,33 @@ import java.util.Map;
 import static org.ngrinder.http.HTTPRequest.DEFAULT_MEDIA_TYPE;
 import static org.ngrinder.http.util.OkHTTPUtils.createRequestBody;
 
-@SuppressWarnings("unused")
-public interface HTTPRequestPost {
+public interface HTTPRequestDelete {
 
-	HTTPResponse POST(String url, RequestBody body, Headers headers);
+	HTTPResponse DELETE(String url, RequestBody body, Headers headers);
 
-	default HTTPResponse POST(String url) {
-		return POST(url, "".getBytes(), Headers.of());
+	default HTTPResponse DELETE(String url) {
+		return DELETE(url, "".getBytes(), Headers.of());
 	}
 
-	default HTTPResponse POST(String url, byte[] data) {
-		return POST(url, data, Headers.of());
+	default HTTPResponse DELETE(String url, byte[] data) {
+		return DELETE(url, data, Headers.of());
 	}
 
-	default HTTPResponse POST(String url, Map<?, ?> map) {
-		return POST(url, map, Headers.of());
+	default HTTPResponse DELETE(String url, Map<?, ?> map) {
+		return DELETE(url, map, Headers.of());
 	}
 
-	default HTTPResponse POST(String url, Map<?, ?> map, Headers headers) {
+	default HTTPResponse DELETE(String url, Map<?, ?> map, Headers headers) {
 		RequestBody body = RequestBody.create(JsonUtils.serialize(map), DEFAULT_MEDIA_TYPE);
-		return POST(url, body, headers);
+		return DELETE(url, body, headers);
 	}
 
-	default HTTPResponse POST(String url, byte[] data, Headers headers) {
+	default HTTPResponse DELETE(String url, byte[] data, Headers headers) {
 		RequestBody body = createRequestBody(data, headers);
-		return POST(url, body, headers);
+		return DELETE(url, body, headers);
 	}
 
-	default HTTPResponse POST(String url, RequestBody body) {
-		return POST(url, body, Headers.of());
+	default HTTPResponse DELETE(String url, RequestBody body) {
+		return DELETE(url, body, Headers.of());
 	}
 }

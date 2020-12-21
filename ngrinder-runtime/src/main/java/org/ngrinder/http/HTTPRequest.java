@@ -28,8 +28,7 @@ import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
 import okio.BufferedSource;
-import org.ngrinder.http.method.HTTPRequestGet;
-import org.ngrinder.http.method.HTTPRequestPost;
+import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +44,16 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 
-public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost {
+@SuppressWarnings("unused")
+public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequestPut,
+	HTTPRequestDelete, HTTPRequestHead, HTTPRequestPatch {
+
 	static {
 		// Ensure plugin is loaded
+		// noinspection ResultOfMethodCallIgnored
 		HTTPPlugin.getPlugin();
 	}
+	public static MediaType DEFAULT_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
@@ -89,14 +93,42 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost {
 		return System.getProperty("java.specification.version");
 	}
 
+	@Override
 	public HTTPResponse GET(String url, Map<?, ?> map, Headers headers) {
-		Request request = new Request.Builder()
-			.url(url + toUrlParam(map))
-			.headers(headers)
-			.build();
-
+		Request request = getRequest(url + toUrlParam(map), "GET", null, headers);
 		return doRequest(request);
 	}
+
+	@Override
+	public HTTPResponse HEAD(String url, Map<?, ?> map, Headers headers) {
+		Request request = getRequest(url + toUrlParam(map), "HEAD", null, headers);
+		return doRequest(request);
+	}
+
+	@Override
+	public HTTPResponse POST(String url, RequestBody body, Headers headers) {
+		Request request = getRequest(url, "POST", body, headers);
+		return doRequest(request);
+	}
+
+	@Override
+	public HTTPResponse PUT(String url, RequestBody body, Headers headers) {
+		Request request = getRequest(url, "PUT", body, headers);
+		return doRequest(request);
+	}
+
+	@Override
+	public HTTPResponse PATCH(String url, RequestBody body, Headers headers) {
+		Request request = getRequest(url, "PATCH", body, headers);
+		return doRequest(request);
+	}
+
+	@Override
+	public HTTPResponse DELETE(String url, RequestBody body, Headers headers) {
+		Request request = getRequest(url, "DELETE", body, headers);
+		return doRequest(request);
+	}
+
 
 	private String toUrlParam(Map<?, ?> map) {
 		return "?" + map.entrySet()
@@ -105,14 +137,12 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost {
 			.collect(joining("&"));
 	}
 
-	public HTTPResponse POST(String url, RequestBody body, Headers headers) {
-		Request request = new Request.Builder()
+	private Request getRequest(String url, String method, RequestBody body, Headers headers) {
+		return new Request.Builder()
 			.url(url)
-			.post(body)
+			.method(method, body)
 			.headers(headers)
 			.build();
-
-		return doRequest(request);
 	}
 
 	private HTTPResponse doRequest(Request request) {
@@ -221,4 +251,5 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost {
 
 		return 0L;
 	}
+
 }

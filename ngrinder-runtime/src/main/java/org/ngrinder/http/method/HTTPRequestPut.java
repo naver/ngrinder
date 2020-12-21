@@ -30,34 +30,33 @@ import java.util.Map;
 import static org.ngrinder.http.HTTPRequest.DEFAULT_MEDIA_TYPE;
 import static org.ngrinder.http.util.OkHTTPUtils.createRequestBody;
 
-@SuppressWarnings("unused")
-public interface HTTPRequestPost {
+public interface HTTPRequestPut {
 
-	HTTPResponse POST(String url, RequestBody body, Headers headers);
+	HTTPResponse PUT(String url, RequestBody body, Headers headers);
 
-	default HTTPResponse POST(String url) {
-		return POST(url, "".getBytes(), Headers.of());
+	default HTTPResponse PUT(String url) {
+		return PUT(url, "".getBytes(), Headers.of());
 	}
 
-	default HTTPResponse POST(String url, byte[] data) {
-		return POST(url, data, Headers.of());
+	default HTTPResponse PUT(String url, byte[] data) {
+		return PUT(url, data, Headers.of());
 	}
 
-	default HTTPResponse POST(String url, Map<?, ?> map) {
-		return POST(url, map, Headers.of());
+	default HTTPResponse PUT(String url, Map<?, ?> map) {
+		return PUT(url, map, Headers.of());
 	}
 
-	default HTTPResponse POST(String url, Map<?, ?> map, Headers headers) {
+	default HTTPResponse PUT(String url, Map<?, ?> map, Headers headers) {
 		RequestBody body = RequestBody.create(JsonUtils.serialize(map), DEFAULT_MEDIA_TYPE);
-		return POST(url, body, headers);
+		return PUT(url, body, headers);
 	}
 
-	default HTTPResponse POST(String url, byte[] data, Headers headers) {
+	default HTTPResponse PUT(String url, byte[] data, Headers headers) {
 		RequestBody body = createRequestBody(data, headers);
-		return POST(url, body, headers);
+		return PUT(url, body, headers);
 	}
 
-	default HTTPResponse POST(String url, RequestBody body) {
-		return POST(url, body, Headers.of());
+	default HTTPResponse PUT(String url, RequestBody body) {
+		return PUT(url, body, Headers.of());
 	}
 }
