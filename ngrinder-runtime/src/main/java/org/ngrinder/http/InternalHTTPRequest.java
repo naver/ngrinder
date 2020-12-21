@@ -34,11 +34,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static java.util.stream.Collectors.joining;
 
 public class InternalHTTPRequest {
 	static {
@@ -73,12 +76,23 @@ public class InternalHTTPRequest {
 	}
 
 	public HTTPResponse GET(String url, Headers headers) {
+		return GET(url, new HashMap<>(), headers);
+	}
+
+	public HTTPResponse GET(String url, Map<?, ?> map, Headers headers) {
 		Request request = new Request.Builder()
-			.url(url)
+			.url(url + toUrlParam(map))
 			.headers(headers)
 			.build();
 
 		return doRequest(request);
+	}
+
+	private String toUrlParam(Map<?, ?> map) {
+		return "?" + map.entrySet()
+			.stream()
+			.map(entry -> entry.getKey() + "=" + entry.getValue())
+			.collect(joining("&"));
 	}
 
 	public HTTPResponse POST(String url) {

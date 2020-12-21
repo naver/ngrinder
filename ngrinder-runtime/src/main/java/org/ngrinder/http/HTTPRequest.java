@@ -51,6 +51,10 @@ public class HTTPRequest {
 		return internalHTTPRequest.GET(url, headers);
 	}
 
+	public HTTPResponse GET(String url, Map<?, ?> map, Headers headers) {
+		return internalHTTPRequest.GET(url, map, headers);
+	}
+
 	public HTTPResponse POST(String url) {
 		return internalHTTPRequest.POST(url);
 	}
