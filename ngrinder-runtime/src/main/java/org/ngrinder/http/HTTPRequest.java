@@ -28,13 +28,13 @@ import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
 import okio.BufferedSource;
-import org.ngrinder.http.util.JsonUtils;
+import org.ngrinder.http.method.HTTPRequestGet;
+import org.ngrinder.http.method.HTTPRequestPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +45,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 
-public class HTTPRequest {
+public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost {
 	static {
 		// Ensure plugin is loaded
 		HTTPPlugin.getPlugin();
@@ -53,7 +53,6 @@ public class HTTPRequest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
-	private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
 	private static final CookieJar threadContextCookieJar = new ThreadContextCookieJar();
 
@@ -90,14 +89,6 @@ public class HTTPRequest {
 		return System.getProperty("java.specification.version");
 	}
 
-	public HTTPResponse GET(String url) {
-		return GET(url, Headers.of());
-	}
-
-	public HTTPResponse GET(String url, Headers headers) {
-		return GET(url, new HashMap<>(), headers);
-	}
-
 	public HTTPResponse GET(String url, Map<?, ?> map, Headers headers) {
 		Request request = new Request.Builder()
 			.url(url + toUrlParam(map))
@@ -114,34 +105,6 @@ public class HTTPRequest {
 			.collect(joining("&"));
 	}
 
-	public HTTPResponse POST(String url) {
-		return POST(url, "".getBytes(), Headers.of());
-	}
-
-	public HTTPResponse POST(String url, byte[] data) {
-		return POST(url, data, Headers.of());
-	}
-
-	public HTTPResponse POST(String url, Map<?, ?> map) {
-		return POST(url, map, Headers.of());
-	}
-
-	public HTTPResponse POST(String url, Map<?, ?> map, Headers headers) {
-		RequestBody body = RequestBody.create(JsonUtils.serialize(map), DEFAULT_MEDIA_TYPE);
-		return POST(url, body, headers);
-	}
-
-	public HTTPResponse POST(String url, byte[] data, Headers headers) {
-		String contentType = headers.get("Content-Type");
-		MediaType mediaType = contentType == null ? DEFAULT_MEDIA_TYPE : MediaType.parse(contentType);
-		RequestBody body = RequestBody.create(data, mediaType);
-		return POST(url, body, headers);
-	}
-
-	public HTTPResponse POST(String url, RequestBody body) {
-		return POST(url, body, Headers.of());
-	}
-
 	public HTTPResponse POST(String url, RequestBody body, Headers headers) {
 		Request request = new Request.Builder()
 			.url(url)
@@ -153,7 +116,7 @@ public class HTTPRequest {
 	}
 
 	private HTTPResponse doRequest(Request request) {
-		Response response = null;
+		Response response;
 		try {
 			response = ThreadContextHTTPClient.get()
 				.newCall(request)
