@@ -13,14 +13,14 @@
  */
 package org.ngrinder.script.service;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.User;
 import org.ngrinder.script.handler.JythonScriptHandler;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 
 public class FileEntryServiceTest {
 
@@ -51,9 +51,18 @@ public class FileEntryServiceTest {
 		assertThat(content, containsString("Gisoo Gwon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
 		assertThat(content, containsString("request1.POST_TEST"));
-		assertThat(content, containsString("headers.append(NVPair(\"header\", \"123\"))"));
-		assertThat(content, containsString("params.append(NVPair(\"pName\", \"pValue\"))"));
-		assertThat(content, containsString("Cookie(\"cook\", \"good\", \"naver.com\", \"/home\""));
+		assertThat(content, containsString("headers = Headers.of("));
+		assertThat(content, containsString("\"header\", \"123\","));
+		assertThat(content, containsString(")"));
+		assertThat(content, containsString("params = {"));
+		assertThat(content, containsString("\"pName\": \"pValue\","));
+		assertThat(content, containsString("}"));
+		assertThat(content, containsString("Cookie.Builder()"));
+		assertThat(content, containsString(".name(\"cook\")"));
+		assertThat(content, containsString(".value(\"good\")"));
+		assertThat(content, containsString(".domain(\"naver.com\")"));
+		assertThat(content, containsString(".path(\"/home\")"));
+		assertThat(content, containsString(".build(),"));
 	}
 
 	@Test
