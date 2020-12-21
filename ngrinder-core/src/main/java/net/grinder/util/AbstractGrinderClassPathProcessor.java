@@ -163,7 +163,6 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("okhttp");
 		usefulJarList.add("okio");
 		usefulJarList.add("kotlin-stdlib");
-		usefulJarList.add("conscrypt-openjdk-uber");
 		usefulJarList.add("jackson-annotations");
 		usefulJarList.add("jackson-core");
 		usefulJarList.add("jackson-databind");

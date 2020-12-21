@@ -28,14 +28,12 @@ import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
 import okio.BufferedSource;
-import org.conscrypt.Conscrypt;
 import org.ngrinder.http.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.security.Security;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -43,9 +41,6 @@ import java.util.function.Supplier;
 
 public class InternalHTTPRequest {
 	static {
-		// To support ALPN
-		Security.insertProviderAt(Conscrypt.newProvider(), 1);
-
 		// Ensure plugin is loaded
 		HTTPPlugin.getPlugin();
 	}

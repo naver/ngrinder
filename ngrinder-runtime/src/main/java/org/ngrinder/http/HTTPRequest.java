@@ -80,11 +80,19 @@ public class HTTPRequest {
 	}
 
 	public static HTTPRequest create() {
-		return new HTTPRequest(DEFAULT_PROTOCOLS);
+		return isOverJava8() ? new HTTPRequest(DEFAULT_PROTOCOLS) : createHTTPRequest();
 	}
 
 	public static HTTPRequest createHTTPRequest() {
 		return new HTTPRequest(singletonList(Protocol.HTTP_1_1));
 	}
 
+	private static boolean isOverJava8() {
+		String jvmVersion = getJvmVersion();
+		return jvmVersion != null && !jvmVersion.startsWith("1.");
+	}
+
+	private static String getJvmVersion() {
+		return System.getProperty("java.specification.version");
+	}
 }
