@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -58,6 +59,10 @@ public class InternalHTTPRequest {
 			.cookieJar(threadContextCookieJar)
 			.eventListenerFactory(ConnectionTimeAggregateListener.FACTORY)
 			.hostnameVerifier((s, sslSession) -> true)
+			.callTimeout(HTTPRequestControl.getCallTimeout(), TimeUnit.MILLISECONDS)
+			.connectTimeout(HTTPRequestControl.getConnectTimeout(), TimeUnit.MILLISECONDS)
+			.readTimeout(HTTPRequestControl.getReadTimeout(), TimeUnit.MILLISECONDS)
+			.writeTimeout(HTTPRequestControl.getWriteTimeout(), TimeUnit.MILLISECONDS)
 			.build();
 
 		ThreadContextHTTPClient.init(clientSupplier);
@@ -128,7 +133,7 @@ public class InternalHTTPRequest {
 
 			getThreadContext().resumeClock();
 		} catch (IOException e) {
-			LOGGER.error("Fail to get response {}", request, e);
+			throw new RuntimeException("Fail to get response " + request, e);
 		}
 
 		return HTTPResponse.of(response);
