@@ -2,7 +2,6 @@ package org.ngrinder.packages;
 
 import org.springframework.stereotype.Component;
 
-import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,8 +16,8 @@ public class MonitorPackageHandler extends PackageHandler {
 	}
 
 	@Override
-	public Set<String> getPackageDependentLibs(URLClassLoader urlClassLoader) {
-		return super.getDependentLibs(urlClassLoader);
+	public Set<String> getPackageDependentLibs() {
+		return getDependentLibs();
 	}
 
 	@Override
