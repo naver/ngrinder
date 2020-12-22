@@ -40,7 +40,9 @@ dependencies {
     compile (group: "rome", name: "rome", version: "1.0")
     compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
     compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
-    compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version)
+    compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version) {
+        exclude (module: "platform")
+    }
     compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
     compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
     compile (group: "com.google.guava", name: "guava", version: "20.0")
