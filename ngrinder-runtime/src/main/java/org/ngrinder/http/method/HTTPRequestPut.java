@@ -23,11 +23,9 @@ package org.ngrinder.http.method;
 import okhttp3.Headers;
 import okhttp3.RequestBody;
 import org.ngrinder.http.HTTPResponse;
-import org.ngrinder.http.util.JsonUtils;
 
 import java.util.Map;
 
-import static org.ngrinder.http.HTTPRequest.DEFAULT_MEDIA_TYPE;
 import static org.ngrinder.http.util.OkHTTPUtils.createRequestBody;
 
 public interface HTTPRequestPut {
@@ -47,7 +45,7 @@ public interface HTTPRequestPut {
 	}
 
 	default HTTPResponse PUT(String url, Map<?, ?> map, Headers headers) {
-		RequestBody body = RequestBody.create(JsonUtils.serialize(map), DEFAULT_MEDIA_TYPE);
+		RequestBody body = createRequestBody(map, headers);
 		return PUT(url, body, headers);
 	}
 
