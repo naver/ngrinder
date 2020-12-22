@@ -30,12 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
-import static com.sun.jmx.mbeanserver.Util.cast;
 import static java.util.Date.from;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.DateUtils.dateToString;
 import static org.ngrinder.common.util.DateUtils.ms2Time;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Performance Test Entity.
