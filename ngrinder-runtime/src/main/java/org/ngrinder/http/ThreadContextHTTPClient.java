@@ -22,30 +22,29 @@ package org.ngrinder.http;
 
 import okhttp3.OkHttpClient;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class ThreadContextHTTPClient {
-	private static ThreadLocal<OkHttpClient> okHttpClientThreadLocal;
+	private static final Map<HTTPRequest, Supplier<OkHttpClient>> supplierMap = new HashMap<>();
+	private static final ThreadLocal<Map<HTTPRequest, OkHttpClient>> clientMapThreadLocal = ThreadLocal.withInitial(HashMap::new);
 
-	public static void init(Supplier<OkHttpClient> clientSupplier) {
-		okHttpClientThreadLocal = ThreadLocal.withInitial(clientSupplier);
+	public static void init(HTTPRequest httpRequest, Supplier<OkHttpClient> clientSupplier) {
+		supplierMap.put(httpRequest, clientSupplier);
 	}
 
-	public static OkHttpClient get() {
-		if (okHttpClientThreadLocal == null) {
-			throw new RuntimeException("Cannot find http client on current thread context. You may need to initialize HTTPRequest first.");
+	public static OkHttpClient of(HTTPRequest request) {
+		OkHttpClient client = clientMapThreadLocal.get().get(request);
+		if (client == null) {
+			client = supplierMap.get(request).get();
+			clientMapThreadLocal.get().put(request, client);
 		}
-
-		return okHttpClientThreadLocal.get();
+		return client;
 	}
 
 	public static void reset() {
-		if (okHttpClientThreadLocal == null) {
-			return;
-		}
-
-		okHttpClientThreadLocal.get()
-			.connectionPool()
-			.evictAll();
+		Map<HTTPRequest, OkHttpClient> clientByHTTPRequest = clientMapThreadLocal.get();
+		clientByHTTPRequest.values().forEach(client -> client.connectionPool().evictAll());
 	}
 }

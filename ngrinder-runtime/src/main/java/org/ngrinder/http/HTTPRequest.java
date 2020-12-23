@@ -73,7 +73,7 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 			.writeTimeout(HTTPRequestControl.getWriteTimeout(), TimeUnit.MILLISECONDS)
 			.build();
 
-		ThreadContextHTTPClient.init(clientSupplier);
+		ThreadContextHTTPClient.init(this, clientSupplier);
 	}
 
 	public static HTTPRequest create() {
@@ -148,7 +148,7 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 	private HTTPResponse doRequest(Request request) {
 		Response response;
 		try {
-			response = ThreadContextHTTPClient.get()
+			response = ThreadContextHTTPClient.of(this)
 				.newCall(request)
 				.execute();
 
