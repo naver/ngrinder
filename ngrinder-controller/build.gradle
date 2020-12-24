@@ -44,7 +44,6 @@ dependencies {
         exclude (module: "platform")
     }
     compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
-    compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
     compile (group: "com.google.guava", name: "guava", version: "20.0")
     compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
     compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")

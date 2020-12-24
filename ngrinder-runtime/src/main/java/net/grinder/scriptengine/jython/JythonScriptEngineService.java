@@ -11,6 +11,7 @@ import net.grinder.scriptengine.Instrumenter;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.scriptengine.jython.instrumentation.dcr.Jython22Instrumenter;
 import net.grinder.scriptengine.jython.instrumentation.dcr.Jython25Instrumenter;
+import net.grinder.scriptengine.jython.instrumentation.dcr.Jython27Instrumenter;
 import net.grinder.scriptengine.jython.instrumentation.traditional.TraditionalJythonInstrumenter;
 import net.grinder.util.FileExtensionMatcher;
 import net.grinder.util.weave.WeavingException;
@@ -81,10 +82,15 @@ public final class JythonScriptEngineService implements ScriptEngineService {
 			if (m_dcrContext != null) {
 				if (instrumenters.size() == 0) {
 					try {
-						instrumenters.add(new Jython25Instrumenter(m_dcrContext));
+						instrumenters.add(new Jython27Instrumenter(m_dcrContext));
 					} catch (WeavingException e) {
-						// Jython 2.5 not available, try Jython 2.1/2.2.
-						instrumenters.add(new Jython22Instrumenter(m_dcrContext));
+						try {
+							// Jython 2.7 not available, try Jython 2.5
+							instrumenters.add(new Jython25Instrumenter(m_dcrContext));
+						} catch (WeavingException ex) {
+							// Jython 2.5 not available, try Jython 2.1/2.2.
+							instrumenters.add(new Jython22Instrumenter(m_dcrContext));
+						}
 					}
 				}
 			}

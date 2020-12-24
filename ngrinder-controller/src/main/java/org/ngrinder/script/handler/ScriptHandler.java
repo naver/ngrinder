@@ -260,9 +260,9 @@ public abstract class ScriptHandler implements ControllerConstants {
 		}
 
 		for (FileEntry eachFileEntry : libFileEntries) {
-			// Skip jython 2.5... it's already included.
-			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+			// Skip jython 2.7... it's already included.
+			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.7.")
+					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.7.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();

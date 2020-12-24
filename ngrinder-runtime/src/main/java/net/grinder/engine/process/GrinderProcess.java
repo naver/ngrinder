@@ -81,7 +81,7 @@ import static java.lang.System.getProperty;
  *
  * @author Paco Gomez
  * @author Philip Aston
- * @author JunHo Yoon (modifed for nGrinder)
+ * @author JunHo Yoon (modified for nGrinder)
  * @see GrinderThread
  */
 final class GrinderProcess {
