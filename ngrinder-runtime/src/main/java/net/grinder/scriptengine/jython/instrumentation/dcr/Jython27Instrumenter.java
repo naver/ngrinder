@@ -21,32 +21,24 @@
 
 package net.grinder.scriptengine.jython.instrumentation.dcr;
 
+import net.grinder.script.NonInstrumentableTypeException;
+import net.grinder.scriptengine.DCRContext;
+import net.grinder.scriptengine.Recorder;
+import net.grinder.util.weave.Weaver.TargetSource;
+import net.grinder.util.weave.WeavingException;
+import org.python.core.*;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.grinder.script.NonInstrumentableTypeException;
-import net.grinder.scriptengine.DCRContext;
-import net.grinder.scriptengine.Recorder;
-import net.grinder.util.weave.WeavingException;
-import net.grinder.util.weave.Weaver.TargetSource;
-
-import org.python.core.PyClass;
-import org.python.core.PyFunction;
-import org.python.core.PyInstance;
-import org.python.core.PyMethod;
-import org.python.core.PyObject;
-import org.python.core.PyProxy;
-import org.python.core.PyReflectedFunction;
-import org.python.core.ThreadState;
-
 
 /**
- * DCR instrumenter for Jython 2.5.
+ * DCR instrumenter for Jython 2.7 (modified for nGrinder)
  *
  * @author Philip Aston
  */
-public final class Jython25Instrumenter extends AbstractJythonDCRInstrumenter {
+public final class Jython27Instrumenter extends AbstractJythonDCRInstrumenter {
 
 	private final Transformer<PyInstance> m_pyInstanceTransformer;
 	private final Transformer<PyFunction> m_pyFunctionTransformer;
@@ -57,9 +49,9 @@ public final class Jython25Instrumenter extends AbstractJythonDCRInstrumenter {
 	 * Constructor.
 	 *
 	 * @param context The DCR context.
-	 * @throws WeavingException If it looks like Jython 2.5 isn't available.
+	 * @throws WeavingException If it looks like Jython 2.7 isn't available.
 	 */
-	public Jython25Instrumenter(final DCRContext context)
+	public Jython27Instrumenter(final DCRContext context)
 		throws WeavingException  {
 
 		super(context);
@@ -196,14 +188,14 @@ public final class Jython25Instrumenter extends AbstractJythonDCRInstrumenter {
 			};
 		}
 		catch (NoSuchMethodException e) {
-			throw new WeavingException("Jython 2.5 not found", e);
+			throw new WeavingException("Jython 2.7 not found", e);
 		}
 	}
 
 	private static void assertAtLeastOneMethod(List<Method> methods)
 		throws WeavingException {
 		if (methods.size() == 0) {
-			throw new WeavingException("Jython 2.5 not found");
+			throw new WeavingException("Jython 2.7 not found");
 		}
 	}
 
@@ -211,7 +203,7 @@ public final class Jython25Instrumenter extends AbstractJythonDCRInstrumenter {
 	 * {@inheritDoc}
 	 */
 	@Override public String getDescription() {
-		return "byte code transforming instrumenter for Jython 2.5";
+		return "byte code transforming instrumenter for Jython 2.7";
 	}
 
 	private interface Transformer<T> {
@@ -268,16 +260,16 @@ public final class Jython25Instrumenter extends AbstractJythonDCRInstrumenter {
 		// cope with other types of callable. I guess I could identify
 		// PyFunction's and dispatch on their im_code should this become an issue.
 
-		if (target.im_self == null) {
+		if (target.__self__ == null) {
 			// Unbound method.
-			instrumentPublicMethodsByName(target.im_func,
+			instrumentPublicMethodsByName(target.__func__,
 				"__call__",
 				recorder,
 				false);
 		}
 		else {
-			instrumentPublicMethodsByName(target.im_func.getClass(),
-				target.im_self,
+			instrumentPublicMethodsByName(target.__func__.getClass(),
+				target.__self__,
 				"__call__",
 				TargetSource.THIRD_PARAMETER,
 				recorder,

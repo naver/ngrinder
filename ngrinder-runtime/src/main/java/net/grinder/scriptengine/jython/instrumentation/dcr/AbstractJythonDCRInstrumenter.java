@@ -46,7 +46,7 @@ import org.python.core.PyReflectedFunction;
 
 
 /**
- * Common code used by the Jython DCR instrumenters.
+ * Common code used by the Jython DCR instrumenters. (modified for nGrinder)
  *
  * @author Philip Aston
  */
@@ -124,7 +124,7 @@ abstract class AbstractJythonDCRInstrumenter extends AbstractDCRInstrumenter {
 				// PyMethod is used for bound and unbound Python methods, and
 				// bound Java methods.
 
-				if (pyMethod.im_func instanceof PyReflectedFunction) {
+				if (pyMethod.__func__ instanceof PyReflectedFunction) {
 
 					// Its Java.
 
@@ -134,8 +134,8 @@ abstract class AbstractJythonDCRInstrumenter extends AbstractDCRInstrumenter {
 					// Here, we defensively cope with unbound methods, but not
 					// constructors.
 					transform(recorder,
-						(PyReflectedFunction)pyMethod.im_func,
-						pyMethod.im_self.__tojava__(Object.class));
+						(PyReflectedFunction)pyMethod.__func__,
+						pyMethod.__self__.__tojava__(Object.class));
 				}
 				else {
 					transform(recorder, pyMethod);

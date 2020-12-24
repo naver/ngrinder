@@ -77,7 +77,7 @@ public class ConsoleManager {
 				consoleEntry.occupySocket();
 				consoleQueue.add(consoleEntry);
 			} catch (Exception ex) {
-				LOG.error("socket binding to {}:{} is failed", currentIP, port);
+				LOG.error("Socket binding to {}:{} is failed ({})", currentIP, port, ex.getMessage());
 			}
 		}
 
