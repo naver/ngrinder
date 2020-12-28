@@ -23,14 +23,14 @@ package net.grinder.scriptengine.groovy;
 import net.grinder.common.GrinderProperties;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
-import net.grinder.engine.process.JavaDCRInstrumenterEx;
 import net.grinder.scriptengine.DCRContext;
 import net.grinder.scriptengine.Instrumenter;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.util.FileExtensionMatcher;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Groovy script engine service.
@@ -44,7 +44,6 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 
 	@SuppressWarnings("unused")
 	private final boolean m_forceDCRInstrumentation;
-	private final DCRContext m_dcrContext;
 
 	/**
 	 * Constructor.
@@ -63,15 +62,12 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 		m_forceDCRInstrumentation = properties.getBoolean("grinder.dcrinstrumentation", false)
 		// Hack: force DCR instrumentation for non-Jython scripts.
 						|| m_groovyFileMatcher.accept(scriptLocation.getFile());
-
-		m_dcrContext = dcrContext;
 	}
 
 	/**
 	 * Constructor used when DCR is unavailable.
 	 */
 	public GroovyScriptEngineService() {
-		m_dcrContext = null;
 		m_forceDCRInstrumentation = false;
 	}
 
@@ -80,19 +76,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 	 */
 	@Override
 	public List<Instrumenter> createInstrumenters() {
-
-		final List<Instrumenter> instrumenters = new ArrayList<>();
-
-		/*
-		 * if (!m_forceDCRInstrumentation) {
-		 * System.out.println("m_forceDCRInstrumentation is false."); // must using Instrumentation
-		 * }
-		 */
-		if (m_dcrContext != null) {
-			instrumenters.add(new JavaDCRInstrumenterEx(m_dcrContext));
-		}
-
-		return instrumenters;
+		return emptyList();
 	}
 
 	/**
