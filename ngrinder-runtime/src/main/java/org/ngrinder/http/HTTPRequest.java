@@ -57,6 +57,8 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
 
+	private boolean readResponseBody = true;
+
 	HTTPRequest(List<Protocol> protocols) {
 		Supplier<OkHttpClient> clientSupplier = () -> new OkHttpClient()
 			.newBuilder()
@@ -236,7 +238,7 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 	}
 
 	private long getBodyLength(ResponseBody body) {
-		if (body != null) {
+		if (body != null && readResponseBody) {
 			try {
 				BufferedSource source = body.source();
 				source.request(Long.MAX_VALUE);
@@ -249,4 +251,11 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 		return 0L;
 	}
 
+	public boolean isReadResponseBody() {
+		return readResponseBody;
+	}
+
+	public void setReadResponseBody(boolean readResponseBody) {
+		this.readResponseBody = readResponseBody;
+	}
 }
