@@ -469,6 +469,18 @@ public class PerfTestRunnable implements ControllerConstants {
 		if (!initial && consoleManager.getConsoleInUse().isEmpty()) {
 			return;
 		}
+
+		if (initial) {
+			String message = "Test is canceled by system";
+			for (PerfTest each : perfTestService.getAllProgressing()) {
+				SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
+				doCancel(each, consoleUsingPort, message);
+				LOG.info(format(each, message, each.getId()));
+				cleanUp(each);
+				notifyFinish(each, StopReason.CANCEL_BY_SYSTEM);
+			}
+		}
+
 		doFinish();
 	}
 
@@ -539,20 +551,23 @@ public class PerfTestRunnable implements ControllerConstants {
 		return false;
 	}
 
+	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		doCancel(perfTest, singleConsoleInUse, "Stop requested by user");
+	}
+
 	/**
 	 * Cancel the given {@link PerfTest}.
 	 *
-	 * @param perfTest           {@link PerfTest} to be canceled.
+	 * @param perfTest           {@link PerfTest} to be canceled
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
-	 *                           {@link PerfTest}
+	 * @param message            cancel message
 	 */
-	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse, String message) {
 		LOG.info(format(perfTest, "Cancel test."));
 		singleConsoleInUse.unregisterSampling();
 		LOG.info(format(perfTest, "Sampling is stopped"));
 		try {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
-					"Stop requested by user");
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, message);
 		} catch (Exception e) {
 			LOG.error(format(perfTest,"Error while canceling test : {}", e.getMessage()));
 			LOG.debug(format(perfTest, "Details : "), e);

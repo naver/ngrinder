@@ -118,6 +118,13 @@ public interface IPerfTestService {
 	List<PerfTest> getAllTesting();
 
 	/**
+	 * Get currently progressing PerfTest.
+	 *
+	 * @return found {@link PerfTest} list
+	 */
+	List<PerfTest> getAllProgressing();
+
+	/**
 	 * Get PerfTest Directory in which the distributed file is stored.
 	 *
 	 * @param perfTest	pefTest from which distribution directory calculated
