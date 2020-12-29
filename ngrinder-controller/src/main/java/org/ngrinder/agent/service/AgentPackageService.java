@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 
+import static net.grinder.util.AbstractGrinderClassPathProcessor.getClassPaths;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.StringUtils.replaceLast;
@@ -39,7 +39,7 @@ public class AgentPackageService {
 	 *
 	 * @return File package.
 	 */
-	public File createPackage(PackageHandler packageHandler, URLClassLoader classLoader, String regionName, String connectionIP, int port, String owner) {
+	public File createPackage(PackageHandler packageHandler, String regionName, String connectionIP, int port, String owner) {
 		synchronized (AgentPackageService.class) {
 			File packageFile = packageHandler.getPackageFile(regionName, connectionIP, owner, false);
 			if (packageFile.exists()) {
@@ -47,7 +47,7 @@ public class AgentPackageService {
 			}
 			FileUtils.deleteQuietly(packageFile);
 			try (TarArchiveOutputStream tarOutputStream = createTarArchiveStream(packageFile)) {
-				addDependentLibToTarStream(packageHandler, tarOutputStream, classLoader);
+				addDependentLibToTarStream(packageHandler, tarOutputStream);
 				if (!(packageHandler instanceof AgentPackageHandler) || isNotEmpty(connectionIP)) {
 					packageHandler.addConfigToPackage(tarOutputStream, packageHandler.getConfigParam(regionName, connectionIP, port, owner));
 				}
@@ -77,19 +77,16 @@ public class AgentPackageService {
 	 */
 	public File createAgentPackage(String region, String connectionIP, int port, String owner) {
 		synchronized (AgentPackageService.class) {
-			return createPackage(agentPackageHandler, (URLClassLoader) getClass().getClassLoader(), region, connectionIP, port, owner);
+			return createPackage(agentPackageHandler, region, connectionIP, port, owner);
 		}
 	}
 
-	private void addDependentLibToTarStream(PackageHandler packageHandler, TarArchiveOutputStream tarOutputStream, URLClassLoader classLoader) throws IOException {
-		if (classLoader == null) {
-			classLoader = (URLClassLoader) getClass().getClassLoader();
-		}
+	private void addDependentLibToTarStream(PackageHandler packageHandler, TarArchiveOutputStream tarOutputStream) throws IOException {
 		packageHandler.addBaseFolderToPackage(tarOutputStream);
-		Set<String> libs = packageHandler.getPackageDependentLibs(classLoader);
+		Set<String> libs = packageHandler.getPackageDependentLibs();
 		packageHandler.copyShellFile(tarOutputStream);
 
-		for (URL eachUrl : classLoader.getURLs()) {
+		for (URL eachUrl : getClassPaths(getClass().getClassLoader())) {
 			File eachClassPath = new File(decodePathWithUTF8(eachUrl.getFile()));
 			if (!isJar(eachClassPath)) {
 				continue;

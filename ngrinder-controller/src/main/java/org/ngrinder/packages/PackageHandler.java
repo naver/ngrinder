@@ -19,14 +19,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.*;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import static freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS;
 import static java.nio.charset.Charset.defaultCharset;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CompressionUtils.*;
@@ -34,23 +33,23 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 public abstract class PackageHandler {
 
-	protected final int TIME_MILLIS_OF_DAY = 1000 * 60 * 60 * 24;
-	private final int EXEC = 0x81ed;
+	private static final Logger LOGGER = LoggerFactory.getLogger(PackageHandler.class);
+	private static final int EXEC = 0x81ed;
+
+	protected static final int TIME_MILLIS_OF_DAY = 1000 * 60 * 60 * 24;
 
 	@Autowired
 	private Config config;
 
-	private Logger LOGGER = LoggerFactory.getLogger(PackageHandler.class);
-
-	protected Set<String> getDependentLibs(URLClassLoader urlClassLoader) {
+	protected Set<String> getDependentLibs() {
 		Set<String> libs = new HashSet<>();
-		try (InputStream dependencyStream = urlClassLoader.getResourceAsStream(this.getDependenciesFileName())) {
-			final String dependencies = IOUtils.toString(dependencyStream, defaultCharset());
+		try (InputStream dependencyStream = getClass().getClassLoader().getResourceAsStream(getDependenciesFileName())) {
+			final String dependencies = IOUtils.toString(requireNonNull(dependencyStream), defaultCharset());
 			for (String each : StringUtils.split(dependencies, ";")) {
 				libs.add(each.trim().replace("-SNAPSHOT", ""));
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error while loading " + this.getDependenciesFileName(), e);
+			LOGGER.error("Error while loading " + getDependenciesFileName(), e);
 		}
 		return libs;
 	}
@@ -172,7 +171,7 @@ public abstract class PackageHandler {
 
 	public abstract Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner);
 
-	public abstract Set<String> getPackageDependentLibs(URLClassLoader urlClassLoader);
+	public abstract Set<String> getPackageDependentLibs();
 
 	protected  abstract String getModuleName();
 

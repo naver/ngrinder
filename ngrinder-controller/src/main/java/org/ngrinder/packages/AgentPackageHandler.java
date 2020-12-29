@@ -6,7 +6,6 @@ import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,8 +73,8 @@ public class AgentPackageHandler extends PackageHandler {
 	}
 
 	@Override
-	public Set<String> getPackageDependentLibs(URLClassLoader urlClassLoader) {
-		Set<String> libs = getDependentLibs(urlClassLoader);
+	public Set<String> getPackageDependentLibs() {
+		Set<String> libs = getDependentLibs();
 		libs.add("ngrinder-core");
 		libs.add("ngrinder-runtime");
 		libs.add("ngrinder-groovy");
