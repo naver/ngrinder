@@ -58,13 +58,11 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
 
-	private static final CookieJar threadContextCookieJar = new ThreadContextCookieJar();
-
 	HTTPRequest(List<Protocol> protocols) {
 		Supplier<OkHttpClient> clientSupplier = () -> new OkHttpClient()
 			.newBuilder()
 			.protocols(protocols)
-			.cookieJar(threadContextCookieJar)
+			.cookieJar(ThreadContextCookieJar.getInstance())
 			.eventListenerFactory(ConnectionTimeAggregateListener.FACTORY)
 			.hostnameVerifier((s, sslSession) -> true)
 			.callTimeout(HTTPRequestControl.getCallTimeout(), TimeUnit.MILLISECONDS)

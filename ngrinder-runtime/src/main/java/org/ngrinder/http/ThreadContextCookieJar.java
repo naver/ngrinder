@@ -28,6 +28,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class ThreadContextCookieJar implements CookieJar {
+	private static class Holder {
+		public static final ThreadContextCookieJar INSTANCE = new ThreadContextCookieJar();
+	}
+
+	private ThreadContextCookieJar() {
+	}
+
+	public static ThreadContextCookieJar getInstance() {
+		return Holder.INSTANCE;
+	}
+
 	@Override
 	public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
 		CookieManager.addCookies(list);
