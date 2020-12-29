@@ -50,8 +50,7 @@ public interface HTTPRequestPut {
 	}
 
 	default HTTPResponse PUT(String url, byte[] data, Headers headers) {
-		RequestBody body = createRequestBody(data, headers);
-		return PUT(url, body, headers);
+		return PUT(url, RequestBody.create(data), headers);
 	}
 
 	default HTTPResponse PUT(String url, RequestBody body) {

@@ -50,8 +50,7 @@ public interface HTTPRequestDelete {
 	}
 
 	default HTTPResponse DELETE(String url, byte[] data, Headers headers) {
-		RequestBody body = createRequestBody(data, headers);
-		return DELETE(url, body, headers);
+		return DELETE(url, RequestBody.create(data), headers);
 	}
 
 	default HTTPResponse DELETE(String url, RequestBody body) {

@@ -7,16 +7,11 @@ import okhttp3.RequestBody;
 
 import java.util.Map;
 
-import static org.ngrinder.http.HTTPRequest.DEFAULT_MEDIA_TYPE;
-
 public class OkHTTPUtils {
 
-	private OkHTTPUtils() {}
+	private static final MediaType DEFAULT_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
-	public static RequestBody createRequestBody(byte[] data, Headers headers) {
-		String contentType = headers.get("Content-Type");
-		MediaType mediaType = contentType == null ? DEFAULT_MEDIA_TYPE : MediaType.get(contentType);
-		return RequestBody.create(data, mediaType);
+	private OkHTTPUtils() {
 	}
 
 	public static RequestBody createRequestBody(Map<?, ?> map, Headers headers) {

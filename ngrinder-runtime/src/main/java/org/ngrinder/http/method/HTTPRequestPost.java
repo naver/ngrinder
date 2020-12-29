@@ -51,8 +51,7 @@ public interface HTTPRequestPost {
 	}
 
 	default HTTPResponse POST(String url, byte[] data, Headers headers) {
-		RequestBody body = createRequestBody(data, headers);
-		return POST(url, body, headers);
+		return POST(url, RequestBody.create(data), headers);
 	}
 
 	default HTTPResponse POST(String url, RequestBody body) {

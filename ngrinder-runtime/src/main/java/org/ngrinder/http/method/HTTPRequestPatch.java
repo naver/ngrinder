@@ -51,8 +51,7 @@ public interface HTTPRequestPatch {
 	}
 
 	default HTTPResponse PATCH(String url, byte[] data, Headers headers) {
-		RequestBody body = createRequestBody(data, headers);
-		return PATCH(url, body, headers);
+		return PATCH(url, RequestBody.create(data), headers);
 	}
 
 	default HTTPResponse PATCH(String url, RequestBody body) {

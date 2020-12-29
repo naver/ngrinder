@@ -53,7 +53,6 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 		// noinspection ResultOfMethodCallIgnored
 		HTTPPlugin.getPlugin();
 	}
-	public static MediaType DEFAULT_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 	private static final List<Protocol> DEFAULT_PROTOCOLS = asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
