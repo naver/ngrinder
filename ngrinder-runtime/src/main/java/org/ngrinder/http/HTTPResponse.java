@@ -43,7 +43,7 @@ public class HTTPResponse extends ResponseProxy {
 		return response;
 	}
 
-	public InputStream byteStream() {
+	public InputStream getInputStream() {
 		return response.body().byteStream();
 	}
 
