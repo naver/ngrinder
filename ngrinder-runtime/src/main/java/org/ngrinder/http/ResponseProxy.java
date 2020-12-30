@@ -65,6 +65,10 @@ class ResponseProxy {
 		return response.isSuccessful();
 	}
 
+	public String message() {
+		return response.message();
+	}
+
 	public ResponseBody body() {
 		return response.body();
 	}

@@ -27,7 +27,6 @@ import net.grinder.plugininterface.PluginThreadContext;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import okhttp3.*;
-import okio.BufferedSource;
 import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,11 +144,13 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 	}
 
 	private HTTPResponse doRequest(Request request) {
-		Response response;
+		HTTPResponse response;
 		try {
-			response = ThreadContextHTTPClient.of(this)
+			Response baseResponse = ThreadContextHTTPClient.of(this)
 				.newCall(request)
 				.execute();
+
+			response = HTTPResponse.of(baseResponse);
 
 			getThreadContext().pauseClock();
 
@@ -161,7 +162,7 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 			throw new RuntimeException("Fail to get response " + request, e);
 		}
 
-		return HTTPResponse.of(response);
+		return response;
 	}
 
 	private PluginThreadContext getThreadContext() {
@@ -175,9 +176,9 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 		}
 	}
 
-	private void summarize(Response response) {
+	private void summarize(HTTPResponse response) {
 		int maxDepth = 0;
-		Response priorResponse = response.priorResponse();
+		HTTPResponse priorResponse = response.priorResponse();
 		while (priorResponse != null) {
 			maxDepth++;
 			priorResponse = priorResponse.priorResponse();
@@ -186,17 +187,17 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 		summarize(response, maxDepth);
 	}
 
-	private void summarize(Response response, int depth) {
+	private void summarize(HTTPResponse response, int depth) {
 		Logger logger = HTTPPlugin.getPlugin()
 			.getPluginProcessContext()
 			.getScriptContext()
 			.getLogger();
 
-		Function<Response, String> generateMessage = res ->
-			String.format("%s -> %s %s, %d bytes", res.request().url(), res.code(), res.message(), getBodyLength(res.body()));
+		Function<HTTPResponse, String> generateMessage = res ->
+			String.format("%s -> %s %s, %d bytes", res.request().url(), res.code(), res.message(), readResponseBody ? res.bytes().length : 0L);
 
 		StringBuilder depthIndicatorBuilder = new StringBuilder();
-		Response priorResponse = response.priorResponse();
+		HTTPResponse priorResponse = response.priorResponse();
 		if (priorResponse != null) {
 			for (int i = 0; i < depth - 1; i++) {
 				depthIndicatorBuilder.append("    ");
@@ -208,7 +209,7 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 		logger.info(depthIndicatorBuilder.toString() + generateMessage.apply(response));
 	}
 
-	private void aggregate(final Response response) {
+	private void aggregate(final HTTPResponse response) {
 		Statistics statistics = HTTPPlugin.getPlugin()
 			.getPluginProcessContext()
 			.getScriptContext()
@@ -229,26 +230,11 @@ public class HTTPRequest implements HTTPRequestGet, HTTPRequestPost, HTTPRequest
 					StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_ERRORS_KEY, 1);
 			}
 
-			ResponseBody body = response.body();
 			statisticsForTest.addLong(
-				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, getBodyLength(body));
+				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, readResponseBody ? response.bytes().length : 0L);
 		} catch (Exception e) {
 			LOGGER.error("Fail to aggregate HTTP statistics", e);
 		}
-	}
-
-	private long getBodyLength(ResponseBody body) {
-		if (body != null && readResponseBody) {
-			try {
-				BufferedSource source = body.source();
-				source.request(Long.MAX_VALUE);
-				return source.getBuffer().snapshot().size();
-			} catch (IOException e) {
-				LOGGER.error("", e);
-			}
-		}
-
-		return 0L;
 	}
 
 	public boolean isReadResponseBody() {

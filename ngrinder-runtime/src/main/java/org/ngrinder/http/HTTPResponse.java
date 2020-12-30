@@ -91,6 +91,10 @@ public class HTTPResponse extends ResponseProxy {
 		return statusCode;
 	}
 
+	public HTTPResponse priorResponse() {
+		return HTTPResponse.of(response.priorResponse());
+	}
+
 	public static HTTPResponse of(Response response) {
 		if (response == null) {
 			return null;
