@@ -20,18 +20,23 @@
  */
 package org.ngrinder.http;
 
+import kotlin.text.Charsets;
+import okhttp3.MediaType;
 import okhttp3.Response;
 import org.ngrinder.http.util.JsonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 public class HTTPResponse extends ResponseProxy {
+	private static final Charset DEFAULT_CHARSET = Charsets.UTF_8;
+
 	private final Response response;
 	private final int statusCode;
 
-	private String body = null;
+	private byte[] bytes;
 
 	private HTTPResponse(Response response) {
 		super(response);
@@ -44,25 +49,42 @@ public class HTTPResponse extends ResponseProxy {
 	}
 
 	public InputStream getInputStream() {
-		return response.body().byteStream();
+		return body().byteStream();
 	}
 
-	public Map<?, ?> json() {
-		return JsonUtils.deserialize(string());
-	}
+	public byte[] bytes() {
+		if (bytes != null) {
+			return bytes;
+		}
 
-	public String string() {
-		if (body != null || response.body() == null) {
-			return body;
+		if (body() == null) {
+			return bytes = new byte[0];
 		}
 
 		try {
-			return body = response.body().string();
+			return bytes = body().bytes();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			response.body().close();
+			body().close();
 		}
+	}
+
+	public Map<?, ?> json() {
+		return JsonUtils.deserialize(bytes());
+	}
+
+	public String string() {
+		Charset charset = getCharset();
+		return new String(bytes(), charset);
+	}
+
+	private Charset getCharset() {
+		MediaType contentType = body().contentType();
+		if (contentType == null) {
+			return DEFAULT_CHARSET;
+		}
+		return contentType.charset(DEFAULT_CHARSET);
 	}
 
 	public int getStatusCode() {

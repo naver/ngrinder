@@ -22,6 +22,7 @@ package org.ngrinder.http.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.python.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
 import java.util.Map;
@@ -40,9 +41,13 @@ public class JsonUtils {
 		}
 	}
 
-	public static Map<?, ?> deserialize(String jsonString) {
+	public static Map<?, ?> deserialize(byte[] bytes) {
+		if (bytes.length == 0) {
+			return ImmutableMap.of();
+		}
+
 		try {
-			return objectMapper.readValue(jsonString, new TypeReference<Map<?, ?>>() {
+			return objectMapper.readValue(bytes, new TypeReference<Map<?, ?>>() {
 			});
 		} catch (IOException e) {
 			throw new RuntimeException(e);
