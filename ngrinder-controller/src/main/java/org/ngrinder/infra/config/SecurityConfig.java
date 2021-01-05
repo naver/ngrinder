@@ -78,6 +78,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final PluggablePreAuthFilter pluggablePreAuthFilter;
 
+	private static final String REMEMBER_ME_KEY = "ngrinder";
+	private static final String REMEMBER_ME_COOKIE_NAME = "ngrinder-remember-me";
+
 	@Bean
 	@Override
 	protected AuthenticationManager authenticationManager() throws Exception {
@@ -93,7 +96,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public TokenBasedRememberMeServices rememberMeServices() {
-		return new TokenBasedRememberMeServices("ngrinder", ngrinderUserDetailsService);
+		TokenBasedRememberMeServices tokenBasedRememberMeServices = new TokenBasedRememberMeServices(REMEMBER_ME_KEY, ngrinderUserDetailsService);
+		tokenBasedRememberMeServices.setCookieName(REMEMBER_ME_COOKIE_NAME);
+		return tokenBasedRememberMeServices;
 	}
 
 	/**
@@ -161,14 +166,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 			.logoutSuccessUrl("/")
-			.deleteCookies("JSESSIONID","switchUser")
+			.deleteCookies("JSESSIONID", "switchUser")
 			.invalidateHttpSession(true)
 			.and()
 			.sessionManagement()
 			.sessionFixation().newSession()
 			.and()
 			.rememberMe()
-			.key("ngrinder")
+			.rememberMeCookieName(REMEMBER_ME_COOKIE_NAME)
+			.key(REMEMBER_ME_KEY)
 			.userDetailsService(ngrinderUserDetailsService)
 			.and()
 			.csrf().disable().exceptionHandling().authenticationEntryPoint(delegatingAuthenticationEntryPoint())
