@@ -62,6 +62,7 @@ public enum Database {
 			final String databaseURL = databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL);
 			if (databaseURL.startsWith("tcp://")) {
 				format = "jdbc:h2:" + databaseURL;
+				setClusterSupport(true);
 			}
 			if (databaseProperties.exist(PROP_DATABASE_UNIT_TEST)) {
 				format = format + ";LOCK_MODE=0";
@@ -84,7 +85,7 @@ public enum Database {
 	private final String urlTemplate;
 	private final String jdbcDriverName;
 	private final String dialect;
-	private final boolean clusterSupport;
+	private boolean clusterSupport;
 
 	/**
 	 * Constructor with cluster mode true.
@@ -207,5 +208,9 @@ public enum Database {
 	 */
 	public boolean isClusterSupport() {
 		return clusterSupport;
+	}
+
+	public void setClusterSupport(boolean clusterSupport) {
+		this.clusterSupport = clusterSupport;
 	}
 }
