@@ -117,7 +117,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 							+ ".\nPlease run the h2 TcpServer in advance\n"
 							+ "or set the correct -database-host and -database-port parameters");
 					}
-					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
+					System.setProperty("database.url", "tcp://" + databaseHost + ":" + databasePort + "/~/db/ngrinder");
 				} else {
 					if (databasePort == null) {
 						databasePort = 3306;
