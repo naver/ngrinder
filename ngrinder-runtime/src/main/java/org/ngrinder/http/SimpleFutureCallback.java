@@ -21,42 +21,37 @@
 package org.ngrinder.http;
 
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
-import org.apache.hc.core5.http.ProtocolVersion;
+import org.apache.hc.core5.concurrent.FutureCallback;
 
-import java.util.function.Function;
-
-public class HttpResponse {
-	private final SimpleHttpResponse response;
-
-	HttpResponse(SimpleHttpResponse response) {
-		this.response = response;
+public class SimpleFutureCallback implements FutureCallback<SimpleHttpResponse> {
+	private SimpleFutureCallback() {
 	}
 
-	public byte[] getBodyBytes() {
-		return response.getBodyBytes();
+	public static SimpleFutureCallback create() {
+		return new SimpleFutureCallback();
 	}
 
-	public String getBodyText() {
-		return response.getBodyText();
+	@Override
+	public void completed(SimpleHttpResponse response) {
+		aggregate(response);
+		summarize(response);
 	}
 
-	public <T> T getBody(Function<String, T> converter) {
-		return converter.apply(getBodyText());
+	private void aggregate(SimpleHttpResponse response) {
+
 	}
 
-	public int getCode() {
-		return response.getCode();
+	private void summarize(SimpleHttpResponse response) {
+
 	}
 
-	public int getStatusCode() {
-		return getCode();
+	@Override
+	public void failed(Exception ex) {
+
 	}
 
-	public ProtocolVersion getVersion() {
-		return response.getVersion();
-	}
+	@Override
+	public void cancelled() {
 
-	public static HttpResponse of(SimpleHttpResponse response) {
-		return new HttpResponse(response);
 	}
 }

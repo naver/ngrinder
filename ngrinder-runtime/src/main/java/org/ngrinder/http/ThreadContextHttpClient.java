@@ -20,43 +20,18 @@
  */
 package org.ngrinder.http;
 
-import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
-import org.apache.hc.core5.http.ProtocolVersion;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 
-import java.util.function.Function;
+public class ThreadContextHttpClient {
+	private static final ThreadLocal<CloseableHttpAsyncClient> clientThreadLocal = ThreadLocal.withInitial(() -> {
+		CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
+		client.start();
 
-public class HttpResponse {
-	private final SimpleHttpResponse response;
+		return client;
+	});
 
-	HttpResponse(SimpleHttpResponse response) {
-		this.response = response;
-	}
-
-	public byte[] getBodyBytes() {
-		return response.getBodyBytes();
-	}
-
-	public String getBodyText() {
-		return response.getBodyText();
-	}
-
-	public <T> T getBody(Function<String, T> converter) {
-		return converter.apply(getBodyText());
-	}
-
-	public int getCode() {
-		return response.getCode();
-	}
-
-	public int getStatusCode() {
-		return getCode();
-	}
-
-	public ProtocolVersion getVersion() {
-		return response.getVersion();
-	}
-
-	public static HttpResponse of(SimpleHttpResponse response) {
-		return new HttpResponse(response);
+	public static CloseableHttpAsyncClient get() {
+		return clientThreadLocal.get();
 	}
 }
