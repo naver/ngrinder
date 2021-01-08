@@ -37,4 +37,8 @@
 		<appender-ref ref="data-file" />
 	</logger>
 
+	<logger name="org.apache.hc" additivity="false" level="ERROR">
+		<appender-ref ref="data-file" />
+	</logger>
+
 </configuration>
