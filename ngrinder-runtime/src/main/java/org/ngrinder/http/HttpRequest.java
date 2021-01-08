@@ -29,12 +29,14 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
+import org.ngrinder.http.method.HttpGet;
+import org.ngrinder.http.method.HttpHead;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class HttpRequest {
+public class HttpRequest implements HttpHead, HttpGet {
 	private HttpRequest() {
 	}
 
@@ -42,10 +44,12 @@ public class HttpRequest {
 		return new HttpRequest();
 	}
 
+	@Override
 	public HttpResponse HEAD(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(createRequest("HEAD", uri, params, headers));
 	}
 
+	@Override
 	public HttpResponse GET(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(createRequest("GET", uri, params, headers));
 	}
