@@ -31,12 +31,20 @@ import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.ngrinder.http.method.HttpGet;
 import org.ngrinder.http.method.HttpHead;
+import org.ngrinder.http.consumer.PartialResponseConsumer;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class HttpRequest implements HttpHead, HttpGet {
+	/**
+	 * Indicates how may first bytes to read from the response body.
+	 * If readBytes smaller than 0, read entire response body.
+	 * It readBytes greater than or equal to 0, read only given bytes from beginning of the response body.
+	 */
+	private int readBytes = -1;
+
 	private HttpRequest() {
 	}
 
@@ -82,7 +90,13 @@ public class HttpRequest implements HttpHead, HttpGet {
 	}
 
 	private HttpResponse doRequest(AsyncRequestProducer producer) {
-		AsyncResponseConsumer<SimpleHttpResponse> consumer = SimpleResponseConsumer.create();
+		final AsyncResponseConsumer<SimpleHttpResponse> consumer;
+		if (getReadBytes() >= 0) {
+			consumer = PartialResponseConsumer.create(getReadBytes());
+		} else {
+			consumer = SimpleResponseConsumer.create();
+		}
+
 		FutureCallback<SimpleHttpResponse> futureCallback = SimpleFutureCallback.create();
 
 		CloseableHttpAsyncClient client = ThreadContextHttpClient.get();
@@ -92,5 +106,13 @@ public class HttpRequest implements HttpHead, HttpGet {
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Fail to execute a request " + producer, e);
 		}
+	}
+
+	public int getReadBytes() {
+		return readBytes;
+	}
+
+	public void setReadBytes(int readBytes) {
+		this.readBytes = readBytes;
 	}
 }
