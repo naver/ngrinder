@@ -34,8 +34,10 @@ public class ThreadContextHttpClient {
 
 	private static CloseableHttpAsyncClient createHttpAsyncClient() {
 		PoolingAsyncClientConnectionManager connectionManager = new ConnectionTimeAggregateConnectionManager();
+		SummarizeRedirectStrategy summarizeRedirectStrategy = new SummarizeRedirectStrategy();
 
 		return HttpAsyncClients.custom()
+			.setRedirectStrategy(summarizeRedirectStrategy)
 			.setConnectionManager(connectionManager)
 			.build();
 	}
