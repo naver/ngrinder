@@ -22,14 +22,23 @@ package org.ngrinder.http;
 
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 
 public class ThreadContextHttpClient {
 	private static final ThreadLocal<CloseableHttpAsyncClient> clientThreadLocal = ThreadLocal.withInitial(() -> {
-		CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
+		CloseableHttpAsyncClient client = createHttpAsyncClient();
 		client.start();
 
 		return client;
 	});
+
+	private static CloseableHttpAsyncClient createHttpAsyncClient() {
+		PoolingAsyncClientConnectionManager connectionManager = new ConnectionTimeAggregateConnectionManager();
+
+		return HttpAsyncClients.custom()
+			.setConnectionManager(connectionManager)
+			.build();
+	}
 
 	public static CloseableHttpAsyncClient get() {
 		return clientThreadLocal.get();

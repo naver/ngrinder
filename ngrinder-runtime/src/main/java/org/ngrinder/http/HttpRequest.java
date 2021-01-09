@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http;
 
+import net.grinder.plugin.http.HTTPPlugin;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.async.methods.SimpleResponseConsumer;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
@@ -38,6 +39,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class HttpRequest implements HttpHead, HttpGet {
+
+	static {
+		// noinspection ResultOfMethodCallIgnored
+		HTTPPlugin.getPlugin();	// Ensure plugin is loaded
+	}
+
 	/**
 	 * Indicates how may first bytes to read from the response body.
 	 * If readBytes smaller than 0, read entire response body.
