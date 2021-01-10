@@ -150,8 +150,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	}
 
 	private boolean resolveClusterMode() {
-		String mode = getClusterProperties().getProperty(PROP_CLUSTER_MODE, "none");
+		String mode = getClusterMode();
 		return !"none".equals(mode) || getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
+	}
+
+	public String getClusterMode() {
+		return getClusterProperties().getProperty(PROP_CLUSTER_MODE, "none");
 	}
 
 	/**

@@ -68,9 +68,8 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 					"it can only communicate with the other cluster members in the same machine.")
 			private String clusterHost = null;
 
-			@Parameter(names = {"-clp", "--cluster-port"}, required = true,
-				description = "This cluster member's cluster communication port. Each cluster member should " +
-					"be run with unique cluster port.",
+			@Parameter(names = {"-clp", "--cluster-port"},
+				description = "Deprecated from 3.5.4, the cluster communication port will be resolved automatically in easy clustering",
 				validateValueWith = PortAvailabilityValidator.class)
 			private Integer clusterPort = null;
 
@@ -104,7 +103,6 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 				if (clusterHost != null) {
 					System.setProperty("cluster.host", clusterHost);
 				}
-				System.setProperty("cluster.port", clusterPort.toString());
 				System.setProperty("cluster.region", region);
 				System.setProperty("controller.controller_port", controllerPort.toString());
 				System.setProperty("database.type", databaseType);
