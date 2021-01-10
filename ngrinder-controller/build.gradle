@@ -72,6 +72,7 @@ dependencies {
     compile (group: "com.unboundid", name: "unboundid-ldapsdk", version: "5.1.1")
 
     compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    annotationProcessor (group: "org.springframework.boot", name: "spring-boot-configuration-processor")
     annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
 
     providedRuntime (group: "org.springframework.boot", name: "spring-boot-starter-tomcat", version: spring_boot_version)
