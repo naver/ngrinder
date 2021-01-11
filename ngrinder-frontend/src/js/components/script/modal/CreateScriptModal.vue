@@ -103,10 +103,12 @@
 </template>
 
 <script>
+    import { Mixins } from 'vue-mixin-decorator';
     import { Component } from 'vue-property-decorator';
     import ModalBase from '../../common/modal/ModalBase.vue';
     import ControlGroup from '../../common/ControlGroup.vue';
     import ScriptOption from './ScriptOption.vue';
+    import MessagesMixin from '../../common/mixin/MessagesMixin.vue';
 
     const resolve = (source, relative) => {
         const removeAppendedSlash = path => (path.startsWith('/') ? path.slice(1) : path);
@@ -127,7 +129,7 @@
             validator: 'new',
         },
     })
-    export default class CreateScriptModal extends ModalBase {
+    export default class CreateScriptModal extends Mixins(ModalBase, MessagesMixin) {
         fileName = '';
         handlers = [];
         scriptHandler = {};
@@ -191,7 +193,7 @@
                     } else {
                         this.$router.push(resolve('/script/detail', res.data.file.path));
                     }
-                });
+                }).catch(err => this.showErrorMsg(err.response.data.message));
         }
 
         focusToInvalidField() {
