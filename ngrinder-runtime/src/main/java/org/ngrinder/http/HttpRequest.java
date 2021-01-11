@@ -21,6 +21,8 @@
 package org.ngrinder.http;
 
 import net.grinder.plugin.http.HTTPPlugin;
+import net.grinder.script.Statistics;
+import net.grinder.statistics.StatisticsIndexMap;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.async.methods.SimpleResponseConsumer;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
@@ -30,19 +32,22 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
+import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.method.HttpGet;
 import org.ngrinder.http.method.HttpHead;
-import org.ngrinder.http.consumer.PartialResponseConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class HttpRequest implements HttpHead, HttpGet {
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequest.class);
 
 	static {
 		// noinspection ResultOfMethodCallIgnored
-		HTTPPlugin.getPlugin();	// Ensure plugin is loaded
+		HTTPPlugin.getPlugin();    // Ensure plugin is loaded
 	}
 
 	/**
@@ -108,10 +113,38 @@ public class HttpRequest implements HttpHead, HttpGet {
 
 		CloseableHttpAsyncClient client = ThreadContextHttpClient.get();
 		try {
-			Future<SimpleHttpResponse> future = client.execute(producer, consumer, futureCallback);
-			return HttpResponse.of(future.get());
+			SimpleHttpResponse response = client.execute(producer, consumer, futureCallback).get();
+
+			aggregate(response);
+
+			return HttpResponse.of(response);
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Fail to execute a request " + producer, e);
+		}
+	}
+
+	private void aggregate(SimpleHttpResponse response) {
+		Statistics statistics = HTTPPlugin.getPlugin()
+			.getPluginProcessContext()
+			.getScriptContext()
+			.getStatistics();
+
+		if (!statistics.isTestInProgress()) {
+			return;
+		}
+
+		try {
+			Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
+
+			statisticsForTest.setLong(StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_STATUS_KEY, response.getCode());
+
+			if (response.getCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+				statisticsForTest.addLong(StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_ERRORS_KEY, 1);
+			}
+
+			statisticsForTest.addLong(StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, response.getBodyBytes().length);
+		} catch (Exception e) {
+			LOGGER.error("Fail to aggregate http statistics", e);
 		}
 	}
 
