@@ -14,23 +14,22 @@
 package org.ngrinder.common.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
-import static org.apache.commons.io.IOUtils.copy;
+import static org.apache.commons.io.FileUtils.*;
 
 /**
  * Convenient File utilities.
  *
  * @since 3.1
  */
+@Slf4j
 public abstract class FileUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
 	/**
 	 * Copy the given resource to the given file.
@@ -40,11 +39,15 @@ public abstract class FileUtils {
 	 * @since 3.2
 	 */
 	public static void copyResourceToFile(String resourcePath, File file) {
-		try (InputStream io = new ClassPathResource(resourcePath).getInputStream();
-			 FileOutputStream fos = new FileOutputStream(file)) {
-			copy(io, fos);
+		copyResourceToFile(new ClassPathResource(resourcePath), file);
+	}
+
+	public static void copyResourceToFile(Resource resource, File file) {
+		try (InputStream io = resource.getInputStream()) {
+			copyToFile(io, file);
 		} catch (IOException e) {
-			LOGGER.error("error while writing {}", resourcePath, e);
+			log.error("error while writing {}", resource.getFilename(), e);
 		}
 	}
+
 }

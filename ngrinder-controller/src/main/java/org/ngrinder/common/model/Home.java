@@ -42,6 +42,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 public class Home {
 
 	// HOME_PATH
+	public static final String PATH_SCRIPT_TEMPLATE_DIRECTORY = "/script_template";
+
 	private static final String PATH_PLUGIN = "plugins";
 	private static final String PATH_SCRIPT = "script";
 	private static final String PATH_USER_REPO = "repos";
@@ -267,6 +269,10 @@ public class Home {
 		}
 		String folderName = String.format("%d_%d%s%s", numericId, numericId + 999, File.separator, id);
 		return new File(getPerfTestDirectory(), folderName);
+	}
+
+	public File getScriptTemplateDirectory() {
+		return new File(directory, PATH_SCRIPT_TEMPLATE_DIRECTORY);
 	}
 
 	/**

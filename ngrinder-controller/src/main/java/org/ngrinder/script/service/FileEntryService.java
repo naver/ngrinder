@@ -41,11 +41,10 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 import static org.apache.commons.compress.utils.CharsetNames.UTF_8;
 import static org.ngrinder.common.constant.CacheConstants.DIST_CACHE_FILE_ENTRIES;
@@ -273,7 +272,7 @@ public class FileEntryService {
 	 * @param path the path
 	 */
 	public void delete(User user, String path) {
-		fileEntityRepository.delete(user, newArrayList(path));
+		fileEntityRepository.delete(user, new ArrayList<>(singletonList(path)));
 	}
 
 	String getPathFromUrl(String urlString) {
