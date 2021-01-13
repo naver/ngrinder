@@ -8,6 +8,8 @@ assignees: ''
 ---
 
 ### 1. Describe the bug 🐞 
+:exclamation: DO NOT ASK QUESTION HERE PLEASE USE [DISCUSSION](https://github.com/naver/ngrinder/discussions) INSTEAD.
+
 A clear and concise description of what the bug is.
 
 ### 2. Reproduction steps
