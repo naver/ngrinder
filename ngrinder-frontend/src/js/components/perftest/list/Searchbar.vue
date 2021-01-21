@@ -1,7 +1,7 @@
 <template>
     <div class="search-bar clearfix">
         <div class="float-left">
-            <div data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
+            <div class="d-flex" data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
                 <select2 v-model="selectedTag" :value="selectedTag" @change="$emit('change-tag')"
                          name="tagSelect" ref="tagSelect"
                          customStyle="margin-bottom: 1px;"
@@ -9,7 +9,7 @@
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
-                <div class="d-inline-block">
+                <div class="d-inline-block ml-1">
                     <div class="input-group">
                         <input type="search" name="search" class="input-search-append form-control"
                                placeholder="Keywords" v-model="searchText" @keydown.enter="$emit('search')" v-focus>
@@ -21,14 +21,16 @@
                         </div>
                     </div>
                 </div>
-                <label class="checkbox-label">
-                    <input type="checkbox" class="align-middle" v-model="running">
-                    <span v-text="i18n('perfTest.action.running')"></span>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" class="align-middle" v-model="scheduled">
-                    <span v-text="i18n('perfTest.action.scheduled')"></span>
-                </label>
+                <div class="d-flex align-items-center">
+                    <label class="ml-2 mb-0">
+                        <input type="checkbox" class="align-middle" v-model="running">
+                        <span v-text="i18n('perfTest.action.running')"></span>
+                    </label>
+                    <label class="ml-2 mb-0">
+                        <input type="checkbox" class="align-middle" v-model="scheduled">
+                        <span v-text="i18n('perfTest.action.scheduled')"></span>
+                    </label>
+                </div>
             </div>
         </div>
         <div class="float-right">
@@ -113,22 +115,10 @@
         border-bottom: none;
         background-color: #f5f5f5;
 
-        .form-control {
-            display: inline-block;
-        }
-
         .input-search-append{
+            display: inline-block;
             width: 250px;
             height: 30px;
-        }
-
-        .checkbox-label {
-            position: relative;
-            margin-left: 5px;
-        }
-
-        * {
-            font-size: 12px;
         }
     }
 </style>
