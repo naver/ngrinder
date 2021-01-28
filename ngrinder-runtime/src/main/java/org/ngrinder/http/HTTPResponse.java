@@ -20,19 +20,31 @@
  */
 package org.ngrinder.http;
 
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.Message;
+import org.apache.hc.core5.http.ProtocolVersion;
+
+import java.nio.charset.Charset;
 import java.util.function.Function;
 
 public class HTTPResponse {
-	HTTPResponse() {
 
+	private final Message<HttpResponse, byte[]> message;
+	private String bodyText = "";
+
+	HTTPResponse(Message<HttpResponse, byte[]> message) {
+		this.message = message;
 	}
 
 	public byte[] getBodyBytes() {
-		return new byte[0];
+		return message.getBody();
 	}
 
 	public String getBodyText() {
-		return "";
+		if (bodyText.isEmpty()) {
+			bodyText = new String(message.getBody(), Charset.defaultCharset());
+		}
+		return bodyText;
 	}
 
 	public <T> T getBody(Function<String, T> converter) {
@@ -40,10 +52,14 @@ public class HTTPResponse {
 	}
 
 	public int getStatusCode() {
-		return -1;
+		return message.getHead().getCode();
 	}
 
-	public static HTTPResponse of() {
-		return new HTTPResponse();
+	public ProtocolVersion getVersion() {
+		return message.getHead().getVersion();
+	}
+
+	public static HTTPResponse of(Message<HttpResponse, byte[]> message) {
+		return new HTTPResponse(message);
 	}
 }
