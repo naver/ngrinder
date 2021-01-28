@@ -15,6 +15,7 @@ dependencies {
         exclude (module: "jedit-syntax")
         exclude (module: "asm")
     }
+    compile (group: "org.apache.httpcomponents.core5", name: "httpcore5-h2", version: "5.0.3")
 
     testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
     testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
