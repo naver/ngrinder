@@ -29,6 +29,8 @@ import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
 import org.apache.hc.core5.util.Timeout;
+import org.ngrinder.http.method.HTTPGet;
+import org.ngrinder.http.method.HTTPHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +38,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Future;
 
-public class HTTPRequest {
+public class HTTPRequest implements HTTPHead, HTTPGet {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
@@ -51,10 +53,12 @@ public class HTTPRequest {
 		return new HTTPRequest();
 	}
 
+	@Override
 	public HTTPResponse HEAD(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("HEAD", uri, params, headers));
 	}
 
+	@Override
 	public HTTPResponse GET(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("GET", uri, params, headers));
 	}
