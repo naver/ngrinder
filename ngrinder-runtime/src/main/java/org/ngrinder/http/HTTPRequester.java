@@ -40,7 +40,6 @@ import org.apache.hc.core5.http2.impl.nio.ClientHttpProtocolNegotiatorFactory;
 import org.apache.hc.core5.http2.nio.support.DefaultAsyncPushConsumerFactory;
 import org.apache.hc.core5.http2.ssl.ConscryptClientTlsStrategy;
 import org.apache.hc.core5.http2.ssl.H2ClientTlsStrategy;
-import org.apache.hc.core5.pool.ManagedConnPool;
 import org.apache.hc.core5.reactor.IOEventHandlerFactory;
 import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.reactor.IOSession;
@@ -55,10 +54,13 @@ import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
 
+	private final SimpleConnPool<HttpHost, IOSession> connPool;
+
 	private HttpVersionPolicy versionPolicy = HttpVersionPolicy.NEGOTIATE;
 
-	public HTTPRequester(ManagedConnPool<HttpHost, IOSession> connPool) {
+	public HTTPRequester(SimpleConnPool<HttpHost, IOSession> connPool) {
 		super(IOReactorConfig.DEFAULT, ioEventHandlerFactory(), null, null, null, connPool);
+		this.connPool = connPool;
 	}
 
 	private static IOEventHandlerFactory ioEventHandlerFactory() {
@@ -100,5 +102,9 @@ public class HTTPRequester extends HttpAsyncRequester {
 
 	public void setVersionPolicy(HttpVersionPolicy versionPolicy) {
 		this.versionPolicy = versionPolicy;
+	}
+
+	public SimpleConnPool<HttpHost, IOSession> getConnPool() {
+		return connPool;
 	}
 }
