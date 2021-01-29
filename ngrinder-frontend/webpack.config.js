@@ -83,6 +83,7 @@ module.exports = function (env) {
                             /(d3-.*)$/,
                             /(strip-.*)$/,
                             /(.*json.*)$/,
+                            /(vuejs-datepicker.*)$/,
                         ],
                     },
                     use: [

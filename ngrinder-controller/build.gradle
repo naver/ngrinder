@@ -114,4 +114,5 @@ test {
 
 tasks.bootWar.dependsOn convert_cr_lf
 
-tasks.processResources.dependsOn tasks.getByPath(":ngrinder-frontend:webpack")
+tasks.processResources.finalizedBy tasks.getByPath(":ngrinder-frontend:webpack")
+tasks.processResources.finalizedBy tasks.getByPath(":ngrinder-frontend:checkES5")
