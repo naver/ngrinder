@@ -1,9 +1,9 @@
 plugins {
-    id "com.github.node-gradle.node" version "2.2.2"
+    id "com.github.node-gradle.node" version "2.2.4"
 }
 
 node {
-    version = "12.16.2"
+    version = "14.15.4"
     // Enabled the automatic download. False is the default (for now).
     download = true
 }
@@ -13,4 +13,9 @@ task webpack(dependsOn: "npmInstall", type: NodeTask) {
     if (profile) {
         args = ["--$profile"]
     }
+}
+
+task checkES5(type: NpxTask) {
+    command = "es-check"
+    args = ["es5", "../ngrinder-controller/build/classes/main/static/js/app.js", "--verbose"]
 }
