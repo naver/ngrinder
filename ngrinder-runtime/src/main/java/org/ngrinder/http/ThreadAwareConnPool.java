@@ -37,22 +37,23 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-public class SimpleConnPool<T, C extends ModalCloseable> extends EmptyConnPoolControl<T, C> implements ManagedConnPool<T, C> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleConnPool.class);
+public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnPoolControl<T, C> implements ManagedConnPool<T, C> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadAwareConnPool.class);
 
-	private final Set<PoolEntry<T, C>> leased = new HashSet<>();
-	private final LinkedList<PoolEntry<T, C>> available = new LinkedList<>();
+	private final ThreadLocal<Set<PoolEntry<T, C>>> leased = ThreadLocal.withInitial(HashSet::new);
+	private final ThreadLocal<LinkedList<PoolEntry<T, C>>> available = ThreadLocal.withInitial(LinkedList::new);
 
 	@Override
 	public Future<PoolEntry<T, C>> lease(T route, Object state, Timeout requestTimeout, FutureCallback<PoolEntry<T, C>> callback) {
-		PoolEntry<T, C> poolEntry = this.available.stream()
+		PoolEntry<T, C> poolEntry = this.getAvailable()
+			.stream()
 			.filter(entry -> entry.getRoute().equals(route))
 			.findAny()
 			.orElseGet(() -> {
 				LOGGER.debug("Create a new connection");
 				return new PoolEntry<>(route, Timeout.DISABLED);
 			});
-		this.leased.add(poolEntry);
+		this.getLeased().add(poolEntry);
 
 		BasicFuture<PoolEntry<T, C>> future = new BasicFuture<>(callback);
 		future.completed(poolEntry);
@@ -65,11 +66,11 @@ public class SimpleConnPool<T, C extends ModalCloseable> extends EmptyConnPoolCo
 			return;
 		}
 
-		if (this.leased.remove(entry)) {
+		if (this.getLeased().remove(entry)) {
 			final boolean keepAlive = entry.hasConnection() && reusable;
 			if (keepAlive) {
 				LOGGER.debug("Reuse connection {}", entry);
-				this.available.addFirst(entry);
+				this.getAvailable().addFirst(entry);
 			} else {
 				LOGGER.debug("Discard connection {}", entry);
 				entry.discardConnection(CloseMode.GRACEFUL);
@@ -79,12 +80,12 @@ public class SimpleConnPool<T, C extends ModalCloseable> extends EmptyConnPoolCo
 
 	public void clear() {
 		Stream<PoolEntry<T, C>> entryStream = Stream.concat(
-			this.leased.stream(),
-			this.available.stream()
+			this.getLeased().stream(),
+			this.getAvailable().stream()
 		);
 		entryStream.forEach(entry -> entry.discardConnection(CloseMode.GRACEFUL));
-		this.leased.clear();
-		this.available.clear();
+		this.getLeased().clear();
+		this.getAvailable().clear();
 	}
 
 	@Override
@@ -95,5 +96,13 @@ public class SimpleConnPool<T, C extends ModalCloseable> extends EmptyConnPoolCo
 	@Override
 	public void close() throws IOException {
 		close(CloseMode.GRACEFUL);
+	}
+
+	public Set<PoolEntry<T, C>> getLeased() {
+		return leased.get();
+	}
+
+	public LinkedList<PoolEntry<T, C>> getAvailable() {
+		return available.get();
 	}
 }

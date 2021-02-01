@@ -54,14 +54,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
-
-	private final SimpleConnPool<HttpHost, IOSession> connPool;
+	private static final ThreadAwareConnPool<HttpHost, IOSession> connPool = new ThreadAwareConnPool<>();
 
 	private HttpVersionPolicy versionPolicy = HttpVersionPolicy.NEGOTIATE;
 
-	public HTTPRequester(SimpleConnPool<HttpHost, IOSession> connPool) {
+	public HTTPRequester() {
 		super(ioReactorConfig(), ioEventHandlerFactory(), null, null, null, connPool);
-		this.connPool = connPool;
 	}
 
 	private static IOReactorConfig ioReactorConfig() {
@@ -107,6 +105,10 @@ public class HTTPRequester extends HttpAsyncRequester {
 		}
 	}
 
+	public static void reset() {
+		connPool.clear();
+	}
+
 	@Override
 	protected Future<AsyncClientEndpoint> doConnect(HttpHost host, Timeout timeout, Object attachment, FutureCallback<AsyncClientEndpoint> callback) {
 		return super.doConnect(host, timeout, attachment != null ? attachment : versionPolicy, callback);
@@ -114,9 +116,5 @@ public class HTTPRequester extends HttpAsyncRequester {
 
 	public void setVersionPolicy(HttpVersionPolicy versionPolicy) {
 		this.versionPolicy = versionPolicy;
-	}
-
-	public SimpleConnPool<HttpHost, IOSession> getConnPool() {
-		return connPool;
 	}
 }

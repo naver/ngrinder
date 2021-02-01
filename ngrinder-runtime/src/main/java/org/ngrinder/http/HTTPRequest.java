@@ -45,6 +45,12 @@ public class HTTPRequest implements HTTPHead, HTTPGet {
 	private static final AsyncResponseConsumer<Message<HttpResponse, byte[]>> DEFAULT_CONSUMER = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
 	private static final FutureCallback<Message<HttpResponse, byte[]>> DEFAULT_CALLBACK = new SimpleFutureCallback<>();
 
+	private static final HTTPRequester requester = new HTTPRequester();
+
+	static {
+		requester.start();
+	}
+
 	private HTTPRequest() {
 
 	}
@@ -68,7 +74,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet {
 			final HttpHost httpHost = HttpHost.create(URI.create(uri));
 			final Timeout connectionTimeout = Timeout.ofMilliseconds(HTTPRequestControl.getConnectionTimeout());
 
-			Future<AsyncClientEndpoint> endpointFuture = ThreadContextHttpClient.get().connect(httpHost, connectionTimeout);
+			Future<AsyncClientEndpoint> endpointFuture = requester.connect(httpHost, connectionTimeout);
 			AsyncClientEndpoint endpoint = endpointFuture.get();
 
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, DEFAULT_CONSUMER, DEFAULT_CALLBACK);
