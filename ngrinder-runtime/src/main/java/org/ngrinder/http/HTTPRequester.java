@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http;
 
+import net.grinder.script.Grinder;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.function.Supplier;
 import org.apache.hc.core5.http.HttpHost;
@@ -59,8 +60,19 @@ public class HTTPRequester extends HttpAsyncRequester {
 	private HttpVersionPolicy versionPolicy = HttpVersionPolicy.NEGOTIATE;
 
 	public HTTPRequester(SimpleConnPool<HttpHost, IOSession> connPool) {
-		super(IOReactorConfig.DEFAULT, ioEventHandlerFactory(), null, null, null, connPool);
+		super(ioReactorConfig(), ioEventHandlerFactory(), null, null, null, connPool);
 		this.connPool = connPool;
+	}
+
+	private static IOReactorConfig ioReactorConfig() {
+		int totalProcessCount = Grinder.grinder.getProperties().getInt("grinder.processes", 1);
+		int totalThreadCount = Grinder.grinder.getProperties().getInt("grinder.threads", 1);
+
+		int ioThreadCount = totalProcessCount * totalThreadCount / 100 + 1;
+
+		return IOReactorConfig.custom()
+			.setIoThreadCount(ioThreadCount)
+			.build();
 	}
 
 	private static IOEventHandlerFactory ioEventHandlerFactory() {
