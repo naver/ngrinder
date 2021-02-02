@@ -116,7 +116,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, DEFAULT_CONSUMER, DEFAULT_CALLBACK);
 			Message<HttpResponse, byte[]> message = messageFuture.get();
 
-			LOGGER.info("{} -> {} {}, {} bytes", uri, message.getHead().getCode(), message.getHead().getReasonPhrase(), message.getBody().length);
+			LOGGER.info("{} -> {} {}, {} bytes", uri, message.getHead().getCode(), message.getHead().getReasonPhrase(), message.getBody() == null ? 0 : message.getBody().length);
 
 			endpoint.releaseAndReuse();
 

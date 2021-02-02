@@ -29,6 +29,8 @@ import java.util.function.Function;
 
 public class HTTPResponse {
 
+	private static final byte[] EMPTY_BODY = new byte[0];
+
 	private final Message<HttpResponse, byte[]> message;
 	private String bodyText = "";
 
@@ -37,12 +39,16 @@ public class HTTPResponse {
 	}
 
 	public byte[] getBodyBytes() {
-		return message.getBody();
+		return message.getBody() == null ? EMPTY_BODY : message.getBody();
 	}
 
 	public String getBodyText() {
+		return getBodyText(Charset.defaultCharset());
+	}
+
+	public String getBodyText(Charset charset) {
 		if (bodyText.isEmpty()) {
-			bodyText = new String(message.getBody(), Charset.defaultCharset());
+			bodyText = new String(getBodyBytes(), charset);
 		}
 		return bodyText;
 	}
