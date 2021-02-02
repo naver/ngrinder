@@ -31,6 +31,7 @@ import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
 import org.apache.hc.core5.util.Timeout;
 import org.ngrinder.http.method.HTTPGet;
 import org.ngrinder.http.method.HTTPHead;
+import org.ngrinder.http.method.HTTPPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Future;
 
-public class HTTPRequest implements HTTPHead, HTTPGet {
+import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
+
+public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
@@ -69,6 +72,16 @@ public class HTTPRequest implements HTTPHead, HTTPGet {
 		return doRequest(uri, createRequest("GET", uri, params, headers));
 	}
 
+	@Override
+	public HTTPResponse POST(String uri, byte[] content, List<Header> headers) {
+		return doRequest(uri, createRequestWithBody("POST", uri, content, headers));
+	}
+
+	@Override
+	public HTTPResponse POST(String uri, List<NameValuePair> params, List<Header> headers) {
+		return doRequest(uri, createRequest("POST", uri, params, headers));
+	}
+
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
 		try {
 			final HttpHost httpHost = HttpHost.create(URI.create(uri));
@@ -97,6 +110,17 @@ public class HTTPRequest implements HTTPHead, HTTPGet {
 			.setUri(uri);
 
 		params.forEach(builder::addParameter);
+		headers.forEach(builder::addHeader);
+
+		return builder.build();
+	}
+
+	private AsyncRequestProducer createRequestWithBody(String method, String uri, byte[] content, List<Header> headers) {
+		AsyncRequestBuilder builder = AsyncRequestBuilder
+			.create(method)
+			.setUri(uri)
+			.setEntity(content, getContentType(headers));
+
 		headers.forEach(builder::addHeader);
 
 		return builder.build();
