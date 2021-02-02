@@ -30,6 +30,7 @@ import net.grinder.plugininterface.PluginThreadContext;
 import net.grinder.plugininterface.PluginThreadListener;
 import net.grinder.util.Sleeper;
 import net.grinder.util.TimeAuthority;
+import org.ngrinder.http.HTTPRequester;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,6 +110,9 @@ class HTTPPluginThreadState extends SkeletonThreadLifeCycleListener implements P
 		}
 
 		m_httpConnectionWrappers.clear();
+
+		// Close connections from previous run.
+		HTTPRequester.reset();
 	}
 
 	public void setLastResponse(HTTPResponse lastResponse) {

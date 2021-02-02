@@ -20,6 +20,9 @@
  */
 package org.ngrinder.http;
 
+import net.grinder.plugin.http.HTTPPlugin;
+import net.grinder.script.Statistics;
+import net.grinder.statistics.StatisticsIndexMap;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
@@ -33,6 +36,7 @@ import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -49,6 +53,9 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	private static final HTTPRequester requester = new HTTPRequester();
 
 	static {
+		// noinspection ResultOfMethodCallIgnored
+		HTTPPlugin.getPlugin();    // Ensure plugin is loaded
+
 		requester.start();
 	}
 
@@ -116,15 +123,56 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, DEFAULT_CONSUMER, DEFAULT_CALLBACK);
 			Message<HttpResponse, byte[]> message = messageFuture.get();
 
-			LOGGER.info("{} -> {} {}, {} bytes", uri, message.getHead().getCode(), message.getHead().getReasonPhrase(), message.getBody() == null ? 0 : message.getBody().length);
-
 			endpoint.releaseAndReuse();
+
+			aggregate(message);
+			summarize(uri, message);
 
 			return HTTPResponse.of(message);
 		} catch (Exception e) {
-			LOGGER.error("Fail to execute HTTP request", e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void aggregate(Message<HttpResponse, byte[]> message) {
+		Statistics statistics = HTTPPlugin.getPlugin()
+			.getPluginProcessContext()
+			.getScriptContext()
+			.getStatistics();
+
+		if (!statistics.isTestInProgress()) {
+			return;
+		}
+
+		try {
+			Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
+
+			statisticsForTest.setLong(
+				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_STATUS_KEY, message.getHead().getCode());
+
+			if (message.getHead().getCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+				statisticsForTest.addLong(
+					StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_ERRORS_KEY, 1);
+			}
+
+			statisticsForTest.addLong(
+				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, message.getBody() == null ? 0 : message.getBody().length);
+		} catch (Exception e) {
+			LOGGER.error("Fail to aggregate HTTP statistics", e);
+		}
+	}
+
+	private void summarize(String uri, Message<HttpResponse, byte[]> message) {
+		Logger logger = HTTPPlugin.getPlugin()
+			.getPluginProcessContext()
+			.getScriptContext()
+			.getLogger();
+
+		logger.info("{} -> {} {}, {} bytes",
+			uri,
+			message.getHead().getCode(),
+			message.getHead().getReasonPhrase(),
+			message.getBody() == null ? 0 : message.getBody().length);
 	}
 
 	private AsyncRequestProducer createRequest(String method, String uri, List<NameValuePair> params, List<Header> headers) {
