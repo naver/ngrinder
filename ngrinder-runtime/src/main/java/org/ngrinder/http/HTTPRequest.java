@@ -29,9 +29,7 @@ import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
 import org.apache.hc.core5.util.Timeout;
-import org.ngrinder.http.method.HTTPGet;
-import org.ngrinder.http.method.HTTPHead;
-import org.ngrinder.http.method.HTTPPost;
+import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +39,7 @@ import java.util.concurrent.Future;
 
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
 
-public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost {
+public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
@@ -80,6 +78,26 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost {
 	@Override
 	public HTTPResponse POST(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("POST", uri, params, headers));
+	}
+
+	@Override
+	public HTTPResponse PUT(String uri, byte[] content, List<Header> headers) {
+		return doRequest(uri, createRequestWithBody("PUT", uri, content, headers));
+	}
+
+	@Override
+	public HTTPResponse PUT(String uri, List<NameValuePair> params, List<Header> headers) {
+		return doRequest(uri, createRequest("PUT", uri, params, headers));
+	}
+
+	@Override
+	public HTTPResponse PATCH(String uri, byte[] content, List<Header> headers) {
+		return doRequest(uri, createRequestWithBody("PATCH", uri, content, headers));
+	}
+
+	@Override
+	public HTTPResponse PATCH(String uri, List<NameValuePair> params, List<Header> headers) {
+		return doRequest(uri, createRequest("PATCH", uri, params, headers));
 	}
 
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
