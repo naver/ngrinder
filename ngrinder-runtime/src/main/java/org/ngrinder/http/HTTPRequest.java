@@ -39,7 +39,7 @@ import java.util.concurrent.Future;
 
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
 
-public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch {
+public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch, HTTPDelete {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
@@ -98,6 +98,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	@Override
 	public HTTPResponse PATCH(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("PATCH", uri, params, headers));
+	}
+
+	@Override
+	public HTTPResponse DELETE(String uri, List<NameValuePair> params, List<Header> headers) {
+		return doRequest(uri, createRequest("DELETE", uri, params, headers));
 	}
 
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
