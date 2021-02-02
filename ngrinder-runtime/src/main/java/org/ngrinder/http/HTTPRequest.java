@@ -23,11 +23,9 @@ package org.ngrinder.http;
 import net.grinder.plugin.http.HTTPPlugin;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
-import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
-import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
@@ -46,9 +44,6 @@ import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
 public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch, HTTPDelete {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
-
-	private static final AsyncResponseConsumer<Message<HttpResponse, byte[]>> DEFAULT_CONSUMER = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
-	private static final FutureCallback<Message<HttpResponse, byte[]>> DEFAULT_CALLBACK = new SimpleFutureCallback<>();
 
 	private static final HTTPRequester requester = new HTTPRequester();
 
@@ -120,7 +115,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			Future<AsyncClientEndpoint> endpointFuture = requester.connect(httpHost, connectionTimeout);
 			AsyncClientEndpoint endpoint = endpointFuture.get();
 
-			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, DEFAULT_CONSUMER, DEFAULT_CALLBACK);
+			// TODO: pooling response consumer and callback?
+			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(
+				producer,
+				new BasicResponseConsumer<>(new BasicAsyncEntityConsumer()),
+				new SimpleFutureCallback<>());
 			Message<HttpResponse, byte[]> message = messageFuture.get();
 
 			endpoint.releaseAndReuse();
