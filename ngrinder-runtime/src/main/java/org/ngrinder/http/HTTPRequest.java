@@ -21,6 +21,8 @@
 package org.ngrinder.http;
 
 import net.grinder.plugin.http.HTTPPlugin;
+import net.grinder.script.InvalidContextException;
+import net.grinder.script.NoSuchStatisticException;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
 import org.apache.hc.core5.http.*;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
@@ -109,11 +112,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
 		try {
-			final HttpHost httpHost = HttpHost.create(URI.create(uri));
-			final Timeout connectionTimeout = Timeout.ofMilliseconds(HTTPRequestControl.getConnectionTimeout());
-
-			Future<AsyncClientEndpoint> endpointFuture = requester.connect(httpHost, connectionTimeout);
-			AsyncClientEndpoint endpoint = endpointFuture.get();
+			AsyncClientEndpoint endpoint = getEndpoint(uri);
 
 			// TODO: pooling response consumer and callback?
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(
@@ -133,11 +132,38 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		}
 	}
 
-	private void aggregate(Message<HttpResponse, byte[]> message) {
-		Statistics statistics = HTTPPlugin.getPlugin()
+	private AsyncClientEndpoint getEndpoint(String uri) {
+		try {
+			final HttpHost httpHost = HttpHost.create(URI.create(uri));
+			final Timeout connectionTimeout = Timeout.ofMilliseconds(HTTPRequestControl.getConnectionTimeout());
+
+			long start = System.currentTimeMillis();
+			AsyncClientEndpoint endpoint = requester.connect(httpHost, connectionTimeout).get();
+			long end = System.currentTimeMillis();
+
+			Statistics statistics = getStatistics();
+			if (statistics.isTestInProgress()) {
+				Statistics.StatisticsForTest statisticsForTest = statistics.getForCurrentTest();
+
+				statisticsForTest.setLong(
+					StatisticsIndexMap.HTTP_PLUGIN_CONNECT_TIME_KEY, end - start);
+			}
+
+			return endpoint;
+		} catch (InterruptedException | ExecutionException | InvalidContextException | NoSuchStatisticException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Statistics getStatistics() {
+		return HTTPPlugin.getPlugin()
 			.getPluginProcessContext()
 			.getScriptContext()
 			.getStatistics();
+	}
+
+	private void aggregate(Message<HttpResponse, byte[]> message) {
+		Statistics statistics = getStatistics();
 
 		if (!statistics.isTestInProgress()) {
 			return;
