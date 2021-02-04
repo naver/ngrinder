@@ -162,7 +162,6 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("commons-lang");
 		usefulJarList.add("httpcore5");
 		usefulJarList.add("httpcore5-h2");
-		usefulJarList.add("conscrypt-openjdk-uber");
 
 		uselessJarList.add("jython-2.2");
 		uselessJarList.add("ngrinder-core");
