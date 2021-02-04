@@ -21,20 +21,28 @@
 package org.ngrinder.http;
 
 import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 
 public class SimpleFutureCallback<T> implements FutureCallback<T> {
+
+	private final AsyncClientEndpoint endpoint;
+
+	public SimpleFutureCallback(AsyncClientEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+
 	@Override
 	public void completed(T result) {
-
+		endpoint.releaseAndReuse();
 	}
 
 	@Override
 	public void failed(Exception ex) {
-
+		endpoint.releaseAndDiscard();
 	}
 
 	@Override
 	public void cancelled() {
-
+		endpoint.releaseAndDiscard();
 	}
 }

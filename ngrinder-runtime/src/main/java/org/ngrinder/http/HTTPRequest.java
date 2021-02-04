@@ -114,14 +114,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		try {
 			AsyncClientEndpoint endpoint = getEndpoint(uri);
 
-			// TODO: pooling response consumer and callback?
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(
 				producer,
 				new BasicResponseConsumer<>(new BasicAsyncEntityConsumer()),
-				new SimpleFutureCallback<>());
+				new SimpleFutureCallback<>(endpoint));
 			Message<HttpResponse, byte[]> message = messageFuture.get();
-
-			endpoint.releaseAndReuse();
 
 			aggregate(message);
 			summarize(uri, message);
