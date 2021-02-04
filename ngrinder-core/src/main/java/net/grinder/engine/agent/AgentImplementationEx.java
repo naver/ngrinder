@@ -27,7 +27,6 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
 import net.grinder.common.processidentity.ProcessReport;
 import net.grinder.communication.*;
-import net.grinder.console.ConsoleFoundation;
 import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
