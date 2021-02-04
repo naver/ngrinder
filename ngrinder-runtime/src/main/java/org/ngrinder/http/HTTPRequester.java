@@ -31,7 +31,6 @@ import org.apache.hc.core5.http.impl.bootstrap.HttpAsyncRequester;
 import org.apache.hc.core5.http.impl.nio.ClientHttp1StreamDuplexerFactory;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.hc.core5.http.nio.AsyncPushConsumer;
-import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.apache.hc.core5.http.protocol.RequestHandlerRegistry;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.core5.http2.config.H2Config;
@@ -39,18 +38,11 @@ import org.apache.hc.core5.http2.impl.H2Processors;
 import org.apache.hc.core5.http2.impl.nio.ClientH2StreamMultiplexerFactory;
 import org.apache.hc.core5.http2.impl.nio.ClientHttpProtocolNegotiatorFactory;
 import org.apache.hc.core5.http2.nio.support.DefaultAsyncPushConsumerFactory;
-import org.apache.hc.core5.http2.ssl.ConscryptClientTlsStrategy;
 import org.apache.hc.core5.http2.ssl.H2ClientTlsStrategy;
 import org.apache.hc.core5.reactor.IOEventHandlerFactory;
 import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.reactor.IOSession;
-import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.Timeout;
-import org.conscrypt.Conscrypt;
-
-import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
@@ -90,19 +82,8 @@ public class HTTPRequester extends HttpAsyncRequester {
 			http1StreamHandlerFactory,
 			http2StreamHandlerFactory,
 			HttpVersionPolicy.NEGOTIATE,
-			createConscryptTlsStrategy(),
+			new H2ClientTlsStrategy(),
 			null);
-	}
-
-	private static TlsStrategy createConscryptTlsStrategy() {
-		try {
-			SSLContext sslContext = SSLContexts.custom()
-				.setProvider(Conscrypt.newProvider())
-				.build();
-			return new ConscryptClientTlsStrategy(sslContext);
-		} catch (NoSuchAlgorithmException | KeyManagementException e) {
-			return new H2ClientTlsStrategy();
-		}
 	}
 
 	public static void reset() {
