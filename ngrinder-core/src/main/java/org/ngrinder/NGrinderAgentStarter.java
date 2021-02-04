@@ -48,6 +48,8 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger("starter");
 
+	private static final String NETWORK_ADDRESS_CACHE_TTL_SECOND = "20";
+
 	private AgentConfig agentConfig;
 
 	private AgentControllerDaemon agentController;
@@ -132,8 +134,8 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		if (agentConfig.isConnectionMode()) {
 			LOG.info("waiting for connection on {}:{}", agentConfig.getBroadcastIP(), agentConfig.getConnectionAgentPort());
 		} else {
-			String controllerIP = getIP(agentConfig.getControllerIP());
-			agentConfig.setControllerHost(controllerIP);
+			String controllerIP = getIP(agentConfig.getControllerHost());
+			agentConfig.setControllerIP(controllerIP);
 			LOG.info("connecting to controller {}:{}", controllerIP, agentConfig.getControllerPort());
 		}
 
@@ -204,6 +206,9 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			return;
 		}
 		starter.checkDuplicatedRun(startMode);
+
+		java.security.Security.setProperty("networkaddress.cache.ttl", NETWORK_ADDRESS_CACHE_TTL_SECOND);
+
 		if (startMode.equalsIgnoreCase("agent")) {
 			starter.startAgent();
 		} else if (startMode.equalsIgnoreCase("monitor")) {
