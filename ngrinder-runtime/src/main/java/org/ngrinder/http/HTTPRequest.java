@@ -31,6 +31,7 @@ import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
+import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.core5.util.Timeout;
 import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
@@ -48,17 +49,16 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
-	private static final HTTPRequester requester = new HTTPRequester();
+ 	private final HTTPRequester requester;
 
 	static {
 		// noinspection ResultOfMethodCallIgnored
 		HTTPPlugin.getPlugin();    // Ensure plugin is loaded
-
-		requester.start();
 	}
 
 	private HTTPRequest() {
-
+		requester = new HTTPRequester();
+		requester.start();
 	}
 
 	public static HTTPRequest create() {
@@ -220,5 +220,12 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		headers.forEach(builder::addHeader);
 
 		return builder.build();
+	}
+
+	/**
+	 * Set version policy one of FORCE_HTTP_1, FORCE_HTTP_2 and NEGOTIATE
+	 */
+	public void setVersionPolicy(HttpVersionPolicy versionPolicy) {
+		requester.setVersionPolicy(versionPolicy);
 	}
 }

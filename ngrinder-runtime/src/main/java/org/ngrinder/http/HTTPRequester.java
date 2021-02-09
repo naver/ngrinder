@@ -57,10 +57,8 @@ public class HTTPRequester extends HttpAsyncRequester {
 	}
 
 	private static IOReactorConfig ioReactorConfig() {
-		int totalProcessCount = Grinder.grinder.getProperties().getInt("grinder.processes", 1);
 		int totalThreadCount = Grinder.grinder.getProperties().getInt("grinder.threads", 1);
-
-		int ioThreadCount = totalProcessCount * totalThreadCount / 100 + 1;
+		int ioThreadCount = totalThreadCount / 100 + 1;
 
 		return IOReactorConfig.custom()
 			.setIoThreadCount(ioThreadCount)
