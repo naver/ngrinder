@@ -22,12 +22,27 @@ package org.ngrinder.http;
 
 public class HTTPRequestControl {
 	private static long connectionTimeout;
+	private static long socketTimeout;
 
 	public static long getConnectionTimeout() {
 		return connectionTimeout;
 	}
 
+	/**
+	 * Set the time to establish the connection with the remote host.
+	 */
 	public static void setConnectionTimeout(long connectionTimeout) {
 		HTTPRequestControl.connectionTimeout = connectionTimeout;
+	}
+
+	public static long getSocketTimeout() {
+		return socketTimeout;
+	}
+
+	/**
+	 * Set the time waiting for data after establishing the connection
+	 */
+	public static void setSocketTimeout(long socketTimeout) {
+		HTTPRequestControl.socketTimeout = socketTimeout;
 	}
 }

@@ -62,6 +62,7 @@ public class HTTPRequester extends HttpAsyncRequester {
 
 		return IOReactorConfig.custom()
 			.setIoThreadCount(ioThreadCount)
+			.setSoTimeout(Timeout.ofMilliseconds(HTTPRequestControl.getSocketTimeout()))
 			.build();
 	}
 
