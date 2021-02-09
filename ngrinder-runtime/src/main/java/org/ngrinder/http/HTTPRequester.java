@@ -42,7 +42,9 @@ import org.apache.hc.core5.http2.ssl.H2ClientTlsStrategy;
 import org.apache.hc.core5.reactor.IOEventHandlerFactory;
 import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.reactor.IOSession;
+import org.apache.hc.core5.reactor.IOSessionListener;
 import org.apache.hc.core5.util.Timeout;
+
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
@@ -51,7 +53,7 @@ public class HTTPRequester extends HttpAsyncRequester {
 	private HttpVersionPolicy versionPolicy = HttpVersionPolicy.NEGOTIATE;
 
 	public HTTPRequester() {
-		super(ioReactorConfig(), ioEventHandlerFactory(), null, null, null, connPool);
+		super(ioReactorConfig(), ioEventHandlerFactory(), null, null, ioSessionListener(), connPool);
 	}
 
 	private static IOReactorConfig ioReactorConfig() {
@@ -85,6 +87,48 @@ public class HTTPRequester extends HttpAsyncRequester {
 			HttpVersionPolicy.NEGOTIATE,
 			new H2ClientTlsStrategy(),
 			null);
+	}
+
+	private static IOSessionListener ioSessionListener() {
+		return new IOSessionListener() {
+			private long startTime;
+
+			@Override
+			public void connected(IOSession session) {
+				startTime = System.currentTimeMillis();
+			}
+
+			@Override
+			public void startTls(IOSession session) {
+
+			}
+
+			@Override
+			public void inputReady(IOSession session) {
+				long endTime = System.currentTimeMillis();
+				TimeToFirstByteHolder.accumulate(endTime - startTime);
+			}
+
+			@Override
+			public void outputReady(IOSession session) {
+
+			}
+
+			@Override
+			public void timeout(IOSession session) {
+
+			}
+
+			@Override
+			public void exception(IOSession session, Exception ex) {
+
+			}
+
+			@Override
+			public void disconnected(IOSession session) {
+
+			}
+		};
 	}
 
 	public static void reset() {
