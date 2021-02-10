@@ -73,7 +73,7 @@ public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnP
 				this.getAvailable().addFirst(entry);
 			} else {
 				LOGGER.debug("Discard connection {}", entry);
-				entry.discardConnection(CloseMode.GRACEFUL);
+				entry.discardConnection(CloseMode.IMMEDIATE);
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnP
 			this.getLeased().stream(),
 			this.getAvailable().stream()
 		);
-		entryStream.forEach(entry -> entry.discardConnection(CloseMode.GRACEFUL));
+		entryStream.forEach(entry -> entry.discardConnection(CloseMode.IMMEDIATE));
 		this.getLeased().clear();
 		this.getAvailable().clear();
 	}
@@ -95,7 +95,7 @@ public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnP
 
 	@Override
 	public void close() throws IOException {
-		close(CloseMode.GRACEFUL);
+		close(CloseMode.IMMEDIATE);
 	}
 
 	public Set<PoolEntry<T, C>> getLeased() {
