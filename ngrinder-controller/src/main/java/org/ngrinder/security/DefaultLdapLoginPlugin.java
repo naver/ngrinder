@@ -30,8 +30,7 @@ import org.ngrinder.user.service.UserService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.*;
 
 @Slf4j
 @Component
@@ -90,18 +89,14 @@ public class DefaultLdapLoginPlugin implements OnLoginRunnable {
 	}
 
 	private String normalizeUserSearchFilter(String userFilter, String userId) {
+		if (userFilter.startsWith("(&") && isNotBlank(userId)) {
+			return userFilter.replace("{login}", userId);
+		}
+
 		if (!userFilter.startsWith("(") || !userFilter.endsWith(")")) {
 			userFilter = "(" + userFilter + ")";
 		}
 		String userIdFilter = String.format("(CN=%s)", userId);
-
-		if (isBlank(userFilter) && isBlank(userId)) {
-			return EMPTY;
-		}
-
-		if (isBlank(userFilter)) {
-			return userIdFilter;
-		}
 
 		if (isBlank(userId)) {
 			return userFilter;
