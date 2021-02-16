@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static net.grinder.util.NetworkUtils.getAvailablePorts;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.ngrinder.common.constant.ControllerConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -70,14 +72,14 @@ public class ConsoleManager {
 	public void init() {
 		int consoleSize = getConsoleSize();
 		consoleQueue = new ArrayBlockingQueue<>(consoleSize);
-		final String currentIP = config.getCurrentIP();
+		final String currentIP = defaultIfEmpty(config.getCurrentIP(), DEFAULT_LOCAL_HOST_ADDRESS);
 		for (int port : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
 			final ConsoleEntry consoleEntry = new ConsoleEntry(currentIP, port);
 			try {
 				consoleEntry.occupySocket();
 				consoleQueue.add(consoleEntry);
 			} catch (Exception ex) {
-				LOG.error("socket binding to {}:{} is failed", currentIP, port);
+				LOG.error("Socket binding to {}:{} is failed ({})", currentIP, port, ex.getMessage());
 			}
 		}
 

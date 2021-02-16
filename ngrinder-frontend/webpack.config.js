@@ -79,7 +79,12 @@ module.exports = function (env) {
                     test: /\.js$/,
                     exclude: {
                         test: /node_modules/,
-                        not: [/(d3-.*)$/]
+                        not: [
+                            /(d3-.*)$/,
+                            /(strip-.*)$/,
+                            /(.*json.*)$/,
+                            /(vuejs-datepicker.*)$/,
+                        ],
                     },
                     use: [
                         { loader: 'babel-loader', options: { 'presets': ['@babel/preset-env'] } },

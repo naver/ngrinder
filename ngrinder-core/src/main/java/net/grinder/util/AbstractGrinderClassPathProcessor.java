@@ -18,10 +18,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
@@ -209,9 +212,9 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildForemostClasspathBasedOnCurrentClassLoader(Logger logger) {
-		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		URL[] urls = getClassPaths(AbstractGrinderClassPathProcessor.class.getClassLoader());
 		StringBuilder builder = new StringBuilder();
-		for (URL each : urLs) {
+		for (URL each : urls) {
 			builder.append(decodePathWithUTF8(each.getFile())).append(File.pathSeparator);
 		}
 		return filterForeMostClassPath(builder.toString(), logger);
@@ -224,12 +227,31 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildPatchClasspathBasedOnCurrentClassLoader(Logger logger) {
-		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		URL[] urls = getClassPaths(AbstractGrinderClassPathProcessor.class.getClassLoader());
 		StringBuilder builder = new StringBuilder();
-		for (URL each : urLs) {
+		for (URL each : urls) {
 			builder.append(decodePathWithUTF8(each.getFile())).append(File.pathSeparator);
 		}
 		return filterPatchClassPath(builder.toString(), logger);
+	}
+
+	public static URL[] getClassPaths(ClassLoader classLoader) {
+		if (classLoader instanceof URLClassLoader) {
+			return ((URLClassLoader) classLoader).getURLs();
+		}
+		return Stream
+			.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
+			.map(AbstractGrinderClassPathProcessor::toURL)
+			.toArray(URL[]::new);
+	}
+
+	private static URL toURL(String classPathEntry) {
+		try {
+			return new File(classPathEntry).toURI().toURL();
+		} catch (MalformedURLException ex) {
+			throw new IllegalArgumentException(
+				"URL could not be created from '" + classPathEntry + "'", ex);
+		}
 	}
 
 	/**
@@ -239,7 +261,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildClasspathBasedOnCurrentClassLoader(Logger logger) {
-		URL[] urls = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		URL[] urls = getClassPaths(AbstractGrinderClassPathProcessor.class.getClassLoader());
 
 		StringBuilder builder = new StringBuilder();
 		for (URL each : urls) {

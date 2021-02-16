@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Properties;
 
+import static net.grinder.util.AbstractGrinderClassPathProcessor.getClassPaths;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_PROP_JVM_CLASSPATH;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -232,12 +232,12 @@ public class LocalScriptTestDriveService {
 	}
 
 	private boolean isRunningOnWas() {
-		return ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()[0].getProtocol().equals("jar");
+		return getClassPaths(LocalScriptTestDriveService.class.getClassLoader())[0].getProtocol().equals("jar");
 	}
 
 	private String runtimeClassPath() {
 		StringBuilder runtimeClassPath = new StringBuilder();
-		for (URL url : ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs()) {
+		for (URL url : getClassPaths(LocalScriptTestDriveService.class.getClassLoader())) {
 			if (url.getPath().contains("ngrinder-runtime") || url.getPath().contains("ngrinder-groovy")) {
 				runtimeClassPath.append(decodePathWithUTF8(url.getFile())).append(File.pathSeparator);
 			}

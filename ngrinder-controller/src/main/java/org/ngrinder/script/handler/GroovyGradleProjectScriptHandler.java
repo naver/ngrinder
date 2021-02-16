@@ -20,22 +20,25 @@
  */
 package org.ngrinder.script.handler;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.System.getenv;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Paths.get;
+import static java.util.Collections.singletonList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.io.FilenameUtils.normalize;
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -56,6 +59,7 @@ import static org.ngrinder.script.model.FileType.DIR;
 public class GroovyGradleProjectScriptHandler extends GroovyProjectScriptHandler {
 
 	public static final String GRADLE_HOME_ENV_NAME = "GRADLE_HOME";
+	private static final String PATH_SCRIPT_TEMPLATE_DIRECTORY = "/groovy_gradle";
 
 	private final String ngrinderHomePath;
 	private String gradlePath;
@@ -92,10 +96,16 @@ public class GroovyGradleProjectScriptHandler extends GroovyProjectScriptHandler
 		path = PathUtils.join(path, fileName);
 		// Create Dir entry
 		createBaseDirectory(user, path);
+
 		// Create each template entries
-		createFileEntries(user, path, name, url, scriptContent);
-		if (createLib) {
-			createLibraryDirectory(user, path);
+		try {
+			createFileEntries(user, path, name, url, scriptContent);
+			if (createLib) {
+				createLibraryDirectory(user, path);
+			}
+		} catch (NGrinderRuntimeException e) {
+			getFileEntryRepository().delete(user, new ArrayList<>(singletonList(path)));
+			throw e;
 		}
 		return false;
 	}
@@ -108,8 +118,9 @@ public class GroovyGradleProjectScriptHandler extends GroovyProjectScriptHandler
 
 	private void createFileEntries(User user, String path, String name, String url, String scriptContent) {
 		String[] scriptTemplatePaths = { getBuildScriptName(), "src/main/resources/resource1.txt", "src/main/java/TestRunner.groovy" };
+		String homeScriptTemplateDirectoryPath = getConfig().getHomeScriptTemplateDirectory().getAbsolutePath() + PATH_SCRIPT_TEMPLATE_DIRECTORY;
 		for (String scriptTemplatePath : scriptTemplatePaths) {
-			try (InputStream inputStream = new ClassPathResource("/script_template/groovy_gradle/" + scriptTemplatePath).getInputStream()) {
+			try (InputStream inputStream = FileUtils.openInputStream(new File(homeScriptTemplateDirectoryPath + "/" + scriptTemplatePath))) {
 				String fileContent = IOUtils.toString(inputStream, UTF_8.name());
 				if (scriptTemplatePath.endsWith("TestRunner.groovy")) {
 					fileContent = scriptContent;

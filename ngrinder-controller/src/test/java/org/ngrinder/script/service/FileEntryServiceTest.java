@@ -18,19 +18,25 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.User;
-import org.ngrinder.script.handler.JythonScriptHandler;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class FileEntryServiceTest {
+public class FileEntryServiceTest extends AbstractNGrinderTransactionalTest {
 
-	private FileEntryService fileEntryService = new FileEntryService(null, null, null, null);
+	@Autowired
+	private FileEntryService fileEntryService;
+
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
 
 	@Test
 	public void testFileTemplateWithoutOptions() {
 		User user = new User();
 		user.setUserName("JunHo Yoon");
-		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(), "http://helloworld/myname/is",
+		String content = fileEntryService.loadTemplate(user, scriptHandlerFactory.getHandler("jython"), "http://helloworld/myname/is",
 						"hello", null);
 		assertThat(content, containsString("JunHo Yoon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
@@ -45,7 +51,7 @@ public class FileEntryServiceTest {
 			"\"cookies\":[{\"name\":\"cook\",\"value\":\"good\",\"domain\":\"naver.com\",\"path\":\"/home\"}]}";
 		User user = new User();
 		user.setUserName("Gisoo Gwon");
-		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(), "http://helloworld/myname/is",
+		String content = fileEntryService.loadTemplate(user, scriptHandlerFactory.getHandler("jython"), "http://helloworld/myname/is",
 						"hello", options);
 		System.out.println(content);
 		assertThat(content, containsString("Gisoo Gwon"));

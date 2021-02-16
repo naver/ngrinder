@@ -33,7 +33,9 @@ public enum StopReason {
 	/** Normal Stop. */
 	NORMAL("Normal stop"),
 	/** Cancel By User. */
-	CANCEL_BY_USER("Cancel by user");
+	CANCEL_BY_USER("Cancel by user"),
+	/** Cancel By System. */
+	CANCEL_BY_SYSTEM("Cancel by system");
 
 	private final String display;
 

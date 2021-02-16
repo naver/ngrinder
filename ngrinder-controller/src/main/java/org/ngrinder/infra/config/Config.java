@@ -23,6 +23,7 @@ import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constants.InternalConstants;
 import org.ngrinder.common.exception.ConfigurationException;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.FileWatchdog;
 import org.ngrinder.common.util.PropertiesKeyMapper;
@@ -51,10 +52,13 @@ import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.grinder.util.NoOp.noOp;
-import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
+import static org.ngrinder.common.model.Home.PATH_SCRIPT_TEMPLATE_DIRECTORY;
+import static org.ngrinder.common.util.FileUtils.copyResourceToFile;
+import static org.ngrinder.common.util.PathUtils.getSubPath;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -124,6 +128,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 			home.init();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
+			copyScriptTemplates();
 			loadInternalProperties();
 			loadProperties();
 			initHomeMonitor();
@@ -150,8 +155,12 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	}
 
 	private boolean resolveClusterMode() {
-		String mode = getClusterProperties().getProperty(PROP_CLUSTER_MODE, "none");
+		String mode = getClusterMode();
 		return !"none".equals(mode) || getClusterProperties().getPropertyBoolean(PROP_CLUSTER_ENABLED);
+	}
+
+	public String getClusterMode() {
+		return getClusterProperties().getProperty(PROP_CLUSTER_MODE, "none");
 	}
 
 	/**
@@ -256,6 +265,31 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		Resource[] resources = resolver.getResources("classpath*:ngrinder_home_template/*");
 		home.copyFrom(resources);
+	}
+
+	private void copyScriptTemplates() {
+		File scriptTemplateDirectory = home.getScriptTemplateDirectory();
+		if (!scriptTemplateDirectory.exists()) {
+			try {
+				ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+				Resource[] resources = resolver.getResources("classpath*:script_template/**/*.*");
+				for (Resource resource : resources) {
+					String scriptTemplatePath = home.getScriptTemplateDirectory().getAbsolutePath();
+					scriptTemplatePath += getSubPath(PATH_SCRIPT_TEMPLATE_DIRECTORY, resource.getURL().getPath());
+					copyResourceToFile(resource, new File(scriptTemplatePath));
+				}
+			} catch (IOException e) {
+				throw new NGrinderRuntimeException("Error while copying script templates.", e);
+			}
+		}
+	}
+
+	public File getHomeScriptTemplateDirectory() {
+		File scriptTemplateDirectory = home.getScriptTemplateDirectory();
+		if (!scriptTemplateDirectory.exists()) {
+			copyScriptTemplates();
+		}
+		return scriptTemplateDirectory;
 	}
 
 	/**

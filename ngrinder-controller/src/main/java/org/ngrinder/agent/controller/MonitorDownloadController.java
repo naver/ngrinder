@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.net.URLClassLoader;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,8 +66,8 @@ public class MonitorDownloadController {
 	@GetMapping("")
 	public String download(ModelMap model) {
 		try {
-			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, (URLClassLoader) getClass().getClassLoader(),
-				"", null, config.getMonitorPort(), "");
+			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, "",
+				null, config.getMonitorPort(), "");
 			model.clear();
 			return "redirect:/monitor/download/" + monitorPackage.getName();
 		} catch (Exception e) {
