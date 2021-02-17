@@ -25,6 +25,8 @@ import net.grinder.script.InvalidContextException;
 import net.grinder.script.NoSuchStatisticException;
 import net.grinder.script.Statistics;
 import net.grinder.statistics.StatisticsIndexMap;
+import org.apache.hc.client5.http.cookie.*;
+import org.apache.hc.client5.http.impl.cookie.RFC6265StrictSpec;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
@@ -33,12 +35,16 @@ import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.core5.util.Timeout;
+import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -49,7 +55,12 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
- 	private final HTTPRequester requester;
+	private static final CookieStore cookieStore = ThreadContextCookieStore.INSTANCE;
+	private static final CookieSpec COOKIE_SPEC = new RFC6265StrictSpec();
+
+	private final HTTPRequester requester;
+
+	private CookieOrigin cookieOrigin;
 
 	static {
 		// noinspection ResultOfMethodCallIgnored
@@ -119,6 +130,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 				new BasicResponseConsumer<>(new BasicAsyncEntityConsumer()),
 				new SimpleFutureCallback<>(endpoint));
 			Message<HttpResponse, byte[]> message = messageFuture.get();
+
+			processResponseCookies(message.getHead().headerIterator("Set-Cookie"));
 
 			aggregate(message);
 			summarize(uri, message);
@@ -206,7 +219,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			.setUri(uri);
 
 		params.forEach(builder::addParameter);
-		headers.forEach(builder::addHeader);
+
+		addRequestCookies(HttpHost.create(URI.create(uri)), headers).forEach(builder::addHeader);
 
 		return builder.build();
 	}
@@ -217,9 +231,63 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			.setUri(uri)
 			.setEntity(content, getContentType(headers));
 
-		headers.forEach(builder::addHeader);
+		addRequestCookies(HttpHost.create(URI.create(uri)), headers).forEach(builder::addHeader);
 
 		return builder.build();
+	}
+
+	private List<Header> addRequestCookies(HttpHost httpHost, List<Header> headers) {
+		cookieOrigin = new CookieOrigin(httpHost.getHostName(), 0, "/", false);
+
+		final List<Cookie> cookies = cookieStore.getCookies();
+		// Find cookies matching the given origin
+		final List<Cookie> matchedCookies = new ArrayList<>();
+		final Date now = new Date();
+		boolean expired = false;
+		for (final Cookie cookie : cookies) {
+			if (!cookie.isExpired(now)) {
+				if (COOKIE_SPEC.match(cookie, cookieOrigin)) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Cookie {} match {}", cookie, cookieOrigin);
+					}
+					matchedCookies.add(cookie);
+				}
+			} else {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Cookie {} expired", cookie);
+				}
+				expired = true;
+			}
+		}
+		// Per RFC 6265, 5.3
+		// The user agent must evict all expired cookies if, at any time, an expired cookie
+		// exists in the cookie store
+		if (expired) {
+			cookieStore.clearExpired(now);
+		}
+		// Generate Cookie request headers
+		if (!matchedCookies.isEmpty()) {
+			headers.addAll(COOKIE_SPEC.formatCookies(matchedCookies));
+		}
+		return headers;
+	}
+
+	private void processResponseCookies(Iterator<Header> iterator) {
+		iterator.forEachRemaining(header -> {
+			try {
+				List<Cookie> cookies = COOKIE_SPEC.parse(header, cookieOrigin);
+				for (Cookie cookie : cookies) {
+					try {
+						COOKIE_SPEC.validate(cookie, cookieOrigin);
+						cookieStore.addCookie(cookie);
+					} catch (MalformedCookieException e) {
+						LOGGER.warn("Cookie rejected [{}] {}", cookie, e.getMessage());
+					}
+				}
+			} catch (MalformedCookieException ex) {
+				LOGGER.warn("Invalid cookie header: \"{}\". {}", header, ex.getMessage());
+			}
+		});
 	}
 
 	/**
