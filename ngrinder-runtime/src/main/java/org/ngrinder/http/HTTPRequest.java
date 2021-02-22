@@ -30,11 +30,13 @@ import org.apache.hc.client5.http.impl.cookie.RFC6265StrictSpec;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
+import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
 import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.core5.util.Timeout;
+import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
@@ -62,6 +64,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	private final HTTPRequester requester;
 
 	private CookieOrigin cookieOrigin;
+
+	private int readBytes = -1;
 
 	static {
 		// noinspection ResultOfMethodCallIgnored
@@ -126,9 +130,16 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		try {
 			AsyncClientEndpoint endpoint = getEndpoint(uri);
 
+			AsyncResponseConsumer<Message<HttpResponse, byte[]>> consumer;
+			if (readBytes >= 0) {
+				consumer = new PartialResponseConsumer(readBytes);
+			} else {
+				consumer = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
+			}
+
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(
 				producer,
-				new BasicResponseConsumer<>(new BasicAsyncEntityConsumer()),
+				consumer,
 				new SimpleFutureCallback<>(endpoint));
 			Message<HttpResponse, byte[]> message = messageFuture.get();
 
@@ -307,5 +318,13 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	 */
 	public void setVersionPolicy(HttpVersionPolicy versionPolicy) {
 		requester.setVersionPolicy(versionPolicy);
+	}
+
+	public int getReadBytes() {
+		return readBytes;
+	}
+
+	public void setReadBytes(int readBytes) {
+		this.readBytes = readBytes;
 	}
 }
