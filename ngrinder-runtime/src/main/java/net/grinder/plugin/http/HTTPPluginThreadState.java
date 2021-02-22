@@ -31,6 +31,7 @@ import net.grinder.plugininterface.PluginThreadListener;
 import net.grinder.util.Sleeper;
 import net.grinder.util.TimeAuthority;
 import org.ngrinder.http.HTTPRequester;
+import org.ngrinder.http.cookie.CookieManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,6 +111,9 @@ class HTTPPluginThreadState extends SkeletonThreadLifeCycleListener implements P
 		}
 
 		m_httpConnectionWrappers.clear();
+
+		// Discard cookies.
+		CookieManager.reset();
 
 		// Close connections from previous run.
 		HTTPRequester.reset();
