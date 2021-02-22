@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static java.util.Collections.emptyList;
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
 
 public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch, HTTPDelete {
@@ -220,7 +221,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 		params.forEach(builder::addParameter);
 
-		addRequestCookies(HttpHost.create(URI.create(uri)), headers).forEach(builder::addHeader);
+		headers.forEach(builder::addHeader);
+		getMatchedCookies(uri).forEach(builder::addHeader);
 
 		return builder.build();
 	}
@@ -231,13 +233,23 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			.setUri(uri)
 			.setEntity(content, getContentType(headers));
 
-		addRequestCookies(HttpHost.create(URI.create(uri)), headers).forEach(builder::addHeader);
+		headers.forEach(builder::addHeader);
+		getMatchedCookies(uri).forEach(builder::addHeader);
 
 		return builder.build();
 	}
 
-	private List<Header> addRequestCookies(HttpHost httpHost, List<Header> headers) {
-		cookieOrigin = new CookieOrigin(httpHost.getHostName(), 0, "/", false);
+	private List<Header> getMatchedCookies(String uriString) {
+		URI uri = URI.create(uriString);
+
+		int port = uri.getPort();
+		if (port == -1) {
+			port = 80;
+		}
+
+		boolean isSecure = uri.getScheme().equalsIgnoreCase("https");
+
+		cookieOrigin = new CookieOrigin(uri.getHost(), port, uri.getPath(), isSecure);
 
 		final List<Cookie> cookies = cookieStore.getCookies();
 		// Find cookies matching the given origin
@@ -267,9 +279,9 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		}
 		// Generate Cookie request headers
 		if (!matchedCookies.isEmpty()) {
-			headers.addAll(COOKIE_SPEC.formatCookies(matchedCookies));
+			return COOKIE_SPEC.formatCookies(matchedCookies);
 		}
-		return headers;
+		return emptyList();
 	}
 
 	private void processResponseCookies(Iterator<Header> iterator) {
