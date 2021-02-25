@@ -41,6 +41,7 @@ public interface GrinderConstants {
 	String GRINDER_PROP_THREAD_RAMPUP ="grinder.threadRampUp";
 	String GRINDER_PROP_TEST_ID = "grinder.test.id";
 	String GRINDER_PROP_IGNORE_SAMPLE_COUNT = "grinder.ignoreSampleCount";
+	String GRINDER_PROP_CONNECTION_RESET = "grinder.connectionReset";
 	String GRINDER_PROP_SECURITY = "grinder.security";
 	String GRINDER_PROP_SECURITY_LEVEL = "grinder.security.level";
 	String GRINDER_PROP_USER = "grinder.user";

@@ -36,9 +36,11 @@ import org.ngrinder.http.cookie.CookieManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.System.getProperty;
+
 
 /**
- * HTTP plug-in thread state.
+ * HTTP plug-in thread state. (modified for nGrinder)
  *
  * @author Philip Aston
  */
@@ -52,6 +54,8 @@ class HTTPPluginThreadState extends SkeletonThreadLifeCycleListener implements P
 	private final Sleeper m_slowClientSleeper;
 	private final TimeAuthorityAdapter m_timeAuthority;
 
+	private final String connectionResetProperty;
+
 	HTTPPluginThreadState(PluginThreadContext threadContext,
 						  SSLContextFactory sslContextFactory,
 						  Sleeper slowClientSleeper,
@@ -60,6 +64,8 @@ class HTTPPluginThreadState extends SkeletonThreadLifeCycleListener implements P
 		m_sslContextFactory = sslContextFactory;
 		m_slowClientSleeper = slowClientSleeper;
 		m_timeAuthority = new TimeAuthorityAdapter(timeAuthority);
+		connectionResetProperty = getProperty("ngrinder.connection.reset.on.each.test.run", "");
+
 	}
 
 	public PluginThreadContext getThreadContext() {
@@ -104,6 +110,11 @@ class HTTPPluginThreadState extends SkeletonThreadLifeCycleListener implements P
 	public void beginRun() {
 		// Discard our cookies.
 		CookieModule.discardAllCookies(this);
+		CookieManager.reset();
+
+		if (connectionResetProperty.isEmpty()) {
+			return;
+		}
 
 		// Close connections from previous run.
 		for (HTTPConnectionWrapper connection : m_httpConnectionWrappers.values()) {
@@ -111,10 +122,7 @@ class HTTPPluginThreadState extends SkeletonThreadLifeCycleListener implements P
 		}
 
 		m_httpConnectionWrappers.clear();
-
-		// Discard cookies.
-		CookieManager.reset();
-
+		
 		// Close connections from previous run.
 		HTTPRequester.reset();
 	}

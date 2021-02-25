@@ -217,10 +217,20 @@
 
                 <div class="advanced-config" v-show="display.detailConfig">
                     <div class="row">
+                        <control-group name="connectionReset" labelMessageKey="perfTest.config.connectionReset"
+                                       labelStyle="line-height: initial;" controlsStyle="padding-top: 6px;">
+                            <input type="checkbox" id="connectionReset" name="connectionReset" v-model="test.config.connectionReset">
+                        </control-group>
                         <control-group name="samplingInterval" labelMessageKey="perfTest.config.samplingInterval">
                             <select class="select-item form-control" name="samplingInterval" v-model="test.config.samplingInterval">
                                 <option v-for="interval in samplingIntervals" :value="interval" v-text="interval"></option>
                             </select>
+                        </control-group>
+                    </div>
+                    <div class="row">
+                        <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
+                                       labelHelpMessageKey="perfTest.config.safeDistribution" controlsStyle="padding-top: 6px;">
+                            <input type="checkbox" id="safeDistribution" name="safeDistribution" v-model="test.config.safeDistribution">
                         </control-group>
                         <control-group :class="{ error: errors.has('ignoreSampleCount') }" name="ignoreSampleCount"
                                        labelMessageKey="perfTest.config.ignoreSampleCount">
@@ -236,9 +246,9 @@
                         </control-group>
                     </div>
                     <div class="row">
-                        <control-group name="safeDistribution" labelMessageKey="perfTest.config.safeDistribution"
-                                       labelHelpMessageKey="perfTest.config.safeDistribution" controlsStyle="padding-top: 6px;">
-                            <input type="checkbox" id="safeDistribution" name="safeDistribution" v-model="test.config.safeDistribution">
+                        <control-group name="ignoreTooManyError" labelMessageKey="perfTest.config.ignoreTooManyError"
+                                       labelHelpMessageKey="perfTest.config.ignoreTooManyError" controlsStyle="padding-top: 6px;">
+                            <input type="checkbox" id="ignoreTooManyError" name="ignoreTooManyError" v-model="test.config.ignoreTooManyError">
                         </control-group>
                         <control-group :class="{error: errors.has('param')}"
                                        name="param" labelMessageKey="perfTest.config.param"
@@ -252,12 +262,6 @@
                                            errStyle="white-space: nowrap;"
                                            :validationRules="{ regex: /^[a-zA-Z0-9_\.,\|=]{0,50}$/ }">
                             </input-popover>
-                        </control-group>
-                    </div>
-                    <div class="row">
-                        <control-group name="ignoreTooManyError" labelMessageKey="perfTest.config.ignoreTooManyError"
-                                       labelHelpMessageKey="perfTest.config.ignoreTooManyError" controlsStyle="padding-top: 6px;">
-                            <input type="checkbox" id="ignoreTooManyError" name="ignoreTooManyError" v-model="test.config.ignoreTooManyError">
                         </control-group>
                     </div>
                 </div>
