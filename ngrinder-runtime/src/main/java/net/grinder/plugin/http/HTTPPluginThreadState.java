@@ -39,9 +39,11 @@ import HTTPClient.ParseException;
 import HTTPClient.ProtocolNotSuppException;
 import HTTPClient.URI;
 
+import static java.lang.System.getProperty;
+
 
 /**
- * HTTP plug-in thread state.
+ * HTTP plug-in thread state. (modified for nGrinder)
  *
  * @author Philip Aston
  */
@@ -57,6 +59,8 @@ class HTTPPluginThreadState
 	private final Sleeper m_slowClientSleeper;
 	private final TimeAuthorityAdapter m_timeAuthority;
 
+	private final String connectionResetProperty;
+
 	HTTPPluginThreadState(PluginThreadContext threadContext,
 						  SSLContextFactory sslContextFactory,
 						  Sleeper slowClientSleeper,
@@ -66,6 +70,8 @@ class HTTPPluginThreadState
 		m_sslContextFactory = sslContextFactory;
 		m_slowClientSleeper = slowClientSleeper;
 		m_timeAuthority = new TimeAuthorityAdapter(timeAuthority);
+		connectionResetProperty = getProperty("ngrinder.connection.reset.after.one.test.cycle", "");
+
 	}
 
 	public PluginThreadContext getThreadContext() {
@@ -114,12 +120,15 @@ class HTTPPluginThreadState
 		// Discard our cookies.
 		CookieModule.discardAllCookies(this);
 
-		// Close connections from previous run.
-		for (HTTPConnectionWrapper connection : m_httpConnectionWrappers.values()) {
-			connection.close();
-		}
+		if (connectionResetProperty.isEmpty()) {
 
-		m_httpConnectionWrappers.clear();
+			// Close connections from previous run.
+			for (HTTPConnectionWrapper connection : m_httpConnectionWrappers.values()) {
+				connection.close();
+			}
+
+			m_httpConnectionWrappers.clear();
+		}
 	}
 
 	public void setLastResponse(HTTPResponse lastResponse) {
