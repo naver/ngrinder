@@ -426,8 +426,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@Transactional
 	public PerfTest getNextRunnablePerfTestPerfTestCandidate() {
 		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
-		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
-		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
+		List<PerfTest> filteredPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
+		return filteredPerfTests.isEmpty() ? null : filteredPerfTests.get(0);
 	}
 
 	/**
