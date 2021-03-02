@@ -53,8 +53,7 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
@@ -128,12 +127,19 @@ public class HTTPRequester extends HttpAsyncRequester {
 	private static IOSessionListener ioSessionListener() {
 		return new IOSessionListener() {
 			private final Map<IOSession, StopWatch> stopWatchMap = new HashMap<>();
+			private final List<StopWatch> stopWatchQueue = new LinkedList<>();
 
 			@Override
 			public void connected(IOSession session) {
-				stopWatchMap.putIfAbsent(session, new StopWatch());
-				StopWatch timeToFirstByteStopWatch = stopWatchMap.get(session);
-				timeToFirstByteStopWatch.start();
+				StopWatch stopWatch;
+				if (stopWatchQueue.size() > 0) {
+					stopWatch = stopWatchQueue.remove(0);
+				} else {
+					stopWatch = new StopWatch();
+				}
+
+				stopWatchMap.put(session, stopWatch);
+				stopWatch.start();
 			}
 
 			@Override
@@ -143,19 +149,22 @@ public class HTTPRequester extends HttpAsyncRequester {
 
 			@Override
 			public void inputReady(IOSession session) {
-				StopWatch timeToFirstByteStopWatch = stopWatchMap.get(session);
-				if (timeToFirstByteStopWatch == null) {
+				StopWatch stopWatch = stopWatchMap.get(session);
+				if (stopWatch == null) {
 					return;
 				}
 
 				try {
-					timeToFirstByteStopWatch.stop();
-					long timeToFirstByte = timeToFirstByteStopWatch.getTime();
-					timeToFirstByteStopWatch.reset();
+					stopWatch.stop();
+					long timeToFirstByte = stopWatch.getTime();
+					stopWatch.reset();
 
 					TimeToFirstByteHolder.accumulate(timeToFirstByte);
 				} catch (IllegalStateException e) {
 					// ignore
+				} finally {
+					stopWatchMap.remove(session);
+					stopWatchQueue.add(stopWatch);
 				}
 			}
 
