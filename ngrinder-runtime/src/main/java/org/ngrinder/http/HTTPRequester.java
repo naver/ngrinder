@@ -21,6 +21,7 @@
 package org.ngrinder.http;
 
 import net.grinder.script.Grinder;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.function.Supplier;
 import org.apache.hc.core5.http.HttpHost;
@@ -52,6 +53,8 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
@@ -124,22 +127,36 @@ public class HTTPRequester extends HttpAsyncRequester {
 
 	private static IOSessionListener ioSessionListener() {
 		return new IOSessionListener() {
-			private long startTime;
+			private final Map<IOSession, StopWatch> stopWatchMap = new HashMap<>();
 
 			@Override
 			public void connected(IOSession session) {
-				startTime = System.currentTimeMillis();
+				stopWatchMap.putIfAbsent(session, new StopWatch());
+				StopWatch timeToFirstByteStopWatch = stopWatchMap.get(session);
+				timeToFirstByteStopWatch.start();
 			}
 
 			@Override
 			public void startTls(IOSession session) {
-
+				// ignore tls cost in time to first byte statistics.
 			}
 
 			@Override
 			public void inputReady(IOSession session) {
-				long endTime = System.currentTimeMillis();
-				TimeToFirstByteHolder.accumulate(endTime - startTime);
+				StopWatch timeToFirstByteStopWatch = stopWatchMap.get(session);
+				if (timeToFirstByteStopWatch == null) {
+					return;
+				}
+
+				try {
+					timeToFirstByteStopWatch.stop();
+					long timeToFirstByte = timeToFirstByteStopWatch.getTime();
+					timeToFirstByteStopWatch.reset();
+
+					TimeToFirstByteHolder.accumulate(timeToFirstByte);
+				} catch (IllegalStateException e) {
+					// ignore
+				}
 			}
 
 			@Override
