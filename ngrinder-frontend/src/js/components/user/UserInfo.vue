@@ -154,7 +154,7 @@
             if (this.config.allowShareChange) {
                 this.followerSelect2Option = {
                     multiple: true,
-                    minimumInputLength: 3,
+                    minimumInputLength: 2,
                     ajax: {
                         url: '/user/api/search',
                         dataType: 'json',
