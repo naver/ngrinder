@@ -45,6 +45,13 @@ import org.apache.hc.core5.reactor.IOSession;
 import org.apache.hc.core5.reactor.IOSessionListener;
 import org.apache.hc.core5.util.Timeout;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
@@ -79,12 +86,40 @@ public class HTTPRequester extends HttpAsyncRequester {
 			H2Config.DEFAULT,
 			CharCodingConfig.DEFAULT,
 			null);
+		final SSLContext sslContext;
+		try {
+			sslContext = SSLContext.getInstance("SSL");
+			sslContext.init(null, trustAllManagers(), new SecureRandom());
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
 		return new ClientHttpProtocolNegotiatorFactory(
 			http1StreamHandlerFactory,
 			http2StreamHandlerFactory,
 			HttpVersionPolicy.NEGOTIATE,
-			new H2ClientTlsStrategy(),
+			new H2ClientTlsStrategy(sslContext),
 			null);
+	}
+
+	private static TrustManager[] trustAllManagers() {
+		return new TrustManager[] {
+			new X509TrustManager() {
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+					// Do nothing. Trust anyway.
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+					// Do nothing. Trust anyway.
+				}
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return new X509Certificate[0];
+				}
+			}
+		};
 	}
 
 	private static IOSessionListener ioSessionListener() {
