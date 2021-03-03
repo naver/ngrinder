@@ -127,17 +127,10 @@ public class HTTPRequester extends HttpAsyncRequester {
 	private static IOSessionListener ioSessionListener() {
 		return new IOSessionListener() {
 			private final Map<IOSession, StopWatch> stopWatchMap = new HashMap<>();
-			private final List<StopWatch> stopWatchQueue = new LinkedList<>();
 
 			@Override
 			public void connected(IOSession session) {
-				StopWatch stopWatch;
-				if (stopWatchQueue.size() > 0) {
-					stopWatch = stopWatchQueue.remove(0);
-				} else {
-					stopWatch = new StopWatch();
-				}
-
+				StopWatch stopWatch = new StopWatch();
 				stopWatchMap.put(session, stopWatch);
 				stopWatch.start();
 			}
@@ -164,7 +157,6 @@ public class HTTPRequester extends HttpAsyncRequester {
 					// ignore
 				} finally {
 					stopWatchMap.remove(session);
-					stopWatchQueue.add(stopWatch);
 				}
 			}
 
