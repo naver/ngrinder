@@ -206,7 +206,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 				StatisticsIndexMap.HTTP_PLUGIN_RESPONSE_LENGTH_KEY, message.getBody() == null ? 0 : message.getBody().length);
 
 			statisticsForTest.addLong(
-				StatisticsIndexMap.HTTP_PLUGIN_FIRST_BYTE_TIME_KEY, TimeToFirstByteHolder.getTotal());
+				StatisticsIndexMap.HTTP_PLUGIN_FIRST_BYTE_TIME_KEY, TimeToFirstByteHolder.getTotal() + statisticsForTest.getLong(StatisticsIndexMap.HTTP_PLUGIN_CONNECT_TIME_KEY));
 		} catch (Exception e) {
 			LOGGER.error("Fail to aggregate HTTP statistics", e);
 		}

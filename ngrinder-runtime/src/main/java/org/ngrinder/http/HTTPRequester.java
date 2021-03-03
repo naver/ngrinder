@@ -21,6 +21,7 @@
 package org.ngrinder.http;
 
 import net.grinder.script.Grinder;
+import net.grinder.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.function.Supplier;
@@ -53,7 +54,8 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 public class HTTPRequester extends HttpAsyncRequester {
@@ -126,38 +128,49 @@ public class HTTPRequester extends HttpAsyncRequester {
 
 	private static IOSessionListener ioSessionListener() {
 		return new IOSessionListener() {
-			private final Map<IOSession, StopWatch> stopWatchMap = new HashMap<>();
+			private final Map<IOSession, Pair<StopWatch, Boolean>> stopWatchAndTlsFlagMap = new HashMap<>();
 
 			@Override
 			public void connected(IOSession session) {
-				StopWatch stopWatch = new StopWatch();
-				stopWatchMap.put(session, stopWatch);
-				stopWatch.start();
+				Pair<StopWatch, Boolean> stopWatchAndTlsFlag = stopWatchAndTlsFlagMap.get(session);
+				if (stopWatchAndTlsFlag == null) {
+					stopWatchAndTlsFlag = Pair.of(new StopWatch(), false);
+					stopWatchAndTlsFlag.getFirst().start();
+				} else {
+					stopWatchAndTlsFlag = Pair.of(stopWatchAndTlsFlag.getFirst(), false);
+				}
+
+				stopWatchAndTlsFlagMap.put(session, stopWatchAndTlsFlag);
 			}
 
 			@Override
 			public void startTls(IOSession session) {
-				// ignore tls cost in time to first byte statistics.
+				Pair<StopWatch, Boolean> stopWatchAndTlsFlag = Pair.of(new StopWatch(), true);
+				stopWatchAndTlsFlag.getFirst().start();
+
+				stopWatchAndTlsFlagMap.put(session, stopWatchAndTlsFlag);
 			}
 
 			@Override
 			public void inputReady(IOSession session) {
-				StopWatch stopWatch = stopWatchMap.get(session);
-				if (stopWatch == null) {
+				Pair<StopWatch, Boolean> stopWatchAndTlsFlag = stopWatchAndTlsFlagMap.get(session);
+				if (stopWatchAndTlsFlag == null) {
 					return;
 				}
 
-				try {
-					stopWatch.stop();
-					long timeToFirstByte = stopWatch.getTime();
-					stopWatch.reset();
+				StopWatch stopWatch = stopWatchAndTlsFlag.getFirst();
+				boolean isTlsEvent = stopWatchAndTlsFlag.getSecond();
 
-					TimeToFirstByteHolder.accumulate(timeToFirstByte);
-				} catch (IllegalStateException e) {
-					// ignore
-				} finally {
-					stopWatchMap.remove(session);
+				if (isTlsEvent) {
+					return;
 				}
+
+				stopWatch.stop();
+				long timeToFirstByte = stopWatch.getTime();
+				stopWatch.reset();
+
+				TimeToFirstByteHolder.accumulate(timeToFirstByte);
+				stopWatchAndTlsFlagMap.remove(session);
 			}
 
 			@Override
