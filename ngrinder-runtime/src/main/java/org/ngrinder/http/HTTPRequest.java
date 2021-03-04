@@ -58,7 +58,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPRequest.class);
 
-	private static final CookieStore cookieStore = ThreadContextCookieStore.INSTANCE;
+	private static final CookieStore COOKIE_STORE = ThreadContextCookieStore.INSTANCE;
 	private static final CookieSpec COOKIE_SPEC = new RFC6265StrictSpec();
 
 	private final HTTPRequester requester;
@@ -262,7 +262,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 		cookieOrigin = new CookieOrigin(uri.getHost(), port, uri.getPath(), isSecure);
 
-		final List<Cookie> cookies = cookieStore.getCookies();
+		final List<Cookie> cookies = COOKIE_STORE.getCookies();
 		// Find cookies matching the given origin
 		final List<Cookie> matchedCookies = new ArrayList<>();
 		final Date now = new Date();
@@ -286,7 +286,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		// The user agent must evict all expired cookies if, at any time, an expired cookie
 		// exists in the cookie store
 		if (expired) {
-			cookieStore.clearExpired(now);
+			COOKIE_STORE.clearExpired(now);
 		}
 		// Generate Cookie request headers
 		if (!matchedCookies.isEmpty()) {
@@ -302,7 +302,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 				for (Cookie cookie : cookies) {
 					try {
 						COOKIE_SPEC.validate(cookie, cookieOrigin);
-						cookieStore.addCookie(cookie);
+						COOKIE_STORE.addCookie(cookie);
 					} catch (MalformedCookieException e) {
 						LOGGER.warn("Cookie rejected [{}] {}", cookie, e.getMessage());
 					}
