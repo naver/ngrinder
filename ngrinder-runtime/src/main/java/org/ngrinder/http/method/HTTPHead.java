@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http.method;
 
+import HTTPClient.NVPair;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static org.ngrinder.http.util.MapToPairListConvertUtils.convert;
+import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public interface HTTPHead {
 	HTTPResponse HEAD(String uri, List<NameValuePair> params, List<Header> headers);
@@ -44,6 +45,14 @@ public interface HTTPHead {
 	}
 
 	default HTTPResponse HEAD(String uri, Map<String, String> params, Map<String, String> headers) {
+		return HEAD(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
+	}
+
+	default HTTPResponse HEAD(String uri, NVPair[] params) {
+		return HEAD(uri, convert(params, BasicNameValuePair::new), emptyList());
+	}
+
+	default HTTPResponse HEAD(String uri, NVPair[] params, NVPair[] headers) {
 		return HEAD(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
 	}
 }

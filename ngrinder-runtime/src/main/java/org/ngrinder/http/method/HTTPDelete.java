@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http.method;
 
+import HTTPClient.NVPair;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static org.ngrinder.http.util.MapToPairListConvertUtils.convert;
+import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public interface HTTPDelete {
 	HTTPResponse DELETE(String uri, List<NameValuePair> params, List<Header> headers);
@@ -44,6 +45,14 @@ public interface HTTPDelete {
 	}
 
 	default HTTPResponse DELETE(String uri, Map<String, String> params, Map<String, String> headers) {
+		return DELETE(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
+	}
+
+	default HTTPResponse DELETE(String uri, NVPair[] params) {
+		return DELETE(uri, convert(params, BasicNameValuePair::new), emptyList());
+	}
+
+	default HTTPResponse DELETE(String uri, NVPair[] params, NVPair[] headers) {
 		return DELETE(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
 	}
 }

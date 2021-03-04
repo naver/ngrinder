@@ -20,12 +20,32 @@
  */
 package org.ngrinder.http.util;
 
-public class TypeConvertUtils {
-	private TypeConvertUtils(){
+import HTTPClient.NVPair;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
+
+public class PairListConvertUtils {
+	private PairListConvertUtils() {
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T cast(Object object) {
-		return (T) object;
+	public static <R> List<R> convert(Map<String, String> map, BiFunction<String, String, R> converter) {
+		Function<Map.Entry<String, String>, R> keyValueMapper = entry -> converter.apply(entry.getKey(), entry.getValue());
+		return map.entrySet()
+			.stream()
+			.map(keyValueMapper)
+			.collect(toList());
+	}
+
+	public static <R> List<R> convert(NVPair[] pairs, BiFunction<String, String, R> converter) {
+		Function<NVPair, R> pairMapper = pair -> converter.apply(pair.getName(), pair.getValue());
+		return Arrays.stream(pairs)
+			.map(pairMapper)
+			.collect(toList());
 	}
 }

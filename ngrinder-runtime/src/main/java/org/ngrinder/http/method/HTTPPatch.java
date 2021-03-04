@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http.method;
 
+import HTTPClient.NVPair;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
@@ -33,8 +34,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
 import static org.ngrinder.http.util.JsonUtils.toJson;
-import static org.ngrinder.http.util.MapToPairListConvertUtils.convert;
-import static org.ngrinder.http.util.TypeConvertUtils.cast;
+import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public interface HTTPPatch {
 	HTTPResponse PATCH(String uri, byte[] content, List<Header> headers);
@@ -55,7 +55,15 @@ public interface HTTPPatch {
 		if (getContentType(headerList).isSameMimeType(ContentType.APPLICATION_JSON)) {
 			return PATCH(uri, toJson(params).getBytes(), headers);
 		}
-		return PATCH(uri, convert(cast(params), BasicNameValuePair::new), headerList);
+		return PATCH(uri, convert((Map<String, String>) params, BasicNameValuePair::new), headerList);
+	}
+
+	default HTTPResponse PATCH(String uri, NVPair[] params) {
+		return PATCH(uri, convert(params, BasicNameValuePair::new), emptyList());
+	}
+
+	default HTTPResponse PATCH(String uri, NVPair[] params, NVPair[] headers) {
+		return PATCH(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
 	}
 
 	default HTTPResponse PATCH(String uri, byte[] content) {

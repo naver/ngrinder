@@ -41,7 +41,7 @@ import org.apache.hc.core5.util.Timeout;
 import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
-import org.ngrinder.http.util.MapToPairListConvertUtils;
+import org.ngrinder.http.util.PairListConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -337,7 +337,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	public void setHeaders(Map<String, String> headers) {
-		setHeaders(MapToPairListConvertUtils.convert(headers, BasicHeader::new));
+		setHeaders(PairListConvertUtils.convert(headers, BasicHeader::new));
 	}
 
 	public void setHeaders(NVPair[] nvPairHeaders) {
