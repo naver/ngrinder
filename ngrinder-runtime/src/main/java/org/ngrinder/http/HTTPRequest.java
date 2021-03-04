@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http;
 
+import HTTPClient.NVPair;
 import net.grinder.plugin.http.HTTPPlugin;
 import net.grinder.script.InvalidContextException;
 import net.grinder.script.NoSuchStatisticException;
@@ -28,6 +29,7 @@ import net.grinder.statistics.StatisticsIndexMap;
 import org.apache.hc.client5.http.cookie.*;
 import org.apache.hc.client5.http.impl.cookie.RFC6265StrictSpec;
 import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
@@ -39,15 +41,13 @@ import org.apache.hc.core5.util.Timeout;
 import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
+import org.ngrinder.http.util.MapToPairListConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -66,6 +66,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	private CookieOrigin cookieOrigin;
 
 	private int readBytes = -1;
+
+	private List<Header> headers = emptyList();
 
 	static {
 		// noinspection ResultOfMethodCallIgnored
@@ -232,7 +234,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 		params.forEach(builder::addParameter);
 
-		headers.forEach(builder::addHeader);
+		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
+		actualHeaders.forEach(builder::addHeader);
 		getMatchedCookies(uri).forEach(builder::addHeader);
 
 		return builder.build();
@@ -244,7 +247,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			.setUri(uri)
 			.setEntity(content, getContentType(headers));
 
-		headers.forEach(builder::addHeader);
+		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
+		actualHeaders.forEach(builder::addHeader);
 		getMatchedCookies(uri).forEach(builder::addHeader);
 
 		return builder.build();
@@ -326,5 +330,21 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	public void setReadBytes(int readBytes) {
 		this.readBytes = readBytes;
+	}
+
+	public void setHeaders(List<Header> headers) {
+		this.headers = headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		setHeaders(MapToPairListConvertUtils.convert(headers, BasicHeader::new));
+	}
+
+	public void setHeaders(NVPair[] nvPairHeaders) {
+		List<Header> headers = new ArrayList<>();
+		for (NVPair header : nvPairHeaders) {
+			headers.add(new BasicHeader(header.getName(), header.getValue()));
+		}
+		setHeaders(headers);
 	}
 }
