@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http;
 
+import net.grinder.util.NoOp;
 import org.apache.hc.core5.concurrent.BasicFuture;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.io.CloseMode;
@@ -27,8 +28,6 @@ import org.apache.hc.core5.io.ModalCloseable;
 import org.apache.hc.core5.pool.ManagedConnPool;
 import org.apache.hc.core5.pool.PoolEntry;
 import org.apache.hc.core5.util.Timeout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -37,8 +36,9 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
+import static net.grinder.util.NoOp.noOp;
+
 public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnPoolControl<T, C> implements ManagedConnPool<T, C> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadAwareConnPool.class);
 
 	private final ThreadLocal<Set<PoolEntry<T, C>>> leased = ThreadLocal.withInitial(HashSet::new);
 	private final ThreadLocal<LinkedList<PoolEntry<T, C>>> available = ThreadLocal.withInitial(LinkedList::new);
@@ -49,10 +49,7 @@ public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnP
 			.stream()
 			.filter(entry -> entry.getRoute().equals(route))
 			.findAny()
-			.orElseGet(() -> {
-				LOGGER.debug("Create a new connection");
-				return new PoolEntry<>(route, Timeout.DISABLED);
-			});
+			.orElseGet(() -> new PoolEntry<>(route, Timeout.DISABLED));
 		this.getLeased().add(poolEntry);
 
 		BasicFuture<PoolEntry<T, C>> future = new BasicFuture<>(callback);
@@ -69,10 +66,8 @@ public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnP
 		if (this.getLeased().remove(entry)) {
 			final boolean keepAlive = entry.hasConnection() && reusable;
 			if (keepAlive) {
-				LOGGER.debug("Reuse connection {}", entry);
 				this.getAvailable().addFirst(entry);
 			} else {
-				LOGGER.debug("Discard connection {}", entry);
 				entry.discardConnection(CloseMode.IMMEDIATE);
 			}
 		}
@@ -90,7 +85,7 @@ public class ThreadAwareConnPool<T, C extends ModalCloseable> extends EmptyConnP
 
 	@Override
 	public void close(CloseMode closeMode) {
-		// TODO: implement close connection pool
+		noOp();
 	}
 
 	@Override
