@@ -616,6 +616,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedBy().getUserId());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, geUserLibraryClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
+			grinderProperties.setBoolean(GRINDER_PROP_CONNECTION_RESET, getSafe(perfTest.getConnectionReset()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
 			grinderProperties.setProperty(GRINDER_PROP_SECURITY_LEVEL, config.getSecurityLevel());
 			// For backward agent compatibility.
