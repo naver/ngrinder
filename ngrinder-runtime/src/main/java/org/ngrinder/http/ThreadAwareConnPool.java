@@ -20,7 +20,6 @@
  */
 package org.ngrinder.http;
 
-import net.grinder.util.NoOp;
 import org.apache.hc.core5.concurrent.BasicFuture;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.io.CloseMode;

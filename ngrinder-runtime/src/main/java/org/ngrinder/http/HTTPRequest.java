@@ -125,9 +125,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
-		AsyncClientEndpoint endpoint = null;
+		AsyncClientEndpoint endpoint = getEndpoint(uri);
 		try {
-			endpoint = getEndpoint(uri);
 			AsyncResponseConsumer<Message<HttpResponse, byte[]>> consumer;
 			if (readBytes >= 0) {
 				consumer = new PartialResponseConsumer(readBytes);
@@ -135,23 +134,19 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 				consumer = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
 			}
 
-			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(
-				producer,
-				consumer,
-				null);
+			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, consumer, null);
 			Message<HttpResponse, byte[]> message = messageFuture.get();
+
+			endpoint.releaseAndReuse();
 
 			processResponseCookies(message.getHead().headerIterator("Set-Cookie"));
 
 			aggregate(message);
 			summarize(uri, message);
-			endpoint.releaseAndReuse();
 
 			return HTTPResponse.of(message);
 		} catch (Exception e) {
-			if (endpoint != null) {
-				endpoint.releaseAndDiscard();
-			}
+			endpoint.releaseAndDiscard();
 			throw new RuntimeException(e);
 		}
 	}
