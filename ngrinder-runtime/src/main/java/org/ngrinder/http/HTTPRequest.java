@@ -41,7 +41,6 @@ import org.apache.hc.core5.util.Timeout;
 import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
-import org.ngrinder.http.util.PairListConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ import java.util.concurrent.Future;
 
 import static java.util.Collections.emptyList;
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
+import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch, HTTPDelete {
 
@@ -74,13 +74,9 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		HTTPPlugin.getPlugin();    // Ensure plugin is loaded
 	}
 
-	private HTTPRequest() {
+	public HTTPRequest() {
 		requester = new HTTPRequester();
 		requester.start();
-	}
-
-	public static HTTPRequest create() {
-		return new HTTPRequest();
 	}
 
 	@Override
@@ -129,9 +125,8 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
+		AsyncClientEndpoint endpoint = getEndpoint(uri);
 		try {
-			AsyncClientEndpoint endpoint = getEndpoint(uri);
-
 			AsyncResponseConsumer<Message<HttpResponse, byte[]>> consumer;
 			if (readBytes >= 0) {
 				consumer = new PartialResponseConsumer(readBytes);
@@ -139,11 +134,10 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 				consumer = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
 			}
 
-			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(
-				producer,
-				consumer,
-				new SimpleFutureCallback<>(endpoint));
+			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, consumer, null);
 			Message<HttpResponse, byte[]> message = messageFuture.get();
+
+			endpoint.releaseAndReuse();
 
 			processResponseCookies(message.getHead().headerIterator("Set-Cookie"));
 
@@ -152,6 +146,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 			return HTTPResponse.of(message);
 		} catch (Exception e) {
+			endpoint.releaseAndDiscard();
 			throw new RuntimeException(e);
 		}
 	}
@@ -337,14 +332,10 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	public void setHeaders(Map<String, String> headers) {
-		setHeaders(PairListConvertUtils.convert(headers, BasicHeader::new));
+		setHeaders(convert(headers, BasicHeader::new));
 	}
 
 	public void setHeaders(NVPair[] nvPairHeaders) {
-		List<Header> headers = new ArrayList<>();
-		for (NVPair header : nvPairHeaders) {
-			headers.add(new BasicHeader(header.getName(), header.getValue()));
-		}
-		setHeaders(headers);
+		setHeaders(convert(nvPairHeaders, BasicHeader::new));
 	}
 }
