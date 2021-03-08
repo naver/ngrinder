@@ -41,7 +41,6 @@ import org.apache.hc.core5.util.Timeout;
 import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
-import org.ngrinder.http.util.PairListConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ import java.util.concurrent.Future;
 
 import static java.util.Collections.emptyList;
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
+import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch, HTTPDelete {
 
@@ -341,14 +341,10 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	public void setHeaders(Map<String, String> headers) {
-		setHeaders(PairListConvertUtils.convert(headers, BasicHeader::new));
+		setHeaders(convert(headers, BasicHeader::new));
 	}
 
 	public void setHeaders(NVPair[] nvPairHeaders) {
-		List<Header> headers = new ArrayList<>();
-		for (NVPair header : nvPairHeaders) {
-			headers.add(new BasicHeader(header.getName(), header.getValue()));
-		}
-		setHeaders(headers);
+		setHeaders(convert(nvPairHeaders, BasicHeader::new));
 	}
 }
