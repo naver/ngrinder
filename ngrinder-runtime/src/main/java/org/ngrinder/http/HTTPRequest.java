@@ -74,13 +74,9 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		HTTPPlugin.getPlugin();    // Ensure plugin is loaded
 	}
 
-	private HTTPRequest() {
+	public HTTPRequest() {
 		requester = new HTTPRequester();
 		requester.start();
-	}
-
-	public static HTTPRequest create() {
-		return new HTTPRequest();
 	}
 
 	@Override
