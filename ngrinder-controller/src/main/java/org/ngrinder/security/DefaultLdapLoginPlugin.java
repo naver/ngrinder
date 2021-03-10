@@ -90,7 +90,7 @@ public class DefaultLdapLoginPlugin implements OnLoginRunnable {
 
 	private String normalizeUserSearchFilter(String userFilter, String userId) {
 		if (userFilter.startsWith("(&") && isNotBlank(userId)) {
-			return userFilter.replace("{login}", userId);
+			return String.format(userFilter, userId);
 		}
 
 		if (!userFilter.startsWith("(") || !userFilter.endsWith(")")) {
