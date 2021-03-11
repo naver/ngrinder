@@ -38,7 +38,6 @@ import org.apache.hc.core5.http.nio.support.AsyncRequestBuilder;
 import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.core5.util.Timeout;
-import org.ngrinder.http.consumer.PartialResponseConsumer;
 import org.ngrinder.http.cookie.ThreadContextCookieStore;
 import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
@@ -61,11 +60,13 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	private static final CookieStore COOKIE_STORE = ThreadContextCookieStore.INSTANCE;
 	private static final CookieSpec COOKIE_SPEC = new RFC6265StrictSpec();
 
-	private final HTTPRequester requester;
+	private HTTPRequester requester;
 
 	private CookieOrigin cookieOrigin;
 
 	private int readBytes = -1;
+
+	private HttpVersionPolicy versionPolicy = HttpVersionPolicy.NEGOTIATE;
 
 	private List<Header> headers = emptyList();
 
@@ -75,8 +76,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	public HTTPRequest() {
-		requester = new HTTPRequester();
-		requester.start();
+		requester = new HTTPRequester.Builder().build();
 	}
 
 	@Override
@@ -127,12 +127,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
 		AsyncClientEndpoint endpoint = getEndpoint(uri);
 		try {
-			AsyncResponseConsumer<Message<HttpResponse, byte[]>> consumer;
-			if (readBytes >= 0) {
-				consumer = new PartialResponseConsumer(readBytes);
-			} else {
-				consumer = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
-			}
+			AsyncResponseConsumer<Message<HttpResponse, byte[]>> consumer = new BasicResponseConsumer<>(new BasicAsyncEntityConsumer());
 
 			Future<Message<HttpResponse, byte[]>> messageFuture = endpoint.execute(producer, consumer, null);
 			Message<HttpResponse, byte[]> message = messageFuture.get();
@@ -316,6 +311,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	 * Set version policy one of FORCE_HTTP_1, FORCE_HTTP_2 and NEGOTIATE
 	 */
 	public void setVersionPolicy(HttpVersionPolicy versionPolicy) {
+		this.versionPolicy = versionPolicy;
 		requester.setVersionPolicy(versionPolicy);
 	}
 
@@ -325,6 +321,10 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	public void setReadBytes(int readBytes) {
 		this.readBytes = readBytes;
+		this.requester = new HTTPRequester.Builder()
+			.setReadBytes(this.readBytes)
+			.setVersionPolicy(this.versionPolicy)
+			.build();
 	}
 
 	public void setHeaders(List<Header> headers) {
