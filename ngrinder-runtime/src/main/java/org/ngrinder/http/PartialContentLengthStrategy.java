@@ -18,21 +18,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ngrinder.http.consumer;
+package org.ngrinder.http;
 
-import org.apache.hc.core5.http.nio.support.BasicResponseConsumer;
+import org.apache.hc.core5.http.ContentLengthStrategy;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpMessage;
+import org.apache.hc.core5.http.impl.DefaultContentLengthStrategy;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+public class PartialContentLengthStrategy implements ContentLengthStrategy {
+	private static final DefaultContentLengthStrategy DELEGATE = new DefaultContentLengthStrategy();
 
-public class PartialResponseConsumer extends BasicResponseConsumer<byte[]> {
+	private long readBytes = -1;
 
-	public PartialResponseConsumer(int size) {
-		super(new PartialEntityConsumer(size));
+	public PartialContentLengthStrategy(long readBytes) {
+		this.readBytes = readBytes;
 	}
 
 	@Override
-	public void consume(ByteBuffer src) throws IOException {
-		super.consume(src);
+	public long determineLength(HttpMessage message) throws HttpException {
+		if (readBytes > -1) {
+			return readBytes;    // And connection cannot be reused.
+		}
+		return DELEGATE.determineLength(message);
 	}
 }
