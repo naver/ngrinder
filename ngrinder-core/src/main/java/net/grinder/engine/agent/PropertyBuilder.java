@@ -34,6 +34,7 @@ import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static javax.net.ssl.SSLSocketFactory.getDefault;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_PROP_CONNECTION_RESET;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_LIGHT;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
@@ -182,6 +183,10 @@ public class PropertyBuilder {
 		} else {
 			jvmArguments.append(properties.getProperty("grinder.jvm.arguments", ""));
 			addNativeLibraryPath(jvmArguments);
+		}
+
+		if (properties.getBoolean(GRINDER_PROP_CONNECTION_RESET, false)) {
+			jvmArguments.append(" -Dngrinder.connection.reset.on.each.test.run=true ");
 		}
 
 		addParam(jvmArguments, properties.getProperty("grinder.param", ""));

@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static net.grinder.util.NetworkUtils.getIP;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -125,7 +126,9 @@ public class AgentController implements Agent, AgentConstants {
 							connector = m_connectorFactory.create(agentConfig.getConnectionAgentPort());
 							occupyConnectionAgentSocket();
 						} else {
-							connector = m_connectorFactory.create(agentConfig.getControllerIP(), agentConfig.getControllerPort());
+							String controllerIP = getIP(agentConfig.getControllerHost());
+							agentConfig.setControllerIP(controllerIP);
+							connector = m_connectorFactory.create(controllerIP, agentConfig.getControllerPort());
 						}
 
 						try {

@@ -1051,7 +1051,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			bw.newLine();
 			bw.flush();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.error("Error while writing report data to {}", name , e);
 			throw processException(e);
 		}
 	}

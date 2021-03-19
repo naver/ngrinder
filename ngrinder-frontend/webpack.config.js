@@ -35,7 +35,7 @@ var lessLoader = {
 };
 
 module.exports = function (env) {
-    var ngrinderVersion = '3.5.3';
+    var ngrinderVersion = '3.5.4';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
     }
@@ -79,7 +79,12 @@ module.exports = function (env) {
                     test: /\.js$/,
                     exclude: {
                         test: /node_modules/,
-                        not: [/(d3-.*)$/]
+                        not: [
+                            /(d3-.*)$/,
+                            /(strip-.*)$/,
+                            /(.*json.*)$/,
+                            /(vuejs-datepicker.*)$/,
+                        ],
                     },
                     use: [
                         { loader: 'babel-loader', options: { 'presets': ['@babel/preset-env'] } },

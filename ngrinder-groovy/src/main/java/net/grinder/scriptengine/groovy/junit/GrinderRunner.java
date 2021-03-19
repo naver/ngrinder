@@ -13,22 +13,11 @@
  */
 package net.grinder.scriptengine.groovy.junit;
 
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.GroovyExceptionProcessor;
-import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
-import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
-import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
-import net.grinder.scriptengine.groovy.junit.annotation.RunRate;
-
+import net.grinder.scriptengine.groovy.junit.annotation.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -50,6 +39,9 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * Grinder JUnit Runner. Grinder JUnit Runner is the custom {@link Runner} which lets the user can
@@ -266,7 +258,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 */
 	protected Statement withBeforeProcess(Statement statement) {
 		TestClass testClass = getTestClass();
-		List<FrameworkMethod> befores = testClass.getAnnotatedMethods(BeforeProcess.class);
+		List<FrameworkMethod> befores = new ArrayList<>(testClass.getAnnotatedMethods(BeforeProcess.class));
 		befores.addAll(testClass.getAnnotatedMethods(BeforeClass.class));
 		return befores.isEmpty() ? statement : new RunBefores(statement, befores, null);
 	}
@@ -282,7 +274,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 */
 	protected Statement withAfterProcess(Statement statement) {
 		TestClass testClass = getTestClass();
-		List<FrameworkMethod> afters = testClass.getAnnotatedMethods(AfterProcess.class);
+		List<FrameworkMethod> afters = new ArrayList<>(testClass.getAnnotatedMethods(AfterProcess.class));
 		afters.addAll(testClass.getAnnotatedMethods(AfterClass.class));
 		return afters.isEmpty() ? statement : new RunAfters(statement, afters, null);
 	}

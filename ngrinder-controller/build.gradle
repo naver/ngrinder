@@ -40,9 +40,10 @@ dependencies {
     compile (group: "rome", name: "rome", version: "1.0")
     compile (group: "com.ibm.icu", name: "icu4j", version: "4.6")
     compile (group: "sonia.svnkit", name: "svnkit-dav", version: svnkit_version)
-    compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version)
+    compile (group: "sonia.svnkit", name: "svnkit", version: svnkit_version) {
+        exclude (module: "platform")
+    }
     compile (group: "javax.servlet.jsp", name: "jsp-api", version: "2.1")
-    compile (group: "org.python", name: "jython-standalone", version: "2.5.3")
     compile (group: "com.google.guava", name: "guava", version: "20.0")
     compile (group: "org.springframework.security", name: "spring-security-taglibs", version: spring_security_version)
     compile (group: "org.liquibase", name: "liquibase-core", version: "3.5.3")
@@ -54,7 +55,6 @@ dependencies {
     compile (group: "com.h2database", name: "h2", version: "1.4.197")
     compile (group: "commons-fileupload", name: "commons-fileupload", version: "1.3.1")
     compile (group: "commons-dbcp", name: "commons-dbcp", version: "1.4")
-    compile (group: "cglib", name: "cglib", version: "2.2.2")
     compile (group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: jackson_version)
     compile (group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jackson_version)
     compile (group: "jaxen", name: "jaxen", version: "1.1.4")
@@ -75,10 +75,9 @@ dependencies {
 
     providedRuntime (group: "org.springframework.boot", name: "spring-boot-starter-tomcat", version: spring_boot_version)
 
-    testCompile (group: "junit", name: "junit", version: "4.13")
+    testCompile (group: "junit", name: "junit", version: junit_version)
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
     testCompile (group: "org.springframework.boot", name: "spring-boot-starter-test", version: spring_boot_version)
-
     testCompileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
     testAnnotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
 }
@@ -104,7 +103,8 @@ task convert_cr_lf {
 
 processResources {
     filesMatching("ngrinder-sh/agent/run_agent_internal.*") {
-        expand(["ngrinder_core": String.format("lib/ngrinder-core-%s.jar", project.version)])
+        expand(["ngrinder_core": String.format("lib/ngrinder-core-%s.jar", project.version),
+                "ngrinder_runtime": String.format("lib/ngrinder-runime-%s.jar", project.version)])
     }
 }
 
@@ -114,4 +114,5 @@ test {
 
 tasks.bootWar.dependsOn convert_cr_lf
 
-tasks.processResources.dependsOn tasks.getByPath(":ngrinder-frontend:webpack")
+tasks.processResources.finalizedBy tasks.getByPath(":ngrinder-frontend:webpack")
+tasks.processResources.finalizedBy tasks.getByPath(":ngrinder-frontend:checkES5")

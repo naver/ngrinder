@@ -66,7 +66,7 @@ public class SingleConsoleThreadTest extends AbstractMultiGrinderTestBase {
 		agentThread2.run(console1.getConsolePort());
 
 		// Wait until all agents are started. They will connect main console.
-		waitAndAssertUntilAgentAttachedTo(console1, 2, 15);
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 20);
 
 		// if we shut down one agent.
 		agentThread2.addListener(new AgentShutDownSynchronizeListener(condition));

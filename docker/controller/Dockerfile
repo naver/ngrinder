@@ -26,6 +26,8 @@ RUN mkdir -p /usr/share/gradle \
   && rm -f /tmp/gradle.zip
 
 # Set up environment variables
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8
+ENV LANG=en_US.UTF-8
 ENV BASE_DIR=/opt \
     NGRINDER_HOME=/opt/ngrinder-controller \
     MAVEN_HOME=/usr/share/maven \

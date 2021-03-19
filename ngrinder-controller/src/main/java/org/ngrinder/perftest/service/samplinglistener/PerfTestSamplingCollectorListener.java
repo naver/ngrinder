@@ -42,7 +42,7 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	                                         final PerfTestService perfTestService,
 	                                         ScheduledTaskService scheduledTaskService) {
 		this.scheduledTaskService = scheduledTaskService;
-		// Make it separate asyc call to remove the delay on the sampling.
+		// Make it separate async call to remove the delay on the sampling.
 		this.runnable = () -> perfTestService.saveStatistics(singleConsole, perfTestId);
 	}
 

@@ -426,8 +426,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 	@Transactional
 	public PerfTest getNextRunnablePerfTestPerfTestCandidate() {
 		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
-		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
-		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
+		List<PerfTest> filteredPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
+		return filteredPerfTests.isEmpty() ? null : filteredPerfTests.get(0);
 	}
 
 	/**
@@ -458,7 +458,12 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 
 	@Override
 	public List<PerfTest> getAllTesting() {
-		return getAll(null, config.getRegion(), Status.getTestingTestStates());
+		return getAll(null, config.getRegion(), Status.getTestStatesByCategory(StatusCategory.TESTING));
+	}
+
+	@Override
+	public List<PerfTest> getAllProgressing() {
+		return getAll(null, config.getRegion(), Status.getTestStatesByCategory(StatusCategory.PROGRESSING));
 	}
 
 	public List<PerfTest> getAllAbnormalTesting() {
@@ -611,6 +616,7 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedBy().getUserId());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_USER_LIBRARY_CLASSPATH, geUserLibraryClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, getSafe(perfTest.getIgnoreSampleCount()));
+			grinderProperties.setBoolean(GRINDER_PROP_CONNECTION_RESET, getSafe(perfTest.getConnectionReset()));
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
 			grinderProperties.setProperty(GRINDER_PROP_SECURITY_LEVEL, config.getSecurityLevel());
 			// For backward agent compatibility.

@@ -6,7 +6,7 @@ allprojects  {
   apply plugin: "idea"
 
   group = "org.ngrinder"
-  version = "3.5.3"
+  version = "3.5.4"
 
   idea {
     module {
@@ -35,6 +35,7 @@ subprojects {
 
   ext {
     profile = project.hasProperty("profile") ? profile : "production"
+    esCheckModuleVersion = project.hasProperty("esCheckModuleVersion") ? esCheckModuleVersion : ""
     slf4j_version = "1.7.28"
     spring_security_version = "5.3.4.RELEASE"
     spring_boot_version = "2.3.3.RELEASE"
@@ -44,7 +45,8 @@ subprojects {
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
     jackson_version = "2.11.2"
-    groovy_version = "3.0.5"
+    groovy_version = project.property("groovy.version")
+    junit_version = project.property("junit.version")
   }
 
   repositories {

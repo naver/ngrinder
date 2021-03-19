@@ -30,12 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
-import static com.sun.jmx.mbeanserver.Util.cast;
 import static java.util.Date.from;
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 import static org.ngrinder.common.util.DateUtils.dateToString;
 import static org.ngrinder.common.util.DateUtils.ms2Time;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Performance Test Entity.
@@ -257,6 +257,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Type(type = "true_false")
 	private Boolean ignoreTooManyError;
 
+	@Column(name = "connection_reset", columnDefinition = "char(1)")
+	@Cloneable
+	@Type(type = "true_false")
+	private Boolean connectionReset;
+
 	@JsonIgnore
 	@Transient
 	private GrinderProperties grinderProperties;
@@ -310,6 +315,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.vuserPerAgent = getSafe(this.vuserPerAgent, 1);
 		this.safeDistribution = getSafe(this.safeDistribution, false);
 		this.ignoreTooManyError = getSafe(this.ignoreTooManyError, false);
+		this.connectionReset = getSafe(this.connectionReset, true);
 		this.useRampUp = getSafe(this.useRampUp, false);
 		this.rampUpInitCount = getSafe(this.rampUpInitCount, 0);
 		this.rampUpStep = getSafe(this.rampUpStep, 1);
@@ -455,5 +461,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.useRampUp = getSafe(this.useRampUp);
 		this.safeDistribution = getSafe(this.safeDistribution);
 		this.ignoreTooManyError = getSafe(this.ignoreTooManyError);
+		this.connectionReset = getSafe(this.connectionReset);
 	}
 }

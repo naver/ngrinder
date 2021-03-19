@@ -134,7 +134,6 @@
 <script>
     import { Mixins } from 'vue-mixin-decorator';
     import Component from 'vue-class-component';
-    import { jsonc } from 'jsonc';
 
     import MessagesMixin from '../common/mixin/MessagesMixin.vue';
     import Base from '../Base.vue';
@@ -229,26 +228,26 @@
         parseActivation(activation) {
             activation.responseBody = 'No Contents';
 
-            if (jsonc.isJSON(activation.response)) {
+            if (this.isJSONString(activation.response)) {
                 const response = JSON.parse(activation.response);
 
                 if (response.body) {
                     activation.responseBody = response.body;
 
-                    if (jsonc.isJSON(response.body)) {
-                        activation.responseBody = jsonc.beautify(response.body);
+                    if (this.isJSONString(response.body)) {
+                        activation.responseBody = this.jsonBeautify(JSON.parse(response.body));
                     }
                 }
                 activation.statusCode = response.statusCode;
-                activation.responseHeader = JSON.stringify(response.header, null, 4);
+                activation.responseHeader = this.jsonBeautify(response.header);
             } else {
                 activation.statusCode = 400;
                 activation.responseHeader = '';
             }
 
-            if (jsonc.isJSON(activation.request)) {
+            if (this.isJSONString(activation.request)) {
                 const request = JSON.parse(activation.request);
-                activation.requestPayload = JSON.stringify(request, null, 4);
+                activation.requestPayload = this.jsonBeautify(request);
             }
             return activation;
         }
@@ -299,6 +298,19 @@
             this.activationPage = 0;
             this.activations = [];
             this.loadMore();
+        }
+
+        isJSONString(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
+
+        jsonBeautify(jsonObject) {
+            return JSON.stringify(jsonObject, null, 4);
         }
 
         get getActivationRequestParams() {

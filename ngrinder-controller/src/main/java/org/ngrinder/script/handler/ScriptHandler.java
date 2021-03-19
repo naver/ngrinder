@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
+import freemarker.template.TemplateNotFoundException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -27,6 +28,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.exception.PerfTestPrepareException;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -89,6 +91,10 @@ public abstract class ScriptHandler implements ControllerConstants {
 	@Autowired
 	@JsonIgnore
 	private GitHubFileEntryRepository gitHubFileEntryRepository;
+
+	@Autowired
+	@JsonIgnore
+	private Config config;
 
 	/**
 	 * Get the display order of {@link ScriptHandler}s.
@@ -260,9 +266,9 @@ public abstract class ScriptHandler implements ControllerConstants {
 		}
 
 		for (FileEntry eachFileEntry : libFileEntries) {
-			// Skip jython 2.5... it's already included.
-			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+			// Skip jython 2.7... it's already included.
+			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.7.")
+					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.7.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
@@ -327,11 +333,12 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return generated string
 	 */
 	public String getScriptTemplate(Map<String, Object> values) {
+		String templateFileName = "basic_template_" + getExtension() + ".ftl";
 		try {
 			Configuration freemarkerConfig = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper(DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
-			freemarkerConfig.setClassForTemplateLoading(this.getClass() , "/script_template");
-			Template template = freemarkerConfig.getTemplate("basic_template_" + getExtension() + ".ftl");
+			freemarkerConfig.setDirectoryForTemplateLoading(config.getHomeScriptTemplateDirectory());
+			Template template = freemarkerConfig.getTemplate(templateFileName);
 			StringWriter writer = new StringWriter();
 			template.process(values, writer);
 			return writer.toString();

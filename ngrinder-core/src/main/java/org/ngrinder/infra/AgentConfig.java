@@ -37,6 +37,7 @@ import java.util.Set;
 
 import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -59,6 +60,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private PropertiesWrapper monitorProperties;
 	private PropertiesWrapper commonProperties;
 	private PropertiesWrapper internalProperties;
+	private String controllerIP;
 
 	private final PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
 	private final PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
@@ -318,12 +320,16 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getMonitorProperties().getProperty(PROP_MONITOR_BINDING_IP);
 	}
 
-	public String getControllerIP() {
+	public String getControllerHost() {
 		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
-	public void setControllerHost(String host) {
-		getAgentProperties().addProperty(PROP_AGENT_CONTROLLER_HOST, host);
+	public void setControllerIP(String ip) {
+		controllerIP = ip;
+	}
+
+	public String getControllerIP() {
+		return defaultIfEmpty(controllerIP, DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public int getControllerPort() {
