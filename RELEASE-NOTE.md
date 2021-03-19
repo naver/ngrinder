@@ -1,9 +1,10 @@
 3.5.4 (2021.03.19)
 ==================
 - Changes
-    - Release new experimental HttpClient based on apache http5-core
+    - Release new experimental HttpClient based on apache httpcomponents-core
         * Support modern HTTP specification
         * Provide easy-to-use APIs
+        * See [new nGrinder HTTP client guide](https://github.com/naver/ngrinder/wiki/The-New-nGrinder-HTTP-Client)
     - Use controller DNS instead of IP to support agent-controller reconnection in cloud env
     - Support script template customization
         * Each ngrinder admin can deploy customized script template under ${NGRINDER_HOME}/script_template
@@ -11,10 +12,9 @@
         * If you turn it on, it tries to reuse connection as much as possible.
     - Bump Jython standard up to 2.7.2
     - Bump internal used Junit up to 4.13.1
-        * nGrinder no longer depended on specific version of junit for perf testing
+        * nGrinder no longer depends on specific version of junit for performance test
 - Notice
-    - Add Guide of How to update ngrinder controller
-        * If you have trouble when update controller to a newer version. Please refer to [How to update ngrinder controller](https://github.com/naver/ngrinder/wiki/How-to-update-ngrinder-controller)
+    - If you have a trouble with updating controller from ngrinder 3.4.X to a newer version. Please refer to [How to update ngrinder controller](https://github.com/naver/ngrinder/wiki/How-to-update-ngrinder-controller)
 - Bug fix
     - #706 Cancel progressing state test when starting controller
     - #714 Fix validation error when using AppClassLoader in over JDK9
