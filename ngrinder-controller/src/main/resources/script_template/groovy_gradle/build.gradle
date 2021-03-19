@@ -15,7 +15,7 @@ repositories {
 }
 
 ext {
-    ngrinder_version = "3.5.3"
+    ngrinder_version = "3.5.4"
 }
 
 dependencies {
