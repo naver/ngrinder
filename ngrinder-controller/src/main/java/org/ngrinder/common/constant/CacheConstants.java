@@ -33,6 +33,8 @@ public interface CacheConstants {
 	String LOCAL_CACHE_CURRENT_PERFTEST_STATISTICS = "current_perftest_statistics";
 
 	String REGION_ATTR_KEY = "region";
+	String SUBREGION_ATTR_KEY = "subregion";
+
 	String REGION_EXECUTOR_SERVICE_NAME = "region_executor";
 	String AGENT_EXECUTOR_SERVICE_NAME = "agent_executor";
 

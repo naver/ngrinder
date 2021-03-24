@@ -4,10 +4,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.map.IMap;
 import com.hazelcast.cluster.Member;
+import lombok.extern.slf4j.Slf4j;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,22 +24,25 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  *
  * @since 3.5.0
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HazelcastService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(HazelcastService.class);
 
 	private final HazelcastInstance hazelcastInstance;
 
 	protected Member findClusterMember(String region) {
 		Set<Member> clusterMember = hazelcastInstance.getCluster().getMembers();
 		for (Member member: clusterMember) {
-			if (member.getAttributes().containsKey(REGION_ATTR_KEY) && region.equals(member.getAttributes().get(REGION_ATTR_KEY))) {
+			if (isSupportedRegion(member, region)) {
 				return member;
 			}
 		}
 		throw new IllegalArgumentException(region + " is not clustered region.");
+	}
+
+	private boolean isSupportedRegion(Member member, String region) {
+		return member.getAttributes().containsKey(REGION_ATTR_KEY) && region.equals(member.getAttributes().get(REGION_ATTR_KEY));
 	}
 
 	public <T> T submitToRegion(String executorName, Callable<T> task, String region) {
@@ -50,7 +52,7 @@ public class HazelcastService {
 		try {
 			return future.get();
 		} catch (InterruptedException | ExecutionException e) {
-			LOGGER.error("Error while running task in region [{}] {}", region, e.getMessage());
+			log.error("Error while running task in region [{}] {}", region, e.getMessage());
 			throw new NGrinderRuntimeException(e);
 		}
 	}
@@ -64,7 +66,7 @@ public class HazelcastService {
 				T result = future.get();
 				results.add(result);
 			} catch (InterruptedException | ExecutionException e) {
-				LOGGER.error("Error while inquire region info. {}", e.getMessage());
+				log.error("Error while inquire region info. {}", e.getMessage());
 			}
 		}
 		return results;

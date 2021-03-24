@@ -146,9 +146,10 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return topicConfig;
 	}
 
+	@SuppressWarnings("CollectionAddAllCanBeReplacedWithConstructor")
 	private Map<String, String> getClusterMemberAttributes() {
 		Map<String, String> attributes = new HashMap<>();
-		attributes.put(REGION_ATTR_KEY, config.getRegion());
+		attributes.putAll(config.getRegionWithSubregion());
 		return attributes;
 	}
 
