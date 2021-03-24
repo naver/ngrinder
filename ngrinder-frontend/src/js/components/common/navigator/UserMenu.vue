@@ -21,8 +21,15 @@
                         <span v-text="i18n('navigator.dropDown.downloadAgent')"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li v-for="region in regions">
-                            <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${region}`" v-text="i18n(region)"></a>
+                        <li class="dropdown-submenu" v-for="regionInfo in regions">
+                            <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${regionInfo.region}`"
+                               v-text="i18n(regionInfo.region)"></a>
+                            <ul v-if="regionInfo.subregion.length > 0" class="dropdown-menu">
+                                <li v-for="subregion in regionInfo.subregion">
+                                    <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${regionInfo.region}&subregion=${subregion}`"
+                                       v-text="i18n(subregion)"></a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </li>
@@ -36,8 +43,15 @@
                         <span v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li v-for="region in regions">
-                            <a class="dropdown-item" :href="`${contextPath}/agent/download/${region}/${ngrinder.currentUser.id}`" v-text="i18n(region)"></a>
+                        <li class="dropdown-submenu" v-for="regionInfo in regions">
+                            <a class="dropdown-item" :href="`${contextPath}/agent/download/${regionInfo.region}/${ngrinder.currentUser.id}`"
+                               v-text="i18n(regionInfo.region)"></a>
+                            <ul class="dropdown-menu">
+                                <li v-for="subregion in regionInfo.subregion">
+                                    <a class="dropdown-item" :href="`${contextPath}/agent/download/${subregion}/${ngrinder.currentUser.id}`"
+                                       v-text="i18n(subregion)"></a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </li>

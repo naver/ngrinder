@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -73,11 +74,20 @@ public class AgentDownloadController {
 	 * @param request request.
 	 */
 	@GetMapping("/{region}/{owner}")
-	public String downloadDirect(@PathVariable(value = "owner") String owner,
-	                             @PathVariable(value = "region") String region,
+	public String downloadDirect(@PathVariable String region,
+								 @PathVariable String owner,
 	                             ModelMap modelMap,
 	                             HttpServletRequest request) {
-		return downloadFile(owner, region, modelMap, request);
+		return downloadFile(owner, region, "", modelMap, request);
+	}
+
+	@GetMapping("/{region}/{subregion}/{owner}")
+	public String downloadDirect(@PathVariable String region,
+								 @PathVariable String subregion,
+								 @PathVariable String owner,
+								 ModelMap modelMap,
+								 HttpServletRequest request) {
+		return downloadFile(owner, region, subregion, modelMap, request);
 	}
 
 
@@ -89,14 +99,15 @@ public class AgentDownloadController {
 	 * @param request request.
 	 */
 	@GetMapping("")
-	public String download(@RequestParam(value = "owner", required = false) String owner,
-	                       @RequestParam(value = "region", required = false) String region,
+	public String download(@RequestParam(value = "owner", defaultValue = "") String owner,
+	                       @RequestParam(value = "region", defaultValue = "") String region,
+	                       @RequestParam(value = "subregion", defaultValue = "") String subregion,
 	                       ModelMap modelMap,
 	                       HttpServletRequest request) {
-		return downloadFile(owner, region, modelMap, request);
+		return downloadFile(owner, region, subregion, modelMap, request);
 	}
 
-	private String downloadFile(String owner, String region, ModelMap modelMap, HttpServletRequest request) {
+	private String downloadFile(String owner, String region, String subregion, ModelMap modelMap, HttpServletRequest request) {
 		String connectingIP = request.getServerName();
 		int port = config.getControllerPort();
 		try {
@@ -104,10 +115,10 @@ public class AgentDownloadController {
 				checkNotEmpty(region, "region should be provided to download agent in cluster mode.");
 				RegionInfo regionInfo = checkNotNull(regionService.getOne(region), "selecting region '" + region + "'" +
 						" is not valid");
-				port = regionInfo.getControllerPort();
+				port = regionInfo.getPort();
 				connectingIP = regionInfo.getIp();
 			}
-			final File agentPackage = agentPackageService.createAgentPackage(region, connectingIP, port, owner);
+			final File agentPackage = agentPackageService.createAgentPackage(defaultIfEmpty(subregion, region), connectingIP, port, owner);
 			modelMap.clear();
 			return "redirect:/agent/download/" + agentPackage.getName();
 		} catch (Exception e) {
