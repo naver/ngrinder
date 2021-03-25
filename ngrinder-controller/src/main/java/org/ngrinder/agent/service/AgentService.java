@@ -222,20 +222,22 @@ public class AgentService extends AbstractAgentService
 			}
 
 			String fullRegion = agentInfo.getRegion();
-			String subregion = agentInfo.getSubregion();
+			String fullSubregion = agentInfo.getSubregion();
 
 			String region = agentManager.extractRegionKey(fullRegion);
+			String subregion = agentManager.extractRegionKey(fullSubregion);
+
 			if (isBlank(region) || !regions.containsKey(region)) {
 				continue;
 			}
 
 			// It's my own agent
-			if (subregion.endsWith(myAgentSuffix)) {
+			if (fullSubregion.endsWith(myAgentSuffix)) {
 				incrementAgentCount(availUserOwnAgent, region + "." + subregion);
 			} else if (fullRegion.endsWith(myAgentSuffix)) {
 				incrementAgentCount(availUserOwnAgent, region);
-			} else if (!fullRegion.contains("owned_")) {
-				if (isBlank(subregion)) {
+			} else if (!isDedicatedAgent(fullRegion) && !isDedicatedAgent(fullSubregion)) {
+				if (isBlank(fullSubregion)) {
 					incrementAgentCount(availShareAgents, region);
 				} else {
 					incrementAgentCount(availShareAgents, region + "." + subregion);
@@ -346,11 +348,12 @@ public class AgentService extends AbstractAgentService
 	 * @param  userId user id
 	 * @return AgentInfo set
 	 */
-	public Set<AgentInfo> getAllAttachedFreeApprovedAgentsForUser(String userId) {
+	public Set<AgentInfo> getAllAttachedFreeApprovedAgentsForUser(String userId, String fullRegion) {
 		return getAllFreeApprovedAgents()
 			.stream()
 			.filter(this::isCurrentRegion)
-			.filter(agentInfo -> isOwnedAgent(agentInfo, userId) || isCommonAgent(agentInfo))
+			.filter(agentInfo -> StringUtils.equals(agentInfo.getSubregion(), extractSubregionFromFullRegion(fullRegion)))
+			.filter(agentInfo -> isDedicatedAgent(agentInfo.getRegion()) || isCommonAgent(agentInfo))
 			.collect(toSet());
 	}
 
@@ -362,6 +365,15 @@ public class AgentService extends AbstractAgentService
 	private boolean isOwnedAgent(AgentInfo agentInfo, String userId) {
 		String configuredRegion = defaultIfEmpty(agentInfo.getSubregion(), agentInfo.getRegion());
 		return endsWith(configuredRegion, "owned_" + userId);
+	}
+
+	private String extractSubregionFromFullRegion(String fullRegion) {
+		if (isEmpty(fullRegion)) {
+			return "";
+		}
+
+		String[] regionToken = fullRegion.split("\\.");
+		return regionToken.length > 1 ? regionToken[1] : "";
 	}
 
 	private boolean isCommonAgent(AgentInfo agentInfo) {
@@ -380,7 +392,7 @@ public class AgentService extends AbstractAgentService
 	public synchronized void runAgent(PerfTest perfTest, final SingleConsole singleConsole,
 									  final GrinderProperties grinderProperties, final Integer agentCount) {
 		User user = perfTest.getCreatedBy();
-		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId());
+		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId(), perfTest.getRegion());
 		final Set<AgentInfo> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 
 		if (hasOldVersionAgent(necessaryAgents)) {
@@ -503,26 +515,75 @@ public class AgentService extends AbstractAgentService
 	}
 
 	/**
-	 * Ready agent state count return
+	 * Ready agent status count return
 	 *
-	 * @param userId The login user id
-	 * @param targetRegion targetRegion The name of target region
-	 * @return ready Agent count
+	 * @param userId       the login user id
+	 * @param targetRegion the name of target region
+	 *
+	 * @return ready status agent count
 	 */
 	@Override
 	public int getReadyAgentCount(String userId, String targetRegion) {
-		int readyAgentCnt = 0;
+		return getReadyAgentInfos(userId, targetRegion, false).size();
+	}
+
+	/**
+	 * Ready agent status count return
+	 *
+	 * @param userId          the login user id
+	 * @param targetRegion    the name of target region
+	 * @param targetSubregion the name of target subregion
+	 *
+	 * @return ready status agent count
+	 */
+	@Override
+	public int getReadyAgentCount(String userId, String targetRegion, String targetSubregion) {
+		return getReadyAgentInfos(userId, targetRegion, targetSubregion).size();
+	}
+
+	/**
+	 * ${@link List} of ready status agents information return
+	 *
+	 * @param userId             the login user id
+	 * @param targetRegion       the name of target region
+	 * @param isContainSubregion the flag of if contains subregion agents or not
+	 *
+	 * @return ${@link List} of ready status agents information
+	 */
+	private List<AgentInfo> getReadyAgentInfos(String userId, String targetRegion, boolean isContainSubregion) {
 		String myOwnAgent = targetRegion + "_owned_" + userId;
-		for (AgentInfo agentInfo : getAllReady()) {
-			if (!agentInfo.isApproved()) {
-				continue;
-			}
-			String fullRegion = agentInfo.getRegion();
-			if (StringUtils.equals(fullRegion, targetRegion) || StringUtils.equals(fullRegion, myOwnAgent)) {
-				readyAgentCnt++;
-			}
+		return getAllFreeApprovedAgents()
+			.stream()
+			.filter(agentInfo -> {
+				if (isNotEmpty(agentInfo.getSubregion())) {
+					return isContainSubregion;
+				}
+				String fullRegion = agentInfo.getRegion();
+				return StringUtils.equals(fullRegion, targetRegion) || StringUtils.equals(fullRegion, myOwnAgent);
+			}).collect(toList());
+	}
+
+	/**
+	 * ${@link List} of ready status agents information return
+	 *
+	 * @param userId          the login user id
+	 * @param targetRegion    the name of target region
+	 * @param targetSubregion the name of target subregion
+	 *
+	 * @return ${@link List} of ready status agents information
+	 */
+	private List<AgentInfo> getReadyAgentInfos(String userId, String targetRegion, String targetSubregion) {
+		if (isEmpty(targetSubregion)) {
+			return getReadyAgentInfos(userId, targetRegion, false);
 		}
-		return readyAgentCnt;
+
+		String myOwnAgent = targetSubregion + "_owned_" + userId;
+		return getReadyAgentInfos(userId, targetRegion, true)
+			.stream()
+			.filter(agentInfo -> {
+				String fullSubregion = agentInfo.getSubregion();
+				return StringUtils.equals(fullSubregion, targetSubregion) || StringUtils.equals(fullSubregion, myOwnAgent);
+			}).collect(toList());
 	}
 
 	@Override

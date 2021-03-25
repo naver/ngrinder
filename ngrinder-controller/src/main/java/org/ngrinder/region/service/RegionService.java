@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
@@ -66,7 +67,7 @@ public class RegionService {
 				}
 			} else {
 				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
-				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), regionIP, config.getControllerPort()));
+				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), emptySet(), regionIP, config.getControllerPort()));
 			}
 			return regions;
 		}

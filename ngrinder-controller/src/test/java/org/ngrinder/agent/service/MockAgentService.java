@@ -41,7 +41,7 @@ public class MockAgentService extends AgentService {
 	 */
 	public synchronized void runAgent(User user, final SingleConsole singleConsole,
 									  final GrinderProperties grinderProperties, final Integer agentCount) {
-		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId());
+		final Set<AgentInfo> allFreeAgents = getAllAttachedFreeApprovedAgentsForUser(user.getUserId(), "");
 		final Set<AgentInfo> necessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 
 		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, user.getUserId(), necessaryAgents);

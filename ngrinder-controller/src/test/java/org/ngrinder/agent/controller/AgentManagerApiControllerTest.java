@@ -69,7 +69,6 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 		RequestContextHolder.resetRequestAttributes();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAgentList() {
 		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
@@ -135,7 +134,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 	@Test
 	public void testGetAvailableAgentCount() {
 		String targetRegion = "test";
-		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion);
+		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion, "");
 		assertThat(0, is(response.get("availableAgentCount")));
 	}
 }

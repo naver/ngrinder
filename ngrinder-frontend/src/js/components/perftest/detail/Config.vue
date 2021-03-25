@@ -25,7 +25,10 @@
                                              customStyle="width: 110px"
                                              :option="{ placeholder: i18n('perfTest.config.region.setting') }">
                                         <option></option>
-                                        <option v-for="region in config.regions" :value="region" v-text="i18n(region)"></option>
+                                        <optgroup v-for="regionInfo in config.regions" :label="regionInfo.region">
+                                            <option :value="regionInfo.region" v-text="i18n(regionInfo.region)"></option>
+                                            <option v-for="subregion in regionInfo.subregion" :value="`${regionInfo.region}.${subregion}`" v-text="i18n(subregion)"></option>
+                                        </optgroup>
                                     </select2>
                                     <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
                                 </div>

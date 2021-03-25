@@ -296,8 +296,10 @@ public class AgentManagerApiController {
 	 */
 	@GetMapping("/availableAgentCount")
 	@PreAuthorize("permitAll")
-	public Map<String, Integer> getAvailableAgentCount(User user, @RequestParam String targetRegion) {
-		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user.getUserId(), targetRegion));
+	public Map<String, Integer> getAvailableAgentCount(User user,
+													   @RequestParam String targetRegion,
+													   @RequestParam(defaultValue = "") String targetSubregion) {
+		return buildMap("availableAgentCount", agentService.getReadyAgentCount(user.getUserId(), targetRegion, targetSubregion));
 	}
 
 	/**

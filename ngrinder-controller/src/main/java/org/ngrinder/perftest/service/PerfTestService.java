@@ -245,11 +245,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		if (user != null) {
 			spec = spec.and(createdBy(user));
 		}
-		if (config.isClustered()) {
-			spec = spec.and(idRegionEqual(region));
-		}
+
 		if (statuses.length != 0) {
 			spec = spec.and(statusSetEqual(statuses));
+		}
+
+		if (config.isClustered()) {
+			spec = spec.and(regionStartsWith(region));
 		}
 
 		return perfTestRepository.findAll(spec);
