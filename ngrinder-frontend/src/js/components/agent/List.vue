@@ -1,13 +1,20 @@
 <template>
-    <div class="container">
+    <div class="container agent-list-container">
         <vue-headful :title="i18n('agent.title')"></vue-headful>
         <fieldSet>
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('agent.list.title')"></span>
-                <select v-if="ngrinder.config.clustered" class="form-control change-region ml-auto mt-auto mb-auto"
-                        v-model="region" @change="changeRegion">
+                <select v-if="ngrinder.config.clustered"
+                        class="form-control change-region ml-auto mt-auto mb-auto"
+                        v-model="selectedRegion" @change="changeRegion">
                     <option value="">All</option>
-                    <option v-for="region in regions" :value="region" v-text="i18n(region)"></option>
+                    <optgroup v-for="regionInfo in regions" :label="regionInfo.region">
+                        <option :value="regionInfo.region" v-text="i18n(regionInfo.region)"></option>
+                        <option v-for="subregion in regionInfo.subregion"
+                                v-text="i18n(subregion)"
+                                :value="`${regionInfo.region}.${subregion}`">
+                        </option>
+                    </optgroup>
                 </select>
             </legend>
         </fieldSet>
@@ -88,7 +95,7 @@
             </template>
 
             <template slot="region" slot-scope="props">
-                <div class="ellipsis region" :title="props.rowData.region" v-text="props.rowData.region"></div>
+                <div class="ellipsis region" :title="getRegion(props.rowData)" v-text="getRegion(props.rowData)"></div>
             </template>
 
             <template slot="approved" slot-scope="props">
@@ -128,6 +135,7 @@
     import AddConnectionAgentModal from './modal/AddConnectionAgentModal.vue';
 
     const AGENT_KEY_TOKEN = '_';
+    const SUBREGION_SEPARATOR = '.';
 
     @Component({
         name: 'agentList',
@@ -136,12 +144,13 @@
     export default class AgentList extends Mixins(Base, MessagesMixin, TableConfig) {
         agents = [];
         regions = [];
+
+        selectedRegion = '';
         region = '';
-
+        subregion = '';
         downloadLink = '';
-        updateStatesTimer = null;
-
         query = '';
+        updateStatesTimer = null;
         queryFilter = () => true;
 
         table = {
@@ -161,13 +170,19 @@
         mounted() {
             this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
 
-            this.region = this.$route.query.region || this.region;
-            this.updateDownloadLink();
-
+            this.region = this.$route.query.region || '';
+            this.subregion = this.$route.query.subregion || '';
             this.query = this.$route.query.query || '';
+
+            this.selectedRegion = this.region;
+            if (this.subregion) {
+                this.selectedRegion += `.${this.subregion}`;
+            }
+
             this.queryFilter = this.createQueryFilter(this.query);
             this.$refs.searchInput.value = this.query; // Prevent to update query by periodic status update
 
+            this.updateDownloadLink();
             this.initAgents();
         }
 
@@ -206,7 +221,13 @@
                 this.downloadLink = '';
                 return;
             }
-            this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => {
+
+            const params = {
+                region: this.region,
+                subregion: this.subregion,
+            };
+
+            this.$http.get('/agent/api/download_link', { params }).then(res => {
                 this.downloadLink = `${this.contextPath}${res.data}`;
             });
         }
@@ -252,9 +273,18 @@
         }
 
         getAgents() {
-            return this.$http.get('/agent/api/list', { params: { region: this.region } })
+            return this.$http.get('/agent/api/list', { params: { region: this.region, subregion: this.subregion } })
                 .then(res => this.agents = this.appendAgentKey(res.data).filter(this.queryFilter));
         }
+
+        getRegion(agentInfo) {
+            let region = agentInfo.region;
+            if (agentInfo.subregion) {
+                region += `.${agentInfo.subregion}`;
+            }
+            return region;
+        }
+
 
         appendAgentKey(agents) {
             return agents.map(agent => {
@@ -266,8 +296,15 @@
         changeRegion() {
             this.$refs.vuetable.currentPage = 1;
             clearTimeout(this.updateStatesTimer);
+            this.updateRegion();
             this.updateStates();
             this.updateDownloadLink();
+        }
+
+        updateRegion() {
+            const regionTokens = this.selectedRegion.split(SUBREGION_SEPARATOR);
+            this.region = regionTokens[0];
+            this.subregion = regionTokens[1];
         }
 
         search() {
@@ -288,6 +325,10 @@
 
             if (this.region) {
                 params.push(`region=${this.region}`);
+            }
+
+            if (this.subregion) {
+                params.push(`subregion=${this.subregion}`);
             }
 
             if (this.query) {

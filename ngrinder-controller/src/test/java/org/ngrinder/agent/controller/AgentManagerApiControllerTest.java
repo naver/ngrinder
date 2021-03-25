@@ -72,7 +72,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAgentList() {
-		agentApiController.getAll(userContext.getCurrentUser(), "NONE");
+		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -92,7 +92,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 			e.printStackTrace();
 		}
 
-		agentApiController.getAll(userContext.getCurrentUser(), "NONE");
+		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
 	}
 
 	@Test
