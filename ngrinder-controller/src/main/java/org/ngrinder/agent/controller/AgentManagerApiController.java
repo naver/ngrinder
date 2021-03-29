@@ -192,17 +192,6 @@ public class AgentManagerApiController {
 	}
 
 	/**
-	 * Get all agents from database.
-	 *
-	 * @return agentInfoList
-	 */
-	@PreAuthorize("hasAnyRole('A')")
-	@GetMapping(value = {"/", ""})
-	public List<AgentInfo> getAll() {
-		return agentService.getAllActive();
-	}
-
-	/**
 	 * Get the agent for the given agent ip and name.
 	 *
 	 * @return agentInfo
