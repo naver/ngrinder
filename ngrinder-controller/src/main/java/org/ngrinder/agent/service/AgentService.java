@@ -648,14 +648,28 @@ public class AgentService extends AbstractAgentService
 	}
 
 	@Override
-	public void onConnectionAgentMessage(String ip, String name, int port) {
+	public void onConnectionAgentMessage(String ip, String name, String region, int port) {
 		Connection connection = connectionRepository.findByIpAndPort(ip, port);
+		String connectedAgentRegion = getConnectedAgentRegion(region);
 		if (connection == null) {
-			connection = new Connection(ip, name, port, config.getRegion());
+			connection = new Connection(ip, name, port, connectedAgentRegion);
 		} else {
 			connection.setName(name);
-			connection.setRegion(config.getRegion());
+			connection.setRegion(connectedAgentRegion);
 		}
 		connectionRepository.save(connection);
+	}
+
+	private String getConnectedAgentRegion(String configuredAgentRegion) {
+		String region = regionService.getCurrent();
+		if (config.isClustered() && isValidSubregion(region, configuredAgentRegion)) {
+			region = region + "." + configuredAgentRegion;
+		}
+		return region;
+	}
+
+	private boolean isValidSubregion(String region, String subregion) {
+		RegionInfo currentRegionInfo = regionService.getOne(region);
+		return !StringUtils.equals(region, subregion) && currentRegionInfo.getSubregion().contains(subregion);
 	}
 }

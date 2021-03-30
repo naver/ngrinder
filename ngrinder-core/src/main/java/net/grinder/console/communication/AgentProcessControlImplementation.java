@@ -131,7 +131,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		messageDispatchRegistry.set(ConnectionAgentMessage.class, new AbstractHandler<ConnectionAgentMessage>() {
 			public void handle(final ConnectionAgentMessage message) {
 				m_connectionAgentListener.apply(listener -> {
-					listener.onConnectionAgentMessage(message.getIp(), message.getName(), message.getPort());
+					listener.onConnectionAgentMessage(message.getIp(), message.getName(), message.getRegion(), message.getPort());
 				});
 			}
 		});

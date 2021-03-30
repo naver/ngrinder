@@ -412,7 +412,8 @@ public class AgentController implements Agent, AgentConstants {
 			};
 
 			if (agentConfig.isConnectionMode()) {
-				m_sender.send(new ConnectionAgentMessage(m_agentIdentity.getIp(), agentConfig.getAgentHostID(), agentConfig.getConnectionAgentPort()));
+				m_sender.send(new ConnectionAgentMessage(m_agentIdentity.getIp(),agentConfig.getAgentHostID(),
+					agentConfig.getRegion(), agentConfig.getConnectionAgentPort()));
 			}
 		}
 

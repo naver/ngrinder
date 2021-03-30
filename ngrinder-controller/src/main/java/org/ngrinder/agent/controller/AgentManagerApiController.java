@@ -156,9 +156,9 @@ public class AgentManagerApiController {
 	/**
 	 * Get the current performance of the given agent.
 	 *
-	 * @param ip agent ip
-	 * @param name agent name
-	 * @param region agent region
+	 * @param ip     agent ip
+	 * @param name   agent name
+	 * @param region agent main region(not subregion)
 	 *
 	 * @return json message
 	 */
@@ -298,7 +298,10 @@ public class AgentManagerApiController {
 	 */
 	@PostMapping("/connect/{ip}/{port}")
 	@PreAuthorize("permitAll")
-	public void addConnectionAgent(@PathVariable String ip, @PathVariable int port, @RequestParam String region) {
+	public void addConnectionAgent(@PathVariable String ip,
+								   @PathVariable int port,
+								   @RequestParam String region,
+								   @RequestParam String subregion) {
 		agentService.addConnectionAgent(ip, port, region);
 	}
 }
