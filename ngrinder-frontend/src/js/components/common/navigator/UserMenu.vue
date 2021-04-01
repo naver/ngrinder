@@ -17,13 +17,14 @@
             <li class="dropdown-divider"></li>
             <template v-if="isAdmin">
                 <li v-if="ngrinder.config.clustered" class="dropdown-submenu">
-                    <a class="dropdown-item">
+                    <a class="dropdown-item dropdown-toggle">
                         <span v-text="i18n('navigator.dropDown.downloadAgent')"></span>
                     </a>
                     <ul class="dropdown-menu">
                         <li class="dropdown-submenu" v-for="regionInfo in regions">
-                            <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${regionInfo.region}`"
-                               v-text="i18n(regionInfo.region)"></a>
+                            <a class="dropdown-item dropdown-toggle" :href="`${contextPath}/agent/download?region=${regionInfo.region}`">
+                                <span v-text="i18n(regionInfo.region)"></span>
+                            </a>
                             <ul v-if="regionInfo.subregion.length > 0" class="dropdown-menu">
                                 <li v-for="subregion in regionInfo.subregion">
                                     <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${regionInfo.region}&subregion=${subregion}`"
@@ -138,6 +139,20 @@
                     display: block;
                 }
             }
+        }
+
+        .dropdown-toggle::after {
+            display: inline-block;
+            position: absolute;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+            right: 7px;
+            top: 10px;
         }
 
         .dropdown-submenu {

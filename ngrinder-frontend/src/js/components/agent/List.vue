@@ -4,18 +4,35 @@
         <fieldSet>
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('agent.list.title')"></span>
-                <select v-if="ngrinder.config.clustered"
-                        class="form-control change-region ml-auto mt-auto mb-auto"
-                        v-model="selectedRegion" @change="changeRegion">
-                    <option value="">All</option>
-                    <optgroup v-for="regionInfo in regions" :label="regionInfo.region">
-                        <option :value="regionInfo.region" v-text="i18n(regionInfo.region)"></option>
-                        <option v-for="subregion in regionInfo.subregion"
-                                v-text="i18n(subregion)"
-                                :value="`${regionInfo.region}.${subregion}`">
-                        </option>
-                    </optgroup>
-                </select>
+
+                <ul class="dropdown ml-auto mb-2">
+                    <li>
+                        <button class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown" v-text="selectedRegion">
+                        </button>
+                        <ul class="dropdown-menu region-menu">
+                            <li @click.prevent="changeDropdown('')"><a class="dropdown-item">All</a></li>
+                            <li v-for="regionInfo in regions"
+                                :set="hasSubregions = hasSubregion(regionInfo)"
+                                :class="{ 'dropdown-submenu': hasSubregion(regionInfo) }">
+                                <a class="dropdown-item"
+                                   :class="{ 'dropdown-toggle': hasSubregions }"
+                                   @click="changeDropdown(regionInfo.region)">
+                                    <span v-text="regionInfo.region"></span>
+                                </a>
+                                <ul v-if="hasSubregions" class="dropdown-menu">
+                                    <li>
+                                        <a v-for="subregion in regionInfo.subregion"
+                                           class="dropdown-item"
+                                           @click.prevent="changeDropdown(`${regionInfo.region}.${subregion}`)"
+                                           v-text="i18n(subregion)">
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </legend>
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
@@ -178,6 +195,7 @@
             if (this.subregion) {
                 this.selectedRegion += `.${this.subregion}`;
             }
+            this.updateRegion();
 
             this.queryFilter = this.createQueryFilter(this.query);
             this.$refs.searchInput.value = this.query; // Prevent to update query by periodic status update
@@ -293,6 +311,11 @@
             });
         }
 
+        changeDropdown(value) {
+            this.selectedRegion = value;
+            this.changeRegion();
+        }
+
         changeRegion() {
             this.$refs.vuetable.currentPage = 1;
             clearTimeout(this.updateStatesTimer);
@@ -305,6 +328,9 @@
             const regionTokens = this.selectedRegion.split(SUBREGION_SEPARATOR);
             this.region = regionTokens[0];
             this.subregion = regionTokens[1];
+            if (!this.selectedRegion) {
+                this.selectedRegion = 'All';
+            }
         }
 
         search() {
@@ -420,6 +446,10 @@
                 return { ip: ipAndName[0], name: ipAndName[1] };
             });
         }
+
+        hasSubregion(regionInfo) {
+            return regionInfo.subregion.length > 0;
+        }
     }
 </script>
 
@@ -435,10 +465,6 @@
         input[type='checkbox'] {
             vertical-align: bottom;
         }
-    }
-
-    .change-region {
-        width: 150px;
     }
 
     img.status {
@@ -479,6 +505,83 @@
 
         button {
             height: 32px;
+        }
+    }
+
+    .show {
+        button.dropdown-toggle {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+
+    .dropdown {
+        list-style: none;
+
+        button {
+            box-shadow: none;
+            text-align: left;
+            width: 150px;
+            border: 1px solid #ced4da
+        }
+
+        .region-menu {
+            width: 150px;
+            margin-top: 0;
+            border-top: none;
+            padding: 3px;
+
+            &.show {
+                border-top-right-radius: 0;
+                border-top-left-radius: 0;
+            }
+        }
+
+        .dropdown-item {
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 20px;
+
+            &:hover {
+                color: #fff;
+                background-color: #007bff;
+            }
+        }
+
+        .dropdown-submenu {
+            position: relative;
+
+            > .dropdown-menu {
+                top: -6px;
+                padding: 3px;
+                margin-left: -2px;
+                left: -100%;
+                width: 100%;
+            }
+
+            &:hover {
+                > ul.dropdown-menu {
+                    display: block;
+                }
+            }
+        }
+
+        .dropdown-toggle::after {
+            display: inline-block;
+            position: absolute;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+            right: 7px;
+            top: 10px;
+        }
+
+        button.dropdown-toggle::after {
+            top: 20px;
         }
     }
 
