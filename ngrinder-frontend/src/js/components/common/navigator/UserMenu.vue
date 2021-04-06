@@ -21,17 +21,19 @@
                         <span v-text="i18n('navigator.dropDown.downloadAgent')"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-submenu" v-for="regionInfo in regions">
-                            <a class="dropdown-item dropdown-toggle" :href="`${contextPath}/agent/download?region=${regionInfo.region}`">
-                                <span v-text="i18n(regionInfo.region)"></span>
-                            </a>
-                            <ul v-if="regionInfo.subregion.length > 0" class="dropdown-menu">
-                                <li v-for="subregion in regionInfo.subregion">
-                                    <a class="dropdown-item" :href="`${contextPath}/agent/download?region=${regionInfo.region}&subregion=${subregion}`"
-                                       v-text="i18n(subregion)"></a>
-                                </li>
-                            </ul>
-                        </li>
+                        <template v-for="(regionInfo, idx) in regions">
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item"
+                                   :href="`${contextPath}/agent/download?region=${regionInfo.region}`"
+                                   v-text="i18n(regionInfo.region)">
+                                </a>
+                                <a v-for="subregion in regionInfo.subregion"
+                                   class="dropdown-item" :href="`${contextPath}/agent/download?region=${regionInfo.region}&subregion=${subregion}`"
+                                   v-text="i18n(`${regionInfo.region}.${subregion}`)">
+                                </a>
+                            </li>
+                            <li v-if="idx !== (regions.length -1)" class="dropdown-divider m-0"></li>
+                        </template>
                     </ul>
                 </li>
                 <li v-else>
@@ -44,16 +46,19 @@
                         <span v-text="i18n('navigator.dropDown.downloadPrivateAgent')"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-submenu" v-for="regionInfo in regions">
-                            <a class="dropdown-item" :href="`${contextPath}/agent/download/${regionInfo.region}/${ngrinder.currentUser.id}`"
-                               v-text="i18n(regionInfo.region)"></a>
-                            <ul class="dropdown-menu">
-                                <li v-for="subregion in regionInfo.subregion">
-                                    <a class="dropdown-item" :href="`${contextPath}/agent/download/${subregion}/${ngrinder.currentUser.id}`"
-                                       v-text="i18n(subregion)"></a>
-                                </li>
-                            </ul>
-                        </li>
+                        <template v-for="(regionInfo, idx) in regions">
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item"
+                                   :href="`${contextPath}/agent/download/${regionInfo.region}/${ngrinder.currentUser.id}`"
+                                   v-text="i18n(regionInfo.region)">
+                                </a>
+                                <a v-for="subregion in regionInfo.subregion"
+                                   class="dropdown-item" :href="`${contextPath}/agent/download/${regionInfo.region}/${subregion}/${ngrinder.currentUser.id}`"
+                                   v-text="i18n(`${regionInfo.region}.${subregion}`)">
+                                </a>
+                            </li>
+                            <li v-if="idx !== (regions.length -1)" class="dropdown-divider m-0"></li>
+                        </template>
                     </ul>
                 </li>
                 <li v-else>

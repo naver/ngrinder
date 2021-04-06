@@ -8,28 +8,24 @@
                 <ul class="dropdown ml-auto mb-2">
                     <li>
                         <button class="btn btn-default dropdown-toggle"
-                                data-toggle="dropdown" v-text="selectedRegion">
+                                data-toggle="dropdown" v-text="i18n(selectedRegion)">
                         </button>
                         <ul class="dropdown-menu region-menu">
                             <li @click.prevent="changeDropdown('')"><a class="dropdown-item">All</a></li>
-                            <li v-for="regionInfo in regions"
-                                :set="hasSubregions = hasSubregion(regionInfo)"
-                                :class="{ 'dropdown-submenu': hasSubregion(regionInfo) }">
-                                <a class="dropdown-item"
-                                   :class="{ 'dropdown-toggle': hasSubregions }"
-                                   @click="changeDropdown(regionInfo.region)">
-                                    <span v-text="regionInfo.region"></span>
-                                </a>
-                                <ul v-if="hasSubregions" class="dropdown-menu">
-                                    <li>
-                                        <a v-for="subregion in regionInfo.subregion"
-                                           class="dropdown-item"
-                                           @click.prevent="changeDropdown(`${regionInfo.region}.${subregion}`)"
-                                           v-text="i18n(subregion)">
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                            <template v-for="regionInfo in regions">
+                                <li class="dropdown-divider m-0"></li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       @click.prevent="changeDropdown(regionInfo.region)"
+                                       v-text="i18n(regionInfo.region)">
+                                    </a>
+                                    <a v-for="subregion in regionInfo.subregion"
+                                       class="dropdown-item"
+                                       @click.prevent="changeDropdown(`${regionInfo.region}.${subregion}`)"
+                                       v-text="i18n(`${regionInfo.region}.${subregion}`)">
+                                    </a>
+                                </li>
+                            </template>
                         </ul>
                     </li>
                 </ul>
@@ -112,7 +108,7 @@
             </template>
 
             <template slot="region" slot-scope="props">
-                <div class="ellipsis region" :title="getRegion(props.rowData)" v-text="getRegion(props.rowData)"></div>
+                <div class="ellipsis region" :title="i18n(getRegion(props.rowData))" v-text="i18n(getRegion(props.rowData))"></div>
             </template>
 
             <template slot="approved" slot-scope="props">
