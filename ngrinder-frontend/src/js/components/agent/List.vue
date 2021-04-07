@@ -111,6 +111,10 @@
                 <div class="ellipsis region" :title="i18n(getRegion(props.rowData))" v-text="i18n(getRegion(props.rowData))"></div>
             </template>
 
+            <template slot="owner" slot-scope="props">
+                <div class="ellipsis owner" :title="props.rowData.owner" v-text="props.rowData.owner"></div>
+            </template>
+
             <template slot="approved" slot-scope="props">
                 <div class="btn-group">
                     <button class="btn btn-primary disapproved"
@@ -298,7 +302,6 @@
             }
             return region;
         }
-
 
         appendAgentKey(agents) {
             return agents.map(agent => {
