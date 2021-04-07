@@ -21,7 +21,6 @@
 package org.ngrinder.http.method;
 
 import HTTPClient.NVPair;
-import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
@@ -32,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
-import static org.ngrinder.http.util.JsonUtils.toJson;
 import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public interface HTTPPost {
@@ -41,21 +38,14 @@ public interface HTTPPost {
 
 	HTTPResponse POST(String uri, List<NameValuePair> params, List<Header> headers);
 
+	HTTPResponse POST(String uri, Map<?, ?> params, List<Header> headers);
+
 	default HTTPResponse POST(String uri) {
 		return POST(uri, new byte[0], emptyList());
 	}
 
 	default HTTPResponse POST(String uri, Map<?, ?> params) {
-		return POST(uri, toJson(params).getBytes(), emptyList());
-	}
-
-	default HTTPResponse POST(String uri, Map<?, ?> params, Map<String, String> headers) {
-		List<Header> headerList = convert(headers, BasicHeader::new);
-
-		if (getContentType(headerList).isSameMimeType(ContentType.APPLICATION_JSON)) {
-			return POST(uri, toJson(params).getBytes(), headers);
-		}
-		return POST(uri, convert((Map<String, String>) params, BasicNameValuePair::new), headerList);
+		return POST(uri, params, emptyList());
 	}
 
 	default HTTPResponse POST(String uri, NVPair[] params) {

@@ -30,6 +30,7 @@ import org.apache.hc.client5.http.cookie.*;
 import org.apache.hc.client5.http.impl.cookie.RFC6265StrictSpec;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
@@ -51,6 +52,7 @@ import java.util.concurrent.Future;
 
 import static java.util.Collections.emptyList;
 import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
+import static org.ngrinder.http.util.JsonUtils.toJson;
 import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPatch, HTTPDelete {
@@ -94,9 +96,18 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		return doRequest(uri, createRequestWithBody("POST", uri, content, headers));
 	}
 
-	@Override
 	public HTTPResponse POST(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("POST", uri, params, headers));
+	}
+
+	@Override
+	public HTTPResponse POST(String uri, Map<?, ?> params, List<Header> headers) {
+		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
+		if (getContentType(actualHeaders).isSameMimeType(ContentType.APPLICATION_JSON)) {
+			return POST(uri, toJson(params).getBytes(), actualHeaders);
+		}
+
+		return POST(uri, convert((Map<String, String>) params, BasicNameValuePair::new), actualHeaders);
 	}
 
 	@Override
@@ -110,6 +121,15 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	@Override
+	public HTTPResponse PUT(String uri, Map<?, ?> params, List<Header> headers) {
+		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
+		if (getContentType(actualHeaders).isSameMimeType(ContentType.APPLICATION_JSON)) {
+			return PUT(uri, toJson(params).getBytes(), headers);
+		}
+		return PUT(uri, convert((Map<String, String>) params, BasicNameValuePair::new), actualHeaders);
+	}
+
+	@Override
 	public HTTPResponse PATCH(String uri, byte[] content, List<Header> headers) {
 		return doRequest(uri, createRequestWithBody("PATCH", uri, content, headers));
 	}
@@ -117,6 +137,15 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	@Override
 	public HTTPResponse PATCH(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("PATCH", uri, params, headers));
+	}
+
+	@Override
+	public HTTPResponse PATCH(String uri, Map<?, ?> params, List<Header> headers) {
+		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
+		if (getContentType(actualHeaders).isSameMimeType(ContentType.APPLICATION_JSON)) {
+			return PATCH(uri, toJson(params).getBytes(), headers);
+		}
+		return PATCH(uri, convert((Map<String, String>) params, BasicNameValuePair::new), actualHeaders);
 	}
 
 	@Override
