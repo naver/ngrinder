@@ -5,14 +5,14 @@ import net.grinder.communication.Message;
 public class ConnectionAgentMessage implements Message {
 	private final String ip;
 	private final String name;
-	private final String region;
+	private final String subregion;
 	private final int port;
 
-	public ConnectionAgentMessage(String ip, String name, String region, int port) {
+	public ConnectionAgentMessage(String ip, String name, String subregion, int port) {
 		this.ip = ip;
 		this.name = name;
 		this.port = port;
-		this.region = region;
+		this.subregion = subregion;
 	}
 
 	public String getIp() {
@@ -23,8 +23,8 @@ public class ConnectionAgentMessage implements Message {
 		return name;
 	}
 
-	public String getRegion() {
-		return region;
+	public String getSubregion() {
+		return subregion;
 	}
 
 	public int getPort() {

@@ -13,6 +13,7 @@
  */
 package org.ngrinder.agent.controller;
 
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
@@ -66,8 +67,8 @@ public class MonitorDownloadController {
 	@GetMapping("")
 	public String download(ModelMap model) {
 		try {
-			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, "",
-				null, config.getMonitorPort(), "");
+			PackageDownloadInfo packageDownloadInfo = PackageDownloadInfo.builder().connectionPort(config.getMonitorPort()).build();
+			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, packageDownloadInfo);
 			model.clear();
 			return "redirect:/monitor/download/" + monitorPackage.getName();
 		} catch (Exception e) {

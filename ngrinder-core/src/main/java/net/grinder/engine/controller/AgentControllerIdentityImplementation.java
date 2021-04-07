@@ -30,7 +30,9 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 
 	private final String ip;
 
-	private String region;
+	private String subregion;
+
+	private String owner;
 
 	/**
 	 * Constructor.
@@ -61,6 +63,14 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 		m_number = number;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
 	/**
 	 * Get ip.
 	 * 
@@ -70,12 +80,12 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 		return ip;
 	}
 
-	public String getRegion() {
-		return region;
+	public String getSubregion() {
+		return subregion;
 	}
 
-	public void setRegion(String region) {
-		this.region = region;
+	public void setSubregion(String subregion) {
+		this.subregion = subregion;
 	}
 
 }

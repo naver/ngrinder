@@ -100,7 +100,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		List<AgentIdentity> agentIdentities = new ArrayList<>(agentManager.getAllAttachedAgents());
 		for (AgentIdentity agentIdentity : agentIdentities) {
 			AgentControllerIdentityImplementation identity = cast(agentIdentity);
-			identity.setRegion("");
+			identity.setSubregion("");
 			AgentInfo agentInfo = new AgentInfo();
 			agentInfo.setIp(identity.getIp());
 			agentInfo.setPort(0);

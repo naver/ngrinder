@@ -1,7 +1,7 @@
 package org.ngrinder.packages;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.springframework.stereotype.Component;
 
@@ -54,21 +54,12 @@ public class AgentPackageHandler extends PackageHandler {
 	}
 
 	@Override
-	public Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner) {
+	public Map<String, Object> getConfigParam(PackageDownloadInfo packageDownloadInfo) {
 		Map<String, Object> confMap = newHashMap();
-		confMap.put("controllerIP", controllerIP);
-		confMap.put("controllerPort", String.valueOf(port));
-		if (StringUtils.isEmpty(regionName)) {
-			regionName = "NONE";
-		}
-		if (StringUtils.isNotBlank(owner)) {
-			if (StringUtils.isEmpty(regionName)) {
-				regionName = "owned_" + owner;
-			} else {
-				regionName = regionName + "_owned_" + owner;
-			}
-		}
-		confMap.put("controllerRegion", regionName);
+		confMap.put("controllerIP", packageDownloadInfo.getConnectionIp());
+		confMap.put("controllerPort", String.valueOf(packageDownloadInfo.getConnectionPort()));
+		confMap.put("subregion", packageDownloadInfo.getSubregion());
+		confMap.put("owner", packageDownloadInfo.getOwner());
 		return confMap;
 	}
 

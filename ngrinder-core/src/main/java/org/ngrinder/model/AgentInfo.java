@@ -121,16 +121,22 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	public String getSubregion() {
 		if (agentIdentity instanceof AgentControllerIdentityImplementation) {
-			String configuredRegion = defaultIfEmpty(((AgentControllerIdentityImplementation) agentIdentity).getRegion(), "");
-			return StringUtils.equals(configuredRegion, region) ? "" : configuredRegion;
+			return defaultIfEmpty(((AgentControllerIdentityImplementation) agentIdentity).getSubregion(), "");
 		}
 		return "";
 	}
 
 	public void setSubregion(String subregion) {
 		if (agentIdentity instanceof AgentControllerIdentityImplementation) {
-			((AgentControllerIdentityImplementation) agentIdentity).setRegion(subregion);
+			((AgentControllerIdentityImplementation) agentIdentity).setSubregion(subregion);
 		}
+	}
+
+	public String getOwner() {
+		if (agentIdentity instanceof AgentControllerIdentityImplementation) {
+			return defaultIfEmpty(((AgentControllerIdentityImplementation) agentIdentity).getOwner(), "");
+		}
+		return "";
 	}
 
 	@JsonIgnore

@@ -15,6 +15,7 @@ package org.ngrinder.agent.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
@@ -25,13 +26,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -94,35 +93,39 @@ public class AgentDownloadController {
 	/**
 	 * Download the latest agent.
 	 *
-	 * @param owner   agent owner
-	 * @param region  agent region
+	 * @param packageDownloadInfo information for downloading agent.
 	 * @param request request.
 	 */
 	@GetMapping("")
-	public String download(@RequestParam(value = "owner", defaultValue = "") String owner,
-	                       @RequestParam(value = "region", defaultValue = "") String region,
-	                       @RequestParam(value = "subregion", defaultValue = "") String subregion,
-	                       ModelMap modelMap,
-	                       HttpServletRequest request) {
-		return downloadFile(owner, region, subregion, modelMap, request);
+	public String download(PackageDownloadInfo packageDownloadInfo,
+						   ModelMap modelMap,
+						   HttpServletRequest request) {
+		return downloadFile(packageDownloadInfo, modelMap, request);
 	}
 
-	private String downloadFile(String owner, String region, String subregion, ModelMap modelMap, HttpServletRequest request) {
-		String connectingIP = request.getServerName();
-		int port = config.getControllerPort();
+	private String downloadFile(PackageDownloadInfo packageDownloadInfo, ModelMap modelMap, HttpServletRequest request) {
+		String region = packageDownloadInfo.getRegion();
+		packageDownloadInfo.setConnectionIp(request.getServerName());
+		packageDownloadInfo.setConnectionPort(config.getControllerPort());
 		try {
 			if (config.isClustered()) {
 				checkNotEmpty(region, "region should be provided to download agent in cluster mode.");
 				RegionInfo regionInfo = checkNotNull(regionService.getOne(region), "selecting region '" + region + "'" +
 						" is not valid");
-				port = regionInfo.getPort();
-				connectingIP = regionInfo.getIp();
+
+				packageDownloadInfo.setConnectionIp(regionInfo.getIp());
+				packageDownloadInfo.setConnectionPort(regionInfo.getPort());
 			}
-			final File agentPackage = agentPackageService.createAgentPackage(defaultIfEmpty(subregion, region), connectingIP, port, owner);
+			final File agentPackage = agentPackageService.createAgentPackage(packageDownloadInfo);
 			modelMap.clear();
 			return "redirect:/agent/download/" + agentPackage.getName();
 		} catch (Exception e) {
 			throw processException(e);
 		}
+	}
+
+	private String downloadFile(String owner, String region, String subregion, ModelMap modelMap, HttpServletRequest request) {
+		PackageDownloadInfo packageDownloadInfo = PackageDownloadInfo.builder().owner(owner).region(region).subregion(subregion).build();
+		return downloadFile(packageDownloadInfo, modelMap, request);
 	}
 }

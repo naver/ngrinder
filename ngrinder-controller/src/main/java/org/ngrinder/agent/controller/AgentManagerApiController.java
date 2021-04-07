@@ -15,6 +15,7 @@ package org.ngrinder.agent.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -66,19 +67,21 @@ public class AgentManagerApiController {
 	@GetMapping("/download_link")
 	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	public String getDownloadLink(final User user,
-								  @RequestParam(defaultValue = "") final String region,
-								  @RequestParam(defaultValue = "") final String subregion) {
+								  final PackageDownloadInfo packageDownloadInfo) {
 		String downloadLink = "";
 		File agentPackage;
+		String region = packageDownloadInfo.getRegion();
 		if (config.isClustered()) {
 			if (StringUtils.isNotBlank(region)) {
-				final RegionInfo regionInfo = regionService.getOne(region, subregion);
-				agentPackage = agentPackageService.createAgentPackage(defaultIfEmpty(subregion, region), regionInfo.getIp(), regionInfo.getPort(), null);
+				final RegionInfo regionInfo = regionService.getOne(region, packageDownloadInfo.getSubregion());
+				packageDownloadInfo.setConnectionIp(regionInfo.getIp());
+				packageDownloadInfo.setConnectionPort(regionInfo.getPort());
+				agentPackage = agentPackageService.createAgentPackage(packageDownloadInfo);
 			} else {
 				throw new NGrinderRuntimeException("Region is not exist.\nthe region must exist in cluster mode.");
 			}
 		} else {
-			agentPackage = agentPackageService.createAgentPackage("", "", config.getControllerPort(), null);
+			agentPackage = agentPackageService.createAgentPackage();
 		}
 		if (agentPackage != null) {
 			downloadLink = "/agent/download/" + agentPackage.getName();
@@ -106,44 +109,38 @@ public class AgentManagerApiController {
 	/**
 	 * Filter agent list by referring to cluster
 	 */
-	private boolean filterAgentByCluster(String region, String subregion, AgentInfo agentInfo) {
-		if (isEmpty(region)) {
+	private boolean filterAgentByCluster(String targetRegion, String targetSubregion, AgentInfo agentInfo) {
+		if (isEmpty(targetRegion)) {
 			return true;
 		}
 
 		String agentRegion = agentInfo.getRegion();
-		if (!region.equals(agentRegion)) {
+		if (!targetRegion.equals(agentRegion)) {
 			return false;
 		}
 
 		String agentSubregion = agentInfo.getSubregion();
-		if (isEmpty(subregion)) {
+		if (isEmpty(targetSubregion)) {
 			return isEmpty(agentSubregion);
 		}
 
-		return agentSubregion.startsWith(subregion + "_owned") || agentSubregion.equals(subregion);
+		return StringUtils.equals(targetSubregion, agentSubregion);
 	}
 
 	/**
 	 * Filter agent list using user authority and user id
 	 */
 	private boolean filterAgentByUserAuthorityAndUserId(Collection<? extends GrantedAuthority> authorities,
-														String userId, String region, String subregion, AgentInfo agentInfo) {
+														String userId, String targetRegion, String targetSubregion, AgentInfo agentInfo) {
 		if (isAdminOrSuperUser(authorities)) {
 			return true;
 		}
 
-		String agentRegion = agentInfo.getRegion();
-		if (isEmpty(region)) {
-			return !agentRegion.contains("_owned_") || agentRegion.endsWith("_owned_" + userId);
+		if (isEmpty(agentInfo.getOwner())) {
+			return true;
 		}
 
-		if (isEmpty(subregion)) {
-			return agentRegion.startsWith(region + "_owned_" + userId) || region.equals(agentRegion);
-		}
-
-		String agentSubregion = agentInfo.getSubregion();
-		return agentSubregion.startsWith(subregion + "_owned_" + userId) || agentSubregion.equals(subregion);
+		return StringUtils.equals(agentInfo.getOwner(), userId);
 	}
 
 	/**

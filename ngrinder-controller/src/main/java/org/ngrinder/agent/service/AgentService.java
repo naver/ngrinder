@@ -131,17 +131,17 @@ public class AgentService extends AbstractAgentService
 			});
 	}
 
-	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus status) {
-		if (agentInfo == null || status == null) {
+	private void fillUpAgentInfo(AgentInfo agentInfo, AgentProcessControlImplementation.AgentStatus agentStatus) {
+		if (agentInfo == null || agentStatus == null) {
 			return;
 		}
 
-		AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
-		AgentControllerState state = status.getAgentControllerState();
+		AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentStatus.getAgentIdentity();
+		AgentControllerState state = agentStatus.getAgentControllerState();
 
 		agentInfo.setState(state);
 		agentInfo.setIp(requireNonNull(agentIdentity).getIp());
-		agentInfo.setRegion(resolveRegion(agentIdentity.getRegion()));
+		agentInfo.setRegion(config.getRegion());
 		agentInfo.setAgentIdentity(agentIdentity);
 		agentInfo.setName(agentIdentity.getName());
 		agentInfo.setVersion(agentManager.getAgentVersion(agentIdentity));
@@ -156,24 +156,6 @@ public class AgentService extends AbstractAgentService
 		String controllerRegion = config.getRegion();
 		RegionInfo currentControllerRegion = regionService.getOne(controllerRegion);
 		return currentControllerRegion.getSubregion().contains(subregion);
-	}
-
-	private String resolveRegion(String attachedAgentRegion) {
-		String controllerRegion = config.getRegion();
-
-		if (attachedAgentRegion != null && isDedicatedAgent(attachedAgentRegion)) {
-			String[] regionTokens = attachedAgentRegion.split("_owned_", 2);
-			if (StringUtils.equals(controllerRegion, regionTokens[0])) {
-				return attachedAgentRegion;
-			} else {
-				return controllerRegion + "_owned_" + regionTokens[1];
-			}
-		}
-		return controllerRegion;
-	}
-
-	private boolean isDedicatedAgent(String region) {
-		return region.contains("_owned_");
 	}
 
 	private List<AgentInfo> getAllReady() {
@@ -212,8 +194,6 @@ public class AgentService extends AbstractAgentService
 			availUserOwnAgent.put(region, new MutableInt(0));
 		});
 
-		String myAgentSuffix = "owned_" + userId;
-
 		for (AgentInfo agentInfo : getAllActive()) {
 			// Skip all agents which are disapproved, inactive or
 			// have no region prefix.
@@ -221,27 +201,19 @@ public class AgentService extends AbstractAgentService
 				continue;
 			}
 
-			String fullRegion = agentInfo.getRegion();
-			String fullSubregion = agentInfo.getSubregion();
+			String agentRegion = agentInfo.getRegion();
+			String agentSubregion = agentInfo.getSubregion();
 
-			String region = agentManager.extractRegionKey(fullRegion);
-			String subregion = agentManager.extractRegionKey(fullSubregion);
-
-			if (isBlank(region) || !regions.containsKey(region)) {
+			if (isBlank(agentRegion) || !regions.containsKey(agentRegion)) {
 				continue;
 			}
 
 			// It's my own agent
-			if (fullSubregion.endsWith(myAgentSuffix)) {
-				incrementAgentCount(availUserOwnAgent, region + "." + subregion);
-			} else if (fullRegion.endsWith(myAgentSuffix)) {
-				incrementAgentCount(availUserOwnAgent, region);
-			} else if (!isDedicatedAgent(fullRegion) && !isDedicatedAgent(fullSubregion)) {
-				if (isBlank(fullSubregion)) {
-					incrementAgentCount(availShareAgents, region);
-				} else {
-					incrementAgentCount(availShareAgents, region + "." + subregion);
-				}
+			String agentFullRegion = isEmpty(agentSubregion) ? agentRegion : agentRegion + "." + agentSubregion;
+			if (isDedicatedAgent(agentInfo, userId)) {
+				incrementAgentCount(availUserOwnAgent, agentFullRegion);
+			} else if (isCommonAgent(agentInfo)) {
+				incrementAgentCount(availShareAgents, agentFullRegion);
 			}
 		}
 
@@ -249,10 +221,11 @@ public class AgentService extends AbstractAgentService
 
 		regions.forEach((region, regionInfo) -> {
 			regionInfo.getSubregion().forEach(subregion -> {
-				MutableInt mutableInt = availShareAgents.get(region + "." + subregion);
+				String agentFullRegion = region + "." + subregion;
+				MutableInt mutableInt = availShareAgents.get(agentFullRegion);
 				int shareAgentCount = mutableInt.intValue();
 				mutableInt.setValue(Math.min(shareAgentCount, maxAgentSizePerConsole));
-				mutableInt.add(availUserOwnAgent.get(region + "." + subregion));
+				mutableInt.add(availUserOwnAgent.get(agentFullRegion));
 			});
 			MutableInt mutableInt = availShareAgents.get(region);
 			int shareAgentCount = mutableInt.intValue();
@@ -267,10 +240,6 @@ public class AgentService extends AbstractAgentService
 		if (agentMap.containsKey(region)) {
 			agentMap.get(region).increment();
 		}
-	}
-
-	protected Set<String> getRegions() {
-		return regionService.getAll().keySet();
 	}
 
 	@Override
@@ -353,18 +322,20 @@ public class AgentService extends AbstractAgentService
 			.stream()
 			.filter(this::isCurrentRegion)
 			.filter(agentInfo -> StringUtils.equals(agentInfo.getSubregion(), extractSubregionFromFullRegion(fullRegion)))
-			.filter(agentInfo -> isDedicatedAgent(agentInfo.getRegion()) || isCommonAgent(agentInfo))
+			.filter(agentInfo -> isDedicatedAgent(agentInfo, userId) || isCommonAgent(agentInfo))
 			.collect(toSet());
 	}
 
 	private boolean isCurrentRegion(AgentInfo agentInfo) {
 		String region = config.getRegion();
-		return StringUtils.equals(region, agentManager.extractRegionKey(agentInfo.getRegion()));
+		return StringUtils.equals(region, agentInfo.getRegion());
 	}
 
-	private boolean isOwnedAgent(AgentInfo agentInfo, String userId) {
-		String configuredRegion = defaultIfEmpty(agentInfo.getSubregion(), agentInfo.getRegion());
-		return endsWith(configuredRegion, "owned_" + userId);
+	private boolean isDedicatedAgent(AgentInfo agentInfo, String userId) {
+		if (isCommonAgent(agentInfo)) {
+			return false;
+		}
+		return StringUtils.equals(agentInfo.getOwner(), userId);
 	}
 
 	private String extractSubregionFromFullRegion(String fullRegion) {
@@ -377,8 +348,7 @@ public class AgentService extends AbstractAgentService
 	}
 
 	private boolean isCommonAgent(AgentInfo agentInfo) {
-		String configuredRegion = defaultIfEmpty(agentInfo.getSubregion(), agentInfo.getRegion());
-		return !contains(configuredRegion, "owned_");
+		return StringUtils.isEmpty(agentInfo.getOwner());
 	}
 
 	/**
@@ -423,8 +393,8 @@ public class AgentService extends AbstractAgentService
 	 * Select agent. This method return agent set which is belong to the given user first and then share agent set.
 	 *
 	 * Priority of agent selection.
-	 * 1. owned agent of recently used.
-	 * 2. owned agent.
+	 * 1. dedicated agent of recently used.
+	 * 2. dedicated agent.
 	 * 3. public agent of recently used.
 	 * 4. public agent.
 	 *
@@ -446,9 +416,9 @@ public class AgentService extends AbstractAgentService
 			return 0;
 		};
 
-		Stream<AgentInfo> ownedFreeAgentStream = allFreeAgents
+		Stream<AgentInfo> freeDedicatedAgentStream = allFreeAgents
 			.stream()
-			.filter(agentInfo -> isOwnedAgent(agentInfo, user.getUserId()))
+			.filter(agentInfo -> isDedicatedAgent(agentInfo, user.getUserId()))
 			.sorted(recentlyUsedPriorityComparator);
 
 		Stream<AgentInfo> freeAgentStream = allFreeAgents
@@ -456,7 +426,7 @@ public class AgentService extends AbstractAgentService
 			.filter(this::isCommonAgent)
 			.sorted(recentlyUsedPriorityComparator);
 
-		return concat(ownedFreeAgentStream, freeAgentStream)
+		return concat(freeDedicatedAgentStream, freeAgentStream)
 			.limit(agentCount)
 			.collect(toSet());
 	}
@@ -493,7 +463,7 @@ public class AgentService extends AbstractAgentService
 
 	@Override
 	public SystemDataModel getSystemDataModel(String ip, String name, String region) {
-		return hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new AgentStateTask(ip, name), agentManager.extractRegionKey(region));
+		return hazelcastService.submitToRegion(AGENT_EXECUTOR_SERVICE_NAME, new AgentStateTask(ip, name), region);
 	}
 
 	/**
@@ -544,23 +514,22 @@ public class AgentService extends AbstractAgentService
 	/**
 	 * ${@link List} of ready status agents information return
 	 *
-	 * @param userId             the login user id
-	 * @param targetRegion       the name of target region
-	 * @param isContainSubregion the flag of if contains subregion agents or not
+	 * @param userId                   the login user id
+	 * @param targetRegion             the name of target region
+	 * @param isContainSubregionAgents the flag of if contains subregion agents or not
 	 *
 	 * @return ${@link List} of ready status agents information
 	 */
-	private List<AgentInfo> getReadyAgentInfos(String userId, String targetRegion, boolean isContainSubregion) {
-		String myOwnAgent = targetRegion + "_owned_" + userId;
+	private List<AgentInfo> getReadyAgentInfos(String userId, String targetRegion, boolean isContainSubregionAgents) {
 		return getAllFreeApprovedAgents()
 			.stream()
+			.filter(agentInfo -> StringUtils.equals(targetRegion, agentInfo.getRegion()))
+			.filter(agentInfo -> isEmpty(agentInfo.getSubregion()) || isContainSubregionAgents)
 			.filter(agentInfo -> {
-				if (isNotEmpty(agentInfo.getSubregion())) {
-					return isContainSubregion;
-				}
-				String fullRegion = agentInfo.getRegion();
-				return StringUtils.equals(fullRegion, targetRegion) || StringUtils.equals(fullRegion, myOwnAgent);
-			}).collect(toList());
+				String agentOwner = agentInfo.getOwner();
+				return isEmpty(agentOwner) || StringUtils.equals(userId, agentOwner);
+			})
+			.collect(toList());
 	}
 
 	/**
@@ -577,13 +546,10 @@ public class AgentService extends AbstractAgentService
 			return getReadyAgentInfos(userId, targetRegion, false);
 		}
 
-		String myOwnAgent = targetSubregion + "_owned_" + userId;
 		return getReadyAgentInfos(userId, targetRegion, true)
 			.stream()
-			.filter(agentInfo -> {
-				String fullSubregion = agentInfo.getSubregion();
-				return StringUtils.equals(fullSubregion, targetSubregion) || StringUtils.equals(fullSubregion, myOwnAgent);
-			}).collect(toList());
+			.filter(agentInfo -> StringUtils.equals(agentInfo.getSubregion(), targetSubregion))
+			.collect(toList());
 	}
 
 	@Override
@@ -598,7 +564,7 @@ public class AgentService extends AbstractAgentService
 
 	private void publishTopic(AgentInfo agentInfo, AgentRequest.RequestType requestType) {
 		hazelcastService.publish(AGENT_TOPIC_NAME, new TopicEvent<>(AGENT_TOPIC_LISTENER_NAME,
-			agentManager.extractRegionKey(agentInfo.getRegion()), new AgentRequest(agentInfo.getIp(), agentInfo.getName(), requestType)));
+			agentInfo.getRegion(), new AgentRequest(agentInfo.getIp(), agentInfo.getName(), requestType)));
 	}
 
 	@Override
@@ -617,18 +583,18 @@ public class AgentService extends AbstractAgentService
 		boolean approved = config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_AGENT_AUTO_APPROVAL);
 		Set<AgentInfo> agentInfoSet = agentInfoStore.getAllAgentInfo()
 			.stream()
-			.filter(agentInfo -> StringUtils.equals(agentManager.extractRegionKey(agentInfo.getRegion()), config.getRegion()))
+			.filter(agentInfo -> StringUtils.equals(agentInfo.getRegion(), config.getRegion()))
 			.collect(toSet());
 
-		for (AgentProcessControlImplementation.AgentStatus status : agentMap.values()) {
-			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) status.getAgentIdentity();
+		for (AgentProcessControlImplementation.AgentStatus agentStatus : agentMap.values()) {
+			AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentStatus.getAgentIdentity();
 			AgentInfo agentInfo = agentInfoStore.getAgentInfo(createKey(requireNonNull(agentIdentity)));
 			// check new agent
 			if (agentInfo == null) {
 				agentInfo = new AgentInfo();
 			}
 
-			fillUpAgentInfo(agentInfo, status);
+			fillUpAgentInfo(agentInfo, agentStatus);
 
 			AgentInfo agentInfoInDB = agentManagerRepository.findByIpAndName(agentInfo.getIp(), agentInfo.getName());
 			if (agentInfoInDB != null) {
@@ -648,9 +614,9 @@ public class AgentService extends AbstractAgentService
 	}
 
 	@Override
-	public void onConnectionAgentMessage(String ip, String name, String region, int port) {
+	public void onConnectionAgentMessage(String ip, String name, String subregion, int port) {
 		Connection connection = connectionRepository.findByIpAndPort(ip, port);
-		String connectedAgentRegion = getConnectedAgentRegion(region);
+		String connectedAgentRegion = getConnectedAgentRegion(subregion);
 		if (connection == null) {
 			connection = new Connection(ip, name, port, connectedAgentRegion);
 		} else {
@@ -660,16 +626,16 @@ public class AgentService extends AbstractAgentService
 		connectionRepository.save(connection);
 	}
 
-	private String getConnectedAgentRegion(String configuredAgentRegion) {
+	private String getConnectedAgentRegion(String subregion) {
 		String region = regionService.getCurrent();
-		if (config.isClustered() && isValidSubregion(region, configuredAgentRegion)) {
-			region = region + "." + configuredAgentRegion;
+		RegionInfo regionInfo = regionService.getOne(region);
+		if (config.isClustered() && isValidSubregion(regionInfo, subregion)) {
+			region = region + "." + subregion;
 		}
 		return region;
 	}
 
-	private boolean isValidSubregion(String region, String subregion) {
-		RegionInfo currentRegionInfo = regionService.getOne(region);
-		return !StringUtils.equals(region, subregion) && currentRegionInfo.getSubregion().contains(subregion);
+	private boolean isValidSubregion(RegionInfo regionInfo, String subregion) {
+		return regionInfo.getSubregion().contains(subregion);
 	}
 }

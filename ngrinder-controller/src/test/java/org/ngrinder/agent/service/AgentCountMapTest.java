@@ -55,8 +55,14 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 	private AgentInfo createAgentInfo(String region, String subregion, boolean approved, AgentControllerState status) {
 		AgentInfo agentInfo = createAgentInfo(region, approved, status);
 		AgentControllerIdentityImplementation agentIdentity = new AgentControllerIdentityImplementation("", "");
-		agentIdentity.setRegion(subregion);
+		agentIdentity.setSubregion(subregion);
 		agentInfo.setAgentIdentity(agentIdentity);
+		return agentInfo;
+	}
+
+	private AgentInfo createAgentInfo(String region, String subregion, boolean approved, AgentControllerState status, String owner) {
+		AgentInfo agentInfo = createAgentInfo(region, subregion, approved, status);
+		((AgentControllerIdentityImplementation) agentInfo.getAgentIdentity()).setOwner(owner);
 		return agentInfo;
 	}
 
@@ -68,20 +74,24 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 		List<AgentInfo> agents = asList(
 			createAgentInfo("hello", true, READY),
 			createAgentInfo("hello", true, READY),
-			createAgentInfo("hello_owned_wow", true, READY),
+			createAgentInfo("hello", "", true, READY, "wow"),
+
 			createAgentInfo("haha", true, READY),
 			createAgentInfo("haha", true, READY),
 			createAgentInfo("haha", true, READY),
 			createAgentInfo("haha", "sub1",true, READY),
 			createAgentInfo("haha", "sub2", true, READY),
 			createAgentInfo("haha", false, READY),
-			createAgentInfo("haha_owned_my", true, READY),
-			createAgentInfo("haha", "sub1_owned_my",true, READY),
-			createAgentInfo("woowo_owned_my", true, READY),
+			createAgentInfo("haha", "", true, READY, "my"),
+			createAgentInfo("haha", "sub1",true, READY, "my"),
+
+			createAgentInfo("woowo", "", true, READY, "my"),
+
 			createAgentInfo("wowo", true, READY),
 			createAgentInfo("wowo", true, READY),
 			createAgentInfo("wowo", true, READY),
 			createAgentInfo("wowo", false, READY),
+
 			createAgentInfo("kiki", false, READY)
 		);
 
@@ -91,8 +101,8 @@ public class AgentCountMapTest extends AbstractNGrinderTransactionalTest {
 		subregions.add("sub2");
 
 		regionMap.put("hello", new RegionInfo("hello", subregions, null, null));
-		regionMap.put("haha", new RegionInfo("hello", subregions, null, null));
-		regionMap.put("wowo", new RegionInfo("hello", subregions, null, null));
+		regionMap.put("haha", new RegionInfo("haha", subregions, null, null));
+		regionMap.put("wowo", new RegionInfo("wowo", subregions, null, null));
 
 		when(mockAgentInfoStore.getAllAgentInfo()).thenReturn(agents);
 		when(mockRegionService.getAll()).thenReturn(regionMap);

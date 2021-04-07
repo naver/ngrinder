@@ -1,5 +1,6 @@
 package org.ngrinder.packages;
 
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -11,8 +12,8 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 public class MonitorPackageHandler extends PackageHandler {
 
 	@Override
-	public Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner) {
-		return buildMap("monitorPort", String.valueOf(port));
+	public Map<String, Object> getConfigParam(PackageDownloadInfo packageDownloadInfo) {
+		return buildMap("monitorPort", String.valueOf(packageDownloadInfo.getConnectionPort()));
 	}
 
 	@Override

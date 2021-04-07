@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
@@ -88,12 +89,12 @@ public abstract class PackageHandler {
 			bytes.length, TarArchiveEntry.DEFAULT_FILE_MODE);
 	}
 
-	public File getPackageFile(String regionName, String connectionIP, String ownerName, boolean forWindow) {
+	public File getPackageFile(PackageDownloadInfo packageDownloadInfo, boolean forWindow) {
 		File packageDir = getPackageDir();
 		if (packageDir.mkdirs()) {
 			LOGGER.info("{} is created", packageDir.getPath());
 		}
-		final String packageName = getDistributionPackageName(regionName, connectionIP, ownerName, forWindow);
+		final String packageName = getDistributionPackageName(packageDownloadInfo, forWindow);
 		return new File(packageDir, packageName);
 	}
 
@@ -122,15 +123,13 @@ public abstract class PackageHandler {
 	/**
 	 * Get distributable package name with appropriate extension.
 	 *
-	 * @param regionName   region   namee
-	 * @param connectionIP where it will connect to
-	 * @param ownerName    owner name
-	 * @param forWindow    if true, then package type is zip,if false, package type is tar.
+	 * @param packageDownloadInfo  information for downloading package
+	 * @param forWindow            if true, then package type is zip,if false, package type is tar.
 	 * @return String  module full name.
 	 */
-	private String getDistributionPackageName(String regionName, String connectionIP, String ownerName, boolean forWindow) {
-		return getPackageName() + getFilenamePostFix(regionName) + getFilenamePostFix(connectionIP) +
-			getFilenamePostFix(ownerName) + (forWindow ? ".zip" : ".tar");
+	private String getDistributionPackageName(PackageDownloadInfo packageDownloadInfo, boolean forWindow) {
+		return getPackageName() + getFilenamePostFix(packageDownloadInfo.getFullRegion()) + getFilenamePostFix(packageDownloadInfo.getConnectionIp()) +
+			getFilenamePostFix(packageDownloadInfo.getOwner()) + (forWindow ? ".zip" : ".tar");
 	}
 
 	private String getFilenamePostFix(String value) {
@@ -169,7 +168,7 @@ public abstract class PackageHandler {
 		return this.getModuleName() + "-" + config.getVersion();
 	}
 
-	public abstract Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner);
+	public abstract Map<String, Object> getConfigParam(PackageDownloadInfo packageDownloadInfo);
 
 	public abstract Set<String> getPackageDependentLibs();
 

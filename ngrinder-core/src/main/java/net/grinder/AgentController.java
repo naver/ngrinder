@@ -47,6 +47,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static net.grinder.util.NetworkUtils.getIP;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -95,10 +96,27 @@ public class AgentController implements Agent, AgentConstants {
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronization, LOGGER);
 		// Set it with the default name
 		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getBroadcastIP());
-		this.m_agentIdentity.setRegion(agentConfig.getRegion());
+		this.m_agentIdentity.setSubregion(agentConfig.getSubregion());
+
+		String configuredOwner = agentConfig.getOwner();
+		if (isEmpty(configuredOwner)) {
+			String legacyOwner = getOwnerFromLegacyRegionConfig(agentConfig.getRegion());
+			this.m_agentIdentity.setOwner(legacyOwner);
+		} else {
+			this.m_agentIdentity.setOwner(configuredOwner);
+		}
+
 		this.agentSystemDataCollector = new SystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
 		this.agentSystemDataCollector.refresh();
+	}
+
+	private String getOwnerFromLegacyRegionConfig(String legacyRegionConfig) {
+		if (legacyRegionConfig.contains("_owned_")) {
+			String[] regionToken = legacyRegionConfig.split("_owned_");
+			return (regionToken.length > 1) ? regionToken[1] : "";
+		}
+		return "";
 	}
 
 	/**
@@ -413,7 +431,7 @@ public class AgentController implements Agent, AgentConstants {
 
 			if (agentConfig.isConnectionMode()) {
 				m_sender.send(new ConnectionAgentMessage(m_agentIdentity.getIp(),agentConfig.getAgentHostID(),
-					agentConfig.getRegion(), agentConfig.getConnectionAgentPort()));
+					agentConfig.getSubregion(), agentConfig.getConnectionAgentPort()));
 			}
 		}
 
