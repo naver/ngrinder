@@ -58,13 +58,14 @@ public class NGrinderAgentStarterParam {
 			@Parameter(names = {"-cp", "--controller-port"}, description = "controller port.")
 			public Integer controllerPort = null;
 
-			@Parameter(names = {"-r", "--region"}, description = "region")
-			public String region = null;
+			@Parameter(names = {"-sb", "--subregion"}, description = "subregion")
+			public String subregion = null;
 
+			@Parameter(names = {"-onr", "--owner"}, description = "owner")
+			public String owner = null;
 
 			@Parameter(names = {"-hi", "--host-id"}, description = "this agent's unique host id")
 			public String hostId = null;
-
 
 			@Override
 			protected void processInternal() {
@@ -80,8 +81,12 @@ public class NGrinderAgentStarterParam {
 					System.setProperty(PROP_AGENT_HOST_ID, hostId);
 				}
 
-				if (region != null) {
-					System.setProperty(PROP_AGENT_REGION, region);
+				if (subregion != null) {
+					System.setProperty(PROP_AGENT_SUBREGION, subregion);
+				}
+
+				if (owner != null) {
+					System.setProperty(PROP_AGENT_OWNER, owner);
 				}
 			}
 		},
