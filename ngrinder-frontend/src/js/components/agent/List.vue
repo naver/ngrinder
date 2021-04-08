@@ -38,7 +38,7 @@
                     <span v-text="i18n('common.button.add')"></span>
                 </button>
             </div>
-            <div class="input-prepend ml-auto mt-auto mb-auto">
+            <div v-if="isAdmin" class="input-prepend ml-auto mt-auto mb-auto">
                 <div class="input-group-text" v-text="i18n('agent.list.download')"></div>
                 <div class="border rounded uneditable-input">
                     <template v-if="downloadLink">
@@ -267,7 +267,9 @@
             this.$refs.vuetable.currentPage = 1;
             clearTimeout(this.updateStatesTimer);
             this.updateStates();
-            this.updateDownloadLink();
+            if (this.isAdmin) {
+                this.updateDownloadLink();
+            }
         }
 
         search() {
