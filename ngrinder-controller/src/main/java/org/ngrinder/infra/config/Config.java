@@ -48,15 +48,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.grinder.util.NoOp.noOp;
 import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.ngrinder.common.constant.CacheConstants.REGION_ATTR_KEY;
+import static org.ngrinder.common.constant.CacheConstants.SUBREGION_ATTR_KEY;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_UNIT_TEST;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 import static org.ngrinder.common.model.Home.PATH_SCRIPT_TEMPLATE_DIRECTORY;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.FileUtils.copyResourceToFile;
 import static org.ngrinder.common.util.PathUtils.getSubPath;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -205,6 +210,22 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 	 */
 	public String getRegion() {
 		return isClustered() ? getClusterProperties().getProperty(PROP_CLUSTER_REGION) : NONE_REGION;
+	}
+
+	/**
+	 * Get the current region and subregion from the configuration.
+	 *
+	 * @return region and subregion. If it's not clustered mode, return "NONE"
+	 */
+	public Map<String, String> getRegionWithSubregion() {
+		Map<String, String> region = newHashMap();
+		region.put(REGION_ATTR_KEY, getRegion());
+
+		if (isClustered()) {
+			region.put(SUBREGION_ATTR_KEY, defaultIfEmpty(getClusterProperties().getProperty(PROP_CLUSTER_SUBREGION), ""));
+		}
+
+		return region;
 	}
 
 	/**

@@ -155,6 +155,11 @@
                         color: @error-color;
                     }
                 }
+
+                [data-toggle="dropdown"] {
+                    border-color: @error-color;
+                    color: @error-color;
+                }
             }
         }
 

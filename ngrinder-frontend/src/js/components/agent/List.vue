@@ -1,14 +1,34 @@
 <template>
-    <div class="container">
+    <div class="container agent-list-container">
         <vue-headful :title="i18n('agent.title')"></vue-headful>
         <fieldSet>
             <legend class="header border-bottom d-flex">
                 <span v-text="i18n('agent.list.title')"></span>
-                <select v-if="ngrinder.config.clustered" class="form-control change-region ml-auto mt-auto mb-auto"
-                        v-model="region" @change="changeRegion">
-                    <option value="">All</option>
-                    <option v-for="region in regions" :value="region" v-text="i18n(region)"></option>
-                </select>
+
+                <ul class="dropdown ml-auto mb-2">
+                    <li>
+                        <button class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown" v-text="i18n(selectedRegion)">
+                        </button>
+                        <ul class="dropdown-menu region-menu">
+                            <li @click.prevent="changeDropdown('')"><a class="dropdown-item">All</a></li>
+                            <template v-for="regionInfo in regions">
+                                <li class="dropdown-divider m-0"></li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       @click.prevent="changeDropdown(regionInfo.region)"
+                                       v-text="i18n(regionInfo.region)">
+                                    </a>
+                                    <a v-for="subregion in regionInfo.subregion"
+                                       class="dropdown-item"
+                                       @click.prevent="changeDropdown(`${regionInfo.region}.${subregion}`)"
+                                       v-text="i18n(`${regionInfo.region}.${subregion}`)">
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
+                    </li>
+                </ul>
             </legend>
         </fieldSet>
         <div class="card card-header search-bar border-bottom-0">
@@ -88,7 +108,11 @@
             </template>
 
             <template slot="region" slot-scope="props">
-                <div class="ellipsis region" :title="props.rowData.region" v-text="props.rowData.region"></div>
+                <div class="ellipsis region" :title="i18n(getRegion(props.rowData))" v-text="i18n(getRegion(props.rowData))"></div>
+            </template>
+
+            <template slot="owner" slot-scope="props">
+                <div class="ellipsis owner" :title="props.rowData.owner" v-text="props.rowData.owner"></div>
             </template>
 
             <template slot="approved" slot-scope="props">
@@ -128,6 +152,7 @@
     import AddConnectionAgentModal from './modal/AddConnectionAgentModal.vue';
 
     const AGENT_KEY_TOKEN = '_';
+    const SUBREGION_SEPARATOR = '.';
 
     @Component({
         name: 'agentList',
@@ -136,12 +161,13 @@
     export default class AgentList extends Mixins(Base, MessagesMixin, TableConfig) {
         agents = [];
         regions = [];
+
+        selectedRegion = '';
         region = '';
-
+        subregion = '';
         downloadLink = '';
-        updateStatesTimer = null;
-
         query = '';
+        updateStatesTimer = null;
         queryFilter = () => true;
 
         table = {
@@ -161,13 +187,20 @@
         mounted() {
             this.$http.get('/agent/api/regions').then(res => this.regions = res.data);
 
-            this.region = this.$route.query.region || this.region;
-            this.updateDownloadLink();
-
+            this.region = this.$route.query.region || '';
+            this.subregion = this.$route.query.subregion || '';
             this.query = this.$route.query.query || '';
+
+            this.selectedRegion = this.region;
+            if (this.subregion) {
+                this.selectedRegion += `.${this.subregion}`;
+            }
+            this.updateRegion();
+
             this.queryFilter = this.createQueryFilter(this.query);
             this.$refs.searchInput.value = this.query; // Prevent to update query by periodic status update
 
+            this.updateDownloadLink();
             this.initAgents();
         }
 
@@ -206,7 +239,13 @@
                 this.downloadLink = '';
                 return;
             }
-            this.$http.get('/agent/api/download_link', { params: { region: this.region } }).then(res => {
+
+            const params = {
+                region: this.region,
+                subregion: this.subregion,
+            };
+
+            this.$http.get('/agent/api/download_link', { params }).then(res => {
                 this.downloadLink = `${this.contextPath}${res.data}`;
             });
         }
@@ -252,8 +291,16 @@
         }
 
         getAgents() {
-            return this.$http.get('/agent/api/list', { params: { region: this.region } })
+            return this.$http.get('/agent/api/list', { params: { region: this.region, subregion: this.subregion } })
                 .then(res => this.agents = this.appendAgentKey(res.data).filter(this.queryFilter));
+        }
+
+        getRegion(agentInfo) {
+            let region = agentInfo.region;
+            if (agentInfo.subregion) {
+                region += `.${agentInfo.subregion}`;
+            }
+            return region;
         }
 
         appendAgentKey(agents) {
@@ -263,12 +310,27 @@
             });
         }
 
+        changeDropdown(value) {
+            this.selectedRegion = value;
+            this.changeRegion();
+        }
+
         changeRegion() {
             this.$refs.vuetable.currentPage = 1;
             clearTimeout(this.updateStatesTimer);
+            this.updateRegion();
             this.updateStates();
             if (this.isAdmin) {
                 this.updateDownloadLink();
+            }
+        }
+
+        updateRegion() {
+            const regionTokens = this.selectedRegion.split(SUBREGION_SEPARATOR);
+            this.region = regionTokens[0];
+            this.subregion = regionTokens[1];
+            if (!this.selectedRegion) {
+                this.selectedRegion = 'All';
             }
         }
 
@@ -290,6 +352,10 @@
 
             if (this.region) {
                 params.push(`region=${this.region}`);
+            }
+
+            if (this.subregion) {
+                params.push(`subregion=${this.subregion}`);
             }
 
             if (this.query) {
@@ -381,6 +447,10 @@
                 return { ip: ipAndName[0], name: ipAndName[1] };
             });
         }
+
+        hasSubregion(regionInfo) {
+            return regionInfo.subregion.length > 0;
+        }
     }
 </script>
 
@@ -396,10 +466,6 @@
         input[type='checkbox'] {
             vertical-align: bottom;
         }
-    }
-
-    .change-region {
-        width: 150px;
     }
 
     img.status {
@@ -440,6 +506,83 @@
 
         button {
             height: 32px;
+        }
+    }
+
+    .show {
+        button.dropdown-toggle {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+
+    .dropdown {
+        list-style: none;
+
+        button {
+            box-shadow: none;
+            text-align: left;
+            width: 150px;
+            border: 1px solid #ced4da
+        }
+
+        .region-menu {
+            width: 150px;
+            margin-top: 0;
+            border-top: none;
+            padding: 3px;
+
+            &.show {
+                border-top-right-radius: 0;
+                border-top-left-radius: 0;
+            }
+        }
+
+        .dropdown-item {
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 20px;
+
+            &:hover {
+                color: #fff;
+                background-color: #007bff;
+            }
+        }
+
+        .dropdown-submenu {
+            position: relative;
+
+            > .dropdown-menu {
+                top: -6px;
+                padding: 3px;
+                margin-left: -2px;
+                left: -100%;
+                width: 100%;
+            }
+
+            &:hover {
+                > ul.dropdown-menu {
+                    display: block;
+                }
+            }
+        }
+
+        .dropdown-toggle::after {
+            display: inline-block;
+            position: absolute;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+            right: 7px;
+            top: 10px;
+        }
+
+        button.dropdown-toggle::after {
+            top: 20px;
         }
     }
 

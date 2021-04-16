@@ -82,6 +82,9 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 				description = "This cluster member's region name")
 			private String region = null;
 
+			@Parameter(names = {"-sr", "--subregion"},
+				description = "This cluster member's subregion names with ',' concatenated format like sub1,sub2")
+			private String subregion = "";
 
 			@Parameter(names = {"-dh", "--database-host"},
 				description = "database host. The default value is localhost")
@@ -104,6 +107,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 					System.setProperty("cluster.host", clusterHost);
 				}
 				System.setProperty("cluster.region", region);
+				System.setProperty("cluster.subregion", subregion);
 				System.setProperty("controller.controller_port", controllerPort.toString());
 				System.setProperty("database.type", databaseType);
 				if ("h2".equals(databaseType)) {

@@ -28,7 +28,8 @@ public interface AgentConstants {
 	String PROP_AGENT_JAVA_OPT = "agent.java_opt";
 	String PROP_AGENT_JVM_CLASSPATH = "agent.jvm.classpath";
 	String PROP_AGENT_LIMIT_XMX = "agent.limit_xmx";
-	String PROP_AGENT_REGION = "agent.region";
+	String PROP_AGENT_SUBREGION = "agent.subregion";
+	String PROP_AGENT_OWNER = "agent.owner";
 	String PROP_AGENT_SERVER_MODE = "agent.server_mode";
 	String PROP_AGENT_CONNECTION_MODE = "agent.connection_mode";
 	String PROP_AGENT_CONNECTION_PORT = "agent.connection_port";
@@ -38,4 +39,7 @@ public interface AgentConstants {
 
 	String VALUE_AGENT_TO_CONTROLLER = "agent_to_controller";
 	String VALUE_CONTROLLER_TO_AGENT = "controller_to_agent";
+
+	// Deprecated, agent region is automatically set to the controller region which the agent is connected.
+	String PROP_AGENT_REGION = "agent.region";
 }

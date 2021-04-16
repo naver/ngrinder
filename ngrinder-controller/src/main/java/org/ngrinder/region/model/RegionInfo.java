@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Region info to be shared b/w controllers.
@@ -29,9 +30,11 @@ public class RegionInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Integer controllerPort;
+	private final Integer port;
 
 	private String regionName;
+
+	private Set<String> subregion;
 
 	@Setter
 	private String ip;
@@ -42,11 +45,11 @@ public class RegionInfo implements Serializable {
 	/**
 	 * Constructor with true visibility.
 	 *
-	 * @param ip              ip
-	 * @param controllerPort  controllerPort
+	 * @param ip    ip
+	 * @param port  port
 	 */
-	public RegionInfo(String ip, int controllerPort) {
-		this(ip, controllerPort, true);
+	public RegionInfo(String ip, int port) {
+		this(ip, port, true);
 	}
 
 	/**
@@ -63,19 +66,26 @@ public class RegionInfo implements Serializable {
 	 * Constructor.
 	 *
 	 * @param ip              ip
-	 * @param controllerPort  controllerPort
+	 * @param port  	      port
 	 * @param visible         true if visible
 	 */
-	public RegionInfo(String ip, Integer controllerPort, boolean visible) {
+	public RegionInfo(String ip, Integer port, boolean visible) {
 		this.ip = ip;
-		this.controllerPort = controllerPort;
+		this.port = port;
 		this.visible = visible;
 	}
 
-	public RegionInfo(String regionName , String ip, Integer controllerPort) {
-		this.ip = ip;
-		this.controllerPort = controllerPort;
+	public RegionInfo(String regionName, String ip, Integer port) {
 		this.regionName = regionName;
+		this.ip = ip;
+		this.port = port;
+	}
+
+	public RegionInfo(String regionName, Set<String> subregion , String ip, Integer port) {
+		this.regionName = regionName;
+		this.subregion = subregion;
+		this.ip = ip;
+		this.port = port;
 	}
 
 }

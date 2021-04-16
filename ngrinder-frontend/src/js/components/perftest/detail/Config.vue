@@ -18,15 +18,34 @@
                                      data-trigger="hover"
                                      data-toggle="popover"
                                      data-html="true"
+                                     data-placement="top"
                                      :title="i18n('perfTest.config.region')"
                                      :data-content="i18n('perfTest.config.region.help')"
                                      class="input-group-prepend agent-region-container">
-                                    <select2 v-model="test.config.region"
-                                             customStyle="width: 110px"
-                                             :option="{ placeholder: i18n('perfTest.config.region.setting') }">
-                                        <option></option>
-                                        <option v-for="region in config.regions" :value="region" v-text="i18n(region)"></option>
-                                    </select2>
+                                    <ul class="dropdown">
+                                        <li>
+                                            <button class="btn btn-default dropdown-toggle"
+                                                    :class="{ 'show-placeholder': isNoneRegion }"
+                                                    data-toggle="dropdown" v-text="i18n(selectedRegion)">
+                                            </button>
+                                            <ul class="dropdown-menu region-menu">
+                                                <template v-for="(regionInfo, idx) in config.regions">
+                                                    <li>
+                                                        <a class="dropdown-item"
+                                                           @click.prevent="changeRegion(regionInfo.region)"
+                                                           v-text="i18n(regionInfo.region)">
+                                                        </a>
+                                                        <a v-for="subregion in regionInfo.subregion"
+                                                           class="dropdown-item"
+                                                           @click.prevent="changeRegion(`${regionInfo.region}.${subregion}`)"
+                                                           v-text="i18n(`${regionInfo.region}.${subregion}`)">
+                                                        </a>
+                                                    </li>
+                                                    <li v-if="idx !== (config.regions.length -1)" class="dropdown-divider m-0"></li>
+                                                </template>
+                                            </ul>
+                                        </li>
+                                    </ul>
                                     <input type="hidden" name="region" v-validate="{ regionValidation: true, required: true }" v-model="test.config.region"/>
                                 </div>
                                 <input id="agentCount" name="agentCount" class="form-control agent-count-input"
@@ -126,13 +145,13 @@
                                 :value="script.path">
                         </option>
                     </select2>
-                    <button v-show="showRevisonBtn(!isGitHubStorage)" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
+                    <button v-show="showRevisionBtn(!isGitHubStorage)" class="btn btn-info float-right btn-script-revision" type="button" @click="showScript">
                         <i class="fa fa-file mr-1"></i>
                         R
                         <span v-if="isSvnHeadRevision(test.config.scriptRevision)">HEAD</span>
                         <span v-else v-text="test.config.scriptRevision"></span>
                     </button>
-                    <span v-show="showRevisonBtn(isGitHubStorage)">
+                    <span v-show="showRevisionBtn(isGitHubStorage)">
                         <a target="_blank"
                            class="btn btn-info float-right btn-github-revision"
                            :href="test.config.scriptRevision">
@@ -314,6 +333,8 @@
         samplingIntervals = [1, 2, 3, 4, 5, 10, 30, 60];
         regionAgentCountMap = {};
 
+        selectedRegion = '';
+
         targetHostIp = '';
         targetHosts = [];
 
@@ -362,6 +383,7 @@
             if (!this.ngrinder.config.clustered) {
                 this.test.config.region = 'NONE';
             }
+            this.selectedRegion = this.isNoneRegion ? this.i18n('perfTest.config.region.setting') : this.test.config.region;
         }
 
         initScripts() {
@@ -434,6 +456,11 @@
             this.test.config.scriptRevision = '';
             this.test.config.scriptName = '';
             this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
+        }
+
+        changeRegion(region) {
+            this.test.config.region = region;
+            this.selectedRegion = region;
         }
 
         createGitConfig() {
@@ -801,8 +828,12 @@
             return revision === -1;
         }
 
-        showRevisonBtn(baseCondition) {
+        showRevisionBtn(baseCondition) {
             return baseCondition && this.test.config.scriptName && this.test.config.scriptRevision;
+        }
+
+        hasSubregion(regionInfo) {
+            return regionInfo.subregion.length > 0;
         }
 
         get isGitHubStorage() {
@@ -811,6 +842,10 @@
 
         get totalVuser() {
             return this.test.config.agentCount * this.test.config.vuserPerAgent;
+        }
+
+        get isNoneRegion() {
+            return this.test.config.region === 'NONE'
         }
     }
 </script>
@@ -1072,6 +1107,91 @@
                 &.control-label {
                     width: 110px;
                 }
+            }
+        }
+
+        .show {
+            button.dropdown-toggle {
+                border-bottom-right-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+
+        .dropdown {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            button {
+                line-height: 1.6;
+                box-shadow: none;
+                text-align: left;
+                width: 125px;
+                border: 1px solid #ced4da;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+
+                &.show-placeholder {
+                    color: #777;
+                }
+            }
+
+            .region-menu {
+                width: 125px;
+                border-top: none;
+                padding: 3px;
+
+                &.show {
+                    border-top-right-radius: 0;
+                    border-top-left-radius: 0;
+                }
+            }
+
+            .dropdown-item {
+                cursor: pointer;
+                font-size: 12px;
+                line-height: 20px;
+
+                &:hover {
+                    color: #fff;
+                    background-color: #007bff;
+                }
+            }
+
+            .dropdown-submenu {
+                position: relative;
+
+                > .dropdown-menu {
+                    padding: 3px;
+                    margin-left: 3px;
+                    top: -6px;
+                    left: 100%;
+                    width: 100%;
+                }
+
+                &:hover {
+                    > ul.dropdown-menu {
+                        display: block;
+                    }
+                }
+            }
+
+            .dropdown-toggle::after {
+                display: inline-block;
+                position: absolute;
+                margin-left: 0.255em;
+                vertical-align: 0.255em;
+                content: "";
+                border-top: 0.3em solid;
+                border-right: 0.3em solid transparent;
+                border-bottom: 0;
+                border-left: 0.3em solid transparent;
+                right: 7px;
+                top: 10px;
+            }
+
+            button.dropdown-toggle::after {
+                top: 13px;
             }
         }
     }

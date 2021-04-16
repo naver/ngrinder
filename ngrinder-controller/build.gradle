@@ -70,16 +70,14 @@ dependencies {
     compile (group: "org.codehaus.groovy", name: "groovy-jsr223", version: groovy_version)
     compile (group: "com.unboundid", name: "unboundid-ldapsdk", version: "5.1.1")
 
-    compileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
-    annotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
+    compileOnly (group: "org.projectlombok", name: "lombok", version: lombok_version)
+    annotationProcessor (group: "org.projectlombok", name: "lombok", version: lombok_version)
 
     providedRuntime (group: "org.springframework.boot", name: "spring-boot-starter-tomcat", version: spring_boot_version)
 
     testCompile (group: "junit", name: "junit", version: junit_version)
     testCompile (group: "org.easytesting", name: "fest-assert", version: "1.4")
     testCompile (group: "org.springframework.boot", name: "spring-boot-starter-test", version: spring_boot_version)
-    testCompileOnly (group: "org.projectlombok", name: "lombok", version: "1.18.8")
-    testAnnotationProcessor (group: "org.projectlombok", name: "lombok", version: "1.18.8")
 }
 
 

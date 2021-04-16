@@ -45,6 +45,7 @@ subprojects {
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
     jackson_version = "2.11.2"
+    lombok_version = "1.18.20"
     groovy_version = project.property("groovy.version")
     junit_version = project.property("junit.version")
   }

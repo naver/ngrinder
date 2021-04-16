@@ -27,16 +27,19 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.RegionInfoTask;
 import org.ngrinder.region.model.RegionInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.RegionUtils.convertSubregionsStringToSet;
 
 /**
  * Region service class. This class responsible to keep the status of available regions.
@@ -46,9 +49,6 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 @Service
 @RequiredArgsConstructor
 public class RegionService {
-
-	@SuppressWarnings("UnusedDeclaration")
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
 
 	private final Config config;
 
@@ -67,22 +67,27 @@ public class RegionService {
 				}
 			} else {
 				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
-				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), regionIP, config.getControllerPort()));
+				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), emptySet(), regionIP, config.getControllerPort()));
 			}
 			return regions;
 		}
 	}, REGION_CACHE_TIME_TO_LIVE_SECONDS, TimeUnit.SECONDS);
 
-	private final Supplier<List<String>> allRegionNames = Suppliers.memoizeWithExpiration(new Supplier<List<String>>() {
+	private final Supplier<List<Map<String, String>>> allRegionNames = Suppliers.memoizeWithExpiration(new Supplier<List<Map<String, String>>>() {
 		@Override
-		public List<String> get() {
+		public List<Map<String, String>> get() {
 			Set<Member> members = hazelcastInstance.getCluster().getMembers();
-			List<String> regionNames = new ArrayList<>();
+			List<Map<String, String>> regionNames = new ArrayList<>();
+
 			for (Member member : members) {
 				if (member.getAttributes().containsKey(REGION_ATTR_KEY)) {
-					regionNames.add(member.getAttributes().get(REGION_ATTR_KEY));
+					Map<String, String> regionMap = new HashMap<>();
+					regionMap.put(REGION_ATTR_KEY, member.getAttributes().get(REGION_ATTR_KEY));
+					regionMap.put(SUBREGION_ATTR_KEY, member.getAttributes().get(SUBREGION_ATTR_KEY));
+					regionNames.add(regionMap);
 				}
 			}
+
 			return regionNames;
 		}
 	}, REGION_CACHE_TIME_TO_LIVE_SECONDS, TimeUnit.SECONDS);
@@ -131,7 +136,21 @@ public class RegionService {
 		if (regionInfo != null) {
 			return regionInfo;
 		}
-		throw new NGrinderRuntimeException(regionName + "is not exist");
+		throw new NGrinderRuntimeException(regionName + " is not exist");
+	}
+
+	public RegionInfo getOne(String region, String subregion) {
+		if (isEmpty(subregion)) {
+			return getOne(region);
+		}
+
+		RegionInfo regionInfo = getAll().get(region);
+		if (regionInfo != null) {
+			if (isEmpty(subregion) || regionInfo.getSubregion().contains(subregion)) {
+				return regionInfo;
+			}
+		}
+		throw new NGrinderRuntimeException(region + "." + subregion + " is not exist");
 	}
 
 	/**
@@ -143,11 +162,17 @@ public class RegionService {
 		return allRegions.get();
 	}
 
-	public List<String> getAllVisibleRegionNames() {
+	public List<Map<String, Object>> getAllVisibleRegionNames() {
 		if (config.isClustered()) {
-			return allRegionNames.get();
+			return allRegionNames.get().stream().map(region -> {
+					Map<String, Object> regionInfo = new HashMap<>();
+					String subregionAttributes = region.get(SUBREGION_ATTR_KEY);
+					regionInfo.put(REGION_ATTR_KEY, region.get(REGION_ATTR_KEY));
+					regionInfo.put(SUBREGION_ATTR_KEY, convertSubregionsStringToSet(subregionAttributes));
+					return regionInfo;
+			}).collect(toList());
 		} else {
-			return Collections.emptyList();
+			return emptyList();
 		}
 	}
 

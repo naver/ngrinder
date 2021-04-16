@@ -26,7 +26,7 @@
                     name: '__slot:name',
                     title: this.i18n('agent.list.name'),
                     sortField: 'name',
-                    width: '365px',
+                    width: '305px',
                 },
                 {
                     name: '__slot:version',
@@ -38,7 +38,13 @@
                     name: '__slot:region',
                     title: this.i18n('agent.list.region'),
                     sortField: 'region',
-                    width: '220px',
+                    width: '160px',
+                },
+                {
+                    name: '__slot:owner',
+                    title: this.i18n('agent.list.owner'),
+                    sortField: 'owner',
+                    width: '120px',
                 },
             ];
 

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.ngrinder.common.constant.CacheConstants.REGION_ATTR_KEY;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
@@ -41,6 +42,9 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		String currentRegion = config.getRegion();
 
 		assertThat(regionService.getAll().keySet().contains(currentRegion)).isEqualTo(true);
-		assertThat(regionService.getAllVisibleRegionNames().contains(currentRegion)).isEqualTo(true);
+		assertThat(regionService.getAllVisibleRegionNames()
+			.stream()
+			.anyMatch(regionNamesMap -> regionNamesMap.get(REGION_ATTR_KEY).equals(currentRegion)))
+			.isEqualTo(true);
 	}
 }

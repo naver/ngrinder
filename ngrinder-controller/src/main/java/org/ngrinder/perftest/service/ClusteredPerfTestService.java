@@ -48,7 +48,7 @@ public class ClusteredPerfTestService extends PerfTestService {
 	@Override
 	@Transactional
 	public PerfTest getNextRunnablePerfTestPerfTestCandidate() {
-		List<PerfTest> readyPerfTests = getPerfTestRepository().findAllByStatusAndRegionOrderByScheduledTimeAsc(
+		List<PerfTest> readyPerfTests = getPerfTestRepository().findAllByStatusAndRegionStartsWithOrderByScheduledTimeAsc(
 				Status.READY, getConfig().getRegion());
 		List<PerfTest> filteredPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return filteredPerfTests.isEmpty() ? null : filteredPerfTests.get(0);

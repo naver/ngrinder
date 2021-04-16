@@ -69,10 +69,9 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 		RequestContextHolder.resetRequestAttributes();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAgentList() {
-		agentApiController.getAll(userContext.getCurrentUser(), "NONE");
+		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -92,7 +91,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 			e.printStackTrace();
 		}
 
-		agentApiController.getAll(userContext.getCurrentUser(), "NONE");
+		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
 	}
 
 	@Test
@@ -135,7 +134,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 	@Test
 	public void testGetAvailableAgentCount() {
 		String targetRegion = "test";
-		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion);
+		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion, "");
 		assertThat(0, is(response.get("availableAgentCount")));
 	}
 }

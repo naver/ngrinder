@@ -2,6 +2,7 @@ package org.ngrinder.agent.service;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.AgentPackageHandler;
 import org.ngrinder.packages.PackageHandler;
@@ -39,17 +40,17 @@ public class AgentPackageService {
 	 *
 	 * @return File package.
 	 */
-	public File createPackage(PackageHandler packageHandler, String regionName, String connectionIP, int port, String owner) {
+	public File createPackage(PackageHandler packageHandler, PackageDownloadInfo packageDownloadInfo) {
 		synchronized (AgentPackageService.class) {
-			File packageFile = packageHandler.getPackageFile(regionName, connectionIP, owner, false);
+			File packageFile = packageHandler.getPackageFile(packageDownloadInfo, false);
 			if (packageFile.exists()) {
 				return packageFile;
 			}
 			FileUtils.deleteQuietly(packageFile);
 			try (TarArchiveOutputStream tarOutputStream = createTarArchiveStream(packageFile)) {
 				addDependentLibToTarStream(packageHandler, tarOutputStream);
-				if (!(packageHandler instanceof AgentPackageHandler) || isNotEmpty(connectionIP)) {
-					packageHandler.addConfigToPackage(tarOutputStream, packageHandler.getConfigParam(regionName, connectionIP, port, owner));
+				if (!(packageHandler instanceof AgentPackageHandler) || isNotEmpty(packageDownloadInfo.getConnectionIp())) {
+					packageHandler.addConfigToPackage(tarOutputStream, packageHandler.getConfigParam(packageDownloadInfo));
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error while generating an agent package" + e.getMessage());
@@ -61,23 +62,23 @@ public class AgentPackageService {
 	/**
 	 * Create agent package.
 	 *
-	 * @return File  agent package.
+	 * @return File agent package.
 	 */
 	public File createAgentPackage() {
-		return createAgentPackage(null, null, config.getControllerPort(), null);
+		PackageDownloadInfo packageDownloadInfo = PackageDownloadInfo.builder().connectionPort(config.getControllerPort()).build();
+		return createAgentPackage(packageDownloadInfo);
 	}
 
 	/**
 	 * Create agent package.
 	 *
-	 * @param connectionIP host ip.
-	 * @param region       region
-	 * @param owner        owner
+	 * @param packageDownloadInfo information for downloading agent.
+	 *
 	 * @return File  agent package.
 	 */
-	public File createAgentPackage(String region, String connectionIP, int port, String owner) {
+	public File createAgentPackage(PackageDownloadInfo packageDownloadInfo) {
 		synchronized (AgentPackageService.class) {
-			return createPackage(agentPackageHandler, region, connectionIP, port, owner);
+			return createPackage(agentPackageHandler, packageDownloadInfo);
 		}
 	}
 

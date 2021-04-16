@@ -60,7 +60,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 * @param region region where the test belong to
 	 * @return perf test list
 	 */
-	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
+	List<PerfTest> findAllByStatusAndRegionStartsWithOrderByScheduledTimeAsc(Status status, String region);
 
 	/**
 	 * Find all {@link PerfTest}s created between the given start and end date and having the the given region.
