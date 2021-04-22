@@ -25,6 +25,7 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.nio.AsyncEntityProducer;
 import org.ngrinder.http.HTTPResponse;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public interface HTTPPatch {
 	HTTPResponse PATCH(String uri, List<NameValuePair> params, List<Header> headers);
 
 	HTTPResponse PATCH(String uri, Map<?, ?> params, List<Header> headers);
+
+	HTTPResponse PATCH(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers);
 
 	default HTTPResponse PATCH(String uri) {
 		return PATCH(uri, new byte[0], emptyList());
@@ -66,5 +69,13 @@ public interface HTTPPatch {
 
 	default HTTPResponse PATCH(String uri, byte[] content, Map<String, String> headers) {
 		return PATCH(uri, content, convert(headers, BasicHeader::new));
+	}
+
+	default HTTPResponse PATCH(String uri, AsyncEntityProducer asyncEntityProducer) {
+		return PATCH(uri, asyncEntityProducer, emptyList());
+	}
+
+	default HTTPResponse PATCH(String uri, AsyncEntityProducer asyncEntityProducer, Map<String, String> headers) {
+		return PATCH(uri, asyncEntityProducer, convert(headers, BasicHeader::new));
 	}
 }

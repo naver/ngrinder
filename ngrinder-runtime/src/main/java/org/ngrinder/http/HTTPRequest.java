@@ -32,6 +32,7 @@ import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
+import org.apache.hc.core5.http.nio.AsyncEntityProducer;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
@@ -96,6 +97,7 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		return doRequest(uri, createRequestWithBody("POST", uri, content, headers));
 	}
 
+	@Override
 	public HTTPResponse POST(String uri, List<NameValuePair> params, List<Header> headers) {
 		return doRequest(uri, createRequest("POST", uri, params, headers));
 	}
@@ -108,6 +110,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		}
 
 		return POST(uri, convert((Map<String, String>) params, BasicNameValuePair::new), actualHeaders);
+	}
+
+	@Override
+	public HTTPResponse POST(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		return doRequest(uri, createRequestWithEntity("POST", uri, asyncEntityProducer, headers));
 	}
 
 	@Override
@@ -130,6 +137,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	@Override
+	public HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		return doRequest(uri, createRequestWithEntity("PUT", uri, asyncEntityProducer, headers));
+	}
+
+	@Override
 	public HTTPResponse PATCH(String uri, byte[] content, List<Header> headers) {
 		return doRequest(uri, createRequestWithBody("PATCH", uri, content, headers));
 	}
@@ -146,6 +158,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			return PATCH(uri, toJson(params).getBytes(), headers);
 		}
 		return PATCH(uri, convert((Map<String, String>) params, BasicNameValuePair::new), actualHeaders);
+	}
+
+	@Override
+	public HTTPResponse PATCH(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		return doRequest(uri, createRequestWithEntity("PATCH", uri, asyncEntityProducer, headers));
 	}
 
 	@Override
@@ -265,6 +282,19 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			.create(method)
 			.setUri(uri)
 			.setEntity(content, getContentType(headers));
+
+		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
+		actualHeaders.forEach(builder::addHeader);
+		getMatchedCookies(uri).forEach(builder::addHeader);
+
+		return builder.build();
+	}
+
+	private AsyncRequestProducer createRequestWithEntity(String method, String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		AsyncRequestBuilder builder = AsyncRequestBuilder
+			.create(method)
+			.setUri(uri)
+			.setEntity(asyncEntityProducer);
 
 		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
 		actualHeaders.forEach(builder::addHeader);

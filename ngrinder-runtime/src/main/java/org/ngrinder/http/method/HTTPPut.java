@@ -26,6 +26,7 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.nio.AsyncEntityProducer;
 import org.ngrinder.http.HTTPResponse;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public interface HTTPPut {
 	HTTPResponse PUT(String uri, List<NameValuePair> params, List<Header> headers);
 
 	HTTPResponse PUT(String uri, Map<?, ?> params, List<Header> headers);
+
+	HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers);
 
 	default HTTPResponse PUT(String uri) {
 		return PUT(uri, new byte[0], emptyList());
@@ -69,5 +72,13 @@ public interface HTTPPut {
 
 	default HTTPResponse PUT(String uri, byte[] content, Map<String, String> headers) {
 		return PUT(uri, content, convert(headers, BasicHeader::new));
+	}
+
+	default HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer) {
+		return PUT(uri, asyncEntityProducer, emptyList());
+	}
+
+	default HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer, Map<String, String> headers) {
+		return PUT(uri, asyncEntityProducer, convert(headers, BasicHeader::new));
 	}
 }
