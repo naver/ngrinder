@@ -20,6 +20,7 @@
  */
 package org.ngrinder.http;
 
+import net.grinder.common.GrinderProperties;
 import net.grinder.script.Grinder;
 import net.grinder.util.Pair;
 import org.apache.commons.lang.time.StopWatch;
@@ -106,7 +107,12 @@ public class HTTPRequester extends HttpAsyncRequester {
 		}
 
 		private IOReactorConfig ioReactorConfig() {
-			int totalThreadCount = Grinder.grinder.getProperties().getInt("grinder.threads", 1);
+			GrinderProperties properties = Grinder.grinder.getProperties();
+			int totalThreadCount = 1;
+			if (properties != null) {
+				totalThreadCount = properties.getInt("grinder.threads", 1);
+			}
+
 			int ioThreadCount = totalThreadCount / 100 + 1;
 
 			return IOReactorConfig.custom()
