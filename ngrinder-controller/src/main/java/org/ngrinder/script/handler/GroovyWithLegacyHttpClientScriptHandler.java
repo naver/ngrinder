@@ -13,6 +13,8 @@
  */
 package org.ngrinder.script.handler;
 
+import org.ngrinder.common.util.PathUtils;
+import org.ngrinder.script.model.FileEntry;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,13 +23,13 @@ import org.springframework.stereotype.Component;
  * @since 3.5.5
  */
 @Component
-public class GroovyExScriptHandler extends GroovyScriptHandler {
+public class GroovyWithLegacyHttpClientScriptHandler extends GroovyScriptHandler {
 
 	/**
 	 * Constructor.
 	 */
-	public GroovyExScriptHandler() {
-		this("groovy_ex", "groovy", "Groovy (Experimental)", "groovy", true);
+	public GroovyWithLegacyHttpClientScriptHandler() {
+		this("groovy_legacy", "groovy", "Groovy (Legacy)", "groovy", true);
 	}
 
 	/**
@@ -39,7 +41,7 @@ public class GroovyExScriptHandler extends GroovyScriptHandler {
 	 * @param codeMirrorKey code mirror key
 	 * @param creatable     creatable
 	 */
-	public GroovyExScriptHandler(String key, String extension, String title, String codeMirrorKey, boolean creatable) {
+	public GroovyWithLegacyHttpClientScriptHandler(String key, String extension, String title, String codeMirrorKey, boolean creatable) {
 		super(key, extension, title, codeMirrorKey, creatable);
 	}
 
@@ -55,6 +57,13 @@ public class GroovyExScriptHandler extends GroovyScriptHandler {
 
 	@Override
 	public String getScriptTemplateName() {
-		return "basic_template_groovy_ex.ftl";
+		return "legacy_template_groovy.ftl";
+	}
+
+	@Override
+	public FileEntry getDefaultQuickTestFilePath(String basePath) {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(PathUtils.join(basePath, "LegacyTestRunner." + getExtension()));
+		return fileEntry;
 	}
 }
