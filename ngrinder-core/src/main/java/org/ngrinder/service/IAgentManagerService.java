@@ -49,6 +49,13 @@ public interface IAgentManagerService {
 	List<AgentInfo> getAllAttached();
 
 	/**
+	 * Get all attached agents in specific controller.
+	 *
+	 * @return agent list
+	 */
+	List<AgentInfo> getLocalAgents();
+
+	/**
 	 * Create the agent key from the given agent identity.
 	 *
 	 * @param agentIdentity agent identity
@@ -135,9 +142,6 @@ public interface IAgentManagerService {
 
 	@Deprecated
 	Map<String, MutableInt> getAvailableAgentCountMap(User user);
-
-	@Deprecated
-	List<AgentInfo> getLocalAgents();
 
 	@Deprecated
 	List<AgentInfo> getAllVisible();
