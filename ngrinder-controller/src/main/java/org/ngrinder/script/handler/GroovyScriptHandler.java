@@ -62,9 +62,8 @@ public class GroovyScriptHandler extends ScriptHandler {
 
 	@Override
 	public String checkSyntaxErrors(String path, String script) {
-		URL url;
 		try {
-			url = new URL("file", "", path);
+			URL url = new URL("file", "", path);
 			final CompilationUnit unit = new CompilationUnit(CompilerConfiguration.DEFAULT, new CodeSource(url,
 					(java.security.cert.Certificate[]) null), null);
 			unit.addSource(path, script);
@@ -88,6 +87,7 @@ public class GroovyScriptHandler extends ScriptHandler {
 	 * @param basePath base path
 	 * @return quick test file
 	 */
+	@Override
 	public FileEntry getDefaultQuickTestFilePath(String basePath) {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(PathUtils.join(basePath, "TestRunner." + getExtension()));

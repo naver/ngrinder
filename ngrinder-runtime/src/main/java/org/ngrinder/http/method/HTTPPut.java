@@ -41,21 +41,18 @@ public interface HTTPPut {
 
 	HTTPResponse PUT(String uri, List<NameValuePair> params, List<Header> headers);
 
+	HTTPResponse PUT(String uri, Map<?, ?> params, List<Header> headers);
+
 	default HTTPResponse PUT(String uri) {
 		return PUT(uri, new byte[0], emptyList());
 	}
 
 	default HTTPResponse PUT(String uri, Map<?, ?> params) {
-		return PUT(uri, toJson(params).getBytes(), emptyList());
+		return PUT(uri, params, emptyList());
 	}
 
 	default HTTPResponse PUT(String uri, Map<?, ?> params, Map<String, String> headers) {
-		List<Header> headerList = convert(headers, BasicHeader::new);
-
-		if (getContentType(headerList).isSameMimeType(ContentType.APPLICATION_JSON)) {
-			return PUT(uri, toJson(params).getBytes(), headers);
-		}
-		return PUT(uri, convert((Map<String, String>) params, BasicNameValuePair::new), headerList);
+		return PUT(uri, params, convert(headers, BasicHeader::new));
 	}
 
 	default HTTPResponse PUT(String uri, NVPair[] params) {
