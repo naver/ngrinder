@@ -16,12 +16,6 @@ public abstract class AbstractAgentService implements IAgentManagerService {
 
 	@Override
 	@Deprecated
-	public List<AgentInfo> getLocalAgents() {
-		return getAllAttached();
-	}
-
-	@Override
-	@Deprecated
 	public List<AgentInfo> getAllVisible() {
 		return getAllActive();
 	}

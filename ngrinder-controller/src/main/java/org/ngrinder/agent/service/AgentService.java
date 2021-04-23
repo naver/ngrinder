@@ -558,6 +558,15 @@ public class AgentService extends AbstractAgentService
 	}
 
 	@Override
+	public List<AgentInfo> getLocalAgents() {
+		String region = config.getRegion();
+		return agentInfoStore.getAllAgentInfo()
+			.stream()
+			.filter(agentInfo -> region.equals(agentInfo.getRegion()))
+			.collect(toList());
+	}
+
+	@Override
 	public String createKey(AgentControllerIdentityImplementation agentIdentity) {
 		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
 	}
