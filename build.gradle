@@ -50,8 +50,8 @@ subprojects {
 
   repositories {
     mavenCentral()
-    maven { url "http://repo.springsource.org/release" }
-    maven { url "http://maven.scm-manager.org/nexus/content/repositories/releases" }
+    maven { url "https://repo.springsource.org/release" }
+    maven { url "https://maven.scm-manager.org/nexus/content/repositories/releases" }
   }
 
   test {
