@@ -51,6 +51,10 @@ public interface HTTPPost {
 		return POST(uri, params, emptyList());
 	}
 
+	default HTTPResponse POST(String uri, Map<?, ?> params, Map<String, String> headers) {
+		return POST(uri, params, convert(headers, BasicHeader::new));
+	}
+
 	default HTTPResponse POST(String uri, NVPair[] params) {
 		return POST(uri, convert(params, BasicNameValuePair::new), emptyList());
 	}

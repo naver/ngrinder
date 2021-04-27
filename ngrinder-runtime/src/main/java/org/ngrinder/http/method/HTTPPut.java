@@ -21,7 +21,6 @@
 package org.ngrinder.http.method;
 
 import HTTPClient.NVPair;
-import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
@@ -33,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
-import static org.ngrinder.http.util.JsonUtils.toJson;
 import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public interface HTTPPut {
@@ -62,7 +59,7 @@ public interface HTTPPut {
 		return PUT(uri, convert(params, BasicNameValuePair::new), emptyList());
 	}
 
-	default HTTPResponse PUT(String uri, NVPair[] params, Map<String, String> headers) {
+	default HTTPResponse PUT(String uri, NVPair[] params, NVPair[] headers) {
 		return PUT(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
 	}
 
