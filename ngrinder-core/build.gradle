@@ -1,5 +1,5 @@
-sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 description = "ngrinder-core"
+
 dependencies {
     api (project(":ngrinder-groovy"))
     api (group: "org.apache.commons", name: "commons-compress", version: "1.4.1")
