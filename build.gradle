@@ -23,6 +23,7 @@ subprojects {
   apply plugin: "maven-publish"
   apply plugin: "maven"
   apply plugin: "signing"
+  apply plugin: "java-library"
 
   compileJava.options.encoding = "UTF-8"
   compileTestJava.options.encoding = "UTF-8"
