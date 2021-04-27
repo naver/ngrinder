@@ -106,7 +106,7 @@ processResources {
 }
 
 test {
-    jvmArgs "-Xms600m", "-Xmx1024m", "-XX:MaxPermSize=200m"
+    jvmArgs "-Xms600m", "-Xmx1024m"
 }
 
 tasks.bootWar.dependsOn convert_cr_lf
