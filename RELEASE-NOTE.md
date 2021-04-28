@@ -1,3 +1,20 @@
+3.5.5 (2021.04.30)
+==================
+- Changes
+   - Support controller subregion
+       * In cluster mode, you can configure subregion to manage agents in different context
+       * See [Controller Subregion In Cluster Mode](https://github.com/naver/ngrinder/wiki/Controller-Subregion-In-Cluster-Mode)
+   - Support multipart request in new HTTP client
+       * See [Sample code](https://github.com/naver/ngrinder/wiki/The-New-nGrinder-HTTP-Client#send-a-multipart-form-data)
+   - Add new HTTP client based script template
+       * When creating a script, you can choose between the old and the new HTTP client based template.
+   - Use OSSRH when release to maven central
+   - Change agent configurations
+       * `agent.region` has been removed, `agent.subregion` and `agent.owner` have been added.
+       * See [Agent Configuration Guide](https://github.com/naver/ngrinder/wiki/Agent-Configuration-Guide)
+- Bug fix
+    - #788 Fix fail of auto-upgrade from 3.4.x to 3.5.x
+
 3.5.4 (2021.03.19)
 ==================
 - Changes
