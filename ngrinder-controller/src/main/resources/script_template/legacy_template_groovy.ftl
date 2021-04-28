@@ -101,7 +101,7 @@ class TestRunner {
 	}
 
 	@Test
-	public void test(){
+	public void test() {
 		HTTPResponse result = request.${method?default("GET")}("${url}", <#if body??>body.getBytes()<#else>params</#if>)
 
 		if (result.statusCode == 301 || result.statusCode == 302) {

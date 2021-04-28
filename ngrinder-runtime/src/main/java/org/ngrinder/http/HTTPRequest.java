@@ -32,6 +32,7 @@ import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
+import org.apache.hc.core5.http.nio.AsyncEntityProducer;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
 import org.apache.hc.core5.http.nio.AsyncResponseConsumer;
 import org.apache.hc.core5.http.nio.entity.BasicAsyncEntityConsumer;
@@ -83,12 +84,12 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	@Override
 	public HTTPResponse HEAD(String uri, List<NameValuePair> params, List<Header> headers) {
-		return doRequest(uri, createRequest("HEAD", uri, params, headers));
+		return doRequest(uri, createRequestWithParam("HEAD", uri, params, headers));
 	}
 
 	@Override
 	public HTTPResponse GET(String uri, List<NameValuePair> params, List<Header> headers) {
-		return doRequest(uri, createRequest("GET", uri, params, headers));
+		return doRequest(uri, createRequestWithParam("GET", uri, params, headers));
 	}
 
 	@Override
@@ -96,8 +97,9 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 		return doRequest(uri, createRequestWithBody("POST", uri, content, headers));
 	}
 
+	@Override
 	public HTTPResponse POST(String uri, List<NameValuePair> params, List<Header> headers) {
-		return doRequest(uri, createRequest("POST", uri, params, headers));
+		return doRequest(uri, createRequestWithParam("POST", uri, params, headers));
 	}
 
 	@Override
@@ -111,13 +113,18 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	@Override
+	public HTTPResponse POST(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		return doRequest(uri, createRequestWithEntity("POST", uri, asyncEntityProducer, headers));
+	}
+
+	@Override
 	public HTTPResponse PUT(String uri, byte[] content, List<Header> headers) {
 		return doRequest(uri, createRequestWithBody("PUT", uri, content, headers));
 	}
 
 	@Override
 	public HTTPResponse PUT(String uri, List<NameValuePair> params, List<Header> headers) {
-		return doRequest(uri, createRequest("PUT", uri, params, headers));
+		return doRequest(uri, createRequestWithParam("PUT", uri, params, headers));
 	}
 
 	@Override
@@ -130,13 +137,18 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	@Override
+	public HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		return doRequest(uri, createRequestWithEntity("PUT", uri, asyncEntityProducer, headers));
+	}
+
+	@Override
 	public HTTPResponse PATCH(String uri, byte[] content, List<Header> headers) {
 		return doRequest(uri, createRequestWithBody("PATCH", uri, content, headers));
 	}
 
 	@Override
 	public HTTPResponse PATCH(String uri, List<NameValuePair> params, List<Header> headers) {
-		return doRequest(uri, createRequest("PATCH", uri, params, headers));
+		return doRequest(uri, createRequestWithParam("PATCH", uri, params, headers));
 	}
 
 	@Override
@@ -149,8 +161,13 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 	}
 
 	@Override
+	public HTTPResponse PATCH(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		return doRequest(uri, createRequestWithEntity("PATCH", uri, asyncEntityProducer, headers));
+	}
+
+	@Override
 	public HTTPResponse DELETE(String uri, List<NameValuePair> params, List<Header> headers) {
-		return doRequest(uri, createRequest("DELETE", uri, params, headers));
+		return doRequest(uri, createRequestWithParam("DELETE", uri, params, headers));
 	}
 
 	private HTTPResponse doRequest(String uri, AsyncRequestProducer producer) {
@@ -246,29 +263,35 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 			message.getBody() == null ? 0 : message.getBody().length);
 	}
 
-	private AsyncRequestProducer createRequest(String method, String uri, List<NameValuePair> params, List<Header> headers) {
+	private AsyncRequestBuilder createRequest(String method, String uri, List<Header> headers) {
 		AsyncRequestBuilder builder = AsyncRequestBuilder
 			.create(method)
 			.setUri(uri);
 
-		params.forEach(builder::addParameter);
-
 		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
 		actualHeaders.forEach(builder::addHeader);
 		getMatchedCookies(uri).forEach(builder::addHeader);
+
+		return builder;
+	}
+
+	private AsyncRequestProducer createRequestWithParam(String method, String uri, List<NameValuePair> params, List<Header> headers) {
+		AsyncRequestBuilder builder = createRequest(method, uri, headers);
+		params.forEach(builder::addParameter);
 
 		return builder.build();
 	}
 
 	private AsyncRequestProducer createRequestWithBody(String method, String uri, byte[] content, List<Header> headers) {
-		AsyncRequestBuilder builder = AsyncRequestBuilder
-			.create(method)
-			.setUri(uri)
-			.setEntity(content, getContentType(headers));
+		AsyncRequestBuilder builder = createRequest(method, uri, headers);
+		builder.setEntity(content, getContentType(headers));
 
-		final List<Header> actualHeaders = headers.isEmpty() ? this.headers : headers;
-		actualHeaders.forEach(builder::addHeader);
-		getMatchedCookies(uri).forEach(builder::addHeader);
+		return builder.build();
+	}
+
+	private AsyncRequestProducer createRequestWithEntity(String method, String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers) {
+		AsyncRequestBuilder builder = createRequest(method, uri, headers);
+		builder.setEntity(asyncEntityProducer);
 
 		return builder.build();
 	}
