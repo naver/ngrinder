@@ -29,7 +29,7 @@ public interface MultipartEntity {
 	String CONTENT_DISPOSITION = "Content-Disposition: form-data; name=\"";
 	String FILENAME = "\"; filename=\"";
 	String CONTENT_TYPE = "Content-Type: ";
-	String BOUNDARY = "---------lgyunodmiboujyueognnynnogjue";
+	String BOUNDARY = "---------bGd5dW5vZG1pYm91anl1ZW9nbm55bm5vZ2p1ZQ";
 	String NEWLINE = "\r\n";
 
 	String getName();
