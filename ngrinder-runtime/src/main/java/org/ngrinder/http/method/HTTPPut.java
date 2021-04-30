@@ -21,19 +21,17 @@
 package org.ngrinder.http.method;
 
 import HTTPClient.NVPair;
-import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.nio.AsyncEntityProducer;
 import org.ngrinder.http.HTTPResponse;
 
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static org.ngrinder.http.util.ContentTypeUtils.getContentType;
-import static org.ngrinder.http.util.JsonUtils.toJson;
 import static org.ngrinder.http.util.PairListConvertUtils.convert;
 
 public interface HTTPPut {
@@ -41,28 +39,27 @@ public interface HTTPPut {
 
 	HTTPResponse PUT(String uri, List<NameValuePair> params, List<Header> headers);
 
+	HTTPResponse PUT(String uri, Map<?, ?> params, List<Header> headers);
+
+	HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer, List<Header> headers);
+
 	default HTTPResponse PUT(String uri) {
 		return PUT(uri, new byte[0], emptyList());
 	}
 
 	default HTTPResponse PUT(String uri, Map<?, ?> params) {
-		return PUT(uri, toJson(params).getBytes(), emptyList());
+		return PUT(uri, params, emptyList());
 	}
 
 	default HTTPResponse PUT(String uri, Map<?, ?> params, Map<String, String> headers) {
-		List<Header> headerList = convert(headers, BasicHeader::new);
-
-		if (getContentType(headerList).isSameMimeType(ContentType.APPLICATION_JSON)) {
-			return PUT(uri, toJson(params).getBytes(), headers);
-		}
-		return PUT(uri, convert((Map<String, String>) params, BasicNameValuePair::new), headerList);
+		return PUT(uri, params, convert(headers, BasicHeader::new));
 	}
 
 	default HTTPResponse PUT(String uri, NVPair[] params) {
 		return PUT(uri, convert(params, BasicNameValuePair::new), emptyList());
 	}
 
-	default HTTPResponse PUT(String uri, NVPair[] params, Map<String, String> headers) {
+	default HTTPResponse PUT(String uri, NVPair[] params, NVPair[] headers) {
 		return PUT(uri, convert(params, BasicNameValuePair::new), convert(headers, BasicHeader::new));
 	}
 
@@ -72,5 +69,13 @@ public interface HTTPPut {
 
 	default HTTPResponse PUT(String uri, byte[] content, Map<String, String> headers) {
 		return PUT(uri, content, convert(headers, BasicHeader::new));
+	}
+
+	default HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer) {
+		return PUT(uri, asyncEntityProducer, emptyList());
+	}
+
+	default HTTPResponse PUT(String uri, AsyncEntityProducer asyncEntityProducer, Map<String, String> headers) {
+		return PUT(uri, asyncEntityProducer, convert(headers, BasicHeader::new));
 	}
 }

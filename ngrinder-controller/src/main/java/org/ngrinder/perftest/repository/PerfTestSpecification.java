@@ -81,6 +81,10 @@ public abstract class PerfTestSpecification {
 		return (Specification<PerfTest>) (root, query, cb) -> cb.or(cb.equal(root.get("region"), region), cb.equal(root.get("region"), ""));
 	}
 
+	public static Specification<PerfTest> regionStartsWith(final String region) {
+		return (Specification<PerfTest>) (root, query, cb) -> cb.like(root.get("region"), region + "%");
+	}
+
 	/**
 	 * Get the {@link Specification} whichs provide empty predicate.
 	 *

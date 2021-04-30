@@ -2,6 +2,7 @@ cluster.enabled,false,ngrinder.cluster.mode
 cluster.members,,ngrinder.cluster.uris
 cluster.port,40003,ngrinder.cluster.listener.port
 cluster.region,NONE,ngrinder.cluster.region
+cluster.subregion,,ngrinder.cluster.subregion
 cluster.hidden_region,false,ngrinder.cluster.region.hide
 cluster.safe_dist,false,
 cluster.mode,,

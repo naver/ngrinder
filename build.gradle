@@ -1,12 +1,8 @@
-plugins {
-  id "com.jfrog.bintray" version "1.8.5"
-}
-
 allprojects  {
   apply plugin: "idea"
 
   group = "org.ngrinder"
-  version = "3.5.4"
+  version = "3.5.5"
 
   idea {
     module {
@@ -25,7 +21,9 @@ allprojects  {
 subprojects {
   apply plugin: "java"
   apply plugin: "maven-publish"
-  apply plugin: "com.jfrog.bintray"
+  apply plugin: "maven"
+  apply plugin: "signing"
+  apply plugin: "java-library"
 
   compileJava.options.encoding = "UTF-8"
   compileTestJava.options.encoding = "UTF-8"
@@ -45,14 +43,15 @@ subprojects {
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
     jackson_version = "2.11.2"
+    lombok_version = "1.18.20"
     groovy_version = project.property("groovy.version")
     junit_version = project.property("junit.version")
   }
 
   repositories {
     mavenCentral()
-    maven { url "http://repo.springsource.org/release" }
-    maven { url "http://maven.scm-manager.org/nexus/content/repositories/releases" }
+    maven { url "https://repo.springsource.org/release" }
+    maven { url "https://maven.scm-manager.org/nexus/content/repositories/releases" }
   }
 
   test {
@@ -69,66 +68,65 @@ subprojects {
     classifier "sources"
   }
 
-  publishing {
-    publications {
-      nGrinerModules(MavenPublication) {
-        from components.java
-        artifact sourceJar
-        artifact javadocJar
-        pom {
+  artifacts {
+    archives javadocJar, sourceJar
+  }
+
+  if (hasAllProperties("signing.keyId", "signing.password", "signing.secretKeyRingFile")) {
+    signing {
+      sign configurations.archives
+    }
+  }
+
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { deployment -> signing.signPom(deployment) }
+
+        if (hasAllProperties("ossrhUsername", "ossrhPassword")) {
+          repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+          }
+
+          snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+          }
+        }
+
+        pom.project {
           name = "org.ngrinder:${project.name}"
           description = "${project.name} module"
           url = "https://github.com/naver/ngrinder"
+
+          scm {
+            connection = "scm:git:git://github.com/naver/ngrinder.git"
+            developerConnection = "scm:git:ssh://github.com/naver/ngrinder.git"
+            url = "https://github.com/naver/ngrinder"
+          }
+
           licenses {
             license {
               name = "The Apache License, Version 2.0"
               url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
           }
-//          Below field is required to publish to the Maven central. Please modify before publishing.
-//          developers {
-//            developer {
-//              id = "{please_input_your_id}"
-//              name = "{please_input_your_name}"
-//              email = "{please_input_your_email}"
-//            }
-//          }
-          scm {
-            connection = "scm:git:git://github.com/naver/ngrinder.git"
-            developerConnection = "scm:git:ssh://github.com/naver/ngrinder.git"
-            url = "https://github.com/naver/ngrinder"
+
+          // Below field is required to publish to the Maven central. Please modify before publishing.
+          developers {
+            developer {
+              id = "{please_input_your_id}"
+              name = "{please_input_your_name}"
+              email = "{please_input_your_email}"
+            }
           }
+
         }
       }
     }
   }
 
-  bintray {
-    user =  project.hasProperty("bintrayUser") ? bintrayUser : ""
-    key =  project.hasProperty("bintrayKey") ? bintrayKey : ""
-    publications = ["nGrinerModules"]
-    publish = true
-    override = true
+}
 
-    pkg {
-      repo = "ngrinder"
-      name = project.name
-      userOrg = "navercorp"
-      licenses = ["Apache-2.0"]
-      websiteUrl = "https://github.com/naver/ngrinder"
-      issueTrackerUrl = "https://github.com/naver/ngrinder/issues"
-      vcsUrl = "https://github.com/naver/ngrinder.git"
-      labels = ["ngrinder"]
-      publicDownloadNumbers = true
-      version {
-        name = project.version
-        released = new Date()
-        gpg {
-          sign = true
-          passphrase = project.hasProperty("bintrayGpgPassphrase") ? bintrayGpgPassphrase : ""
-        }
-      }
-    }
-  }
-
+def hasAllProperties(String... keys) {
+  return keys.every() { key -> project.hasProperty(key) }
 }

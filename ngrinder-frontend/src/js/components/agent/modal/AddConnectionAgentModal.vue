@@ -14,11 +14,8 @@
                             <control-group :class="{ error: errors.has('region') }" v-show="ngrinder.config.clustered"
                                            name="region" labelMessageKey="agent.info.region">
                                 <select name="region" class="form-control"
-                                        v-model="region" v-validate="{ required: true }">
-                                    <option v-for="region in regions"
-                                            :value="region"
-                                            v-text="i18n(region)">
-                                    </option>
+                                        v-model="selectedRegion" v-validate="{ required: true }" @change="changeRegion">
+                                    <option v-for="regionInfo in regions" :value="regionInfo.region" v-text="i18n(regionInfo.region)"></option>
                                 </select>
                                 <div v-visible="errors.has('region')" class="validation-message" v-text="errors.first('region')"></div>
                             </control-group>
@@ -60,6 +57,8 @@
     import ModalBase from '../../common/modal/ModalBase.vue';
     import MessageMixin from '../../common/mixin/MessagesMixin.vue';
 
+    const SUBREGION_SEPARATOR = '.';
+
     @Component({
         name: 'addConnectionAgentModal',
         components: { ControlGroup },
@@ -71,7 +70,9 @@
         @Prop({ type: Array, required: false, default: [] })
         regions;
 
+        selectedRegion = '';
         region = '';
+        subregion = '';
 
         ip = '';
         port = null;
@@ -80,11 +81,17 @@
             this.$validator.validateAll()
                 .then(result => {
                     if (result) {
-                        this.$http.post(`/agent/api/connect/${this.ip}/${this.port}?region=${this.region}`)
+                        this.$http.post(`/agent/api/connect/${this.ip}/${this.port}?region=${this.region}&subregion=${this.subregion}`)
                             .catch(err => this.showErrorMsg(`Unable to connect to connection agent <b>${this.ip}:${this.port}</b><br>${err.response.data.message}`))
                             .finally(() => this.hide());
                     }
                 });
+        }
+
+        changeRegion() {
+            const regionTokens = this.selectedRegion.split(SUBREGION_SEPARATOR);
+            this.region = regionTokens[0];
+            this.subregion = regionTokens[1];
         }
 
         beforeShown() {

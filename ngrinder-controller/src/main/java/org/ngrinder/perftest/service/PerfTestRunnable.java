@@ -188,7 +188,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @return true if enough agents
 	 */
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
-		int size = agentService.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedBy().getUserId()).size();
+		int size = agentService.getAllAttachedFreeApprovedAgentsForUser(test.getCreatedBy().getUserId(), test.getRegion()).size();
 		if (test.getAgentCount() != null && test.getAgentCount() > size) {
 			perfTestService.markProgress(test, "The test is tried to execute but there is not enough free agents."
 					+ "\n- Current free agent count : " + size + "  / Requested : " + test.getAgentCount() + "\n");

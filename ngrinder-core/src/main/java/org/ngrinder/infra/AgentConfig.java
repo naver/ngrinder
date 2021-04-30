@@ -341,7 +341,15 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getRegion() {
-		return getAgentProperties().getProperty(PROP_AGENT_REGION);
+		return defaultIfEmpty(getAgentProperties().getProperty(PROP_AGENT_REGION), "");
+	}
+
+	public String getSubregion() {
+		return defaultIfEmpty(getAgentProperties().getProperty(PROP_AGENT_SUBREGION), "");
+	}
+
+	public String getOwner() {
+		return defaultIfEmpty(getAgentProperties().getProperty(PROP_AGENT_OWNER), "");
 	}
 
 	public String getAgentHostID() {

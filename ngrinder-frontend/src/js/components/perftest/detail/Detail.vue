@@ -432,15 +432,15 @@
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
             if (this.test.config.scm === 'svn') {
-                this.checkClonePerftestValidation();
+                this.checkClonedPerftestValidation();
                 return;
             }
 
             this.$refs.config.loadGitHubScript()
-                .then(this.checkClonePerftestValidation, this.clickConfigTabIfHasErrors);
+                .then(this.checkClonedPerftestValidation, this.clickConfigTabIfHasErrors);
         }
 
-        checkClonePerftestValidation() {
+        checkClonedPerftestValidation() {
             this.$validator.validateAll()
                 .then(() => {
                     if (this.errors.any()) {

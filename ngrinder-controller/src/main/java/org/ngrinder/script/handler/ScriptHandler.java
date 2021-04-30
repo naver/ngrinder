@@ -333,12 +333,11 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return generated string
 	 */
 	public String getScriptTemplate(Map<String, Object> values) {
-		String templateFileName = "basic_template_" + getExtension() + ".ftl";
 		try {
 			Configuration freemarkerConfig = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper(DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 			freemarkerConfig.setDirectoryForTemplateLoading(config.getHomeScriptTemplateDirectory());
-			Template template = freemarkerConfig.getTemplate(templateFileName);
+			Template template = freemarkerConfig.getTemplate(getScriptTemplateName());
 			StringWriter writer = new StringWriter();
 			template.process(values, writer);
 			return writer.toString();
@@ -357,5 +356,9 @@ public abstract class ScriptHandler implements ControllerConstants {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(PathUtils.join(basePath, "TestRunner." + getExtension()));
 		return fileEntry;
+	}
+
+	public String getScriptTemplateName() {
+		return "basic_template_" + getExtension() + ".ftl";
 	}
 }

@@ -2,6 +2,8 @@ agent.verbose,,verbose
 agent.controller_host,,agent.controller.ip,agent.console.ip,agent.controller_ip
 agent.controller_port,16001,agent.controller.port,agent.console.port
 agent.region,,
+agent.subregion,,
+agent.owner,,
 agent.host_id,,agent.hostid
 agent.server_mode,,
 agent.connection_mode,agent_to_controller,

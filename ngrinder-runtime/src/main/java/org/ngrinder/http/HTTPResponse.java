@@ -20,11 +20,14 @@
  */
 package org.ngrinder.http;
 
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.Message;
 import org.apache.hc.core5.http.ProtocolVersion;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 public class HTTPResponse {
@@ -65,7 +68,20 @@ public class HTTPResponse {
 		return message.getHead().getVersion();
 	}
 
+	public Header getHeader(String name) {
+		return message.getHead().getFirstHeader(name);
+	}
+
+	public List<Header> getHeaders() {
+		return Arrays.asList(message.getHead().getHeaders());
+	}
+
+	public List<Header> getHeaders(String name) {
+		return Arrays.asList(message.getHead().getHeaders(name));
+	}
+
 	public static HTTPResponse of(Message<HttpResponse, byte[]> message) {
 		return new HTTPResponse(message);
 	}
+
 }

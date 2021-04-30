@@ -18,12 +18,12 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.core.BooleanTypeEx;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.sqlgenerator.core.LockDatabaseChangeLogGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
@@ -32,6 +32,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import static liquibase.datatype.DataTypeFactory.getInstance;
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
@@ -40,6 +45,7 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  *
  * @since 3.0
  */
+@Slf4j
 @Service
 @DependsOn("dataSource")
 @RequiredArgsConstructor
@@ -71,9 +77,12 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@PostConstruct
 	public void init() throws Exception {
 		SqlGeneratorFactory.getInstance().register(new LockDatabaseChangeLogGenerator());
-		DataTypeFactory.getInstance().register(BooleanTypeEx.class);
+		getInstance().register(BooleanTypeEx.class);
 		Liquibase liquibase = new Liquibase(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 				.getClassLoader()), getDatabase());
+
+		updateLiquibaseDatabaseLockTableForBackwardCompatibility(liquibase.getDatabase());
+
 		try {
 			liquibase.update((String) null);
 		} catch (LiquibaseException e) {
@@ -89,4 +98,21 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 		this.resourceLoader = resourceLoader;
 	}
 
+	private void updateLiquibaseDatabaseLockTableForBackwardCompatibility(Database database) {
+		if (!equalsIgnoreCase(database.getDatabaseProductName(), "H2")) {
+			return;
+		}
+
+		String databaseLockTableName = database.getDatabaseChangeLogLockTableName();
+		String lockColumnDataType = getInstance().fromDescription("boolean", database).toDatabaseDataType(database).getType();
+		String updateQuery = "ALTER TABLE " + databaseLockTableName +  " ALTER COLUMN LOCKED " + lockColumnDataType;
+
+		try (Statement stmt = dataSource.getConnection().createStatement()) {
+			stmt.executeUpdate(updateQuery);
+			log.info("Liquibase lock table has been updated successfully from '" + updateQuery + "'");
+		} catch (SQLException e) {
+			log.error("Failed to update liquibase lock table from '" + updateQuery + "' cause by {} " +
+				"If you run the ngrinder first time, Please ignore this error.", e.getMessage());
+		}
+	}
 }
