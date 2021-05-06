@@ -20,8 +20,11 @@
  */
 package net.grinder.scriptengine.kotlin;
 
+import kotlin.jvm.JvmClassMappingKt;
+import kotlin.reflect.KClass;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
+import net.grinder.script.Grinder;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.scriptengine.ScriptExecutionException;
 
@@ -29,7 +32,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -37,9 +39,8 @@ public class KotlinScriptEngine implements ScriptEngineService.ScriptEngine {
 	private static final String KOTLIN_SCRIPT_EXTENSION = "kts";
 
 	private final ScriptEngineFactory kotlinEngineFactory;
-	private final ScriptEngine kotlinEngine;
 
-	private final File script;
+	private final Class<?> kotlinClass;
 
 	public KotlinScriptEngine(ScriptLocation script) throws EngineException {
 		this.kotlinEngineFactory = new ScriptEngineManager().getEngineFactories()
@@ -47,19 +48,24 @@ public class KotlinScriptEngine implements ScriptEngineService.ScriptEngine {
 			.filter(factory -> factory.getExtensions().contains(KOTLIN_SCRIPT_EXTENSION))
 			.findFirst()
 			.orElseThrow(() -> new EngineException("Cannot find kotlin script engine"));
-		this.kotlinEngine = kotlinEngineFactory.getScriptEngine();
+		ScriptEngine kotlinEngine = kotlinEngineFactory.getScriptEngine();
 
-		this.script = script.getFile();
+		try {
+			KClass<?> kClass = (KClass<?>) kotlinEngine.eval(new FileReader(script.getFile()));
+			this.kotlinClass = JvmClassMappingKt.getJavaClass(kClass);
+		} catch (IOException | ScriptException e) {
+			throw new KotlinScriptExecutionException("Cannot execute kotlin script properly", e);
+		}
 	}
 
 	@Override
 	public ScriptEngineService.WorkerRunnable createWorkerRunnable() throws EngineException {
-		return new KotlinWorkerRunnable();
+		return new KotlinWorkerRunnable(kotlinClass);
 	}
 
 	@Override
 	public ScriptEngineService.WorkerRunnable createWorkerRunnable(Object testRunner) throws EngineException {
-		return null;
+		return new KotlinWorkerRunnable(kotlinClass);
 	}
 
 	@Override
@@ -72,13 +78,23 @@ public class KotlinScriptEngine implements ScriptEngineService.ScriptEngine {
 		return String.format("KotlinScriptEngine running with kotlin version: %s", kotlinEngineFactory.getLanguageVersion());
 	}
 
-	public final class KotlinWorkerRunnable implements ScriptEngineService.WorkerRunnable {
+	public static final class KotlinWorkerRunnable implements ScriptEngineService.WorkerRunnable {
+
+		private static final String TEST_METHOD_NAME = "doTest";
+
+		private final Class<?> kotlinClass;
+
+		public KotlinWorkerRunnable(Class<?> kotlinClass) {
+			this.kotlinClass = kotlinClass;
+		}
+
 		@Override
 		public void run() throws ScriptExecutionException {
 			try {
-				kotlinEngine.eval(new FileReader(script));
-			} catch (IOException | ScriptException e) {
-				throw new KotlinScriptExecutionException("Cannot execute kotlin script properly", e);
+				Object testRunner = kotlinClass.newInstance();
+				kotlinClass.getDeclaredMethod(TEST_METHOD_NAME).invoke(testRunner);
+			} catch (Exception e) {
+				throw new KotlinScriptExecutionException("Fail to run kotlin script", e);
 			}
 		}
 
