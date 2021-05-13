@@ -6,6 +6,7 @@
     import 'codemirror/mode/properties/properties.js';
     import 'codemirror/mode/groovy/groovy.js';
     import 'codemirror/mode/python/python.js';
+    import 'codemirror/mode/clike/clike.js';
     import 'codemirror/mode/javascript/javascript.js';
     import 'codemirror/mode/htmlmixed/htmlmixed';
     import 'codemirror/mode/xml/xml';
