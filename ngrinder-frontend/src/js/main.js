@@ -109,6 +109,11 @@ Vue.directive('visible', (el, binding) => {
 Vue.filter('numFormat', numFormat(numeral));
 Vue.filter('dateFormat', (value, format) => {
     if (value) {
+        if(!ngrinder.currentUser.timeZone) {
+             this.$http.get('home/api/timezones')
+             .then(res => this.timezones = res.data)
+             .catch(() => this.showErrorMsg(this.i18n('common.message.loading.error')));
+        }
         return moment(new Date(value)).tz(ngrinder.currentUser.timeZone).format(format);
     }
     return '';
