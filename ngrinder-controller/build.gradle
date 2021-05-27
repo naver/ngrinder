@@ -67,6 +67,7 @@ dependencies {
     implementation (group: "org.kohsuke", name: "github-api", version: "1.99")
     implementation (group: "commons-validator", name: "commons-validator", version: "1.6")
     implementation (group: "org.codehaus.groovy", name: "groovy-jsr223", version: groovy_version)
+    implementation (group: "org.jetbrains.kotlin", name: "kotlin-scripting-jsr223", version: kotlin_version)
     implementation (group: "com.unboundid", name: "unboundid-ldapsdk", version: "5.1.1")
 
     compileOnly (group: "org.projectlombok", name: "lombok", version: lombok_version)

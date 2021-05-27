@@ -69,6 +69,7 @@ public class AgentPackageHandler extends PackageHandler {
 		libs.add("ngrinder-core");
 		libs.add("ngrinder-runtime");
 		libs.add("ngrinder-groovy");
+		libs.add("ngrinder-kotlin");
 		return libs;
 	}
 }

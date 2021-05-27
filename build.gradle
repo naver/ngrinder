@@ -45,6 +45,7 @@ subprojects {
     jackson_version = "2.11.2"
     lombok_version = "1.18.20"
     groovy_version = project.property("groovy.version")
+    kotlin_version = project.property("kotlin.version")
     junit_version = project.property("junit.version")
   }
 

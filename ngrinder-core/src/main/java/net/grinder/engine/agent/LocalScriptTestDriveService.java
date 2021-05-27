@@ -99,7 +99,8 @@ public class LocalScriptTestDriveService {
 			fanOutStreamSender = new FanOutStreamSender(1);
 			deleteLogs(base);
 
-			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
+			Lang lang = Lang.getByFileName(script);
+			AbstractLanguageHandler handler = lang.getHandler();
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new ValidationPropertyBuilder(properties, new Directory(base), securityEnabled, securityLevel, hostString,
@@ -129,6 +130,9 @@ public class LocalScriptTestDriveService {
 
 			Directory workingDirectory = new Directory(base);
 			String buildJVMArgumentWithoutMemory = builder.buildJVMArgumentWithoutMemory();
+			if (lang.equals(Lang.Kotlin)) {
+				buildJVMArgumentWithoutMemory += " -Dkotlin.script.classpath=" + path;
+			}
 			LOGGER.info("jvm args : {} ", buildJVMArgumentWithoutMemory);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
 					systemProperties, buildJVMArgumentWithoutMemory, workingDirectory);
