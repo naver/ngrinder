@@ -1,5 +1,5 @@
 * Please post questions in [Discussions](https://github.com/naver/ngrinder/discussions) not Issues.
-* nGrinder 3.5.5 has been released. See https://github.com/naver/ngrinder/releases
+* nGrinder 3.5.5-p1 has been released. See https://github.com/naver/ngrinder/releases
 
 nGrinder 
 ========
