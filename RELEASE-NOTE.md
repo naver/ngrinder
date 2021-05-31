@@ -1,3 +1,8 @@
+3.5.5-p1 (2021.05.31)
+==================
+- Bug fix
+    - #804 Fix that perftest detail report does not rendered properly if logout
+
 3.5.5 (2021.04.30)
 ==================
 - Changes
