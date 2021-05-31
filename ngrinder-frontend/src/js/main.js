@@ -110,7 +110,7 @@ Vue.directive('visible', (el, binding) => {
 Vue.filter('numFormat', numFormat(numeral));
 Vue.filter('dateFormat', (value, format) => {
     if (value) {
-        return moment(new Date(value)).tz(ngrinder.currentUser.timeZone).format(format);
+        return moment(new Date(value)).tz(ngrinder.currentUser.timeZone || moment.tz.guess(true)).format(format);
     }
     return '';
 });
