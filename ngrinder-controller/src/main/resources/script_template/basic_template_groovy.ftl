@@ -1,7 +1,7 @@
 import static net.grinder.script.Grinder.grinder
 import static org.junit.Assert.*
 import static org.hamcrest.Matchers.*
-import net.grinder.script.GTest
+import net.grinder.script.KTest
 import net.grinder.script.Grinder
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess

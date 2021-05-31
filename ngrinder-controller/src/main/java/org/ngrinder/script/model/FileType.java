@@ -22,6 +22,9 @@ import org.apache.commons.io.FilenameUtils;
  * @since 3.0
  */
 public enum FileType {
+	/** Kotlin Script. */
+	KOTLIN_SCRIPT("Kotlin Script", "kts", FileCategory.SCRIPT, true, false),
+
 	/** Python/Jython. */
 	PYTHON_SCRIPT("Jython Script", "py", FileCategory.SCRIPT, true, false),
 

@@ -1,0 +1,28 @@
+description = "ngrinder-kotlin"
+
+configurations {
+    testAgent {
+        transitive = false
+    }
+}
+
+dependencies {
+    api (project(":ngrinder-runtime"))
+    api (group: "org.jetbrains.kotlin", name: "kotlin-script-runtime", version: kotlin_version)
+    api (group: "org.jetbrains.kotlin", name: "kotlin-reflect", version: "1.5.0")
+    api (group: "org.jetbrains.kotlin", name: "kotlin-compiler-embeddable", version: "1.5.0")
+    api (group: "org.jetbrains.kotlin", name: "kotlin-script-util", version: "1.5.0")
+    api (group: "org.jetbrains.kotlin", name: "kotlin-scripting-jvm", version: "1.5.0")
+    api (group: "org.jetbrains.kotlin", name: "kotlin-scripting-compiler-embeddable", version: "1.5.0")
+    api (group: "org.jetbrains.kotlin", name: "kotlin-scripting-compiler-impl-embeddable", version: "1.5.0")
+    api (group: "org.jetbrains.intellij.deps", name: "trove4j", version: "1.0.20181211")
+    api (group: "net.java.dev.jna", name: "jna", version: "4.2.2")
+
+    testImplementation (group: "org.mockito", name: "mockito-core", version: mockito_version)
+
+    testAgent (group: "net.sf.grinder", name: "grinder-dcr-agent", version: "3.9.1")
+}
+
+test {
+    jvmArgs "-javaagent:${configurations.testAgent.singleFile}"
+}

@@ -2,6 +2,7 @@ description = "ngrinder-core"
 
 dependencies {
     api (project(":ngrinder-groovy"))
+    api (project(":ngrinder-kotlin"))
     api (group: "org.apache.commons", name: "commons-compress", version: "1.4.1")
     api (group: "com.github.oshi", name: "oshi-core", version: "5.2.2")
 
