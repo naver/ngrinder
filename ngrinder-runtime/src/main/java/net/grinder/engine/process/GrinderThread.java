@@ -117,6 +117,12 @@ class GrinderThread implements Runnable {
 				try {
 					workerRunnable.run();
 				}
+				// [#817](https://github.com/naver/ngrinder/pull/817) Add for nGrinder
+				catch (ShutdownException e) {
+					m_logger.info(m_context.getLogMarker(), "Thread has been shut down");
+					break;
+				}
+				// [#817] end
 				catch (ScriptExecutionException e) {
 					final Throwable cause = e.getCause();
 
