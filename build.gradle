@@ -2,7 +2,7 @@ allprojects  {
   apply plugin: "idea"
 
   group = "org.ngrinder"
-  version = "3.5.5-p1"
+  version = "3.5.5-p2"
 
   idea {
     module {
