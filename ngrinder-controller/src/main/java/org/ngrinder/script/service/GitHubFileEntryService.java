@@ -53,6 +53,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.PathUtils.removePrependedSlash;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 import static org.ngrinder.script.model.FileType.getFileTypeByName;
+import static org.ngrinder.script.model.GitHubConfig.CONFIG_NAME_MAX_LENGTH;
 import static org.tmatesoft.svn.core.SVNDepth.INFINITY;
 import static org.tmatesoft.svn.core.SVNURL.parseURIEncoded;
 import static org.tmatesoft.svn.core.wc.SVNClientManager.newInstance;
@@ -322,6 +323,14 @@ public class GitHubFileEntryService {
 	public boolean validate(FileEntry gitConfigYaml) {
 		for (GitHubConfig config : getAllGithubConfig(gitConfigYaml)) {
 			try {
+				String configName = config.getName();
+				if (configName.length() > CONFIG_NAME_MAX_LENGTH) {
+					throw new NGrinderRuntimeException(
+						"Invalid github configuration.(" + config.getName() + ")\n" +
+						"Configuration name must be shorter than " + CONFIG_NAME_MAX_LENGTH
+					);
+				}
+
 				GHRepository ghRepository = getGitHubClient(config).getRepository(config.getOwner() + "/" + config.getRepo());
 				String branch = config.getBranch();
 				if (isNotEmpty(branch)) {
