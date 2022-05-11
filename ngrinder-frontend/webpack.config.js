@@ -68,11 +68,6 @@ module.exports = function (env) {
                 'vue$': 'vue/dist/vue.esm.js',
             },
         },
-        resolveLoader: {
-            alias: {
-                'scss-loader': 'sass-loader',
-            },
-        },
         module: {
             rules: [
                 {

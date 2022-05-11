@@ -3,7 +3,7 @@ plugins {
 }
 
 node {
-    version = "14.15.4"
+    version = "16.15.0"
     // Enabled the automatic download. False is the default (for now).
     download = true
 }
