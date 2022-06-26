@@ -3,7 +3,7 @@ description = "ngrinder-core"
 dependencies {
     api (project(":ngrinder-groovy"))
     api (group: "org.apache.commons", name: "commons-compress", version: "1.4.1")
-    api (group: "com.github.oshi", name: "oshi-core", version: "5.2.2")
+    api (group: "com.github.oshi", name: "oshi-core", version: "6.1.6")
 
     implementation files("${rootDir}/lib/grinder-3.9.1-patch.jar")
     implementation (group: "org.pf4j", name: "pf4j", version: "3.0.1")
