@@ -791,13 +791,4 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 
 		return csvSeparator;
 	}
-
-	public boolean ignoreStop(StopReason stopReason) {
-		return (stopReason == StopReason.TOO_LOW_TPS &&
-				getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) ||
-			   (stopReason == StopReason.TOO_MANY_ERRORS &&
-				getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MANY_ERRORS, false)) ||
-			   (stopReason == StopReason.TOO_MUCH_TRAFFIC_ON_REGION &&
-				getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MUCH_TRAFFIC_ON_REGION, false));
-	}
 }
