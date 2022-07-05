@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.exception.PerfTestPrepareException;
+import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
@@ -383,6 +384,21 @@ public class PerfTestRunnable implements ControllerConstants {
 				+ " agents are ready.");
 	}
 
+	private boolean isValidStopReason(StopReason stopReason) {
+		PropertiesWrapper properties = config.getControllerProperties();
+		if (stopReason == StopReason.TOO_LOW_TPS &&
+			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) {
+			return true;
+		} else if (stopReason == StopReason.TOO_MANY_ERRORS &&
+			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) {
+			return true;
+		} else if (stopReason == StopReason.TOO_MUCH_TRAFFIC_ON_REGION &&
+			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MUCH_TRAFFIC_ON_REGION, false)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Run a given {@link PerfTest} with the given {@link GrinderProperties} and
 	 * the {@link SingleConsole} .
@@ -391,18 +407,6 @@ public class PerfTestRunnable implements ControllerConstants {
 	 * @param grinderProperties grinder properties
 	 * @param singleConsole     console to be used.
 	 */
-
-
-	private boolean ignoreStop(Config config, StopReason stopReason) {
-		return (stopReason == StopReason.TOO_LOW_TPS &&
-				config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) ||
-			   (stopReason == StopReason.TOO_MANY_ERRORS &&
-				config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MANY_ERRORS, false)) ||
-			   (stopReason == StopReason.TOO_MUCH_TRAFFIC_ON_REGION &&
-				config.getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MUCH_TRAFFIC_ON_REGION,
-					false));
-	}
-
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
 		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class, getDefaultTestLifeCyclePlugins())) {
@@ -415,7 +419,7 @@ public class PerfTestRunnable implements ControllerConstants {
 
 		singleConsole.addListener(stopReason -> {
 			PerfTest fetchedPerftest = perfTestService.getOne(perfTest.getId());
-			if (ignoreStop(config, stopReason)) {
+			if (isValidStopReason(stopReason)) {
 				LOG.warn(format(perfTest, "Abnormal test due to {} but ignored", stopReason.name()));
 				return;
 			}
