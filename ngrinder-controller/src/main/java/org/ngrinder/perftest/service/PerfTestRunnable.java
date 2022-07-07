@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.exception.PerfTestPrepareException;
+import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.config.Config;
@@ -383,6 +384,15 @@ public class PerfTestRunnable implements ControllerConstants {
 				+ " agents are ready.");
 	}
 
+	private boolean isValidStopReason(StopReason stopReason) {
+		PropertiesWrapper properties = config.getControllerProperties();
+		if (stopReason == StopReason.TOO_LOW_TPS &&
+			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Run a given {@link PerfTest} with the given {@link GrinderProperties} and
 	 * the {@link SingleConsole} .
@@ -404,6 +414,9 @@ public class PerfTestRunnable implements ControllerConstants {
 		singleConsole.addListener(stopReason -> {
 			PerfTest fetchedPerftest = perfTestService.getOne(perfTest.getId());
 			if (fetchedPerftest.getStatus().isStoppable()) {
+				if (isValidStopReason(stopReason)) {
+					return;
+				}
 				perfTestService.markAbnormalTermination(perfTest, stopReason);
 				LOG.error(format(perfTest, "Abnormal test due to {}", stopReason.name()));
 			}
