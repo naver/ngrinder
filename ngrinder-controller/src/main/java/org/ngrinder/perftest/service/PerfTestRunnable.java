@@ -419,11 +419,11 @@ public class PerfTestRunnable implements ControllerConstants {
 
 		singleConsole.addListener(stopReason -> {
 			PerfTest fetchedPerftest = perfTestService.getOne(perfTest.getId());
-			if (isValidStopReason(stopReason)) {
-				LOG.debug(format(perfTest, "Abnormal test due to {} but ignored", stopReason.name()));
-				return;
-			}
 			if (fetchedPerftest.getStatus().isStoppable()) {
+				if (isValidStopReason(stopReason)) {
+					LOG.debug(format(perfTest, "Abnormal test due to {} but ignored", stopReason.name()));
+					return;
+				}
 				perfTestService.markAbnormalTermination(perfTest, stopReason);
 				LOG.error(format(perfTest, "Abnormal test due to {}", stopReason.name()));
 			}
