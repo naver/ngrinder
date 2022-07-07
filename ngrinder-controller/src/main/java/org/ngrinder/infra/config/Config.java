@@ -15,7 +15,6 @@ package org.ngrinder.infra.config;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import net.grinder.StopReason;
 import net.grinder.util.ListenerSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
