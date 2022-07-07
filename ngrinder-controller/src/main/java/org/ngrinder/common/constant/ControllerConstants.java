@@ -83,6 +83,4 @@ public interface ControllerConstants {
 	String PROP_CONTROLLER_CSV_SEPARATOR = "controller.csv_separator";
 	String PROP_CONTROLLER_GITHUB_BASE_URL = "controller.github_base_url";
 	String PROP_CONTROLLER_IGNORE_TOO_LOW_TPS = "controller.ignore_too_low_tps";
-	String PROP_CONTROLLER_IGNORE_TOO_MANY_ERRORS = "controller.ignore_too_many_errors";
-	String PROP_CONTROLLER_IGNORE_TOO_MUCH_TRAFFIC_ON_REGION = "controller.ignore_too_much_traffic_on_region";
 }
