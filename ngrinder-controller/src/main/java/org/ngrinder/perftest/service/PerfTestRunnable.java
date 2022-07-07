@@ -390,7 +390,7 @@ public class PerfTestRunnable implements ControllerConstants {
 			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) {
 			return true;
 		} else if (stopReason == StopReason.TOO_MANY_ERRORS &&
-			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_LOW_TPS, false)) {
+			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MANY_ERRORS, false)) {
 			return true;
 		} else if (stopReason == StopReason.TOO_MUCH_TRAFFIC_ON_REGION &&
 			properties.getPropertyBoolean(PROP_CONTROLLER_IGNORE_TOO_MUCH_TRAFFIC_ON_REGION, false)) {
