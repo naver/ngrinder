@@ -46,6 +46,7 @@ public interface GrinderConstants {
 	String GRINDER_PROP_SECURITY_LEVEL = "grinder.security.level";
 	String GRINDER_PROP_USER = "grinder.user";
 	String GRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
+	String GRINDER_PROP_TARGET_HOSTS = "ngrinder.target.hosts";
 	String GRINDER_SECURITY_LEVEL_LIGHT = "light";
 	String GRINDER_SECURITY_LEVEL_NORMAL = "normal";
 	String DEFAULT_GRINDER_PROPERTIES = "grinder.properties";

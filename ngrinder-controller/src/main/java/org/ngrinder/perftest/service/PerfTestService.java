@@ -635,6 +635,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, property);
 				}
 			}
+			if (StringUtils.isNotBlank(perfTest.getTargetHosts())) {
+				grinderProperties.setProperty(GRINDER_PROP_TARGET_HOSTS, perfTest.getTargetHosts());
+			}
 			LOGGER.info(format(perfTest, "Grinder Properties : {} ", grinderProperties));
 			return grinderProperties;
 		} catch (Exception e) {

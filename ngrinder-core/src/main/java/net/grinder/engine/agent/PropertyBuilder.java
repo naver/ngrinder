@@ -36,6 +36,7 @@ import static java.util.Collections.singletonList;
 import static javax.net.ssl.SSLSocketFactory.getDefault;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_PROP_CONNECTION_RESET;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_LIGHT;
+import static org.ngrinder.common.constants.GrinderConstants.GRINDER_PROP_TARGET_HOSTS;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -190,6 +191,7 @@ public class PropertyBuilder {
 		}
 
 		addParam(jvmArguments, properties.getProperty("grinder.param", ""));
+		addTargetHosts(jvmArguments);
 		addPythonPathJvmArgument(jvmArguments);
 		addCustomDns(jvmArguments);
 		addUserDir(jvmArguments);
@@ -250,6 +252,14 @@ public class PropertyBuilder {
 			return jvmArguments;
 		}
 		return jvmArguments.append(" -Dparam=").append(param).append(" ");
+	}
+
+	protected StringBuilder addTargetHosts(StringBuilder jvmArguments) {
+		String targetHosts = properties.getProperty(GRINDER_PROP_TARGET_HOSTS, "");
+		if (StringUtils.isEmpty(targetHosts)) {
+			return jvmArguments;
+		}
+		return jvmArguments.append(" -DtargetHosts=").append(targetHosts).append(" ");
 	}
 
 	protected StringBuilder addAdditionalJavaOpt(StringBuilder jvmArguments) {
