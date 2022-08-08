@@ -119,6 +119,10 @@ public abstract class CompressionUtils {
 				String fileName = ze.getName();
 
 				File newFile = new File(destDir.getAbsolutePath(), fileName);
+
+				if (!newFile.toPath().normalize().startsWith(destDir.getAbsolutePath())) {
+					throw new RuntimeException("Bad zip entry");
+				}
 				if (newFile.getPath().contains("..")) {
 					throw new IllegalArgumentException("zip entry should not contain .. in the path.");
 				}
