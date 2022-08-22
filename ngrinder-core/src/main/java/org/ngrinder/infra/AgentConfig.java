@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
-import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
@@ -321,7 +320,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getControllerHost() {
-		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
+		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, NetworkUtils.getLocalHostAddress());
 	}
 
 	public void setControllerIP(String ip) {
@@ -329,7 +328,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getControllerIP() {
-		return defaultIfEmpty(controllerIP, DEFAULT_LOCAL_HOST_ADDRESS);
+		return defaultIfEmpty(controllerIP, NetworkUtils.getLocalHostAddress());
 	}
 
 	public int getControllerPort() {
@@ -353,7 +352,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getAgentHostID() {
-		return getAgentProperties().getProperty(PROP_AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
+		return getAgentProperties().getProperty(PROP_AGENT_HOST_ID, NetworkUtils.getLocalHostName());
 	}
 
 	public boolean isSecurityEnabled() {
@@ -370,7 +369,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getBroadcastIP() {
-		return getAgentProperties().getProperty(PROP_AGENT_BROADCAST_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+		return getAgentProperties().getProperty(PROP_AGENT_BROADCAST_IP, NetworkUtils.getLocalHostAddress());
 	}
 
 	public boolean isSilentMode() {

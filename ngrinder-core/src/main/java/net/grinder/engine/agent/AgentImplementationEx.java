@@ -143,7 +143,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
 					if (m_agentConfig.isConnectionMode()) {
-						properties.setProperty(GrinderProperties.CONSOLE_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+						properties.setProperty(GrinderProperties.CONSOLE_HOST, NetworkUtils.getLocalHostAddress());
 						properties.setInt(GrinderProperties.CONSOLE_PORT, connectionPort);
 					} else {
 						properties.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getControllerIP());

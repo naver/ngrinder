@@ -52,9 +52,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
 @SuppressWarnings("SameParameterValue")
 public abstract class NetworkUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
-	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
-	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
-	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
 
 	/**
 	 * Get the local host address, try to get actual IP.
@@ -147,7 +144,7 @@ public abstract class NetworkUtils {
 	}
 
 	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
-			throws SocketException {
+		throws SocketException {
 		Enumeration<?> en = getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
@@ -214,8 +211,8 @@ public abstract class NetworkUtils {
 	/**
 	 * Get the available ports.
 	 *
-	 * @param size port size
-	 * @param from port number starting from
+	 * @param size  port size
+	 * @param from  port number starting from
 	 * @param limit number of max port
 	 * @return port list
 	 */
@@ -475,7 +472,7 @@ public abstract class NetworkUtils {
 	}
 
 
-	private static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
+	public static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
 		List<InetAddress> addresses = new ArrayList<>();
 		final Enumeration<NetworkInterface> networkInterfaces;
 		try {
