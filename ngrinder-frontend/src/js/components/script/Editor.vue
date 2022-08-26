@@ -298,7 +298,7 @@
             this.$http.post('/script/api/save', params)
             .then(() => {
                 this.showSuccessMsg(this.i18n('common.message.alert.save.success'));
-                this.file.content = this.$refs.editor.getValue();
+                this.$refs.editor.codemirror.setValue(this.$refs.editor.getValue());
                 if (isClose) {
                     this.$router.push('/script/list/');
                 }
