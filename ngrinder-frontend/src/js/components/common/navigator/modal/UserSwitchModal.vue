@@ -8,8 +8,17 @@
                 <div class="modal-body pt-0">
                     <fieldset>
                         <control-group labelMessageKey="user.switch.title">
-                            <select2 v-if="isAdmin" :option="option" type="input" v-model="switchTargetUserId" @change="switchUser"></select2>
-                            <select2 v-else v-model="switchTargetUserId" @change="switchUser">
+                            <select2 v-if="isAdmin"
+                                     customStyle="width: 310px;"
+                                     :option="option"
+                                     type="input"
+                                     v-model="switchTargetUserId"
+                                     @change="switchUser">
+                            </select2>
+                            <select2 v-else
+                                     customStyle="width: 310px;"
+                                     v-model="switchTargetUserId"
+                                     @change="switchUser">
                                 <option value=""></option>
                                 <option v-for="user in switchableUsers" :value="user.userId">{{ user | userDescription }}</option>
                             </select2>
@@ -100,10 +109,6 @@
                 width: 100px;
                 color: #666;
                 font-weight: bold;
-            }
-
-            .select2-container {
-                width: 310px;
             }
         }
     }

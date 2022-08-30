@@ -16,8 +16,8 @@
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import { Inject } from 'vue-property-decorator';
-    import 'select2';
-    import 'select2/select2.css';
+    import 'select2/dist/js/select2.full.js';
+    import 'select2/dist/css/select2.css';
 
     @Component({
         props: {
@@ -82,13 +82,13 @@
 </script>
 
 <style lang="less">
-    .select2-container {
-        .select2-choice {
-            height: 30px !important;
+    #ngrinder {
+        .select2-container .select2-selection--single {
+            height: 30px;
         }
-    }
 
-    .select2-no-results, .select2-input {
-        font-size: 12px;
+        .select2-no-results, .select2-input {
+            font-size: 12px;
+        }
     }
 </style>
