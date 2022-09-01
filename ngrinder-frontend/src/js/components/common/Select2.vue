@@ -82,9 +82,35 @@
 </script>
 
 <style lang="less">
+    @error-color: #d9534f;
+
     #ngrinder {
         .select2-container .select2-selection--single {
             height: 30px;
+        }
+
+        .error {
+            .dropdown {
+                button {
+                    border: 1px solid @error-color;
+
+                    &.show-placeholder {
+                        color: @error-color;
+                    }
+                }
+            }
+
+            .select2-selection {
+                border-color: @error-color;
+
+                span {
+                    color: @error-color;
+                }
+
+                b {
+                    border-color: @error-color transparent;
+                }
+            }
         }
 
         .select2-no-results, .select2-input {
