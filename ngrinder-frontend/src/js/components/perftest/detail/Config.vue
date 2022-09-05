@@ -130,6 +130,7 @@
                         <option v-if="!config.github || config.github.length === 0" class="add-github" value="addGitHub" v-text="i18n('script.github.add.config')"></option>
                     </select2>
                     <select2 v-model="test.config.scriptName" name="scriptName" ref="scriptSelect" customStyle="width: 250px;"
+                             :key="test.config.scm"
                              :option="{ placeholder: i18n('perfTest.config.scriptInput'),
                                         formatSelection: scriptSelect2Template,
                                         formatResult: scriptSelect2Template }"
@@ -455,7 +456,7 @@
             this.targetHosts = [];
             this.test.config.scriptRevision = '';
             this.test.config.scriptName = '';
-            this.$nextTick(() => this.$refs.scriptSelect.selectValue(''));
+            this.$refs.scriptSelect.selectValue('');
         }
 
         changeRegion(region) {
@@ -516,13 +517,13 @@
             this.loadGitHubScript(true).catch(() => { /* noOp */ });
         }
 
-        async loadGitHubScript(refresh) {
+        loadGitHubScript(refresh) {
             if (!this.isValidScm()) {
                 return Promise.reject();
             }
 
             this.showProgressBar();
-            await this.$http.get(`/script/api/github?refresh=${!!refresh}`)
+            return this.$http.get(`/script/api/github?refresh=${!!refresh}`)
                 .then(res => {
                     for (const key in res.data) {
                         this.scriptsMap[this.extractConfigurationName(key)] = res.data[key].map(script => ({
@@ -845,7 +846,7 @@
         }
 
         get isNoneRegion() {
-            return this.test.config.region === 'NONE'
+            return this.test.config.region === 'NONE';
         }
     }
 </script>

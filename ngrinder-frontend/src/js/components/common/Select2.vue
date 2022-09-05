@@ -51,31 +51,29 @@
             const self = this;
             $(this.$refs.select2)
                 .select2(this.option, [])
-                .change(function() {
+                .on('change', function() {
                     self.$emit('input', this.value);
                     self.$emit('change');
                     if (self.type === 'select') {
                         self.$nextTick(() => self.$validator.validate(self.name));
                     }
                 })
-                .on('select2-opening', () => self.$emit('opening'));
+                .on('select2:opening', () => self.$emit('opening'));
         }
 
         selectValue(value) {
-            $(this.$refs.select2).select2('val', value);
+            $(this.$refs.select2).val(value);
+            $(this.$refs.select2).trigger('change');
             this.$emit('input', value);
         }
 
         getSelectedOption(key) {
-            return this.$refs.select2.options[this.selectedIndex()].dataset[key];
-        }
-
-        selectedIndex() {
-            return this.$refs.select2.options.selectedIndex;
+            return $(this.$refs.select2).find(':selected')[0].dataset[key];
         }
 
         refreshDropDown() {
-            $(this.$refs.select2).select2('search', '');
+            $(this.$refs.select2).select2('close');
+            $(this.$refs.select2).select2('open');
         }
     }
 
