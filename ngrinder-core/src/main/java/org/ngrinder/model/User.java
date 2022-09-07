@@ -96,7 +96,7 @@ public class User extends BaseModel<User> {
 	private User follower;
 
 	@Transient
-	private String followersStr;
+	private List<String> followerIds;
 
 	@Transient
 	private User ownerUser;
