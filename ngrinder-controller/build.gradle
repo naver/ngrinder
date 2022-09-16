@@ -33,6 +33,7 @@ dependencies {
     implementation (group: "org.springframework.boot", name: "spring-boot-starter-data-jpa")
     implementation (group: "org.springframework.boot", name: "spring-boot-starter-cache")
     implementation (group: "org.springframework.boot", name: "spring-boot-starter-webflux")
+    implementation (group: "org.springframework.boot", name: "spring-boot-loader")
 
     implementation (group: "com.github.jknack", name: "handlebars-springmvc", version: handlebars_version)
     implementation (group: "com.github.jknack", name: "handlebars-helpers", version: handlebars_version)
@@ -79,10 +80,10 @@ dependencies {
     testImplementation (group: "org.springframework.boot", name: "spring-boot-starter-test", version: spring_boot_version)
 }
 
-
 bootWar {
     manifest {
         attributes "Implementation-Version": project.version, mainClassName: "org.ngrinder.starter.NGrinderControllerStarter"
+        attributes "Main-Class": "org.springframework.boot.loader.WarLauncher"
     }
     requiresUnpack "**/*.jar"
     sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
