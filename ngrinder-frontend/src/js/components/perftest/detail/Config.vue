@@ -410,8 +410,15 @@
                 return;
             }
 
+            const scriptName = this.test.config.scriptName;
+            const scriptRevision = this.test.config.scriptRevision;
             this.syncGitHubConfigRevision();
-            this.setScripts(this.test.config.scriptName);
+
+            this.test.config.scriptName = scriptName;
+            this.setScripts(scriptName);
+            this.$nextTick(() => {
+                this.test.config.scriptRevision = scriptRevision;
+            });
         }
 
         syncGitHubConfigRevision() {
