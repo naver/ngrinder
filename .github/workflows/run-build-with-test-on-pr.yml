@@ -1,0 +1,48 @@
+name: Run Build with Tests on PR
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - develop
+      - master
+
+concurrency:
+  group: ${{ github.head_ref }}-run-build-with-tests
+  cancel-in-progress: true
+
+jobs:
+  build-and-run-unit-test:
+    name: "Build & Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download JDK 8
+        run: |
+          download_url="https://cdn.azul.com/zulu/bin/zulu8.64.0.19-ca-jdk8.0.345-linux_x64.tar.gz"
+          test -f /tmp/openjdk-1.8.0.345_linux-x64_bin.tar.gz || curl -o /tmp/openjdk-1.8.0.345_linux-x64_bin.tar.gz $download_url
+
+      - name: Setup JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'jdkfile'
+          java-version: '8.0.345'
+          architecture: x64
+          jdkFile: /tmp/openjdk-1.8.0.345_linux-x64_bin.tar.gz
+
+      - name: Execute Gradle Build
+        run: ./gradlew clean test --console=plain
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3.5.0
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          fail_on_failure: true
+          annotate_only: false
+          check_name: Test Report
+
