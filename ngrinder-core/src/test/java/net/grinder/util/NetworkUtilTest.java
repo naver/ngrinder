@@ -18,16 +18,18 @@ import org.junit.Test;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class NetworkUtilTest {
 
 	@Test
 	public void testLocalAddresses() {
-		assertThat(NetworkUtils.DEFAULT_LOCAL_ADDRESSES.size(), not(0));
-		for (InetAddress each : NetworkUtils.DEFAULT_LOCAL_ADDRESSES) {
+		List<InetAddress> localAddresses = NetworkUtils.getAllLocalNonLoopbackAddresses(false);
+		assertThat(localAddresses.size(), not(0));
+		for (InetAddress each : localAddresses) {
 			assertThat(each.getHostAddress(), not(containsString("127.0.0.1")));
 		}
 	}
@@ -35,14 +37,14 @@ public class NetworkUtilTest {
 	@Test
 	public void testIPAndPortPair() {
 		NetworkUtils.IPPortPair ipAndPortPair = NetworkUtils.convertIPAndPortPair
-				("2001:0:9d38:90d7:469:1f94:f5bf:cf5d", 0);
+			("2001:0:9d38:90d7:469:1f94:f5bf:cf5d", 0);
 		assertThat(ipAndPortPair.getIP(), is("2001:0:9d38:90d7:469:1f94:f5bf:cf5d"));
 		assertThat(ipAndPortPair.getPort(), is(0));
 		ipAndPortPair = NetworkUtils.convertIPAndPortPair("[2001:0:9d38:90d7:469:1f94:f5bf:cf5d]:20", 0);
 		assertThat(ipAndPortPair.getIP(), is("2001:0:9d38:90d7:469:1f94:f5bf:cf5d"));
 		assertThat(ipAndPortPair.getPort(), is(20));
 		ipAndPortPair = NetworkUtils.convertIPAndPortPair
-				("2001:0:9d38:90d7:469:1f94:f5bf:cf5d", 0);
+			("2001:0:9d38:90d7:469:1f94:f5bf:cf5d", 0);
 		assertThat(ipAndPortPair.getIP(), is("2001:0:9d38:90d7:469:1f94:f5bf:cf5d"));
 		assertThat(ipAndPortPair.getPort(), is(0));
 		ipAndPortPair = NetworkUtils.convertIPAndPortPair("127.0.0.1:20", 0);

@@ -17,13 +17,13 @@ public class DynamicCacheConfigTest {
 
 	@Test
 	public void testLocalHost() {
-		IPPortPair pair = new IPPortPair(NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS, 10);
+		IPPortPair pair = new IPPortPair(NetworkUtils.getLocalHostAddress(), 10);
 		assertThat(pair.isLocalHost()).isTrue();
 
 		pair = new IPPortPair("10.10.10.10", 10);
 		assertThat(pair.isLocalHost()).isFalse();
 
-		for (InetAddress each : NetworkUtils.DEFAULT_LOCAL_ADDRESSES) {
+		for (InetAddress each : NetworkUtils.getAllLocalNonLoopbackAddresses(false)) {
 			if (each instanceof Inet6Address) {
 				final String hostAddress = each.getHostAddress();
 				assertThat(new IPPortPair("[" + hostAddress + "]", 10).isLocalHost()).isTrue();

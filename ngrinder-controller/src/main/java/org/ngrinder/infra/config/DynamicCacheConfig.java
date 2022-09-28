@@ -39,7 +39,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static org.apache.commons.lang.ArrayUtils.EMPTY_STRING_ARRAY;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
@@ -109,7 +108,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 			String[] clusterURIs = defaultIfNull(getClusterURIs(), EMPTY_STRING_ARRAY);
 
 			if ("easy".equals(clusterMode)) {
-				tcpIpConfig.addMember(DEFAULT_LOCAL_HOST_ADDRESS);
+				tcpIpConfig.addMember(NetworkUtils.getLocalHostAddress());
 			} else {
 				networkConfig.setPort(getClusterPort()).setPortAutoIncrement(false);
 				if (clusterURIs.length > 0) {
@@ -243,7 +242,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 	}
 
 	private String getClusterHostName() {
-		String hostName = config.getClusterProperties().getProperty(PROP_CLUSTER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
+		String hostName = config.getClusterProperties().getProperty(PROP_CLUSTER_HOST, NetworkUtils.getLocalHostAddress());
 		try {
 			//noinspection ResultOfMethodCallIgnored
 			InetAddress.getByName(hostName);
