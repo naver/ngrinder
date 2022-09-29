@@ -137,7 +137,7 @@
                              @change="changeScript"
                              @opening="openingScriptSelect"
                              :validationRules="{ required: true, scriptValidation: true }" errStyle="position: absolute; padding-left: 177px;">
-                        <option></option>
+                        <option data-validate="-1"></option>
                         <option v-for="script in scripts"
                                 :data-validate="script.validated"
                                 :data-revision="script.revision"
