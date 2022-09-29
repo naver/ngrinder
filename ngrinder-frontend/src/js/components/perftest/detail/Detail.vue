@@ -163,7 +163,7 @@
                 progressMessage: test.progressMessage,
                 lastProgressMessage: test.lastProgressMessage,
                 testName: test.testName,
-                tagList: test.tagString !== '' ? test.tagString.split(',') : [],
+                tagList: test.tagString ? test.tagString.split(',') : [],
                 status: test.status,
                 description: test.description,
                 config: {
