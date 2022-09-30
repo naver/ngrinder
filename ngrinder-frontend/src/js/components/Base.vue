@@ -147,20 +147,6 @@
                 max-height: 100%;
                 overflow: hidden;
             }
-
-            .error {
-                .select2-choice {
-                    border-color: @error-color;
-                    span {
-                        color: @error-color;
-                    }
-                }
-
-                [data-toggle="dropdown"] {
-                    border-color: @error-color;
-                    color: @error-color;
-                }
-            }
         }
 
         .introjs-helperNumberLayer {
@@ -206,12 +192,6 @@
                     pointer-events: none;
                     cursor: default;
                 }
-            }
-        }
-
-        .select2-container {
-            .select2-default {
-                color: #777 !important;
             }
         }
 

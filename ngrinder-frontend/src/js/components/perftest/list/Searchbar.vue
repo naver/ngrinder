@@ -4,8 +4,8 @@
             <div class="d-flex" data-step="3" data-position="top" :data-intro="i18n('intro.list.search')">
                 <select2 v-model="selectedTag" :value="selectedTag" @change="$emit('change-tag')"
                          name="tagSelect" ref="tagSelect"
-                         customStyle="margin-bottom: 1px;"
-                         :option="{placeholder: i18n('perfTest.action.selectATag'), allowClear: true}">
+                         customStyle="width: 170px;"
+                         :option="{ placeholder: i18n('perfTest.action.selectATag'), allowClear: true }">
                     <option value=""></option>
                     <option v-for="tag in userTags" v-text="tag" :value="tag"></option>
                 </select2>
@@ -93,17 +93,6 @@
         }
     }
 </script>
-
-<style lang="less">
-    .search-bar {
-        .select2-container {
-            .select2-choice {
-                width: 170px;
-                height: 29px;
-            }
-        }
-    }
-</style>
 
 <style lang="less" scoped>
     .search-bar {
