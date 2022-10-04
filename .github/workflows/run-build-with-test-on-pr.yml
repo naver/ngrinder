@@ -46,6 +46,14 @@ jobs:
           annotate_only: false
           check_name: Test Report
 
+      - name: Delete previous comment of Github Actions Bot
+        uses: izhangzhihao/delete-comment@master
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_user_name: github-actions[bot]
+          issue_number: ${{ github.event.number }}
+
       - name: Notify current workflow is succeed
         uses: actions/github-script@v6
         if: success()
