@@ -46,3 +46,28 @@ jobs:
           annotate_only: false
           check_name: Test Report
 
+      - name: Notify current workflow is succeed
+        uses: actions/github-script@v6
+        if: success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: 'naver',
+              repo: 'ngrinder',
+              body: '✅ Build & Test workflow succeed ✅\n- [Show details](https://github.com/naver/ngrinder/actions/runs/${{ github.run_id }})'
+            })
+
+      - name: Notify current workflow is failed
+        uses: actions/github-script@v6
+        if: failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: 'naver',
+              repo: 'ngrinder',
+              body: '❌ Build & Test workflow failed ❌\n- [Show details](https://github.com/naver/ngrinder/actions/runs/${{ github.run_id }})'
+            })
