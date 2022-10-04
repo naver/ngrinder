@@ -72,12 +72,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testSave() {
 		// test update
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
 		currUser.setOwners(null);
+		currUser.setPassword("");
 		userApiController.save(currUser, currUser);
 		User user = userApiController.getOne(currUser.getUserId());
 		assertThat(user.getUserName(), is("new name"));
@@ -102,7 +102,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		User currUser = getTestUser();
 		assertThat(currUser.getRole(), is(Role.USER)); // current test user is "USER"
 
-		User updatedUser = new User(currUser.getUserId(), currUser.getUserName(), currUser.getPassword(),
+		User updatedUser = new User(currUser.getUserId(), currUser.getUserName(), "",
 				"temp@nhn.com", currUser.getRole());
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
@@ -179,6 +179,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSwitchOptions() {
 		User currUser = getTestUser();
+		currUser.setPassword("");
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
 		User admin = getAdminUser();
 		userApiController.save(admin, temp);
