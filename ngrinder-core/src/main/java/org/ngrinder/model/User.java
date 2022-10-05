@@ -35,7 +35,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.trim;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
@@ -97,7 +96,7 @@ public class User extends BaseModel<User> {
 	private User follower;
 
 	@Transient
-	private List<String> followerIds = emptyList();
+	private List<String> followerIds;
 
 	@Transient
 	private User ownerUser;
