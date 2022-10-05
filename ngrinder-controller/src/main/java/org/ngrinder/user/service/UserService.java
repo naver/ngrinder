@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.time.Instant.now;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.hibernate.Hibernate.initialize;
@@ -193,6 +194,10 @@ public class UserService extends AbstractUserService {
 
 
 	private List<User> getFollowers(List<String> followerIds) {
+		if (followerIds == null) {
+			return emptyList();
+		}
+
 		return followerIds.stream()
 			.map(userId -> userRepository.findOneByUserId(userId.trim()))
 			.filter(Objects::nonNull)

@@ -1,0 +1,76 @@
+name: Run Build with Tests on PR
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - develop
+      - master
+
+concurrency:
+  group: ${{ github.head_ref }}-run-build-with-tests
+  cancel-in-progress: true
+
+jobs:
+  build-and-run-unit-test:
+    name: "Build & Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '8.0.345'
+          architecture: x64
+          cache: 'gradle'
+
+      - name: Execute Gradle Build
+        run: ./gradlew clean test --console=plain
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3.5.0
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          fail_on_failure: true
+          annotate_only: false
+          check_name: Test Report
+
+      - name: Delete previous comment of Github Actions Bot
+        uses: izhangzhihao/delete-comment@master
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_user_name: github-actions[bot]
+          issue_number: ${{ github.event.number }}
+
+      - name: Notify current workflow is succeed
+        uses: actions/github-script@v6
+        if: success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: 'naver',
+              repo: 'ngrinder',
+              body: '✅ Build & Test workflow succeed ✅\n- [Show details](https://github.com/naver/ngrinder/actions/runs/${{ github.run_id }})'
+            })
+
+      - name: Notify current workflow is failed
+        uses: actions/github-script@v6
+        if: failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: 'naver',
+              repo: 'ngrinder',
+              body: '❌ Build & Test workflow failed ❌\n- [Show details](https://github.com/naver/ngrinder/actions/runs/${{ github.run_id }})'
+            })
