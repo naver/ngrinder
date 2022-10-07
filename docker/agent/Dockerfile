@@ -1,7 +1,7 @@
 FROM jeanblanchard/java:serverjre-8
 MAINTAINER JunHo Yoon "junoyoon@gmail.com"
 
-RUN apk update; apk add curl bash
+RUN apk update; apk add curl bash udev
 
 
 # Set up environment variables
