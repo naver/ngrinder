@@ -102,7 +102,7 @@
     "typescript": "^3.6.4",
     "url-loader": "^2.2.0",
     "vue-class-component": "^7.1.0",
-    "vue-loader": "^14.2.4",
+    "vue-loader": "^17.0.0",
     "vue-mixin-decorator": "^1.2.0",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.10",
