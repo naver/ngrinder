@@ -21,7 +21,7 @@
     "select2": "^4.0.13",
     "axios": "^0.21.1",
     "base64-js": "^1.2.1",
-    "billboard.js": "^1.11.0",
+    "billboard.js": "^3.6.0",
     "bootbox": "^5.5.3",
     "bootstrap": "4.6.0",
     "font-awesome": "^4.7.0",
