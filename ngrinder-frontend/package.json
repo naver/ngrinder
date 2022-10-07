@@ -38,7 +38,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.2.2",
-    "moment-timezone": "^0.5.25",
+    "moment-timezone": "^0.5.35",
     "numeral": "^2.0.6",
     "popper.js": "^1.15.0",
     "dateformat": "^3.0.3",
