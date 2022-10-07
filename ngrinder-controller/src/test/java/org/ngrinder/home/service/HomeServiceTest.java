@@ -31,10 +31,10 @@ public class HomeServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testHome() throws IOException {
-		List<PanelEntry> leftPanelEntries = homeService.getLeftPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
+		List<PanelEntry> leftPanelEntries = homeService.getLeftPanelEntries("http://ngrinder.373.s1.nabble.com/ngrinder-user-en-f50.xml");
 		assertThat(leftPanelEntries.size(), greaterThan(2));
 		assertThat(leftPanelEntries.size(), lessThanOrEqualTo(8));
-		List<PanelEntry> rightPanel = homeService.getRightPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
+		List<PanelEntry> rightPanel = homeService.getRightPanelEntries("http://ngrinder.373.s1.nabble.com/ngrinder-user-en-f50.xml");
 		assertThat(rightPanel.size(), greaterThanOrEqualTo(2));
 		assertThat(rightPanel.size(), lessThanOrEqualTo(8));
 	}

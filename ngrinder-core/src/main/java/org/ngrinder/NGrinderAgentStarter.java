@@ -33,7 +33,8 @@ import java.util.Properties;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static net.grinder.util.NetworkUtils.getIP;
-import static org.apache.commons.lang.StringUtils.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.SystemInfoUtils.*;
 
@@ -134,9 +135,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		if (agentConfig.isConnectionMode()) {
 			LOG.info("waiting for connection on {}:{}", agentConfig.getBroadcastIP(), agentConfig.getConnectionAgentPort());
 		} else {
-			String controllerIP = getIP(agentConfig.getControllerHost());
-			agentConfig.setControllerIP(controllerIP);
-			LOG.info("connecting to controller {}:{}", controllerIP, agentConfig.getControllerPort());
+			LOG.info("connecting to controller {}:{}", getIP(agentConfig.getControllerHost()), agentConfig.getControllerPort());
 		}
 
 		try {

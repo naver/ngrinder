@@ -20,9 +20,12 @@
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 300px; min-height: 30px;" type="input" name="tagString"
-                                                 :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
-                                                  maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
+                                        <select2 v-model="test.tagList"
+                                                 name="tags"
+                                                 ref="tags"
+                                                 multiple
+                                                 customStyle="width: 300px; min-height: 30px;"
+                                                 :option="tagSelect2Options">
                                         </select2>
                                     </control-group>
                                 </div>
@@ -118,7 +121,7 @@
                 // basic
                 id: test.id,
                 testName: test.testName,
-                tagString: test.tagString,
+                tagString: test.tagList.join(','),
                 status: test.status.name,
                 description: test.description,
                 scheduledTime: test.scheduledTime,
@@ -160,7 +163,7 @@
                 progressMessage: test.progressMessage,
                 lastProgressMessage: test.lastProgressMessage,
                 testName: test.testName,
-                tagString: test.tagString,
+                tagList: test.tagString ? test.tagString.split(',') : [],
                 status: test.status,
                 description: test.description,
                 config: {
@@ -235,6 +238,20 @@
             },
         };
 
+        tagSelect2Options = {
+            placeholder: this.i18n('perfTest.config.tagInput'),
+            multiple: true,
+            maximumSelectionLength: 5,
+            ajax: {
+                url: '/perftest/api/search_tag',
+                data: params => ({ query: params.term }),
+                processResults: results => ({
+                    results: results.map(e => ({ id: e, text: e })),
+                }),
+            },
+            initSelect2: this.initSelect2,
+        };
+
         data() {
             return { test: PerfTestSerializer.deserialize(this.$route.params.test) };
         }
@@ -260,13 +277,21 @@
             this.$router.referer ? this.$router.back() : this.$router.push('/perftest/');
         }
 
+        initSelect2() {
+            const data = [];
+            if (this.test.tagList) {
+                this.test.tagList.forEach(tag => data.push(new Option(tag, tag, true, true)));
+            }
+            return data;
+        }
+
         static async prepare(route) {
             route.params.scriptsMap = {};
             try {
                 await PerfTestDetail.preparePerfTest(route);
                 return Promise.all([
                     PerfTestDetail.prepareSvnScripts(route),
-                    PerfTestDetail.prepareGitHubConfig(route)
+                    PerfTestDetail.prepareGitHubConfig(route),
                 ]);
             } catch (e) {
                 return Promise.reject();
@@ -400,32 +425,6 @@
             this.$nextTick(() => this.$refs.configTab.click());
         }
 
-        initSelection(element, callback) {
-            const data = [];
-            this.test.tagString.split(',').forEach(tag => {
-                if (tag) {
-                    data.push({ id: tag, text: tag });
-                }
-            });
-            element.val('');
-            callback(data);
-        }
-
-        select2Query(query) {
-            const data = {
-                results: [],
-            };
-
-            this.$http.get('/perftest/api/search_tag', {
-                params: {
-                    query: query.term,
-                },
-            }).then(res => {
-                res.data.forEach(tag => data.results.push({ id: tag, text: tag }));
-                query.callback(data);
-            });
-        }
-
         clonePerftest() {
             this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
@@ -476,7 +475,7 @@
                     if (this.errors.any()) {
                         this.$refs.configTab.click();
                     } else {
-                        if (typeof(scheduleTestBlockingHook) === 'function') {
+                        if (typeof (scheduleTestBlockingHook) === 'function') {
                             scheduleTestBlockingHook.call(this, this.$refs.scheduleModal.show);
                             return;
                         }

@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +72,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 * .
 	 */
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testSave() {
 		// test update
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
 		currUser.setOwners(null);
+		currUser.setPassword("");
 		userApiController.save(currUser, currUser);
 		User user = userApiController.getOne(currUser.getUserId());
 		assertThat(user.getUserName(), is("new name"));
@@ -88,7 +89,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		temp = new User("temp2", "temp2", "temp2", "temp@nhn.com", Role.USER);
 		userApiController.save(admin, temp);
 
-		currUser.setFollowersStr("temp1, temp2");
+		currUser.setFollowerIds(Arrays.asList("temp1", "temp2"));
 		userApiController.save(currUser, currUser);
 		user = userApiController.getOne(currUser.getUserId());
 		assertThat(user.getFollowers().size(), is(2));
@@ -101,7 +102,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		User currUser = getTestUser();
 		assertThat(currUser.getRole(), is(Role.USER)); // current test user is "USER"
 
-		User updatedUser = new User(currUser.getUserId(), currUser.getUserName(), currUser.getPassword(),
+		User updatedUser = new User(currUser.getUserId(), currUser.getUserName(), "",
 				"temp@nhn.com", currUser.getRole());
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
@@ -178,6 +179,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSwitchOptions() {
 		User currUser = getTestUser();
+		currUser.setPassword("");
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
 		User admin = getAdminUser();
 		userApiController.save(admin, temp);

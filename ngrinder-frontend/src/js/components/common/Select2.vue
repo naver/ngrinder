@@ -1,5 +1,6 @@
 <template>
-    <span v-if="type === 'select'">
+    <select v-if="multiple" ref="select2" v-model="value" :style="customStyle" :name="name"></select>
+    <span v-else>
         <select ref="select2"
                 :style="customStyle"
                 :name="name"
@@ -9,25 +10,24 @@
         </select>
         <div v-show="errors.has(name)" class="validation-message" v-text="errors.first(name)" :style="errStyle"></div>
     </span>
-    <input v-else ref="select2" v-model="value" :style="customStyle" :name="name">
 </template>
 
 <script>
     import Vue from 'vue';
     import Component from 'vue-class-component';
     import { Inject } from 'vue-property-decorator';
-    import 'select2';
-    import 'select2/select2.css';
+    import 'select2/dist/js/select2.full.js';
+    import 'select2/dist/css/select2.css';
 
     @Component({
         props: {
             value: {
-                type: String,
+                type: [String, Array],
                 required: true,
             },
-            type: {
-                type: String,
-                default: 'select',
+            multiple: {
+                type: Boolean,
+                default: false,
             },
             option: {
                 type: Object,
@@ -51,44 +51,75 @@
             const self = this;
             $(this.$refs.select2)
                 .select2(this.option, [])
-                .change(function() {
-                    self.$emit('input', this.value);
+                .on('change', () => {
+                    self.$emit('input', $(self.$refs.select2).val());
                     self.$emit('change');
-                    if (self.type === 'select') {
+                    if (!self.multiple) {
                         self.$nextTick(() => self.$validator.validate(self.name));
                     }
                 })
-                .on('select2-opening', () => self.$emit('opening'));
+                .on('select2:opening', () => self.$emit('opening'));
+
+            if (self.multiple && this.value) {
+                const initFunction = this.option.initSelect2 || (() => []);
+                const options = initFunction();
+                options.forEach(option => $(this.$refs.select2).append(option));
+                $(this.$refs.select2).trigger('change');
+            }
         }
 
         selectValue(value) {
-            $(this.$refs.select2).select2('val', value);
+            $(this.$refs.select2).val(value);
+            $(this.$refs.select2).trigger('change');
             this.$emit('input', value);
         }
 
         getSelectedOption(key) {
-            return this.$refs.select2.options[this.selectedIndex()].dataset[key];
-        }
-
-        selectedIndex() {
-            return this.$refs.select2.options.selectedIndex;
+            return $(this.$refs.select2).find(':selected')[0].dataset[key];
         }
 
         refreshDropDown() {
-            $(this.$refs.select2).select2('search', '');
+            $(this.$refs.select2).select2('close');
+            $(this.$refs.select2).select2('open');
         }
     }
 
 </script>
 
 <style lang="less">
-    .select2-container {
-        .select2-choice {
-            height: 30px !important;
-        }
-    }
+    @error-color: #d9534f;
 
-    .select2-no-results, .select2-input {
-        font-size: 12px;
+    #ngrinder {
+        .select2-container .select2-selection--single {
+            height: 30px;
+        }
+
+        .error {
+            .dropdown {
+                button {
+                    border: 1px solid @error-color;
+
+                    &.show-placeholder {
+                        color: @error-color;
+                    }
+                }
+            }
+
+            .select2-selection {
+                border-color: @error-color;
+
+                span {
+                    color: @error-color;
+                }
+
+                b {
+                    border-color: @error-color transparent;
+                }
+            }
+        }
+
+        .select2-no-results, .select2-input {
+            font-size: 12px;
+        }
     }
 </style>

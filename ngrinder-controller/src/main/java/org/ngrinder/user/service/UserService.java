@@ -40,10 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.time.Instant.now;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.hibernate.Hibernate.initialize;
 import static org.ngrinder.common.constant.CacheConstants.DIST_CACHE_USERS;
@@ -151,7 +153,7 @@ public class UserService extends AbstractUserService {
 	@CachePut(value = DIST_CACHE_USERS, key = "#user.userId")
 	@Override
 	public User saveWithoutPasswordEncoding(User user) {
-		final List<User> followers = getFollowers(user.getFollowersStr());
+		final List<User> followers = getFollowers(user.getFollowerIds());
 		user.setFollowers(followers);
 
 		User savedUser = saveWithoutFollowers(user);
@@ -191,16 +193,15 @@ public class UserService extends AbstractUserService {
 	}
 
 
-	private List<User> getFollowers(String followersStr) {
-		List<User> newShareUsers = new ArrayList<>();
-		String[] userIds = StringUtils.split(StringUtils.trimToEmpty(followersStr), ',');
-		for (String userId : userIds) {
-			User shareUser = userRepository.findOneByUserId(userId.trim());
-			if (shareUser != null) {
-				newShareUsers.add(shareUser);
-			}
+	private List<User> getFollowers(List<String> followerIds) {
+		if (followerIds == null) {
+			return emptyList();
 		}
-		return newShareUsers;
+
+		return followerIds.stream()
+			.map(userId -> userRepository.findOneByUserId(userId.trim()))
+			.filter(Objects::nonNull)
+			.collect(toList());
 	}
 
 	/**

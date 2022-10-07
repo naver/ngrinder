@@ -52,9 +52,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
 @SuppressWarnings("SameParameterValue")
 public abstract class NetworkUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
-	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
-	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
-	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
+	private static final int MAX_REACHABLE_TIMEOUT = 10;
 
 	/**
 	 * Get the local host address, try to get actual IP.
@@ -146,8 +144,7 @@ public abstract class NetworkUtils {
 		return true;
 	}
 
-	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
-			throws SocketException {
+	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6) throws SocketException {
 		Enumeration<?> en = getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
@@ -214,8 +211,8 @@ public abstract class NetworkUtils {
 	/**
 	 * Get the available ports.
 	 *
-	 * @param size port size
-	 * @param from port number starting from
+	 * @param size  port size
+	 * @param from  port number starting from
 	 * @param limit number of max port
 	 * @return port list
 	 */
@@ -226,7 +223,13 @@ public abstract class NetworkUtils {
 		if (StringUtils.isNotBlank(ip)) {
 			try {
 				inetAddress = InetAddress.getByName(ip);
-			} catch (Exception e) {
+				if (!inetAddress.isReachable(MAX_REACHABLE_TIMEOUT)) {
+					processException(
+						"Can not check available ports because given local IP address '" + ip + "' is unreachable. " +
+							"Please check the `/etc/hosts` file or manually specify the local IP address in `${NGRINDER_HOME}/system.conf`."
+					);
+				}
+			} catch (SecurityException | IOException e) {
 				noOp();
 			}
 		}
@@ -475,7 +478,7 @@ public abstract class NetworkUtils {
 	}
 
 
-	private static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
+	public static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
 		List<InetAddress> addresses = new ArrayList<>();
 		final Enumeration<NetworkInterface> networkInterfaces;
 		try {
@@ -507,8 +510,7 @@ public abstract class NetworkUtils {
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 			while (interfaces.hasMoreElements()) {
 				NetworkInterface iface = interfaces.nextElement();
-				if (iface.isLoopback() || !iface.isUp())
-					continue;
+				if (iface.isLoopback() || !iface.isUp()) continue;
 
 				Enumeration<InetAddress> addresses = iface.getInetAddresses();
 				while (addresses.hasMoreElements()) {

@@ -49,7 +49,7 @@
             </control-group>
 
             <control-group v-if="config.allowShareChange" class="follower-container" :class="{ 'mb-3' : config.showPasswordByDefault }" labelMessageKey="user.share.title">
-                <select2 v-model="user.followersStr" type="input" name="followersStr"
+                <select2 v-model="user.followerIds" multiple name="followers"
                          :option="followerSelect2Option" customStyle="width: 100%;">
                 </select2>
             </control-group>
@@ -133,7 +133,7 @@
             email: '',
             description: '',
             password: '',
-            followersStr: '',
+            followerIds: [],
         };
         confirmPassword = '';
 
@@ -144,7 +144,7 @@
             delete this.userProps.password;
             Object.assign(this.user, this.userProps);
             if (this.user.followers) {
-                this.user.followersStr = this.user.followers.map(user => user.userId).join(',');
+                this.user.followerIds = this.user.followers.map(user => user.userId);
             }
 
             this.displayPasswordField = this.config.showPasswordByDefault;
@@ -158,12 +158,12 @@
                     ajax: {
                         url: '/user/api/search',
                         dataType: 'json',
-                        data: (term, page) => ({
+                        data: ({ term, page }) => ({
                                 keywords: term,
                                 pageNumber: page,
                                 pageSize: 10,
                         }),
-                        results: users => {
+                        processResults: users => {
                             const select2Data = users.map(user => ({
                                 id: user.userId,
                                 text: userDescription(user),
@@ -171,8 +171,7 @@
                             return { results: select2Data };
                         },
                     },
-                    initSelection: this.initSelection,
-                    formatSelection: data => data.text,
+                    initSelect2: this.initSelect2,
                 };
             }
         }
@@ -181,13 +180,14 @@
             $('[data-toggle="popover"]').popover({ trigger: 'hover', container: '#user_form' });
         }
 
-        initSelection(element, callback) {
-            const data = [];
-            if (this.user.followers) {
-                this.user.followers.forEach(follower => data.push({ id: follower.userId, text: userDescription(follower) }));
-            }
-            element.val('');
-            callback(data);
+        initSelect2() {
+            const followers = this.user.followers || [];
+            return followers.map(follower => new Option(
+                userDescription(follower),
+                follower.userId,
+                true,
+                true,
+            ));
         }
 
         reset() {

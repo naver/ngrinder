@@ -35,7 +35,7 @@ var lessLoader = {
 };
 
 module.exports = function (env) {
-    var ngrinderVersion = '3.5.5-p1';
+    var ngrinderVersion = '3.5.6';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
     }
@@ -66,11 +66,6 @@ module.exports = function (env) {
             ],
             alias: {
                 'vue$': 'vue/dist/vue.esm.js',
-            },
-        },
-        resolveLoader: {
-            alias: {
-                'scss-loader': 'sass-loader',
             },
         },
         module: {

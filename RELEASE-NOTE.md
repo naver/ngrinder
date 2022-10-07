@@ -1,3 +1,16 @@
+3.5.6 (2022.10.10)
+==================
+- Changes
+  - Bump OSHI up to 6.1.6 to support M1 arch
+  - Bump select2 version up
+  - Change Jython test thread shutdown log level
+  - Change nabble forum URL
+  - Fix scm-manager maven repo URL
+  - Remove ES-Check gradle task
+
+- Bug fix
+  - #897 Fix the script content is lost after validation check
+
 3.5.5-p1 (2021.05.31)
 ==================
 - Bug fix

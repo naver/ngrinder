@@ -16,8 +16,8 @@ package org.ngrinder.region.service;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
-import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cluster.Member;
+import com.hazelcast.core.HazelcastInstance;
 import lombok.RequiredArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,7 +66,7 @@ public class RegionService {
 					regions.put(regionInfo.getRegionName(), regionInfo);
 				}
 			} else {
-				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.getLocalHostAddress());
 				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), emptySet(), regionIP, config.getControllerPort()));
 			}
 			return regions;
@@ -109,7 +109,7 @@ public class RegionService {
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
 		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getClusterProperties().getProperty
-			(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
+			(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.getLocalHostAddress()))) {
 			throw processException("The region name, " + localRegion
 				+ ", is already used by other controller " + regionInfo.getIp()
 				+ ". Please set the different region name in this controller.");
@@ -165,11 +165,11 @@ public class RegionService {
 	public List<Map<String, Object>> getAllVisibleRegionNames() {
 		if (config.isClustered()) {
 			return allRegionNames.get().stream().map(region -> {
-					Map<String, Object> regionInfo = new HashMap<>();
-					String subregionAttributes = region.get(SUBREGION_ATTR_KEY);
-					regionInfo.put(REGION_ATTR_KEY, region.get(REGION_ATTR_KEY));
-					regionInfo.put(SUBREGION_ATTR_KEY, convertSubregionsStringToSet(subregionAttributes));
-					return regionInfo;
+				Map<String, Object> regionInfo = new HashMap<>();
+				String subregionAttributes = region.get(SUBREGION_ATTR_KEY);
+				regionInfo.put(REGION_ATTR_KEY, region.get(REGION_ATTR_KEY));
+				regionInfo.put(SUBREGION_ATTR_KEY, convertSubregionsStringToSet(subregionAttributes));
+				return regionInfo;
 			}).collect(toList());
 		} else {
 			return emptyList();
