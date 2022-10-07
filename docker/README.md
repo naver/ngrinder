@@ -10,9 +10,9 @@ nGrinder is a platform for stress tests that enables you to execute script creat
 
 nGrinder consists of two major components. 
 
-* __controller__ : a web application that enables the performance tester to create a test script and configure a test run. You can get the controller docker images [ngrinder/controller](https://registry.hub.docker.com/u/ngrinder/controller/).
+* __controller__ : a web application that enables the performance tester to create a test script and configure a test run. You can get the controller docker images [ngrinder/controller](https://registry.hub.docker.com/r/ngrinder/controller).
 
-* __agent__ : a virtual user generator that creates loads. You can get the agent docker images [ngrinder/agent](https://registry.hub.docker.com/u/ngrinder/agent/).
+* __agent__ : a virtual user generator that creates loads. You can get the agent docker images [ngrinder/agent](https://registry.hub.docker.com/r/ngrinder/agent).
 
 Version
 ---------
@@ -27,13 +27,13 @@ Install docker 1.5.0 or above  on your host.
 Pull the ngrinder/controller image.
 
 ```
-$ docker pull ngrinder-controller:3.4
+$ docker pull ngrinder/controller:3.5.6
 ```
 
 Start controller.
 
 ```
-docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder-controller:3.4
+docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder/controller:3.5.6
 ``` 
 
 The controller creates a data folder under /opt/ngrinder-controller to maintain test history and configuration data. In order to keep the data persistently, you should map the folder /opt/ngrinder-controller on the container to a folder on your host . 
@@ -54,11 +54,11 @@ Install docker 1.5.0 or above on your another host. You should run your agent on
 Pull the ngrinder/agent image.
 
 ```
-$ docker pull ngrinder/agent:3.4
+$ docker pull ngrinder/agent:3.5.6
 ```
 
 Start agent.
 
 ```
-docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.4 controller_ip:controller_web_port
+docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.5.6 controller_ip:controller_web_port
 ``` 
