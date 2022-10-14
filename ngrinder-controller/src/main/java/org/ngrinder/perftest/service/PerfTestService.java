@@ -982,12 +982,22 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatisticsData();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> additionalStats = MapUtils.getMap(result, "additionalStats", MapUtils.EMPTY_MAP);
 		LOGGER.info(format(perfTest, "Total Statistics is {}", totalStatistics));
 		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
 		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));
 		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue());
 		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue());
+		perfTest.setMinRT(parseDoubleWithSafety(additionalStats, "minRT", 0D));
+		perfTest.setPct25RT(parseDoubleWithSafety(additionalStats, "pct25RT", 0D));
+		perfTest.setPct50RT(parseDoubleWithSafety(additionalStats, "pct50RT", 0D));
+		perfTest.setPct75RT(parseDoubleWithSafety(additionalStats, "pct75RT", 0D));
+		perfTest.setPct90RT(parseDoubleWithSafety(additionalStats, "pct90RT", 0D));
+		perfTest.setPct95RT(parseDoubleWithSafety(additionalStats, "pct95RT", 0D));
+		perfTest.setPct99RT(parseDoubleWithSafety(additionalStats, "pct99RT", 0D));
+		perfTest.setMaxRT(parseDoubleWithSafety(additionalStats, "maxRT", 0D));
 	}
 
 	/**

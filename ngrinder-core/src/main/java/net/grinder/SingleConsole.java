@@ -47,6 +47,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.ReflectionUtils;
@@ -96,6 +97,9 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	// It contains cached distribution files digest from each agents.
 	private final CopyOnWriteArrayList<Set<String>> agentCachedDistFilesDigestList = new CopyOnWriteArrayList<>();
+
+	private final List<Double> responseTimeList = new CopyOnWriteArrayList<>();
+
 	private boolean cancel = false;
 
 	// for displaying tps graph in test running page
@@ -829,6 +833,11 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 					intervalStatisticsMap.put(each.getKey(),
 							getRealDoubleValue(each.getValue().getDoubleValue(intervalSet)));
 				}
+
+				if ("Mean_Test_Time_(ms)".equals(each.getKey())) {
+					responseTimeList.add((Double) getRealDoubleValue(each.getValue()
+						.getDoubleValue(intervalStatistics)));
+				}
 			}
 			cumulativeStatistics.add(accumulatedStatisticMap);
 			lastSampleStatistics.add(intervalStatisticsMap);
@@ -855,6 +864,42 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 		}
 		// Finally overwrite.. current one.
 		this.statisticData = result;
+	}
+
+	/**
+	 * Add （25th,50th,75th,90th,95th,99th） pct
+	 * Add min & max RT
+	 */
+	private void getAdditionalStats() {
+		if (responseTimeList.isEmpty()) {
+			return;
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getAdditionalStats() responseTimeList is {}", responseTimeList);
+		}
+
+		int i = 0;
+		double[] rtArray = new double[responseTimeList.size()];
+		for (double responseTime : responseTimeList) {
+			rtArray[i++] = responseTime;
+		}
+
+		Arrays.sort(rtArray);
+
+		Percentile percentile = new Percentile();
+		Map<String, Object> additionalStats = newHashMap();
+		additionalStats.put("minRT", rtArray[0]);
+		additionalStats.put("pct25RT", percentile.evaluate(rtArray, 25));
+		additionalStats.put("pct50RT", percentile.evaluate(rtArray, 50));
+		additionalStats.put("pct75RT", percentile.evaluate(rtArray, 75));
+		additionalStats.put("pct90RT", percentile.evaluate(rtArray, 90));
+		additionalStats.put("pct95RT", percentile.evaluate(rtArray, 95));
+		additionalStats.put("pct99RT", percentile.evaluate(rtArray, 99));
+		additionalStats.put("maxRT", rtArray[rtArray.length - 1]);
+
+		LOGGER.debug("SingleConsole getAdditionalStats additionalStats {}", additionalStats);
+
+		this.statisticData.put("additionalStats", additionalStats);
 	}
 
 	/*
@@ -1169,6 +1214,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			this.sampleModel.stop();
 		}
 		informTestSamplingEnd();
+		getAdditionalStats();
+
 	}
 
 	private void informTestSamplingStart() {

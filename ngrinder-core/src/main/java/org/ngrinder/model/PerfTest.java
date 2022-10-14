@@ -282,6 +282,97 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "param")
 	private String param;
 
+
+	@Column(name = "minRT")
+	private Double minRT;
+
+	@Column(name = "pct25RT")
+	private Double pct25RT;
+
+	@Column(name = "pct50RT")
+	private Double pct50RT;
+
+	@Column(name = "pct75RT")
+	private Double pct75RT;
+
+	@Column(name = "pct90RT")
+	private Double pct90RT;
+
+	@Column(name = "pct95RT")
+	private Double pct95RT;
+
+	@Column(name = "pct99RT")
+	private Double pct99RT;
+
+	@Column(name = "maxRT")
+	private Double maxRT;
+
+	public Double getMinRT() {
+		return minRT;
+	}
+
+	public void setMinRT(Double minRT) {
+		this.minRT = minRT;
+	}
+
+	public Double getPct25RT() {
+		return pct25RT;
+	}
+
+	public void setPct25RT(Double pct25RT) {
+		this.pct25RT = pct25RT;
+	}
+
+	public Double getPct50RT() {
+		return pct50RT;
+	}
+
+	public void setPct50RT(Double pct50RT) {
+		this.pct50RT = pct50RT;
+	}
+
+	public Double getPct75RT() {
+		return pct75RT;
+	}
+
+	public void setPct75RT(Double pct75RT) {
+		this.pct75RT = pct75RT;
+	}
+
+	public Double getPct90RT() {
+		return pct90RT;
+	}
+
+	public void setPct90RT(Double pct90RT) {
+		this.pct90RT = pct90RT;
+	}
+
+	public Double getPct95RT() {
+		return pct95RT;
+	}
+
+	public void setPct95RT(Double pct95RT) {
+		this.pct95RT = pct95RT;
+	}
+
+	public Double getPct99RT() {
+		return pct99RT;
+	}
+
+	public void setPct99RT(Double pct99RT) {
+		this.pct99RT = pct99RT;
+	}
+
+	public Double getMaxRT() {
+		return maxRT;
+	}
+
+	public void setMaxRT(Double maxRT) {
+		this.maxRT = maxRT;
+	}
+
+
+
 	@PrePersist
 	@PreUpdate
 	public void init() {
