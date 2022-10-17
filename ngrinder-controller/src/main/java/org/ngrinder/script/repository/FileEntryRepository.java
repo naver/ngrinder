@@ -26,7 +26,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map.Entry;
@@ -132,18 +132,15 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
-					svnRevision, svnRevision, true, recursive, new ISVNDirEntryHandler() {
-				@Override
-				public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
-
+				svnRevision, svnRevision, true, recursive, dirEntry -> {
 					FileEntry script = new FileEntry();
 					// Exclude base path "/"
 					if (StringUtils.isBlank(dirEntry.getRelativePath())) {
 						return;
 					}
 					script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
-					script.setCreatedDate(dirEntry.getDate());
-					script.setLastModifiedDate(dirEntry.getDate());
+					script.setCreatedAt(dirEntry.getDate().toInstant());
+					script.setLastModifiedAt(dirEntry.getDate().toInstant());
 					script.setDescription(dirEntry.getCommitMessage());
 					script.setRevision(dirEntry.getRevision());
 					if (dirEntry.getKind() == SVNNodeKind.DIR) {
@@ -153,8 +150,7 @@ public class FileEntryRepository {
 						script.setFileSize(dirEntry.getSize());
 					}
 					fileEntries.add(script);
-				}
-			});
+				});
 		} catch (Exception e) {
 			LOG.debug("findAll() to the not existing folder {}", path);
 		} finally {
@@ -175,16 +171,15 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
-					SVNRevision.HEAD, false, true, new ISVNDirEntryHandler() {
-				@Override
-				public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+				SVNRevision.HEAD, false, true, dirEntry -> {
 					FileEntry script = new FileEntry();
 					String relativePath = dirEntry.getRelativePath();
 					if (StringUtils.isBlank(relativePath)) {
 						return;
 					}
-					script.setCreatedDate(dirEntry.getDate());
-					script.setLastModifiedDate(dirEntry.getDate());
+					Instant lastModifiedAt = dirEntry.getDate().toInstant();
+					script.setCreatedAt(lastModifiedAt);
+					script.setLastModifiedAt(lastModifiedAt);
 					script.setPath(relativePath);
 					script.setDescription(dirEntry.getCommitMessage());
 					long reversion = dirEntry.getRevision();
@@ -192,8 +187,7 @@ public class FileEntryRepository {
 					script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
 					script.setFileSize(dirEntry.getSize());
 					scripts.add(script);
-				}
-			});
+				});
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN for {}", user.getUserId());
 			LOG.debug("Error details :", e);
@@ -216,8 +210,9 @@ public class FileEntryRepository {
 	public FileEntry findOne(User user, String path, SVNRevision revision) {
 		final FileEntry script = new FileEntry();
 		SVNClientManager svnClientManager = null;
-		ByteArrayOutputStream outputStream = null;
-		try {
+
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
 			svnClientManager = getSVNClientManager();
 
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
@@ -229,7 +224,6 @@ public class FileEntryRepository {
 			if (nodeKind == SVNNodeKind.NONE) {
 				return null;
 			}
-			outputStream = new ByteArrayOutputStream();
 			SVNProperties fileProperty = new SVNProperties();
 			// Get File.
 			repo.getFile(path, revision.getNumber(), fileProperty, outputStream);
@@ -248,20 +242,17 @@ public class FileEntryRepository {
 				String autoDetectedEncoding = EncodingUtils.detectEncoding(byteArray, "UTF-8");
 				script.setContent((new String(byteArray, autoDetectedEncoding)).replaceAll("&quot;","\""));
 				script.setEncoding(autoDetectedEncoding);
-				script.setContentBytes(byteArray);
-			} else {
-				script.setContentBytes(byteArray);
 			}
+			script.setContentBytes(byteArray);
 			script.setDescription(info.getCommitMessage());
 			script.setRevision(revisionNumber);
 			script.setLastRevision(lastRevisionNumber);
-			script.setCreatedUser(user);
+			script.setCreatedBy(user);
 		} catch (Exception e) {
 			LOG.error("Error while fetching a file from SVN {}", user.getUserId() + "_" + path, e);
 			return null;
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
-			IOUtils.closeQuietly(outputStream);
 		}
 		return script;
 	}
@@ -283,11 +274,13 @@ public class FileEntryRepository {
 	 * @param encoding  file encoding with which fileEntry is saved. It is meaningful
 	 *                  only FileEntry is editable.
 	 */
+	@SuppressWarnings("JavadocReference")
 	public void save(User user, FileEntry fileEntry, String encoding) {
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;
 		String checksum = null;
 		InputStream bais = null;
+
 		try {
 			svnClientManager = getSVNClientManager();
 			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
@@ -332,9 +325,10 @@ public class FileEntryRepository {
 
 				// Calc diff
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
+
 				if (fileEntry.getContentBytes() == null && fileEntry.getFileType().isEditable()) {
 					bais = new ByteArrayInputStream(checkNotNull(fileEntry.getContent()).getBytes(
-							encoding == null ? "UTF-8" : encoding));
+						encoding == null ? "UTF-8" : encoding));
 				} else {
 					bais = new ByteArrayInputStream(fileEntry.getContentBytes());
 				}
@@ -398,10 +392,7 @@ public class FileEntryRepository {
 			while (true) {
 				editor.closeDir();
 			}
-		} catch (EmptyStackException e) {
-			// FALL THROUGH
-			noOp();
-		} catch (SVNException e) {
+		} catch (EmptyStackException | SVNException e) {
 			// FALL THROUGH
 			noOp();
 		} finally {
@@ -504,7 +495,7 @@ public class FileEntryRepository {
 	 */
 	public void writeContentTo(User user, String path, File toPathDir) {
 		SVNClientManager svnClientManager = null;
-		FileOutputStream fileOutputStream = null;
+
 		try {
 			svnClientManager = getSVNClientManager();
 
@@ -519,16 +510,17 @@ public class FileEntryRepository {
 			toPathDir.mkdirs();
 			File destFile = new File(toPathDir, FilenameUtils.getName(path));
 			// Prepare parent folders
-			fileOutputStream = new FileOutputStream(destFile);
-			SVNProperties fileProperty = new SVNProperties();
-			// Get file.
-			repo.getFile(path, -1L, fileProperty, fileOutputStream);
+			try (FileOutputStream fileOutputStream = new FileOutputStream(destFile)) {
+				SVNProperties fileProperty = new SVNProperties();
+				// Get file.
+				repo.getFile(path, -1L, fileProperty, fileOutputStream);
+			}
+
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
 			throw processException("Error while fetching files from SVN", e);
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
-			IOUtils.closeQuietly(fileOutputStream);
 		}
 	}
 }

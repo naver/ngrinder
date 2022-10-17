@@ -45,7 +45,7 @@ public interface AgentProcessControl {
 	 * @param properties	Properties that override the agent's local properties.
 	 *
 	 */
-	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties);
+	void startAgent(Set<AgentIdentity> agents, GrinderProperties properties);
 
 	/**
 	 * Stop agent.
@@ -53,14 +53,14 @@ public interface AgentProcessControl {
 	 * @param agentIdentity	agent to be stopped
 	 *
 	 */
-	public void stopAgent(AgentIdentity agentIdentity);
+	void stopAgent(AgentIdentity agentIdentity);
 
 	/**
 	 * Get the number of agents.
 	 *
 	 * @return available agent's count
 	 */
-	public int getNumberOfLiveAgents();
+	int getNumberOfLiveAgents();
 
 	/**
 	 * Get the agents for given state and count.
@@ -69,14 +69,14 @@ public interface AgentProcessControl {
 	 * @param count	the count of agent to be get
 	 * @return agent list
 	 */
-	public Set<AgentIdentity> getAgents(AgentControllerState state, int count);
+	Set<AgentIdentity> getAgents(AgentControllerState state, int count);
 
 	/**
 	 * Get all available agents.
 	 *
 	 * @return agent list
 	 */
-	public Set<AgentIdentity> getAllAgents();
+	Set<AgentIdentity> getAllAgents();
 
 	/**
 	 * Get agent version for given {@link AgentIdentity}.

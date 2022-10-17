@@ -27,6 +27,8 @@ import static org.ngrinder.script.model.GitHubConfigField.*;
 @ToString
 @JsonDeserialize(using = GitHubConfig.GitHubConfigDeserializer.class)
 public class GitHubConfig {
+	public static final int CONFIG_NAME_MAX_LENGTH = 40;
+
 	private String name;
 	private String owner;
 	private String repo;

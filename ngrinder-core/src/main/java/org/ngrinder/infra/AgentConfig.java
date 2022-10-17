@@ -35,8 +35,8 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
-import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -59,11 +59,12 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	private PropertiesWrapper monitorProperties;
 	private PropertiesWrapper commonProperties;
 	private PropertiesWrapper internalProperties;
+	private String controllerIP;
 
-	private PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
-	private PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
-	private PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
-	private PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
+	private final PropertiesKeyMapper internalPropertyMapper = PropertiesKeyMapper.create("internal-properties.map");
+	private final PropertiesKeyMapper agentPropertyMapper = PropertiesKeyMapper.create("agent-properties.map");
+	private final PropertiesKeyMapper monitorPropertyMapper = PropertiesKeyMapper.create("monitor-properties.map");
+	private final PropertiesKeyMapper commonPropertyMapper = PropertiesKeyMapper.create("common-properties.map");
 
 	/**
 	 * Initialize.
@@ -79,6 +80,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return this;
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
 		final File agentConfig = home.getFile("agent.conf");
@@ -317,12 +319,16 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		return getMonitorProperties().getProperty(PROP_MONITOR_BINDING_IP);
 	}
 
-	public String getControllerIP() {
-		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
+	public String getControllerHost() {
+		return getAgentProperties().getProperty(PROP_AGENT_CONTROLLER_HOST, NetworkUtils.getLocalHostAddress());
 	}
 
-	public void setControllerHost(String host) {
-		getAgentProperties().addProperty(PROP_AGENT_CONTROLLER_HOST, host);
+	public void setControllerIP(String ip) {
+		controllerIP = ip;
+	}
+
+	public String getControllerIP() {
+		return defaultIfEmpty(controllerIP, NetworkUtils.getLocalHostAddress());
 	}
 
 	public int getControllerPort() {
@@ -334,11 +340,19 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getRegion() {
-		return getAgentProperties().getProperty(PROP_AGENT_REGION);
+		return defaultIfEmpty(getAgentProperties().getProperty(PROP_AGENT_REGION), "");
+	}
+
+	public String getSubregion() {
+		return defaultIfEmpty(getAgentProperties().getProperty(PROP_AGENT_SUBREGION), "");
+	}
+
+	public String getOwner() {
+		return defaultIfEmpty(getAgentProperties().getProperty(PROP_AGENT_OWNER), "");
 	}
 
 	public String getAgentHostID() {
-		return getAgentProperties().getProperty(PROP_AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
+		return getAgentProperties().getProperty(PROP_AGENT_HOST_ID, NetworkUtils.getLocalHostName());
 	}
 
 	public boolean isSecurityEnabled() {
@@ -355,7 +369,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getBroadcastIP() {
-		return getAgentProperties().getProperty(PROP_AGENT_BROADCAST_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
+		return getAgentProperties().getProperty(PROP_AGENT_BROADCAST_IP, NetworkUtils.getLocalHostAddress());
 	}
 
 	public boolean isSilentMode() {
@@ -372,7 +386,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public static class NullAgentConfig extends AgentConfig {
-		public int counter = 0;
+		public int counter;
 		private int controllerPort = 0;
 
 		public NullAgentConfig(int i) {
@@ -397,7 +411,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 		@Override
 		protected AgentHome resolveHome() {
 			AgentHome resolveHome = super.resolveHome();
-			File directory = new File(resolveHome.getDirectory(), "tmp_" + String.valueOf(counter));
+			File directory = new File(resolveHome.getDirectory(), "tmp_" + counter);
 			resolveHome = new AgentHome(directory);
 			try {
 				FileUtils.forceDeleteOnExit(directory);

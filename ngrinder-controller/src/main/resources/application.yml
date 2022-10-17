@@ -1,5 +1,5 @@
 ngrinder:
-  version: 3.5.1
+  version: 3.5.6
 
 server:
   default-encoding: UTF-8
@@ -33,3 +33,7 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  h2:
+    console:
+      enabled: false
+      path: /h2-console

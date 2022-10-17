@@ -28,9 +28,7 @@ import net.grinder.engine.communication.AgentUpdateGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -101,7 +99,7 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 			File logFile = null;
 			try {
 				logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")),
-						agentIdentity.getName() + "-" + agentIdentity.getRegion() + "-log.zip");
+						agentIdentity.getName() + "-" + agentIdentity.getSubregion() + "-log.zip");
 				FileUtils.writeByteArrayToFile(logFile, logs);
 			} catch (IOException e) {
 				LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
@@ -223,18 +221,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 		return (AgentControllerIdentityImplementation) identity;
 	}
 
-	public String extractRegionKey(String agentRegion) {
-		if (agentRegion != null && agentRegion.contains("_owned_")) {
-			return agentRegion.substring(0, agentRegion.indexOf("_owned_"));
-		}
-		if (agentRegion != null && agentRegion.contains("owned_")) {
-			return agentRegion.substring(0, agentRegion.indexOf("owned_"));
-		}
-		if (StringUtils.isEmpty(agentRegion)) {
-			return Config.NONE_REGION;
-		}
-		return agentRegion;
-	}
 
 	/**
 	 * Get the current system performance of the given agent.
@@ -332,9 +318,8 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 	public synchronized AgentUpdateGrinderMessage onAgentDownloadRequested(String version, int offset) {
 		final int updateChunkSize = getUpdateChunkSize();
 		byte[] buffer = new byte[updateChunkSize];
-		RandomAccessFile agentPackageReader = null;
-		try {
-			agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r");
+
+		try (RandomAccessFile agentPackageReader = new RandomAccessFile(agentPackageService.createAgentPackage(), "r")) {
 			agentPackageReader.seek(offset);
 			int count = agentPackageReader.read(buffer, 0, updateChunkSize);
 			byte[] bytes = buffer;
@@ -347,8 +332,6 @@ public class AgentManager implements ControllerConstants, AgentDownloadRequestLi
 					CRC32ChecksumUtils.getCRC32Checksum(bytes));
 		} catch (Exception e) {
 			LOGGER.error("Error while reading agent package, its offset is {} and details {}:", offset, e);
-		} finally {
-			IOUtils.closeQuietly(agentPackageReader);
 		}
 		return AgentUpdateGrinderMessage.getNullAgentUpdateGrinderMessage(version);
 	}

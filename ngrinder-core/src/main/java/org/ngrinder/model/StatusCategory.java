@@ -33,6 +33,10 @@ public enum StatusCategory {
 	 */
 	TESTING("green_anime.gif", true, false, false),
 	/**
+	 * Abnormal testing.
+	 */
+	ABNORMAL_TESTING("yellow_anime.gif", false, false, false),
+	/**
 	 * Finished normally.
 	 */
 	FINISHED("green.png", false, true, true),

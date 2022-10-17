@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.engine.agent;
 
@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractMultiGrinderTestBase;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SingleConsoleThreadTest extends AbstractMultiGrinderTestBase {
 
@@ -66,7 +66,7 @@ public class SingleConsoleThreadTest extends AbstractMultiGrinderTestBase {
 		agentThread2.run(console1.getConsolePort());
 
 		// Wait until all agents are started. They will connect main console.
-		waitAndAssertUntilAgentAttachedTo(console1, 2, 15);
+		waitAndAssertUntilAgentAttachedTo(console1, 2, 20);
 
 		// if we shut down one agent.
 		agentThread2.addListener(new AgentShutDownSynchronizeListener(condition));

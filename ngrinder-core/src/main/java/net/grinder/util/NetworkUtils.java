@@ -25,10 +25,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -52,11 +49,10 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @author Mavlarn
  * @since 3.0
  */
+@SuppressWarnings("SameParameterValue")
 public abstract class NetworkUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
-	public static String DEFAULT_LOCAL_HOST_ADDRESS = getLocalHostAddress();
-	public static String DEFAULT_LOCAL_HOST_NAME = getLocalHostName();
-	public static List<InetAddress> DEFAULT_LOCAL_ADDRESSES = getAllLocalNonLoopbackAddresses(false);
+	private static final int MAX_REACHABLE_TIMEOUT = 10;
 
 	/**
 	 * Get the local host address, try to get actual IP.
@@ -120,7 +116,7 @@ public abstract class NetworkUtils {
 			try {
 				addr = getFirstNonLoopbackAddress(true, false);
 			} catch (SocketException e2) {
-				addr = null;
+				noOp();
 			}
 		}
 		return addr;
@@ -148,8 +144,7 @@ public abstract class NetworkUtils {
 		return true;
 	}
 
-	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
-			throws SocketException {
+	static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6) throws SocketException {
 		Enumeration<?> en = getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
@@ -216,19 +211,25 @@ public abstract class NetworkUtils {
 	/**
 	 * Get the available ports.
 	 *
-	 * @param size port size
-	 * @param from port number starting from
+	 * @param size  port size
+	 * @param from  port number starting from
 	 * @param limit number of max port
 	 * @return port list
 	 */
 	public static List<Integer> getAvailablePorts(String ip, int size, int from, int limit) {
-		List<Integer> ports = new ArrayList<Integer>(size);
+		List<Integer> ports = new ArrayList<>(size);
 		int freePort;
 		InetAddress inetAddress = null;
 		if (StringUtils.isNotBlank(ip)) {
 			try {
 				inetAddress = InetAddress.getByName(ip);
-			} catch (Exception e) {
+				if (!inetAddress.isReachable(MAX_REACHABLE_TIMEOUT)) {
+					processException(
+						"Can not check available ports because given local IP address '" + ip + "' is unreachable. " +
+							"Please check the `/etc/hosts` file or manually specify the local IP address in `${NGRINDER_HOME}/system.conf`."
+					);
+				}
+			} catch (SecurityException | IOException e) {
 				noOp();
 			}
 		}
@@ -345,7 +346,7 @@ public abstract class NetworkUtils {
 			try {
 				this.ip = InetAddress.getByName(ip);
 			} catch (UnknownHostException e) {
-				LOGGER.error("{} is not accessible ip");
+				LOGGER.error("{} is not accessible ip", ip);
 			}
 			this.port = port;
 		}
@@ -477,8 +478,8 @@ public abstract class NetworkUtils {
 	}
 
 
-	private static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
-		List<InetAddress> addresses = new ArrayList<InetAddress>();
+	public static List<InetAddress> getAllLocalNonLoopbackAddresses(boolean onlyIPv4) {
+		List<InetAddress> addresses = new ArrayList<>();
 		final Enumeration<NetworkInterface> networkInterfaces;
 		try {
 			networkInterfaces = getNetworkInterfaces();
@@ -509,8 +510,7 @@ public abstract class NetworkUtils {
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 			while (interfaces.hasMoreElements()) {
 				NetworkInterface iface = interfaces.nextElement();
-				if (iface.isLoopback() || !iface.isUp())
-					continue;
+				if (iface.isLoopback() || !iface.isUp()) continue;
 
 				Enumeration<InetAddress> addresses = iface.getInetAddresses();
 				while (addresses.hasMoreElements()) {
@@ -528,10 +528,10 @@ public abstract class NetworkUtils {
 	}
 
 	public static List<String> getDnsServers() throws NamingException {
-		Hashtable<String, String> env = new Hashtable<String, String>();
+		Hashtable<String, String> env = new Hashtable<>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
 		DirContext ctx = null;
-		List<String> dnsServers = new ArrayList<String>();
+		List<String> dnsServers = new ArrayList<>();
 		try {
 			ctx = new InitialDirContext(env);
 			String dnsString = (String) ctx.getEnvironment().get("java.naming.provider.url");

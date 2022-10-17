@@ -13,6 +13,7 @@
  */
 package org.ngrinder.agent.controller;
 
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.agent.service.AgentPackageService;
 import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.net.URLClassLoader;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,8 +53,7 @@ public class MonitorDownloadController {
 	 * @param fileName monitor file name.
 	 * @param response response.
 	 */
-
-	@GetMapping("/{fileName:[a-zA-Z0-9\\.\\-_]+}")
+	@GetMapping("/{fileName:[a-zA-Z0-9.\\-_]+}")
 	public void download(@PathVariable String fileName, HttpServletResponse response) {
 		File home = config.getHome().getDownloadDirectory();
 		File monitorFile = new File(home, fileName);
@@ -64,11 +63,12 @@ public class MonitorDownloadController {
 	/**
 	 * Download monitor.
 	 */
+	@SuppressWarnings("SpringMVCViewInspection")
 	@GetMapping("")
 	public String download(ModelMap model) {
 		try {
-			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, (URLClassLoader) getClass().getClassLoader(),
-				"", null, config.getMonitorPort(), "");
+			PackageDownloadInfo packageDownloadInfo = PackageDownloadInfo.builder().connectionPort(config.getMonitorPort()).build();
+			final File monitorPackage = agentPackageService.createPackage(monitorPackageHandler, packageDownloadInfo);
 			model.clear();
 			return "redirect:/monitor/download/" + monitorPackage.getName();
 		} catch (Exception e) {

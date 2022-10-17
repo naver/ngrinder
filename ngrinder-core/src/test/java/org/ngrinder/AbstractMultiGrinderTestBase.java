@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 abstract public class AbstractMultiGrinderTestBase {
 	public AgentConfig.NullAgentConfig agentConfig1;

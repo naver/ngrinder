@@ -1,4 +1,6 @@
-* nGrinder 3.5.1 has been released. See https://github.com/naver/ngrinder/releases
+* Please post questions in [Discussions](https://github.com/naver/ngrinder/discussions) not Issues.
+* nGrinder 3.5.6 has been released. See https://github.com/naver/ngrinder/releases
+* Currently, we are working on the internal project not ngrinder. We will resume ngrinder dev from July, 2022.
 
 nGrinder 
 ========
@@ -100,11 +102,10 @@ Found the apparent bug? Got a brilliant idea for an enhancement? Please create a
 * https://github.com/naver/ngrinder/issues
 
 You can join our forum as well
-* Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
-* User Forum : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
-* 中文论坛 (Chinese) : http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
-* 한국어 유저 포럼 (Korean): http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
-* [![Developer chat at https://gitter.im/naver/ngrinder-kr](https://badges.gitter.im/naver/ngrinder-kr.svg)](https://gitter.im/naver/ngrinder-kr?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+* Dev : http://ngrinder.373.s1.nabble.com/ngrinder-dev-f1.html 
+* User Forum : http://ngrinder.373.s1.nabble.com/ngrinder-user-f50.html
+* 中文论坛 (Chinese) : http://ngrinder.373.s1.nabble.com/ngrinder-user-cn-f114.html
+* 한국어 유저 포럼 (Korean): http://ngrinder.373.s1.nabble.com/ngrinder-user-kr-f113.html
 
 
 License

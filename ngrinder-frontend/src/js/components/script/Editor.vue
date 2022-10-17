@@ -298,7 +298,7 @@
             this.$http.post('/script/api/save', params)
             .then(() => {
                 this.showSuccessMsg(this.i18n('common.message.alert.save.success'));
-                this.file.content = this.$refs.editor.getValue();
+                this.$refs.editor.codemirror.setValue(this.$refs.editor.getValue());
                 if (isClose) {
                     this.$router.push('/script/list/');
                 }
@@ -362,7 +362,7 @@
                 },
                 hostString: this.targetHosts.join(','),
             }).then(res => {
-                this.showScriptValidationResult(this.appendEditorLink(res.data));
+                this.showScriptValidationResult(this.appendEditorLink(this.$htmlEntities.encode(res.data)));
                 this.validated = true;
             }).catch(() => this.showErrorMsg(this.i18n('script.editor.validate.error')))
               .finally(this.hideProgressBar);

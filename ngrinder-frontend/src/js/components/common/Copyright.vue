@@ -28,7 +28,7 @@
         background-color: #f5f4f2;
 
         section {
-            height: 100%;
+            height: inherit;
             margin: 0;
             align-items: center;
             justify-content: center;

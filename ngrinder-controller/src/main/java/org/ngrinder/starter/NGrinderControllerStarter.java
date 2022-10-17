@@ -14,10 +14,9 @@
 package org.ngrinder.starter;
 
 import com.beust.jcommander.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -35,9 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static net.grinder.util.NoOp.noOp;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.ngrinder.common.constant.ClusterConstants.*;
+import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_CONTROLLER_PORT;
+import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_TYPE;
+import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_URL;
 
-
+@Slf4j
 @SpringBootApplication
 @ComponentScan(
 	basePackages = {"org.ngrinder"},
@@ -45,8 +49,6 @@ import static net.grinder.util.NoOp.noOp;
 )
 @Parameters(separators = "= ")
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(NGrinderControllerStarter.class);
 
 	@Parameters(separators = "= ")
 	enum ClusterMode {
@@ -57,7 +59,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 			public void process() {
 				if (controllerPort != null) {
-					System.setProperty("controller.controller_port", controllerPort.toString());
+					System.setProperty(PROP_CONTROLLER_CONTROLLER_PORT, controllerPort.toString());
 				}
 			}
 		},
@@ -66,23 +68,25 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 				description = "This cluster member's cluster communication host. The default value is the " +
 					"first non-localhost address. if it's localhost, " +
 					"it can only communicate with the other cluster members in the same machine.")
-			private String clusterHost = null;
+			private String clusterHost;
 
-			@Parameter(names = {"-clp", "--cluster-port"}, required = true,
-				description = "This cluster member's cluster communication port. Each cluster member should " +
-					"be run with unique cluster port.",
+			@Parameter(names = {"-clp", "--cluster-port"},
+				description = "Deprecated from 3.5.4, the cluster communication port will be resolved automatically in easy clustering",
 				validateValueWith = PortAvailabilityValidator.class)
-			private Integer clusterPort = null;
+			private Integer clusterPort;
 
 			@Parameter(names = {"-cp", "--controller-port"}, required = true,
 				description = "This cluster member's agent connection port",
 				validateValueWith = PortAvailabilityValidator.class)
-			private Integer controllerPort = null;
+			private Integer controllerPort;
 
 			@Parameter(names = {"-r", "--region"}, required = true,
 				description = "This cluster member's region name")
-			private String region = null;
+			private String region;
 
+			@Parameter(names = {"-sr", "--subregion"},
+				description = "This cluster member's subregion names with ',' concatenated format like sub1,sub2")
+			private String subregion = "";
 
 			@Parameter(names = {"-dh", "--database-host"},
 				description = "database host. The default value is localhost")
@@ -92,7 +96,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 				description = "database port. The default value is 9092 when h2 is used and " +
 					"3306 when mysql is used."
 			)
-			private Integer databasePort = null;
+			private Integer databasePort;
 
 			@Parameter(names = {"-dt", "--database-type"},
 				description = "database type", hidden = true)
@@ -100,45 +104,40 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 			@SuppressWarnings("SpellCheckingInspection")
 			public void process() {
-				System.setProperty("cluster.mode", "easy");
-				if (clusterHost != null) {
-					System.setProperty("cluster.host", clusterHost);
+				System.setProperty(PROP_CLUSTER_MODE, "easy");
+				if (isNotEmpty(clusterHost)) {
+					System.setProperty(PROP_CLUSTER_HOST, clusterHost);
 				}
-				System.setProperty("cluster.port", clusterPort.toString());
-				System.setProperty("cluster.region", region);
-				System.setProperty("controller.controller_port", controllerPort.toString());
-				System.setProperty("database.type", databaseType);
+				System.setProperty(PROP_CLUSTER_REGION, region);
+				System.setProperty(PROP_CLUSTER_SUBREGION, subregion);
+				System.setProperty(PROP_CONTROLLER_CONTROLLER_PORT, controllerPort.toString());
+				System.setProperty(PROP_DATABASE_TYPE, databaseType);
 				if ("h2".equals(databaseType)) {
-					if (databasePort == null) {
-						databasePort = 9092;
-					}
-					if (!tryConnection(databaseHost, databasePort)) {
+					databasePort = defaultIfNull(databasePort, 9092);
+					if (!checkConnection(databaseHost, databasePort)) {
 						throw new ParameterException("Failed to connect h2 db " + databaseHost + ":" + databasePort
 							+ ".\nPlease run the h2 TcpServer in advance\n"
 							+ "or set the correct -database-host and -database-port parameters");
 					}
-					System.setProperty("database.url", "tcp://" + this.databaseHost + ":" + databasePort + "/db/ngrinder");
+					System.setProperty(PROP_DATABASE_URL, "tcp://" + databaseHost + ":" + databasePort + "/~/db/ngrinder");
 				} else {
-					if (databasePort == null) {
-						databasePort = 3306;
-					}
-					if (!tryConnection(databaseHost, databasePort)) {
+					databasePort = defaultIfNull(databasePort, 3306);
+					if (!checkConnection(databaseHost, databasePort)) {
 						throw new ParameterException("Failed to connect mysql db.\n" +
 							"Please run the mysql db " + databaseHost + ":" + databasePort + "in advance\n" +
 							"or set the correct -database-host and -database-port parameters");
 					}
-					System.setProperty("database.url", this.databaseHost + ":" + this.databasePort);
+					System.setProperty(PROP_DATABASE_URL, databaseHost + ":" + databasePort);
 				}
 			}
 
 		},
 		advanced {
 			public void process() {
-				System.setProperty("cluster.mode", "advanced");
+				System.setProperty(PROP_CLUSTER_MODE, "advanced");
 			}
 		};
 
-		@SuppressWarnings("Duplicates")
 		public void parseArgs(String[] args) {
 			JCommander commander = new JCommander(ClusterMode.this);
 			String clusterModeOption = "";
@@ -160,28 +159,18 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		abstract void process();
 	}
 
-	private static boolean tryConnection(String byConnecting, int port) {
-		Socket socket = null;
-		try {
-			socket = new Socket();
+	private static boolean checkConnection(String byConnecting, int port) {
+		try (Socket socket = new Socket()) {
 			socket.connect(new InetSocketAddress(byConnecting, port), 2000); // 2 seconds timeout
 		} catch (Exception e) {
 			return false;
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (Exception e) {
-					noOp();
-				}
-			}
 		}
 		return true;
 	}
 
 	@Parameter(names = {"-p", "--port"}, description = "HTTP port of the server. The default port is 8080.",
 		validateValueWith = PortAvailabilityValidator.class)
-	private Integer port = null;
+	private Integer port;
 
 	@Parameter(names = {"-c", "--context-path"}, description = "context path of the embedded web application.")
 	private String contextPath = "/";
@@ -190,11 +179,11 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	private String clusterMode = "none";
 
 	@Parameter(names = {"-nh", "--ngrinder-home"}, description = "nGridner home directory")
-	private String home = null;
+	private String home;
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Parameter(names = {"-exh", "--ex-home"}, description = "nGridner extended home directory")
-	private String exHome = null;
+	private String exHome;
 
 	@Parameter(names = {"-help", "-?", "-h"}, description = "prints this message")
 	private Boolean help = false;
@@ -203,11 +192,6 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 	@DynamicParameter(names = "-D", description = "Dynamic parameters", hidden = true)
 	private Map<String, String> params = new HashMap<>();
-
-
-	public static boolean isEmpty(String str) {
-		return str == null || str.length() == 0;
-	}
 
 	private static String getWarName() {
 		ProtectionDomain protectionDomain = NGrinderControllerStarter.class.getProtectionDomain();
@@ -226,9 +210,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		PortAvailabilityValidator validator = new PortAvailabilityValidator();
 		try {
 			commander.parse(args);
-			if (server.port == null) {
-				server.port = 8080;
-			}
+			server.port = defaultIfNull(server.port, 8080);
 			validator.validate("-p / --port", server.port);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -247,10 +229,10 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 			System.exit(0);
 		}
 
-		if (server.home != null) {
+		if (isNotEmpty(server.home)) {
 			System.setProperty("ngrinder.home", server.home);
 		}
-		if (server.exHome != null) {
+		if (isNotEmpty(server.exHome)) {
 			System.setProperty("ngrinder.ex.home", server.exHome);
 		}
 		final List<String> unknownOptions = commander.getUnknownOptions();
@@ -278,7 +260,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 			try {
 				FileUtils.forceDelete(file);
 			} catch (IOException e) {
-				LOGGER.error("Previously unpacked folder {} delete failed", file.getName(), e);
+				log.error("Previously unpacked folder {} delete failed", file.getName(), e);
 			}
 		}
 	}

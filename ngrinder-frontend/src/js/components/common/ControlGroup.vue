@@ -78,11 +78,5 @@
                 color: black;
             }
         }
-
-        .required-mark {
-            vertical-align: middle;
-            margin-right: 2px;
-            color: red;
-        }
     }
 </style>

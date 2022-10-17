@@ -1,8 +1,8 @@
 package org.ngrinder.packages;
 
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.springframework.stereotype.Component;
 
-import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,13 +12,13 @@ import static org.ngrinder.common.util.CollectionUtils.buildMap;
 public class MonitorPackageHandler extends PackageHandler {
 
 	@Override
-	public Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner) {
-		return buildMap("monitorPort", (Object) String.valueOf(port));
+	public Map<String, Object> getConfigParam(PackageDownloadInfo packageDownloadInfo) {
+		return buildMap("monitorPort", String.valueOf(packageDownloadInfo.getConnectionPort()));
 	}
 
 	@Override
-	public Set<String> getPackageDependentLibs(URLClassLoader urlClassLoader) {
-		return super.getDependentLibs(urlClassLoader);
+	public Set<String> getPackageDependentLibs() {
+		return getDependentLibs();
 	}
 
 	@Override

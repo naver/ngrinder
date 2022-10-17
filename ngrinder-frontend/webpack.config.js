@@ -35,7 +35,7 @@ var lessLoader = {
 };
 
 module.exports = function (env) {
-    var ngrinderVersion = '3.5.1';
+    var ngrinderVersion = '3.5.6';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
     }
@@ -43,6 +43,9 @@ module.exports = function (env) {
 
     var webpackConfig = {
         mode: developmentBuild ? 'development' : 'production',
+        node: {
+            fs: 'empty'
+        },
         performance: {
             hints: false,
         },
@@ -65,18 +68,18 @@ module.exports = function (env) {
                 'vue$': 'vue/dist/vue.esm.js',
             },
         },
-        resolveLoader: {
-            alias: {
-                'scss-loader': 'sass-loader',
-            },
-        },
         module: {
             rules: [
                 {
                     test: /\.js$/,
                     exclude: {
                         test: /node_modules/,
-                        not: [/(d3-.*)$/]
+                        not: [
+                            /(d3-.*)$/,
+                            /(strip-.*)$/,
+                            /(.*json.*)$/,
+                            /(vuejs-datepicker.*)$/,
+                        ],
                     },
                     use: [
                         { loader: 'babel-loader', options: { 'presets': ['@babel/preset-env'] } },

@@ -14,15 +14,11 @@
 package org.ngrinder.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import java.util.Date;
+import java.time.Instant;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -40,24 +36,25 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Column(name = "created_date", insertable = true, updatable = false)
-	private Date createdDate;
+	@Column(name = "created_at", updatable = false)
+	private Instant createdAt;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
-	@JoinColumn(name = "created_user", insertable = true, updatable = false)
-	@Index(name = "created_user_index")
-	@NotFound(action = NotFoundAction.IGNORE)
-	private User createdUser;
+	@JoinColumn(name = "created_by", updatable = false)
 
-	@Column(name = "last_modified_date", insertable = true, updatable = true)
-	private Date lastModifiedDate;
+	@NotFound(action = NotFoundAction.IGNORE)
+	private User createdBy;
+
+
+	@Column(name = "last_modified_at")
+	private Instant lastModifiedAt;
 
 	@JsonSerialize(using = User.UserReferenceSerializer.class)
 	@ManyToOne
-	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
-	@Index(name = "last_modified_user_index")
+	@JoinColumn(name = "last_modified_By")
+
 	@NotFound(action = NotFoundAction.IGNORE)
-	private User lastModifiedUser;
+	private User lastModifiedBy;
 
 }

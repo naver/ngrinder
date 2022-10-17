@@ -1,59 +1,162 @@
+3.5.6 (2022.10.10)
+==================
+- Changes
+  - Bump OSHI up to 6.1.6 to support M1 arch
+  - Bump select2 version up
+  - Change Jython test thread shutdown log level
+  - Change nabble forum URL
+  - Fix scm-manager maven repo URL
+  - Remove ES-Check gradle task
+
+- Bug fix
+  - #897 Fix the script content is lost after validation check
+
+3.5.5-p1 (2021.05.31)
+==================
+- Bug fix
+    - #804 Fix that perftest detail report does not rendered properly if logout
+
+3.5.5 (2021.04.30)
+==================
+- Changes
+   - Support controller subregion
+       * In cluster mode, you can configure subregion to manage agents in different context
+       * See [Controller Subregion In Cluster Mode](https://github.com/naver/ngrinder/wiki/Controller-Subregion-In-Cluster-Mode)
+   - Support multipart request in new HTTP client
+       * See [Sample code](https://github.com/naver/ngrinder/wiki/The-New-nGrinder-HTTP-Client#send-a-multipart-form-data)
+   - Add new HTTP client based script template
+       * When creating a script, you can choose between the old and the new HTTP client based template.
+   - Use OSSRH when release to maven central
+   - Change agent configurations
+       * `agent.region` has been removed, `agent.subregion` and `agent.owner` have been added.
+       * See [Agent Configuration Guide](https://github.com/naver/ngrinder/wiki/Agent-Configuration-Guide)
+- Bug fix
+    - #788 Fix fail of auto-upgrade from 3.4.x to 3.5.x
+
+3.5.4 (2021.03.19)
+==================
+- Changes
+    - Release new experimental HttpClient based on apache httpcomponents-core
+        * Support modern HTTP specification
+        * Provide easy-to-use APIs
+        * See [new nGrinder HTTP client guide](https://github.com/naver/ngrinder/wiki/The-New-nGrinder-HTTP-Client)
+    - Use controller DNS instead of IP to support agent-controller reconnection in cloud env
+    - Support script template customization
+        * Each ngrinder admin can deploy customized script template under ${NGRINDER_HOME}/script_template
+    - Provide the connection reset option in test configuration page
+        * If you turn it on, it tries to reuse connection as much as possible.
+    - Bump Jython standard up to 2.7.2
+    - Bump internal used Junit up to 4.13.1
+        * nGrinder no longer depends on specific version of junit for performance test
+- Notice
+    - If you have a trouble with updating controller from ngrinder 3.4.X to a newer version. Please refer to [How to update ngrinder controller](https://github.com/naver/ngrinder/wiki/How-to-update-ngrinder-controller)
+- Bug fix
+    - #706 Cancel progressing state test when starting controller
+    - #714 Fix validation error when using AppClassLoader in over JDK9
+    - #716 Fix script validation error in windows
+    - #731 Fix not working remember-me
+    - #739 Fix easy clustering
+    - #745 Make compatibility with IE11
+    - #748 Make grinder utils work on Jython performance test
+    - #773 Fix cannot search user with two characters
+    - #774, #779 Fix duplicated running test on one user
+
+3.5.3 (2020.11.27)
+==================
+- Changes
+   - Support gradle groovy script
+       * Maven groovy script is deprecated and can't create any more but, it can still run
+   - Use maven central repository to manage submodules
+       * Use maven central repository instead of github repository
+   - Support UTC
+       * Use linux timestamp instead of string format of date time.
+- Trivial Fix
+    - Make several UI improvements
+    - Add identity information to perftest related log
+    - Make the H2 console optionally available
+    - Clean up code
+- Bug fix
+    - #669 Prevent lazy initialize exception in spring security authentication object
+    - #672 Make the modified file distribution handler to be loaded first
+    - #681 Prevent NPE if start console is failed
+    - #682 Escape response body in result console
+    - #684 Fix unstoppable abnormal test
+
+3.5.2 (2020.09.29)
+==================
+- Changes
+   * Support LDAP login
+       - From now on you can use LDAP for user authentication.
+       - See [LDAP guide](https://github.com/naver/ngrinder/wiki/LDAP-Configuration)
+   * Support webhook
+       - When the specified events happen, we'll send a webhook request depends on your configuration.
+       - See [webhook guide](https://github.com/naver/ngrinder/wiki/Webhook)
+- Trivial Fix
+   * Make several UI improvements.
+
+3.5.1-p1 (2020.09.01)
+==================
+- Changes
+    * Add additional groovy dependencies.
+        - json, xml, sql, datetime, templates.
+    * Change webpack default profile.
+    
 3.5.1 (2020.08.31)
 ==================
-* Changes
+- Changes
     * Support Java 11.
-        * nGrinder now supports Java 11. Controller & Agent supports Java 1.8 or above.
-        * Bump several libraries version up.
+      - nGrinder now supports Java 11. Controller & Agent supports Java 1.8 or above.
+      - Bump several libraries version up.
         
-* Trivial Fix
+- Trivial Fix
     * Remove mobile phone column from NUSER table.
     * Make several UI improvements.
   
 3.5.0 (2020.07.30)
 ==================
-* New Feature
+- New Feature
     * Introduce server mode agent
-        * In previous version, nGrinder agents made TCP connections from agent to controller and this made hard to locate a nGrinder controller behind a  firewall. From version 3.5.0, nGrinder introduces server mode agent so that a controller make a connection from a controller to agents.
-        * See https://github.com/naver/ngrinder/wiki/server-mode-agent
+      - In previous version, nGrinder agents made TCP connections from agent to controller and this made hard to locate a nGrinder controller behind a  firewall. From version 3.5.0, nGrinder introduces server mode agent so that a controller make a connection from a controller to agents.
+      - See https://github.com/naver/ngrinder/wiki/server-mode-agent
     * Update agents automatically
-        * When the test is executed with older version of agent, it triggers agent auto update.
+      - When the test is executed with older version of agent, it triggers agent auto update.
     * Support GitHub script storage
-        * Users can save and run their test script saved in not only embedded SVN server but also external GitHub repository. GitHub enterprise deployed in each own organization is also supported.
-        * See https://github.com/naver/ngrinder/wiki/github-script-storage
+      - Users can save and run their test script saved in not only embedded SVN server but also external GitHub repository. GitHub enterprise deployed in each own organization is also supported.
+      - See https://github.com/naver/ngrinder/wiki/github-script-storage
     * Support MySQL
-        * Since 3.5.0, we support H2 and MySQL as databases and fade out Cubrid and provide cubrid-to-mysql migration script.
-        * See https://github.com/naver/ngrinder/wiki/mysql-migration
+      - Since 3.5.0, we support H2 and MySQL as databases and fade out Cubrid and provide cubrid-to-mysql migration script.
+      - See https://github.com/naver/ngrinder/wiki/mysql-migration
     * Improve test restart time
-        * In previous version, nGrinder agent doesn't cache executed test lib & resources, Therefore, it took long time to execute tests in the case of using large amount of libraries and resource. From nGrinder 3.5.0, the test execution is much faster by sending only changed test resources to agents
+      - In previous version, nGrinder agent doesn't cache executed test lib & resources, Therefore, it took long time to execute tests in the case of using large amount of libraries and resource. From nGrinder 3.5.0, the test execution is much faster by sending only changed test resources to agents
     * Fade out nGrinder-recorder
-        * nGrinder-recorder is no longer supported.
+      - nGrinder-recorder is no longer supported.
     * Support multiple user defined statistics
-        * See https://github.com/naver/ngrinder/wiki/multiple-user-defined-statistic-in-ngrinder
+      - See https://github.com/naver/ngrinder/wiki/multiple-user-defined-statistic-in-ngrinder
     * Ignore error count
-        * Some of users want to continue testing even if there were many errors in the test. So nGrinder 3.5.0 supports that as a test option in advanced configuration panel
+      - Some of users want to continue testing even if there were many errors in the test. So nGrinder 3.5.0 supports that as a test option in advanced configuration panel
     * Support custom classpath
-        * If you want to set classpath for test scripts, you can use this.
-        * See https://github.com/naver/ngrinder/wiki/custom-classpath
+      - If you want to set classpath for test scripts, you can use this.
+      - See https://github.com/naver/ngrinder/wiki/custom-classpath
 
-* Modernize
+- Modernize
     * Back-end
-        * Spring boot
-            * Change from spring framework 4 to spring boot 2.
-            * Remove embedded Jetty.
-        * Hazelcast
-            * Use Hazelcast to share data among clusters
-            * Reduce load of database.
-        * Gradle
-          * Use Gradle 6.3 as a build system.
+      - Spring boot
+        - Change from spring framework 4 to spring boot 2.
+        - Remove embedded Jetty.
+      - Hazelcast
+        - Use Hazelcast to share data among clusters
+        - Reduce load of database.
+      - Gradle
+        - Use Gradle 6.3 as a build system.
     * Front-end
-        * Vue.js
-            * Introduce SPA for imporve responsibility & usability.
-            * Use webpack as a module bundler.
-        * UX/UI
-            *  Use Billboard.js to draw charts.
-            *  Bump bootstrap up from 2 to 4.
+      - Vue.js
+        - Introduce SPA for imporve responsibility & usability.
+        - Use webpack as a module bundler.
+      - UX/UI
+        - Use Billboard.js to draw charts.
+        - Bump bootstrap up from 2 to 4.
 
-* Bug fix
+- Bug fix
     * #490 Fix log file name for agent command line
     * #558 Fix agent state API to work in private agent
     * #571 Prevent zombie agents from remaining in distributed cache

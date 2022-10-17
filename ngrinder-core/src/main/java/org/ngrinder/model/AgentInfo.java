@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
@@ -25,6 +26,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 
 import static java.util.Objects.hash;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
@@ -34,7 +36,7 @@ import static org.ngrinder.common.util.AccessUtils.getSafe;
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings({"deprecation", "UnusedDeclaration", "JpaDataSourceORMInspection"})
+@SuppressWarnings({"UnusedDeclaration", "JpaDataSourceORMInspection"})
 @Getter
 @Setter
 @ToString
@@ -114,7 +116,27 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	public boolean isApproved() {
-		return approved == null ? false : approved;
+		return approved != null && approved;
+	}
+
+	public String getSubregion() {
+		if (agentIdentity instanceof AgentControllerIdentityImplementation) {
+			return defaultIfEmpty(((AgentControllerIdentityImplementation) agentIdentity).getSubregion(), "");
+		}
+		return "";
+	}
+
+	public void setSubregion(String subregion) {
+		if (agentIdentity instanceof AgentControllerIdentityImplementation) {
+			((AgentControllerIdentityImplementation) agentIdentity).setSubregion(subregion);
+		}
+	}
+
+	public String getOwner() {
+		if (agentIdentity instanceof AgentControllerIdentityImplementation) {
+			return defaultIfEmpty(((AgentControllerIdentityImplementation) agentIdentity).getOwner(), "");
+		}
+		return "";
 	}
 
 	@JsonIgnore

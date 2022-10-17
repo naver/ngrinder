@@ -1,7 +1,6 @@
 package org.ngrinder.infra.config;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.*;
@@ -47,8 +46,8 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 	 */
 	static class LocaleAndCode {
 
-		private String locale;
-		private String code;
+		private final String locale;
+		private final String code;
 
 		public LocaleAndCode(String locale, String code) {
 			this.locale = locale;
@@ -64,14 +63,6 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 		public boolean equals(Object obj) {
 			return EqualsBuilder.reflectionEquals(this, obj);
 		}
-	}
-
-	/**
-	 * Refresh i18n messages.
-	 * @throws IOException IO exception
-	 */
-	public void refresh() throws IOException {
-		init();
 	}
 
 	/**
@@ -127,6 +118,7 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 			.collect(Collectors.toMap(entry -> entry.getKey().code, entry -> entry.getValue().toPattern()));
 	}
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
 		MessageFormat resolved = langMessageMap.get(new LocaleAndCode(locale.getLanguage(), code));

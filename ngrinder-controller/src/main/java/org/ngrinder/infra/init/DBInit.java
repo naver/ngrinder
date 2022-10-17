@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.init;
 
@@ -22,8 +22,9 @@ import org.springframework.security.crypto.password.ShaPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
+import java.time.Instant;
 
+import static java.time.Instant.now;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_ADMIN_PASSWORD_RESET;
 import static org.ngrinder.model.Role.*;
 
@@ -89,11 +90,11 @@ public class DBInit {
 			user.setUserName(userName);
 			user.setEmail(email);
 
-			Date now = new Date();
-			user.setCreatedDate(now);
-			user.setLastModifiedDate(now);
-			user.setCreatedUser(user);
-			user.setLastModifiedUser(user);
+			Instant now = now();
+			user.setCreatedAt(now);
+			user.setLastModifiedAt(now);
+			user.setCreatedBy(user);
+			user.setLastModifiedBy(user);
 
 			user = userRepository.save(user);
 			fileEntryService.prepare(user);

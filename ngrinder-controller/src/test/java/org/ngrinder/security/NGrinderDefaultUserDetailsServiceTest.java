@@ -13,11 +13,6 @@
  */
 package org.ngrinder.security;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +20,8 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.plugin.MockPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import static org.junit.Assert.*;
 
 public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
@@ -43,9 +40,9 @@ public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTrans
 		// if passing a default user, admin,
 		SecuredUser loadUserByUsername = (SecuredUser) userDetailsService.loadUserByUsername("admin");
 		// Default should be resolved by DefaultLoginPlugins
-		assertThat("admin should not be null", loadUserByUsername, notNullValue());
-		assertThat("default user(admin) should be retrieved from DefaultLoginPlugin",
-						loadUserByUsername.getUserInfoProviderClass(), nullValue());
+		assertNotNull("admin should not be null", loadUserByUsername);
+		assertEquals("default user(admin) should be retrieved from DefaultLoginPlugin",
+						loadUserByUsername.getUserInfoProviderClass(), DefaultLoginPlugin.class.getName());
 	}
 
 	@Test

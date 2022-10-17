@@ -31,6 +31,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.by;
 
+@SuppressWarnings({"JavaDoc", "SpringElInspection"})
 @Slf4j
 @RestController
 @RequestMapping("/user/api")
@@ -66,7 +67,7 @@ public class UserApiController {
 	@GetMapping("/profile")
 	public Map<String, Object> getOne(User user) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User one = userService.getOneWithFollowers(user.getUserId());
+		User one = userService.getOneWithEagerFetch(user.getUserId());
 
 		Map<String, Object> viewConfig = new HashMap<>();
 		viewConfig.put("allowPasswordChange", !config.isDemo());
@@ -88,8 +89,9 @@ public class UserApiController {
 	 * @param user current user
 	 * @return app
 	 */
+	@SuppressWarnings("unused")
 	@GetMapping("/new")
-	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
+	@PreAuthorize("hasAnyRole('A')")
 	public Map<String, Object> openForm(User user) {
 		User one = User.createNew();
 
@@ -117,7 +119,7 @@ public class UserApiController {
 	@GetMapping("/{userId}/detail")
 	@PreAuthorize("hasAnyRole('A')")
 	public Map<String, Object> getOneDetail(@PathVariable final String userId) {
-		User one = userService.getOneWithFollowers(userId);
+		User one = userService.getOneWithEagerFetch(userId);
 
 		Map<String, Object> viewConfig = new HashMap<>();
 		viewConfig.put("allowPasswordChange", true);
@@ -137,7 +139,7 @@ public class UserApiController {
 	@GetMapping({"/list", "/list/"})
 	@PreAuthorize("hasAnyRole('A')")
 	public Page<User> getAll(@RequestParam(required = false) Role role,
-							 @PageableDefault(page = 0, size = 10) Pageable pageable,
+							 @PageableDefault Pageable pageable,
 							 @RequestParam(required = false) String keywords) {
 		pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
 		Pageable defaultPageable = PageRequest.of(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(), DEFAULT_SORT));
@@ -280,7 +282,6 @@ public class UserApiController {
 	 * Delete the user by the given userId.
 	 *
 	 * @param userId user id
-	 * @return json message
 	 */
 	@DeleteMapping("/{userId}")
 	@PreAuthorize("hasAnyRole('A')")

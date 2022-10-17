@@ -20,9 +20,12 @@
                                 </div>
                                 <div class="tag-container" data-step="2" :data-intro="i18n('intro.detail.tags')">
                                     <control-group name="tagString" labelMessageKey="perfTest.config.tags">
-                                        <select2 v-model="test.tagString" :value="test.tagString" customStyle="width: 300px; min-height: 30px;" type="input" name="tagString"
-                                                 :option="{ tokenSeparators: [',', ' '], tags: [''], placeholder: i18n('perfTest.config.tagInput'),
-                                                  maximumSelectionSize: 5, initSelection: initSelection, query: select2Query }">
+                                        <select2 v-model="test.tagList"
+                                                 name="tags"
+                                                 ref="tags"
+                                                 multiple
+                                                 customStyle="width: 300px; min-height: 30px;"
+                                                 :option="tagSelect2Options">
                                         </select2>
                                     </control-group>
                                 </div>
@@ -38,7 +41,7 @@
                                              :src="`${contextPath}${perftestStatus.iconPath}`"/>
                                     </div>
                                     <div class="ml-auto" data-step="3" :data-intro="i18n('intro.detail.startbutton')">
-                                        <div class="control-group">
+                                        <div class="control-group start-btn-container">
                                             <button class="btn btn-success" :disabled="disabled" @click.prevent="clonePerftest">
                                                 <i class="fa fa-clone mr-1"></i>
                                                 <span v-text="isClone ? i18n('perfTest.action.clone') : i18n('common.button.save')"></span>
@@ -76,7 +79,7 @@
                         <a v-show="tab.display.report" href="#report-section" class="nav-link"
                            data-toggle="tab" ref="reportTab" v-text="i18n('perfTest.report.tab')"></a>
                     </li>
-                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdUser.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdUser.userId}`" v-text="switchUserTitle"></a>
+                    <a v-if="isAdmin && (ngrinder.currentUser.id !== test.createdBy.userId)" class="ml-auto" :href="`${contextPath}/user/switch?to=${test.createdBy.userId}`" v-text="switchUserTitle"></a>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane" id="test-config-section">
@@ -110,7 +113,7 @@
     import PopoverMixin from '../../common/mixin/PopoverMixin.vue';
     import CommonMixin from '../mixin/CommonMixin.vue';
     import Utils from '../../../utils.js';
-    import { TipType } from "../../../constants";
+    import { TipType } from '../../../constants';
 
     class PerfTestSerializer {
         static serialize(test) {
@@ -118,7 +121,7 @@
                 // basic
                 id: test.id,
                 testName: test.testName,
-                tagString: test.tagString,
+                tagString: test.tagList.join(','),
                 status: test.status.name,
                 description: test.description,
                 scheduledTime: test.scheduledTime,
@@ -137,6 +140,7 @@
                 samplingInterval: test.config.samplingInterval,
                 ignoreSampleCount: test.config.ignoreSampleCount,
                 ignoreTooManyError: test.config.ignoreTooManyError,
+                connectionReset: test.config.connectionReset,
                 safeDistribution: test.config.safeDistribution,
                 param: test.config.param,
                 scm: test.config.scm,
@@ -155,11 +159,11 @@
         static deserialize(test) {
             return {
                 id: test.id,
-                createdUser: test.createdUser,
+                createdBy: test.createdBy,
                 progressMessage: test.progressMessage,
                 lastProgressMessage: test.lastProgressMessage,
                 testName: test.testName,
-                tagString: test.tagString,
+                tagList: test.tagString ? test.tagString.split(',') : [],
                 status: test.status,
                 description: test.description,
                 config: {
@@ -178,6 +182,7 @@
                     samplingInterval: test.samplingInterval,
                     ignoreSampleCount: test.ignoreSampleCount,
                     ignoreTooManyError: test.ignoreTooManyError,
+                    connectionReset: test.connectionReset,
                     safeDistribution: test.safeDistribution,
                     param: test.param,
                     scm: test.scm || 'svn',
@@ -233,6 +238,20 @@
             },
         };
 
+        tagSelect2Options = {
+            placeholder: this.i18n('perfTest.config.tagInput'),
+            multiple: true,
+            maximumSelectionLength: 5,
+            ajax: {
+                url: '/perftest/api/search_tag',
+                data: params => ({ query: params.term }),
+                processResults: results => ({
+                    results: results.map(e => ({ id: e, text: e })),
+                }),
+            },
+            initSelect2: this.initSelect2,
+        };
+
         data() {
             return { test: PerfTestSerializer.deserialize(this.$route.params.test) };
         }
@@ -258,13 +277,21 @@
             this.$router.referer ? this.$router.back() : this.$router.push('/perftest/');
         }
 
+        initSelect2() {
+            const data = [];
+            if (this.test.tagList) {
+                this.test.tagList.forEach(tag => data.push(new Option(tag, tag, true, true)));
+            }
+            return data;
+        }
+
         static async prepare(route) {
             route.params.scriptsMap = {};
             try {
                 await PerfTestDetail.preparePerfTest(route);
                 return Promise.all([
                     PerfTestDetail.prepareSvnScripts(route),
-                    PerfTestDetail.prepareGitHubConfig(route)
+                    PerfTestDetail.prepareGitHubConfig(route),
                 ]);
             } catch (e) {
                 return Promise.reject();
@@ -286,9 +313,9 @@
         }
 
         static prepareSvnScripts(route) {
-            let apiUrl = `/perftest/api/script`;
+            let apiUrl = '/perftest/api/script';
             if (route.params.isAdmin) {
-                apiUrl += `?ownerId=${route.params.test.createdUser.userId}`;
+                apiUrl += `?ownerId=${route.params.test.createdBy.userId}`;
             }
             return Base.prototype.$http.get(apiUrl)
                 .then(res => route.params.scriptsMap.svn = res.data);
@@ -398,47 +425,21 @@
             this.$nextTick(() => this.$refs.configTab.click());
         }
 
-        initSelection(element, callback) {
-            const data = [];
-            this.test.tagString.split(',').forEach(tag => {
-                if (tag) {
-                    data.push({ id: tag, text: tag });
-                }
-            });
-            element.val('');
-            callback(data);
-        }
-
-        select2Query(query) {
-            const data = {
-                results: [],
-            };
-
-            this.$http.get('/perftest/api/search_tag', {
-                params: {
-                    query: query.term,
-                },
-            }).then(res => {
-                res.data.forEach(tag => data.results.push({ id: tag, text: tag }));
-                query.callback(data);
-            });
-        }
-
         clonePerftest() {
             this.$delete(this.$refs.config.agentCountValidationRules, 'min_value');
             const agentCountField = this.$refs.config.$validator.fields.find({ name: 'agentCount' });
             agentCountField.update({ rules: this.$refs.config.agentCountValidationRules });
 
             if (this.test.config.scm === 'svn') {
-                this.checkClonePerftestValidation();
+                this.checkClonedPerftestValidation();
                 return;
             }
 
             this.$refs.config.loadGitHubScript()
-                .then(this.checkClonePerftestValidation, this.clickConfigTabIfHasErrors);
+                .then(this.checkClonedPerftestValidation, this.clickConfigTabIfHasErrors);
         }
 
-        checkClonePerftestValidation() {
+        checkClonedPerftestValidation() {
             this.$validator.validateAll()
                 .then(() => {
                     if (this.errors.any()) {
@@ -474,7 +475,7 @@
                     if (this.errors.any()) {
                         this.$refs.configTab.click();
                     } else {
-                        if (typeof(scheduleTestBlockingHook) === 'function') {
+                        if (typeof (scheduleTestBlockingHook) === 'function') {
                             scheduleTestBlockingHook.call(this, this.$refs.scheduleModal.show);
                             return;
                         }
@@ -492,7 +493,7 @@
         runPerftest(scheduledTime) {
             this.$refs.scheduleModal.hide();
             this.test.status.name = 'READY';
-            this.test.scheduledTime = scheduledTime;
+            this.test.scheduledTime = scheduledTime ? scheduledTime.getTime() : scheduledTime;
 
             this.$nextTick(() => {
                 this.$http.post(`/perftest/api/save?isClone=${this.isClone}`, PerfTestSerializer.serialize(this.test))
@@ -513,11 +514,11 @@
         }
 
         get switchUserTitle() {
-            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdUser.userName} (${this.test.createdUser.userId})`;
+            return `${this.i18n('perfTest.list.owner')} : ${this.test.createdBy.userName} (${this.test.createdBy.userId})`;
         }
 
         get disabled() {
-            return this.test.createdUser.userId !== this.ngrinder.currentUser.factualUser.id;
+            return this.test.createdBy.userId !== this.ngrinder.currentUser.factualUser.id;
         }
     }
 </script>
@@ -535,7 +536,7 @@
 
         fieldset {
             .d-flex {
-                width: 275px;
+                width: 304px;
             }
         }
 
@@ -544,7 +545,7 @@
         }
 
         .tag-container {
-            width: 414px;
+            width: 385px;
 
             label.control-label {
                 width: 60px;
@@ -635,6 +636,19 @@
             input {
                 vertical-align: top;
                 margin-left: 2px
+            }
+        }
+
+        .start-btn-container {
+            text-align: right;
+            width: 194px;
+
+            .btn-success {
+                width: 70px;
+            }
+
+            .btn-primary {
+                width: 120px;
             }
         }
 

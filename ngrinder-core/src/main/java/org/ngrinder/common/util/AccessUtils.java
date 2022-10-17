@@ -30,7 +30,7 @@ public abstract class AccessUtils {
 	}
 
 	public static boolean getSafe(Boolean value) {
-		return (value == null) ? false : value;
+		return value != null && value;
 	}
 
 	public static boolean getSafe(Boolean value, boolean b) {

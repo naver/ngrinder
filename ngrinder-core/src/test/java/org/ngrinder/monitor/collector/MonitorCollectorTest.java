@@ -5,7 +5,7 @@ import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.ngrinder.common.util.ThreadUtils.sleep;
 

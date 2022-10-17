@@ -1,19 +1,23 @@
 description = "ngrinder-runtime"
+
 dependencies {
-    compile (group: "org.json", name: "json", version:"20090211")
-    compile (group: "dnsjava", name: "dnsjava", version:"3.2.2")
-    compile (group: "commons-io", name: "commons-io", version:"2.2")
-    compile (group: "commons-lang", name: "commons-lang", version:"2.6")
-    compile (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
-    compile (group: "junit", name: "junit-dep", version:"4.8.2")
-    compile (group: "asm", name: "asm", version:"3.3.1")
-    compile (group: "net.sf.grinder", name: "grinder", version:"3.9.1") {
+    api (group: "junit", name: "junit", version: junit_version)
+    api (group: "commons-lang", name: "commons-lang", version:"2.6")
+    api (group: "commons-io", name: "commons-io", version:"2.2")
+    api (group: "org.python", name: "jython-standalone", version:"2.7.2")
+    api (group: "net.sf.grinder", name: "grinder", version:"3.9.1") {
         exclude (module: "clojure")
         exclude (module: "jython")
         exclude (module: "grinder-xmlbeans")
         exclude (module: "jedit-syntax")
+        exclude (module: "asm")
     }
+    api (group: "org.json", name: "json", version:"20090211")
+    api (group: "dnsjava", name: "dnsjava", version:"3.2.2")
+    api (group: "org.hamcrest", name: "hamcrest-all", version:"1.1")
+    api (group: "org.ow2.asm", name: "asm", version: "9.0")
+    api (group: "org.apache.httpcomponents.core5", name: "httpcore5-h2", version: "5.0.3")
 
-    testCompile (group: "org.easytesting", name: "fest-assert", version:"1.4")
-    testCompile (group: "org.mockito", name: "mockito-core", version: mockito_version)
+    testImplementation (group: "org.easytesting", name: "fest-assert", version:"1.4")
+    testImplementation (group: "org.mockito", name: "mockito-core", version: mockito_version)
 }

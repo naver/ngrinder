@@ -17,7 +17,7 @@
                     </div>
 
                     <div class="prompt">
-                        <input type="checkbox" class="checkbox remember-me" name='_spring_security_remember_me'>
+                        <input type="checkbox" class="checkbox remember-me" name="remember-me">
                         <span>Remember Me</span>
                         <select class="form-control native-language" name="native_language" v-model="userLanguage">
                             <option value="en">English</option>

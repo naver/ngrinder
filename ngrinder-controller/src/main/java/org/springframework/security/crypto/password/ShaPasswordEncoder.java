@@ -8,11 +8,10 @@ import org.springframework.security.crypto.codec.Utf8;
  *
  * @since 3.5.0
  */
-@SuppressWarnings("deprecation")
 public class ShaPasswordEncoder {
 	private static final String PREFIX = "{";
 	private static final String SUFFIX = "}";
-	private Digester digester;
+	private final Digester digester;
 
 	/**
 	 * @param algorithm encryption algorithm

@@ -16,8 +16,8 @@ package org.ngrinder.region.service;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
-import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cluster.Member;
+import com.hazelcast.core.HazelcastInstance;
 import lombok.RequiredArgsConstructor;
 import net.grinder.util.NetworkUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,16 +27,19 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.hazelcast.HazelcastService;
 import org.ngrinder.infra.hazelcast.task.RegionInfoTask;
 import org.ngrinder.region.model.RegionInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.RegionUtils.convertSubregionsStringToSet;
 
 /**
  * Region service class. This class responsible to keep the status of available regions.
@@ -47,16 +50,13 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 @RequiredArgsConstructor
 public class RegionService {
 
-	@SuppressWarnings("UnusedDeclaration")
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
-
 	private final Config config;
 
 	private final HazelcastService hazelcastService;
 
 	private final HazelcastInstance hazelcastInstance;
 
-	private Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
+	private final Supplier<Map<String, RegionInfo>> allRegions = Suppliers.memoizeWithExpiration(new Supplier<Map<String, RegionInfo>>() {
 		@Override
 		public Map<String, RegionInfo> get() {
 			Map<String, RegionInfo> regions = Maps.newHashMap();
@@ -66,23 +66,28 @@ public class RegionService {
 					regions.put(regionInfo.getRegionName(), regionInfo);
 				}
 			} else {
-				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
-				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), regionIP, config.getControllerPort()));
+				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.getLocalHostAddress());
+				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), emptySet(), regionIP, config.getControllerPort()));
 			}
 			return regions;
 		}
 	}, REGION_CACHE_TIME_TO_LIVE_SECONDS, TimeUnit.SECONDS);
 
-	private Supplier<List<String>> allRegionNames = Suppliers.memoizeWithExpiration(new Supplier<List<String>>() {
+	private final Supplier<List<Map<String, String>>> allRegionNames = Suppliers.memoizeWithExpiration(new Supplier<List<Map<String, String>>>() {
 		@Override
-		public List<String> get() {
+		public List<Map<String, String>> get() {
 			Set<Member> members = hazelcastInstance.getCluster().getMembers();
-			List<String> regionNames = new ArrayList<>();
+			List<Map<String, String>> regionNames = new ArrayList<>();
+
 			for (Member member : members) {
 				if (member.getAttributes().containsKey(REGION_ATTR_KEY)) {
-					regionNames.add((String) member.getAttributes().get(REGION_ATTR_KEY));
+					Map<String, String> regionMap = new HashMap<>();
+					regionMap.put(REGION_ATTR_KEY, member.getAttributes().get(REGION_ATTR_KEY));
+					regionMap.put(SUBREGION_ATTR_KEY, member.getAttributes().get(SUBREGION_ATTR_KEY));
+					regionNames.add(regionMap);
 				}
 			}
+
 			return regionNames;
 		}
 	}, REGION_CACHE_TIME_TO_LIVE_SECONDS, TimeUnit.SECONDS);
@@ -104,7 +109,7 @@ public class RegionService {
 		String localRegion = getCurrent();
 		RegionInfo regionInfo = regions.get(localRegion);
 		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getClusterProperties().getProperty
-			(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS))) {
+			(ClusterConstants.PROP_CLUSTER_HOST, NetworkUtils.getLocalHostAddress()))) {
 			throw processException("The region name, " + localRegion
 				+ ", is already used by other controller " + regionInfo.getIp()
 				+ ". Please set the different region name in this controller.");
@@ -131,7 +136,21 @@ public class RegionService {
 		if (regionInfo != null) {
 			return regionInfo;
 		}
-		throw new NGrinderRuntimeException(regionName + "is not exist");
+		throw new NGrinderRuntimeException(regionName + " is not exist");
+	}
+
+	public RegionInfo getOne(String region, String subregion) {
+		if (isEmpty(subregion)) {
+			return getOne(region);
+		}
+
+		RegionInfo regionInfo = getAll().get(region);
+		if (regionInfo != null) {
+			if (isEmpty(subregion) || regionInfo.getSubregion().contains(subregion)) {
+				return regionInfo;
+			}
+		}
+		throw new NGrinderRuntimeException(region + "." + subregion + " is not exist");
 	}
 
 	/**
@@ -143,11 +162,17 @@ public class RegionService {
 		return allRegions.get();
 	}
 
-	public List<String> getAllVisibleRegionNames() {
+	public List<Map<String, Object>> getAllVisibleRegionNames() {
 		if (config.isClustered()) {
-			return allRegionNames.get();
+			return allRegionNames.get().stream().map(region -> {
+				Map<String, Object> regionInfo = new HashMap<>();
+				String subregionAttributes = region.get(SUBREGION_ATTR_KEY);
+				regionInfo.put(REGION_ATTR_KEY, region.get(REGION_ATTR_KEY));
+				regionInfo.put(SUBREGION_ATTR_KEY, convertSubregionsStringToSet(subregionAttributes));
+				return regionInfo;
+			}).collect(toList());
 		} else {
-			return Collections.emptyList();
+			return emptyList();
 		}
 	}
 

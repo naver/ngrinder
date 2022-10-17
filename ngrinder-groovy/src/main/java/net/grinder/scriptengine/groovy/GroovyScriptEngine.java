@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.scriptengine.groovy;
 
@@ -40,10 +40,12 @@ import static net.grinder.util.NoOp.noOp;
  * @author JunHo Yoon (modified by)
  */
 public class GroovyScriptEngine implements ScriptEngine {
-	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+
+	private final AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+	private final GrinderContextExecutor m_grinderRunner;
+
 	// For unit test, make it package protected.
 	Class<?> m_groovyClass;
-	private GrinderContextExecutor m_grinderRunner;
 
 	/**
 	 * Construct a GroovyScriptEngine that will use the supplied ScriptLocation.
@@ -99,7 +101,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
 		private final GrinderContextExecutor m_groovyThreadRunner;
-		private RunNotifier notifier = new RunNotifier() {
+		private final RunNotifier notifier = new RunNotifier() {
 			@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 			public void fireTestFailure(Failure failure) {
 				if (exceptionProcessor.isGenericShutdown(failure.getException())) {
@@ -117,7 +119,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 			this.m_groovyThreadRunner = groovyRunner;
 			this.notifier.addListener(new RunListener() {
 				@Override
-				public void testFailure(Failure failure) throws Exception {
+				public void testFailure(Failure failure) {
 					// Skip Generic Shutdown... It's not failure.
 					Throwable rootCause = exceptionProcessor.getRootCause(failure.getException());
 					if (exceptionProcessor.isGenericShutdown(rootCause)) {

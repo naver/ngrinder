@@ -34,10 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import static java.nio.charset.Charset.defaultCharset;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
 
 public class AgentManagerApiControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -69,10 +69,9 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 		RequestContextHolder.resetRequestAttributes();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAgentList() {
-		agentApiController.getAll(userContext.getCurrentUser(), "NONE");
+		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -86,13 +85,13 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 		File tmpDownFile;
 		try {
 			tmpDownFile = File.createTempFile("ngrinder", "zip", directory);
-			FileUtils.writeStringToFile(tmpDownFile, "test data");
+			FileUtils.writeStringToFile(tmpDownFile, "test data", defaultCharset());
 			tmpDownFile.deleteOnExit();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		agentApiController.getAll(userContext.getCurrentUser(), "NONE");
+		agentApiController.getAll(userContext.getCurrentUser(), "NONE", "");
 	}
 
 	@Test
@@ -135,7 +134,7 @@ public class AgentManagerApiControllerTest extends AbstractNGrinderTransactional
 	@Test
 	public void testGetAvailableAgentCount() {
 		String targetRegion = "test";
-		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion);
+		Map<String, Integer> response = agentApiController.getAvailableAgentCount(getTestUser(), targetRegion, "");
 		assertThat(0, is(response.get("availableAgentCount")));
 	}
 }

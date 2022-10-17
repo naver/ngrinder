@@ -147,15 +147,6 @@
                 max-height: 100%;
                 overflow: hidden;
             }
-
-            .error {
-                .select2-choice {
-                    border-color: @error-color;
-                    span {
-                        color: @error-color;
-                    }
-                }
-            }
         }
 
         .introjs-helperNumberLayer {
@@ -171,6 +162,12 @@
 
             &.table-striped tbody > tr:nth-child(odd) > td {
                 background-color: #f9f9f9;
+            }
+
+            .vuetable-checkboxes, [class*='vuetable-th-checkbox'] {
+                input {
+                    margin-top: 5px;
+                }
             }
         }
 
@@ -198,12 +195,6 @@
             }
         }
 
-        .select2-container {
-            .select2-default {
-                color: #777 !important;
-            }
-        }
-
         .modal-dialog {
             .modal-body {
                 word-break: break-all;
@@ -219,8 +210,8 @@
 
         .control-group.error {
             input, select, .input-group-text {
-                color: @error-color;
-                border-color: @error-color;
+                color: @error-color !important;
+                border-color: @error-color !important;
                 box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 
                 &.input-group-text {
@@ -261,6 +252,12 @@
         .control-label {
             float: left;
             text-align: right;
+        }
+
+        .required-mark {
+            vertical-align: middle;
+            margin-right: 2px;
+            color: red;
         }
 
         div {

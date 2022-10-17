@@ -8,9 +8,17 @@
                 <div class="modal-body pt-0">
                     <fieldset>
                         <control-group labelMessageKey="user.switch.title">
-                            <select2 v-if="isAdmin" :option="option" type="input" v-model="switchTargetUserId" @change="switchUser"></select2>
-                            <select2 v-else v-model="switchTargetUserId" @change="switchUser">
-                                <option value=""></option>
+                            <select2 v-if="isAdmin"
+                                     customStyle="width: 310px;"
+                                     :option="option"
+                                     type="input"
+                                     v-model="switchTargetUserId"
+                                     @change="switchUser">
+                            </select2>
+                            <select2 v-else
+                                     customStyle="width: 310px;"
+                                     v-model="switchTargetUserId"
+                                     @change="switchUser">
                                 <option v-for="user in switchableUsers" :value="user.userId">{{ user | userDescription }}</option>
                             </select2>
                         </control-group>
@@ -47,8 +55,8 @@
                         url: `${this.contextPath}/user/api/switch_options`,
                         dataType: 'json',
                         quietMillis: 1000,
-                        data: term => ({ keywords: term }),
-                        results: users => {
+                        data: params => ({ keywords: params.term }),
+                        processResults: users => {
                             const select2Data = users.map(user => ({
                                 id: user.userId,
                                 text: userDescription(user),
@@ -56,8 +64,6 @@
                             return { results: select2Data };
                         },
                     },
-                    formatSelection: data => data.text,
-                    formatResult: data => data.text,
                 };
             } else {
                 this.$http.get('/user/api/switch_options')
@@ -100,10 +106,6 @@
                 width: 100px;
                 color: #666;
                 font-weight: bold;
-            }
-
-            .select2-container {
-                width: 310px;
             }
         }
     }

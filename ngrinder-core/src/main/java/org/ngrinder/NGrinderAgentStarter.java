@@ -33,7 +33,8 @@ import java.util.Properties;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static net.grinder.util.NetworkUtils.getIP;
-import static org.apache.commons.lang.StringUtils.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constants.InternalConstants.PROP_INTERNAL_NGRINDER_VERSION;
 import static org.ngrinder.common.util.SystemInfoUtils.*;
 
@@ -47,6 +48,8 @@ import static org.ngrinder.common.util.SystemInfoUtils.*;
 public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger("starter");
+
+	private static final String NETWORK_ADDRESS_CACHE_TTL_SECOND = "20";
 
 	private AgentConfig agentConfig;
 
@@ -132,9 +135,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		if (agentConfig.isConnectionMode()) {
 			LOG.info("waiting for connection on {}:{}", agentConfig.getBroadcastIP(), agentConfig.getConnectionAgentPort());
 		} else {
-			String controllerIP = getIP(agentConfig.getControllerIP());
-			agentConfig.setControllerHost(controllerIP);
-			LOG.info("connecting to controller {}:{}", controllerIP, agentConfig.getControllerPort());
+			LOG.info("connecting to controller {}:{}", getIP(agentConfig.getControllerHost()), agentConfig.getControllerPort());
 		}
 
 		try {
@@ -182,7 +183,7 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 		}
 		final List<String> unknownOptions = commander.getUnknownOptions();
 		modeParam = param.getModeParam();
-		modeParam.parse(unknownOptions.toArray(new String[unknownOptions.size()]));
+		modeParam.parse(unknownOptions.toArray(new String[0]));
 
 		if (modeParam.version != null) {
 			LOG.info("nGrinder v" + getStaticVersion());
@@ -204,6 +205,9 @@ public class NGrinderAgentStarter implements AgentConstants, CommonConstants {
 			return;
 		}
 		starter.checkDuplicatedRun(startMode);
+
+		java.security.Security.setProperty("networkaddress.cache.ttl", NETWORK_ADDRESS_CACHE_TTL_SECOND);
+
 		if (startMode.equalsIgnoreCase("agent")) {
 			starter.startAgent();
 		} else if (startMode.equalsIgnoreCase("monitor")) {

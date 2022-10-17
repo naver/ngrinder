@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -38,7 +38,7 @@ public enum Database {
 	/**
 	 * MYSQL.
 	 */
-	mysql(com.mysql.cj.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8&serverTimezone=%s&%s") {
+	mysql(com.mysql.cj.jdbc.Driver.class, MYSQLExDialect.class, "jdbc:mysql://%s?characterEncoding=utf8&allowMultiQueries=true&serverTimezone=%s&%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String databaseUrlOption = databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION);
@@ -62,6 +62,7 @@ public enum Database {
 			final String databaseURL = databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL);
 			if (databaseURL.startsWith("tcp://")) {
 				format = "jdbc:h2:" + databaseURL;
+				setClusterSupport(true);
 			}
 			if (databaseProperties.exist(PROP_DATABASE_UNIT_TEST)) {
 				format = format + ";LOCK_MODE=0";
@@ -84,7 +85,7 @@ public enum Database {
 	private final String urlTemplate;
 	private final String jdbcDriverName;
 	private final String dialect;
-	private final boolean clusterSupport;
+	private boolean clusterSupport;
 
 	/**
 	 * Constructor with cluster mode true.
@@ -207,5 +208,9 @@ public enum Database {
 	 */
 	public boolean isClusterSupport() {
 		return clusterSupport;
+	}
+
+	public void setClusterSupport(boolean clusterSupport) {
+		this.clusterSupport = clusterSupport;
 	}
 }

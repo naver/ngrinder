@@ -43,6 +43,7 @@ public interface NameServiceProxy extends InvocationHandler {
 	 * @param dns NameService implementation to be replaced.
 	 * Replace NameService implementation of {@link InetAddress}.
 	 */
+	@SuppressWarnings("JavaReflectionMemberAccess")
 	static void set(NameServiceProxy dns) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
 		Class<?> inetAddressClass = InetAddress.class;
 		Object proxyInstance;
@@ -65,6 +66,7 @@ public interface NameServiceProxy extends InvocationHandler {
 		nameServiceField.setAccessible(false);
 	}
 
+	@SuppressWarnings("SuspiciousInvocationHandlerImplementation")
 	@Override
 	default Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		return method.getName().equalsIgnoreCase("lookupAllHostAddr") ?

@@ -2,7 +2,7 @@ package org.ngrinder.agent.service;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.packages.AgentPackageHandler;
 import org.ngrinder.packages.PackageHandler;
@@ -12,16 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import lombok.RequiredArgsConstructor;
 
+import static net.grinder.util.AbstractGrinderClassPathProcessor.getClassPaths;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.ngrinder.common.util.CompressionUtils.*;
 import static org.ngrinder.common.util.EncodingUtils.decodePathWithUTF8;
+import static org.ngrinder.common.util.StringUtils.replaceLast;
 
 /**
  * Agent package service.
@@ -42,17 +40,17 @@ public class AgentPackageService {
 	 *
 	 * @return File package.
 	 */
-	public File createPackage(PackageHandler packageHandler, URLClassLoader classLoader, String regionName, String connectionIP, int port, String owner) {
+	public File createPackage(PackageHandler packageHandler, PackageDownloadInfo packageDownloadInfo) {
 		synchronized (AgentPackageService.class) {
-			File packageFile = packageHandler.getPackageFile(regionName, connectionIP, owner, false);
+			File packageFile = packageHandler.getPackageFile(packageDownloadInfo, false);
 			if (packageFile.exists()) {
 				return packageFile;
 			}
 			FileUtils.deleteQuietly(packageFile);
 			try (TarArchiveOutputStream tarOutputStream = createTarArchiveStream(packageFile)) {
-				addDependentLibToTarStream(packageHandler, tarOutputStream, classLoader);
-				if (!(packageHandler instanceof AgentPackageHandler) || isNotEmpty(connectionIP)) {
-					packageHandler.addConfigToPackage(tarOutputStream, packageHandler.getConfigParam(regionName, connectionIP, port, owner));
+				addDependentLibToTarStream(packageHandler, tarOutputStream);
+				if (!(packageHandler instanceof AgentPackageHandler) || isNotEmpty(packageDownloadInfo.getConnectionIp())) {
+					packageHandler.addConfigToPackage(tarOutputStream, packageHandler.getConfigParam(packageDownloadInfo));
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error while generating an agent package" + e.getMessage());
@@ -64,35 +62,32 @@ public class AgentPackageService {
 	/**
 	 * Create agent package.
 	 *
-	 * @return File  agent package.
+	 * @return File agent package.
 	 */
 	public File createAgentPackage() {
-		return createAgentPackage(null, null, config.getControllerPort(), null);
+		PackageDownloadInfo packageDownloadInfo = PackageDownloadInfo.builder().connectionPort(config.getControllerPort()).build();
+		return createAgentPackage(packageDownloadInfo);
 	}
 
 	/**
 	 * Create agent package.
 	 *
-	 * @param connectionIP host ip.
-	 * @param region       region
-	 * @param owner        owner
+	 * @param packageDownloadInfo information for downloading agent.
+	 *
 	 * @return File  agent package.
 	 */
-	public File createAgentPackage(String region, String connectionIP, int port, String owner) {
+	public File createAgentPackage(PackageDownloadInfo packageDownloadInfo) {
 		synchronized (AgentPackageService.class) {
-			return createPackage(agentPackageHandler, (URLClassLoader) getClass().getClassLoader(), region, connectionIP, port, owner);
+			return createPackage(agentPackageHandler, packageDownloadInfo);
 		}
 	}
 
-	private void addDependentLibToTarStream(PackageHandler packageHandler, TarArchiveOutputStream tarOutputStream, URLClassLoader classLoader) throws IOException {
-		if (classLoader == null) {
-			classLoader = (URLClassLoader) getClass().getClassLoader();
-		}
+	private void addDependentLibToTarStream(PackageHandler packageHandler, TarArchiveOutputStream tarOutputStream) throws IOException {
 		packageHandler.addBaseFolderToPackage(tarOutputStream);
-		Set<String> libs = packageHandler.getPackageDependentLibs(classLoader);
+		Set<String> libs = packageHandler.getPackageDependentLibs();
 		packageHandler.copyShellFile(tarOutputStream);
 
-		for (URL eachUrl : classLoader.getURLs()) {
+		for (URL eachUrl : getClassPaths(getClass().getClassLoader())) {
 			File eachClassPath = new File(decodePathWithUTF8(eachUrl.getFile()));
 			if (!isJar(eachClassPath)) {
 				continue;
@@ -125,39 +120,15 @@ public class AgentPackageService {
 	 * @param libs    lib set
 	 * @return true if dependent lib
 	 */
-	private boolean isDependentLib(File libFile, Set<String> libs) {
+	protected boolean isDependentLib(File libFile, Set<String> libs) {
 		if (libFile.getName().contains("grinder-3.9.1.jar")) {
 			return false;
 		}
-		String name = libFile.getName().replace("-SNAPSHOT", "").replace("-GA", "");
+
+		// Replace release types (-SNAPSHOT, -GA, -p1, ...)
+		String name = replaceLast(libFile.getName(), "-[a-zA-Z][a-zA-Z1-9]+\\.", ".");
 		final int libVersionStartIndex = name.lastIndexOf("-");
 		name = name.substring(0, (libVersionStartIndex == -1) ? name.lastIndexOf(".") : libVersionStartIndex);
 		return libs.contains(name);
 	}
-
-	static class TarArchivingZipEntryProcessor implements ZipEntryProcessor {
-		private TarArchiveOutputStream tao;
-		private FilePredicate filePredicate;
-		private String basePath;
-		private int mode;
-
-		TarArchivingZipEntryProcessor(TarArchiveOutputStream tao, FilePredicate filePredicate, String basePath, int mode) {
-			this.tao = tao;
-			this.filePredicate = filePredicate;
-			this.basePath = basePath;
-			this.mode = mode;
-		}
-
-		@Override
-		public void process(ZipFile file, ZipEntry entry) throws IOException {
-			try (InputStream inputStream = file.getInputStream(entry)) {
-				if (filePredicate.evaluate(entry)) {
-					addInputStreamToTar(this.tao, inputStream, basePath + FilenameUtils.getName(entry.getName()),
-							entry.getSize(),
-							this.mode);
-				}
-			}
-		}
-	}
-
 }

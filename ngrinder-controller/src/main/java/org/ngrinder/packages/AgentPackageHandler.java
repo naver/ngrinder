@@ -1,31 +1,25 @@
 package org.ngrinder.packages;
 
-import org.apache.commons.lang.StringUtils;
+import lombok.RequiredArgsConstructor;
+import org.ngrinder.agent.model.PackageDownloadInfo;
 import org.ngrinder.infra.schedule.ScheduledTaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Set;
 
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
 @Component("agentPackageHandler")
+@RequiredArgsConstructor
 public class AgentPackageHandler extends PackageHandler {
 
-	private Logger LOGGER = LoggerFactory.getLogger(AgentPackageHandler.class);
-
-	@Autowired
-	private ScheduledTaskService scheduledTaskService;
+	private final ScheduledTaskService scheduledTaskService;
 
 	@PostConstruct
 	public void cleanUpCachedPackageDir() {
 		cleanUpPackageDir(true);
-
 		scheduledTaskService.addFixedDelayedScheduledTask(() -> cleanUpPackageDir(false), TIME_MILLIS_OF_DAY);
 	}
 
@@ -60,27 +54,18 @@ public class AgentPackageHandler extends PackageHandler {
 	}
 
 	@Override
-	public Map<String, Object> getConfigParam(String regionName, String controllerIP, int port, String owner) {
+	public Map<String, Object> getConfigParam(PackageDownloadInfo packageDownloadInfo) {
 		Map<String, Object> confMap = newHashMap();
-		confMap.put("controllerIP", controllerIP);
-		confMap.put("controllerPort", String.valueOf(port));
-		if (StringUtils.isEmpty(regionName)) {
-			regionName = "NONE";
-		}
-		if (StringUtils.isNotBlank(owner)) {
-			if (StringUtils.isEmpty(regionName)) {
-				regionName = "owned_" + owner;
-			} else {
-				regionName = regionName + "_owned_" + owner;
-			}
-		}
-		confMap.put("controllerRegion", regionName);
+		confMap.put("controllerIP", packageDownloadInfo.getConnectionIp());
+		confMap.put("controllerPort", String.valueOf(packageDownloadInfo.getConnectionPort()));
+		confMap.put("subregion", packageDownloadInfo.getSubregion());
+		confMap.put("owner", packageDownloadInfo.getOwner());
 		return confMap;
 	}
 
 	@Override
-	public Set<String> getPackageDependentLibs(URLClassLoader urlClassLoader) {
-		Set<String> libs = getDependentLibs(urlClassLoader);
+	public Set<String> getPackageDependentLibs() {
+		Set<String> libs = getDependentLibs();
 		libs.add("ngrinder-core");
 		libs.add("ngrinder-runtime");
 		libs.add("ngrinder-groovy");

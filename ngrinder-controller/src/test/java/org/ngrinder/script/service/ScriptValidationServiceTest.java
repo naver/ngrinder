@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.service;
 
@@ -33,9 +33,11 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.ngrinder.common.constants.GrinderConstants.GRINDER_SECURITY_LEVEL_NORMAL;
 
 public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTest {
@@ -88,7 +90,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 
 	@Test(timeout = 30000)
 	public void testInfiniteScriptValidation() throws IOException {
-		String script = IOUtils.toString(new ClassPathResource("/validation/script_loop.py").getInputStream());
+		String script = IOUtils.toString(new ClassPathResource("/validation/script_loop.py").getInputStream(), defaultCharset());
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script.py");
 		fileEntry.setContent(script);
@@ -97,7 +99,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 
 	@Test
 	public void testNormalScriptValidation() throws IOException {
-		String script = IOUtils.toString(new ClassPathResource("/validation/script_1time.py").getInputStream());
+		String script = IOUtils.toString(new ClassPathResource("/validation/script_1time.py").getInputStream(), defaultCharset());
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script2.py");
 		fileEntry.setContent(script);
@@ -108,7 +110,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 
 	@Test
 	public void testScriptValidationWithSvnScript() throws IOException {
-		String script = IOUtils.toString(new ClassPathResource("/validation/script_1time.py").getInputStream());
+		String script = IOUtils.toString(new ClassPathResource("/validation/script_1time.py").getInputStream(), defaultCharset());
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script2.py");
 		fileEntry.setContent(script);

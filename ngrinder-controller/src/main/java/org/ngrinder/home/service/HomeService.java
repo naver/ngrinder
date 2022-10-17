@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.home.service;
 
@@ -18,7 +18,6 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.infra.config.UserDefinedMessageSource;
@@ -31,8 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
-import static org.ngrinder.common.constant.CacheConstants.CACHE_LEFT_PANEL_ENTRIES;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_RIGHT_PANEL_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_LEFT_PANEL_ENTRIES;
+import static org.ngrinder.common.constant.CacheConstants.LOCAL_CACHE_RIGHT_PANEL_ENTRIES;
 import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
@@ -55,8 +54,7 @@ public class HomeService {
 	 * @param feedURL feed url
 	 * @return the list of {@link PanelEntry}
 	 */
-	@SuppressWarnings("unchecked")
-	@Cacheable(CACHE_LEFT_PANEL_ENTRIES)
+	@Cacheable(LOCAL_CACHE_LEFT_PANEL_ENTRIES)
 	public List<PanelEntry> getLeftPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, false);
 	}
@@ -68,7 +66,7 @@ public class HomeService {
 	 * @param feedURL rss url message
 	 * @return {@link PanelEntry} list
 	 */
-	@Cacheable(CACHE_RIGHT_PANEL_ENTRIES)
+	@Cacheable(LOCAL_CACHE_RIGHT_PANEL_ENTRIES)
 	public List<PanelEntry> getRightPanelEntries(String feedURL) {
 		return getPanelEntries(feedURL, PANEL_ENTRY_SIZE, true);
 	}
@@ -88,37 +86,39 @@ public class HomeService {
 	 */
 	public List<PanelEntry> getPanelEntries(String feedURL, int maxSize, boolean includeReply) {
 		SyndFeedInput input = new SyndFeedInput();
-		XmlReader reader = null;
 		HttpURLConnection feedConnection = null;
+
 		try {
 			List<PanelEntry> panelEntries = new ArrayList<>();
 			URL url = new URL(feedURL);
 			feedConnection = (HttpURLConnection) url.openConnection();
 			feedConnection.setConnectTimeout(8000);
 			feedConnection.setReadTimeout(8000);
-			reader = new XmlReader(feedConnection);
-			SyndFeed feed = input.build(reader);
-			int count = 0;
 
-			for (Object eachObj : feed.getEntries()) {
-				SyndEntryImpl each = cast(eachObj);
-				if (!includeReply && StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
-					continue;
+			try (XmlReader reader = new XmlReader(feedConnection)) {
+				SyndFeed feed = input.build(reader);
+				int count = 0;
+
+				for (Object eachObj : feed.getEntries()) {
+					SyndEntryImpl each = cast(eachObj);
+					if (!includeReply && StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
+						continue;
+					}
+					if (count++ >= maxSize) {
+						break;
+					}
+					panelEntries.add(getPanelEntry(each));
 				}
-				if (count++ >= maxSize) {
-					break;
-				}
-				panelEntries.add(getPanelEntry(each));
+				Collections.sort(panelEntries);
+				return panelEntries;
 			}
-			Collections.sort(panelEntries);
-			return panelEntries;
+
 		} catch (Exception e) {
 			LOG.error("Error while patching the feed entries for {} : {}", feedURL, e.getMessage());
 		} finally {
 			if (feedConnection != null) {
 				feedConnection.disconnect();
 			}
-			IOUtils.closeQuietly(reader);
 		}
 		return Collections.emptyList();
 	}

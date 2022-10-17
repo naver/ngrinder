@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @PreAuthorize("hasAnyRole('A')")
 public class SystemConfigController {
 
+	@SuppressWarnings("SpringMVCViewInspection")
 	@GetMapping("")
 	public String systemConfig() {
 		return "app";

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,27 +9,27 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import static org.apache.commons.io.FileUtils.*;
 
 /**
  * Convenient File utilities.
  *
  * @since 3.1
  */
+@Slf4j
 public abstract class FileUtils {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
 	/**
 	 * Copy the given resource to the given file.
@@ -39,17 +39,15 @@ public abstract class FileUtils {
 	 * @since 3.2
 	 */
 	public static void copyResourceToFile(String resourcePath, File file) {
-		InputStream io = null;
-		FileOutputStream fos = null;
-		try {
-			io = new ClassPathResource(resourcePath).getInputStream();
-			fos = new FileOutputStream(file);
-			IOUtils.copy(io, fos);
+		copyResourceToFile(new ClassPathResource(resourcePath), file);
+	}
+
+	public static void copyResourceToFile(Resource resource, File file) {
+		try (InputStream io = resource.getInputStream()) {
+			copyToFile(io, file);
 		} catch (IOException e) {
-			LOGGER.error("error while writing {}", resourcePath, e);
-		} finally {
-			IOUtils.closeQuietly(io);
-			IOUtils.closeQuietly(fos);
+			log.error("error while writing {}", resource.getFilename(), e);
 		}
 	}
+
 }

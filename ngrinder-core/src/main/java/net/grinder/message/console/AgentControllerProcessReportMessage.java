@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.message.console;
 
@@ -22,7 +22,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
  * Message for informing the console of agent process status.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -36,13 +36,13 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	private final SystemDataModel systemDataModel;
 
-	private int connectingPort = 0;
+	private final int connectingPort;
 
-	private String version;
+	private final String version;
 
 	/**
 	 * Creates a new <code>AgentProcessReportMessage</code> instance.
-	 * 
+	 *
 	 * @param state	The process state. See {@link net.grinder.common.processidentity.ProcessReport}.
 	 * @param systemDataModel system performance data model
 	 * @param connectingPort agent connecting console port
@@ -71,7 +71,7 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	/**
 	 * Accessor for the process identity.
-	 * 
+	 *
 	 * @return The process identity.
 	 */
 	@SuppressWarnings("UnusedDeclaration")
@@ -81,7 +81,7 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	/**
 	 * Accessor for the process identity.
-	 * 
+	 *
 	 * @return The process identity.
 	 */
 	public AgentIdentity getAgentIdentity() {
@@ -90,7 +90,7 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	/**
 	 * Accessor for the process state.
-	 * 
+	 *
 	 * @return The process state.
 	 */
 	public AgentControllerState getState() {

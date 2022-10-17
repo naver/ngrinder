@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.controller;
 
@@ -40,7 +40,6 @@ import org.tmatesoft.svn.util.SVNLogType;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -56,7 +55,7 @@ import java.util.*;
  *
  * @since 3.0
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes", "NullableProblems", "SameParameterValue"})
 @Controller("svnDavServlet")
 @RequiredArgsConstructor
 public class SvnDavController implements HttpRequestHandler, ServletConfig, ServletContextAware {
@@ -80,7 +79,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 	}
 
-	private Map<String, String> initParam = new HashMap<>();
+	private final Map<String, String> initParam = new HashMap<>();
 	private DAVConfig myDAVConfig;
 	private ServletContext servletContext;
 
@@ -107,13 +106,10 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 	 *
 	 * @param request  request
 	 * @param response response
-	 * @throws ServletException occurs when servlet has a problem.
 	 * @throws IOException      occurs when file system has a problem.
 	 */
 	@Override
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException,
-			IOException {
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		if (LOGGER.isTraceEnabled()) {
 			logRequest(request);
@@ -131,7 +127,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 			StringWriter sw = new StringWriter();
 			svne.printStackTrace(new PrintWriter(sw));
 
-			/**
+			/*
 			 * truncate status line if it is to long
 			 */
 			String msg = sw.getBuffer().toString();
@@ -163,44 +159,42 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 	}
 
-	@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 	private void logRequest(HttpServletRequest request) {
-		StringBuilder logBuffer = new StringBuilder();
-		logBuffer.append('\n');
-		logBuffer.append("request.getAuthType(): " + request.getAuthType());
-		logBuffer.append('\n');
-		logBuffer.append("request.getCharacterEncoding(): " + request.getCharacterEncoding());
-		logBuffer.append('\n');
-		logBuffer.append("request.getContentType(): " + request.getContentType());
-		logBuffer.append('\n');
-		logBuffer.append("request.getContextPath(): " + request.getContextPath());
-		logBuffer.append('\n');
-		logBuffer.append("request.getContentLength(): " + request.getContentLength());
-		logBuffer.append('\n');
-		logBuffer.append("request.getMethod(): " + request.getMethod());
-		logBuffer.append('\n');
-		logBuffer.append("request.getPathInfo(): " + request.getPathInfo());
-		logBuffer.append('\n');
-		logBuffer.append("request.getPathTranslated(): " + request.getPathTranslated());
-		logBuffer.append('\n');
-		logBuffer.append("request.getQueryString(): " + request.getQueryString());
-		logBuffer.append('\n');
-		logBuffer.append("request.getRemoteAddr(): " + request.getRemoteAddr());
-		logBuffer.append('\n');
-		logBuffer.append("request.getRemoteHost(): " + request.getRemoteHost());
-		logBuffer.append('\n');
-		logBuffer.append("request.getRemoteUser(): " + request.getRemoteUser());
-		logBuffer.append('\n');
-		logBuffer.append("request.getRequestURI(): " + request.getRequestURI());
-		logBuffer.append('\n');
-		logBuffer.append("request.getServerName(): " + request.getServerName());
-		logBuffer.append('\n');
-		logBuffer.append("request.getServerPort(): " + request.getServerPort());
-		logBuffer.append('\n');
-		logBuffer.append("request.getServletPath(): " + request.getServletPath());
-		logBuffer.append('\n');
-		logBuffer.append("request.getRequestURL(): " + request.getRequestURL());
-		LOGGER.trace(logBuffer.toString());
+		String logBuffer = '\n' +
+			"request.getAuthType(): " + request.getAuthType() +
+			'\n' +
+			"request.getCharacterEncoding(): " + request.getCharacterEncoding() +
+			'\n' +
+			"request.getContentType(): " + request.getContentType() +
+			'\n' +
+			"request.getContextPath(): " + request.getContextPath() +
+			'\n' +
+			"request.getContentLength(): " + request.getContentLength() +
+			'\n' +
+			"request.getMethod(): " + request.getMethod() +
+			'\n' +
+			"request.getPathInfo(): " + request.getPathInfo() +
+			'\n' +
+			"request.getPathTranslated(): " + request.getPathTranslated() +
+			'\n' +
+			"request.getQueryString(): " + request.getQueryString() +
+			'\n' +
+			"request.getRemoteAddr(): " + request.getRemoteAddr() +
+			'\n' +
+			"request.getRemoteHost(): " + request.getRemoteHost() +
+			'\n' +
+			"request.getRemoteUser(): " + request.getRemoteUser() +
+			'\n' +
+			"request.getRequestURI(): " + request.getRequestURI() +
+			'\n' +
+			"request.getServerName(): " + request.getServerName() +
+			'\n' +
+			"request.getServerPort(): " + request.getServerPort() +
+			'\n' +
+			"request.getServletPath(): " + request.getServletPath() +
+			'\n' +
+			"request.getRequestURL(): " + request.getRequestURL();
+		LOGGER.trace(logBuffer);
 	}
 
 	/**

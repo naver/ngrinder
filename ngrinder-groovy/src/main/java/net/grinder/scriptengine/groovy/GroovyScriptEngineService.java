@@ -23,18 +23,18 @@ package net.grinder.scriptengine.groovy;
 import net.grinder.common.GrinderProperties;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
-import net.grinder.engine.process.JavaDCRInstrumenterEx;
 import net.grinder.scriptengine.DCRContext;
 import net.grinder.scriptengine.Instrumenter;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.util.FileExtensionMatcher;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Groovy script engine service.
- * 
+ *
  * @author Mavlarn
  * @since 3.0
  */
@@ -44,34 +44,28 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 
 	@SuppressWarnings("unused")
 	private final boolean m_forceDCRInstrumentation;
-	private final DCRContext m_dcrContext;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param properties		Properties.
-	 * @param dcrContext		DCR context.
-	 * @param scriptLocation	Script location.
+	 *
+	 * @param properties     Properties.
+	 * @param dcrContext     DCR context.
+	 * @param scriptLocation Script location.
 	 */
-	public GroovyScriptEngineService(GrinderProperties properties, //
-					DCRContext dcrContext, ScriptLocation scriptLocation) {
-
+	public GroovyScriptEngineService(GrinderProperties properties, DCRContext dcrContext, ScriptLocation scriptLocation) {
 		// This property name is poor, since it really means "If DCR
 		// instrumentation is available, avoid the traditional Jython
 		// instrumenter". I'm not renaming it, since I expect it only to last
 		// a few releases, until DCR becomes the default.
 		m_forceDCRInstrumentation = properties.getBoolean("grinder.dcrinstrumentation", false)
-		// Hack: force DCR instrumentation for non-Jython scripts.
-						|| m_groovyFileMatcher.accept(scriptLocation.getFile());
-
-		m_dcrContext = dcrContext;
+			// Hack: force DCR instrumentation for non-Jython scripts.
+			|| m_groovyFileMatcher.accept(scriptLocation.getFile());
 	}
 
 	/**
 	 * Constructor used when DCR is unavailable.
 	 */
 	public GroovyScriptEngineService() {
-		m_dcrContext = null;
 		m_forceDCRInstrumentation = false;
 	}
 
@@ -79,22 +73,8 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Instrumenter> createInstrumenters() throws EngineException {
-
-		final List<Instrumenter> instrumenters = new ArrayList<Instrumenter>();
-
-		/*
-		 * if (!m_forceDCRInstrumentation) {
-		 * System.out.println("m_forceDCRInstrumentation is false."); // must using Instrumentation
-		 * }
-		 */
-		if (m_dcrContext != null) {
-			if (instrumenters.size() == 0) {
-				instrumenters.add(new JavaDCRInstrumenterEx(m_dcrContext));
-			}
-		}
-
-		return instrumenters;
+	public List<Instrumenter> createInstrumenters() {
+		return emptyList();
 	}
 
 	/**

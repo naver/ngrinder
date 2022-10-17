@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.perftest.service;
 
@@ -22,14 +22,14 @@ import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 
 public class TagServiceTest extends AbstractPerfTestTransactionalTest {
@@ -61,8 +61,8 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testTagService() {
 		Tag entity = new Tag("HELLO");
-		entity.setLastModifiedUser(getTestUser());
-		entity.setCreatedUser(getTestUser());
+		entity.setLastModifiedBy(getTestUser());
+		entity.setCreatedBy(getTestUser());
 		tagRepository.save(entity);
 		Set<Tag> addTags = tagService.addTags(getTestUser(), new String[]{"HELLO", "WORLD"});
 		assertThat(addTags.size(), is(2));
@@ -82,7 +82,7 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testTagging() {
-		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
+		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, now());
 		newPerfTest.setTagString("HELLO,world");
 		createPerfTest(newPerfTest);
 		newPerfTest.setTagString("HELLO,WORLD");
@@ -98,7 +98,7 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testGetAllTagStrings() {
 		String[] tags = new String[]{"aaaa", "AAA", "a123", "bbbb", "a12312", "a999", "a777"};
 		tagService.addTags(getTestUser(), tags);
-		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
+		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, now());
 		newPerfTest.setTagString(String.join(",", tags));
 		perfTestService.save(getTestUser(), newPerfTest);
 

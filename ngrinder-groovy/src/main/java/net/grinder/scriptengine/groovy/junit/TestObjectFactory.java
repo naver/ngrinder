@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.scriptengine.groovy.junit;
 
@@ -23,21 +23,22 @@ import org.junit.runners.model.TestClass;
 /**
  * Abstract test object factory. This class is mainly responsible to keep the created object and
  * return the created one when it's created again.
- * 
+ *
  * This delegates the real object creation logic into sub class.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.2
  */
 abstract class TestObjectFactory {
-	private Map<TestClass, Object> testObjectMap = new HashMap<TestClass, Object>();
+
+	private final Map<TestClass, Object> testObjectMap = new HashMap<>();
 
 	public TestObjectFactory() {
 	}
 
 	/**
 	 * Get current test object
-	 * 
+	 *
 	 * @return test object.
 	 */
 	public Object getTestObject() {

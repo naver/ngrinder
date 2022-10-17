@@ -24,7 +24,7 @@ public class GroovyMavenProjectScriptHandlerTest {
 
 		FileEntry entry = new FileEntry();
 		entry.setPath("/hello/world/src/main/java/wow/Global.groovy");
-		entry.setCreatedUser(user);
+		entry.setCreatedBy(user);
 		assertThat(handler.canHandle(entry)).isTrue();
 
 		entry.setPath("/hello/world/src/main/wow/Global.groovy");

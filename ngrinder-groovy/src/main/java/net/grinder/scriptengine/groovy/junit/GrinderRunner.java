@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,26 +9,15 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder.scriptengine.groovy.junit;
-
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.GroovyExceptionProcessor;
-import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
-import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
-import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
-import net.grinder.scriptengine.groovy.junit.annotation.RunRate;
-
+import net.grinder.scriptengine.groovy.junit.annotation.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -50,6 +39,9 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * Grinder JUnit Runner. Grinder JUnit Runner is the custom {@link Runner} which lets the user can
@@ -81,13 +73,15 @@ import org.junit.runners.model.TestClass;
  * @since 1.0
  */
 public class GrinderRunner extends BlockJUnit4ClassRunner {
+
+	private final TestObjectFactory testTargetFactory;
+	private final AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+	private final Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<>();
+
 	private JUnitThreadContextInitializer threadContextInitializer;
 	private JUnitThreadContextUpdater threadContextUpdater;
-	private TestObjectFactory testTargetFactory;
 	private PerThreadStatement finalPerThreadStatement;
-	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 	private boolean enableRateRunner = true;
-	private Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<FrameworkMethod, Statement>();
 
 	/**
 	 * Constructor.
@@ -128,7 +122,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 			}
 
 			@Override
-			public Object createTest() throws Exception {
+			public Object createTest() {
 				return runner;
 			}
 		};
@@ -264,7 +258,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 */
 	protected Statement withBeforeProcess(Statement statement) {
 		TestClass testClass = getTestClass();
-		List<FrameworkMethod> befores = testClass.getAnnotatedMethods(BeforeProcess.class);
+		List<FrameworkMethod> befores = new ArrayList<>(testClass.getAnnotatedMethods(BeforeProcess.class));
 		befores.addAll(testClass.getAnnotatedMethods(BeforeClass.class));
 		return befores.isEmpty() ? statement : new RunBefores(statement, befores, null);
 	}
@@ -280,7 +274,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 */
 	protected Statement withAfterProcess(Statement statement) {
 		TestClass testClass = getTestClass();
-		List<FrameworkMethod> afters = testClass.getAnnotatedMethods(AfterProcess.class);
+		List<FrameworkMethod> afters = new ArrayList<>(testClass.getAnnotatedMethods(AfterProcess.class));
 		afters.addAll(testClass.getAnnotatedMethods(AfterClass.class));
 		return afters.isEmpty() ? statement : new RunAfters(statement, afters, null);
 	}
@@ -298,22 +292,22 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	protected void registerRunNotifierListener(RunNotifier notifier) {
 		notifier.addFirstListener(new RunListener() {
 			@Override
-			public void testStarted(Description description) throws Exception {
+			public void testStarted(Description description) {
 
 			}
 
 			@Override
-			public void testRunStarted(Description description) throws Exception {
+			public void testRunStarted(Description description) {
 				attachWorker();
 			}
 
 			@Override
-			public void testRunFinished(Result result) throws Exception {
+			public void testRunFinished(Result result) {
 				detachWorker();
 			}
 
 			@Override
-			public void testFailure(Failure failure) throws Exception {
+			public void testFailure(Failure failure) {
 				Throwable exception = failure.getException();
 				Throwable filtered = exceptionProcessor.filterException(exception);
 				if (exception != filtered) {

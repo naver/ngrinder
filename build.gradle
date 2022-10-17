@@ -2,7 +2,7 @@ allprojects  {
   apply plugin: "idea"
 
   group = "org.ngrinder"
-  version = "3.5.1"
+  version = "3.5.6"
 
   idea {
     module {
@@ -21,6 +21,9 @@ allprojects  {
 subprojects {
   apply plugin: "java"
   apply plugin: "maven-publish"
+  apply plugin: "maven"
+  apply plugin: "signing"
+  apply plugin: "java-library"
 
   compileJava.options.encoding = "UTF-8"
   compileTestJava.options.encoding = "UTF-8"
@@ -29,7 +32,8 @@ subprojects {
   targetCompatibility = 1.8
 
   ext {
-    profile = project.hasProperty('profile') ? profile : 'production'
+    profile = project.hasProperty("profile") ? profile : "production"
+    esCheckModuleVersion = project.hasProperty("esCheckModuleVersion") ? esCheckModuleVersion : ""
     slf4j_version = "1.7.28"
     spring_security_version = "5.3.4.RELEASE"
     spring_boot_version = "2.3.3.RELEASE"
@@ -39,13 +43,15 @@ subprojects {
     mockito_version = "2.23.4"
     handlebars_version = "4.0.5"
     jackson_version = "2.11.2"
-    groovy_version = "3.0.5"
+    lombok_version = "1.18.20"
+    groovy_version = project.property("groovy.version")
+    junit_version = project.property("junit.version")
   }
 
   repositories {
     mavenCentral()
-    maven { url "http://repo.springsource.org/release" }
-    maven { url "http://maven.scm-manager.org/nexus/content/repositories/releases" }
+    maven { url "https://repo.springsource.org/release" }
+    maven { url "https://packages.scm-manager.org/repository/releases" }
   }
 
   test {
@@ -62,18 +68,65 @@ subprojects {
     classifier "sources"
   }
 
-  publishing {
-    publications {
-      nGrinerModules(MavenPublication) {
-        from components.java
-        artifact sourceJar
-        artifact javadocJar
-      }
+  artifacts {
+    archives javadocJar, sourceJar
+  }
+
+  if (hasAllProperties("signing.keyId", "signing.password", "signing.secretKeyRingFile")) {
+    signing {
+      sign configurations.archives
     }
+  }
+
+  uploadArchives {
     repositories {
-      maven {
-        url = "file:../../ngrinder.maven.repo/releases/"
+      mavenDeployer {
+        beforeDeployment { deployment -> signing.signPom(deployment) }
+
+        if (hasAllProperties("ossrhUsername", "ossrhPassword")) {
+          repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+          }
+
+          snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+          }
+        }
+
+        pom.project {
+          name = "org.ngrinder:${project.name}"
+          description = "${project.name} module"
+          url = "https://github.com/naver/ngrinder"
+
+          scm {
+            connection = "scm:git:git://github.com/naver/ngrinder.git"
+            developerConnection = "scm:git:ssh://github.com/naver/ngrinder.git"
+            url = "https://github.com/naver/ngrinder"
+          }
+
+          licenses {
+            license {
+              name = "The Apache License, Version 2.0"
+              url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+          }
+
+          // Below field is required to publish to the Maven central. Please modify before publishing.
+          developers {
+            developer {
+              id = "{please_input_your_id}"
+              name = "{please_input_your_name}"
+              email = "{please_input_your_email}"
+            }
+          }
+
+        }
       }
     }
   }
+
+}
+
+def hasAllProperties(String... keys) {
+  return keys.every() { key -> project.hasProperty(key) }
 }

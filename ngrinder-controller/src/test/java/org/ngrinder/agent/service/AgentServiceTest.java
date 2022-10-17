@@ -1,5 +1,7 @@
 package org.ngrinder.agent.service;
 
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.hazelcast.HazelcastService;
@@ -11,10 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.ngrinder.common.constant.CacheConstants.CACHE_RECENTLY_USED_AGENTS;
+import static org.ngrinder.common.constant.CacheConstants.DIST_MAP_NAME_RECENTLY_USED_AGENTS;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 
 public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
@@ -30,8 +32,8 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	/**
 	 *
 	 * Priority of agent selection.
-	 * 1. owned agent of recently used.
-	 * 2. owned agent.
+	 * 1. dedicated agent of recently used.
+	 * 2. dedicated agent.
 	 * 3. public agent of recently used.
 	 * 4. public agent.
 	 *
@@ -39,7 +41,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void selectAgentsTest() {
 		Set<AgentInfo> recentlyUsedAgents = getRecentlyUsedAgents();
-		hazelcastService.put(CACHE_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
+		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
 
 		User testUser = new User();
 		testUser.setUserId(TEST_USER_ID);
@@ -49,43 +51,41 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 
 		assertThat(selectedAgents.size(), is(5));
 
-		List<AgentInfo> selectedOwnedAgents = selectedAgents
+		List<AgentInfo> selectedDedicatedAgents = selectedAgents
 			.stream()
-			.filter(agentInfo -> agentInfo.getRegion().contains("owned"))
+			.filter(agentInfo -> StringUtils.isNotEmpty(agentInfo.getOwner()))
 			.collect(toList());
-
-		assertThat(selectedOwnedAgents.size(), is(2));
+		assertThat(selectedDedicatedAgents.size(), is(2));
 
 		// Check if recently used agents are selected.
-		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-1", "test-region")));
-		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-3", "test-region")));
-		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-5", "test-region")));
+		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-1")));
+		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-3")));
+		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-5")));
 
 		// Add recently used agents.
-
-		recentlyUsedAgents.add(createAgentInfo("test-agent-11", "test-region_owned_test-user"));
-		recentlyUsedAgents.add(createAgentInfo("test-agent-14", "test-region_owned_test-user"));
-		hazelcastService.put(CACHE_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
+		recentlyUsedAgents.add(createAgentInfo("test-agent-11", "test-region", TEST_USER_ID));
+		recentlyUsedAgents.add(createAgentInfo("test-agent-14", "test-region", TEST_USER_ID));
+		hazelcastService.put(DIST_MAP_NAME_RECENTLY_USED_AGENTS, TEST_USER_ID, recentlyUsedAgents);
 
 		// Add owned agents for another test.
-		allFreeAgents.add(createAgentInfo("test-agent-8", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-9", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-10", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-11", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-12", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-13", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-14", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-15", "test-region_owned_test-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-8", "test-region", "another-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-9", "test-region", "another-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-10", "test-region", "another-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-11", "test-region", TEST_USER_ID));
+		allFreeAgents.add(createAgentInfo("test-agent-12", "test-region", TEST_USER_ID));
+		allFreeAgents.add(createAgentInfo("test-agent-13", "test-region", TEST_USER_ID));
+		allFreeAgents.add(createAgentInfo("test-agent-14", "test-region", TEST_USER_ID));
+		allFreeAgents.add(createAgentInfo("test-agent-15", "test-region", TEST_USER_ID));
 
 		selectedAgents = agentService.selectAgent(testUser, allFreeAgents, 3);
 
 		assertThat(selectedAgents.size(), is(3));
 		// Check if recently used owned agents are selected.
-		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-6", "test-region_owned_test-user")));
-		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-11", "test-region_owned_test-user")));
-		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-14", "test-region_owned_test-user")));
+		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-6")));
+		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-11")));
+		assertTrue(selectedAgents.contains(createAgentInfo("test-agent-14")));
 
-		hazelcastService.delete(CACHE_RECENTLY_USED_AGENTS, TEST_USER_ID);
+		hazelcastService.delete(DIST_MAP_NAME_RECENTLY_USED_AGENTS, TEST_USER_ID);
 	}
 
 	private Set<AgentInfo> getRecentlyUsedAgents() {
@@ -93,7 +93,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		cachedAgents.add(createAgentInfo("test-agent-1", "test-region"));
 		cachedAgents.add(createAgentInfo("test-agent-3", "test-region"));
 		cachedAgents.add(createAgentInfo("test-agent-5", "test-region"));
-		cachedAgents.add(createAgentInfo("test-agent-6", "test-region_owned_test-user"));
+		cachedAgents.add(createAgentInfo("test-agent-6", "test-region", TEST_USER_ID));
 		return cachedAgents;
 	}
 
@@ -107,9 +107,19 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		allFreeAgents.add(createAgentInfo("test-agent-5", "test-region"));
 
 		// owned agents
-		allFreeAgents.add(createAgentInfo("test-agent-6", "test-region_owned_test-user"));
-		allFreeAgents.add(createAgentInfo("test-agent-7", "test-region_owned_test-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-6", "test-region", TEST_USER_ID));
+		allFreeAgents.add(createAgentInfo("test-agent-7", "test-region", TEST_USER_ID));
+		allFreeAgents.add(createAgentInfo("test-agent-8", "test-region", "another-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-9", "test-region", "another-user"));
+		allFreeAgents.add(createAgentInfo("test-agent-10", "test-region", "another-user"));
 		return allFreeAgents;
+	}
+
+	private AgentInfo createAgentInfo(String name) {
+		AgentInfo agentInfo = new AgentInfo();
+		agentInfo.setIp("1.1.1.1");
+		agentInfo.setName(name);
+		return agentInfo;
 	}
 
 	private AgentInfo createAgentInfo(String name, String region) {
@@ -117,6 +127,14 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setIp("1.1.1.1");
 		agentInfo.setName(name);
 		agentInfo.setRegion(region);
+		return agentInfo;
+	}
+
+	private AgentInfo createAgentInfo(String name, String region, String owner) {
+		AgentInfo agentInfo = createAgentInfo(name, region);
+		AgentControllerIdentityImplementation identityImplementation = new AgentControllerIdentityImplementation("", "");
+		identityImplementation.setOwner(owner);
+		agentInfo.setAgentIdentity(identityImplementation);
 		return agentInfo;
 	}
 }

@@ -13,7 +13,6 @@
  */
 package net.grinder.engine.common;
 
-import net.grinder.communication.CommunicationException;
 import net.grinder.communication.ConnectionType;
 import net.grinder.communication.Connector;
 

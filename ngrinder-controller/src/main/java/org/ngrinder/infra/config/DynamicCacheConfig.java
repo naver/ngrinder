@@ -22,6 +22,7 @@ import com.hazelcast.spring.cache.HazelcastCacheManager;
 import com.hazelcast.spring.context.SpringManagedContext;
 import com.hazelcast.topic.ITopic;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.grinder.util.NetworkUtils;
 import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.infra.hazelcast.topic.message.TopicEvent;
@@ -38,9 +39,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static net.grinder.util.NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
-import static net.grinder.util.NetworkUtils.selectLocalIp;
+import static org.apache.commons.lang.ArrayUtils.EMPTY_STRING_ARRAY;
 import static org.ngrinder.common.constant.CacheConstants.*;
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
 
 /**
@@ -48,6 +49,7 @@ import static org.ngrinder.infra.logger.CoreLogger.LOGGER;
  *
  * @since 3.1
  */
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class DynamicCacheConfig implements ClusterConstants {
@@ -95,16 +97,28 @@ public class DynamicCacheConfig implements ClusterConstants {
 		hazelcastConfig.addExecutorConfig(getExecutorConfig(AGENT_EXECUTOR_SERVICE_NAME));
 		hazelcastConfig.addTopicConfig(getTopicConfig());
 		NetworkConfig networkConfig = hazelcastConfig.getNetworkConfig();
-		networkConfig.setPort(getClusterPort()).setPortAutoIncrement(false);
 
 		JoinConfig join = networkConfig.getJoin();
 		join.getMulticastConfig().setEnabled(false);
 
-		if (isClustered() && getClusterURIs() != null && getClusterURIs().length > 0) {
+		if (isClustered()) {
 			TcpIpConfig tcpIpConfig = join.getTcpIpConfig();
 			tcpIpConfig.setEnabled(true);
-			tcpIpConfig.setMembers(Arrays.asList(getClusterURIs()));
-			networkConfig.setPublicAddress(selectLocalIp(Arrays.asList(getClusterURIs())));
+			String clusterMode = config.getClusterMode();
+			String[] clusterURIs = defaultIfNull(getClusterURIs(), EMPTY_STRING_ARRAY);
+
+			if ("easy".equals(clusterMode)) {
+				tcpIpConfig.addMember(NetworkUtils.getLocalHostAddress());
+			} else {
+				networkConfig.setPort(getClusterPort()).setPortAutoIncrement(false);
+				if (clusterURIs.length > 0) {
+					tcpIpConfig.setMembers(Arrays.asList(clusterURIs));
+				} else {
+					log.warn("nGrinder system configuration 'cluster.members' is required in advanced clustering.\n" +
+						"Please set comma separated IP list of all clustered controller servers in your system configuration.");
+				}
+			}
+
 		}
 
 		if (!isClustered()) {
@@ -131,9 +145,10 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return topicConfig;
 	}
 
+	@SuppressWarnings("CollectionAddAllCanBeReplacedWithConstructor")
 	private Map<String, String> getClusterMemberAttributes() {
 		Map<String, String> attributes = new HashMap<>();
-		attributes.put(REGION_ATTR_KEY, config.getRegion());
+		attributes.putAll(config.getRegionWithSubregion());
 		return attributes;
 	}
 
@@ -149,16 +164,16 @@ public class DynamicCacheConfig implements ClusterConstants {
 		cm.addDistMap(DIST_MAP_NAME_SAMPLING, 15);
 		cm.addDistMap(DIST_MAP_NAME_MONITORING, 15);
 		cm.addDistMap(DIST_MAP_NAME_AGENT, 10);
+		cm.addDistMap(DIST_MAP_NAME_RECENTLY_USED_AGENTS, 1 * DAY);
 
-		cm.addDistCache(CACHE_USERS, 30, 300);
-		cm.addDistCache(CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 300);
+		cm.addDistCache(DIST_CACHE_USERS, 30, 300);
+		cm.addDistCache(DIST_CACHE_FILE_ENTRIES, 1 * HOUR + 40 * MIN, 300);
 
-		cm.addLocalCache(CACHE_GITHUB_SCRIPTS, 5 * MIN, 300);
-		cm.addLocalCache(CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
-		cm.addLocalCache(CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 1);
-		cm.addLocalCache(CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
-		cm.addLocalCache(CACHE_GITHUB_IS_MAVEN_GROOVY, 5 * MIN, 300);
-		cm.addLocalCache(CACHE_RECENTLY_USED_AGENTS, 1 * DAY, 100);
+		cm.addLocalCache(LOCAL_CACHE_GITHUB_SCRIPTS, 5 * MIN, 300);
+		cm.addLocalCache(LOCAL_CACHE_RIGHT_PANEL_ENTRIES, 1 * DAY, 1);
+		cm.addLocalCache(LOCAL_CACHE_LEFT_PANEL_ENTRIES, 1 * DAY, 1);
+		cm.addLocalCache(LOCAL_CACHE_CURRENT_PERFTEST_STATISTICS, 5, 1);
+		cm.addLocalCache(LOCAL_CACHE_GITHUB_GROOVY_PROJECT_SCRIPT_TYPE, 5 * MIN, 300);
 		return cm;
 	}
 
@@ -177,6 +192,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 			hazelcastCacheConfigs.put(cacheName, mapConfig);
 		}
 
+		@SuppressWarnings("SameParameterValue")
 		void addDistCache(String cacheName, int timeout, int count) {
 			MapConfig mapConfig = createDistMapConfig(cacheName, timeout);
 
@@ -226,7 +242,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 	}
 
 	private String getClusterHostName() {
-		String hostName = config.getClusterProperties().getProperty(PROP_CLUSTER_HOST, DEFAULT_LOCAL_HOST_ADDRESS);
+		String hostName = config.getClusterProperties().getProperty(PROP_CLUSTER_HOST, NetworkUtils.getLocalHostAddress());
 		try {
 			//noinspection ResultOfMethodCallIgnored
 			InetAddress.getByName(hostName);
