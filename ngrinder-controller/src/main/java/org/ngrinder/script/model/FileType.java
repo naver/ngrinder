@@ -29,10 +29,10 @@ public enum FileType {
 	GROOVY_SCRIPT("Groovy Script", "groovy", FileCategory.SCRIPT, true, false),
 
 	/** Groovy Maven project. */
-	GROOVY_MAVEN_PROJECT("Groovy maven project", "", FileCategory.PROJECT, true, false),
+	GROOVY_MAVEN_PROJECT("Groovy maven project", "pom", FileCategory.PROJECT, true, false),
 
 	/** Groovy Gradle project. */
-	GROOVY_GRADLE_PROJECT("Groovy gradle project", "", FileCategory.PROJECT, true, false),
+	GROOVY_GRADLE_PROJECT("Groovy gradle project", "gradle", FileCategory.PROJECT, true, false),
 
 	/** Xml. */
 	XML("xml", "xml", FileCategory.DATA, true, true),
