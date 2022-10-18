@@ -162,8 +162,11 @@ public abstract class GroovyProjectScriptHandler extends GroovyScriptHandler imp
 		String copyDependenciesCommand = getCopyDependenciesCommand(distDir);
 		processingResult.println("\nCopy dependencies by running '" + copyDependenciesCommand + "'");
 
-		boolean success = isSuccess(runNative(copyDependenciesCommand));
+		log.info("Copy dependencies with command '" + copyDependenciesCommand + "'");
+		List<String> result = runNative(copyDependenciesCommand);
+		log.info("Copy dependencies result: " + result);
 
+		boolean success = isSuccess(result);
 		if (success) {
 			processingResult.printf("\nDependencies in %s was copied.\n", buildFilePathInSVN);
 			log.info(format(perfTest, "Dependencies in {} is copied into {}/lib folder", buildFilePathInSVN, distDir.getAbsolutePath()));
