@@ -87,7 +87,7 @@ public class GroovyGradleProjectScriptHandler extends GroovyProjectScriptHandler
 		if (results.isEmpty()) {
 			return false;
 		}
-		return results.stream().noneMatch(str -> str.contains("FAILED"));
+		return results.stream().noneMatch(str -> str.contains("FAILED") || str.contains("ERROR"));
 	}
 
 	@Override
