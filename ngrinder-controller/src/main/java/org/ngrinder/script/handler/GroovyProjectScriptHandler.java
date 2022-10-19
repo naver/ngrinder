@@ -163,7 +163,7 @@ public abstract class GroovyProjectScriptHandler extends GroovyScriptHandler imp
 		processingResult.println("\nCopy dependencies by running '" + copyDependenciesCommand + "'");
 
 		log.info("Copy dependencies with command '" + copyDependenciesCommand + "'");
-		List<String> result = runNative(copyDependenciesCommand);
+		List<String> result = runNative(copyDependenciesCommand.split(" "), null);
 		log.info("Copy dependencies result: " + result);
 
 		boolean success = isSuccess(result);
