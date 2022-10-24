@@ -64,7 +64,8 @@ public enum InstallationChecker {
 	}
 
 	private boolean isInstalled() {
-		List<String> result = runNative(homePath + installationCheckingCommand);
+		String checkCommand = homePath + installationCheckingCommand;
+		List<String> result = runNative(checkCommand.split(" "), null);
 		return !result.isEmpty();
 	}
 
