@@ -878,13 +878,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 			LOGGER.debug("getAdditionalStats() responseTimeList is {}", responseTimeList);
 		}
 
-		int i = 0;
-		double[] rtArray = new double[responseTimeList.size()];
-		for (double responseTime : responseTimeList) {
-			rtArray[i++] = responseTime;
-		}
-
-		Arrays.sort(rtArray);
+		double[] rtArray = responseTimeList.stream()
+			.mapToDouble(Double::doubleValue)
+			.sorted()
+			.toArray();
 
 		Percentile percentile = new Percentile();
 		Map<String, Object> additionalStats = newHashMap();
