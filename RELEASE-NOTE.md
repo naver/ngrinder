@@ -1,3 +1,12 @@
+3.5.7 (2022.10.26)
+=================
+- Changes
+  - Bump front-end dependencies up
+- Bug fix
+  - #922 Fix gradle command execution on Oshi 6.1.6
+  - #928 Fix revision and target hosts reset 
+  - #929 Prevent memory leak on HTTPRequest
+
 3.5.6 (2022.10.10)
 ==================
 - Changes
