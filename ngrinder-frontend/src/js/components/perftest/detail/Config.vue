@@ -515,7 +515,6 @@
             }
 
             this.$nextTick(() => {
-                this.$refs.scriptSelect.selectValue(selectedScript);
                 this.$validator.validate('scriptName');
             });
         }

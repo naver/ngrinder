@@ -45,6 +45,7 @@ import org.ngrinder.http.method.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.*;
@@ -373,6 +374,11 @@ public class HTTPRequest implements HTTPHead, HTTPGet, HTTPPost, HTTPPut, HTTPPa
 
 	public void setReadBytes(int readBytes) {
 		this.readBytes = readBytes;
+		try {
+			this.requester.close();
+		} catch (IOException e) {
+			// noOp
+		}
 		this.requester = new HTTPRequester.Builder()
 			.setReadBytes(this.readBytes)
 			.setVersionPolicy(this.versionPolicy)
