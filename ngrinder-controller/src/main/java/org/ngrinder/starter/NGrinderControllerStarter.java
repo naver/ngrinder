@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.lang.System.out;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.ClusterConstants.*;
@@ -49,6 +50,9 @@ import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_URL;
 )
 @Parameters(separators = "= ")
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
+
+	private static final String CONSOLE_COLOR_YELLOW = "\033[0;33m";
+	private static final String CONSOLE_COLOR_RESET = "\033[0m";
 
 	@Parameters(separators = "= ")
 	enum ClusterMode {
@@ -203,6 +207,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	}
 
 	public static void main(String[] args) {
+		checkTmpDirProperty();
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server);
 		commander.setAcceptUnknownOptions(true);
@@ -241,6 +246,23 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		System.getProperties().putAll(server.params);
 		cleanupPreviouslyUnpackedFolders();
 		SpringApplication.run(NGrinderControllerStarter.class, args);
+	}
+
+	private static void checkTmpDirProperty() {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		String systemTmpDir = System.getenv("TMPDIR");
+		if (javaTmpDir.equals(systemTmpDir)) {
+			System.out.print(CONSOLE_COLOR_YELLOW);
+			System.out.println("####################################################################################################################");
+			System.out.println("# WARNING                                                                                                          #");
+			System.out.println("# If you run the ngrinder-controller as SpringBoot JAR without specifying 'java.io.tmpdir' system property,        #");
+			System.out.println("# related library files could be unintentionally missing and you could encounter unexpected errors.                #");
+			System.out.println("# You must run the ngrinder-controller with specifying 'java.io.tmpdir' system property.                           #");
+			System.out.println("#   ex) java -Djava.io.tmpdir=/home/user/.ngrinder/lib -jar ngrinder-controller.war                                #");
+			System.out.println("####################################################################################################################");
+			System.out.print(CONSOLE_COLOR_RESET);
+			System.exit(1);
+		}
 	}
 
 	private static String getRunningCommand() {
