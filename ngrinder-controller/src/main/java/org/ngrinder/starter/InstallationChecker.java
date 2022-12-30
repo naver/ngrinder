@@ -23,6 +23,8 @@ package org.ngrinder.starter;
 import java.util.List;
 
 import static java.lang.System.*;
+import static org.ngrinder.common.constant.ConsoleColorConstants.CONSOLE_COLOR_RESET;
+import static org.ngrinder.common.constant.ConsoleColorConstants.CONSOLE_COLOR_YELLOW;
 import static org.ngrinder.script.handler.GroovyGradleProjectScriptHandler.GRADLE_HOME_ENV_NAME;
 import static org.ngrinder.script.handler.GroovyMavenProjectScriptHandler.MAVEN_HOME_ENV_NAME;
 import static oshi.util.ExecutingCommand.runNative;
@@ -40,9 +42,6 @@ public enum InstallationChecker {
 		"Maven isn't installed, You can't run Maven groovy scripts. Please install Maven and set MAVEN_HOME.    "),
 	GRADLE(GRADLE_HOME_ENV_NAME, "gradle -version",
 		"Gradle isn't installed, You can't run Gradle groovy scripts. Please install Gradle and set GRADLE_HOME.");
-
-	private static final String CONSOLE_COLOR_YELLOW = "\033[0;33m";
-	private static final String CONSOLE_COLOR_RESET = "\033[0m";
 
 	private final String homePath;
 	private final String installationCheckingCommand;
