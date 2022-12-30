@@ -246,18 +246,15 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	}
 
 	private static void checkTmpDirProperty() {
-		String userHome = System.getProperty("user.home");
-		String ngrinderHome = Config.getUserHome();
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		String systemTmpDir = System.getenv("TMPDIR");
 
-		if (!javaTmpDir.startsWith(userHome) && !javaTmpDir.startsWith(ngrinderHome)) {
-			System.out.print(CONSOLE_COLOR_RED);
-			System.out.println("####################################################################################################################");
-			System.out.println("# ERROR                                                                                                            #");
-			System.out.println("# Wrong runtime option. Please put tmpdir property like following.                                                 #");
-			System.out.println("# `java -Djava.io.tmpdir=${NGRINDER_HOME}/lib -jar ngrinder-controller.war`                                        #");
-			System.out.println("####################################################################################################################");
-			System.out.print(CONSOLE_COLOR_RESET);
+		if (javaTmpDir.equals(systemTmpDir)) {
+			System.err.print(CONSOLE_COLOR_RED);
+			System.err.println("ERROR");
+			System.err.println("Please set `java.io.tmpdir` property like following. tmpdir should be different from the OS default tmpdir.");
+			System.err.println("`java -Djava.io.tmpdir=${NGRINDER_HOME}/lib -jar ngrinder-controller.war`");
+			System.err.print(CONSOLE_COLOR_RESET);
 			System.exit(1);
 		}
 	}
