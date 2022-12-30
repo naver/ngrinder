@@ -37,6 +37,8 @@ import java.util.Objects;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.ngrinder.common.constant.ClusterConstants.*;
+import static org.ngrinder.common.constant.ConsoleColorConstants.CONSOLE_COLOR_RED;
+import static org.ngrinder.common.constant.ConsoleColorConstants.CONSOLE_COLOR_RESET;
 import static org.ngrinder.common.constant.ControllerConstants.PROP_CONTROLLER_CONTROLLER_PORT;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_TYPE;
 import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_URL;
@@ -49,7 +51,6 @@ import static org.ngrinder.common.constant.DatabaseConstants.PROP_DATABASE_URL;
 )
 @Parameters(separators = "= ")
 public class NGrinderControllerStarter extends SpringBootServletInitializer {
-
 	@Parameters(separators = "= ")
 	enum ClusterMode {
 		none {
@@ -203,6 +204,7 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 	}
 
 	public static void main(String[] args) {
+		checkTmpDirProperty();
 		NGrinderControllerStarter server = new NGrinderControllerStarter();
 		JCommander commander = new JCommander(server);
 		commander.setAcceptUnknownOptions(true);
@@ -241,6 +243,23 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 		System.getProperties().putAll(server.params);
 		cleanupPreviouslyUnpackedFolders();
 		SpringApplication.run(NGrinderControllerStarter.class, args);
+	}
+
+	private static void checkTmpDirProperty() {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		String osTmpDir = System.getenv("TMPDIR");
+		if (osTmpDir == null) {
+			osTmpDir = "";
+		}
+
+		if (javaTmpDir.equals(osTmpDir)) {
+			System.err.print(CONSOLE_COLOR_RED);
+			System.err.println("ERROR");
+			System.err.println("Please set `java.io.tmpdir` property like following. tmpdir should be different from the OS default tmpdir.");
+			System.err.println("`java -Djava.io.tmpdir=${NGRINDER_HOME}/lib -jar ngrinder-controller.war`");
+			System.err.print(CONSOLE_COLOR_RESET);
+			System.exit(1);
+		}
 	}
 
 	private static String getRunningCommand() {
