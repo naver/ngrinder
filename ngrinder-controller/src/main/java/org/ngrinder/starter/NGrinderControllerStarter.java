@@ -247,9 +247,12 @@ public class NGrinderControllerStarter extends SpringBootServletInitializer {
 
 	private static void checkTmpDirProperty() {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		String systemTmpDir = System.getenv("TMPDIR");
+		String osTmpDir = System.getenv("TMPDIR");
+		if (osTmpDir == null) {
+			osTmpDir = "";
+		}
 
-		if (javaTmpDir.equals(systemTmpDir)) {
+		if (javaTmpDir.equals(osTmpDir)) {
 			System.err.print(CONSOLE_COLOR_RED);
 			System.err.println("ERROR");
 			System.err.println("Please set `java.io.tmpdir` property like following. tmpdir should be different from the OS default tmpdir.");
