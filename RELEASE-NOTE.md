@@ -1,3 +1,8 @@
+3.5.8 (2022.12.30)
+=================
+- Changes
+  - Shows error message when running without tmpdir property
+
 3.5.7 (2022.10.26)
 =================
 - Changes
