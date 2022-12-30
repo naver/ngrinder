@@ -56,11 +56,12 @@ Quick Start
 You can start nGrinder by executing following command.
 
 ```
-java -jar ngrinder-controller-{version}.war
+java -Djava.io.tmpdir=${NGRINDER_HOME}/lib -jar ngrinder-controller-{version}.war
 ```
 
 And then access it by using a browser. http://localhost:8080
 
+> `NGRINDER_HOME` is usually `${HOME}/.ngrinder`.
 
 Documentation
 -------------
