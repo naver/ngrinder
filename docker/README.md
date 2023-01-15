@@ -42,6 +42,8 @@ Port information:
 
 * __80__: Default controller web UI port.
 
+* __16001__: Controller port for agent connection.
+
 * __9010-9019__: agents connect to the controller cluster through these ports.
 
 * __12000-12029__: controllers allocate stress tests through these ports.
