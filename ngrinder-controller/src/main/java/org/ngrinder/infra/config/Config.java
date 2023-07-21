@@ -703,7 +703,7 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		if (cluster) {
 			return StringUtils.trimToEmpty(getClusterProperties().getProperty(PROP_CLUSTER_HOST));
 		} else {
-			return StringUtils.trimToEmpty(getControllerProperties().getProperty(PROP_CONTROLLER_IP));
+			return StringUtils.trimToEmpty(getControllerProperties().getProperty(PROP_CONTROLLER_HOST));
 		}
 	}
 

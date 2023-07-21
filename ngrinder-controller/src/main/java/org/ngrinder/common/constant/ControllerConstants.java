@@ -53,7 +53,7 @@ public interface ControllerConstants {
 	String PROP_CONTROLLER_FRONT_PAGE_QNA_RSS = "controller.front_page_qna_rss";
 	String PROP_CONTROLLER_FRONT_PAGE_RESOURCES_MORE_URL = "controller.front_page_resources_more_url";
 	String PROP_CONTROLLER_HELP_URL = "controller.help_url";
-	String PROP_CONTROLLER_IP = "controller.ip";
+	String PROP_CONTROLLER_HOST = "controller.host";
 	String PROP_CONTROLLER_MAX_AGENT_PER_TEST = "controller.max_agent_per_test";
 	String PROP_CONTROLLER_MAX_CONCURRENT_TEST = "controller.max_concurrent_test";
 	String PROP_CONTROLLER_MAX_RUN_COUNT = "controller.max_run_count";
