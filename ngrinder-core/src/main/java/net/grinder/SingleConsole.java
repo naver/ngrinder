@@ -65,7 +65,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
 
-
 import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedMap;
 import static org.ngrinder.common.util.CollectionUtils.*;
@@ -461,7 +460,7 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 
 	/**
 	 * Wait until the given size of agents are all connected and receive digest from there cached files.
-	 * It wait until 10 sec.
+	 * It waits until 10 sec.
 	 *
 	 * @param size size of agent.
 	 */
