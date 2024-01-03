@@ -64,19 +64,4 @@ public class HealthCheckApiController implements ControllerConstants {
 		map.put("regions", regionService.getAll());
 		return map;
 	}
-
-	/**
-	 * Return health check message with 1 sec delay. If there is shutdown lock,
-	 * it returns 503. Otherwise, it returns region lists.
-	 *
-	 * @param sleep    in milliseconds.
-	 * @param response response
-	 * @return region list
-	 */
-	@GetMapping("/check/healthcheck_slow")
-	public Map<String, Object> healthCheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
-												HttpServletResponse response) {
-		ThreadUtils.sleep(sleep);
-		return healthCheck(response);
-	}
 }
