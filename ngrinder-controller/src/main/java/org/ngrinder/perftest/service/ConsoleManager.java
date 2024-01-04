@@ -36,10 +36,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static net.grinder.util.NetworkUtils.getAvailablePorts;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.ngrinder.common.constant.ControllerConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.StringUtils.defaultIfBlank;
 
 /**
  * Console manager is responsible for console instance management.
@@ -72,7 +72,7 @@ public class ConsoleManager {
 	public void init() {
 		int consoleSize = getConsoleSize();
 		consoleQueue = new ArrayBlockingQueue<>(consoleSize);
-		final String currentIP = defaultIfEmpty(config.getCurrentIP(), NetworkUtils.getLocalHostAddress());
+		final String currentIP = defaultIfBlank(config.getCurrentIP(), NetworkUtils::getLocalHostAddress);
 		for (int port : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
 			final ConsoleEntry consoleEntry = new ConsoleEntry(currentIP, port);
 			try {
