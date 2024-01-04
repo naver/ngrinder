@@ -1,4 +1,4 @@
-  /*
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -53,7 +54,7 @@ import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.grinder.util.NoOp.noOp;
-import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constant.CacheConstants.REGION_ATTR_KEY;
@@ -71,7 +72,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  *
  * @since 3.0
  */
-
+@Profile("production")
 @Component
 public class Config extends AbstractConfig implements ControllerConstants, ClusterConstants {
 	public static final String NONE_REGION = "NONE";

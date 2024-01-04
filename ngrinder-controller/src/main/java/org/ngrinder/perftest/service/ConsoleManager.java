@@ -24,6 +24,7 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -51,6 +52,7 @@ import static org.ngrinder.common.util.StringUtils.defaultIfBlank;
  *
  * @since 3.0
  */
+@Profile("production")
 @Component
 @RequiredArgsConstructor
 public class ConsoleManager {
@@ -150,7 +152,7 @@ public class ConsoleManager {
 					consoleCommunicationSetting.setInactiveClientTimeOut(config.getInactiveClientTimeOut());
 				}
 				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
-					consoleCommunicationSetting, baseConsoleProperties);
+						consoleCommunicationSetting, baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				singleConsole.setCsvSeparator(config.getCsvSeparator());
 				return singleConsole;
@@ -180,7 +182,7 @@ public class ConsoleManager {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
 			LOG.error("Exception occurred during console return back for test {}.",
-				testIdentifier, e);
+					testIdentifier, e);
 			// But the port is getting back.
 		} finally {
 			// This is very careful implementation..
@@ -189,7 +191,7 @@ public class ConsoleManager {
 				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
 				LOG.error("Exception occurred during console return back for test {}.",
-					testIdentifier, e);
+						testIdentifier, e);
 				// If it's not disconnected still, stop them by force.
 				agentManager.stopAgent(console.getConsolePort());
 			}
@@ -197,7 +199,7 @@ public class ConsoleManager {
 				console.shutdown();
 			} catch (Exception e) {
 				LOG.error("Exception occurred during console return back for test {}.",
-					testIdentifier, e);
+						testIdentifier, e);
 			}
 			int consolePort;
 			String consoleIP;
