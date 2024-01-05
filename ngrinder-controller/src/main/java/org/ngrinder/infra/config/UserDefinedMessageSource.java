@@ -11,9 +11,8 @@ import javax.annotation.PostConstruct;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.ngrinder.common.util.EncodingUtils;
+import org.ngrinder.common.util.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractMessageSource;
@@ -81,19 +80,16 @@ public class UserDefinedMessageSource extends AbstractMessageSource {
 		if (messagesDirectory.exists()) {
 			for (String each : Locale.getISOLanguages()) {
 				File file = new File(messagesDirectory, "messages_" + each + ".properties");
-				if (file.exists()) {
-					try {
-						byte[] propByte = FileUtils.readFileToByteArray(file);
-						String propString = EncodingUtils.getAutoDecodedString(propByte, "UTF-8");
-						Properties prop = new Properties();
-						prop.load(new StringReader(propString));
-						for (Map.Entry<Object, Object> eachEntry : prop.entrySet()) {
-							map.put(new LocaleAndCode(each, (String) eachEntry.getKey()), new MessageFormat(
-								(String) eachEntry.getValue()));
-						}
-					} catch (Exception e) {
-						LOGGER.error("Error while loading {}", file.getAbsolutePath(), e);
+				try {
+					Properties prop = PropertyUtils.loadProperties(file);
+					for (Map.Entry<Object, Object> eachEntry : prop.entrySet()) {
+						map.put(
+							new LocaleAndCode(each, (String) eachEntry.getKey()),
+							new MessageFormat((String) eachEntry.getValue())
+						);
 					}
+				} catch (Exception e) {
+					LOGGER.error("Error while loading {}", file.getAbsolutePath(), e);
 				}
 			}
 		}
