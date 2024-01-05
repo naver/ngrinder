@@ -48,6 +48,7 @@ public class WebhookApiController {
 
 	@PostMapping
 	public void save(User user, @RequestBody WebhookConfig webhookConfig) {
+		webhookConfig.setCreatorId(user.getUserId());
 		webhookConfigService.save(webhookConfig);
 	}
 
