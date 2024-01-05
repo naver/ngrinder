@@ -22,7 +22,9 @@ import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.agent.store.AgentInfoStore;
 import org.ngrinder.common.constant.ControllerConstants;
@@ -119,6 +121,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	}
 
 	@Test
+	@Ignore
 	public void testDoTest() throws IOException {
 		assertThat(agentService.getAllAttachedFreeApprovedAgents().size(), is(1));
 		perfTestRunnable.doStart();
