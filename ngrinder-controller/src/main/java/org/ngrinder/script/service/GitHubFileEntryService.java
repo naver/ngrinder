@@ -1,5 +1,6 @@
 package org.ngrinder.script.service;
 
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,6 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.*;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -278,25 +278,26 @@ public class GitHubFileEntryService {
 		return getAllGithubConfig(gitConfigYaml);
 	}
 
-	private Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
+	protected Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
 		Set<GitHubConfig> gitHubConfig = new HashSet<>();
-		// Yaml is not thread safe. so create it every time.
-		Yaml yaml = new Yaml();
-		Iterable<Map<String, Object>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
-		for (Map<String, Object> configMap : gitConfigs) {
-			if (configMap == null) {
-				continue;
-			}
-			configMap.put("revision", gitConfigYaml.getRevision());
-			GitHubConfig config = objectMapper.convertValue(configMap, GitHubConfig.class);
+		try (YamlReader reader = new YamlReader(gitConfigYaml.getContent())) {
+			Map<String, Object> gitConfigMap = cast(reader.read());
+			while (gitConfigMap != null) {
+				gitConfigMap.put("revision", gitConfigYaml.getRevision());
+				GitHubConfig config = objectMapper.convertValue(gitConfigMap, GitHubConfig.class);
 
-			if (gitHubConfig.contains(config)) {
-				throw new InvalidGitHubConfigurationException("GitHub configuration '"
-					+ config.getName() + "' is duplicated.\nPlease check your .gitconfig.yml");
-			}
+				if (gitHubConfig.contains(config)) {
+					throw new InvalidGitHubConfigurationException("GitHub configuration '"
+							+ config.getName() + "' is duplicated.\nPlease check your .gitconfig.yml");
+				}
 
-			gitHubConfig.add(config);
-		}
+				gitHubConfig.add(config);
+
+				gitConfigMap = cast(reader.read());
+			}
+		} catch (IOException e) {
+			throw new InvalidGitHubConfigurationException("Fail to read GitHub configuration.", e);
+        }
 		return gitHubConfig;
 	}
 

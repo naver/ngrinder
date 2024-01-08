@@ -59,7 +59,7 @@ dependencies {
     implementation (group: "jaxen", name: "jaxen", version: "1.1.4")
     implementation (group: "com.beust", name: "jcommander", version: "1.32")
     implementation (group: "org.pf4j", name: "pf4j", version: "3.0.1")
-    implementation (group: "org.yaml", name: "snakeyaml", version: "1.25")
+    implementation (group: "com.esotericsoftware.yamlbeans", name: "yamlbeans", version: "1.17")
     implementation (group: "commons-collections", name: "commons-collections", version: "3.2.1")
     implementation (group: "org.reflections", name: "reflections", version: "0.9.9")
     implementation (group: "com.hazelcast", name: "hazelcast", version: hazelcast_version)
