@@ -40,6 +40,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.ngrinder.common.constant.CacheConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.RegionUtils.convertSubregionsStringToSet;
+import static org.ngrinder.common.util.StringUtils.defaultIfBlank;
 
 /**
  * Region service class. This class responsible to keep the status of available regions.
@@ -66,7 +67,7 @@ public class RegionService {
 					regions.put(regionInfo.getRegionName(), regionInfo);
 				}
 			} else {
-				final String regionIP = StringUtils.defaultIfBlank(config.getCurrentIP(), NetworkUtils.getLocalHostAddress());
+				final String regionIP = defaultIfBlank(config.getCurrentIP(), NetworkUtils::getLocalHostAddress);
 				regions.put(config.getRegion(), new RegionInfo(config.getRegion(), emptySet(), regionIP, config.getControllerPort()));
 			}
 			return regions;

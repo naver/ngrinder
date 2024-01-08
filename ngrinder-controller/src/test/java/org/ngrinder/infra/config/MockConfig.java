@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -27,13 +27,13 @@ public class MockConfig extends Config {
 	public boolean cluster;
 	public boolean doRealOnRegion = false;
 
-	public void setControllerProperties(PropertiesWrapper wrapper) {
-		this.wrapper = wrapper;
-	}
-
 	@Override
 	public PropertiesWrapper getControllerProperties() {
 		return wrapper;
+	}
+
+	public void setControllerProperties(PropertiesWrapper wrapper) {
+		this.wrapper = wrapper;
 	}
 
 	@Override
@@ -50,6 +50,11 @@ public class MockConfig extends Config {
 	@Override
 	public String getRegion() {
 		return isClustered() ? (doRealOnRegion == true ? super.getRegion() : "TestRegion") : NONE_REGION;
+	}
+
+	@Override
+	public String getCurrentIP() {
+		return "127.0.0.1";
 	}
 
 }

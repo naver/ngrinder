@@ -24,6 +24,7 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -36,10 +37,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static net.grinder.util.NetworkUtils.getAvailablePorts;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.ngrinder.common.constant.ControllerConstants.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.StringUtils.defaultIfBlank;
 
 /**
  * Console manager is responsible for console instance management.
@@ -51,6 +52,7 @@ import static org.ngrinder.common.util.NoOp.noOp;
  *
  * @since 3.0
  */
+@Profile("production")
 @Component
 @RequiredArgsConstructor
 public class ConsoleManager {
@@ -72,7 +74,7 @@ public class ConsoleManager {
 	public void init() {
 		int consoleSize = getConsoleSize();
 		consoleQueue = new ArrayBlockingQueue<>(consoleSize);
-		final String currentIP = defaultIfEmpty(config.getCurrentIP(), NetworkUtils.getLocalHostAddress());
+		final String currentIP = defaultIfBlank(config.getCurrentIP(), NetworkUtils::getLocalHostAddress);
 		for (int port : getAvailablePorts(currentIP, consoleSize, getConsolePortBase(), MAX_PORT_NUMBER)) {
 			final ConsoleEntry consoleEntry = new ConsoleEntry(currentIP, port);
 			try {
@@ -150,7 +152,7 @@ public class ConsoleManager {
 					consoleCommunicationSetting.setInactiveClientTimeOut(config.getInactiveClientTimeOut());
 				}
 				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
-					consoleCommunicationSetting, baseConsoleProperties);
+						consoleCommunicationSetting, baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				singleConsole.setCsvSeparator(config.getCsvSeparator());
 				return singleConsole;
@@ -180,7 +182,7 @@ public class ConsoleManager {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
 			LOG.error("Exception occurred during console return back for test {}.",
-				testIdentifier, e);
+					testIdentifier, e);
 			// But the port is getting back.
 		} finally {
 			// This is very careful implementation..
@@ -189,7 +191,7 @@ public class ConsoleManager {
 				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
 				LOG.error("Exception occurred during console return back for test {}.",
-					testIdentifier, e);
+						testIdentifier, e);
 				// If it's not disconnected still, stop them by force.
 				agentManager.stopAgent(console.getConsolePort());
 			}
@@ -197,7 +199,7 @@ public class ConsoleManager {
 				console.shutdown();
 			} catch (Exception e) {
 				LOG.error("Exception occurred during console return back for test {}.",
-					testIdentifier, e);
+						testIdentifier, e);
 			}
 			int consolePort;
 			String consoleIP;

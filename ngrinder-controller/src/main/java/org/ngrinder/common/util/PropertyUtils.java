@@ -15,14 +15,14 @@ package org.ngrinder.common.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.util.Properties;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
@@ -30,20 +30,17 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  *
  * @since 3.0
  */
-public abstract class EncodingUtils {
+public abstract class PropertyUtils {
 
 	private static final int MINIMAL_CONFIDENCE_LEVEL = 70;
 
 	/**
 	 * Decode the byte array with auto encoding detection feature.
 	 *
-	 * @param data
-	 *            byte array
-	 * @param defaultEncoding
-	 *            the default encoding if no encoding is sure.
+	 * @param data            byte array
+	 * @param defaultEncoding the default encoding if no encoding is sure.
 	 * @return decoded string
-	 * @throws IOException
-	 *             occurs when the decoding is failed.
+	 * @throws IOException occurs when the decoding is failed.
 	 */
 	public static String getAutoDecodedString(byte[] data, String defaultEncoding) throws IOException {
 		return new String(data, detectEncoding(data, defaultEncoding));
@@ -52,10 +49,8 @@ public abstract class EncodingUtils {
 	/**
 	 * Detect encoding of given data.
 	 *
-	 * @param data
-	 *            byte array
-	 * @param defaultEncoding
-	 *            the default encoding if no encoding is sure.
+	 * @param data            byte array
+	 * @param defaultEncoding the default encoding if no encoding is sure.
 	 * @return encoding name detected encoding name
 	 */
 	public static String detectEncoding(byte[] data, String defaultEncoding) {
@@ -67,40 +62,20 @@ public abstract class EncodingUtils {
 		return isReliable ? estimatedEncoding : defaultEncoding;
 	}
 
-	/**
-	 * Encode the given path with UTF-8.
-	 *
-	 * "/" is not encoded.
-	 * @param path path
-	 * @return encoded path
-	 */
-	public static String encodePathWithUTF8(String path) {
+	public static Properties loadProperties(File file) {
 		try {
-			StringBuilder result = new StringBuilder();
-			for (char each : path.toCharArray()) {
-				if (each == '/') {
-					result.append("/");
-				} else {
-					result.append(URLEncoder.encode(String.valueOf(each), "UTF-8"));
-				}
+			if (file.exists()) {
+				byte[] propByte = FileUtils.readFileToByteArray(file);
+				String propString = PropertyUtils.getAutoDecodedString(propByte, "UTF-8");
+				Properties prop = new Properties();
+				prop.load(new StringReader(propString));
+				return prop;
+			} else {
+				// default empty properties.
+				return new Properties();
 			}
-			return result.toString();
-		} catch (UnsupportedEncodingException e) {
-			throw processException(e);
-		}
-	}
-
-	/**
-	 * Decode the given path with UTF-8.
-	 *
-	 * @param path path
-	 * @return decoded path
-	 */
-	public static String decodePathWithUTF8(String path) {
-		try {
-			return URLDecoder.decode(path, UTF_8.name());
-		} catch (UnsupportedEncodingException e) {
-			throw processException(e);
+		} catch (IOException e) {
+			throw processException("Fail to load property file " + file.getAbsolutePath(), e);
 		}
 	}
 }
