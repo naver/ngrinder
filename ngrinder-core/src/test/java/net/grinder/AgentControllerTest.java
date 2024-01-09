@@ -48,13 +48,15 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		final int freePort = getFreePort();
 		agentControllerServerDaemon = new AgentControllerServerDaemon(freePort);
 		agentControllerServerDaemon.start();
+
 		agentConfig1.setControllerPort(freePort);
 		agentControllerDaemon = new AgentControllerDaemon(agentConfig1);
-
 		agentControllerDaemon.run();
+
 		agentConfig2.setControllerPort(freePort);
 		agentControllerDaemon2 = new AgentControllerDaemon(agentConfig2);
 		agentControllerDaemon2.run();
+
 		sleep(2000);
 		// Validate if all agents are well-attached.
 

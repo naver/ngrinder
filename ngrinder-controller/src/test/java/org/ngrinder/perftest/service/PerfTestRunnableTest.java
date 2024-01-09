@@ -121,7 +121,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 	}
 
 	@Test
-	@Ignore
 	public void testDoTest() throws IOException {
 		assertThat(agentService.getAllAttachedFreeApprovedAgents().size(), is(1));
 		perfTestRunnable.doStart();
@@ -134,8 +133,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
-
-	private boolean ended = false;
 
 	@Test
 	public void testStartConsole() throws IOException {
@@ -168,7 +165,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cont
 
 			@Override
 			public void onSamplingEnded() {
-				ended = true;
 			}
 
 			@Override
