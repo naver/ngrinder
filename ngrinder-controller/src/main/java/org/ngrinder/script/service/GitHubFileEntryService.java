@@ -278,7 +278,7 @@ public class GitHubFileEntryService {
 		return getAllGithubConfig(gitConfigYaml);
 	}
 
-	protected Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
+	private Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
 		Set<GitHubConfig> gitHubConfig = new HashSet<>();
 		try (YamlReader reader = new YamlReader(gitConfigYaml.getContent())) {
 			Map<String, Object> gitConfigMap = cast(reader.read());
