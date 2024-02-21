@@ -90,13 +90,13 @@
                 this.memory.queue.enQueue(res.data.totalMemory - res.data.freeMemory);
                 this.cpu.chart.load({ json: { 'cpu-usage': this.cpu.queue.getArray() } });
                 this.memory.chart.load({ json: { 'memory-usage': this.memory.queue.getArray() } });
-            });
+            }).catch(() => {}); // ignore error.
         }
 
         closeMonitorConnection() {
             this.$http.get('/monitor/api/close', {
                 params: {
-                    ip: this.ip
+                    ip: this.ip,
                 },
             });
         }
