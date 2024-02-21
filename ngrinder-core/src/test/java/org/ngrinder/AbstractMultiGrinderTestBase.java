@@ -43,13 +43,13 @@ abstract public class AbstractMultiGrinderTestBase {
 
 	@Before
 	public void agentInit() {
-		agentConfig1 = new AgentConfig.NullAgentConfig(1);
+		agentConfig1 = new AgentConfig.NullAgentConfig(0);
 		agentConfig1.init();
 
 		agentConfig2 = new AgentConfig.NullAgentConfig(1);
 		agentConfig2.init();
 
-		agentConfig3 = new AgentConfig.NullAgentConfig(1);
+		agentConfig3 = new AgentConfig.NullAgentConfig(2);
 		agentConfig3.init();
 	}
 
