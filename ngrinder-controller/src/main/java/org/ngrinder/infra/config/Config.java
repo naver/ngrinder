@@ -238,6 +238,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		return getControllerProperties().getPropertyInt(PROP_CONTROLLER_MONITOR_PORT);
 	}
 
+	public boolean isMonitorEnabled() {
+		return getControllerProperties().getPropertyBoolean(PROP_CONTROLLER_ENABLE_MONITOR);
+	}
+
 	/**
 	 * Check if the periodic usage report is enabled.
 	 *

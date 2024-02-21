@@ -13,6 +13,7 @@
  */
 package org.ngrinder.agent.controller;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.AopUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -53,6 +54,13 @@ public class MonitorManagerApiController {
 	 */
 	@GetMapping("/state")
 	public SystemDataModel getRealTimeMonitorData(@RequestParam final String ip) throws InterruptedException, ExecutionException, TimeoutException {
+		if (!config.isMonitorEnabled()) {
+			throw new NGrinderRuntimeException(
+				"Monitoring is disabled. If you want to enable monitoring feature," +
+					" modify system settings. but there is a risk of attack from the monitoring server."
+			);
+		}
+
 		int port = config.getMonitorPort();
 		Future<SystemInfo> systemInfoFuture = AopUtils.proxy(this).getAsyncSystemInfo(ip, port);
 		SystemInfo systemInfo = checkNotNull(systemInfoFuture.get(2, TimeUnit.SECONDS), "Monitoring data is not available.");
