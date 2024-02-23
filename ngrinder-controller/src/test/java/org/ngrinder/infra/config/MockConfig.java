@@ -57,4 +57,8 @@ public class MockConfig extends Config {
 		return "127.0.0.1";
 	}
 
+	@Override
+	public boolean isMonitorEnabled() {
+		return true;
+	}
 }
