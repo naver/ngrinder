@@ -1,9 +1,9 @@
-FROM jeanblanchard/java:serverjre-8
+FROM azul/zulu-openjdk-alpine:11.0.22-jre
 MAINTAINER JunHo Yoon "junoyoon@gmail.com"
 
 RUN apk update; apk add curl bash tar
 
-ARG MAVEN_VERSION=3.6.3
+ARG MAVEN_VERSION=3.9.6
 ARG MAVEN_DOWNLOAD_BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
 
 ARG GRADLE_VERSION=6.7.1

@@ -16,7 +16,7 @@ nGrinder consists of two major components.
 
 Version
 ---------
-Current Version: 3.4
+Current Version: 3.5.9
 
 How to run nGrinder with dockers
 ===========================
@@ -27,13 +27,13 @@ Install docker 1.5.0 or above  on your host.
 Pull the ngrinder/controller image.
 
 ```
-$ docker pull ngrinder/controller:3.5.8
+$ docker pull ngrinder/controller:3.5.9
 ```
 
 Start controller.
 
 ```
-docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder/controller:3.5.8
+docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder/controller:3.5.9
 ``` 
 
 The controller creates a data folder under /opt/ngrinder-controller to maintain test history and configuration data. In order to keep the data persistently, you should map the folder /opt/ngrinder-controller on the container to a folder on your host . 
@@ -56,11 +56,11 @@ Install docker 1.5.0 or above on your another host. You should run your agent on
 Pull the ngrinder/agent image.
 
 ```
-$ docker pull ngrinder/agent:3.5.8
+$ docker pull ngrinder/agent:3.5.9
 ```
 
 Start agent.
 
 ```
-docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.5.8 controller_ip:controller_web_port
+docker run -v ~/ngrinder-agent:/opt/ngrinder-agent -d ngrinder/agent:3.5.9 controller_ip:controller_web_port
 ``` 
