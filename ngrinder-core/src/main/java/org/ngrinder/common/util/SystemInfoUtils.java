@@ -33,7 +33,6 @@ import java.util.List;
 
 import static com.sun.jna.Platform.isWindows;
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.getProperty;
 import static oshi.util.ExecutingCommand.runNative;
 
 /**
@@ -102,10 +101,6 @@ public class SystemInfoUtils {
 			}
 		}
 		return getBandWidth(rx, tx);
-	}
-
-	public static String getJDKVersion() {
-		return getProperty("java.specification.version");
 	}
 
 	private static BandWidth getBandWidth(long rx, long tx) {
