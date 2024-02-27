@@ -40,7 +40,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.SystemInfoUtils.getAvailableMemory;
-import static org.ngrinder.common.util.SystemInfoUtils.getJDKVersion;
 
 /**
  * Class which is responsible to build custom jvm arguments.
@@ -205,7 +204,7 @@ public class PropertyBuilder {
 			addAdditionalJavaOpt(jvmArguments);
 		}
 
-		String jdkVersion = getJDKVersion();
+		String jdkVersion = System.getProperty("java.specification.version");
 		if (jdkVersion != null && !jdkVersion.startsWith("1.")) {
 			jvmArguments.append(" --add-opens java.base/java.net=ALL-UNNAMED ");
 		}
