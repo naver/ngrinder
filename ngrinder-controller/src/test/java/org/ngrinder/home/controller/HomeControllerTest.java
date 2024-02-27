@@ -65,8 +65,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testHealthCheck() {
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		healthCheckApiController.healthCheck(res);
-		Map<String, Object> message = healthCheckApiController.healthCheckSlowly(500, res);
+		Map<String, Object> message = healthCheckApiController.healthCheck(res);
 		assertEquals(message.get("current"), regionService.getCurrent());
 	}
 

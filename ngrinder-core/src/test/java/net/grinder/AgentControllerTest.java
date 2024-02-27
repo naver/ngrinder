@@ -48,13 +48,15 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		final int freePort = getFreePort();
 		agentControllerServerDaemon = new AgentControllerServerDaemon(freePort);
 		agentControllerServerDaemon.start();
+
 		agentConfig1.setControllerPort(freePort);
 		agentControllerDaemon = new AgentControllerDaemon(agentConfig1);
-
 		agentControllerDaemon.run();
+
 		agentConfig2.setControllerPort(freePort);
 		agentControllerDaemon2 = new AgentControllerDaemon(agentConfig2);
 		agentControllerDaemon2.run();
+
 		sleep(2000);
 		// Validate if all agents are well-attached.
 
@@ -172,7 +174,7 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 
 		FileUtils.copyFileToDirectory(
 			new File(this.getClass().getResource("/long-time-prepare-test.py").getFile()),
-			new File("./tmp/agent-home/tmp_1/file-store/_default/incoming")
+			new File("./tmp/agent-home/tmp_0/file-store/_default/incoming")
 		);
 
 		URL scriptUrl = this.getClass().getResource("/long-time-prepare-test.properties");
@@ -180,17 +182,14 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		GrinderProperties properties = new GrinderProperties(scriptFile);
 		properties.setAssociatedFile(new File("long-time-prepare-test.properties"));
 		final MutableBoolean timeouted = new MutableBoolean(false);
-		console1.addListener(new SingleConsole.ConsoleShutdownListener() {
-			@Override
-			public void readyToStop(StopReason stopReason) {
-				// Notice: it couldn't distinguish between a script error or
-				// timed out of the keepalive connection.
-				System.out.println("The stop signal is received " + stopReason);
-				if (stopReason.equals(SCRIPT_ERROR)) {
-					timeouted.setValue(true);
-				}
-			}
-		});
+		console1.addListener(stopReason -> {
+            // Notice: it couldn't distinguish between a script error or
+            // timed out of the keepalive connection.
+            System.out.println("The stop signal is received " + stopReason);
+            if (stopReason.equals(SCRIPT_ERROR)) {
+                timeouted.setValue(true);
+            }
+        });
 		console1.startTest(properties);
 
 		for (int i = 0; i < 20; i++) {

@@ -1,4 +1,4 @@
-FROM jeanblanchard/java:serverjre-8
+FROM azul/zulu-openjdk-alpine:11.0.22-jre
 MAINTAINER JunHo Yoon "junoyoon@gmail.com"
 
 RUN apk update; apk add curl bash udev

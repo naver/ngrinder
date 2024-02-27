@@ -20,7 +20,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.common.util.EncodingUtils;
+import org.ngrinder.common.util.PropertyUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileCategory;
@@ -239,8 +239,8 @@ public class FileEntryRepository {
 			}
 			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script.getFileName())));
 			if (script.getFileType().isEditable()) {
-				String autoDetectedEncoding = EncodingUtils.detectEncoding(byteArray, "UTF-8");
-				script.setContent((new String(byteArray, autoDetectedEncoding)).replaceAll("&quot;","\""));
+				String autoDetectedEncoding = PropertyUtils.detectEncoding(byteArray, "UTF-8");
+				script.setContent((new String(byteArray, autoDetectedEncoding)).replaceAll("&quot;", "\""));
 				script.setEncoding(autoDetectedEncoding);
 			}
 			script.setContentBytes(byteArray);

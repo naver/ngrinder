@@ -14,10 +14,11 @@ controller.max_run_count,10000,agent.max.runcount
 controller.max_run_hour,8,agent.max.runhour
 controller.max_concurrent_test,10,ngrinder.max.concurrenttest
 controller.monitor_port,13243,monitor.listen.port
+controller.enable_monitor,false,
 controller.url,,ngrinder.http.url,http.url
 controller.console_port_base,12000,ngrinder.console.portbase
 controller.controller_port,16001,ngrinder.agent.control.port
-controller.ip,,ngrinder.controller.ipaddress,ngrinder.controller.ip
+controller.host,,controller.ip,ngrinder.controller.ipaddress,ngrinder.controller.ip
 controller.validation_timeout,100,ngrinder.validation.timeout
 controller.enable_agent_auto_approval,true,
 controller.enable_script_console,false,

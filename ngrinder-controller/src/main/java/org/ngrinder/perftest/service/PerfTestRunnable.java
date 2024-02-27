@@ -54,7 +54,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.Instant.*;
+import static java.time.Instant.now;
+import static java.time.Instant.ofEpochMilli;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -229,6 +230,8 @@ public class PerfTestRunnable implements ControllerConstants {
 			LOG.debug("Stack Trace is : ", ex);
 			doTerminate(perfTest, singleConsole, ex.getMessage());
 			notifyFinish(perfTest, StopReason.ERROR_WHILE_PREPARE);
+		} finally {
+			cleanUp(perfTest);
 		}
 	}
 
@@ -254,7 +257,7 @@ public class PerfTestRunnable implements ControllerConstants {
 	}
 
 	/**
-	 * Extract non cached distribution files for send to each agents.
+	 * Extract non cached distribution files for send to each agent.
 	 *
 	 * @param distFilesDigest					Required file's digest for currently running test.
 	 * @param agentCachedDistFilesDigestList    Digest of files in each agent cache directory.

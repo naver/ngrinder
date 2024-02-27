@@ -20,6 +20,9 @@
  */
 package org.ngrinder.starter;
 
+import com.sun.jna.Platform;
+
+import java.io.File;
 import java.util.List;
 
 import static java.lang.System.*;
@@ -38,20 +41,19 @@ import static oshi.util.ExecutingCommand.runNative;
  * */
 public enum InstallationChecker {
 
-	MAVEN(MAVEN_HOME_ENV_NAME, "mvn -version",
+	MAVEN(MAVEN_HOME_ENV_NAME, Platform.isWindows() ? "mvn.cmd -version" : "mvn -version",
 		"Maven isn't installed, You can't run Maven groovy scripts. Please install Maven and set MAVEN_HOME.    "),
-	GRADLE(GRADLE_HOME_ENV_NAME, "gradle -version",
+	GRADLE(GRADLE_HOME_ENV_NAME, Platform.isWindows() ? "gradle.bat -version" : "gradle -version",
 		"Gradle isn't installed, You can't run Gradle groovy scripts. Please install Gradle and set GRADLE_HOME.");
 
-	private final String homePath;
+	private final String homeEnvName;
 	private final String installationCheckingCommand;
 	private final String warningMessage;
 
 	InstallationChecker(String homeEnvName, String installationCheckingCommand, String warningMessage) {
+		this.homeEnvName = homeEnvName;
 		this.warningMessage = warningMessage;
 		this.installationCheckingCommand = installationCheckingCommand;
-
-		homePath = getenv(homeEnvName) == null ? "" : getenv(homeEnvName) + "/bin/";
 	}
 
 	public static void checkAll() {
@@ -63,6 +65,8 @@ public enum InstallationChecker {
 	}
 
 	private boolean isInstalled() {
+		String env = getenv(homeEnvName);
+		String homePath = env == null ? "" : env + File.separator +  "bin" + File.separator;
 		String checkCommand = homePath + installationCheckingCommand;
 		List<String> result = runNative(checkCommand.split(" "), null);
 		return !result.isEmpty();

@@ -15,6 +15,7 @@ package org.ngrinder.common.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
@@ -25,6 +26,28 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
  * @since 3.5.0
  */
 public abstract class EncodingUtils {
+	/**
+	 * Encode the given path with UTF-8.
+	 * "/" is not encoded.
+	 *
+	 * @param path path
+	 * @return encoded path
+	 */
+	public static String encodePathWithUTF8(String path) {
+		try {
+			StringBuilder result = new StringBuilder();
+			for (char each : path.toCharArray()) {
+				if (each == '/') {
+					result.append("/");
+				} else {
+					result.append(URLEncoder.encode(String.valueOf(each), "UTF-8"));
+				}
+			}
+			return result.toString();
+		} catch (UnsupportedEncodingException e) {
+			throw processException(e);
+		}
+	}
 
 	/**
 	 * Decode the given path with UTF-8.

@@ -226,7 +226,7 @@ public abstract class NetworkUtils {
 				if (!inetAddress.isReachable(MAX_REACHABLE_TIMEOUT)) {
 					processException(
 						"Can not check available ports because given local IP address '" + ip + "' is unreachable. " +
-							"Please check the `/etc/hosts` file or manually specify the local IP address in `${NGRINDER_HOME}/system.conf`."
+							"Specify controller.host property in `${NGRINDER_HOME}/system.conf`."
 					);
 				}
 			} catch (SecurityException | IOException e) {

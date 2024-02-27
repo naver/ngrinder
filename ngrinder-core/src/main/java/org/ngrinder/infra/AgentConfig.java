@@ -41,6 +41,7 @@ import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.StringUtils.defaultIfBlank;
 
 /**
  * Spring component which is responsible to get the nGrinder config which is stored
@@ -328,7 +329,7 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 	}
 
 	public String getControllerIP() {
-		return defaultIfEmpty(controllerIP, NetworkUtils.getLocalHostAddress());
+		return defaultIfBlank(controllerIP, NetworkUtils::getLocalHostAddress);
 	}
 
 	public int getControllerPort() {
@@ -419,6 +420,16 @@ public class AgentConfig implements AgentConstants, MonitorConstants, CommonCons
 				noOp();
 			}
 			return resolveHome;
+		}
+
+		@Override
+		public String getControllerHost() {
+			return "127.0.0.1";
+		}
+
+		@Override
+		public String getControllerIP() {
+			return "127.0.0.1";
 		}
 	}
 }
