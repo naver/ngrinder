@@ -61,6 +61,60 @@
                             <th v-text="i18n('perfTest.report.errors')"></th>
                             <td>{{ test.errors | numFormat }}</td>
                         </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.errorRate')"></th>
+                            <td>{{ test.errors / (test.tests + test.errors) * 100 |  numFormat('0,0.00') }}
+                                <code class="ml-1">%</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.pct25RT')"></th>
+                            <td>{{ test.pct25RT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.pct50RT')"></th>
+                            <td>{{ test.pct50RT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.pct75RT')"></th>
+                            <td>{{ test.pct75RT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.pct90RT')"></th>
+                            <td>{{ test.pct90RT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.pct95RT')"></th>
+                            <td>{{ test.pct95RT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.pct99RT')"></th>
+                            <td>{{ test.pct99RT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.minRT')"></th>
+                            <td>{{ test.minRT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th v-text="i18n('perfTest.report.maxRT')"></th>
+                            <td>{{ test.maxRT | numFormat('0,0.00') }}
+                                <code class="ml-1">ms</code>
+                            </td>
+                        </tr>
                     </table>
                     <div class="card bg-light">
                         <ul class="nav flex-column">

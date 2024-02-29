@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="ngrinder.3.5.8" id="34" dbms="h2, mysql">
+        <addColumn tableName="PERF_TEST">
+            <column name="errorRate" type="double"/>
+            <column name="pct25RT" type="double"/>
+            <column name="pct50RT" type="double"/>
+            <column name="pct75RT" type="double"/>
+            <column name="pct90RT" type="double"/>
+            <column name="pct95RT" type="double"/>
+            <column name="pct99RT" type="double"/>
+            <column name="minRT" type="double"/>
+            <column name="maxRT" type="double"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
