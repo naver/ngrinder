@@ -66,7 +66,7 @@ cookies.append(Cookie("${cookie["name"]?j_string}", "${cookie["value"]?j_string}
 </#if>
 
 class TestRunner:
-	# initlialize a thread
+	# initialize a thread
 	def __init__(self):
 		test1.record(TestRunner.__call__)
 		grinder.statistics.delayReports=True
