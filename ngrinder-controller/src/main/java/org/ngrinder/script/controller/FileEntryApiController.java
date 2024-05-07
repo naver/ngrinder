@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ContentDisposition;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,6 +66,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/script/api")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 public class FileEntryApiController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryApiController.class);
