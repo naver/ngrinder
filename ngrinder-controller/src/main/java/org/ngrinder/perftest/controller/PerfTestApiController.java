@@ -44,6 +44,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
@@ -74,6 +75,7 @@ import static org.springframework.data.domain.Sort.by;
 @RestController
 @RequestMapping("/perftest/api")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 public class PerfTestApiController {
 
 	private final PerfTestService perfTestService;
@@ -337,6 +339,7 @@ public class PerfTestApiController {
 	}
 
 	@GetMapping("/{id}/detail_report")
+	@PreAuthorize("permitAll")
 	public Map<String, Object> getReport(@PathVariable long id) {
 		Map<String, Object> model = newHashMap();
 		model.put("test", perfTestService.getOne(id));
@@ -601,6 +604,7 @@ public class PerfTestApiController {
 	 * @return perf test result list.
 	 */
 	@GetMapping({"/{id}/perf", "/{id}/graph"})
+	@PreAuthorize("permitAll")
 	public Map<String, Object> getPerfGraph(@PathVariable long id,
 											@RequestParam(defaultValue = "") String dataType,
 											@RequestParam(defaultValue = "false") boolean onlyTotal,
@@ -630,6 +634,7 @@ public class PerfTestApiController {
 	 * @return json message
 	 */
 	@GetMapping("/{id}/monitor")
+	@PreAuthorize("permitAll")
 	public Map<String, Object> getMonitorGraph(@PathVariable long id,
 											   @RequestParam String targetIP, @RequestParam int imgWidth) {
 		int interval = perfTestService.getMonitorGraphInterval(id, targetIP, imgWidth);
@@ -649,6 +654,7 @@ public class PerfTestApiController {
 	 * @return json message
 	 */
 	@GetMapping("/{id}/plugin/{plugin}")
+	@PreAuthorize("permitAll")
 	public Map<String, Object> getPluginGraph(@PathVariable long id,
 											  @PathVariable String plugin,
 											  @RequestParam String kind,
