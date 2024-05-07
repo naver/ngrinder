@@ -531,7 +531,7 @@ public class PerfTestApiController {
 			.collect(toList());
 
 		return buildMap(
-			"perfTestInfo", perfTestService.getCurrentPerfTestStatistics(),
+			"runningTestsCount", perfTestService.getCurrentPerfTestStatistics().size(),
 			"status", statuses
 		);
 	}
