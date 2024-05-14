@@ -27,6 +27,7 @@ import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.*;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -281,14 +282,14 @@ public class GitHubFileEntryService {
 	private Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
 		Set<GitHubConfig> gitHubConfig = new HashSet<>();
 		// Yaml is not thread safe. so create it every time.
-		Yaml yaml = new Yaml();
-		Iterable<Map<String, Object>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
-		for (Map<String, Object> configMap : gitConfigs) {
+		Yaml yaml = new Yaml(new SafeConstructor());
+		Iterable<Map<String, String>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
+		for (Map<String, String> configMap : gitConfigs) {
 			if (configMap == null) {
 				continue;
 			}
-			configMap.put("revision", gitConfigYaml.getRevision());
 			GitHubConfig config = objectMapper.convertValue(configMap, GitHubConfig.class);
+			config.setRevision(String.valueOf(gitConfigYaml.getRevision()));
 
 			if (gitHubConfig.contains(config)) {
 				throw new InvalidGitHubConfigurationException("GitHub configuration '"
