@@ -1,6 +1,5 @@
 package org.ngrinder.script.service;
 
-import com.esotericsoftware.yamlbeans.YamlReader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +26,8 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.wc.*;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -280,24 +281,23 @@ public class GitHubFileEntryService {
 
 	private Set<GitHubConfig> getAllGithubConfig(FileEntry gitConfigYaml) {
 		Set<GitHubConfig> gitHubConfig = new HashSet<>();
-		try (YamlReader reader = new YamlReader(gitConfigYaml.getContent())) {
-			Map<String, Object> gitConfigMap = cast(reader.read());
-			while (gitConfigMap != null) {
-				gitConfigMap.put("revision", gitConfigYaml.getRevision());
-				GitHubConfig config = objectMapper.convertValue(gitConfigMap, GitHubConfig.class);
-
-				if (gitHubConfig.contains(config)) {
-					throw new InvalidGitHubConfigurationException("GitHub configuration '"
-							+ config.getName() + "' is duplicated.\nPlease check your .gitconfig.yml");
-				}
-
-				gitHubConfig.add(config);
-
-				gitConfigMap = cast(reader.read());
+		// Yaml is not thread safe. so create it every time.
+		Yaml yaml = new Yaml(new SafeConstructor());
+		Iterable<Map<String, String>> gitConfigs = cast(yaml.loadAll(gitConfigYaml.getContent()));
+		for (Map<String, String> configMap : gitConfigs) {
+			if (configMap == null) {
+				continue;
 			}
-		} catch (IOException e) {
-			throw new InvalidGitHubConfigurationException("Fail to read GitHub configuration.", e);
-        }
+			GitHubConfig config = objectMapper.convertValue(configMap, GitHubConfig.class);
+			config.setRevision(String.valueOf(gitConfigYaml.getRevision()));
+
+			if (gitHubConfig.contains(config)) {
+				throw new InvalidGitHubConfigurationException("GitHub configuration '"
+					+ config.getName() + "' is duplicated.\nPlease check your .gitconfig.yml");
+			}
+
+			gitHubConfig.add(config);
+		}
 		return gitHubConfig;
 	}
 
