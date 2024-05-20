@@ -24,6 +24,7 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.*;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,7 @@ import static org.ngrinder.common.util.Preconditions.*;
 @RequestMapping("/perftest")
 @GlobalControllerModel
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 public class PerfTestController {
 
 	private final PerfTestService perfTestService;
@@ -150,6 +152,7 @@ public class PerfTestController {
 	 * @return perftest/detail_report
 	 */
 	@GetMapping({"/{id}/detail_report", /* for backward compatibility */"/{id}/report"})
+	@PreAuthorize("permitAll")
 	public String getReport(@PathVariable long id) {
 		return "app";
 	}
@@ -162,6 +165,7 @@ public class PerfTestController {
 	 */
 	@SuppressWarnings("UnusedParameters")
 	@GetMapping("/{id}/detail_report/perf")
+	@PreAuthorize("permitAll")
 	public String getDetailPerfReport(@PathVariable("id") long id) {
 		return "perftest/detail_report/perf";
 	}
@@ -176,6 +180,7 @@ public class PerfTestController {
 	 */
 	@SuppressWarnings("UnusedParameters")
 	@GetMapping("/{id}/detail_report/monitor")
+	@PreAuthorize("permitAll")
 	public String getDetailMonitorReport(@PathVariable("id") long id, @RequestParam("targetIP") String targetIP,
 	                                     ModelMap modelMap) {
 		modelMap.addAttribute("targetIP", targetIP);
@@ -192,6 +197,7 @@ public class PerfTestController {
 	 */
 	@SuppressWarnings("UnusedParameters")
 	@GetMapping("/{id}/detail_report/plugin/{plugin}")
+	@PreAuthorize("permitAll")
 	public String getDetailPluginReport(@PathVariable("id") long id,
 	                                    @PathVariable("plugin") String plugin, @RequestParam("kind") String kind, ModelMap modelMap) {
 		modelMap.addAttribute("plugin", plugin);

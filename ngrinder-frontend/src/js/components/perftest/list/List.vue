@@ -420,7 +420,7 @@
                         }
 
                         this.tests[target.index].status = updatedStatus;
-                        this.runningSummary = `${res.data.perfTestInfo.length} ${this.i18n('perfTest.list.runningSummary')}`;
+                        this.runningSummary = `${res.data.runningTestsCount} ${this.i18n('perfTest.list.runningSummary')}`;
                     });
                 }).finally(() => this.updateStatusTimeoutId = setTimeout(this.updatePerftestStatus, 2000));
             } else {
