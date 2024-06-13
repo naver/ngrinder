@@ -1,5 +1,5 @@
 ngrinder:
-  version: 3.5.9
+  version: 3.5.9-p1
 
 server:
   default-encoding: UTF-8

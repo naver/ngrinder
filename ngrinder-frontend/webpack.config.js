@@ -35,7 +35,7 @@ var lessLoader = {
 };
 
 module.exports = function (env) {
-    var ngrinderVersion = '3.5.9';
+    var ngrinderVersion = '3.5.9-p1';
     if (env !== undefined && env.ngrinderVersion !== undefined) {
         ngrinderVersion = env.ngrinderVersion;
     }
