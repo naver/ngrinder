@@ -23,6 +23,7 @@ package net.grinder.communication;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -31,6 +32,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import net.grinder.common.UncheckedInterruptedException;
+import net.grinder.common.processidentity.ProcessIdentity;
+import net.grinder.engine.controller.AbstractAgentControllerIdentityImplementation;
 
 
 /**
@@ -197,6 +200,23 @@ public final class Connector {
 
 		try {
 			final ObjectInputStream objectInputStream = new ObjectInputStream(in);
+			objectInputStream.setObjectInputFilter(filterInfo -> {
+				if (filterInfo.serialClass() == null) {
+					return ObjectInputFilter.Status.UNDECIDED;
+				}
+
+				if (Address.class.isAssignableFrom(filterInfo.serialClass())
+					|| ConnectionType.class.isAssignableFrom(filterInfo.serialClass())
+					|| Enum.class.isAssignableFrom(filterInfo.serialClass())
+					|| filterInfo.serialClass().getCanonicalName().startsWith("net.grinder.engine")
+					|| filterInfo.serialClass().getCanonicalName().startsWith("net.grinder.common")
+				) {
+					return ObjectInputFilter.Status.ALLOWED;
+				}
+
+				return ObjectInputFilter.Status.REJECTED;
+			});
+
 			final ConnectionType type =
 				(ConnectionType) objectInputStream.readObject();
 			final Address address = (Address) objectInputStream.readObject();

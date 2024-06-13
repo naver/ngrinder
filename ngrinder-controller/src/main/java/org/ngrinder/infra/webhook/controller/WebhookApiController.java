@@ -47,7 +47,8 @@ public class WebhookApiController {
 	private final WebhookActivationService webhookActivationService;
 
 	@PostMapping
-	public void save(@RequestBody WebhookConfig webhookConfig) {
+	public void save(User user, @RequestBody WebhookConfig webhookConfig) {
+		webhookConfig.setCreatorId(user.getUserId());
 		webhookConfigService.save(webhookConfig);
 	}
 
@@ -62,8 +63,7 @@ public class WebhookApiController {
 	}
 
 	@GetMapping("/activation")
-	public List<WebhookActivation> getActivations(@RequestParam String creatorId,
-												  @PageableDefault Pageable pageable) {
-		return webhookActivationService.findAll(creatorId, pageable);
+	public List<WebhookActivation> getActivations(User user, @PageableDefault Pageable pageable) {
+		return webhookActivationService.findAll(user.getUserId(), pageable);
 	}
 }

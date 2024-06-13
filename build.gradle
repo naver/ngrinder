@@ -2,7 +2,7 @@ allprojects  {
   apply plugin: "idea"
 
   group = "org.ngrinder"
-  version = "3.5.8"
+  version = "3.5.9"
 
   idea {
     module {
@@ -28,8 +28,8 @@ subprojects {
   compileJava.options.encoding = "UTF-8"
   compileTestJava.options.encoding = "UTF-8"
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  sourceCompatibility = 11
+  targetCompatibility = 11
 
   ext {
     profile = project.hasProperty("profile") ? profile : "production"

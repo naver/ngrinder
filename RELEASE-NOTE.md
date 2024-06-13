@@ -1,3 +1,12 @@
+3.5.9 (2023.02.28)
+=================
+- Changes
+  - Fix security vulnerabilities
+  - Bump base JDK version up to 11
+- Bug fix
+  - #998 Fix failing to call mvn and gradle command in Windows
+  - #1004 Fix script validation error in docker env
+
 3.5.8 (2022.12.30)
 =================
 - Changes

@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.ngrinder.common.constant.CacheConstants.REGION_ATTR_KEY;
 import static org.ngrinder.common.constant.CacheConstants.SUBREGION_ATTR_KEY;
 import static org.ngrinder.common.util.RegionUtils.convertSubregionsStringToSet;
+import static org.ngrinder.common.util.StringUtils.defaultIfBlank;
 
 /**
  * Task for getting region info from clustered controller.
@@ -28,7 +28,7 @@ public class RegionInfoTask implements Callable<RegionInfo>, Serializable {
 	private transient Config config;
 
 	public RegionInfo call() {
-		final String regionIP = defaultIfBlank(config.getCurrentIP(), NetworkUtils.getLocalHostAddress());
+		final String regionIP = defaultIfBlank(config.getCurrentIP(), NetworkUtils::getLocalHostAddress);
 		Map<String, String> regionWithSubregion = config.getRegionWithSubregion();
 		Set<String> subregion = convertSubregionsStringToSet(regionWithSubregion.get(SUBREGION_ATTR_KEY));
 		return new RegionInfo(regionWithSubregion.get(REGION_ATTR_KEY), subregion, regionIP, config.getControllerPort());

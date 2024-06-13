@@ -1,5 +1,5 @@
 * Please post questions in [Discussions](https://github.com/naver/ngrinder/discussions) not Issues.
-* nGrinder 3.5.8 has been released. See https://github.com/naver/ngrinder/releases
+* nGrinder 3.5.9 has been released. See https://github.com/naver/ngrinder/releases
 * Currently, we are working on the internal project not ngrinder. We will resume ngrinder dev from July, 2022.
 
 nGrinder 

@@ -16,8 +16,8 @@ package org.ngrinder.common.model;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
-import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.common.util.NoOp;
+import org.ngrinder.common.util.PropertyUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;
@@ -26,7 +26,6 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Properties;
 
 import static java.util.Objects.requireNonNull;
@@ -55,8 +54,8 @@ public class Home {
 	private static final String PATH_DIST = "dist";
 	private static final String PATH_STAT = "stat";
 	private final static Logger LOGGER = LoggerFactory.getLogger(Home.class);
-	private final File directory;
 	private static final String REPORT_CSV = "output.csv";
+	private final File directory;
 
 	/**
 	 * Constructor.
@@ -81,8 +80,7 @@ public class Home {
 			}
 		}
 		if (directory.exists() && !directory.canWrite()) {
-			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory),
-					null);
+			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory), null);
 		}
 		this.directory = directory;
 	}
@@ -140,22 +138,8 @@ public class Home {
 	 * @return loaded {@link Properties}
 	 */
 	public Properties getProperties(String confFileName) {
-		try {
-			File configFile = getSubFile(confFileName);
-			if (configFile.exists()) {
-				byte[] propByte = FileUtils.readFileToByteArray(configFile);
-				String propString = EncodingUtils.getAutoDecodedString(propByte, "UTF-8");
-				Properties prop = new Properties();
-				prop.load(new StringReader(propString));
-				return prop;
-			} else {
-				// default empty properties.
-				return new Properties();
-			}
-
-		} catch (IOException e) {
-			throw processException("Fail to load property file " + confFileName, e);
-		}
+		File configFile = getSubFile(confFileName);
+		return PropertyUtils.loadProperties(configFile);
 	}
 
 	/**
