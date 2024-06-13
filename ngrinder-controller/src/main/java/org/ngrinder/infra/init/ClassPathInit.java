@@ -46,6 +46,9 @@ public class ClassPathInit {
 		final String systemClasspath = System.getProperty("java.class.path", StringUtils.EMPTY);
 		for (String pathEntry : systemClasspath.split(File.pathSeparator)) {
 			final File parentFile = ObjectUtils.defaultIfNull(new File(pathEntry).getParentFile(), new File("."));
+			if (!parentFile.isDirectory()) {
+				continue;
+			}
 			final Collection<File> childrenFileList = FileUtils.listFiles(parentFile, new String[]{"jar"}, false);
 			for (File candidate : childrenFileList) {
 				final String name = candidate.getName();
