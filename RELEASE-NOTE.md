@@ -1,4 +1,4 @@
-3.5.9-p1 (2023.06.13)
+3.5.9-p1 (2024.06.13)
 =================
 - Changes
   - Fix security vulnerability
