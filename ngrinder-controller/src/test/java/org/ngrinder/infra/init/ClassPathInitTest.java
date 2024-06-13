@@ -40,6 +40,9 @@ public class ClassPathInitTest {
 				final File f = new File(pathEntry).getParentFile();
 				final File parentFile = f != null ? f : new File(".");
 
+				if (!parentFile.isDirectory()) {
+					continue;
+				}
 				final Collection<File> children = FileUtils.listFiles(parentFile, null, false);
 
 				for (File candidate : children) {
